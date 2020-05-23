@@ -22,8 +22,24 @@ This is where I put all the cool stuff.
 - [ ] vscode supports cross-project debug
     - [x] Break at Exception in any project level
     - [x] Breakpoints work at any project level
-- [ ] Shared/Single tsconfig
+- [x] Shared/Single tsconfig
+    - [x] Only root tsconfig
+        - [FAIL] Breaks Eslint
+    - [x] Support extends to root tsconfig
 - [ ] Shared/Single eslint
 - [ ] works with expo
 - [ ] works with gatsby
 
+
+## Useful Commands:
+
+- print eslint rules
+    `npx eslint --print-config .\src\_.ts > .eslint-all-rules.debug.json`
+- print eslint files linted
+    `npx eslint --debug`
+- Convert JS to TSX (and convert prop-types)
+    `npx react-proptypes-to-typescript "./src/**/*.js" --remove-original-files`
+- Fix all files with eslint
+    `npx eslint --ext js,jsx,ts,tsx src --fix`
+- Find depedency used in node_modules (bash)
+    `find ./node_modules/ -name package.json | xargs grep <the_package_name>`

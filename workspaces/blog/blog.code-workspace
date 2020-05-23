@@ -1,10 +1,10 @@
 {
 	"folders": [
 		// Root (Comment to Filter Out)
-		{
-			"name": "Root",
-			"path": "../../"
-		},
+		// {
+		// 	"name": "Root",
+		// 	"path": "../../"
+		// },
 		{
 			"name": "Workspace",
 			"path": "../../workspaces/blog"
