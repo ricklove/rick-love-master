@@ -1,0 +1,21 @@
+{
+	"folders": [
+		// Root (Comment to Filter Out)
+		{
+			"path": "../../"
+		},
+		{
+			"path": "../../workspaces/blog"
+		},
+		{
+			"path": "../../packages/blog-content"
+		},
+		{
+			"path": "../../packages/blog-gatsby-site"
+		},
+		{
+			"path": "../../packages/utils"
+		},
+	],
+	"settings": {}
+}

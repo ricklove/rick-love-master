@@ -1,0 +1,50 @@
+{
+    // Use IntelliSense to learn about possible attributes.
+    // Hover to view descriptions of existing attributes.
+    // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "Current TS File",
+            "type": "node",
+            "request": "launch",
+            "args": [
+                "${file}"
+            ],
+            "runtimeArgs": [
+                "--nolazy",
+                "-r",
+                "ts-node/register"
+            ],
+            "sourceMaps": true,
+            "cwd": "${fileDirname}",
+            "protocol": "inspector",
+            "smartStep": true,
+            "skipFiles": [
+                "${workspaceFolder}/../../node_modules/**/*.js",
+                "<node_internals>/**/*.js"
+            ]
+        },
+        {
+            "name": "Run Specific Target (Example)",
+            "type": "node",
+            "request": "launch",
+            "args": [
+                "${workspaceFolder}/../../packages/blog-site/src/debug-run.ts"
+            ],
+            "runtimeArgs": [
+                "--nolazy",
+                "-r",
+                "ts-node/register"
+            ],
+            "sourceMaps": true,
+            "cwd": "${workspaceFolder}/../../packages/blog-site/src/",
+            "protocol": "inspector",
+            "smartStep": true,
+            "skipFiles": [
+                "${workspaceFolder}/../../node_modules/**/*.js",
+                "<node_internals>/**/*.js"
+            ]
+        },
+    ]
+}
