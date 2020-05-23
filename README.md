@@ -21,7 +21,7 @@ This is where I put all the cool stuff.
 - [x] vscode supports cross-project rename
 - [ ] vscode supports cross-project debug
     - [x] Break at Exception in any project level
-    - [FAIL] Breakpoints work at any project level
+    - [x] Breakpoints work at any project level
 - [ ] Shared/Single tsconfig
 - [ ] Shared/Single eslint
 - [ ] works with expo
