@@ -4,6 +4,7 @@
   "description": "Host the blog with gatsby-lite",
   "version": "1.0.0",
   "dependencies": {
+    "gatsby": "^2.21.37",
     "gatsby-lite": "*"
   },
   "devDependencies": {},
