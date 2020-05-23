@@ -21,7 +21,7 @@
             "protocol": "inspector",
             "smartStep": true,
             "skipFiles": [
-                "${workspaceFolder}/../../node_modules/**/*.js",
+                "${workspaceFolder}/node_modules/**/*.js",
                 "<node_internals>/**/*.js"
             ]
         },
@@ -38,7 +38,7 @@
                 "ts-node/register"
             ],
             "sourceMaps": true,
-            "cwd": "${workspaceFolder}/../../packages/blog-site/src/",
+            "cwd": "${workspaceFolder}/packages/blog-site/src/",
             "protocol": "inspector",
             "smartStep": true,
             "skipFiles": [
