@@ -1,0 +1,1 @@
+Gatsby Lite allows you to use the minimal gatsby tools and pre-rendering with out all the junk.

@@ -1,10 +1,9 @@
 {
 	"folders": [
-		// Root (Comment to Filter Out)
-		// {
-		// 	"name": "Root",
-		// 	"path": "../../"
-		// },
+		{
+			"name": "Root",
+			"path": "../../"
+		},
 		{
 			"name": "Workspace",
 			"path": "../../workspaces/blog"
@@ -21,6 +20,9 @@
 		{
 			"path": "../../packages/utils"
 		},
+		{
+			"path": "../../packages/gatsby-lite"
+		}
 	],
 	"settings": {}
 }
