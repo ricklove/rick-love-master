@@ -19,14 +19,14 @@ This is where I put all the cool stuff.
 - [x] Code folders have a simple well defined structure
 - [x] vscode supports cross-project navigation 
 - [x] vscode supports cross-project rename
-- [ ] vscode supports cross-project debug
+- [x] vscode supports cross-project debug
     - [x] Break at Exception in any project level
     - [x] Breakpoints work at any project level
 - [x] Shared/Single tsconfig
     - [x] Only root tsconfig
-        - [FAIL] Breaks Eslint
+        - [FAIL] Breaks Eslint => Use Extends
     - [x] Support extends to root tsconfig
-- [ ] Shared/Single eslint
+- [x] Shared/Single eslint
 - [ ] works with expo
 - [ ] works with gatsby
 
