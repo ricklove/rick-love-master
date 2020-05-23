@@ -1,5 +1,5 @@
 {
-  "name": "gatsby-starter-default",
+  "name": "blog-gatsby-site",
   "private": true,
   "description": "A simple starter to get up and developing quickly with Gatsby",
   "version": "0.1.0",
@@ -19,6 +19,7 @@
     "react-helmet": "^6.0.0"
   },
   "devDependencies": {
+    "babel-eslint": "^10.1.0",
     "prettier": "2.0.5"
   },
   "keywords": [
