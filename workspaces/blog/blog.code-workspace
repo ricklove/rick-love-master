@@ -2,10 +2,15 @@
 	"folders": [
 		// Root (Comment to Filter Out)
 		{
+			"name": "Root",
 			"path": "../../"
 		},
 		{
+			"name": "Workspace",
 			"path": "../../workspaces/blog"
+		},
+		{
+			"path": "../../packages/blog-core"
 		},
 		{
 			"path": "../../packages/blog-content"
