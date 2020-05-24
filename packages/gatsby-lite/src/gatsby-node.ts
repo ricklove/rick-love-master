@@ -2,11 +2,11 @@ import { CreatePagesArgs } from 'gatsby';
 import path from 'path';
 import { getSiteProvider } from '../register-site';
 
-const { loadPageData } = getSiteProvider();
-
 // Integrating with custom system
 export const createPages = async ({ graphql, actions }: CreatePagesArgs) => {
   const { createPage } = actions;
+
+  const { loadPageData } = getSiteProvider();
   const pages = await loadPageData();
 
   // eslint-disable-next-line no-console

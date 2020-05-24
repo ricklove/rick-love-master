@@ -3,8 +3,6 @@ import React from 'react';
 import { getSiteProvider } from '../register-site';
 import { SitePageInfo } from '../types';
 
-const { createPage } = getSiteProvider();
-
 const GatsbyLiteTemplate = ({
     pageContext,
 }: {
@@ -12,6 +10,7 @@ const GatsbyLiteTemplate = ({
 }) => {
     const { sitePath, data } = pageContext;
 
+    const { createPage } = getSiteProvider();
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const page = createPage(sitePath, data as any);
     if (!page) {

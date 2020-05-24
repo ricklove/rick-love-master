@@ -1,7 +1,2 @@
-import { setupSite } from 'blog-core/src/setup';
-import GatsbyLiteTemplate from 'gatsby-lite/src/gatsby-lite-template';
-
-setupSite();
-
-// eslint-disable-next-line import/no-default-export
-export default GatsbyLiteTemplate;
+console.log(`gatspy-lite-template.js START`);
+module.exports = require(`gatsby-lite/gatsby-lite-template.ts`);
