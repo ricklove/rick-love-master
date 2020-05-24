@@ -1,9 +1,16 @@
 /* eslint-disable @typescript-eslint/camelcase */
 /* eslint-disable no-console */
 /* eslint-disable unicorn/consistent-function-scoping */
-import { SitePages, SitePageInfo } from 'gatsby-lite/types';
 // import { processDirectoryFiles, getFilename, readFile } from 'utils/files';
 import { PageData } from './create-page';
+
+export type SitePages<T> = {
+    pages: SitePageInfo<T>[];
+};
+export type SitePageInfo<T> = {
+    sitePath: string;
+    data: T;
+};
 
 export const loadPageData = async (): Promise<SitePages<PageData>> => {
     // Register Pages here (node api available => Load all data that is needed for all pages here)
@@ -75,11 +82,6 @@ export const loadPageData = async (): Promise<SitePages<PageData>> => {
 
     console.log(`getStaticPages`, { pages });
     return {
-        includePagesFolder: true,
         pages,
-        // pages: [...new Array(1000)].map((x, i) => ({
-        //     sitePath: `test-${i}`,
-        //     Component: () => (<ExamplePage index={i} />),
-        // })),
     };
 };

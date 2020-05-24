@@ -1,7 +1,6 @@
 /* eslint-disable unicorn/consistent-function-scoping */
 // eslint-disable-next-line import/no-extraneous-dependencies
 import React from 'react';
-import { SitePageComponent } from 'gatsby-lite/types';
 // import { PostIndexPage, PostIndexPageData } from '../pageTemplates/post-index';
 // import { PostPage, PostPageData } from '../pageTemplates/post';
 import { NotFoundPage } from '../pageTemplates/404';
@@ -12,7 +11,7 @@ export type PageData = {
     notFoundPage?: {};
 };
 
-export const createPage = (sitePath: string, data: PageData): SitePageComponent => {
+export const createPage = (sitePath: string, data: PageData): { Component: () => JSX.Element } => {
     // Generate Page here => No Node context available, all data must be passed in
 
     // eslint-disable-next-line no-console

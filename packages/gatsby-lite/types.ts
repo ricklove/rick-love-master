@@ -1,5 +1,4 @@
 export type SitePages<T> = {
-    includePagesFolder: boolean;
     pages: SitePageInfo<T>[];
 };
 

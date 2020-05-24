@@ -1,5 +1,5 @@
 import { registerSiteProvider_Browser } from 'gatsby-lite/register-site';
-import { createPage } from './site/create-page';
+import { createPage } from 'blog-core/src/site/create-page';
 
 export const setupSite_Browser = () => {
     // eslint-disable-next-line no-console

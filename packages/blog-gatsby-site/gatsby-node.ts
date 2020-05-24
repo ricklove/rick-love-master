@@ -1,4 +1,4 @@
-import { setupSite_Node } from 'blog-core/src/setup-node';
+import { setupSite_Node } from './src/setup-node';
 
 setupSite_Node();
 
