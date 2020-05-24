@@ -9,7 +9,7 @@
 			"path": "../../workspaces/blog"
 		},
 		{
-			"path": "../../packages/blog-core"
+			"path": "../../packages/blog"
 		},
 		{
 			"path": "../../packages/blog-content"
