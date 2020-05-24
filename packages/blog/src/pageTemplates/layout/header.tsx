@@ -10,8 +10,7 @@ import { getNavigation } from '../../site/store';
 // const consoleCommands = createConsoleCommands(initDir);
 
 export const Header = ({ siteTitle }: { siteTitle: string }) => {
-    const nav = getNavigation();
-    const Link = nav.StaticPageLinkComponent;
+    const Link = getNavigation().StaticPageLinkComponent;
 
     return (
         <header>
