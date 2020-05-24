@@ -1,5 +1,5 @@
 import { registerSiteProvider_Node } from 'gatsby-lite/register-site-provider-node';
-import { loadStaticPageData } from 'blog-core/src/site/load-page-data';
+import { loadStaticPageData } from 'blog/src/site/load-page-data';
 
 export const setupSite_Node = () => {
     // eslint-disable-next-line no-console
