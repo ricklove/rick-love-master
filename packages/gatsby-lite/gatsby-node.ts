@@ -1,12 +1,14 @@
-import { CreatePagesArgs } from 'gatsby';
+import { CreatePagesArgs, CreateWebpackConfigArgs } from 'gatsby';
 import path from 'path';
-import { getSiteProvider_Node } from './register-site';
+import LoadablePlugin from '@loadable/webpack-plugin';
+import { getSiteProvider_Node } from './register-site-provider-node';
+
 
 // Integrating with custom system
 export const createPages = async ({ graphql, actions }: CreatePagesArgs) => {
     const { createPage } = actions;
 
-    const { loadPageData } = getSiteProvider_Node();
+    const { loadStaticPageData: loadPageData } = getSiteProvider_Node();
     const pages = await loadPageData();
 
     // eslint-disable-next-line no-console
@@ -20,5 +22,11 @@ export const createPages = async ({ graphql, actions }: CreatePagesArgs) => {
 
     pages.pages.forEach(p => {
         createPage({ path: p.sitePath, component: templatePath, context: p });
+    });
+};
+
+export const onCreateWebpackConfig = ({ actions }: CreateWebpackConfigArgs) => {
+    actions.setWebpackConfig({
+        plugins: [new LoadablePlugin()],
     });
 };

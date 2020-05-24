@@ -14,21 +14,21 @@
 		{
 			"path": "../../packages/blog-content"
 		},
-		// {
-		// 	"path": "../../packages/blog-gatsby-site"
-		// },
+		{
+			"path": "../../packages/blog-gatsby-site"
+		},
 		{
 			"path": "../../packages/utils"
 		},
-		// {
-		// 	"path": "../../packages/gatsby-lite"
-		// }
+		{
+			"path": "../../packages/gatsby-lite"
+		}
 	],
 	"settings": {
 		"typescript.tsdk": "Root\\node_modules\\typescript\\lib",
 		"files.exclude": {
 			"node_modules/": true,
-			"package.json": true,
+			// "package.json": true,
 			"tsconfig.json": true,
 		}
 	}

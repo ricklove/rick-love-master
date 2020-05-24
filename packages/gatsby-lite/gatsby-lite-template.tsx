@@ -1,6 +1,6 @@
 /* eslint-disable import/no-default-export */
 import React from 'react';
-import { getSiteProvider_Browser } from './register-site';
+import { getSiteProvider_Browser } from './register-site-provider-browser';
 import { SitePageInfo } from './types';
 
 export const GatsbyLiteTemplate = ({
@@ -10,7 +10,7 @@ export const GatsbyLiteTemplate = ({
 }) => {
     const { sitePath, data } = pageContext;
 
-    const { createPage } = getSiteProvider_Browser();
+    const { createStaticPage: createPage } = getSiteProvider_Browser();
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const page = createPage(sitePath, data as any);
     if (!page) {

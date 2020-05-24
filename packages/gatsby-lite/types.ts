@@ -12,9 +12,9 @@ export type SitePageComponent = {
 }
 
 export type SiteProvider_Node<T> = {
-    loadPageData: () => Promise<SitePages<T>>;
+    loadStaticPageData: () => Promise<SitePages<T>>;
 };
 
 export type SiteProvider_Browser<T> = {
-    createPage: (sitePath: string, data: T) => SitePageComponent;
+    createStaticPage: (sitePath: string, data: T) => SitePageComponent;
 };

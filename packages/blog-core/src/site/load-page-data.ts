@@ -12,7 +12,7 @@ export type SitePageInfo<T> = {
     data: T;
 };
 
-export const loadPageData = async (): Promise<SitePages<PageData>> => {
+export const loadStaticPageData = async (): Promise<SitePages<PageData>> => {
     // Register Pages here (node api available => Load all data that is needed for all pages here)
 
     console.log(`loadStaticPages START`);

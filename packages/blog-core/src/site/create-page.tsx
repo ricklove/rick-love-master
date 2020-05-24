@@ -11,7 +11,7 @@ export type PageData = {
     notFoundPage?: {};
 };
 
-export const createPage = (sitePath: string, data: PageData): { Component: () => JSX.Element } => {
+export const createStaticPage = (sitePath: string, data: PageData): { Component: () => JSX.Element } => {
     // Generate Page here => No Node context available, all data must be passed in
 
     // eslint-disable-next-line no-console
@@ -31,6 +31,7 @@ export const createPage = (sitePath: string, data: PageData): { Component: () =>
     //     };
     // }
 
+    // Dynamic Pages Here
     return {
         Component: () => <NotFoundPage data={notFoundPage ?? {}} />,
     };
