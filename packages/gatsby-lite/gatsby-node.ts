@@ -13,7 +13,7 @@ export const createPages = async ({ graphql, actions }: CreatePagesArgs) => {
     console.log(`createPages`, { pages });
 
     // This is relative to project root
-    const templatePath = path.resolve(`./gatsby-lite-template.tsx`);
+    const templatePath = path.resolve(`./gatsby-lite-template.ts`);
 
     // eslint-disable-next-line no-console
     console.log(`createPages using template at: ${templatePath}`);

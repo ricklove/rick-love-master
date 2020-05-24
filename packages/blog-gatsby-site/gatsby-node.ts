@@ -1,5 +1,5 @@
-import './src/setup-node';
+import { setupSite_Node } from 'blog-core/src/setup-node';
 
-// eslint-disable-next-line no-console
-console.log(`gatspy-node.ts START`);
+setupSite_Node();
+
 export * from 'gatsby-lite/gatsby-node';
