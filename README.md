@@ -24,12 +24,15 @@ This is where I put all the cool stuff.
     - [x] Breakpoints work at any project level
 - [x] Shared/Single tsconfig
     - [x] Only root tsconfig
-        - [FAIL] Breaks Eslint => Use Extends
+        - [FAIL] Breaks Eslint => Each package must have a tsconfig.json, but it can just be an extends
     - [x] Support extends to root tsconfig
 - [x] Shared/Single eslint
+- [x] works with gatsby
 - [ ] works with expo
-- [ ] works with gatsby
 
+- [x] Import typsecript directly module without index or extra path
+    - The only way to do this now is to not use a 'src' folder in the package
+    - vscode can be used to hide the extra files
 
 ## Useful Commands:
 
