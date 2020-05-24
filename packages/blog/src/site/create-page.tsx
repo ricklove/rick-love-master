@@ -4,11 +4,13 @@ import React from 'react';
 // import { PostIndexPage, PostIndexPageData } from '../pageTemplates/post-index';
 // import { PostPage, PostPageData } from '../pageTemplates/post';
 import { NotFoundPage } from '../pageTemplates/404';
+import { LazyComponentExamplePage } from '../pageTemplates/lazy-component-example';
 
 export type PageData = {
     // postPage?: PostPageData;
     // postIndexPage?: PostIndexPageData;
     notFoundPage?: {};
+    lazyComponentExamplePage?: {};
 };
 
 export const createStaticPage = (sitePath: string, data: PageData): { Component: () => JSX.Element } => {
@@ -18,18 +20,18 @@ export const createStaticPage = (sitePath: string, data: PageData): { Component:
     console.log(`getStaticPage START`, { sitePath, data });
 
     // const { postPage, postIndexPage, notFoundPage } = data;
-    const { notFoundPage } = data;
+    const { notFoundPage, lazyComponentExamplePage } = data;
 
     // if (postPage) {
     //     return {
     //         Component: () => <PostPage data={postPage} />,
     //     };
     // }
-    // if (postIndexPage) {
-    //     return {
-    //         Component: () => <PostIndexPage data={postIndexPage} />,
-    //     };
-    // }
+    if (lazyComponentExamplePage) {
+        return {
+            Component: () => <LazyComponentExamplePage data={lazyComponentExamplePage} />,
+        };
+    }
 
     // Dynamic Pages Here
     return {
