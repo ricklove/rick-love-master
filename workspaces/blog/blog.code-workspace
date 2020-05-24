@@ -14,9 +14,9 @@
 		{
 			"path": "../../packages/blog-content"
 		},
-		// {
-		// 	"path": "../../packages/blog-gatsby-site"
-		// },
+		{
+			"path": "../../packages/blog-gatsby-site"
+		},
 		{
 			"path": "../../packages/utils"
 		},

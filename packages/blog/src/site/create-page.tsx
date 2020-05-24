@@ -5,6 +5,7 @@ import React from 'react';
 // import { PostPage, PostPageData } from '../pageTemplates/post';
 import { NotFoundPage } from '../pageTemplates/404';
 import { LazyComponentExamplePage } from '../pageTemplates/lazy-component-example';
+import { SiteNavigation, setupNavigation } from './store';
 
 export type PageData = {
     // postPage?: PostPageData;
@@ -13,11 +14,14 @@ export type PageData = {
     lazyComponentExamplePage?: {};
 };
 
-export const createStaticPage = (sitePath: string, data: PageData): { Component: () => JSX.Element } => {
+export const createStaticPage = (sitePath: string, data: PageData, navigation: SiteNavigation): { Component: () => JSX.Element } => {
     // Generate Page here => No Node context available, all data must be passed in
 
     // eslint-disable-next-line no-console
     console.log(`getStaticPage START`, { sitePath, data });
+
+    // Set Navigation
+    setupNavigation(navigation);
 
     // const { postPage, postIndexPage, notFoundPage } = data;
     const { notFoundPage, lazyComponentExamplePage } = data;
