@@ -1,3 +1,5 @@
-console.log(`gatspy-node.ts START`);
+import './src/setup-node';
 
-module.exports = require(`gatsby-lite/gatsby-node.ts`);
+// eslint-disable-next-line no-console
+console.log(`gatspy-node.ts START`);
+export * from 'gatsby-lite/gatsby-node';

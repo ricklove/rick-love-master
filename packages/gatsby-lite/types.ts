@@ -12,8 +12,10 @@ export type SitePageComponent = {
     Component: () => JSX.Element;
 }
 
-
-export type SiteProvider<T> = {
+export type SiteProvider_Node<T> = {
     loadPageData: () => Promise<SitePages<T>>;
+};
+
+export type SiteProvider_Browser<T> = {
     createPage: (sitePath: string, data: T) => SitePageComponent;
 };

@@ -1,1 +1,4 @@
-module.exports = require(`./src/gatsby-config.ts`);
+/* eslint-disable import/no-default-export */
+export default {
+    plugins: [],
+};

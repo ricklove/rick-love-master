@@ -1,16 +1,16 @@
 /* eslint-disable import/no-default-export */
 import React from 'react';
-import { getSiteProvider } from '../register-site';
-import { SitePageInfo } from '../types';
+import { getSiteProvider_Browser } from './register-site';
+import { SitePageInfo } from './types';
 
-const GatsbyLiteTemplate = ({
+export const GatsbyLiteTemplate = ({
     pageContext,
 }: {
     pageContext: SitePageInfo<unknown>;
 }) => {
     const { sitePath, data } = pageContext;
 
-    const { createPage } = getSiteProvider();
+    const { createPage } = getSiteProvider_Browser();
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const page = createPage(sitePath, data as any);
     if (!page) {
@@ -22,4 +22,3 @@ const GatsbyLiteTemplate = ({
     const { Component } = page;
     return (<Component />);
 };
-export default GatsbyLiteTemplate;
