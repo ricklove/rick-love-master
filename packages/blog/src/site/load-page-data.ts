@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/camelcase */
 /* eslint-disable no-console */
 /* eslint-disable unicorn/consistent-function-scoping */
-import { processDirectoryFiles, getFilename, readFile } from 'utils/files';
+import { processDirectoryFiles, getFilename, readFile, resolvePath } from 'utils/files';
 import { PageData } from './create-page';
 
 export type SitePages<T> = {
@@ -56,23 +56,25 @@ export const loadStaticPageData = async (): Promise<SitePages<PageData>> => {
     };
 
     const pages = [] as SitePageInfo<PageData>[];
-    // const blogContentDir = `../../../blog-content`;
-    // // await processDirectoryFiles(`${blogContentDir}/posts`, async x => { if (x.endsWith(`.md`)) { pages.push(await createPageData_fromMarkdownFile(x, `post`)); } });
-    // // await processDirectoryFiles(`${blogContentDir}/pages`, async x => { if (x.endsWith(`.md`)) { pages.push(await createPageData_fromMarkdownFile(x, `page`)); } });
 
+    const blogContentDir = resolvePath(__dirname, `../../../blog-content`);
+    // console.log(`loadStaticPageData blogContentDir`, { blogContentDir });
+    // await processDirectoryFiles(`${blogContentDir}`, async x => { if (x.endsWith(`.md`)) { pages.push(await createPageData_fromMarkdownFile(x, `post`)); } });
+    await processDirectoryFiles(`${blogContentDir}/posts`, async x => { if (x.endsWith(`.md`)) { pages.push(await createPageData_fromMarkdownFile(x, `post`)); } });
+    await processDirectoryFiles(`${blogContentDir}/pages`, async x => { if (x.endsWith(`.md`)) { pages.push(await createPageData_fromMarkdownFile(x, `page`)); } });
 
-    // pages.push({
-    //     sitePath: `/`,
-    //     data: {
-    //         postIndexPage: {
-    //             posts: pages.map(x => ({
-    //                 sitePath: x.sitePath,
-    //                 title: x.data.postPage?.title ?? ``,
-    //                 summary: x.data.postPage?.summary ?? ``,
-    //             })),
-    //         },
-    //     },
-    // });
+    pages.push({
+        sitePath: `/`,
+        data: {
+            postIndexPage: {
+                posts: pages.map(x => ({
+                    sitePath: x.sitePath,
+                    title: x.data.postPage?.title ?? ``,
+                    summary: x.data.postPage?.summary ?? ``,
+                })),
+            },
+        },
+    });
 
     pages.push({
         sitePath: `/404.html`,
