@@ -46,3 +46,12 @@ This is where I put all the cool stuff.
     `npx eslint --ext js,jsx,ts,tsx src --fix`
 - Find depedency used in node_modules (bash)
     `find ./node_modules/ -name package.json | xargs grep <the_package_name>`
+
+
+
+## License
+
+*tl;dr Don't copy my blog content, but any source code is available under MIT*
+
+The blog content contained inside this repo is *Not Licensesed* for any use. However, all source code including source code contained within the blog copy is licensed under the MIT license.
+
