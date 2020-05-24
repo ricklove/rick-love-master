@@ -1,6 +1,6 @@
 import './post.css';
 import React from 'react';
-// import { Markdown } from '../components/markdown';
+import { Markdown } from '../components/markdown/markdown';
 import { SEO } from './layout/seo';
 import { Layout } from './layout/layout';
 
@@ -32,7 +32,7 @@ export const PostPage = (props: { data: PostPageData }) => {
                 </p>
                 <div>
                     {body}
-                    {/* <Markdown markdown={body} /> */}
+                    <Markdown markdown={body} />
                 </div>
             </div>
         </Layout>

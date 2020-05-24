@@ -1,9 +1,9 @@
 {
 	"folders": [
-		// {
-		// 	"name": "Root",
-		// 	"path": "../../"
-		// },
+		{
+			"name": "Root",
+			"path": "../../"
+		},
 		{
 			"name": "Workspace",
 			"path": "../../workspaces/blog"

@@ -1,6 +1,6 @@
 import './post.css';
 import React from 'react';
-// import { Markdown } from '../components/markdown';
+import { Markdown } from '../components/markdown/markdown';
 import { SEO } from './layout/seo';
 import { Layout } from './layout/layout';
 import { getNavigation } from '../site/store';
@@ -26,7 +26,7 @@ export const PostIndexPage = (props: { data: PostIndexPageData }) => {
                                 </p>
                             </div>
                             <div>
-                                {/* <Markdown markdown={x.summary} /> */}
+                                <Markdown markdown={x.summary} />
                             </div>
                         </div>
                     ))}
