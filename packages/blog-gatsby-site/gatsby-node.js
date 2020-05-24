@@ -1,1 +1,1 @@
-module.exports = require('gatsby-lite/gatsby-node');
+module.exports = require('gatsby-lite/gatsby-node.ts');

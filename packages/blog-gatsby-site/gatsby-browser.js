@@ -1,1 +1,1 @@
-module.exports = require('gatsby-lite/gatsby-browser');
+module.exports = require('gatsby-lite/gatsby-browser.ts');

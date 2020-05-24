@@ -1,10 +1,11 @@
+/* eslint-disable import/no-default-export */
 import React from 'react';
-import { getSiteProvider } from './register-site';
-import { SitePageInfo } from './types';
+import { getSiteProvider } from '../register-site';
+import { SitePageInfo } from '../types';
 
 const { createPage } = getSiteProvider();
 
-const CustomComponentTemplate = ({
+const GatsbyLiteTemplate = ({
     pageContext,
 }: {
     pageContext: SitePageInfo<unknown>;
@@ -22,4 +23,4 @@ const CustomComponentTemplate = ({
     const { Component } = page;
     return (<Component />);
 };
-export default CustomComponentTemplate;
+export default GatsbyLiteTemplate;

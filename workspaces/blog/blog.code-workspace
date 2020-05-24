@@ -27,9 +27,9 @@
 	"settings": {
 		"typescript.tsdk": "Root\\node_modules\\typescript\\lib",
 		"files.exclude": {
-			"node_modules/": true,
-			"package.json": true,
-			"tsconfig.json": true,
+			// "node_modules/": true,
+			// "package.json": true,
+			// "tsconfig.json": true,
 		}
 	}
 }
