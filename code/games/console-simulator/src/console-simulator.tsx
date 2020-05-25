@@ -40,7 +40,7 @@ export const ConsoleSimulator = (props: {
     });
 
     const handleResult = (result: ConCommandResult) => {
-        console.log(`handleResult`, { result });
+        // console.log(`handleResult`, { result });
         const l = lines;
 
         if (result.addDivider) {

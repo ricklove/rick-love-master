@@ -33,6 +33,7 @@
         "node_modules"
     ],
     "include": [
-        "code"
+        "code",
+        "scripts"
     ]
 }
