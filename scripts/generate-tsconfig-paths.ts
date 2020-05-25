@@ -2,7 +2,7 @@ import { getAllDirectories, getPathNormalized, getDirectoryName, readFile, write
 import { toKeyValueObject } from 'utils/objects';
 import { piped } from 'utils/piped';
 
-export const run = async () => {
+export const generateTsconfigPaths = async () => {
 
     // const parentSearch = `/code/`;
     // const dir = resolvePath(__dirname).replace(/\\/g, `/`);
@@ -35,4 +35,4 @@ export const run = async () => {
     writeFile(`${tsConfigPath}`, JSON.stringify(tsConfigObj, null, 2));
 };
 
-run();
+generateTsconfigPaths();
