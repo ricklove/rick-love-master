@@ -10,6 +10,9 @@
       "dork/*": [
         "code/games/dork/src/*"
       ],
+      "gatsby-lite/*": [
+        "code/gatsby-lite/src/*"
+      ],
       "utils-react/*": [
         "code/utils-react/src/*"
       ],
