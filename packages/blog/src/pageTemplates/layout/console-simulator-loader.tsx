@@ -1,11 +1,10 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { ConsoleSimulatorPlaceholder } from 'console-simulator/src/console-simulator-placeholder';
-import { loadable } from 'utils-react/loadable';
+import { useLoadable } from 'utils-react/loadable';
 
 export const ConsoleSimulatorLoader = ({ initialPrompt }: { initialPrompt: string }) => {
 
-    const [visible, setVisible] = useState(false);
-    const ConsoleSimulatorComp = !visible ? null : loadable(async () => {
+    const { LoadedComponent: ConsoleSimulatorComp, loading, load } = useLoadable(async () => {
         const consoleCommands = (await import(`console-simulator/src/commands`)).createConsoleCommands(initialPrompt);
         const { ConsoleSimulator } = await import(`console-simulator/src/console-simulator`);
         return () => (
@@ -13,9 +12,10 @@ export const ConsoleSimulatorLoader = ({ initialPrompt }: { initialPrompt: strin
         );
     });
 
+    console.log(`ConsoleSimulatorLoader`, { loading, ConsoleSimulatorComp: !!ConsoleSimulatorComp });
     return (
         <>
-            {!ConsoleSimulatorComp && <ConsoleSimulatorPlaceholder initialPrompt={`${initialPrompt}> ${visible ? `Loading...` : ``}`} onClick={() => setVisible(true)} />}
+            {!ConsoleSimulatorComp && <ConsoleSimulatorPlaceholder initialPrompt={`${initialPrompt}> ${loading ? `Loading...` : ``}`} onClick={() => load()} />}
             {ConsoleSimulatorComp && <ConsoleSimulatorComp />}
         </>
     );
