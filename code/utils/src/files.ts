@@ -31,6 +31,8 @@ export const getProjectRootDirectoryPath = (dirStart: string, options: { search:
     return dir;
 };
 
+export const directoryContains = (dirPath: string, relativePath: string) => fs.existsSync(getPathNormalized(dirPath, relativePath));
+
 
 const _mkdir = promisify(fs.mkdir);
 const _readFile = promisify(fs.readFile);

@@ -31,7 +31,7 @@
         "typescript": "^3.9.3"
     },
     "scripts": {
-        "build": "cd scripts/build && ts-node build.ts",
+        "build": "cd scripts/build && ts-node -r tsconfig-paths/register build.ts",
         "build-blog": "cd packages/blog-gatsby-site && gatsby build"
     }
 }

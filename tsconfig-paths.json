@@ -10,6 +10,9 @@
       "dork/*": [
         "code/games/dork/src/*"
       ],
+      "test/*": [
+        "code/test/src/*"
+      ],
       "utils/*": [
         "code/utils/src/*"
       ]

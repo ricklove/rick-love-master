@@ -1,6 +1,10 @@
-import { getAllDirectories, getPathNormalized, getDirectoryName, readFile, writeFile, getProjectRootDirectoryPath } from 'utils/files';
+import { getAllDirectories, getPathNormalized, getDirectoryName, readFile, writeFile, getProjectRootDirectoryPath, directoryContains } from 'utils/files';
 import { toKeyValueObject } from 'utils/objects';
 import { piped } from 'utils/piped';
+
+export const isTsconfigPathDirectory = (fullPath: string) => {
+    return directoryContains(fullPath, `./src`);
+};
 
 export const generateTsconfigPaths = async (rootRaw?: string) => {
 
@@ -8,7 +12,7 @@ export const generateTsconfigPaths = async (rootRaw?: string) => {
     // const dir = resolvePath(__dirname).replace(/\\/g, `/`);
     // const i = dir.lastIndexOf(parentSearch);
     // const root = dir.slice(0, Math.max(0, i + parentSearch.length));
-    const root = rootRaw ?? getProjectRootDirectoryPath(__dirname);
+    const root = getPathNormalized(rootRaw ?? getProjectRootDirectoryPath(__dirname));
     const rootCode = `${root}/code`;
 
     const dirs = await getAllDirectories(rootCode);
@@ -24,7 +28,7 @@ export const generateTsconfigPaths = async (rootRaw?: string) => {
     //             ], 
     // ...
     const paths = piped(pathDirs)
-        .pipe(r => r.map(x => ({ key: `${x.name}/*`, value: [`${x.path.replace(root, ``)}/*`] })))
+        .pipe(r => r.map(x => ({ key: `${x.name}/*`, value: [`${x.path.replace(`${root}/`, ``)}/*`] })))
         .pipe(r => toKeyValueObject(r))
         .out();
 

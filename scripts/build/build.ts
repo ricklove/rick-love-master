@@ -1,14 +1,21 @@
-import { watchFileChanges, getProjectRootDirectoryPath } from 'utils/files';
-import { generateTsconfigPaths } from './generate-tsconfig-paths';
+/* eslint-disable no-console */
+import { watchFileChanges, getProjectRootDirectoryPath, getPathNormalized } from 'utils/files';
+import { generateTsconfigPaths, isTsconfigPathDirectory } from './generate-tsconfig-paths';
 
 const build = (rootRaw?: string) => {
 
-    const root = rootRaw ?? getProjectRootDirectoryPath(__dirname);
+    const root = getPathNormalized(rootRaw ?? getProjectRootDirectoryPath(__dirname));
+    const rootCode = getPathNormalized(root, `./code`);
 
-    watchFileChanges({ pathRoot: root, runOnStart: true }, async (filesChanged) => {
+    watchFileChanges({ pathRoot: rootCode, runOnStart: false }, async (filesChanged) => {
+
+        // console.log(`filesChanged`, filesChanged);
 
         // Update tsconfig
-        generateTsconfigPaths(root);
+        if (filesChanged.some(x => isTsconfigPathDirectory(x))) {
+            console.log(`Regenerating Tsconfig Paths`, filesChanged);
+            generateTsconfigPaths(root);
+        }
 
     });
     // watchForFileChanges(x=>x.)
