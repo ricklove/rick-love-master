@@ -24,9 +24,9 @@ export const createScene_01mailbox = (gameState: GameState) => {
     // These don't indicate state, just creation containers
     const mailObjects = {
         litterBox: createGameObject(`Self Cleaning Litter Box`, `Cause 18 years is great even if you have to deal with a little crap sometimes. Keep it clean and happy!`, {}),
-        towelHooks: createGameObject(`Set of Bathroom Towel Hooks`, `For the new house of course.`, {}),
+        towelHooks: createGameObject(`Set of Bathroom Towel Hooks`, `Stop dripping all over the floor!`, {}),
         squishyToy: createGameObject(`Pink Flamingo Squishy Toy`, `It's head is tearing off. Maybe if can be sewn.`, {}),
-        strangLights: createGameObject(`Strand of Fairy Lights - 20ft`, `Make the room look cool. Girls only though!`, {}),
+        strandLights: createGameObject(`Strand of Fairy Lights - 66ft`, `Make the room look cool. Girls only though!`, {}),
         squirrel: createGameObject(`Squirrel Stuffed Animal with Nuts`, `It looks like you should be careful not to touch it's nuts!`, {
             execute: async ({ command, target, onMessage }) => {
                 if (command === `touch` && target.includes(`nuts`)) {
