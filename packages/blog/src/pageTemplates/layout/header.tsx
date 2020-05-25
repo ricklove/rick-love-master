@@ -1,7 +1,7 @@
 import './header.css';
 import React from 'react';
 import { ConsoleSimulator } from 'console-simulator/src/console-simulator';
-import { createConsoleCommands } from 'console-simulator/src/console-simulator-commands';
+import { createConsoleCommands } from 'console-simulator/src/commands';
 import { site, getNavigation } from '../../site/store';
 
 const initDir = site.siteMetadata.title;

@@ -5,8 +5,8 @@
 /* eslint-disable @typescript-eslint/no-use-before-define */
 import './console-simulator.css';
 import React, { useState, useRef } from 'react';
-import { ConCommandResult } from './console-simulator-types';
-import { delay } from './console-simulator-utils';
+import { ConCommandResult } from './types';
+import { delay } from './utils';
 
 const consoleVersion = `v1.0.7`;
 

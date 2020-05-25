@@ -1,6 +1,6 @@
 /* eslint-disable no-param-reassign */
-import { ConFile, ConActionQuery } from './console-simulator-types';
-import { randomBinary } from './console-simulator-utils';
+import { ConFile, ConActionQuery } from './types';
+import { randomBinary } from './utils';
 
 export const zork: ConFile = {
     session: `user`, path: `/`, name: `zork`,
@@ -39,6 +39,7 @@ There is a small mailbox here.${randomBinary(512)}`,
                     ****  You have died  ****
                     ...bzzz...
                     The magnetic tape drive is smoking...
+                    Maybe I should play >>> DORK <<<
                 ` };
             },
         };

@@ -1,9 +1,9 @@
 /* eslint-disable no-param-reassign */
 /* eslint-disable unicorn/consistent-function-scoping */
-import { ConSessionName, ConSession, ConState, ConFile, ConAction, ConInput, ConCommandResult } from './console-simulator-types';
-import { randomBinary } from './console-simulator-utils';
-import { dorkFile } from './console-simulator-game-dork';
-import { zork } from './console-simulator-game-zork';
+import { ConSessionName, ConSession, ConState, ConFile, ConAction, ConInput, ConCommandResult } from './types';
+import { randomBinary } from './utils';
+import { dorkFile } from './game-dork';
+import { zork } from './game-zork';
 
 export const createConsoleCommands = (initialMachineName: string) => {
 

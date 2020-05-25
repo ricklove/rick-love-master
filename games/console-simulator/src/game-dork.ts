@@ -4,8 +4,8 @@
 /* eslint-disable no-param-reassign */
 import { createDorkGame, title } from 'dork/src/main';
 import { GameInput, GameAction } from 'dork/src/types';
-import { ConFile, ConActionQuery } from './console-simulator-types';
-import { randomBinary } from './console-simulator-utils';
+import { ConFile, ConActionQuery } from './types';
+import { randomBinary } from './utils';
 
 // localStorage
 type DorkGameStorage = {
