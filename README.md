@@ -156,6 +156,8 @@ This is where I put all the cool stuff.
 - Find depedency used in node_modules (bash)
     `find ./node_modules/ -name package.json | xargs grep <the_package_name>`
 
+- Display Dependencies
+    `depcruise --ts-config --exclude "^node_modules" --output-type dot code | dot -T svg > dependencygraph.svg`
 
 
 ## License

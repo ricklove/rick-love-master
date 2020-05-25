@@ -4,6 +4,7 @@
         "@types/react": "^16.9.35",
         "@typescript-eslint/eslint-plugin": "^2.33.0",
         "@typescript-eslint/parser": "^2.33.0",
+        "dependency-cruiser": "^9.3.0",
         "eslint": "^7.0.0",
         "eslint-config-airbnb": "^18.1.0",
         "eslint-config-airbnb-typescript": "^7.2.1",
