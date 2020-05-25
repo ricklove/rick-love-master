@@ -1,8 +1,4 @@
-export async function delay(timeout: number): Promise<void> {
-    return new Promise((resolve) => {
-        setTimeout(resolve, timeout);
-    });
-}
+export { delay } from "utils/delay";
 
 export const randomBinary = (length: number) => String.fromCharCode(...[...new Array(length)].map(x => Math.random() * (126 - 32) + 32));
 

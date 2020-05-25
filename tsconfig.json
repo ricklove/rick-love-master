@@ -18,15 +18,21 @@
         "skipLibCheck": true,
         "baseUrl": ".",
         "paths": {
-            "console-simulator": [
-                "./games/console-simulator/src"
+            "console-simulator/*": [
+                "code/games/console-simulator/src/*"
             ],
-            "dork": [
-                "./games/dork/src"
+            "dork/*": [
+                "code/games/dork/src/*"
+            ],
+            "utils/*": [
+                "code/utils/src/*"
             ]
         }
     },
     "exclude": [
         "node_modules"
+    ],
+    "include": [
+        "code"
     ]
 }

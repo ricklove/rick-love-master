@@ -2,7 +2,7 @@ import React from 'react';
 import { createGameState } from './core';
 import { createScene_01mailbox } from './scenes/01-mailbox';
 import { GameAction, GameInput, GameExecute, Game, GameScene } from './types';
-import { delay, randomItem } from './utils';
+import { randomItem, delay } from './utils';
 import { artMap, artMan } from './art';
 import { AsciiArtViewer } from './components/ascii-art-viewer';
 

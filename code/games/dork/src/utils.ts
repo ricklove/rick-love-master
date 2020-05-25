@@ -1,9 +1,4 @@
-
-export async function delay(timeout: number): Promise<void> {
-    return new Promise((resolve) => {
-        setTimeout(resolve, timeout);
-    });
-}
+export { delay as delay } from 'utils/delay';
 
 export const randomIndex = (length: number) => {
     const x = Math.floor(length * Math.random());
