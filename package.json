@@ -23,5 +23,8 @@
         "eslint-plugin-react-hooks": "^4.0.2",
         "eslint-plugin-unicorn": "^20.0.0",
         "prettier": "2.0.5"
+    },
+    "scripts": {
+        "build-blog": "cd packages/blog-gatsby-site && gatsby build"
     }
 }
