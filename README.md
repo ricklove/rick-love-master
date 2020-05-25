@@ -79,6 +79,42 @@ This is where I put all the cool stuff.
 - [FAIL] debugging points to original code
     - [FAIL] debugging points to copy of code and resulted in edits in wrong files a few times
 
+## Option: Code Folder with Advanced Build (Current)
+
+- [x] vscode works in every case
+    - [x] Typescript
+        - [x] Goto Definition always works
+        - [x] Find all references always works
+        - [x] Rename changes all instances
+        - [x] Auto import always works
+- [x] Single Default Config
+    - [x] Single .eslintrc.js
+    - [x] Single tsconfig.json
+    - [x] Single pacakges.json
+- [ ] Special Config
+    - [ ] Override config by placing own version in folder
+- [ ] Separation of code from boilerplate
+    - [x] Ability to define all code without any boilerplate files
+    - [ ] Boilerplate projects can be isolated
+    - [ ] Customizations of boilerplate can be separated from default boilerplate
+- [ ] Optional Dependency Versioning
+    - [ ] Dependencies can optionally be modified while allowing dependants to continue to use an old version
+    - [ ] Dependants can be reconciled to an updated version of the dependency at their own convenience
+- [ ] Multi-Repo
+    - [ ] Code can be synced with multiple repos
+    - [ ] Optional Blind code ownership, code can be copied into target repo and has no dependencies on master repo
+- [ ] Multi-Config
+    - [ ] Code can be synced into a target that uses a different tsconfig
+    - [ ] Code can be synced into a target that uses a different eslint
+    - [ ] Code can be automatically formatted with target config tools (i.e. auto run eslint --fix)
+- [ ] Free Project structure
+    - [ ] Possible to have packages in catagory folders (i.e. packages/ games/ projects/)
+- [ ] Languange/Project/Environment/Target Agnostic
+    - [ ] Tools can work with any code or framework
+        - Typescript, C#, Python, etc.
+- [ ] Config files in isolated folder (i.e. .config/ folder)
+    - [ ] Config files do not have to live in the root of the project, but can live out of the way in their own folder
+
 
 ## Ideal Features
 
