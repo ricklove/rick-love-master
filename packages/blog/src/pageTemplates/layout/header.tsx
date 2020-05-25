@@ -1,13 +1,11 @@
 import './header.css';
-// import { Link } from 'gatsby';
 import React from 'react';
-import { getNavigation } from '../../site/store';
-// import { ConsoleSimulator } from '../../components/console-simulator';
-// import { site } from '../../store';
-// import { createConsoleCommands } from '../../components/console-simulator-commands';
+import { ConsoleSimulator } from 'console-simulator/src/console-simulator';
+import { createConsoleCommands } from 'console-simulator/src/console-simulator-commands';
+import { site, getNavigation } from '../../site/store';
 
-// const initDir = site.siteMetadata.title;
-// const consoleCommands = createConsoleCommands(initDir);
+const initDir = site.siteMetadata.title;
+const consoleCommands = createConsoleCommands(initDir);
 
 export const Header = ({ siteTitle }: { siteTitle: string }) => {
     const Link = getNavigation().StaticPageLinkComponent;
@@ -17,7 +15,7 @@ export const Header = ({ siteTitle }: { siteTitle: string }) => {
             <div>
                 <h1>
                     <Link to='/'>&nbsp;&gt;&nbsp;</Link>
-                    {/* <ConsoleSimulator initialPrompt={`${initDir}>`} onCommand={consoleCommands.onCommand} /> */}
+                    <ConsoleSimulator initialPrompt={`${initDir}>`} onCommand={consoleCommands.onCommand} />
                 </h1>
             </div>
         </header>
