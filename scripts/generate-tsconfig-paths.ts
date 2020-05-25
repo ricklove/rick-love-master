@@ -32,7 +32,7 @@ export const run = async () => {
     const tsConfigText = await readFile(tsConfigPath);
     const tsConfigObj = JSON.parse(tsConfigText) as { compilerOptions: { paths: typeof paths } };
     tsConfigObj.compilerOptions.paths = paths;
-    writeFile(`${tsConfigPath}.new`, JSON.stringify(tsConfigObj, null, 2));
+    writeFile(`${tsConfigPath}`, JSON.stringify(tsConfigObj, null, 2));
 };
 
 run();

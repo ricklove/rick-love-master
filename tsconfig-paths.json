@@ -1,18 +1,18 @@
 {
-    "compilerOptions": {
-        "paths": {
-            "blog/*": [
-                "code/blog/src/*"
-            ],
-            "console-simulator/*": [
-                "code/games/console-simulator/src/*"
-            ],
-            "dork/*": [
-                "code/games/dork/src/*"
-            ],
-            "utils/*": [
-                "code/utils/src/*"
-            ]
-        }
+  "compilerOptions": {
+    "paths": {
+      "blog/*": [
+        "code/blog/src/*"
+      ],
+      "console-simulator/*": [
+        "code/games/console-simulator/src/*"
+      ],
+      "dork/*": [
+        "code/games/dork/src/*"
+      ],
+      "utils/*": [
+        "code/utils/src/*"
+      ]
     }
+  }
 }
