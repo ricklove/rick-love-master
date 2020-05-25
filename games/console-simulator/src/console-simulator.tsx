@@ -4,17 +4,28 @@
 /* eslint-disable no-use-before-define */
 /* eslint-disable @typescript-eslint/no-use-before-define */
 import './console-simulator.css';
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { ConCommandResult } from './types';
 import { delay } from './utils';
 
-const consoleVersion = `v1.0.7`;
+const consoleVersion = `v1.1.0`;
 
-export const ConsoleSimulator = (props: { initialPrompt: string, onCommand: (command: string, onMessage: (message: ConCommandResult) => void) => Promise<ConCommandResult> }) => {
+export const ConsoleSimulator = (props: {
+    initialPrompt: string;
+    onCommand: (command: string, onMessage: (message: ConCommandResult) => void) => Promise<ConCommandResult>;
+    focusOnLoad?: boolean;
+    forceExpanded?: boolean;
+}) => {
     const elementInput = useRef(null as null | HTMLInputElement);
     const focusOnInput = () => {
         elementInput.current?.focus();
     };
+
+    useEffect(() => {
+        if (props.focusOnLoad) {
+            focusOnInput();
+        }
+    }, [props.focusOnLoad]);
 
     const [isFocused, setIsFocused] = useState(false);
     const [command, setCommand] = useState(``);
@@ -73,17 +84,20 @@ export const ConsoleSimulator = (props: { initialPrompt: string, onCommand: (com
         handleResult(result);
     };
 
+
+    // Force Expanded
+    const isExpandedActual = props.forceExpanded ?? isExpanded;
     return (
-        <div className='console-simulator' style={{ display: isExpanded ? `block` : `inline-block` }} onClick={focusOnInput}>
-            {isExpanded && <span>{consoleVersion}</span>}
-            {isExpanded && (lines.map((x, i) => (
+        <div className='console-simulator' style={{ display: isExpandedActual ? `block` : `inline-block` }} onClick={focusOnInput}>
+            {isExpandedActual && <span>{consoleVersion}</span>}
+            {isExpandedActual && (lines.map((x, i) => (
                 <div key={i}>
                     <span>{x.prefix}</span>
                     <span>{x.text}</span>
                     {x.Component && (<span><x.Component /></span>)}
                 </div>
             )))}
-            <div style={{ display: isExpanded ? `block` : `inline-block` }}>
+            <div style={{ display: isExpandedActual ? `block` : `inline-block` }}>
                 <span>{prompt} </span>
                 <span>{command}</span>
                 <span className='console-simulator-cursor' style={isFocused ? {} : { backgroundColor: `#000000` }}>&nbsp;</span>

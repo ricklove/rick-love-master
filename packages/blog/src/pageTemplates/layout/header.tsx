@@ -1,11 +1,7 @@
 import './header.css';
 import React from 'react';
-import { ConsoleSimulator } from 'console-simulator/src/console-simulator';
-import { createConsoleCommands } from 'console-simulator/src/commands';
-import { site, getNavigation } from '../../site/store';
-
-const initDir = site.siteMetadata.title;
-const consoleCommands = createConsoleCommands(initDir);
+import { getNavigation } from '../../site/store';
+import { ConsoleSimulatorLoader } from './console-simulator-loader';
 
 export const Header = ({ siteTitle }: { siteTitle: string }) => {
     const Link = getNavigation().StaticPageLinkComponent;
@@ -15,7 +11,7 @@ export const Header = ({ siteTitle }: { siteTitle: string }) => {
             <div>
                 <h1>
                     <Link to='/'>&nbsp;&gt;&nbsp;</Link>
-                    <ConsoleSimulator initialPrompt={`${initDir}>`} onCommand={consoleCommands.onCommand} />
+                    <ConsoleSimulatorLoader initialPrompt={siteTitle} />
                 </h1>
             </div>
         </header>
