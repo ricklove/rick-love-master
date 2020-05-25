@@ -31,7 +31,6 @@ export const PostPage = (props: { data: PostPageData }) => {
                     ))}
                 </p>
                 <div>
-                    {body}
                     <Markdown markdown={body} />
                 </div>
             </div>
