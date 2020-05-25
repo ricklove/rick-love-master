@@ -18,7 +18,8 @@ export const createStaticPage = (sitePath: string, data: PageData, navigation: S
     // Generate Page here => No Node context available, all data must be passed in
 
     // eslint-disable-next-line no-console
-    console.log(`getStaticPage START`, { sitePath, data });
+    // console.log(`getStaticPage START`, { sitePath, data });
+    // console.log(`getStaticPage START`, { sitePath, data });
 
     // Set Navigation
     setupNavigation(navigation);
