@@ -10,8 +10,8 @@
       "dork/*": [
         "code/games/dork/src/*"
       ],
-      "test/*": [
-        "code/test/src/*"
+      "utils-react/*": [
+        "code/utils-react/src/*"
       ],
       "utils/*": [
         "code/utils/src/*"
