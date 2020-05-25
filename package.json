@@ -1,9 +1,5 @@
 {
     "private": true,
-    "workspaces": [
-        "packages/*",
-        "games/*"
-    ],
     "devDependencies": {
         "@typescript-eslint/eslint-plugin": "^2.33.0",
         "@typescript-eslint/parser": "^2.33.0",
@@ -22,7 +18,9 @@
         "eslint-plugin-react": "^7.19.0",
         "eslint-plugin-react-hooks": "^4.0.2",
         "eslint-plugin-unicorn": "^20.0.0",
-        "prettier": "2.0.5"
+        "prettier": "2.0.5",
+        "react": "^16.12.0",
+        "react-dom": "^16.12.0"
     },
     "scripts": {
         "build-blog": "cd packages/blog-gatsby-site && gatsby build"

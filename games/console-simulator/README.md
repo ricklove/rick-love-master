@@ -1,3 +1,1 @@
-Utility Code
-
-No src for direct import with ts
+Console Simulator for the win!

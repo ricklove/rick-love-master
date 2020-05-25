@@ -2,8 +2,8 @@
 /* eslint-disable @typescript-eslint/no-use-before-define */
 /* eslint-disable unicorn/consistent-function-scoping */
 /* eslint-disable no-param-reassign */
-import { createDorkGame, title } from 'dork/src/main';
-import { GameInput, GameAction } from 'dork/src/types';
+import { createDorkGame, title } from 'dork/main';
+import { GameInput, GameAction } from 'dork/types';
 import { ConFile, ConActionQuery } from './types';
 import { randomBinary } from './utils';
 

@@ -15,7 +15,16 @@
         "experimentalDecorators": true,
         "emitDecoratorMetadata": true,
         "noEmit": true,
-        "skipLibCheck": true
+        "skipLibCheck": true,
+        "baseUrl": ".",
+        "paths": {
+            "console-simulator": [
+                "./games/console-simulator/src"
+            ],
+            "dork": [
+                "./games/dork/src"
+            ]
+        }
     },
     "exclude": [
         "node_modules"

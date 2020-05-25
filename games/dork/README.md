@@ -1,3 +1,1 @@
-Utility Code
-
-No src for direct import with ts
+Dork is a text adventure that runs in a console-like environment
