@@ -96,7 +96,7 @@ export const createGameState = (onMessageInit: (message: GameAction) => void) =>
 
     const achievementGameObject: GameItem = {
         ...createGameObjectTitle(`Achievements`),
-        matches: [`achieve`, `ach`, `Achievements`],
+        matches: [`achieve`, `ach`, `achievements`],
         description: () => getAchievements().join(`\n`),
         lower: ``,
     };
