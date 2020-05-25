@@ -12,7 +12,7 @@ export const getDirectoryName = (fullPath: string) => {
     return dirFullPath.replace(grandDirFullPath, ``).replace(/\\/g, ``).replace(/\//g, ``);
 };
 export const getFileName = path.basename;
-export const resolvePath = path.resolve;
+export const getPathNormalized = (...x: string[]) => path.join(...x).replace(/\\/g, `/`);
 // export const 
 
 const _mkdir = promisify(fs.mkdir);
@@ -30,14 +30,14 @@ export async function getAllDirectories(dir: string) {
     const dirs = [] as string[];
     await processDirectoryItems(dir, { onDirectory: async (fullPath) => { dirs.push(fullPath); } });
     dirs.sort();
-    return dirs;
+    return dirs.map(x => getPathNormalized(x));
 }
 
 export async function processDirectoryItems(dir: string, options: { onDirectory?: (fullPath: string, name: string, info: Dirent) => Promise<void>, onFile?: (fullPath: string, name: string, info: Dirent) => Promise<void> }) {
     const { onDirectory, onFile } = options;
     const items = await readdir(dir, { withFileTypes: true });
     await Promise.all(items.map(async (item) => {
-        const fullPath = resolvePath(dir, item.name);
+        const fullPath = getPathNormalized(dir, item.name);
         if (item.isDirectory()) {
             await onDirectory?.(fullPath, item.name, item);
             await processDirectoryItems(fullPath, options);
@@ -82,7 +82,7 @@ export const watchForFileChanges = async (options: { pathRoot: string, runOnStar
     }
 
     fs.watch(options.pathRoot, { recursive: true, persistent: true }, async (event, filename) => {
-        run(resolvePath(options.pathRoot, filename));
+        run(getPathNormalized(options.pathRoot, filename));
     });
 
 };

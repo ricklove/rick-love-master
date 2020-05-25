@@ -1,4 +1,5 @@
 {
+    "extends": "./tsconfig-paths",
     "compilerOptions": {
         "moduleResolution": "node",
         // "target": "es2018",
@@ -8,6 +9,7 @@
             "es2017"
         ],
         "allowJs": true,
+        "resolveJsonModule": true,
         // "checkJs": true,
         "jsx": "react",
         "strict": true,
@@ -16,18 +18,7 @@
         "emitDecoratorMetadata": true,
         "noEmit": true,
         "skipLibCheck": true,
-        "baseUrl": ".",
-        "paths": {
-            "console-simulator/*": [
-                "code/games/console-simulator/src/*"
-            ],
-            "dork/*": [
-                "code/games/dork/src/*"
-            ],
-            "utils/*": [
-                "code/utils/src/*"
-            ]
-        }
+        "baseUrl": "."
     },
     "exclude": [
         "node_modules"

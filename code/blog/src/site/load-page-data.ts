@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/camelcase */
 /* eslint-disable no-console */
 /* eslint-disable unicorn/consistent-function-scoping */
-import { processDirectoryFiles, getFileName, readFile, resolvePath } from 'utils/files';
+import { processDirectoryFiles, getFileName, readFile, getPathNormalized } from 'utils/files';
 import { PageData } from './create-page';
 
 export type SitePages<T> = {
@@ -57,7 +57,7 @@ export const loadStaticPageData = async (): Promise<SitePages<PageData>> => {
 
     const pages = [] as SitePageInfo<PageData>[];
 
-    const blogContentDir = resolvePath(__dirname, `../../../blog-content`);
+    const blogContentDir = getPathNormalized(__dirname, `../../../blog-content`);
     // console.log(`loadStaticPageData blogContentDir`, { blogContentDir });
     // await processDirectoryFiles(`${blogContentDir}`, async x => { if (x.endsWith(`.md`)) { pages.push(await createPageData_fromMarkdownFile(x, `post`)); } });
     await processDirectoryFiles(`${blogContentDir}/posts`, async x => { if (x.endsWith(`.md`)) { pages.push(await createPageData_fromMarkdownFile(x, `post`)); } });
