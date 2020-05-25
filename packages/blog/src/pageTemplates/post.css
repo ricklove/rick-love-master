@@ -1,17 +1,4 @@
 div.post-item {
     margin: 16px;
     box-shadow: 1px 2px 4px 2px #b27aef;
-    animation: shadow 8s infinite;
-}
-
-@keyframes shadow {
-    0% {
-        transform: scale(1);
-    }
-    50% {
-        transform: scale(0.95);
-    }
-    100% {
-        transform: scale(1);
-    }
 }
