@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/camelcase */
 /* eslint-disable no-console */
 /* eslint-disable unicorn/consistent-function-scoping */
-import { processDirectoryFiles, getFilename, readFile, resolvePath } from 'utils/files';
+import { processDirectoryFiles, getFileName, readFile, resolvePath } from 'utils/files';
 import { PageData } from './create-page';
 
 export type SitePages<T> = {
@@ -19,7 +19,7 @@ export const loadStaticPageData = async (): Promise<SitePages<PageData>> => {
 
     const createPageData_fromMarkdownFile = async (filePath: string, kind: 'post' | 'page'): Promise<SitePageInfo<PageData>> => {
 
-        const filename = getFilename(filePath);
+        const filename = getFileName(filePath);
         const content = await readFile(filePath);
 
         // TODO: Parse Header when Creating Pages (to use path)

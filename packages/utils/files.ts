@@ -1,10 +1,13 @@
 /* eslint-disable no-underscore-dangle */
 import fs from 'fs';
-import { dirname, resolve as resolvePath, basename as getFilename } from 'path';
+import path from 'path';
 import { promisify } from 'util';
 import { delay } from './delay';
 
-export { resolvePath, getFilename };
+export const getDirectoryName = path.dirname;
+export const getFileName = path.basename;
+export const resolvePath = path.resolve;
+// export const 
 
 const _mkdir = promisify(fs.mkdir);
 const _readFile = promisify(fs.readFile);
@@ -13,7 +16,7 @@ const readdir = promisify(fs.readdir);
 
 export const readFile = async (filePath: string) => _readFile(filePath, { encoding: `utf-8` });
 export const writeFile = async (filePath: string, data: string | Buffer) => {
-    await _mkdir(dirname(filePath), { recursive: true });
+    await _mkdir(getDirectoryName(filePath), { recursive: true });
     await _writeFile(filePath, data, { encoding: `utf-8` });
 };
 
