@@ -1,14 +1,14 @@
-import { getAllDirectories, getPathNormalized, getDirectoryName, readFile, writeFile } from 'utils/files';
+import { getAllDirectories, getPathNormalized, getDirectoryName, readFile, writeFile, getProjectRootDirectoryPath } from 'utils/files';
 import { toKeyValueObject } from 'utils/objects';
 import { piped } from 'utils/piped';
 
-export const generateTsconfigPaths = async () => {
+export const generateTsconfigPaths = async (rootRaw?: string) => {
 
     // const parentSearch = `/code/`;
     // const dir = resolvePath(__dirname).replace(/\\/g, `/`);
     // const i = dir.lastIndexOf(parentSearch);
     // const root = dir.slice(0, Math.max(0, i + parentSearch.length));
-    const root = getPathNormalized(__dirname, `../`);
+    const root = rootRaw ?? getProjectRootDirectoryPath(__dirname);
     const rootCode = `${root}/code`;
 
     const dirs = await getAllDirectories(rootCode);
@@ -35,4 +35,4 @@ export const generateTsconfigPaths = async () => {
     writeFile(`${tsConfigPath}`, JSON.stringify(tsConfigObj, null, 2));
 };
 
-generateTsconfigPaths();
+// generateTsconfigPaths();

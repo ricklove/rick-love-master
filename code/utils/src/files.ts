@@ -13,7 +13,24 @@ export const getDirectoryName = (fullPath: string) => {
 };
 export const getFileName = path.basename;
 export const getPathNormalized = (...x: string[]) => path.join(...x).replace(/\\/g, `/`);
-// export const 
+
+export const getProjectRootDirectoryPath = (dirStart: string, options: { search: string } = { search: `.git` }) => {
+    const { search } = options;
+    let dir = dirStart;
+    let hasGit = fs.existsSync(getPathNormalized(dir, search));
+    while (!hasGit) {
+        const parentDir = getDirectoryPath(dir);
+        if (parentDir === dir) {
+            throw new Error(`No .git was found`);
+        }
+
+        dir = parentDir;
+        hasGit = fs.existsSync(getPathNormalized(dir, search));
+    }
+
+    return dir;
+};
+
 
 const _mkdir = promisify(fs.mkdir);
 const _readFile = promisify(fs.readFile);
@@ -50,7 +67,7 @@ export async function processDirectoryFiles(dir: string, onFile: (filePath: stri
     await processDirectoryItems(dir, { onFile });
 }
 
-export const watchForFileChanges = async (options: { pathRoot: string, runOnStart: boolean }, onFilesChanged: (changedFiles: string[]) => Promise<void>) => {
+export const watchFileChanges = async (options: { pathRoot: string, runOnStart: boolean }, onFilesChanged: (changedFiles: string[]) => Promise<void>) => {
 
     const state = {
         isRunning: false,
