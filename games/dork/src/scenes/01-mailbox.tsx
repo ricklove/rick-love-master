@@ -194,7 +194,7 @@ export const createScene_01mailbox = (gameState: GameState) => {
                 pickupTruck.hasCrashed = true;
                 pickupTruck.contents.splice(pickupTruck.contents.indexOf(tickingPackage), 1);
 
-                gameState.achievements.addAchievement(`🏴‍☠️ Take That, Porch Pirates!`);
+                gameState.achievements.addAchievement(`🏴‍☠️ Take That, Porch Pirates!!`);
                 return {
                     output: `
                     You see a package-thief drive up in an old beat up pickup truck.
