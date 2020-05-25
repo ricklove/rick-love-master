@@ -1,9 +1,9 @@
 {
 	"folders": [
-		{
-			"name": "Root",
-			"path": "../../"
-		},
+		// {
+		// 	"name": "Root",
+		// 	"path": "../../"
+		// },
 		{
 			"name": "Workspace",
 			"path": "../../workspaces/blog"
@@ -14,18 +14,22 @@
 		{
 			"path": "../../packages/blog-content"
 		},
-		{
-			"path": "../../packages/blog-gatsby-site"
-		},
+		// {
+		// 	"path": "../../packages/blog-gatsby-site"
+		// },
 		{
 			"path": "../../packages/utils"
 		},
-		{
-			"path": "../../packages/utils-react"
-		},
+		// {
+		// 	"path": "../../packages/utils-react"
+		// },
 		// {
 		// 	"path": "../../packages/gatsby-lite"
-		// }
+		// },
+		{
+			"name": "dork",
+			"path": "../../games/dork"
+		},
 	],
 	"settings": {
 		"typescript.tsdk": "Root\\node_modules\\typescript\\lib",
