@@ -2,7 +2,13 @@
 import { watchFileChanges, getProjectRootDirectoryPath, getPathNormalized, processDirectoryFiles } from 'utils/files';
 import { somePromise } from 'utils/async';
 import { generateTsconfigPaths, isTsconfigPathDirectory, loadTsConfigPaths } from './generate-tsconfig-paths';
-import { cloneFileAndReturnDependencies, FileDependencies, saveDependenciesToModulePackageJson } from './clone-and-process-imports';
+import { processImports_returnDependencies, FileDependencies, saveDependenciesToModulePackageJson } from './process-imports';
+import { cloneFile } from './clone-files';
+
+export const getTargetBuildPath = (root: string) => {
+    const targetFromRootPath = getPathNormalized(root, `./build/src/`);
+    return targetFromRootPath;
+};
 
 const build = async (rootRaw?: string) => {
 
@@ -18,7 +24,10 @@ const build = async (rootRaw?: string) => {
 
         const fileDependencies = [] as FileDependencies[];
         await processDirectoryFiles(rootCode, async (x) => {
-            const r = await cloneFileAndReturnDependencies(x, root, tsConfigPaths);
+            const destFile = await cloneFile(x, getTargetBuildPath(root), root, { skipIfDestinationNewer: false });
+            if (!destFile) { return; }
+
+            const r = await processImports_returnDependencies(destFile, root, tsConfigPaths);
             if (r) {
                 fileDependencies.push(r);
             }
@@ -45,7 +54,10 @@ const build = async (rootRaw?: string) => {
 
         const fileDependencies = [] as FileDependencies[];
         await Promise.all(filesChanged.filter(x => x.startsWith(rootCode)).map(async x => {
-            const r = await cloneFileAndReturnDependencies(x, root, tsConfigPaths);
+            const destFile = await cloneFile(x, getTargetBuildPath(root), root, { skipIfDestinationNewer: false });
+            if (!destFile) { return; }
+
+            const r = await processImports_returnDependencies(destFile, root, tsConfigPaths);
             if (r) {
                 fileDependencies.push(r);
             }

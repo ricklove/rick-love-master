@@ -1,26 +1,22 @@
 // Clone the files and expand the imports found in each
 
-import { getFileInfo, getPathNormalized, getProjectRootDirectoryPath, readFile, writeFile, copyFile, getDirectoryName, getParentName } from 'utils/files';
-import { distinct, distinct_key, mergeItems } from 'utils/arrays';
-import { getValuesAsItems } from 'dork/utils';
+import { getFileInfo, getPathNormalized, getProjectRootDirectoryPath, readFile, writeFile, copyFile, getParentName } from 'utils/files';
+import { distinct_key, mergeItems } from 'utils/arrays';
 import { TsConfigPath, loadTsConfigPaths } from './generate-tsconfig-paths';
 
-
-export const cloneFileAndProcessExports = async (sourceFilePath: string,
-    onExportFound: (args: {
+export const processImports = async (sourceFilePath: string,
+    onImportFound: (args: {
         fileRelativePath: string;
-        sourceFilePath: string;
-        destinationFilePath: string | null;
+        fileFullPath: string;
         tsConfigPath: TsConfigPath | null;
         importName: string;
         replace: (value: string) => void;
         wholeText: string;
         match: RegExpExecArray;
     }) => void,
-    rootRaw?: string, tsconfigPaths?: TsConfigPath[],
-    options?: { cloneToRootPath?: string, shouldModifyOriginalFile?: string }) => {
+    root: string, tsconfigPaths?: TsConfigPath[],
+    options?: {}) => {
 
-    const root = getPathNormalized(rootRaw ?? await getProjectRootDirectoryPath(__dirname));
     const sourceFileFullPath = getPathNormalized(sourceFilePath);
     const relativePath = sourceFileFullPath.replace(`${root}/`, ``);
     const fileInfo = await getFileInfo(sourceFilePath);
@@ -28,20 +24,11 @@ export const cloneFileAndProcessExports = async (sourceFilePath: string,
     // Skip non files
     if (!fileInfo || !fileInfo.isFile()) { return; }
 
-    const destFilePath = options?.cloneToRootPath ? getPathNormalized(options.cloneToRootPath, relativePath) : null;
-    if (destFilePath) {
-        // Skip if the destination is newer
-        // const destFileInfo = await getFileInfo(destFilePath);
-        // if (destFileInfo && destFileInfo.mtime > (fileInfo?.mtime ?? 0)) { return; }
-    }
-
+    // Skip non-js files
     if (!sourceFileFullPath.endsWith(`.ts`)
         && !sourceFileFullPath.endsWith(`.tsx`)
         && !sourceFileFullPath.endsWith(`.js`)
         && !sourceFileFullPath.endsWith(`.jsx`)) {
-        if (destFilePath) {
-            await copyFile(sourceFileFullPath, destFilePath);
-        }
         return;
     }
 
@@ -86,10 +73,9 @@ export const cloneFileAndProcessExports = async (sourceFilePath: string,
     const getTsConfigPath = (name: string) => p.find(x => x.name === name);
 
     while ((m = regex.exec(contentFinal))) {
-        onExportFound({
+        onImportFound({
             fileRelativePath: relativePath,
-            sourceFilePath,
-            destinationFilePath: destFilePath,
+            fileFullPath: sourceFilePath,
             tsConfigPath: getTsConfigPath(m[2] ?? ``) ?? null,
             importName: m[2] ?? ``,
             replace,
@@ -98,26 +84,15 @@ export const cloneFileAndProcessExports = async (sourceFilePath: string,
         });
     };
 
-    // WriteFile (as readonly to prevent manual edits)
-    if (destFilePath) {
-        await writeFile(destFilePath, contentFinal, { readonly: true, overwrite: true });
-    }
-
     // write file in place
-    if (contentFinal !== content && options?.shouldModifyOriginalFile) {
+    if (contentFinal !== content) {
         await writeFile(sourceFilePath, contentFinal, { readonly: false, overwrite: true });
     }
 };
 
-export const getTargetBuildPath = async (rootRaw?: string) => {
-    const root = getPathNormalized(rootRaw ?? await getProjectRootDirectoryPath(__dirname));
-    const targetFromRootPath = getPathNormalized(root, `./build/src/`);
-    return targetFromRootPath;
-};
+export const processImports_expandToRelativeImports = async (sourceFilePath: string, root: string, tsconfigPaths?: TsConfigPath[]) => {
 
-export const cloneFileAndExpandImports = async (sourceFilePath: string, rootRaw?: string, tsconfigPaths?: TsConfigPath[]) => {
-
-    await cloneFileAndProcessExports(sourceFilePath, (args) => {
+    await processImports(sourceFilePath, (args) => {
         const { fileRelativePath, tsConfigPath, replace } = args;
         if (!tsConfigPath) { return; }
 
@@ -133,19 +108,8 @@ export const cloneFileAndExpandImports = async (sourceFilePath: string, rootRaw?
         replace(`${toCommon}${tPathParts.join(`/`)}`);
         // Simplify common path
         // contentFinal = contentFinal.replace(/\/..\/code/g, ``);
-    }, rootRaw, tsconfigPaths, { cloneToRootPath: await getTargetBuildPath(rootRaw) });
+    }, root, tsconfigPaths);
 };
-
-// export const cloneFileAndReturnImports = async (sourceFilePath: string, rootRaw?: string, tsconfigPaths?: TsConfigPath[]): Promise<TsConfigPath[]> => {
-
-//     const imports = [] as TsConfigPath[];
-//     await cloneFileAndProcessExports(sourceFilePath, (args) => {
-//         const { tsConfigPath } = args;
-//         imports.push(tsConfigPath);
-//     }, rootRaw, tsconfigPaths);
-
-//     return distinct(imports);
-// };
 
 export type PackageJson = {
     name: string;
@@ -155,36 +119,33 @@ export type PackageJson = {
 export type ImportDependency = {
     importName: string;
     tsConfigPath: TsConfigPath | null;
-    sourceFilePath: string;
-    destinationFilePath: string;
+    fileFullPath: string;
 };
 
 export type FileDependencies = {
-    sourceFilePath: string;
-    destinationFilePath: string;
+    fileFullPath: string;
     dependencies: ImportDependency[];
 };
 
-export const cloneFileAndReturnDependencies = async (sourceFilePath: string, rootRaw?: string, tsconfigPaths?: TsConfigPath[]): Promise<null | FileDependencies> => {
+export const processImports_returnDependencies = async (sourceFilePath: string, root: string, tsconfigPaths?: TsConfigPath[]): Promise<null | FileDependencies> => {
 
     const importsAll = [] as ImportDependency[];
-    await cloneFileAndProcessExports(sourceFilePath, (args) => {
-        const { importName, tsConfigPath, destinationFilePath } = args;
-        importsAll.push({ importName, tsConfigPath, sourceFilePath, destinationFilePath: destinationFilePath ?? `` });
-    }, rootRaw, tsconfigPaths, { cloneToRootPath: await getTargetBuildPath(rootRaw) });
+    await processImports(sourceFilePath, (args) => {
+        const { importName, tsConfigPath, fileFullPath } = args;
+        importsAll.push({ importName, tsConfigPath, fileFullPath });
+    }, root, tsconfigPaths);
 
     if (importsAll.length <= 0) { return null; }
 
     const imports = distinct_key(importsAll, x => x.importName);
-    const { destinationFilePath } = imports[0];
+    const { fileFullPath } = imports[0];
 
-
-    return { sourceFilePath, destinationFilePath, dependencies: imports };
+    return { fileFullPath, dependencies: imports };
 };
 export const saveDependenciesToModulePackageJson = async (fileDependencies: FileDependencies[]) => {
 
     const packageDependenciesAll = await Promise.all(fileDependencies.map(async (x) => {
-        const moduleRoot = await getProjectRootDirectoryPath(x.destinationFilePath, { search: `src` });
+        const moduleRoot = await getProjectRootDirectoryPath(x.fileFullPath, { search: `src` });
         const packagePath = getPathNormalized(moduleRoot, `./package.json`);
         return {
             packageJsonPath: packagePath,
