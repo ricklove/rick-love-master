@@ -24,7 +24,7 @@ const build = async (rootRaw?: string) => {
 
         const fileDependencies = [] as FileDependencies[];
         await processDirectoryFiles(rootCode, async (x) => {
-            const destFile = await cloneFile(x, getTargetBuildPath(root), root, { skipIfDestinationNewer: false });
+            const destFile = await cloneFile(x, root, getTargetBuildPath(root), { skipIfDestinationNewer: false });
             if (!destFile) { return; }
 
             const r = await processImports_returnDependencies(destFile, root, tsConfigPaths);
@@ -54,7 +54,7 @@ const build = async (rootRaw?: string) => {
 
         const fileDependencies = [] as FileDependencies[];
         await Promise.all(filesChanged.filter(x => x.startsWith(rootCode)).map(async x => {
-            const destFile = await cloneFile(x, getTargetBuildPath(root), root, { skipIfDestinationNewer: false });
+            const destFile = await cloneFile(x, root, getTargetBuildPath(root), { skipIfDestinationNewer: false });
             if (!destFile) { return; }
 
             const r = await processImports_returnDependencies(destFile, root, tsConfigPaths);

@@ -3,10 +3,9 @@
 import { getFileInfo, getPathNormalized, getProjectRootDirectoryPath, copyFile } from 'utils/files';
 
 
-export const cloneFile = async (sourceFilePath: string, targetRootPath: string, rootRaw?: string, options?: { skipIfDestinationNewer?: boolean }): Promise<string | null> => {
-    const root = getPathNormalized(rootRaw ?? await getProjectRootDirectoryPath(__dirname));
+export const cloneFile = async (sourceFilePath: string, sourceRootPath: string, targetRootPath: string, options?: { skipIfDestinationNewer?: boolean }): Promise<string | null> => {
     const sourceFileFullPath = getPathNormalized(sourceFilePath);
-    const relativePath = sourceFileFullPath.replace(`${root}/`, ``);
+    const relativePath = sourceFileFullPath.replace(`${sourceRootPath}/`, ``);
     const fileInfo = await getFileInfo(sourceFilePath);
 
     // Skip non files
