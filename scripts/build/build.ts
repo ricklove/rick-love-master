@@ -32,7 +32,7 @@ const build = async (rootRaw?: string) => {
                 fileDependencies.push(r);
             }
         });
-        await saveDependenciesToModulePackageJson(fileDependencies);
+        await saveDependenciesToModulePackageJson(fileDependencies, root);
     };
     await startup();
 
@@ -62,7 +62,7 @@ const build = async (rootRaw?: string) => {
                 fileDependencies.push(r);
             }
         }));
-        await saveDependenciesToModulePackageJson(fileDependencies);
+        await saveDependenciesToModulePackageJson(fileDependencies, root);
 
         console.log(`--- Watching ---`);
     });

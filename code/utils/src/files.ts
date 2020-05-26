@@ -28,9 +28,14 @@ export const getFileInfo = async (fullPath: string) => {
     }
 };
 export const ensureDirectoryExists = async (dirPath: string) => fs.mkdir(dirPath, { recursive: true });
-export const copyFile = async (sourceFilePath: string, destFilePath: string, shouldCreateDirectory = true) => {
-    if (shouldCreateDirectory) { await ensureDirectoryExists(getDirectoryPath(destFilePath)); }
-    fs.copyFile(sourceFilePath, destFilePath);
+export const copyFile = async (sourceFilePath: string, destFilePath: string, options?: { overwrite?: boolean, readonly?: boolean, disableCreateDirectory?: boolean }) => {
+    if (!options?.disableCreateDirectory) { await ensureDirectoryExists(getDirectoryPath(destFilePath)); }
+
+    if (options?.overwrite && await getFileInfo(destFilePath)) { await fs.unlink(destFilePath); }
+    await fs.copyFile(sourceFilePath, destFilePath);
+    if (options?.readonly) {
+        await fs.chmod(destFilePath, 0o444);
+    }
 };
 
 export const getProjectRootDirectoryPath = async (dirStart: string, options: { search: string } = { search: `.git` }) => {

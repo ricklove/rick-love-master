@@ -1,6 +1,6 @@
 // Clone the files and expand the imports found in each
 
-import { getFileInfo, getPathNormalized, getProjectRootDirectoryPath, copyFile } from 'utils/files';
+import { getFileInfo, getPathNormalized, copyFile } from 'utils/files';
 
 
 export const cloneFile = async (sourceFilePath: string, sourceRootPath: string, targetRootPath: string, options?: { skipIfDestinationNewer?: boolean }): Promise<string | null> => {
@@ -22,6 +22,6 @@ export const cloneFile = async (sourceFilePath: string, sourceRootPath: string, 
     }
 
     // Copy the file
-    await copyFile(sourceFileFullPath, destFilePath);
+    await copyFile(sourceFileFullPath, destFilePath, { readonly: true, overwrite: true });
     return destFilePath;
 };
