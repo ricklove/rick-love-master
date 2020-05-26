@@ -28,7 +28,7 @@ const hydrate_template = async (templateJsonPath: string) => {
 };
 
 const hydrate_templatesAll = async (rootCode: string) => {
-    const templateJsonFiles = await getFiles(rootCode, x => x.endsWith(`template.json`));
+    const templateJsonFiles = await getFiles(rootCode, x => x.endsWith(`/template.json`));
     await Promise.all(templateJsonFiles.map(async templateJsonPath => {
         await hydrate_template(templateJsonPath);
     }));
@@ -58,7 +58,7 @@ const dehydrate_template = async (templateJsonPath: string) => {
 };
 
 const dehydrate_templatesAll = async (rootCode: string) => {
-    const templateJsonFiles = await getFiles(rootCode, x => x.endsWith(`template.json`));
+    const templateJsonFiles = await getFiles(rootCode, x => x.endsWith(`/template.json`));
     await Promise.all(templateJsonFiles.map(async templateJsonPath => {
         await dehydrate_template(templateJsonPath);
     }));
@@ -111,8 +111,8 @@ export const dehydrate_yarnWorkspaces = async (root: string, rootCode: string) =
 
 const test = async () => {
     const root = getPathNormalized(await getProjectRootDirectoryPath(__dirname));
-    // hydrate_pureCode(root, getPathNormalized(root, `./code`));
-    // hydrate_yarnWorkspaces(root, getPathNormalized(root, `./code`));
+    hydrate_yarnWorkspaces(root, getPathNormalized(root, `./code`));
+    // dehydrate_yarnWorkspaces(root, getPathNormalized(root, `./code`));
     // hydrate_templatesAll(getPathNormalized(root, `./code`));
     // dehydrate_templatesAll(getPathNormalized(root, `./code`));
 };
