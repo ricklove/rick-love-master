@@ -13,7 +13,7 @@ const hydrate_template = async (templateJsonPath: string) => {
 
     await processDirectoryFiles(templatePath, async (x) => {
         const relPath = x.replace(`${templatePath}/`, ``);
-        const destPath = getPathNormalized(targetRootPath, relPath);
+        const destPath = getPathNormalized(targetRootPath, relPath.replace(`.template.`, `.`));
         const destExtraTemplatePath = `${destPath}.template`;
         try {
             await copyFile(x, destPath, { overwrite: false, readonly: true });
@@ -42,7 +42,7 @@ const dehydrate_template = async (templateJsonPath: string) => {
 
     await processDirectoryFiles(templatePath, async (x) => {
         const relPath = x.replace(`${templatePath}/`, ``);
-        const destPath = getPathNormalized(targetRootPath, relPath);
+        const destPath = getPathNormalized(targetRootPath, relPath.replace(`.template.`, `.`));
 
         // Delete extra template files
         const destExtraTemplatePath = `${destPath}.template`;
@@ -85,11 +85,7 @@ export const hydrate_yarnWorkspaces = async (root: string, rootCode: string) => 
     });
     await saveDependenciesToModulePackageJson(fileDependencies, root);
 
-    // Inject Template files
-    const templateJsonFiles = await getFiles(rootCode, x => x === `template.json`);
-    await Promise.all(templateJsonFiles.map(async templateJsonPath => {
-        await hydrate_template(templateJsonPath);
-    }));
+    // Add tsconfig with extends to root
 };
 
 
@@ -109,8 +105,7 @@ export const dehydrate_yarnWorkspaces = async (root: string, rootCode: string) =
         // Leave it alone if there is other content
     });
 
-    // Delete files that belong to a template
-
+    // Remove tsconfig with extends to root
 };
 
 
@@ -119,6 +114,6 @@ const test = async () => {
     // hydrate_pureCode(root, getPathNormalized(root, `./code`));
     // hydrate_yarnWorkspaces(root, getPathNormalized(root, `./code`));
     // hydrate_templatesAll(getPathNormalized(root, `./code`));
-    dehydrate_templatesAll(getPathNormalized(root, `./code`));
+    // dehydrate_templatesAll(getPathNormalized(root, `./code`));
 };
 test();
