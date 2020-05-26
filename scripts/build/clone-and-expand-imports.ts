@@ -1,6 +1,6 @@
 // Clone the files and expand the imports found in each
 
-import { getFileInfo, getPathNormalized, getProjectRootDirectoryPath, copyFile, readFile, writeFile } from 'utils/files';
+import { getFileInfo, getPathNormalized, getProjectRootDirectoryPath, readFile, writeFile, copyFile } from 'utils/files';
 import { TsConfigPath, loadTsConfigPaths } from './generate-tsconfig-paths';
 
 const targetFromRootPath = `./build/src/`;
@@ -14,10 +14,19 @@ export const cloneFileAndExpandExport = async (sourceFilePath: string, rootRaw?:
     const fileInfo = await getFileInfo(sourceFilePath);
     const destFileInfo = await getFileInfo(destFilePath);
 
+    // Skip non files
+    if (!fileInfo || !fileInfo.isFile()) { return; }
+
     // Skip if the destination is newer
     if (destFileInfo && destFileInfo.mtime > (fileInfo?.mtime ?? 0)) { return; }
 
-    // await copyFile(sourceFileFullPath, destFilePath);
+    if (!sourceFileFullPath.endsWith(`.ts`)
+        && !sourceFileFullPath.endsWith(`.tsx`)
+        && !sourceFileFullPath.endsWith(`.js`)
+        && !sourceFileFullPath.endsWith(`.jsx`)) {
+        await copyFile(sourceFileFullPath, destFilePath);
+        return;
+    }
 
     // Load File
     const content = await readFile(sourceFileFullPath);
@@ -29,8 +38,8 @@ export const cloneFileAndExpandExport = async (sourceFilePath: string, rootRaw?:
     let contentFinal = content;
     p.forEach(x => { contentFinal = content.split(x.name).join(toRoot + x.path); });
 
-    // WriteFile
-    await writeFile(destFilePath, contentFinal);
+    // WriteFile (as readonly to prevent manual edits)
+    await writeFile(destFilePath, contentFinal, { readonly: true });
 };
 
-cloneFileAndExpandExport(getPathNormalized(__dirname, `./build.ts`));
+// cloneFileAndExpandExport(getPathNormalized(__dirname, `./build.ts`));

@@ -49,7 +49,7 @@ export const generateTsconfigPaths = async (rootRaw?: string) => {
     const tsConfigText = await readFile(tsConfigPath);
     const tsConfigObj = JSON.parse(tsConfigText) as { compilerOptions: { paths: TsConfigPathsRaw } };
     tsConfigObj.compilerOptions.paths = paths;
-    writeFile(`${tsConfigPath}`, JSON.stringify(tsConfigObj, null, 2));
+    await writeFile(`${tsConfigPath}`, JSON.stringify(tsConfigObj, null, 2));
 };
 
 // generateTsconfigPaths();

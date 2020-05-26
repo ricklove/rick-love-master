@@ -1,7 +1,8 @@
 /* eslint-disable no-console */
-import { watchFileChanges, getProjectRootDirectoryPath, getPathNormalized } from 'utils/files';
+import { watchFileChanges, getProjectRootDirectoryPath, getPathNormalized, processDirectoryFiles } from 'utils/files';
 import { somePromise } from 'utils/async';
-import { generateTsconfigPaths, isTsconfigPathDirectory } from './generate-tsconfig-paths';
+import { generateTsconfigPaths, isTsconfigPathDirectory, loadTsConfigPaths } from './generate-tsconfig-paths';
+import { cloneFileAndExpandExport } from './clone-and-expand-imports';
 
 const build = async (rootRaw?: string) => {
 
@@ -11,6 +12,10 @@ const build = async (rootRaw?: string) => {
     const startup = async () => {
         console.log(`Statup: Regenerate Tsconfig Paths`);
         await generateTsconfigPaths(root);
+
+        console.log(`Statup: Clone & Expand Imports`);
+        const tsConfigPaths = await loadTsConfigPaths(root);
+        await processDirectoryFiles(rootCode, async (x) => cloneFileAndExpandExport(x, root, tsConfigPaths));
     };
     await startup();
 
@@ -19,13 +24,16 @@ const build = async (rootRaw?: string) => {
 
         // console.log(`filesChanged`, filesChanged);
 
-
         // Update tsconfig
         if (await somePromise(filesChanged, isTsconfigPathDirectory)) {
             console.log(`Regenerate Tsconfig Paths`, filesChanged);
             generateTsconfigPaths(root);
         }
 
+        // Clone and Expand Imports
+        console.log(`Clone & Expand Imports`, filesChanged);
+        const tsConfigPaths = await loadTsConfigPaths(root);
+        await Promise.all(filesChanged.filter(x => x.startsWith(rootCode)).map(x => cloneFileAndExpandExport(x, root, tsConfigPaths)));
     });
     // watchForFileChanges(x=>x.)
 };
