@@ -53,8 +53,9 @@ const _writeFile = promisify(fs.writeFile);
 const readdir = promisify(fs.readdir);
 
 export const readFile = async (filePath: string) => _readFile(filePath, { encoding: `utf-8` });
-export const writeFile = async (filePath: string, data: string | Buffer, options?: { readonly?: boolean }) => {
+export const writeFile = async (filePath: string, data: string | Buffer, options?: { readonly?: boolean, overwrite?: boolean }) => {
     await _mkdir(getDirectoryPath(filePath), { recursive: true });
+    if (options?.overwrite) { promisify(fs.unlink)(filePath); }
     await _writeFile(filePath, data, { encoding: `utf-8`, mode: options?.readonly ? 0o444 : 0o666 });
 };
 

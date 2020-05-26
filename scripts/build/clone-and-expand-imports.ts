@@ -68,7 +68,7 @@ export const cloneFileAndExpandExport = async (sourceFilePath: string, rootRaw?:
     });
 
     // WriteFile (as readonly to prevent manual edits)
-    await writeFile(destFilePath, contentFinal, { readonly: true });
+    await writeFile(destFilePath, contentFinal, { readonly: true, overwrite: true });
 };
 
 // cloneFileAndExpandExport(getPathNormalized(__dirname, `./build.ts`));
