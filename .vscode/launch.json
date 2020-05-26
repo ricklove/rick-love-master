@@ -34,7 +34,8 @@
             "type": "node",
             "request": "launch",
             "args": [
-                "${workspaceFolder}/scripts/build/build.ts"
+                //"${workspaceFolder}/scripts/build/build.ts"
+                "${workspaceFolder}/scripts/build/hydrate.ts"
             ],
             "runtimeArgs": [
                 "--nolazy",

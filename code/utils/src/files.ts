@@ -91,7 +91,13 @@ export async function getAllDirectories(dir: string) {
 
 export async function getFiles(dir: string, isMatch: (filePath: string) => boolean): Promise<string[]> {
     const files = [] as string[];
-    await processDirectoryItems(dir, { onFile: async (fullPath) => { if (isMatch(fullPath)) { files.push(fullPath); } } });
+    await processDirectoryItems(dir, {
+        onFile: async (fullPath) => {
+            if (isMatch(fullPath)) {
+                files.push(fullPath);
+            }
+        },
+    });
     return files.map(x => getPathNormalized(x));
 }
 

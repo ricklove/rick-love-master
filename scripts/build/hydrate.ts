@@ -4,16 +4,25 @@ import { generateTsconfigPaths, loadTsConfigPaths } from './generate-tsconfig-pa
 import { FileDependencies, processImports_returnDependencies, saveDependenciesToModulePackageJson } from './process-imports';
 import { PackageJson } from './types';
 
-const cloneTemplateFiles = async (templateJsonPath: string) => {
+/** Clone Templates files into target */
+const hydrate_template = async (templateJsonPath: string) => {
+
     const targetRootPath = getDirectoryPath(templateJsonPath);
     const templateJsonObj = await readFileAsJson<{ extends: string }>(templateJsonPath);
-    const templatePath = getPathNormalized(templateJsonPath, templateJsonObj.extends);
+    const templatePath = getPathNormalized(targetRootPath, templateJsonObj.extends);
 
     await processDirectoryFiles(templatePath, async (x) => {
         const relPath = x.replace(`${templatePath}/`, ``);
         const destPath = getPathNormalized(targetRootPath, relPath);
-        await copyFile(x, destPath);
+        await copyFile(x, destPath, { overwrite: false, readonly: true });
     });
+};
+
+const hydrate_templatesAll = async (rootCode: string) => {
+    const templateJsonFiles = await getFiles(rootCode, x => x.endsWith(`template.json`));
+    await Promise.all(templateJsonFiles.map(async templateJsonPath => {
+        await hydrate_template(templateJsonPath);
+    }));
 };
 
 /** Add package.json to each module with detected dependencies */
@@ -40,7 +49,7 @@ export const hydrate_yarnWorkspaces = async (root: string, rootCode: string) => 
     // Inject Template files
     const templateJsonFiles = await getFiles(rootCode, x => x === `template.json`);
     await Promise.all(templateJsonFiles.map(async templateJsonPath => {
-        await cloneTemplateFiles(templateJsonPath);
+        await hydrate_template(templateJsonPath);
     }));
 };
 
@@ -69,6 +78,7 @@ export const hydrate_pureCode = async (root: string, rootCode: string) => {
 const test = async () => {
     const root = getPathNormalized(await getProjectRootDirectoryPath(__dirname));
     // hydrate_pureCode(root, getPathNormalized(root, `./code`));
-    hydrate_yarnWorkspaces(root, getPathNormalized(root, `./code`));
+    // hydrate_yarnWorkspaces(root, getPathNormalized(root, `./code`));
+    hydrate_templatesAll(getPathNormalized(root, `./code`));
 };
 test();
