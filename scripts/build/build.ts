@@ -23,7 +23,7 @@ const build = async (rootRaw?: string) => {
     console.log(`--- Watching ---`);
     watchFileChanges({ pathRoot: rootCode, runOnStart: false }, async (filesChanged) => {
 
-        await delay(1000);
+        // await delay(1000);
         // console.log(`filesChanged`, filesChanged);
 
         // Update tsconfig
