@@ -1,9 +1,8 @@
 /* eslint-disable no-console */
 import { watchFileChanges, getProjectRootDirectoryPath, getPathNormalized, processDirectoryFiles } from 'utils/files';
 import { somePromise } from 'utils/async';
-import { delay } from 'dork/utils';
 import { generateTsconfigPaths, isTsconfigPathDirectory, loadTsConfigPaths } from './generate-tsconfig-paths';
-import { cloneFileAndExpandExport } from './clone-and-expand-imports';
+import { cloneFileAndExpandExports } from './clone-and-process-imports';
 
 const build = async (rootRaw?: string) => {
 
@@ -16,7 +15,7 @@ const build = async (rootRaw?: string) => {
 
         console.log(`Statup: Clone & Expand Imports`);
         const tsConfigPaths = await loadTsConfigPaths(root);
-        await processDirectoryFiles(rootCode, async (x) => cloneFileAndExpandExport(x, root, tsConfigPaths));
+        await processDirectoryFiles(rootCode, async (x) => cloneFileAndExpandExports(x, root, tsConfigPaths));
     };
     await startup();
 
@@ -35,7 +34,7 @@ const build = async (rootRaw?: string) => {
         // Clone and Expand Imports
         console.log(`Clone & Expand Imports`, filesChanged);
         const tsConfigPaths = await loadTsConfigPaths(root);
-        await Promise.all(filesChanged.filter(x => x.startsWith(rootCode)).map(x => cloneFileAndExpandExport(x, root, tsConfigPaths)));
+        await Promise.all(filesChanged.filter(x => x.startsWith(rootCode)).map(x => cloneFileAndExpandExports(x, root, tsConfigPaths)));
 
         console.log(`--- Watching ---`);
     });

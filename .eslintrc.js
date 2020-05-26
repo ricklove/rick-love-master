@@ -169,6 +169,10 @@ module.exports = {
         "react/jsx-pascal-case": ['off'],
         "no-underscore-dangle": ['off'],
 
-        "no-plusplus": ['off']
+        // Why?
+        "no-plusplus": ['off'],
+
+        // No substr is preferred 
+        "unicorn/prefer-string-slice": ["off"]
     },
 }

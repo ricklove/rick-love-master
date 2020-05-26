@@ -5,7 +5,9 @@ import { TsConfigPath, loadTsConfigPaths } from './generate-tsconfig-paths';
 
 const targetFromRootPath = `./build/src/`;
 
-export const cloneFileAndExpandExport = async (sourceFilePath: string, rootRaw?: string, tsconfigPaths?: TsConfigPath[]) => {
+export const cloneFileAndProcessExports = async (sourceFilePath: string,
+    onExportFound: (args: { fileRelativePath: string, path: TsConfigPath, exportText: string, replace: (value: string) => void, wholeText: string, match: RegExpExecArray }) => void,
+    rootRaw?: string, tsconfigPaths?: TsConfigPath[]) => {
 
     const root = getPathNormalized(rootRaw ?? await getProjectRootDirectoryPath(__dirname));
     const sourceFileFullPath = getPathNormalized(sourceFilePath);
@@ -18,7 +20,7 @@ export const cloneFileAndExpandExport = async (sourceFilePath: string, rootRaw?:
     if (!fileInfo || !fileInfo.isFile()) { return; }
 
     // Skip if the destination is newer
-    if (destFileInfo && destFileInfo.mtime > (fileInfo?.mtime ?? 0)) { return; }
+    // if (destFileInfo && destFileInfo.mtime > (fileInfo?.mtime ?? 0)) { return; }
 
     if (!sourceFileFullPath.endsWith(`.ts`)
         && !sourceFileFullPath.endsWith(`.tsx`)
@@ -33,8 +35,6 @@ export const cloneFileAndExpandExport = async (sourceFilePath: string, rootRaw?:
     let contentFinal = content;
 
     // Expand Imports
-    const toRoot = [...new Array(relativePath.split(`/`).length - 1)].map(x => `../`).join(``);
-
     const p = tsconfigPaths ?? await loadTsConfigPaths(root);
     p.forEach(x => {
         // // Include the start and end char to prevent partial matches
@@ -61,14 +61,48 @@ export const cloneFileAndExpandExport = async (sourceFilePath: string, rootRaw?:
         // export * from 'gatsby-lite';
 
         const regex = new RegExp(`((?:(?:import|export)\\s+[^;]*\\s+from\\s*|(?:import|require)\\s*\\(\\s*)["'\`])(${x.name})(["'\`/])`, `g`);
-        contentFinal = contentFinal.replace(regex, `$1${toRoot}${x.path}$3`);
 
-        // Simplify common path
-        contentFinal = contentFinal.replace(/\/..\/code/g, ``);
+        let m = null as null | RegExpExecArray;
+        const replace = (value: string) => {
+            if (!m) { return; }
+
+            const pieces = [
+                contentFinal.substr(0, m.index),
+                m[1],
+                value,
+                m[3],
+                contentFinal.substr(m.index + m[0].length, contentFinal.length - (m.index + m.length)),
+            ];
+
+            contentFinal = pieces.join(``);
+        };
+
+        while ((m = regex.exec(contentFinal))) {
+            onExportFound({ fileRelativePath: relativePath, path: x, exportText: m[2] ?? ``, replace, wholeText: contentFinal, match: m });
+        };
     });
 
     // WriteFile (as readonly to prevent manual edits)
     await writeFile(destFilePath, contentFinal, { readonly: true, overwrite: true });
 };
 
-// cloneFileAndExpandExport(getPathNormalized(__dirname, `./build.ts`));
+export const cloneFileAndExpandExports = async (sourceFilePath: string, rootRaw?: string, tsconfigPaths?: TsConfigPath[]) => {
+
+    cloneFileAndProcessExports(sourceFilePath, (args) => {
+        const { fileRelativePath, path, replace } = args;
+        const rPathParts = fileRelativePath.split(`/`);
+        const tPathParts = path.path.split(`/`);
+
+        while (rPathParts[0] === tPathParts[0]) {
+            rPathParts.shift();
+            tPathParts.shift();
+        }
+
+        const toCommon = [...new Array(rPathParts.length - 1)].map(x => `../`).join(``);
+        replace(`${toCommon}${tPathParts.join(`/`)}`);
+        // Simplify common path
+        // contentFinal = contentFinal.replace(/\/..\/code/g, ``);
+    }, rootRaw, tsconfigPaths);
+};
+
+// cloneFileAndExpandExports(getPathNormalized(__dirname, `../../code/games/console-simulator/src/game-dork.ts`));
