@@ -14,6 +14,7 @@ const hydrate_template = async (templateJsonPath: string) => {
     await processDirectoryFiles(templatePath, async (x) => {
         const relPath = x.replace(`${templatePath}/`, ``);
         const destPath = getPathNormalized(targetRootPath, relPath);
+        const destExtraTemplatePath = `${destPath}.template`;
         try {
             await copyFile(x, destPath, { overwrite: false, readonly: true });
         } catch{
@@ -21,7 +22,7 @@ const hydrate_template = async (templateJsonPath: string) => {
             const destInfo = await getFileInfo(destPath);
             if (sourceInfo?.size === destInfo?.size) { return; }
             // if (sourceInfo?.mtime === destInfo?.mtime) { return; }
-            await copyFile(x, `${destPath}.template`, { overwrite: false, readonly: true });
+            await copyFile(x, destExtraTemplatePath, { overwrite: false, readonly: true });
         }
     });
 };
@@ -30,6 +31,36 @@ const hydrate_templatesAll = async (rootCode: string) => {
     const templateJsonFiles = await getFiles(rootCode, x => x.endsWith(`template.json`));
     await Promise.all(templateJsonFiles.map(async templateJsonPath => {
         await hydrate_template(templateJsonPath);
+    }));
+};
+
+const dehydrate_template = async (templateJsonPath: string) => {
+
+    const targetRootPath = getDirectoryPath(templateJsonPath);
+    const templateJsonObj = await readFileAsJson<{ extends: string }>(templateJsonPath);
+    const templatePath = getPathNormalized(targetRootPath, templateJsonObj.extends);
+
+    await processDirectoryFiles(templatePath, async (x) => {
+        const relPath = x.replace(`${templatePath}/`, ``);
+        const destPath = getPathNormalized(targetRootPath, relPath);
+
+        // Delete extra template files
+        const destExtraTemplatePath = `${destPath}.template`;
+        if (await getFileInfo(destExtraTemplatePath)) { await deleteFile(destExtraTemplatePath); }
+
+        // Delete file if NOT changed
+        const sourceInfo = await getFileInfo(x);
+        const destInfo = await getFileInfo(destPath);
+        if (sourceInfo?.size !== destInfo?.size) { return; }
+
+        await deleteFile(destPath);
+    });
+};
+
+const dehydrate_templatesAll = async (rootCode: string) => {
+    const templateJsonFiles = await getFiles(rootCode, x => x.endsWith(`template.json`));
+    await Promise.all(templateJsonFiles.map(async templateJsonPath => {
+        await dehydrate_template(templateJsonPath);
     }));
 };
 
@@ -63,7 +94,7 @@ export const hydrate_yarnWorkspaces = async (root: string, rootCode: string) => 
 
 
 /** Remove package.json dependencies and add all dependencies to ${root}/package.json */
-export const hydrate_pureCode = async (root: string, rootCode: string) => {
+export const dehydrate_yarnWorkspaces = async (root: string, rootCode: string) => {
     await processDirectoryFiles(rootCode, async (x) => {
         if (getFileName(x) !== `package.json`) { return; }
 
@@ -87,6 +118,7 @@ const test = async () => {
     const root = getPathNormalized(await getProjectRootDirectoryPath(__dirname));
     // hydrate_pureCode(root, getPathNormalized(root, `./code`));
     // hydrate_yarnWorkspaces(root, getPathNormalized(root, `./code`));
-    hydrate_templatesAll(getPathNormalized(root, `./code`));
+    // hydrate_templatesAll(getPathNormalized(root, `./code`));
+    dehydrate_templatesAll(getPathNormalized(root, `./code`));
 };
 test();
