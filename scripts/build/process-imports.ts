@@ -144,7 +144,8 @@ export const processImports_returnDependencies = async (sourceFilePath: string, 
 
     return { fileFullPath, dependencies: imports };
 };
-export const saveDependenciesToModulePackageJson = async (fileDependencies: FileDependencies[], root: string) => {
+export const processDependenciesInModulePackageJson = async (fileDependencies: FileDependencies[], root: string,
+    processPackageJson: (packageJson: PackageJson, dependencies: ImportDependency[], rootPackageJson: PackageJson) => Promise<PackageJson>) => {
 
     const rootPackagePath = getPathNormalized(root, `./package.json`);
     const rootPackageJson = JSON.parse(await readFile(rootPackagePath)) as PackageJson;
@@ -163,22 +164,13 @@ export const saveDependenciesToModulePackageJson = async (fileDependencies: File
     // dependencies: { "@loadable/component": "^5.12.0", }
     await Promise.all(packageDependencies.map(async (pack) => {
         const { packageJsonPath, dependencies } = pack;
+        const loadedPackageJson = !(await getFileInfo(packageJsonPath)) ? null : await readFileAsJson<PackageJson>(packageJsonPath);
+        const loadedPackageJsonText = loadedPackageJson && JSON.stringify(loadedPackageJson, null, 2);
+
         const defaultPackageJson = { name: getParentName(packageJsonPath), dependencies: {} } as PackageJson;
-        const packageJson = !(await getFileInfo(packageJsonPath)) ? defaultPackageJson : await readFileAsJson<PackageJson>(packageJsonPath);
+        const packageJsonInit = loadedPackageJson || defaultPackageJson;
 
-        const depPackageNames = distinct(dependencies
-            .filter(x => !x.importExpression.startsWith(`.`))
-            .map(x => ({
-                importPackageName: x.importPackageName,
-            })));
-
-        // Record as * for yarn workspaces to manage (if not already there)
-        depPackageNames.forEach(x => {
-            if ((packageJson.dependencies[x.importPackageName] ?? `*`) !== `*`) { return; }
-
-            // TODO: For external dependencies, get the version from the root package.json
-            packageJson.dependencies[x.importPackageName] = rootPackageJson.dependencies[x.importPackageName] ?? `*`;
-        });
+        const packageJson = await processPackageJson(packageJsonInit, dependencies, rootPackageJson);
 
         // Sort Order
         packageJson.dependencies = toKeyValueObject(toKeyValueArray(packageJson.dependencies).sort((a, b) => {
@@ -188,8 +180,54 @@ export const saveDependenciesToModulePackageJson = async (fileDependencies: File
             return a.key.localeCompare(b.key);
         }));
 
-        await writeFile(packageJsonPath, JSON.stringify(packageJson, null, 2), { readonly: true, overwrite: true });
+        const finalPackageJsonText = JSON.stringify(packageJson, null, 2);
+        if (loadedPackageJsonText === finalPackageJsonText) { return; }
+        await writeFile(packageJsonPath, finalPackageJsonText, { readonly: false, overwrite: true });
     }));
+};
+
+export const saveDependenciesToModulePackageJson = async (fileDependencies: FileDependencies[], root: string) => {
+    processDependenciesInModulePackageJson(fileDependencies, root, async (packageJsonRaw, dependencies, rootPackageJson) => {
+        // Json Clone
+        const packageJson = JSON.parse(JSON.stringify(packageJsonRaw)) as PackageJson;
+
+        const depPackageNames = distinct(dependencies
+            .filter(x => !x.importExpression.startsWith(`.`))
+            .map(x => ({
+                importPackageName: x.importPackageName,
+            })));
+
+        // Record as * for yarn workspaces to manage (if not already there)
+        depPackageNames.forEach(x => {
+            if ((packageJson.dependencies[x.importPackageName] ?? packageJson.devDependencies?.[x.importPackageName] ?? packageJson.peerDependencies?.[x.importPackageName] ?? `*`) !== `*`) { return; }
+
+            // For external dependencies, get the version from the root package.json
+            packageJson.dependencies[x.importPackageName] =
+                rootPackageJson.dependencies[x.importPackageName] ??
+                rootPackageJson.devDependencies?.[x.importPackageName] ??
+                rootPackageJson.peerDependencies?.[x.importPackageName] ??
+                `*`;
+        });
+
+        return packageJson;
+    });
+};
+
+export const removeLocalDependenciesFromModulePackageJson = async (packageJsonPath: string, root: string) => {
+    const packageJson = !(await getFileInfo(packageJsonPath)) ? null : await readFileAsJson<PackageJson>(packageJsonPath);
+    if (!packageJson) { return; }
+
+    // Remove any dependencies not listed in root
+    const rootPackagePath = getPathNormalized(root, `./package.json`);
+    const rootPackageJson = JSON.parse(await readFile(rootPackagePath)) as PackageJson;
+
+    const localDeps = toKeyValueArray(packageJson.dependencies).filter(x =>
+        !rootPackageJson.dependencies[x.key]
+        && !rootPackageJson.devDependencies?.[x.key]
+        && !rootPackageJson.peerDependencies?.[x.key]);
+
+    localDeps.forEach(x => { delete packageJson.dependencies[x.key]; });
+    await writeFile(packageJsonPath, JSON.stringify(packageJson, null, 2), { readonly: false, overwrite: true });
 };
 
 // cloneFileAndExpandExports(getPathNormalized(__dirname, `../../code/games/console-simulator/src/game-dork.ts`));

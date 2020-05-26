@@ -1,7 +1,7 @@
 /* eslint-disable no-console */
 import { processDirectoryFiles, getFileName, deleteFile, readFileAsJson, getPathNormalized, getProjectRootDirectoryPath, getFiles, getDirectoryPath, copyFile, getFileInfo } from 'utils/files';
 import { generateTsconfigPaths, loadTsConfigPaths } from './generate-tsconfig-paths';
-import { FileDependencies, processImports_returnDependencies, saveDependenciesToModulePackageJson } from './process-imports';
+import { FileDependencies, processImports_returnDependencies, saveDependenciesToModulePackageJson, removeLocalDependenciesFromModulePackageJson } from './process-imports';
 import { PackageJson } from './types';
 
 /** Clone Templates files into target */
@@ -77,9 +77,9 @@ export const hydrate_yarnWorkspaces = async (root: string, rootCode: string) => 
         // const destFile = await cloneFile(x, root, getTargetBuildPath(root), { skipIfDestinationNewer: false });
         // if (!destFile) { return; }
 
-        if (!x.includes(`node_modules`)) { return; }
-        if (!x.includes(`.cache`)) { return; }
-        if (!x.includes(`public`)) { return; }
+        if (x.includes(`node_modules`)) { return; }
+        if (x.includes(`.cache`)) { return; }
+        if (x.includes(`public`)) { return; }
 
         const destFile = x;
 
@@ -104,7 +104,10 @@ export const dehydrate_yarnWorkspaces = async (root: string, rootCode: string) =
 
         if (!hasOtherStuff) {
             deleteFile(x);
+            return;
         }
+
+        await removeLocalDependenciesFromModulePackageJson(x, root);
 
         // TODO: Handle other content
         // Leave it alone if there is other content

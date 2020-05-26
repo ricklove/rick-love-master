@@ -17,12 +17,7 @@
     "typescript": "^3.9.3"
   },
   "devDependencies": {},
-  "exports": {
-    "./": "./src/"
-  },
   "dependencies": {
-    "@loadable/webpack-plugin": "*",
-    "path": "*",
     "gatsby": "^2.21.37",
     "react": "^16.12.0"
   }
