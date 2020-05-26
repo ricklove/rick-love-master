@@ -1,0 +1,19 @@
+// eslint-disable-next-line import/no-extraneous-dependencies
+import ts from 'typescript';
+import { getProjectRootDirectoryPath, getPathNormalized, readFile } from 'utils/files';
+
+export const test = async () => {
+    const mainFilePath = `./build.ts`;
+
+    const tsConfigPath = getPathNormalized(__dirname, `./tsconfig.json`);
+    const tsConfigText = await readFile(tsConfigPath);
+    const tsConfigObj = ts.parseConfigFileTextToJson(tsConfigPath, tsConfigText);
+    const program = ts.createProgram([mainFilePath], tsConfigObj.config);
+
+    // const breakdance = program.getSourceFiles().filter(x => !x.fileName.includes(`node_modules`));
+
+    const resolvedModules = [] as ;
+
+    const resolvedModules = program.getSourceFiles().find(x => x.fileName.endsWith(mainFilePath)).;
+};
+test();

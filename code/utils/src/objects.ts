@@ -7,3 +7,7 @@ export const toKeyValueObject = <T>(items: { key: string, value: T }[]): { [key:
     items.forEach(x => { v[x.key] = x.value; });
     return v;
 };
+
+export const toKeyValueArray = <T>(obj: { [key: string]: T }): { key: string, value: T }[] => {
+    return Object.keys(obj).map(k => k as keyof typeof obj).map(k => ({ key: k as string, value: obj[k] }));
+};

@@ -5,6 +5,7 @@
         "*.tsx",
     ],
     "compilerOptions": {
-        "outDir": "../../builds/blog/src"
+        "outDir": "./build",
+        "noEmit": false
     }
 }

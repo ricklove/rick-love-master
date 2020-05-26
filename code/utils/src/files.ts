@@ -12,12 +12,24 @@ export const getDirectoryName = (fullPath: string) => {
     return dirFullPath.replace(grandDirFullPath, ``).replace(/\\/g, ``).replace(/\//g, ``);
 };
 export const getFileName = path.basename;
-export const getPathNormalized = (...x: string[]) => path.join(...x).replace(/\\/g, `/`);
+export const getPathNormalized = (...x: string[]) => path.resolve(path.join(...x)).replace(/\\/g, `/`);
 
-export const getProjectRootDirectoryPath = (dirStart: string, options: { search: string } = { search: `.git` }) => {
+export const getFileInfo = async (fullPath: string) => {
+    const exists = await promisify(fs.exists)(fullPath);
+    if (!exists) { return null; }
+    const info = await promisify(fs.stat)(fullPath);
+    return info;
+};
+export const ensureDirectoryExists = async (dirPath: string) => promisify(fs.mkdir)(dirPath, { recursive: true });
+export const copyFile = async (sourceFilePath: string, destFilePath: string, shouldCreateDirectory = true) => {
+    if (shouldCreateDirectory) { await ensureDirectoryExists(getDirectoryPath(destFilePath)); }
+    promisify(fs.copyFile)(sourceFilePath, destFilePath);
+};
+
+export const getProjectRootDirectoryPath = async (dirStart: string, options: { search: string } = { search: `.git` }) => {
     const { search } = options;
     let dir = dirStart;
-    let hasGit = fs.existsSync(getPathNormalized(dir, search));
+    let hasGit = await promisify(fs.exists)(getPathNormalized(dir, search));
     while (!hasGit) {
         const parentDir = getDirectoryPath(dir);
         if (parentDir === dir) {
@@ -25,13 +37,14 @@ export const getProjectRootDirectoryPath = (dirStart: string, options: { search:
         }
 
         dir = parentDir;
-        hasGit = fs.existsSync(getPathNormalized(dir, search));
+        // eslint-disable-next-line no-await-in-loop
+        hasGit = await promisify(fs.exists)(getPathNormalized(dir, search));
     }
 
     return dir;
 };
 
-export const directoryContains = (dirPath: string, relativePath: string) => fs.existsSync(getPathNormalized(dirPath, relativePath));
+export const directoryContains = async (dirPath: string, relativePath: string) => promisify(fs.exists)(getPathNormalized(dirPath, relativePath));
 
 
 const _mkdir = promisify(fs.mkdir);
