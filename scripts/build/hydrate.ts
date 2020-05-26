@@ -1,5 +1,5 @@
 /* eslint-disable no-console */
-import { processDirectoryFiles, getFileName, deleteFile, readFileAsJson, getPathNormalized, getProjectRootDirectoryPath, getFiles, getDirectoryPath, copyFile } from 'utils/files';
+import { processDirectoryFiles, getFileName, deleteFile, readFileAsJson, getPathNormalized, getProjectRootDirectoryPath, getFiles, getDirectoryPath, copyFile, getFileInfo } from 'utils/files';
 import { generateTsconfigPaths, loadTsConfigPaths } from './generate-tsconfig-paths';
 import { FileDependencies, processImports_returnDependencies, saveDependenciesToModulePackageJson } from './process-imports';
 import { PackageJson } from './types';
@@ -14,7 +14,15 @@ const hydrate_template = async (templateJsonPath: string) => {
     await processDirectoryFiles(templatePath, async (x) => {
         const relPath = x.replace(`${templatePath}/`, ``);
         const destPath = getPathNormalized(targetRootPath, relPath);
-        await copyFile(x, destPath, { overwrite: false, readonly: true });
+        try {
+            await copyFile(x, destPath, { overwrite: false, readonly: true });
+        } catch{
+            const sourceInfo = await getFileInfo(x);
+            const destInfo = await getFileInfo(destPath);
+            if (sourceInfo?.size === destInfo?.size) { return; }
+            // if (sourceInfo?.mtime === destInfo?.mtime) { return; }
+            await copyFile(x, `${destPath}.template`, { overwrite: false, readonly: true });
+        }
     });
 };
 
