@@ -181,7 +181,7 @@ export const saveDependenciesToModulePackageJson = async (fileDependencies: File
             return a.key.localeCompare(b.key);
         }));
 
-        await writeFile(packageJsonPath, JSON.stringify(packageJson, null, 2));
+        await writeFile(packageJsonPath, JSON.stringify(packageJson, null, 2), { readonly: true, overwrite: true });
     }));
 };
 

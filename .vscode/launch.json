@@ -34,7 +34,7 @@
             "type": "node",
             "request": "launch",
             "args": [
-                "${workspaceFolder}/../../packages/blog-core/src/run-debug.ts"
+                "${workspaceFolder}/scripts/build/build.ts"
             ],
             "runtimeArgs": [
                 "--nolazy",

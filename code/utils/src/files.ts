@@ -28,15 +28,7 @@ export const getFileInfo = async (fullPath: string) => {
     }
 };
 export const ensureDirectoryExists = async (dirPath: string) => fs.mkdir(dirPath, { recursive: true });
-export const copyFile = async (sourceFilePath: string, destFilePath: string, options?: { overwrite?: boolean, readonly?: boolean, disableCreateDirectory?: boolean }) => {
-    if (!options?.disableCreateDirectory) { await ensureDirectoryExists(getDirectoryPath(destFilePath)); }
 
-    if (options?.overwrite && await getFileInfo(destFilePath)) { await fs.unlink(destFilePath); }
-    await fs.copyFile(sourceFilePath, destFilePath);
-    if (options?.readonly) {
-        await fs.chmod(destFilePath, 0o444);
-    }
-};
 
 export const getProjectRootDirectoryPath = async (dirStart: string, options: { search: string } = { search: `.git` }) => {
     const { search } = options;
@@ -62,8 +54,27 @@ export const directoryContains = async (dirPath: string, relativePath: string) =
 export const readFile = async (filePath: string) => fs.readFile(filePath, { encoding: `utf-8` });
 export const writeFile = async (filePath: string, data: string | Buffer, options?: { readonly?: boolean, overwrite?: boolean }) => {
     await fs.mkdir(getDirectoryPath(filePath), { recursive: true });
-    if (options?.overwrite) { fs.unlink(filePath); }
+    if (await getFileInfo(filePath)) {
+        if (!options?.overwrite) {
+            throw new Error(`File already exists, cannot copy without 'overwrite'`);
+        }
+        await fs.unlink(filePath);
+    }
     await fs.writeFile(filePath, data, { encoding: `utf-8`, mode: options?.readonly ? 0o444 : 0o666 });
+};
+export const copyFile = async (sourceFilePath: string, destFilePath: string, options?: { overwrite?: boolean, readonly?: boolean, disableCreateDirectory?: boolean }) => {
+    if (!options?.disableCreateDirectory) { await ensureDirectoryExists(getDirectoryPath(destFilePath)); }
+
+    if (await getFileInfo(destFilePath)) {
+        if (!options?.overwrite) {
+            throw new Error(`File already exists, cannot copy without 'overwrite'`);
+        }
+        await fs.unlink(destFilePath);
+    }
+    await fs.copyFile(sourceFilePath, destFilePath);
+    if (options?.readonly) {
+        await fs.chmod(destFilePath, 0o444);
+    }
 };
 
 export async function getAllDirectories(dir: string) {
