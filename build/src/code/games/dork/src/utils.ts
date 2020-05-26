@@ -1,4 +1,4 @@
-export { delay } from '../../../utils/src/delay';
-export { randomIndex, randomItem } from '../../../utils/src/random';
-export { getValuesAsItems } from '../../../utils/src/objects';
-export { moveItem } from '../../../utils/src/arrays';
+export { delay } from 'utils/delay';
+export { randomIndex, randomItem } from 'utils/random';
+export { getValuesAsItems } from 'utils/objects';
+export { moveItem } from 'utils/arrays';

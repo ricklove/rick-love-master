@@ -1,0 +1,12 @@
+{
+  "name": "blog",
+  "dependencies": {
+    "console-simulator": "*",
+    "react-lowlight": "*",
+    "utils": "*",
+    "utils-react": "*",
+    "react": "^16.12.0",
+    "react-helmet": "^6.0.0",
+    "react-markdown": "^4.3.1"
+  }
+}

@@ -1,4 +1,4 @@
-import { GatsbyLiteTemplate } from '../gatsby-lite/src/gatsby-lite-template';
+import { GatsbyLiteTemplate } from 'gatsby-lite/gatsby-lite-template';
 import { setupSite_Browser } from './src/setup-browser';
 
 setupSite_Browser();

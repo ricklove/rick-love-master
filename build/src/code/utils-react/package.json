@@ -1,0 +1,7 @@
+{
+  "name": "utils-react",
+  "dependencies": {
+    "@loadable": "*",
+    "react": "^16.12.0"
+  }
+}

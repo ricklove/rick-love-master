@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/camelcase */
 /* eslint-disable no-console */
 /* eslint-disable unicorn/consistent-function-scoping */
-import { processDirectoryFiles, getFileName, readFile, getPathNormalized } from '../../../utils/src/files';
+import { processDirectoryFiles, getFileName, readFile, getPathNormalized } from 'utils/files';
 import { PageData } from './create-page';
 
 export type SitePages<T> = {

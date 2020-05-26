@@ -1,7 +1,7 @@
 /* eslint-disable jsx-a11y/click-events-have-key-events */
 /* eslint-disable jsx-a11y/no-static-element-interactions */
 import React from 'react';
-import { useLoadable } from '../../../utils-react/src/loadable';
+import { useLoadable } from 'utils-react/loadable';
 
 export type LazyComponentExamplePage_Data = {};
 

@@ -1,0 +1,8 @@
+{
+  "name": "build",
+  "dependencies": {
+    "gatsby-lite": "*",
+    "source-map-support": "*",
+    "ts-node": "*"
+  }
+}
