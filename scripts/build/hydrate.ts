@@ -76,6 +76,11 @@ export const hydrate_yarnWorkspaces = async (root: string, rootCode: string) => 
     await processDirectoryFiles(rootCode, async (x) => {
         // const destFile = await cloneFile(x, root, getTargetBuildPath(root), { skipIfDestinationNewer: false });
         // if (!destFile) { return; }
+
+        if (!x.includes(`node_modules`)) { return; }
+        if (!x.includes(`.cache`)) { return; }
+        if (!x.includes(`public`)) { return; }
+
         const destFile = x;
 
         const r = await processImports_returnDependencies(destFile, root, tsConfigPaths);
@@ -112,8 +117,8 @@ export const dehydrate_yarnWorkspaces = async (root: string, rootCode: string) =
 const test = async () => {
     const root = getPathNormalized(await getProjectRootDirectoryPath(__dirname));
     // hydrate_yarnWorkspaces(root, getPathNormalized(root, `./code`));
-    // dehydrate_yarnWorkspaces(root, getPathNormalized(root, `./code`));
-    hydrate_templatesAll(getPathNormalized(root, `./code`));
+    dehydrate_yarnWorkspaces(root, getPathNormalized(root, `./code`));
+    // hydrate_templatesAll(getPathNormalized(root, `./code`));
     // dehydrate_templatesAll(getPathNormalized(root, `./code`));
 };
 test();

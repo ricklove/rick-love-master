@@ -1,6 +1,9 @@
 {
   "compilerOptions": {
     "paths": {
+      "blog-gatsby-lite/*": [
+        "code/blog-gatsby-lite/src/*"
+      ],
       "blog/*": [
         "code/blog/src/*"
       ],
