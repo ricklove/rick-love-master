@@ -11,7 +11,7 @@ export const loadTsConfigPaths = async (rootRaw?: string): Promise<TsConfigPath[
     const tsConfigText = await readFile(tsConfigPath);
     const tsConfigObj = JSON.parse(tsConfigText) as { compilerOptions: { paths: TsConfigPathsRaw } };
     const { paths: pathsRaw } = tsConfigObj.compilerOptions;
-    const paths = toKeyValueArray(pathsRaw).map(x => ({ name: x.key.replace(`/*`, ``), path: x.key.replace(`/*`, ``) }));
+    const paths = toKeyValueArray(pathsRaw).map(x => ({ name: x.key.replace(`/*`, ``), path: x.value[0].replace(`/*`, ``) }));
     return paths;
 };
 

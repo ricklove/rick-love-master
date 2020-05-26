@@ -1,6 +1,6 @@
 // Clone the files and expand the imports found in each
 
-import { getFileInfo, getPathNormalized, getProjectRootDirectoryPath, copyFile } from 'utils/files';
+import { getFileInfo, getPathNormalized, getProjectRootDirectoryPath, copyFile, readFile, writeFile } from 'utils/files';
 import { TsConfigPath, loadTsConfigPaths } from './generate-tsconfig-paths';
 
 const targetFromRootPath = `./build/src/`;
@@ -17,12 +17,20 @@ export const cloneFileAndExpandExport = async (sourceFilePath: string, rootRaw?:
     // Skip if the destination is newer
     if (destFileInfo && destFileInfo.mtime > (fileInfo?.mtime ?? 0)) { return; }
 
-    await copyFile(sourceFileFullPath, destFilePath);
+    // await copyFile(sourceFileFullPath, destFilePath);
+
+    // Load File
+    const content = await readFile(sourceFileFullPath);
 
     // Expand Imports
-    const p = tsconfigPaths ?? loadTsConfigPaths(root);
+    const toRoot = [...new Array(relativePath.split(`/`).length - 1)].map(x => `../`).join(``);
 
+    const p = tsconfigPaths ?? await loadTsConfigPaths(root);
+    let contentFinal = content;
+    p.forEach(x => { contentFinal = content.split(x.name).join(toRoot + x.path); });
 
+    // WriteFile
+    await writeFile(destFilePath, contentFinal);
 };
 
 cloneFileAndExpandExport(getPathNormalized(__dirname, `./build.ts`));

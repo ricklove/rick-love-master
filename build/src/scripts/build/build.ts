@@ -1,6 +1,6 @@
 /* eslint-disable no-console */
-import { watchFileChanges, getProjectRootDirectoryPath, getPathNormalized } from 'utils/files';
-import { somePromise } from 'utils/async';
+import { watchFileChanges, getProjectRootDirectoryPath, getPathNormalized } from '../../code/utils/src/files';
+import { somePromise } from '../../code/utils/src/async';
 import { generateTsconfigPaths, isTsconfigPathDirectory } from './generate-tsconfig-paths';
 
 const build = async (rootRaw?: string) => {
