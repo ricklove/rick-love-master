@@ -1,5 +1,5 @@
 /* eslint-disable no-console */
-import { delay } from 'utils/delay';
+import { delay } from '../../../code/utils/src/delay';
 
 export const run = async () => {
 

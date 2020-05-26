@@ -30,15 +30,39 @@ export const cloneFileAndExpandExport = async (sourceFilePath: string, rootRaw?:
 
     // Load File
     const content = await readFile(sourceFileFullPath);
-    const contentFinal = content;
+    let contentFinal = content;
 
-    // // Expand Imports
-    // const toRoot = [...new Array(relativePath.split(`/`).length - 1)].map(x => `../`).join(``);
+    // Expand Imports
+    const toRoot = [...new Array(relativePath.split(`/`).length - 1)].map(x => `../`).join(``);
 
-    // const p = tsconfigPaths ?? await loadTsConfigPaths(root);
-    // p.forEach(x => {
-    //     contentFinal = contentFinal.split(x.name).join(toRoot + x.path);
-    // });
+    const p = tsconfigPaths ?? await loadTsConfigPaths(root);
+    p.forEach(x => {
+        // // Include the start and end char to prevent partial matches
+        // contentFinal = contentFinal
+        //     .split(`"${x.name}/`).join(`"${toRoot}${x.path}/`)
+        //     .split(`'${x.name}/`).join(`'${toRoot}${x.path}/`)
+        //     .split(`\`${x.name}/`).join(`\`${toRoot}${x.path}/`)
+        //     .split(`"${x.name}"`).join(`"${toRoot}${x.path}"`)
+        //     .split(`'${x.name}'`).join(`'${toRoot}${x.path}'`)
+        //     .split(`\`${x.name}\``).join(`\`${toRoot}${x.path}\``)
+        //     ;
+
+        // Include start, end char and ensure is an imports statement
+        // Formats: 
+        // module.exports = require('gatsby-lite/.babelrc');
+        // import {sdadas} from 'gatsby-lite/.babelrc';
+        // await import( 'gatsby-lite/.babelrc');
+        // export {sdadas} from 'gatsby-lite/.babelrc';
+        // export * from 'gatsby-lite/.babelrc';
+        // module.exports = require('gatsby-lite');
+        // import {sdadas} from 'gatsby-lite';
+        // await import( 'gatsby-lite');
+        // export {sdadas} from 'gatsby-lite';
+        // export * from 'gatsby-lite';
+
+        const regex = new RegExp(`((?:(?:import|export)\\s+[^;]*\\s+from\\s*|(?:import|require)\\s*\\(\\s*)["'\`])(${x.name})(["'\`/])`, `g`);
+        contentFinal = contentFinal.replace(regex, `$1${toRoot}${x.path}$3`);
+    });
 
     // WriteFile (as readonly to prevent manual edits)
     await writeFile(destFilePath, contentFinal, { readonly: true });

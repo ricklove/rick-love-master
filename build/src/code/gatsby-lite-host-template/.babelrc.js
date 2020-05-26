@@ -1,1 +1,1 @@
-module.exports = require('gatsby-lite/.babelrc');
+module.exports = require('../../code/gatsby-lite/src/.babelrc');
