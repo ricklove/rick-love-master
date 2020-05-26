@@ -4,6 +4,7 @@
   "description": "Host the blog with gatsby-lite",
   "version": "1.0.0",
   "dependencies": {
+    "blog": "*",
     "gatsby-lite": "*",
     "@babel/core": "^7.9.6",
     "@loadable/babel-plugin": "^5.12.0",

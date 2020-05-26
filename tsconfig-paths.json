@@ -10,6 +10,9 @@
       "dork/*": [
         "code/games/dork/src/*"
       ],
+      "gatsby-lite-host-template/*": [
+        "code/gatsby-lite-host-template/src/*"
+      ],
       "gatsby-lite/*": [
         "code/gatsby-lite/src/*"
       ],
