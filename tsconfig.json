@@ -16,6 +16,7 @@
         "esModuleInterop": true,
         "experimentalDecorators": true,
         "emitDecoratorMetadata": true,
+        "downlevelIteration": true,
         "noEmit": true,
         "skipLibCheck": true,
         "baseUrl": "."

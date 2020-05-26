@@ -4,3 +4,8 @@ export const moveItem = <T>(obj: T, from: T[], to: T[]) => {
     from.splice(i, 1);
     to.push(obj);
 };
+
+export const distinct = <T>(items: T[]) => {
+    const set = new Set(items);
+    return [...set];
+};
