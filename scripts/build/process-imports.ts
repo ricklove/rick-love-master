@@ -1,9 +1,10 @@
 // Clone the files and expand the imports found in each
 
-import { getFileInfo, getPathNormalized, getProjectRootDirectoryPath, readFile, writeFile, getParentName } from 'utils/files';
+import { getFileInfo, getPathNormalized, getProjectRootDirectoryPath, readFile, writeFile, getParentName, readFileAsJson } from 'utils/files';
 import { distinct_key, mergeItems, distinct } from 'utils/arrays';
 import { toKeyValueObject, toKeyValueArray } from 'utils/objects';
 import { TsConfigPath, loadTsConfigPaths } from './generate-tsconfig-paths';
+import { PackageJson } from './types';
 
 export const processImports = async (sourceFilePath: string,
     onImportFound: (args: {
@@ -116,11 +117,6 @@ export const processImports_expandToRelativeImports = async (sourceFilePath: str
     }, root, tsconfigPaths);
 };
 
-export type PackageJson = {
-    name: string;
-    dependencies: { [name: string]: string };
-};
-
 export type ImportDependency = {
     importExpression: string;
     importPackageName: string;
@@ -168,7 +164,7 @@ export const saveDependenciesToModulePackageJson = async (fileDependencies: File
     await Promise.all(packageDependencies.map(async (pack) => {
         const { packageJsonPath, dependencies } = pack;
         const defaultPackageJson = { name: getParentName(packageJsonPath), dependencies: {} } as PackageJson;
-        const packageJson = !(await getFileInfo(packageJsonPath)) ? defaultPackageJson : JSON.parse(await readFile(packageJsonPath)) as PackageJson;
+        const packageJson = !(await getFileInfo(packageJsonPath)) ? defaultPackageJson : await readFileAsJson<PackageJson>(packageJsonPath);
 
         const depPackageNames = distinct(dependencies
             .filter(x => !x.importExpression.startsWith(`.`))

@@ -50,8 +50,13 @@ export const getProjectRootDirectoryPath = async (dirStart: string, options: { s
 
 export const directoryContains = async (dirPath: string, relativePath: string) => !!getFileInfo(getPathNormalized(dirPath, relativePath));
 
-
+export const deleteFile = async (filePath: string) => {
+    try { fs.unlink(filePath); }
+    // eslint-disable-next-line no-empty
+    catch{ }
+};
 export const readFile = async (filePath: string) => fs.readFile(filePath, { encoding: `utf-8` });
+export const readFileAsJson = async <T>(filePath: string) => JSON.parse(await readFile(filePath)) as T;
 export const writeFile = async (filePath: string, data: string | Buffer, options?: { readonly?: boolean, overwrite?: boolean }) => {
     await fs.mkdir(getDirectoryPath(filePath), { recursive: true });
     if (await getFileInfo(filePath)) {

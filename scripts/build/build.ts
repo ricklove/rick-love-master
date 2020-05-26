@@ -24,8 +24,9 @@ const build = async (rootRaw?: string) => {
 
         const fileDependencies = [] as FileDependencies[];
         await processDirectoryFiles(rootCode, async (x) => {
-            const destFile = await cloneFile(x, root, getTargetBuildPath(root), { skipIfDestinationNewer: false });
-            if (!destFile) { return; }
+            // const destFile = await cloneFile(x, root, getTargetBuildPath(root), { skipIfDestinationNewer: false });
+            // if (!destFile) { return; }
+            const destFile = x;
 
             const r = await processImports_returnDependencies(destFile, root, tsConfigPaths);
             if (r) {
@@ -36,36 +37,36 @@ const build = async (rootRaw?: string) => {
     };
     await startup();
 
-    console.log(`--- Watching ---`);
-    watchFileChanges({ pathRoot: rootCode, runOnStart: false }, async (filesChanged) => {
+    // console.log(`--- Watching ---`);
+    // watchFileChanges({ pathRoot: rootCode, runOnStart: false }, async (filesChanged) => {
 
-        // await delay(1000);
-        // console.log(`filesChanged`, filesChanged);
+    //     // await delay(1000);
+    //     // console.log(`filesChanged`, filesChanged);
 
-        // Update tsconfig
-        if (await somePromise(filesChanged, isTsconfigPathDirectory)) {
-            console.log(`Regenerate Tsconfig Paths`, filesChanged);
-            generateTsconfigPaths(root);
-        }
+    //     // Update tsconfig
+    //     if (await somePromise(filesChanged, isTsconfigPathDirectory)) {
+    //         console.log(`Regenerate Tsconfig Paths`, filesChanged);
+    //         generateTsconfigPaths(root);
+    //     }
 
-        // Clone and Expand Imports
-        console.log(`Clone & Process Imports`, filesChanged);
-        const tsConfigPaths = await loadTsConfigPaths(root);
+    //     // Clone and Expand Imports
+    //     console.log(`Clone & Process Imports`, filesChanged);
+    //     const tsConfigPaths = await loadTsConfigPaths(root);
 
-        const fileDependencies = [] as FileDependencies[];
-        await Promise.all(filesChanged.filter(x => x.startsWith(rootCode)).map(async x => {
-            const destFile = await cloneFile(x, root, getTargetBuildPath(root), { skipIfDestinationNewer: false });
-            if (!destFile) { return; }
+    //     const fileDependencies = [] as FileDependencies[];
+    //     await Promise.all(filesChanged.filter(x => x.startsWith(rootCode)).map(async x => {
+    //         const destFile = await cloneFile(x, root, getTargetBuildPath(root), { skipIfDestinationNewer: false });
+    //         if (!destFile) { return; }
 
-            const r = await processImports_returnDependencies(destFile, root, tsConfigPaths);
-            if (r) {
-                fileDependencies.push(r);
-            }
-        }));
-        await saveDependenciesToModulePackageJson(fileDependencies, root);
+    //         const r = await processImports_returnDependencies(destFile, root, tsConfigPaths);
+    //         if (r) {
+    //             fileDependencies.push(r);
+    //         }
+    //     }));
+    //     await saveDependenciesToModulePackageJson(fileDependencies, root);
 
-        console.log(`--- Watching ---`);
-    });
+    //     console.log(`--- Watching ---`);
+    // });
     // watchForFileChanges(x=>x.)
 };
 
