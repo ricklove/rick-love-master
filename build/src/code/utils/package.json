@@ -1,7 +1,0 @@
-{
-  "name": "utils",
-  "dependencies": {
-    "fs": "*",
-    "path": "*"
-  }
-}
