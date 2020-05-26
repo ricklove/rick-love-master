@@ -11,6 +11,11 @@ export const getDirectoryName = (fullPath: string) => {
     const grandDirFullPath = getDirectoryPath(dirFullPath);
     return dirFullPath.replace(grandDirFullPath, ``).replace(/\\/g, ``).replace(/\//g, ``);
 };
+export const getParentName = (fullPath: string) => {
+    const dirFullPath = getDirectoryPath(fullPath);
+    const grandDirFullPath = getDirectoryPath(dirFullPath);
+    return dirFullPath.replace(grandDirFullPath, ``).replace(/\\/g, ``).replace(/\//g, ``);
+};
 export const getFileName = path.basename;
 export const getPathNormalized = (...x: string[]) => path.resolve(path.join(...x)).replace(/\\/g, `/`);
 

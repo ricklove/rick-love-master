@@ -1,7 +1,8 @@
 // Clone the files and expand the imports found in each
 
-import { getFileInfo, getPathNormalized, getProjectRootDirectoryPath, readFile, writeFile, copyFile, getDirectoryName } from 'utils/files';
-import { distinct } from 'utils/arrays';
+import { getFileInfo, getPathNormalized, getProjectRootDirectoryPath, readFile, writeFile, copyFile, getDirectoryName, getParentName } from 'utils/files';
+import { distinct, distinct_key, mergeItems } from 'utils/arrays';
+import { getValuesAsItems } from 'dork/utils';
 import { TsConfigPath, loadTsConfigPaths } from './generate-tsconfig-paths';
 
 
@@ -10,7 +11,7 @@ export const cloneFileAndProcessExports = async (sourceFilePath: string,
         fileRelativePath: string;
         sourceFilePath: string;
         destinationFilePath: string | null;
-        path: TsConfigPath;
+        tsConfigPath: TsConfigPath | null;
         importName: string;
         replace: (value: string) => void;
         wholeText: string;
@@ -48,62 +49,54 @@ export const cloneFileAndProcessExports = async (sourceFilePath: string,
     const content = await readFile(sourceFileFullPath);
     let contentFinal = content;
 
-    // Expand Imports
+    // Process Imports
     const p = tsconfigPaths ?? await loadTsConfigPaths(root);
-    p.forEach(x => {
-        // // Include the start and end char to prevent partial matches
-        // contentFinal = contentFinal
-        //     .split(`"${x.name}/`).join(`"${toRoot}${x.path}/`)
-        //     .split(`'${x.name}/`).join(`'${toRoot}${x.path}/`)
-        //     .split(`\`${x.name}/`).join(`\`${toRoot}${x.path}/`)
-        //     .split(`"${x.name}"`).join(`"${toRoot}${x.path}"`)
-        //     .split(`'${x.name}'`).join(`'${toRoot}${x.path}'`)
-        //     .split(`\`${x.name}\``).join(`\`${toRoot}${x.path}\``)
-        //     ;
 
-        // Include start, end char and ensure is an imports statement
-        // Formats: 
-        // module.exports = require('gatsby-lite/.babelrc');
-        // import {sdadas} from 'gatsby-lite/.babelrc';
-        // await import( 'gatsby-lite/.babelrc');
-        // export {sdadas} from 'gatsby-lite/.babelrc';
-        // export * from 'gatsby-lite/.babelrc';
-        // module.exports = require('gatsby-lite');
-        // import {sdadas} from 'gatsby-lite';
-        // await import( 'gatsby-lite');
-        // export {sdadas} from 'gatsby-lite';
-        // export * from 'gatsby-lite';
+    // Include start, end char and ensure is an imports statement
+    // Formats: 
+    // module.exports = require('gatsby-lite/.babelrc');
+    // import {sdadas} from 'gatsby-lite/.babelrc';
+    // await import( 'gatsby-lite/.babelrc');
+    // export {sdadas} from 'gatsby-lite/.babelrc';
+    // export * from 'gatsby-lite/.babelrc';
+    // module.exports = require('gatsby-lite');
+    // import {sdadas} from 'gatsby-lite';
+    // await import( 'gatsby-lite');
+    // export {sdadas} from 'gatsby-lite';
+    // export * from 'gatsby-lite';
 
-        const regex = new RegExp(`((?:(?:import|export)\\s+[^;]*\\s+from\\s*|(?:import|require)\\s*\\(\\s*)["'\`])(${x.name})(["'\`/])`, `g`);
+    // Note: This skips relative imports
+    const regex = new RegExp(`((?:(?:import|export)\\s+[^;]*\\s+from\\s*|(?:import|require)\\s*\\(\\s*)["'\`])([^/\\.]+)(["'\`/])`, `g`);
 
-        let m = null as null | RegExpExecArray;
-        const replace = (value: string) => {
-            if (!m) { return; }
+    let m = null as null | RegExpExecArray;
+    const replace = (value: string) => {
+        if (!m) { return; }
 
-            const pieces = [
-                contentFinal.substr(0, m.index),
-                m[1],
-                value,
-                m[3],
-                contentFinal.substr(m.index + m[0].length, contentFinal.length - (m.index + m.length)),
-            ];
+        const pieces = [
+            contentFinal.substr(0, m.index),
+            m[1],
+            value,
+            m[3],
+            contentFinal.substr(m.index + m[0].length, contentFinal.length - (m.index + m.length)),
+        ];
 
-            contentFinal = pieces.join(``);
-        };
+        contentFinal = pieces.join(``);
+    };
 
-        while ((m = regex.exec(contentFinal))) {
-            onExportFound({
-                fileRelativePath: relativePath,
-                sourceFilePath,
-                destinationFilePath: destFilePath,
-                path: x,
-                importName: m[2] ?? ``,
-                replace,
-                wholeText: contentFinal,
-                match: m,
-            });
-        };
-    });
+    const getTsConfigPath = (name: string) => p.find(x => x.name === name);
+
+    while ((m = regex.exec(contentFinal))) {
+        onExportFound({
+            fileRelativePath: relativePath,
+            sourceFilePath,
+            destinationFilePath: destFilePath,
+            tsConfigPath: getTsConfigPath(m[2] ?? ``) ?? null,
+            importName: m[2] ?? ``,
+            replace,
+            wholeText: contentFinal,
+            match: m,
+        });
+    };
 
     // WriteFile (as readonly to prevent manual edits)
     if (destFilePath) {
@@ -125,9 +118,11 @@ export const getTargetBuildPath = async (rootRaw?: string) => {
 export const cloneFileAndExpandImports = async (sourceFilePath: string, rootRaw?: string, tsconfigPaths?: TsConfigPath[]) => {
 
     await cloneFileAndProcessExports(sourceFilePath, (args) => {
-        const { fileRelativePath, path, replace } = args;
+        const { fileRelativePath, tsConfigPath, replace } = args;
+        if (!tsConfigPath) { return; }
+
         const rPathParts = fileRelativePath.split(`/`);
-        const tPathParts = path.path.split(`/`);
+        const tPathParts = tsConfigPath.path.split(`/`);
 
         while (rPathParts[0] === tPathParts[0]) {
             rPathParts.shift();
@@ -141,45 +136,82 @@ export const cloneFileAndExpandImports = async (sourceFilePath: string, rootRaw?
     }, rootRaw, tsconfigPaths, { cloneToRootPath: await getTargetBuildPath(rootRaw) });
 };
 
-export const cloneFileAndReturnImports = async (sourceFilePath: string, rootRaw?: string, tsconfigPaths?: TsConfigPath[]): Promise<TsConfigPath[]> => {
+// export const cloneFileAndReturnImports = async (sourceFilePath: string, rootRaw?: string, tsconfigPaths?: TsConfigPath[]): Promise<TsConfigPath[]> => {
 
-    const imports = [] as TsConfigPath[];
-    await cloneFileAndProcessExports(sourceFilePath, (args) => {
-        const { path } = args;
-        imports.push(path);
-    }, rootRaw, tsconfigPaths);
+//     const imports = [] as TsConfigPath[];
+//     await cloneFileAndProcessExports(sourceFilePath, (args) => {
+//         const { tsConfigPath } = args;
+//         imports.push(tsConfigPath);
+//     }, rootRaw, tsconfigPaths);
 
-    return distinct(imports);
-};
+//     return distinct(imports);
+// };
 
 export type PackageJson = {
     name: string;
     dependencies: { [name: string]: string };
 };
 
-export const cloneFileAndRecordDependencies = async (sourceFilePath: string, rootRaw?: string, tsconfigPaths?: TsConfigPath[]) => {
+export type ImportDependency = {
+    importName: string;
+    tsConfigPath: TsConfigPath | null;
+    sourceFilePath: string;
+    destinationFilePath: string;
+};
 
-    const importsAll = [] as { path: TsConfigPath, destinationFilePath: string }[];
+export type FileDependencies = {
+    sourceFilePath: string;
+    destinationFilePath: string;
+    dependencies: ImportDependency[];
+};
+
+export const cloneFileAndReturnDependencies = async (sourceFilePath: string, rootRaw?: string, tsconfigPaths?: TsConfigPath[]): Promise<null | FileDependencies> => {
+
+    const importsAll = [] as ImportDependency[];
     await cloneFileAndProcessExports(sourceFilePath, (args) => {
-        const { path, destinationFilePath } = args;
-        importsAll.push({ path, destinationFilePath: destinationFilePath ?? `` });
+        const { importName, tsConfigPath, destinationFilePath } = args;
+        importsAll.push({ importName, tsConfigPath, sourceFilePath, destinationFilePath: destinationFilePath ?? `` });
     }, rootRaw, tsconfigPaths, { cloneToRootPath: await getTargetBuildPath(rootRaw) });
 
-    if (importsAll.length <= 0) { return; }
+    if (importsAll.length <= 0) { return null; }
 
-    const imports = distinct(importsAll);
-    const destFilePath = imports[0].destinationFilePath;
-    const moduleRoot = await getProjectRootDirectoryPath(destFilePath, { search: `src` });
-    const packagePath = getPathNormalized(moduleRoot, `./package.json`);
+    const imports = distinct_key(importsAll, x => x.importName);
+    const { destinationFilePath } = imports[0];
 
-    // depdencies: { "@loadable/component": "^5.12.0", }
-    const defaultPackageJson = { name: getDirectoryName(moduleRoot), dependencies: {} } as PackageJson;
-    const packageJson = !(await getFileInfo(packagePath)) ? defaultPackageJson : JSON.parse(await readFile(packagePath)) as PackageJson;
-    // Record as * for yarn workspaces to manage
-    imports.forEach(x => { packageJson.dependencies[x.path.name] = `*`; });
 
-    await writeFile(packagePath, JSON.stringify(packageJson, null, 2));
+    return { sourceFilePath, destinationFilePath, dependencies: imports };
+};
+export const saveDependenciesToModulePackageJson = async (fileDependencies: FileDependencies[]) => {
+
+    const packageDependenciesAll = await Promise.all(fileDependencies.map(async (x) => {
+        const moduleRoot = await getProjectRootDirectoryPath(x.destinationFilePath, { search: `src` });
+        const packagePath = getPathNormalized(moduleRoot, `./package.json`);
+        return {
+            packageJsonPath: packagePath,
+            dependencies: x.dependencies,
+        };
+    }));
+
+    const packageDependencies = mergeItems(packageDependenciesAll, x => x.packageJsonPath, g => ({ packageJsonPath: g[0].packageJsonPath, dependencies: g.flatMap(x => x.dependencies) }));
+
+    // dependencies: { "@loadable/component": "^5.12.0", }
+    await Promise.all(packageDependencies.map(async (pack) => {
+        const { packageJsonPath, dependencies } = pack;
+        const defaultPackageJson = { name: getParentName(packageJsonPath), dependencies: {} } as PackageJson;
+        const packageJson = !(await getFileInfo(packageJsonPath)) ? defaultPackageJson : JSON.parse(await readFile(packageJsonPath)) as PackageJson;
+
+        // Record as * for yarn workspaces to manage (if not already there)
+        dependencies.forEach(x => {
+            if (packageJson.dependencies[x.importName]) { return; }
+
+            // TODO: For external dependencies, get the version from the root package.json
+            packageJson.dependencies[x.importName] = `*`;
+        });
+
+        await writeFile(packageJsonPath, JSON.stringify(packageJson, null, 2));
+    }));
 };
 
 // cloneFileAndExpandExports(getPathNormalized(__dirname, `../../code/games/console-simulator/src/game-dork.ts`));
-cloneFileAndRecordDependencies(getPathNormalized(__dirname, `../../code/games/console-simulator/src/game-dork.ts`));
+// cloneFileAndRecordDependencies(getPathNormalized(__dirname, `../../code/games/console-simulator/src/game-dork.ts`));
+// cloneFileAndRecordDependencies(getPathNormalized(__dirname, `../../code/games/console-simulator/src/console-simulator.tsx`));

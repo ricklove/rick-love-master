@@ -2,7 +2,7 @@
 import { watchFileChanges, getProjectRootDirectoryPath, getPathNormalized, processDirectoryFiles } from 'utils/files';
 import { somePromise } from 'utils/async';
 import { generateTsconfigPaths, isTsconfigPathDirectory, loadTsConfigPaths } from './generate-tsconfig-paths';
-import { cloneFileAndExpandImports } from './clone-and-process-imports';
+import { cloneFileAndReturnDependencies, FileDependencies, saveDependenciesToModulePackageJson } from './clone-and-process-imports';
 
 const build = async (rootRaw?: string) => {
 
@@ -13,9 +13,17 @@ const build = async (rootRaw?: string) => {
         console.log(`Statup: Regenerate Tsconfig Paths`);
         await generateTsconfigPaths(root);
 
-        console.log(`Statup: Clone & Expand Imports`);
+        console.log(`Statup: Clone & Process Imports`);
         const tsConfigPaths = await loadTsConfigPaths(root);
-        await processDirectoryFiles(rootCode, async (x) => cloneFileAndExpandImports(x, root, tsConfigPaths));
+
+        const fileDependencies = [] as FileDependencies[];
+        await processDirectoryFiles(rootCode, async (x) => {
+            const r = await cloneFileAndReturnDependencies(x, root, tsConfigPaths);
+            if (r) {
+                fileDependencies.push(r);
+            }
+        });
+        await saveDependenciesToModulePackageJson(fileDependencies);
     };
     await startup();
 
@@ -32,9 +40,17 @@ const build = async (rootRaw?: string) => {
         }
 
         // Clone and Expand Imports
-        console.log(`Clone & Expand Imports`, filesChanged);
+        console.log(`Clone & Process Imports`, filesChanged);
         const tsConfigPaths = await loadTsConfigPaths(root);
-        await Promise.all(filesChanged.filter(x => x.startsWith(rootCode)).map(x => cloneFileAndExpandImports(x, root, tsConfigPaths)));
+
+        const fileDependencies = [] as FileDependencies[];
+        await Promise.all(filesChanged.filter(x => x.startsWith(rootCode)).map(async x => {
+            const r = await cloneFileAndReturnDependencies(x, root, tsConfigPaths);
+            if (r) {
+                fileDependencies.push(r);
+            }
+        }));
+        await saveDependenciesToModulePackageJson(fileDependencies);
 
         console.log(`--- Watching ---`);
     });
