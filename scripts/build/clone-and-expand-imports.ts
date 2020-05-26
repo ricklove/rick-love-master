@@ -62,6 +62,9 @@ export const cloneFileAndExpandExport = async (sourceFilePath: string, rootRaw?:
 
         const regex = new RegExp(`((?:(?:import|export)\\s+[^;]*\\s+from\\s*|(?:import|require)\\s*\\(\\s*)["'\`])(${x.name})(["'\`/])`, `g`);
         contentFinal = contentFinal.replace(regex, `$1${toRoot}${x.path}$3`);
+
+        // Simplify common path
+        contentFinal = contentFinal.replace(/\/..\/code/g, ``);
     });
 
     // WriteFile (as readonly to prevent manual edits)
