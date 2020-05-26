@@ -30,13 +30,15 @@ export const cloneFileAndExpandExport = async (sourceFilePath: string, rootRaw?:
 
     // Load File
     const content = await readFile(sourceFileFullPath);
+    const contentFinal = content;
 
-    // Expand Imports
-    const toRoot = [...new Array(relativePath.split(`/`).length - 1)].map(x => `../`).join(``);
+    // // Expand Imports
+    // const toRoot = [...new Array(relativePath.split(`/`).length - 1)].map(x => `../`).join(``);
 
-    const p = tsconfigPaths ?? await loadTsConfigPaths(root);
-    let contentFinal = content;
-    p.forEach(x => { contentFinal = content.split(x.name).join(toRoot + x.path); });
+    // const p = tsconfigPaths ?? await loadTsConfigPaths(root);
+    // p.forEach(x => {
+    //     contentFinal = contentFinal.split(x.name).join(toRoot + x.path);
+    // });
 
     // WriteFile (as readonly to prevent manual edits)
     await writeFile(destFilePath, contentFinal, { readonly: true });
