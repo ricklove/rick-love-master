@@ -1,7 +1,7 @@
 // Clone the files and expand the imports found in each
 
 import { getFileInfo, getPathNormalized, getProjectRootDirectoryPath, readFile, writeFile, getParentName } from 'utils/files';
-import { distinct_key, mergeItems } from 'utils/arrays';
+import { distinct_key, mergeItems, distinct } from 'utils/arrays';
 import { toKeyValueObject, toKeyValueArray } from 'utils/objects';
 import { TsConfigPath, loadTsConfigPaths } from './generate-tsconfig-paths';
 
@@ -10,7 +10,8 @@ export const processImports = async (sourceFilePath: string,
         fileRelativePath: string;
         fileFullPath: string;
         tsConfigPath: TsConfigPath | null;
-        importName: string;
+        importExpression: string;
+        importPackageName: string;
         replace: (value: string) => void;
         wholeText: string;
         match: RegExpExecArray;
@@ -54,7 +55,7 @@ export const processImports = async (sourceFilePath: string,
     // export * from 'gatsby-lite';
 
     // Note: This skips relative imports
-    const regex = new RegExp(`((?:(?:import|export)\\s+[^;]*\\s+from\\s*|(?:import|require)\\s*\\(\\s*)["'\`])([^/\\."'\`/]+)(["'\`/])`, `g`);
+    const regex = new RegExp(`((?:(?:import|export)\\s+[^;]*\\s+from\\s*|(?:import|require)\\s*\\(\\s*)["'\`])([^"'\`]+)(["'\`])`, `g`);
 
     let m = null as null | RegExpExecArray;
     const replace = (value: string) => {
@@ -74,11 +75,14 @@ export const processImports = async (sourceFilePath: string,
     const getTsConfigPath = (name: string) => p.find(x => x.name === name);
 
     while ((m = regex.exec(contentFinal))) {
+        const importExpression = m[2] ?? ``;
+        const importPackageName = importExpression.startsWith(`@`) ? importExpression.split(`/`).slice(0, 2).join(`/`) : importExpression.split(`/`)[0];
         onImportFound({
             fileRelativePath: relativePath,
             fileFullPath: sourceFilePath,
             tsConfigPath: getTsConfigPath(m[2] ?? ``) ?? null,
-            importName: m[2] ?? ``,
+            importExpression,
+            importPackageName,
             replace,
             wholeText: contentFinal,
             match: m,
@@ -118,7 +122,8 @@ export type PackageJson = {
 };
 
 export type ImportDependency = {
-    importName: string;
+    importExpression: string;
+    importPackageName: string;
     tsConfigPath: TsConfigPath | null;
     fileFullPath: string;
 };
@@ -132,13 +137,13 @@ export const processImports_returnDependencies = async (sourceFilePath: string, 
 
     const importsAll = [] as ImportDependency[];
     await processImports(sourceFilePath, (args) => {
-        const { importName, tsConfigPath, fileFullPath } = args;
-        importsAll.push({ importName, tsConfigPath, fileFullPath });
+        const { importExpression, importPackageName, tsConfigPath, fileFullPath } = args;
+        importsAll.push({ importExpression, importPackageName, tsConfigPath, fileFullPath });
     }, root, tsconfigPaths);
 
     if (importsAll.length <= 0) { return null; }
 
-    const imports = distinct_key(importsAll, x => x.importName);
+    const imports = distinct_key(importsAll, x => x.importExpression);
     const { fileFullPath } = imports[0];
 
     return { fileFullPath, dependencies: imports };
@@ -157,7 +162,7 @@ export const saveDependenciesToModulePackageJson = async (fileDependencies: File
         };
     }));
 
-    const packageDependencies = mergeItems(packageDependenciesAll, x => x.packageJsonPath, g => ({ packageJsonPath: g[0].packageJsonPath, dependencies: distinct_key(g.flatMap(x => x.dependencies), x => x.importName) }));
+    const packageDependencies = mergeItems(packageDependenciesAll, x => x.packageJsonPath, g => ({ packageJsonPath: g[0].packageJsonPath, dependencies: distinct_key(g.flatMap(x => x.dependencies), x => x.importExpression) }));
 
     // dependencies: { "@loadable/component": "^5.12.0", }
     await Promise.all(packageDependencies.map(async (pack) => {
@@ -165,12 +170,18 @@ export const saveDependenciesToModulePackageJson = async (fileDependencies: File
         const defaultPackageJson = { name: getParentName(packageJsonPath), dependencies: {} } as PackageJson;
         const packageJson = !(await getFileInfo(packageJsonPath)) ? defaultPackageJson : JSON.parse(await readFile(packageJsonPath)) as PackageJson;
 
+        const depPackageNames = distinct(dependencies
+            .filter(x => !x.importExpression.startsWith(`.`))
+            .map(x => ({
+                importPackageName: x.importPackageName,
+            })));
+
         // Record as * for yarn workspaces to manage (if not already there)
-        dependencies.forEach(x => {
-            if ((packageJson.dependencies[x.importName] ?? `*`) !== `*`) { return; }
+        depPackageNames.forEach(x => {
+            if ((packageJson.dependencies[x.importPackageName] ?? `*`) !== `*`) { return; }
 
             // TODO: For external dependencies, get the version from the root package.json
-            packageJson.dependencies[x.importName] = rootPackageJson.dependencies[x.importName] ?? `*`;
+            packageJson.dependencies[x.importPackageName] = rootPackageJson.dependencies[x.importPackageName] ?? `*`;
         });
 
         // Sort Order
