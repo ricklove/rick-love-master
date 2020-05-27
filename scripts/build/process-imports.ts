@@ -232,7 +232,7 @@ export const saveDependenciesToModulePackageJson = async (fileDependencies: File
     if (options?.updateRootWorkspaces) {
         const rootPackagePath = getPathNormalized(root, `./package.json`);
         const rootPackageJson = JSON.parse(await readFile(rootPackagePath)) as PackageJson;
-        rootPackageJson.workspaces = packageJsonPaths.map(x => x.replace(`/package.json`, ``));
+        rootPackageJson.workspaces = packageJsonPaths.map(x => x.replace(`/package.json`, ``).replace(`${root}/`, ``));
         await writeFile(rootPackagePath, JSON.stringify(rootPackageJson, null, 2), { overwrite: true, readonly: false });
     }
 };
