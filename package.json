@@ -54,12 +54,11 @@
   },
   "workspaces": [
     "code/gatsby-lite-host-template/src",
+    "code/gatsby-lite/src",
     "code/utils/src",
     "code/utils-react/src",
     "code/blog/src",
     "code/games/console-simulator/src",
-    "code/games/dork/src",
-    "code/blog-gatsby-lite",
-    "code/gatsby-lite/src"
+    "code/games/dork/src"
   ]
 }

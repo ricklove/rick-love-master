@@ -1,7 +1,5 @@
 {
   "dependencies": {
-    "blog": "*",
-    "gatsby-lite": "*",
     "@babel/core": "^7.9.6",
     "@loadable/babel-plugin": "^5.12.0",
     "@loadable/component": "^5.12.0",
@@ -14,7 +12,6 @@
     "react-dom": "^16.12.0",
     "source-map-support": "^0.5.19",
     "ts-node": "^8.10.1",
-    "tsconfig-paths": "^3.9.0",
     "typescript": "^3.9.3"
   },
   "scripts": {
