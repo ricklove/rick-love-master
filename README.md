@@ -90,30 +90,40 @@ This is where I put all the cool stuff.
 - [x] Single Default Config
     - [x] Single .eslintrc.js
     - [x] Single tsconfig.json
-    - [x] Single pacakges.json
-- [ ] Special Config
-    - [ ] Override config by placing own version in folder
-- [ ] Separation of code from boilerplate
+    - [x] Single package.json
+        - Hydrate/Dehydrate generated package.json for runtime (Not needed for ts-node runs using tsconfig-paths)
+- [x] Special Config
+    - [x] Override config by placing own version in folder
+        - Hydrate/Dehydrate can work with custom config
+- [x] Separation of code from boilerplate
     - [x] Ability to define all code without any boilerplate files
-    - [ ] Boilerplate projects can be isolated
-    - [ ] Customizations of boilerplate can be separated from default boilerplate
+    - [x] Boilerplate projects can be isolated
+    - [x] Customizations of boilerplate can be separated from default boilerplate
+        - Using template.json with a build script, templates/projects can be separated
 - [ ] Optional Dependency Versioning
     - [ ] Dependencies can optionally be modified while allowing dependants to continue to use an old version
     - [ ] Dependants can be reconciled to an updated version of the dependency at their own convenience
-- [ ] Multi-Repo
-    - [ ] Code can be synced with multiple repos
-    - [ ] Optional Blind code ownership, code can be copied into target repo and has no dependencies on master repo
+- [x] Multi-Repo
+    - [x] Code can be synced with multiple repos
+    - [x] Optional Blind code ownership, code can be copied into target repo and has no dependencies on master repo
+        - Code can be copied and tranformed to any target path
+        - Code can also be copied from a target path and transformed in project
 - [ ] Multi-Config
     - [ ] Code can be synced into a target that uses a different tsconfig
     - [ ] Code can be synced into a target that uses a different eslint
     - [ ] Code can be automatically formatted with target config tools (i.e. auto run eslint --fix)
-- [ ] Free Project structure
-    - [ ] Possible to have packages in catagory folders (i.e. packages/ games/ projects/)
+        - Note: This would require being able to run a command at the target path
+- [x] Free Project structure
+    - [x] Possible to have packages in catagory folders or nested (i.e. packages/ games/ projects/)
+        - Convention currently identifies packages as any folder that contains a `src/` folder
+        - Another possible convention could be: the parentmost folder (under root) that contains a source code file (*.ts/*.tsx)
 - [ ] Languange/Project/Environment/Target Agnostic
     - [ ] Tools can work with any code or framework
         - Typescript, C#, Python, etc.
 - [ ] Config files in isolated folder (i.e. .config/ folder)
     - [ ] Config files do not have to live in the root of the project, but can live out of the way in their own folder
+        - It is possible to extract config files from root, but that would potentially break the scripts
+        - With a globally installed cli tool, it would be possible to hydrate/dehydrate config files out from the root
 
 
 ## Ideal Features
@@ -126,7 +136,7 @@ This is where I put all the cool stuff.
 - [ ] Single Default Config
     - [ ] Single .eslintrc.js
     - [ ] Single tsconfig.json
-    - [ ] Single pacakges.json
+    - [ ] Single package.json
 - [ ] Special Config
     - [ ] Override config by placing own version in folder
 - [ ] Separation of code from boilerplate
