@@ -51,5 +51,15 @@
   "scripts": {
     "build": "cd scripts/build && ts-node -r tsconfig-paths/register build.ts",
     "build-blog": "cd packages/blog-gatsby-site && gatsby build"
-  }
+  },
+  "workspaces": [
+    "C:/Projects/rick-love-master/code/gatsby-lite-host-template/src",
+    "C:/Projects/rick-love-master/code/utils/src",
+    "C:/Projects/rick-love-master/code/utils-react/src",
+    "C:/Projects/rick-love-master/code/blog/src",
+    "C:/Projects/rick-love-master/code/games/console-simulator/src",
+    "C:/Projects/rick-love-master/code/games/dork/src",
+    "C:/Projects/rick-love-master/code/blog-gatsby-lite",
+    "C:/Projects/rick-love-master/code/gatsby-lite"
+  ]
 }

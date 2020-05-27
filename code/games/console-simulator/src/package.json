@@ -1,0 +1,8 @@
+{
+  "name": "src",
+  "dependencies": {
+    "dork": "*",
+    "utils": "*",
+    "react": "^16.12.0"
+  }
+}

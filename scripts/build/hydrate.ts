@@ -120,8 +120,8 @@ export const dehydrate_yarnWorkspaces = async (root: string, rootCode: string) =
 
 const test = async () => {
     const root = getPathNormalized(await getProjectRootDirectoryPath(__dirname));
-    // hydrate_yarnWorkspaces(root, getPathNormalized(root, `./code`));
-    dehydrate_yarnWorkspaces(root, getPathNormalized(root, `./code`));
+    hydrate_yarnWorkspaces(root, getPathNormalized(root, `./code`));
+    // dehydrate_yarnWorkspaces(root, getPathNormalized(root, `./code`));
     // hydrate_templatesAll(getPathNormalized(root, `./code`));
     // dehydrate_templatesAll(getPathNormalized(root, `./code`));
 };

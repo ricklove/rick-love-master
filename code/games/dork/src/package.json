@@ -1,0 +1,7 @@
+{
+  "name": "src",
+  "dependencies": {
+    "utils": "*",
+    "react": "^16.12.0"
+  }
+}
