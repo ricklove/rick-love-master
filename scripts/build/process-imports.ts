@@ -200,6 +200,10 @@ export const saveDependenciesToModulePackageJson = async (fileDependencies: File
         // Record as * for yarn workspaces to manage (if not already there)
         depPackageNames.forEach(x => {
             if ((packageJson.dependencies[x.importPackageName] ?? packageJson.devDependencies?.[x.importPackageName] ?? packageJson.peerDependencies?.[x.importPackageName] ?? `*`) !== `*`) { return; }
+            // Ignore node built-in
+            if (x.importPackageName === `path`
+                || x.importPackageName === `fs`
+            ) { return; }
 
             // For external dependencies, get the version from the root package.json
             packageJson.dependencies[x.importPackageName] =
