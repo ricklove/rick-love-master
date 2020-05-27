@@ -178,7 +178,7 @@ export const processDependenciesInModulePackageJson = async (
 
         const loadedPackageJsonText = loadedPackageJson && JSON.stringify(loadedPackageJson, null, 2);
 
-        const defaultPackageJson = { name: packageName, dependencies: {} } as PackageJson;
+        const defaultPackageJson: PackageJson = { name: packageName, version: `1.0.0`, dependencies: {} };
         const packageJsonInit = loadedPackageJson || defaultPackageJson;
 
         const packageJson = await processPackageJson(packageJsonInit, dependencies, rootPackageJson, packageJsonPath);

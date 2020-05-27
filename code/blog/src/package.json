@@ -1,5 +1,6 @@
 {
   "name": "blog",
+  "version": "1.0.0",
   "dependencies": {
     "console-simulator": "*",
     "utils": "*",

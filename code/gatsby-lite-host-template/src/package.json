@@ -1,5 +1,6 @@
 {
   "name": "gatsby-lite-host-template",
+  "version": "1.0.0",
   "dependencies": {
     "gatsby-lite": "*",
     "react": "^16.12.0",

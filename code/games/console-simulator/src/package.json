@@ -1,5 +1,6 @@
 {
   "name": "console-simulator",
+  "version": "1.0.0",
   "dependencies": {
     "dork": "*",
     "utils": "*",

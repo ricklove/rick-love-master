@@ -100,7 +100,7 @@ export const dehydrate_yarnWorkspaces = async (root: string, rootCode: string) =
         if (getFileName(x) !== `package.json`) { return; }
 
         const json = await readFileAsJson<PackageJson>(x);
-        const hasOtherStuff = JSON.stringify(json) !== JSON.stringify({ name: json.name, dependencies: json.dependencies });
+        const hasOtherStuff = JSON.stringify(json) !== JSON.stringify({ name: json.name, version: json.version, dependencies: json.dependencies });
 
         if (!hasOtherStuff) {
             deleteFile(x);
