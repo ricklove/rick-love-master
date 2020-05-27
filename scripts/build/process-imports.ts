@@ -169,6 +169,7 @@ export const processDependenciesInModulePackageJson = async (
     await Promise.all(packageDependencies.map(async (pack) => {
         const { packageJsonPath: packageJsonPathRaw, dependencies } = pack;
         let packageJsonPath = packageJsonPathRaw;
+        const packageName = getParentName(packageJsonPath);
         let loadedPackageJson = !(await getFileInfo(packageJsonPath)) ? null : await readFileAsJson<PackageJson>(packageJsonPath);
         if (!loadedPackageJson && options?.placeNewPackageJsonInSrcFolder) {
             packageJsonPath = packageJsonPath.replace(`/package.json`, `/src/package.json`);
@@ -177,7 +178,7 @@ export const processDependenciesInModulePackageJson = async (
 
         const loadedPackageJsonText = loadedPackageJson && JSON.stringify(loadedPackageJson, null, 2);
 
-        const defaultPackageJson = { name: getParentName(packageJsonPath), dependencies: {} } as PackageJson;
+        const defaultPackageJson = { name: packageName, dependencies: {} } as PackageJson;
         const packageJsonInit = loadedPackageJson || defaultPackageJson;
 
         const packageJson = await processPackageJson(packageJsonInit, dependencies, rootPackageJson, packageJsonPath);

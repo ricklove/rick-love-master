@@ -1,5 +1,5 @@
 {
-  "name": "src",
+  "name": "console-simulator",
   "dependencies": {
     "dork": "*",
     "utils": "*",
