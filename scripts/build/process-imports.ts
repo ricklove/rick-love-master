@@ -147,7 +147,7 @@ export const processImports_returnDependencies = async (sourceFilePath: string, 
 export const processDependenciesInModulePackageJson = async (
     fileDependencies: FileDependencies[],
     root: string,
-    processPackageJson: (packageJson: PackageJson, dependencies: ImportDependency[], rootPackageJson: PackageJson) => Promise<PackageJson>,
+    processPackageJson: (packageJson: PackageJson, dependencies: ImportDependency[], rootPackageJson: PackageJson, packageJsonPath: string) => Promise<PackageJson>,
     options?: { placeNewPackageJsonInSrcFolder?: boolean },
 ) => {
 
@@ -180,7 +180,7 @@ export const processDependenciesInModulePackageJson = async (
         const defaultPackageJson = { name: getParentName(packageJsonPath), dependencies: {} } as PackageJson;
         const packageJsonInit = loadedPackageJson || defaultPackageJson;
 
-        const packageJson = await processPackageJson(packageJsonInit, dependencies, rootPackageJson);
+        const packageJson = await processPackageJson(packageJsonInit, dependencies, rootPackageJson, packageJsonPath);
 
         // Sort Order
         packageJson.dependencies = toKeyValueObject(toKeyValueArray(packageJson.dependencies).sort((a, b) => {
@@ -196,8 +196,11 @@ export const processDependenciesInModulePackageJson = async (
     }));
 };
 
-export const saveDependenciesToModulePackageJson = async (fileDependencies: FileDependencies[], root: string, options?: { placeNewPackageJsonInSrcFolder?: boolean }) => {
-    processDependenciesInModulePackageJson(fileDependencies, root, async (packageJsonRaw, dependencies, rootPackageJson) => {
+export const saveDependenciesToModulePackageJson = async (fileDependencies: FileDependencies[], root: string, options?: { placeNewPackageJsonInSrcFolder?: boolean, updateRootWorkspaces?: boolean }) => {
+
+    const packageJsonPaths = [] as string[];
+    await processDependenciesInModulePackageJson(fileDependencies, root, async (packageJsonRaw, dependencies, rootPackageJson, packageJsonPath) => {
+        packageJsonPaths.push(packageJsonPath);
         // Json Clone
         const packageJson = JSON.parse(JSON.stringify(packageJsonRaw)) as PackageJson;
 
@@ -225,6 +228,13 @@ export const saveDependenciesToModulePackageJson = async (fileDependencies: File
 
         return packageJson;
     }, options);
+
+    if (options?.updateRootWorkspaces) {
+        const rootPackagePath = getPathNormalized(root, `./package.json`);
+        const rootPackageJson = JSON.parse(await readFile(rootPackagePath)) as PackageJson;
+        rootPackageJson.workspaces = packageJsonPaths.map(x => x.replace(`/package.json`, ``));
+        await writeFile(rootPackagePath, JSON.stringify(rootPackageJson, null, 2), { overwrite: true, readonly: false });
+    }
 };
 
 export const removeLocalDependenciesFromModulePackageJson = async (packageJsonPath: string, root: string) => {
@@ -242,6 +252,14 @@ export const removeLocalDependenciesFromModulePackageJson = async (packageJsonPa
 
     localDeps.forEach(x => { delete packageJson.dependencies[x.key]; });
     await writeFile(packageJsonPath, JSON.stringify(packageJson, null, 2), { readonly: false, overwrite: true });
+
+};
+
+export const removeRootPackageJsonWorkspaces = async (root: string) => {
+    const rootPackagePath = getPathNormalized(root, `./package.json`);
+    const rootPackageJson = JSON.parse(await readFile(rootPackagePath)) as PackageJson;
+    delete rootPackageJson.workspaces;
+    await writeFile(rootPackagePath, JSON.stringify(rootPackageJson, null, 2), { overwrite: true, readonly: false });
 };
 
 // cloneFileAndExpandExports(getPathNormalized(__dirname, `../../code/games/console-simulator/src/game-dork.ts`));
