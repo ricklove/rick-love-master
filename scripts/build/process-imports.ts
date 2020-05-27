@@ -144,8 +144,12 @@ export const processImports_returnDependencies = async (sourceFilePath: string, 
 
     return { fileFullPath, dependencies: imports };
 };
-export const processDependenciesInModulePackageJson = async (fileDependencies: FileDependencies[], root: string,
-    processPackageJson: (packageJson: PackageJson, dependencies: ImportDependency[], rootPackageJson: PackageJson) => Promise<PackageJson>) => {
+export const processDependenciesInModulePackageJson = async (
+    fileDependencies: FileDependencies[],
+    root: string,
+    processPackageJson: (packageJson: PackageJson, dependencies: ImportDependency[], rootPackageJson: PackageJson) => Promise<PackageJson>,
+    options?: { placeNewPackageJsonInSrcFolder?: boolean },
+) => {
 
     const rootPackagePath = getPathNormalized(root, `./package.json`);
     const rootPackageJson = JSON.parse(await readFile(rootPackagePath)) as PackageJson;
@@ -163,8 +167,14 @@ export const processDependenciesInModulePackageJson = async (fileDependencies: F
 
     // dependencies: { "@loadable/component": "^5.12.0", }
     await Promise.all(packageDependencies.map(async (pack) => {
-        const { packageJsonPath, dependencies } = pack;
-        const loadedPackageJson = !(await getFileInfo(packageJsonPath)) ? null : await readFileAsJson<PackageJson>(packageJsonPath);
+        const { packageJsonPath: packageJsonPathRaw, dependencies } = pack;
+        let packageJsonPath = packageJsonPathRaw;
+        let loadedPackageJson = !(await getFileInfo(packageJsonPath)) ? null : await readFileAsJson<PackageJson>(packageJsonPath);
+        if (!loadedPackageJson && options?.placeNewPackageJsonInSrcFolder) {
+            packageJsonPath = packageJsonPath.replace(`/package.json`, `/src/package.json`);
+            loadedPackageJson = !(await getFileInfo(packageJsonPath)) ? null : await readFileAsJson<PackageJson>(packageJsonPath);
+        }
+
         const loadedPackageJsonText = loadedPackageJson && JSON.stringify(loadedPackageJson, null, 2);
 
         const defaultPackageJson = { name: getParentName(packageJsonPath), dependencies: {} } as PackageJson;
@@ -186,7 +196,7 @@ export const processDependenciesInModulePackageJson = async (fileDependencies: F
     }));
 };
 
-export const saveDependenciesToModulePackageJson = async (fileDependencies: FileDependencies[], root: string) => {
+export const saveDependenciesToModulePackageJson = async (fileDependencies: FileDependencies[], root: string, options?: { placeNewPackageJsonInSrcFolder?: boolean }) => {
     processDependenciesInModulePackageJson(fileDependencies, root, async (packageJsonRaw, dependencies, rootPackageJson) => {
         // Json Clone
         const packageJson = JSON.parse(JSON.stringify(packageJsonRaw)) as PackageJson;
@@ -214,7 +224,7 @@ export const saveDependenciesToModulePackageJson = async (fileDependencies: File
         });
 
         return packageJson;
-    });
+    }, options);
 };
 
 export const removeLocalDependenciesFromModulePackageJson = async (packageJsonPath: string, root: string) => {

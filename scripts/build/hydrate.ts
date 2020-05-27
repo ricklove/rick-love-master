@@ -88,7 +88,7 @@ export const hydrate_yarnWorkspaces = async (root: string, rootCode: string) => 
             fileDependencies.push(r);
         }
     });
-    await saveDependenciesToModulePackageJson(fileDependencies, root);
+    await saveDependenciesToModulePackageJson(fileDependencies, root, { placeNewPackageJsonInSrcFolder: true });
 
     // Add tsconfig with extends to root
 };
@@ -119,8 +119,8 @@ export const dehydrate_yarnWorkspaces = async (root: string, rootCode: string) =
 
 const test = async () => {
     const root = getPathNormalized(await getProjectRootDirectoryPath(__dirname));
-    // hydrate_yarnWorkspaces(root, getPathNormalized(root, `./code`));
-    dehydrate_yarnWorkspaces(root, getPathNormalized(root, `./code`));
+    hydrate_yarnWorkspaces(root, getPathNormalized(root, `./code`));
+    // dehydrate_yarnWorkspaces(root, getPathNormalized(root, `./code`));
     // hydrate_templatesAll(getPathNormalized(root, `./code`));
     // dehydrate_templatesAll(getPathNormalized(root, `./code`));
 };
