@@ -191,6 +191,9 @@ export const createScene_01mailbox = (gameState: GameState) => {
             mailbox.isOpen = true;
 
             if (item === tickingPackage) {
+                mailbox.package = null;
+                gameState.destroyedObjects.push(tickingPackage);
+
                 pickupTruck.hasCrashed = true;
                 pickupTruck.contents.splice(pickupTruck.contents.indexOf(tickingPackage), 1);
 
