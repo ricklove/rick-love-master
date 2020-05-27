@@ -41,6 +41,7 @@ export const createGameState = (onMessageInit: (message: GameAction) => void) =>
     };
 
     const inventory = [] as GameItem[];
+    const destroyedObjects = [] as GameItem[];
     const allGameObjectTitles = [] as GameItemTitle[];
     const allWords = [] as string[];
     const commonWords = `the a an at in of by`.split(` `).filter(x => x);
@@ -115,6 +116,7 @@ export const createGameState = (onMessageInit: (message: GameAction) => void) =>
         triggerGameOver,
         triggerQuit,
         inventory,
+        destroyedObjects,
         allGameObjects: allGameObjectTitles,
         allWords,
         commonWords,
