@@ -186,9 +186,14 @@ module.exports = {
         // The original rule is completely wrong
         "no-return-await": "off",
         "@typescript-eslint/return-await": ["error", "always"],
-        // This also helps ensure all async functions contain an await (not async with no reason)
+        "@typescript-eslint/no-floating-promises": ["error"],
+        // This is not needed because of above, promises can return a value sometimes without an await, but all promises must be awaited (above)
         // Use Promise.resolve(if needed)
         "require-await": "off",
-        "@typescript-eslint/require-await": ["error"],
+        "@typescript-eslint/require-await": ["off"],
+
+
+        // TODO: Test
+        // "require-atomic-updates": ["error"],
     },
 }
