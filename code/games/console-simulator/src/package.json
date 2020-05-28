@@ -1,0 +1,9 @@
+{
+  "name": "console-simulator",
+  "version": "1.0.0",
+  "dependencies": {
+    "dork": "*",
+    "utils": "*",
+    "react": "^16.12.0"
+  }
+}

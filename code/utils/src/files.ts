@@ -37,7 +37,7 @@ export const getProjectRootDirectoryPath = async (dirStart: string, options: { s
     while (!hasGit) {
         const parentDir = getDirectoryPath(dir);
         if (parentDir === dir) {
-            throw new Error(`No .git was found`);
+            throw new Error(`No parent with ${options.search} was found in ${dirStart}`);
         }
 
         dir = parentDir;

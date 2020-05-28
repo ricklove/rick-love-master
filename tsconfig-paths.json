@@ -13,6 +13,9 @@
       "gatsby-lite/*": [
         "code/gatsby-lite/src/*"
       ],
+      "payments/*": [
+        "code/payments/src/*"
+      ],
       "utils-react/*": [
         "code/utils-react/src/*"
       ],
