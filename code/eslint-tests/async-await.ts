@@ -1,0 +1,1 @@
+export const requireAwait = async () => { return true; };

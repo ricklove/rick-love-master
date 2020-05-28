@@ -173,6 +173,22 @@ module.exports = {
         "no-plusplus": ['off'],
 
         // No substr is preferred 
-        "unicorn/prefer-string-slice": ["off"]
+        "unicorn/prefer-string-slice": ["off"],
+
+        // Keep your functions close to home
+        "unicorn/consistent-function-scoping": ["off"],
+
+        // Always Return await!
+        // V8 actually performs better if it is always there
+        // Debug Stack is complete
+        // Try Catch won't fail
+        // Code consistently marks every promise with await (which helps with the common, oops forgot to call await for Promise<void>)
+        // The original rule is completely wrong
+        "no-return-await": "off",
+        "@typescript-eslint/return-await": "always",
+        // This also helps ensure all async functions contain an await (not async with no reason)
+        // Use Promise.resolve(if needed)
+        "require-await": "off",
+        "@typescript-eslint/require-await": "error"
     },
 }
