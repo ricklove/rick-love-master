@@ -51,13 +51,5 @@
   "scripts": {
     "build": "cd scripts/build && ts-node -r tsconfig-paths/register build.ts",
     "build-blog": "cd packages/blog-gatsby-site && gatsby build"
-  },
-  "workspaces": [
-    "code/blog/src",
-    "code/games/console-simulator/src",
-    "code/games/dork/src",
-    "code/gatsby-lite/src",
-    "code/utils-react/src",
-    "code/utils/src"
-  ]
+  }
 }

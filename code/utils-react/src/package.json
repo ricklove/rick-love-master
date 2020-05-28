@@ -1,8 +1,0 @@
-{
-  "name": "utils-react",
-  "version": "1.0.0",
-  "dependencies": {
-    "@loadable/component": "^5.12.0",
-    "react": "^16.12.0"
-  }
-}
