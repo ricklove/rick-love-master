@@ -1,6 +1,6 @@
 /* eslint-disable no-console */
 /* eslint-disable @typescript-eslint/no-unused-vars */
-const requireAwaitExists = async () => { return true; };
+const allowNoAwaitInAsync = async () => { return true; };
 
 const basicPromise = () => new Promise<boolean>((resolve) => { resolve(true); });
 const requireAwaitOnPromise = async () => { return basicPromise(); };
