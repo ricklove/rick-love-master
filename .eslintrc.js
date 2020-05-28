@@ -192,6 +192,9 @@ module.exports = {
         "require-await": "off",
         "@typescript-eslint/require-await": ["off"],
 
+        // Not Needed with Typescript
+        "react/prop-types": ["off"],
+
 
         // TODO: Test
         // "require-atomic-updates": ["error"],
