@@ -195,6 +195,7 @@ This is where I put all the cool stuff.
     `npx eslint --print-config .\src\_.ts > .eslint-all-rules.debug.json`
 - print eslint files linted
     `npx eslint --debug`
+    `npx eslint --ext js,jsx,ts,tsx code --debug`
 - Convert JS to TSX (and convert prop-types)
     `npx react-proptypes-to-typescript "./src/**/*.js" --remove-original-files`
 - Fix all files with eslint

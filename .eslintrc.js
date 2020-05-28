@@ -185,10 +185,10 @@ module.exports = {
         // Code consistently marks every promise with await (which helps with the common, oops forgot to call await for Promise<void>)
         // The original rule is completely wrong
         "no-return-await": "off",
-        "@typescript-eslint/return-await": "always",
+        "@typescript-eslint/return-await": ["error", "always"],
         // This also helps ensure all async functions contain an await (not async with no reason)
         // Use Promise.resolve(if needed)
         "require-await": "off",
-        "@typescript-eslint/require-await": "error"
+        "@typescript-eslint/require-await": ["error"],
     },
 }
