@@ -6,6 +6,8 @@ export type PaymentComponentStyle = {
     backgroundColor: string;
     textColor: string;
     textPadding: number;
+    fontSize: number;
+    fontFamily: string;
 };
 
 export type PaymentClientComponents = {
