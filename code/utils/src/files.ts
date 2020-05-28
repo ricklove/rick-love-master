@@ -51,7 +51,7 @@ export const getProjectRootDirectoryPath = async (dirStart: string, options: { s
 export const directoryContains = async (dirPath: string, relativePath: string) => !!getFileInfo(getPathNormalized(dirPath, relativePath));
 
 export const deleteFile = async (filePath: string) => {
-    try { fs.unlink(filePath); }
+    try { await fs.unlink(filePath); }
     // eslint-disable-next-line no-empty
     catch{ }
 };
@@ -146,11 +146,11 @@ export const watchFileChanges = async (options: { pathRoot: string, runOnStart: 
     };
 
     if (options.runOnStart) {
-        processDirectoryFiles(options.pathRoot, f => run(f));
+        await processDirectoryFiles(options.pathRoot, f => run(f));
     }
 
     fsRaw.watch(options.pathRoot, { recursive: true, persistent: true }, async (event, filename) => {
-        run(getPathNormalized(options.pathRoot, filename));
+        await run(getPathNormalized(options.pathRoot, filename));
     });
 
 };
