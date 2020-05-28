@@ -37,23 +37,6 @@ export const createPaymentClientComponents_stripe = (params: { stripePublicKey: 
             };
 
             const s = style;
-            // const buttonStyle = {
-            //     margin: s.button.view.margin,
-            //     padding: s.button.view.padding,
-            //     minWidth: s.button.view.minWidth,
-            //     color: s.button.text.color,
-            //     backgroundColor: s.button.view.backgroundColor,
-
-            //     borderWidth: s.button.view.borderWidth ?? 0,
-            //     borderColor: s.button.view.borderColor,
-            //     borderRadius: s.button.view.borderRadius,
-
-            //     flexGrow: s.button.view.flexGrow,
-            //     fontFamily: s.button.text.fontFamily,
-            //     fontSize: s.button.text.fontSize,
-            //     fontWeight: s.button.text.fontWeight,
-            //     textAlign: s.button.text.textAlign,
-            // };
             const inputStyle = {
                 base: {
                     color: s.textColor,
@@ -66,18 +49,29 @@ export const createPaymentClientComponents_stripe = (params: { stripePublicKey: 
                     },
                 },
                 invalid: {
-                    color: `#fa755a`,
-                    iconColor: `#fa755a`,
+                    color: s.textColor_invalid,
+                    iconColor: s.textColor_invalid,
                 },
             };
+            const buttonStyle = {
+                color: s.textColor,
+                fontSize: `${s.fontSize}px`,
+                fontFamily: s.fontFamily,
+                fontSmoothing: `antialiased`,
+                padding: s.textPadding,
+                margin: s.elementPadding,
+            };
+            const buttonJustifyContent = s.buttonAlignment === `left` ? `flex-start`
+                : (s.buttonAlignment === `right` ? `flex-end`
+                    : `center`);
 
             return (
                 <form onSubmit={handleSubmit}>
-                    <div style={{ ...s.input.view, ...{ padding: s.input.text.padding } }}>
+                    <div style={{ padding: s.textPadding, borderWidth: 1, borderStyle: `solid`, borderColor: s.borderColor, margin: s.elementPadding }}>
                         <CardElement options={{ style: inputStyle }} />
                     </div>
-                    <div style={{ display: `flex`, marginTop: 8 }}>
-                        <button type='submit' disabled={!stripe || !elements} style={buttonStyle}>{props.text}</button>
+                    <div style={{ display: `flex`, flexDirection: `row`, justifyContent: buttonJustifyContent }}>
+                        <button type='submit' disabled={!stripe || !elements} style={buttonStyle}>{s.buttonText ?? `Subscribe`}</button>
                     </div>
                 </form>
             );

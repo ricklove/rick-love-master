@@ -6,12 +6,14 @@ import { PostPage, PostPageData } from '../pageTemplates/post';
 import { NotFoundPage } from '../pageTemplates/404';
 import { LazyComponentExamplePage } from '../pageTemplates/lazy-component-example';
 import { SiteNavigation, setupNavigation } from './store';
+import { ComponentTestsPage, ComponentTestsPageData } from '../pageTemplates/component-tests';
 
 export type PageData = {
     postPage?: PostPageData;
     postIndexPage?: PostIndexPageData;
     notFoundPage?: {};
     lazyComponentExamplePage?: {};
+    componentTestsPage?: ComponentTestsPageData;
 };
 
 export const createStaticPage = (sitePath: string, data: PageData, navigation: SiteNavigation): { Component: () => JSX.Element } => {
@@ -24,7 +26,7 @@ export const createStaticPage = (sitePath: string, data: PageData, navigation: S
     // Set Navigation
     setupNavigation(navigation);
 
-    const { postPage, postIndexPage, notFoundPage, lazyComponentExamplePage } = data;
+    const { postPage, postIndexPage, notFoundPage, lazyComponentExamplePage, componentTestsPage } = data;
 
     if (postPage) {
         return {
@@ -39,6 +41,11 @@ export const createStaticPage = (sitePath: string, data: PageData, navigation: S
     if (lazyComponentExamplePage) {
         return {
             Component: () => <LazyComponentExamplePage data={lazyComponentExamplePage} />,
+        };
+    }
+    if (componentTestsPage) {
+        return {
+            Component: () => <ComponentTestsPage data={componentTestsPage} />,
         };
     }
 

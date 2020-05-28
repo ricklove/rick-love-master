@@ -77,6 +77,13 @@ export const loadStaticPageData = async (): Promise<SitePages<PageData>> => {
     });
 
     pages.push({
+        sitePath: `/tests/stripe`,
+        data: {
+            componentTestsPage: { testName: `stripe` },
+        },
+    });
+
+    pages.push({
         sitePath: `/404.html`,
         data: {
             notFoundPage: {},

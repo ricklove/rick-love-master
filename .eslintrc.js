@@ -186,7 +186,7 @@ module.exports = {
         // The original rule is completely wrong
         "no-return-await": "off",
         "@typescript-eslint/return-await": ["error", "always"],
-        "@typescript-eslint/no-floating-promises": ["error"],
+        "@typescript-eslint/no-floating-promises": ["error", { ignoreIIFE: true }],
         // This is not needed because of above, promises can return a value sometimes without an await, but all promises must be awaited (above)
         // Use Promise.resolve(if needed)
         "require-await": "off",
