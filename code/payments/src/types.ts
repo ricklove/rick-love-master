@@ -48,6 +48,7 @@ export type PaymentMethodStorageData = {
 
 export type PaymentStorageProviderApi = {
     savePaymentMethod: (params: Omit<PaymentMethodStorageData, 'key'>) => Promise<void>;
+    /** Return all saved payment methods - In the order that they were created */
     getSavedPaymentMethods: () => Promise<PaymentMethodStorageData[]>;
     deleteSavedPaymentMethod: (params: { key: PaymentMethodStorageKey }) => Promise<void>;
 }

@@ -22,12 +22,13 @@ export const createPaymentApi = (dependencies: { paymentProviders: PaymentProvid
         },
         getSavedPaymentMethods: async () => {
             const stored = await dependencies.storageProvider.getSavedPaymentMethods();
-            return stored.map(x => ({
-                key: x.key,
-                providerName: x.providerName,
-                title: x.title,
-                extra: `ok`,
-            }));
+            return stored
+                .map(x => ({
+                    key: x.key,
+                    providerName: x.providerName,
+                    title: x.title,
+                    extra: `ok`,
+                }));
         },
         deleteSavedPaymentMethod: async ({ key }) => {
             await dependencies.storageProvider.deleteSavedPaymentMethod({ key });
