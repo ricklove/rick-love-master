@@ -44,7 +44,7 @@ export const triggerTimedMessage = async (
         : (color === `warning` ? `#FFFF00`
             : `#7777FF`);
 
-    return new Promise(resolve => {
+    return await new Promise(resolve => {
         const Component = () => (<CountDownTimer time={time} color={colorActual} onTimeElapsed={async () => {
             resolve({ output: ``, ...await getResultAfterTime(), addDivider: true });
         }} />);

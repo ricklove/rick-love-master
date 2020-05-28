@@ -27,7 +27,7 @@ export const getFileInfo = async (fullPath: string) => {
         return null;
     }
 };
-export const ensureDirectoryExists = async (dirPath: string) => fs.mkdir(dirPath, { recursive: true });
+export const ensureDirectoryExists = async (dirPath: string) => await fs.mkdir(dirPath, { recursive: true });
 
 
 export const getProjectRootDirectoryPath = async (dirStart: string, options: { search: string } = { search: `.git` }) => {
@@ -55,7 +55,7 @@ export const deleteFile = async (filePath: string) => {
     // eslint-disable-next-line no-empty
     catch{ }
 };
-export const readFile = async (filePath: string) => fs.readFile(filePath, { encoding: `utf-8` });
+export const readFile = async (filePath: string) => await fs.readFile(filePath, { encoding: `utf-8` });
 export const readFileAsJson = async <T>(filePath: string) => JSON.parse(await readFile(filePath)) as T;
 export const writeFile = async (filePath: string, data: string | Buffer, options?: { readonly?: boolean, overwrite?: boolean }) => {
     await fs.mkdir(getDirectoryPath(filePath), { recursive: true });

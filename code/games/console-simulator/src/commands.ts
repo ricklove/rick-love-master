@@ -122,7 +122,7 @@ export const createConsoleCommands = (initialMachineName: string) => {
             const a = state.activeAction;
             if (a.query) {
                 const action = await a.query.respond(input);
-                return processAction(action);
+                return await processAction(action);
             }
         }
 

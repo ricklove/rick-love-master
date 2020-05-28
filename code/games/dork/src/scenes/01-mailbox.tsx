@@ -32,7 +32,7 @@ export const createScene_01mailbox = (gameState: GameState) => {
                 if (command === `touch` && target.includes(`nuts`)) {
                     gameState.achievements.addAchievement(`🐿️ Don't Be Touchin My Nutz!`);
 
-                    return triggerTimedMessage(onMessage, {
+                    return await triggerTimedMessage(onMessage, {
                         output: randomItem([
                             `The squirrel goes nuts and begins to chew off your arm.`,
                             `The squirel had more than just nuts with him.`,
@@ -295,7 +295,7 @@ export const createScene_01mailbox = (gameState: GameState) => {
             }
 
             mailbox.isOpen = false;
-            return closeMailbox(input);
+            return await closeMailbox(input);
         }
 
         if (command === `take` && mailbox.package && isMatch(mailbox.package, target)) {
