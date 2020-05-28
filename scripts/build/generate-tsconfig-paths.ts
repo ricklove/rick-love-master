@@ -16,7 +16,7 @@ export const loadTsConfigPaths = async (rootRaw?: string): Promise<TsConfigPath[
 };
 
 export const isTsconfigPathDirectory = async (fullPath: string) => {
-    return directoryContains(fullPath, `./src`);
+    return await directoryContains(fullPath, `./src`);
 };
 
 export const generateTsconfigPaths = async (rootRaw?: string) => {
