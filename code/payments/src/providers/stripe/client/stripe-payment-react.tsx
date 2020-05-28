@@ -30,7 +30,7 @@ export const createPaymentClientComponents_stripe = (params: { stripePublicKey: 
                 });
 
                 if (result.error || !result.setupIntent) {
-                    throw new PaymentError(`Stripe Payment Error`);
+                    throw new PaymentError(`Stripe Payment Error`, result.error);
                 }
 
                 onPaymentMethodReady(stripeEncodeClientToken({ setupIntent: result.setupIntent }));
@@ -53,8 +53,17 @@ export const createPaymentClientComponents_stripe = (params: { stripePublicKey: 
                     iconColor: s.textColor_invalid,
                 },
             };
+            const inputContainerStyle = {
+                margin: s.elementPadding,
+                padding: s.textPadding,
+                backgroundColor: s.backgroundColor,
+                borderWidth: 1, borderStyle: `solid`, borderColor: s.borderColor, borderRadius: s.borderRadius,
+            };
             const buttonStyle = {
                 color: s.textColor,
+                backgroundColor: s.backgroundColor,
+                borderWidth: 1, borderStyle: `solid`, borderColor: s.borderColor, borderRadius: s.borderRadius,
+
                 fontSize: `${s.fontSize}px`,
                 fontFamily: s.fontFamily,
                 fontSmoothing: `antialiased`,
@@ -67,7 +76,7 @@ export const createPaymentClientComponents_stripe = (params: { stripePublicKey: 
 
             return (
                 <form onSubmit={handleSubmit}>
-                    <div style={{ padding: s.textPadding, borderWidth: 1, borderStyle: `solid`, borderColor: s.borderColor, margin: s.elementPadding }}>
+                    <div style={inputContainerStyle}>
                         <CardElement options={{ style: inputStyle }} />
                     </div>
                     <div style={{ display: `flex`, flexDirection: `row`, justifyContent: buttonJustifyContent }}>

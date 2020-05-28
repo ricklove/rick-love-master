@@ -9,6 +9,7 @@ export type PaymentComponentStyle = {
     fontSize?: number;
     fontFamily?: string;
 
+    borderRadius?: number;
     textPadding?: number;
     elementPadding?: number;
     buttonAlignment?: 'left' | 'right' | 'center';

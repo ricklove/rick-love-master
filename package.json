@@ -60,6 +60,7 @@
     "code/games/dork/src",
     "code/gatsby-lite/src",
     "code/payments/src",
+    "code/themes/src",
     "code/utils-react/src",
     "code/utils/src"
   ]

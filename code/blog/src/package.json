@@ -3,6 +3,8 @@
   "version": "1.0.0",
   "dependencies": {
     "console-simulator": "*",
+    "payments": "*",
+    "themes": "*",
     "utils": "*",
     "utils-react": "*",
     "highlight.js": "^10.0.3",

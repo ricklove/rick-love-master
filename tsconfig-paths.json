@@ -16,6 +16,9 @@
       "payments/*": [
         "code/payments/src/*"
       ],
+      "themes/*": [
+        "code/themes/src/*"
+      ],
       "utils-react/*": [
         "code/utils-react/src/*"
       ],

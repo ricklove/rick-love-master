@@ -18,6 +18,7 @@ export const ComponentTestsPage = (props: { data: ComponentTestsPageData }) => {
 
 export const testComponentsAuto = [
     { name: `stripe`, load: async () => (await import(`payments/providers/stripe/client-test/stripe-example`)).StripeExamplePage },
+    // { name: `theme`, load: async () => (await import(`themes/theme-example`)).ThemeExample },
 ];
 
 export const TestComponentAuto = (props: { data: ComponentTestsPageData }) => {
@@ -38,33 +39,3 @@ export const TestComponentAuto = (props: { data: ComponentTestsPageData }) => {
         </div>
     );
 };
-
-// Manual Register:
-export const testComponents = [] as { name: string, Component: () => JSX.Element }[];
-export const TestComponent = (props: { data: ComponentTestsPageData }) => {
-    const { testName } = props.data;
-
-    const test = testComponents.find(x => x.name === testName);
-    if (test) {
-        return <test.Component />;
-    }
-
-    return (
-        <>
-            <h1>TEST NOT FOUND</h1>
-            <p>testName: {props.data.testName}</p>
-        </>
-    );
-};
-
-// Register components
-export const TestComponent_Stripe = () => {
-    const { LoadedComponent, load } = useLoadable(async () => (await import(`payments/providers/stripe/client-test/stripe-example`)).StripeExamplePage);
-    useEffect(() => { (async () => await load())(); }, [load]);
-    return (
-        <div>
-            {LoadedComponent && <LoadedComponent />}
-        </div>
-    );
-};
-testComponents.push({ name: `stripe`, Component: TestComponent_Stripe });
