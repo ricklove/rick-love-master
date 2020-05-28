@@ -103,7 +103,7 @@ export const dehydrate_yarnWorkspaces = async (root: string, rootCode: string) =
         const hasOtherStuff = JSON.stringify(json) !== JSON.stringify({ name: json.name, version: json.version, dependencies: json.dependencies });
 
         if (!hasOtherStuff) {
-            deleteFile(x);
+            await deleteFile(x);
             return;
         }
 
@@ -129,4 +129,6 @@ const test = async () => {
     await dehydrate_yarnWorkspaces(root, getPathNormalized(root, `./code`));
     await hydrate_yarnWorkspaces(root, getPathNormalized(root, `./code`));
 };
+
+// eslint-disable-next-line @typescript-eslint/no-floating-promises
 test();

@@ -1,9 +1,7 @@
 /* eslint-disable no-console */
-import { watchFileChanges, getProjectRootDirectoryPath, getPathNormalized, processDirectoryFiles } from 'utils/files';
-import { somePromise } from 'utils/async';
-import { generateTsconfigPaths, isTsconfigPathDirectory, loadTsConfigPaths } from './generate-tsconfig-paths';
+import { getProjectRootDirectoryPath, getPathNormalized, processDirectoryFiles } from 'utils/files';
+import { generateTsconfigPaths, loadTsConfigPaths } from './generate-tsconfig-paths';
 import { processImports_returnDependencies, FileDependencies, saveDependenciesToModulePackageJson } from './process-imports';
-import { cloneFile } from './clone-files';
 
 export const getTargetBuildPath = (root: string) => {
     const targetFromRootPath = getPathNormalized(root, `./build/src/`);
@@ -70,4 +68,5 @@ const build = async (rootRaw?: string) => {
     // watchForFileChanges(x=>x.)
 };
 
+// eslint-disable-next-line @typescript-eslint/no-floating-promises
 build();
