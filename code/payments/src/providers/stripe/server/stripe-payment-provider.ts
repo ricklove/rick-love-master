@@ -1,5 +1,5 @@
 import Stripe from 'stripe';
-import { PaymentProviderApi, PaymentProviderName, PaymentError } from '../../../common/types';
+import { PaymentProviderApi, PaymentProviderName, PaymentError, PaymentTransaction } from '../../../common/types';
 import { stripeDecodeUserToken, stripeEncodeUserToken, stripeEncodeStorageToken, stripeDecodeStorageToken } from './stripe-server-tokens';
 import { stripeEncodeClientSetupToken, StripeCustomerBillingDetails, stripeDecodeClientToken } from '../client/stripe-client-tokens';
 import { wrapProcessStep_CreateSavedPaymentMethod_Stripe, ProcessSteps_CreateSavedPaymentMethod_Stripe } from '../common/stripe-process-steps';
@@ -15,8 +15,9 @@ export const createStripePaymentProviderApi = (dependencies: {
     storage: StripePaymentProviderStorage;
 }): PaymentProviderApi => {
     const stripe = new Stripe(dependencies.config.getStripeSecretKey(), { apiVersion: `2020-03-02` });
+    const providerName = `stripe` as PaymentProviderName;
     const providerApi: PaymentProviderApi = {
-        providerName: `stripe` as PaymentProviderName,
+        providerName,
         setupSavedPaymentMethod: async (userToken) => {
             const userTokenData = userToken ? stripeDecodeUserToken(userToken) : null;
 
@@ -112,6 +113,19 @@ export const createStripePaymentProviderApi = (dependencies: {
 
                 throw new PaymentError(`stripe.chargeSavedPaymentMethod: Failed`, { errorCode: error?.code, error, paymentIntentRetrieved });
             }
+        },
+        getPayments: async (userToken) => {
+            const { customerId } = stripeDecodeUserToken(userToken);
+            const result = await stripe.paymentIntents.list({ customer: customerId });
+            const p: PaymentTransaction[] = result.data.map(x => ({
+                providerName,
+                created: new Date(x.created * 1000),
+                amount: { currency: x.currency as 'usd', usdCents: x.amount },
+                status: x.status === `succeeded` ? `success`
+                    : (x.status === `canceled` ? `terminated`
+                        : `incomplete`),
+            }));
+            return p;
         },
     };
     return providerApi;

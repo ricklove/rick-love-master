@@ -94,6 +94,24 @@ export const createPaymentApi_inner = (dependencies: { providers: PaymentProvide
         debug_triggerPayment: async (params) => {
             await paymentServerApi.chargeUsingSavedPaymentMethods(params);
         },
+        getPayments: async () => {
+
+            const allPayments = (await Promise.all(dependencies.providers.map(async (x) => {
+                const userToken = await dependencies.storage.getUserToken({ providerName: x.providerName });
+                if (!userToken) {
+                    // throw new PaymentError(`getPayments: User Token was not found`, { providerName });
+                    return null;
+                };
+                return await x.getPayments(userToken.userToken);
+            })))
+                .flatMap(x => x ?? []);
+
+            // Reverse sort by date
+            const sorted = allPayments
+                .sort((a, b) => -(a.created.getTime() - b.created.getTime()));
+
+            return sorted;
+        },
 
     };
     return paymentClientApi;

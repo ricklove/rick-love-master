@@ -2,6 +2,7 @@
   "name": "payments",
   "version": "1.0.0",
   "dependencies": {
+    "formatting": "*",
     "json-rpc": "*",
     "themes": "*",
     "@stripe/react-stripe-js": "^1.1.2",

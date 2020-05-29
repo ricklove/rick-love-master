@@ -2,10 +2,14 @@
 import React, { useState, useEffect } from 'react';
 import { mainTheme } from 'themes/colors';
 import { createJsonRpcClient } from 'json-rpc/json-rpc-client';
-import { createPaymentApi_simple } from '../server/create-payment-api';
+import { formatDate } from 'formatting/dates';
 import { createPaymentClientComponents } from '../client/payment-react';
 import { PaymentComponentStyle, PaymentClientComponents } from '../common/types-react';
-import { PaymentProviderSavedPaymentMethodClientSetupToken, PaymentProviderName, PaymentClientApi, PaymentProviderSavedPaymentMethodClientToken, PaymentMethodClientInfo, PaymentMethodStorageKey } from '../common/types';
+import {
+    PaymentProviderSavedPaymentMethodClientSetupToken, PaymentProviderName, PaymentClientApi,
+    PaymentProviderSavedPaymentMethodClientToken, PaymentMethodClientInfo, PaymentMethodStorageKey,
+    PaymentTransaction,
+} from '../common/types';
 import { getFullStackTestConfig, FullStackTestConfig } from './full-stack-test-config';
 
 export const PaymentFullStackTesterHost = (props: {}) => {
@@ -26,6 +30,7 @@ export const PaymentFullStackTesterHost = (props: {}) => {
                 getSavedPaymentMethods: `getSavedPaymentMethods`,
                 deleteSavedPaymentMethod: `deleteSavedPaymentMethod`,
                 debug_triggerPayment: `debug_triggerPayment`,
+                getPayments: `getPayments`,
             });
 
             const providerName = `stripe` as PaymentProviderName;
@@ -49,6 +54,10 @@ export const PaymentFullStackTesterHost = (props: {}) => {
                 onMakePurchase: async (amount: number) => {
                     console.log(`onMakePurchase`);
                     await server.debug_triggerPayment({ amount: { currency: `usd`, usdCents: Math.floor(amount * 100) } });
+                },
+                getPayments: async () => {
+                    console.log(`getPayments`);
+                    return await server.getPayments();
                 },
             };
 
@@ -90,6 +99,7 @@ type PaymantViewServerAccess = {
     onSetupPayment: () => Promise<PaymentProviderSavedPaymentMethodClientSetupToken>;
     onPaymentMethodReady: (paymentMethodToken: PaymentProviderSavedPaymentMethodClientToken) => Promise<void>;
     onMakePurchase: (amount: number) => Promise<void>;
+    getPayments: () => Promise<PaymentTransaction[]>;
 };
 const PaymantView = (props: {
     comp: PaymentClientComponents;
@@ -111,9 +121,7 @@ const PaymantView = (props: {
         const result = await props.serverAccess.getPaymentMethods();
         setPaymentMethods(result);
     };
-    useEffect(() => {
-        (async () => { await populatePaymentMethods(); })();
-    }, []);
+
 
     const deletePaymentMethod = async (key: PaymentMethodStorageKey) => {
         await props.serverAccess.deletePaymentMethod(key);
@@ -133,10 +141,24 @@ const PaymantView = (props: {
         await populatePaymentMethods();
     };
 
+    const [payments, setPayments] = useState(null as null | PaymentTransaction[]);
+    const populatePayments = async () => {
+        const result = await props.serverAccess.getPayments();
+        setPayments(result);
+    };
+
     const [purchaseAmount, setPurchaseAmount] = useState(100);
     const makePurchase = async () => {
         await props.serverAccess.onMakePurchase(purchaseAmount);
+        await populatePayments();
     };
+
+    useEffect(() => {
+        (async () => {
+            await populatePaymentMethods();
+            await populatePayments();
+        })();
+    }, []);
 
     return (
         <>
@@ -159,6 +181,12 @@ const PaymantView = (props: {
                     <input style={mainTheme.input_fieldEntry} type='number' min='0.00' max='10000.00' step='0.01' value={purchaseAmount} onChange={(e) => setPurchaseAmount(Number.parseFloat(e.target.value))} />
                     <button style={mainTheme.button_fieldInline} type='button' onClick={() => makePurchase()}>Purchase</button>
                 </div>
+                {payments && payments.map(x => (
+                    <div key={`${x.created}`} style={mainTheme.div_fieldRow}>
+                        <span style={mainTheme.span_fieldInfo}>Created: {formatDate(x.created)}</span>
+                        <span style={mainTheme.span_fieldInfo}>${x.amount.usdCents / 100}</span>
+                    </div>
+                ))}
             </div>
         </>
     );

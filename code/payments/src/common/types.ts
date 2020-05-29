@@ -48,7 +48,7 @@ export type PaymentClientApi = {
 
     // Management of Payments
     debug_triggerPayment: (params: { amount: PaymentAmount }) => Promise<void>;
-    // getPayments: () => Promise<PaymentTransaction[]>;
+    getPayments: () => Promise<PaymentTransaction[]>;
     // getPaymentsRequiringUserAction: () => Promise<PaymentTransaction[]>;
 }
 
@@ -79,7 +79,7 @@ export type PaymentProviderApi = {
     }>;
     chargeSavedPaymentMethod: (userToken: PaymentProviderUserToken, token: PaymentProviderSavedPaymentMethodStorageToken, amount: PaymentAmount) => Promise<void>;
 
-    // getPayments: () => Promise<PaymentTransaction[]>;
+    getPayments: (userToken: PaymentProviderUserToken) => Promise<PaymentTransaction[]>;
 }
 
 /** Payment Server Dependencies */

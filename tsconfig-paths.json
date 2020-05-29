@@ -4,6 +4,9 @@
       "blog/*": [
         "code/blog/src/*"
       ],
+      "formatting/*": [
+        "code/formatting/src/*"
+      ],
       "console-simulator/*": [
         "code/games/console-simulator/src/*"
       ],

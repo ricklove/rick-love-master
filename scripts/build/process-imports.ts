@@ -217,6 +217,7 @@ export const saveDependenciesToModulePackageJson = async (fileDependencies: File
             // Ignore node built-in
             if (x.importPackageName === `path`
                 || x.importPackageName === `fs`
+                || x.importPackageName === `http`
             ) { return; }
 
             // For external dependencies, get the version from the root package.json

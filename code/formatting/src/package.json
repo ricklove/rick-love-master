@@ -1,0 +1,8 @@
+{
+  "name": "formatting",
+  "version": "1.0.0",
+  "dependencies": {
+    "utils": "*",
+    "dayjs": "^1.8.28"
+  }
+}
