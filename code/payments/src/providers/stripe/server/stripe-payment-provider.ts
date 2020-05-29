@@ -4,11 +4,17 @@ import { stripeDecodeUserToken, stripeEncodeUserToken, stripeEncodeStorageToken 
 import { stripeEncodeClientSetupToken, StripeCustomerBillingDetails, stripeDecodeClientToken } from '../client/stripe-client-tokens';
 import { wrapProcessStep_CreateSavedPaymentMethod_Stripe, ProcessSteps_CreateSavedPaymentMethod_Stripe } from '../common/stripe-process-steps';
 
-export const createStripePaymentProviderApi = (dependencies: {
+export type StripePaymentProviderConfig = {
     getStripeSecretKey: () => string;
+};
+export type StripePaymentProviderStorage = {
     getUserBillingDetails: () => Promise<StripeCustomerBillingDetails>;
+};
+export const createStripePaymentProviderApi = (dependencies: {
+    config: StripePaymentProviderConfig;
+    storage: StripePaymentProviderStorage;
 }): PaymentProviderApi => {
-    const stripe = new Stripe(dependencies.getStripeSecretKey(), { apiVersion: `2020-03-02` });
+    const stripe = new Stripe(dependencies.config.getStripeSecretKey(), { apiVersion: `2020-03-02` });
     const providerApi: PaymentProviderApi = {
         providerName: `stripe` as PaymentProviderName,
         setupSavedPaymentMethod: async (userToken) => {
@@ -35,7 +41,7 @@ export const createStripePaymentProviderApi = (dependencies: {
                     if (!intent.client_secret) {
                         throw new PaymentError(`setupSavedPaymentMethod: intent.client_secret is missing`);
                     }
-                    return stripeEncodeClientSetupToken({ clientSecret: intent.client_secret, customerBillingDetails: await dependencies.getUserBillingDetails() });
+                    return stripeEncodeClientSetupToken({ clientSecret: intent.client_secret, customerBillingDetails: await dependencies.storage.getUserBillingDetails() });
                 });
 
             return { newUserToken: newUser?.newUserToken, setupToken };
