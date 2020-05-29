@@ -48,7 +48,7 @@ export const getProjectRootDirectoryPath = async (dirStart: string, options: { s
     return dir;
 };
 
-export const directoryContains = async (dirPath: string, relativePath: string) => !!getFileInfo(getPathNormalized(dirPath, relativePath));
+export const directoryContains = async (dirPath: string, relativePath: string) => !!await getFileInfo(getPathNormalized(dirPath, relativePath));
 
 export const deleteFile = async (filePath: string) => {
     try { await fs.unlink(filePath); }
@@ -81,6 +81,10 @@ export const copyFile = async (sourceFilePath: string, destFilePath: string, opt
         await fs.chmod(destFilePath, 0o444);
     }
 };
+export const moveFile = async (sourceFilePath: string, destFilePath: string) => {
+    await fs.rename(sourceFilePath, destFilePath);
+};
+export const renameFile = moveFile;
 
 export async function getAllDirectories(dir: string) {
     const dirs = [] as string[];

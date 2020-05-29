@@ -1,6 +1,7 @@
-import { getAllDirectories, getPathNormalized, getDirectoryName, readFile, writeFile, getProjectRootDirectoryPath, directoryContains } from 'utils/files';
+import { getAllDirectories, getPathNormalized, getDirectoryName, readFile, writeFile, getProjectRootDirectoryPath } from 'utils/files';
 import { toKeyValueObject, toKeyValueArray } from 'utils/objects';
 import { piped } from 'utils/piped';
+import { isModuleRootPath } from './package-path';
 
 export type TsConfigPathsRaw = { [name: string]: string[] }
 export type TsConfigPath = { path: string, name: string };
@@ -16,7 +17,7 @@ export const loadTsConfigPaths = async (rootRaw?: string): Promise<TsConfigPath[
 };
 
 export const isTsconfigPathDirectory = async (fullPath: string) => {
-    return await directoryContains(fullPath, `./src`);
+    return await isModuleRootPath(fullPath);
 };
 
 export const generateTsconfigPaths = async (rootRaw?: string) => {
