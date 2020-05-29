@@ -35,7 +35,7 @@ export const createPaymentApi = (dependencies: {
 
 export const createPaymentApi_simple = (dependencies: {
     getStripeSecretKey: () => string;
-    getUserBillingDetails: () => StripeCustomerBillingDetails;
+    getUserBillingDetails: () => Promise<StripeCustomerBillingDetails>;
     userKeyValueStorage: {
         getValue: (key: string) => Promise<string>;
         setValue: (key: string, value: string) => Promise<void>;
@@ -59,9 +59,9 @@ export const createPaymentApi_simple = (dependencies: {
         getSavedPaymentMethods: async () => await getValue<PaymentMethodStorageData[]>(`Payment:savedPaymentMethods`) ?? [],
         savePaymentMethod: async (data) => {
             const items = await storage.getSavedPaymentMethods();
-            const ids = items.map(x => parseInt(x.key));
+            const ids = items.map(x => Number.parseInt(x.key, 10));
             const nextId = Math.max(...ids) + 1;
-            items.push({ ...data, key: ('' + nextId) as PaymentMethodStorageKey });
+            items.push({ ...data, key: (`${nextId}`) as PaymentMethodStorageKey });
             await setValue<PaymentMethodStorageData[]>(`Payment:savedPaymentMethods`, items);
         },
         deleteSavedPaymentMethod: async (data) => {
@@ -72,6 +72,10 @@ export const createPaymentApi_simple = (dependencies: {
     };
 
     return createPaymentApi({
-        storage: ,
+        storage,
+        stripe: {
+            config: { getStripeSecretKey: dependencies.getStripeSecretKey },
+            storage: { getUserBillingDetails: dependencies.getUserBillingDetails },
+        },
     });
 };
