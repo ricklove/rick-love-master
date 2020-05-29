@@ -60,6 +60,7 @@
     "code/games/console-simulator/src",
     "code/games/dork/src",
     "code/gatsby-lite/src",
+    "code/json-rpc/src",
     "code/payments/src",
     "code/themes/src",
     "code/utils-react/src",

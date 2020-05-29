@@ -13,6 +13,9 @@
       "gatsby-lite/*": [
         "code/gatsby-lite/src/*"
       ],
+      "json-rpc/*": [
+        "code/json-rpc/src/*"
+      ],
       "payments/*": [
         "code/payments/src/*"
       ],

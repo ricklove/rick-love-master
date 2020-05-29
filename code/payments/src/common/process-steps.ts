@@ -7,15 +7,17 @@ export enum ProcessSteps_CreateSavedPaymentMethod {
     _05_Server_SavePaymentMethod = 500,
 };
 
-export const logProcessStep_CreateSavedPaymentMethod = (step: ProcessSteps_CreateSavedPaymentMethod, status?: 'success' | 'fail', data?: unknown) => {
+export const logProcessStep_CreateSavedPaymentMethod = (step: ProcessSteps_CreateSavedPaymentMethod, status?: 'start' | 'success' | 'fail', data?: unknown) => {
     // TODO: Implement Universal Logger
 
     // eslint-disable-next-line no-console
-    console.log(`CreateSavedPaymentMethod: ${ProcessSteps_CreateSavedPaymentMethod[step]}`, { data });
+    console.log(`CreateSavedPaymentMethod: ${ProcessSteps_CreateSavedPaymentMethod[step]} ${status}`, { status, data });
 };
 
 export const wrapProcessStep_CreateSavedPaymentMethod = async <TResult>(step: ProcessSteps_CreateSavedPaymentMethod, execute: () => Promise<TResult>): Promise<TResult> => {
     try {
+        logProcessStep_CreateSavedPaymentMethod(step, `start`);
+
         const result = await execute();
         logProcessStep_CreateSavedPaymentMethod(step, `success`);
         return result;
