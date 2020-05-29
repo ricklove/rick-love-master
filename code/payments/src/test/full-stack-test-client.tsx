@@ -2,7 +2,7 @@
 import React, { useState, useEffect } from 'react';
 import { mainTheme } from 'themes/colors';
 import { createJsonRpcClient } from 'json-rpc/json-rpc-client';
-import { formatDate } from 'formatting/dates';
+import { formatDate } from 'utils/dates';
 import { createPaymentClientComponents } from '../client/payment-react';
 import { PaymentComponentStyle, PaymentClientComponents } from '../common/types-react';
 import {

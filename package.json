@@ -58,7 +58,6 @@
   },
   "workspaces": [
     "code/blog/src",
-    "code/formatting/src",
     "code/games/console-simulator/src",
     "code/games/dork/src",
     "code/gatsby-lite/src",
