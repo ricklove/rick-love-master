@@ -1,4 +1,5 @@
-
+/** This token is used to identify a specific app user with the user's id in the provider's context (i.e. customer id) */
+export type PaymentProviderUserToken = unknown & { __type: 'PaymentProviderUserToken' };
 /** This token is used to identify the client as it negotiates directly with the provider to enter payment method data */
 export type PaymentProviderSavedPaymentMethodClientSetupToken = unknown & { __type: 'PaymentProviderSavedPaymentMethodClientSetupToken' };
 /** This token is used to identify the payment method obtained on the client from the provider */
@@ -32,9 +33,9 @@ export type PaymentApi = {
  */
 export type PaymentProviderApi = {
     providerName: PaymentProviderName;
-    setupSavePaymentMethod: () => Promise<PaymentProviderSavedPaymentMethodClientSetupToken>;
-    obtainSavedPaymentMethod: (clientToken: PaymentProviderSavedPaymentMethodClientToken) => Promise<PaymentProviderSavedPaymentMethodStorageToken>;
-    chargeSavedPaymentMethod: (token: PaymentProviderSavedPaymentMethodStorageToken) => Promise<void>;
+    setupSavedPaymentMethod: (userToken: PaymentProviderUserToken | null) => Promise<{ newUserToken?: PaymentProviderUserToken, setupToken: PaymentProviderSavedPaymentMethodClientSetupToken }>;
+    obtainSavedPaymentMethod: (userToken: PaymentProviderUserToken, clientToken: PaymentProviderSavedPaymentMethodClientToken) => Promise<PaymentProviderSavedPaymentMethodStorageToken>;
+    chargeSavedPaymentMethod: (userToken: PaymentProviderUserToken, token: PaymentProviderSavedPaymentMethodStorageToken) => Promise<void>;
 }
 
 /** Payment Server Dependencies */
@@ -46,7 +47,15 @@ export type PaymentMethodStorageData = {
     paymentMethodStorageToken: PaymentProviderSavedPaymentMethodStorageToken;
 };
 
+export type PaymentUserTokenData = {
+    providerName: PaymentProviderName;
+    userToken: PaymentProviderUserToken;
+};
+
 export type PaymentStorageProviderApi = {
+    getUserToken: (params: { providerName: PaymentProviderName }) => Promise<PaymentUserTokenData | null>;
+    setUserToken: (params: PaymentUserTokenData) => Promise<void>;
+
     savePaymentMethod: (params: Omit<PaymentMethodStorageData, 'key'>) => Promise<void>;
     /** Return all saved payment methods - In the order that they were created */
     getSavedPaymentMethods: () => Promise<PaymentMethodStorageData[]>;

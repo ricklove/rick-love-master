@@ -1,5 +1,5 @@
 import { PaymentMethodCreateParams, SetupIntent } from '@stripe/stripe-js';
-import { PaymentProviderSavedPaymentMethodClientSetupToken, PaymentProviderSavedPaymentMethodClientToken } from '../../../types';
+import { PaymentProviderSavedPaymentMethodClientSetupToken, PaymentProviderSavedPaymentMethodClientToken } from '../../../common/types';
 
 export type StripeCustomerBillingDetails = PaymentMethodCreateParams.BillingDetails;
 

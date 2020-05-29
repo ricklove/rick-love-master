@@ -1,9 +1,10 @@
 import React from 'react';
 import { Elements, CardElement, useStripe, useElements } from '@stripe/react-stripe-js';
 import { loadStripe, PaymentMethod, PaymentMethodCreateParams } from '@stripe/stripe-js';
-import { PaymentClientComponents } from '../../../types-react';
-import { PaymentError } from '../../../types';
+import { PaymentClientComponents } from '../../../common/types-react';
+import { PaymentError } from '../../../common/types';
 import { stripeDecodeClientSetupToken, stripeEncodeClientToken } from './stripe-client-tokens';
+import { wrapProcessStep_CreateSavedPaymentMethod_Stripe, ProcessSteps_CreateSavedPaymentMethod_Stripe } from '../common/stripe-process-steps';
 
 export const createPaymentClientComponents_stripe = (params: { stripePublicKey: string }): PaymentClientComponents => {
 
@@ -19,21 +20,28 @@ export const createPaymentClientComponents_stripe = (params: { stripePublicKey: 
                 event.preventDefault();
                 if (!stripe || !elements) { return; }
 
-                const setupInfo = stripeDecodeClientSetupToken(paymentMethodSetupToken);
+                const setupIntent = await wrapProcessStep_CreateSavedPaymentMethod_Stripe(
+                    ProcessSteps_CreateSavedPaymentMethod_Stripe._03A_Client_CollectPaymentDetails,
+                    async () => {
 
-                const result = await stripe.confirmCardSetup(setupInfo.clientSecret, {
-                    payment_method: {
-                        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-                        card: elements.getElement(CardElement)!,
-                        billing_details: setupInfo.customerBillingDetails,
-                    },
-                });
+                        const setupInfo = stripeDecodeClientSetupToken(paymentMethodSetupToken);
 
-                if (result.error || !result.setupIntent) {
-                    throw new PaymentError(`Stripe Payment Error`, result.error);
-                }
+                        const result = await stripe.confirmCardSetup(setupInfo.clientSecret, {
+                            payment_method: {
+                                // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+                                card: elements.getElement(CardElement)!,
+                                billing_details: setupInfo.customerBillingDetails,
+                            },
+                        });
 
-                onPaymentMethodReady(stripeEncodeClientToken({ setupIntent: result.setupIntent }));
+                        if (result.error || !result.setupIntent) {
+                            throw new PaymentError(`Stripe Payment Error`, result.error);
+                        }
+
+                        return result.setupIntent;
+                    });
+
+                onPaymentMethodReady(stripeEncodeClientToken({ setupIntent }));
             };
 
             const s = style;

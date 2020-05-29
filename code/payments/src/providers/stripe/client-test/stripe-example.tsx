@@ -1,7 +1,7 @@
 /* eslint-disable no-console */
 import React, { useState } from 'react';
 import { mainTheme } from 'themes/colors';
-import { PaymentComponentStyle } from '../../../types-react';
+import { PaymentComponentStyle } from '../../../common/types-react';
 import { createPaymentClientComponents_stripe } from '../client/stripe-payment-react';
 import { stripeEncodeClientSetupToken } from '../client/stripe-client-tokens';
 

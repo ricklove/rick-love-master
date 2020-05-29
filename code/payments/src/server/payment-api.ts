@@ -1,4 +1,5 @@
-import { PaymentApi, PaymentProviderApi, PaymentStorageProviderApi, PaymentError } from '../types';
+import { PaymentApi, PaymentProviderApi, PaymentStorageProviderApi, PaymentError } from '../common/types';
+import { wrapProcessStep_CreateSavedPaymentMethod, ProcessSteps_CreateSavedPaymentMethod } from '../common/process-steps';
 
 export const createPaymentApi = (dependencies: { paymentProviders: PaymentProviderApi[], storageProvider: PaymentStorageProviderApi }): PaymentApi => {
 
@@ -10,15 +11,38 @@ export const createPaymentApi = (dependencies: { paymentProviders: PaymentProvid
 
     const paymentApi: PaymentApi = {
         setupSavedPaymentMethod: async ({ providerName }) => {
-            return await getProvider(providerName).setupSavePaymentMethod();
+            const setupToken = await wrapProcessStep_CreateSavedPaymentMethod(
+                ProcessSteps_CreateSavedPaymentMethod._02_Server_SetupSavedPaymentMethod,
+                async () => {
+                    const userToken = await dependencies.storageProvider.getUserToken({ providerName });
+                    const setup = await getProvider(providerName).setupSavedPaymentMethod(userToken?.userToken ?? null);
+                    if (setup.newUserToken) {
+                        await dependencies.storageProvider.setUserToken({ providerName, userToken: setup.newUserToken });
+                    }
+                    return setup.setupToken;
+                });
+            return setupToken;
         },
         saveSavedPaymentMethod: async ({ providerName, title, paymentMethodClientToken }) => {
-            const paymentMethodStorageToken = await getProvider(providerName).obtainSavedPaymentMethod(paymentMethodClientToken);
-            await dependencies.storageProvider.savePaymentMethod({
-                providerName,
-                title,
-                paymentMethodStorageToken,
-            });
+            const paymentMethodStorageToken = await wrapProcessStep_CreateSavedPaymentMethod(
+                ProcessSteps_CreateSavedPaymentMethod._04_Server_ObtainPaymentMethod,
+                async () => {
+                    const userToken = await dependencies.storageProvider.getUserToken({ providerName });
+                    if (!userToken) {
+                        throw new PaymentError(`saveSavedPaymentMethod: User Token was not found`, { providerName });
+                    }
+                    return await getProvider(providerName).obtainSavedPaymentMethod(userToken.userToken, paymentMethodClientToken);
+                });
+
+            await wrapProcessStep_CreateSavedPaymentMethod(
+                ProcessSteps_CreateSavedPaymentMethod._05_Server_SavePaymentMethod,
+                async () => {
+                    await dependencies.storageProvider.savePaymentMethod({
+                        providerName,
+                        title,
+                        paymentMethodStorageToken,
+                    });
+                });
         },
         getSavedPaymentMethods: async () => {
             const stored = await dependencies.storageProvider.getSavedPaymentMethods();
