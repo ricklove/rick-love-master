@@ -24,11 +24,20 @@ export type PaymentMethodClientInfo = {
     expiration: PaymentMethodExpiration;
 };
 
+export type PaymentAmount = { currency: 'usd', usdCents: number };
+
+export type PaymentTransaction = {
+    providerName: PaymentProviderName;
+    created: Date;
+    amount: PaymentAmount;
+    status: 'success' | 'incomplete' | 'terminated';
+}
+
 /** Payment Client to Server Calls
  * 
  * These are the calls made on the client to the server, it supports multiple payment provider types
  */
-export type PaymentApi = {
+export type PaymentClientApi = {
     // Normal Flow
     setupSavedPaymentMethod: (params: { providerName: PaymentProviderName }) => Promise<PaymentProviderSavedPaymentMethodClientSetupToken>;
     saveSavedPaymentMethod: (params: { providerName: PaymentProviderName, paymentMethodClientToken: PaymentProviderSavedPaymentMethodClientToken }) => Promise<void>;
@@ -36,6 +45,21 @@ export type PaymentApi = {
     // Management of Payment Methods
     getSavedPaymentMethods: () => Promise<PaymentMethodClientInfo[]>;
     deleteSavedPaymentMethod: (params: { key: PaymentMethodStorageKey }) => Promise<void>;
+
+    // Management of Payments
+    debug_triggerPayment: (params: { amount: PaymentAmount }) => Promise<void>;
+    // getPayments: () => Promise<PaymentTransaction[]>;
+    // getPaymentsRequiringUserAction: () => Promise<PaymentTransaction[]>;
+}
+
+
+/** Payment Server to Server Calls
+ * 
+ * These are the calls intended to be used server-side to process payments
+ */
+export type PaymentServerApi = {
+    /** This will use the payment methods in order until one succeeds */
+    chargeUsingSavedPaymentMethods: (params: { amount: PaymentAmount }) => Promise<void>;
 }
 
 /** Payment Server to Payment Provider Api Calls
@@ -53,7 +77,9 @@ export type PaymentProviderApi = {
         title: string;
         expiration: PaymentMethodExpiration;
     }>;
-    chargeSavedPaymentMethod: (userToken: PaymentProviderUserToken, token: PaymentProviderSavedPaymentMethodStorageToken) => Promise<void>;
+    chargeSavedPaymentMethod: (userToken: PaymentProviderUserToken, token: PaymentProviderSavedPaymentMethodStorageToken, amount: PaymentAmount) => Promise<void>;
+
+    // getPayments: () => Promise<PaymentTransaction[]>;
 }
 
 /** Payment Server Dependencies */

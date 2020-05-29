@@ -1,7 +1,7 @@
-import { PaymentApi, PaymentProviderApi, PaymentStorageProviderApi, PaymentError } from '../common/types';
+import { PaymentClientApi, PaymentProviderApi, PaymentStorageProviderApi, PaymentError, PaymentServerApi, PaymentMethodClientInfo } from '../common/types';
 import { wrapProcessStep_CreateSavedPaymentMethod, ProcessSteps_CreateSavedPaymentMethod } from '../common/process-steps';
 
-export const createPaymentApi_inner = (dependencies: { providers: PaymentProviderApi[], storage: PaymentStorageProviderApi }): PaymentApi => {
+export const createPaymentApi_inner = (dependencies: { providers: PaymentProviderApi[], storage: PaymentStorageProviderApi }): PaymentClientApi => {
 
     const getProvider = (providerName: string) => {
         const provider = dependencies.providers.find(x => x.providerName === providerName);
@@ -9,7 +9,38 @@ export const createPaymentApi_inner = (dependencies: { providers: PaymentProvide
         return provider;
     };
 
-    const paymentApi: PaymentApi = {
+    const paymentServerApi: PaymentServerApi = {
+        chargeUsingSavedPaymentMethods: async ({ amount }) => {
+            const stored = await dependencies.storage.getSavedPaymentMethods();
+            const errors = [] as { error: unknown, paymentMethod: PaymentMethodClientInfo }[];
+
+            for (const x of stored) {
+                // Attempt to make payment
+                const { key, providerName, title, expiration } = x;
+                const provider = getProvider(providerName);
+
+                // eslint-disable-next-line no-await-in-loop
+                const userToken = await dependencies.storage.getUserToken({ providerName });
+                if (!userToken) {
+                    throw new PaymentError(`saveSavedPaymentMethod: User Token was not found`, { providerName });
+                }
+
+                try {
+                    // eslint-disable-next-line no-await-in-loop
+                    await provider.chargeSavedPaymentMethod(userToken.userToken, x.paymentMethodStorageToken, amount);
+                    return;
+                } catch (error) {
+                    errors.push({ error, paymentMethod: { key, providerName, title, expiration } });
+                    console.log(`PaymentMethod failed, try next`, { error });
+                }
+            }
+
+            // No method succeeded
+            throw new PaymentError(`All Payment Methods Failed`, { errors });
+        },
+    };
+
+    const paymentClientApi: PaymentClientApi = {
         setupSavedPaymentMethod: async ({ providerName }) => {
             const setupToken = await wrapProcessStep_CreateSavedPaymentMethod(
                 ProcessSteps_CreateSavedPaymentMethod._02_Server_SetupSavedPaymentMethod,
@@ -60,6 +91,10 @@ export const createPaymentApi_inner = (dependencies: { providers: PaymentProvide
             await dependencies.storage.deleteSavedPaymentMethod({ key });
         },
 
+        debug_triggerPayment: async (params) => {
+            await paymentServerApi.chargeUsingSavedPaymentMethods(params);
+        },
+
     };
-    return paymentApi;
+    return paymentClientApi;
 };

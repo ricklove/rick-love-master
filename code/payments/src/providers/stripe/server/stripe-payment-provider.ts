@@ -1,6 +1,6 @@
 import Stripe from 'stripe';
 import { PaymentProviderApi, PaymentProviderName, PaymentError } from '../../../common/types';
-import { stripeDecodeUserToken, stripeEncodeUserToken, stripeEncodeStorageToken } from './stripe-server-tokens';
+import { stripeDecodeUserToken, stripeEncodeUserToken, stripeEncodeStorageToken, stripeDecodeStorageToken } from './stripe-server-tokens';
 import { stripeEncodeClientSetupToken, StripeCustomerBillingDetails, stripeDecodeClientToken } from '../client/stripe-client-tokens';
 import { wrapProcessStep_CreateSavedPaymentMethod_Stripe, ProcessSteps_CreateSavedPaymentMethod_Stripe } from '../common/stripe-process-steps';
 
@@ -81,8 +81,37 @@ export const createStripePaymentProviderApi = (dependencies: {
                 expiration: paymentMethodInfo.expiration,
             };
         },
-        chargeSavedPaymentMethod: async () => {
-            throw new Error(`Not Implemented`);
+        chargeSavedPaymentMethod: async (userToken, paymentToken, amount) => {
+
+            const { customerId } = stripeDecodeUserToken(userToken);
+            const { paymentMethod } = stripeDecodeStorageToken(paymentToken);
+
+            if (amount.currency !== `usd`) {
+                throw new PaymentError(`stripe.chargeSavedPaymentMethod: Only Usd is accepted`, { amount, customerId });
+            }
+
+            try {
+                const paymentIntent = await stripe.paymentIntents.create({
+                    amount: amount.usdCents,
+                    currency: `usd`,
+                    customer: customerId,
+                    payment_method: paymentMethod,
+                    // User not here
+                    off_session: true,
+                    // Attempt to confirm Immediately
+                    confirm: true,
+                });
+
+                // Successful
+                return;
+            } catch (error) {
+                // Error code will be authentication_required if authentication is needed
+                // console.log(`Error code is:`, error.code);
+                const paymentIntentRetrieved = await stripe.paymentIntents.retrieve(error.raw.payment_intent.id);
+                // console.log(`PI retrieved:`, paymentIntentRetrieved.id);
+
+                throw new PaymentError(`stripe.chargeSavedPaymentMethod: Failed`, { errorCode: error?.code, error, paymentIntentRetrieved });
+            }
         },
     };
     return providerApi;

@@ -5,7 +5,7 @@ import { createJsonRpcClient } from 'json-rpc/json-rpc-client';
 import { createPaymentApi_simple } from '../server/create-payment-api';
 import { createPaymentClientComponents } from '../client/payment-react';
 import { PaymentComponentStyle, PaymentClientComponents } from '../common/types-react';
-import { PaymentProviderSavedPaymentMethodClientSetupToken, PaymentProviderName, PaymentApi, PaymentProviderSavedPaymentMethodClientToken, PaymentMethodClientInfo, PaymentMethodStorageKey } from '../common/types';
+import { PaymentProviderSavedPaymentMethodClientSetupToken, PaymentProviderName, PaymentClientApi, PaymentProviderSavedPaymentMethodClientToken, PaymentMethodClientInfo, PaymentMethodStorageKey } from '../common/types';
 import { getFullStackTestConfig, FullStackTestConfig } from './full-stack-test-config';
 
 export const PaymentFullStackTesterHost = (props: {}) => {
@@ -17,7 +17,7 @@ export const PaymentFullStackTesterHost = (props: {}) => {
         (async () => {
             const c = await getFullStackTestConfig();
             setConfig(c);
-            const server = createJsonRpcClient<PaymentApi>({
+            const server = createJsonRpcClient<PaymentClientApi>({
                 serverUrl: c.serverUrl,
                 appendMethodNameToUrl: true,
             }, {
@@ -25,6 +25,7 @@ export const PaymentFullStackTesterHost = (props: {}) => {
                 saveSavedPaymentMethod: `saveSavedPaymentMethod`,
                 getSavedPaymentMethods: `getSavedPaymentMethods`,
                 deleteSavedPaymentMethod: `deleteSavedPaymentMethod`,
+                debug_triggerPayment: `debug_triggerPayment`,
             });
 
             const providerName = `stripe` as PaymentProviderName;
@@ -44,6 +45,10 @@ export const PaymentFullStackTesterHost = (props: {}) => {
                 deletePaymentMethod: async (key: PaymentMethodStorageKey) => {
                     console.log(`deletePaymentMethod`);
                     await server.deleteSavedPaymentMethod({ key });
+                },
+                onMakePurchase: async (amount: number) => {
+                    console.log(`onMakePurchase`);
+                    await server.debug_triggerPayment({ amount: { currency: `usd`, usdCents: Math.floor(amount * 100) } });
                 },
             };
 
@@ -84,6 +89,7 @@ type PaymantViewServerAccess = {
     deletePaymentMethod: (key: PaymentMethodStorageKey) => Promise<void>;
     onSetupPayment: () => Promise<PaymentProviderSavedPaymentMethodClientSetupToken>;
     onPaymentMethodReady: (paymentMethodToken: PaymentProviderSavedPaymentMethodClientToken) => Promise<void>;
+    onMakePurchase: (amount: number) => Promise<void>;
 };
 const PaymantView = (props: {
     comp: PaymentClientComponents;
@@ -127,17 +133,33 @@ const PaymantView = (props: {
         await populatePaymentMethods();
     };
 
+    const [purchaseAmount, setPurchaseAmount] = useState(100);
+    const makePurchase = async () => {
+        await props.serverAccess.onMakePurchase(purchaseAmount);
+    };
+
     return (
         <>
-            {paymentMethods && paymentMethods.map(x => (
-                <div key={x.key} style={mainTheme.div_fieldRow}>
-                    <span style={mainTheme.span_fieldInfo}>{x.title}</span>
-                    <span style={mainTheme.span_fieldInfo}>Expires: {`${x.expiration.month}`.padStart(2, `0`)}/{x.expiration.year}</span>
-                    <button style={mainTheme.button_fieldInline} type='button' onClick={() => deletePaymentMethod(x.key)}>Remove</button>
+            <div style={mainTheme.div_form}>
+                {paymentMethods && paymentMethods.map(x => (
+                    <div key={x.key} style={mainTheme.div_fieldRow}>
+                        <span style={mainTheme.span_fieldInfo}>{x.title}</span>
+                        <span style={mainTheme.span_fieldInfo}>Expires: {`${x.expiration.month}`.padStart(2, `0`)}/{x.expiration.year}</span>
+                        <button style={mainTheme.button_fieldInline} type='button' onClick={() => deletePaymentMethod(x.key)}>Remove</button>
+                    </div>
+                ))}
+                {!setupToken && <div style={mainTheme.div_formActionRow}><button style={mainTheme.button_formAction} type='button' onClick={setupPayment}>Add Payment Method</button></div>}
+                {setupToken && <props.comp.PaymentMethodEntryComponent style={style} paymentMethodSetupToken={setupToken} onPaymentMethodReady={onPaymentMethodReady} />}
+            </div>
+
+            <div style={mainTheme.div_form}>
+                <span style={mainTheme.span_formTitle}>Make Purchase</span>
+                <div style={mainTheme.div_fieldRow}>
+                    <span style={mainTheme.span_fieldInfo}>Amount $</span>
+                    <input style={mainTheme.input_fieldEntry} type='number' min='0.00' max='10000.00' step='0.01' value={purchaseAmount} onChange={(e) => setPurchaseAmount(Number.parseFloat(e.target.value))} />
+                    <button style={mainTheme.button_fieldInline} type='button' onClick={() => makePurchase()}>Purchase</button>
                 </div>
-            ))}
-            {!setupToken && <div style={mainTheme.div_formActionRow}><button style={mainTheme.button_formAction} type='button' onClick={setupPayment}>Add Payment Method</button></div>}
-            {setupToken && <props.comp.PaymentMethodEntryComponent style={style} paymentMethodSetupToken={setupToken} onPaymentMethodReady={onPaymentMethodReady} />}
+            </div>
         </>
     );
 };

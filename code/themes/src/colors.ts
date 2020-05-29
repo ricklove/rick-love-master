@@ -12,6 +12,7 @@ const mainThemSizes = {
     textPadding: 4,
     borderWidth: 1,
     borderRadius: 4,
+    sectionPadding: 16,
     elementPadding: 8,
     rowPadding: 4,
 } as const;
@@ -20,6 +21,12 @@ const createTheme = (colors: typeof mainThemeColors, sizes: typeof mainThemSizes
     return {
         colors,
 
+        div_form: {
+            padding: 8,
+            marginBottom: sizes.sectionPadding,
+            border: `solid ${sizes.borderWidth}px ${colors.border}`, borderRadius: `${sizes.borderRadius}px`,
+        },
+        span_formTitle: { padding: sizes.textPadding, color: colors.text, fontSize: 20 },
         div_fieldRow: {
             marginBottom: sizes.rowPadding,
             background: colors.background_field,
@@ -28,6 +35,7 @@ const createTheme = (colors: typeof mainThemeColors, sizes: typeof mainThemSizes
             flexDirection: `row`,
         },
         span_fieldInfo: { padding: sizes.textPadding, color: colors.text },
+        input_fieldEntry: { padding: sizes.textPadding, color: colors.text },
         button_fieldInline: {
             padding: sizes.textPadding,
             marginLeft: sizes.elementPadding,

@@ -20,6 +20,7 @@ export const createPaymentClientComponents_stripe = (params: { stripePublicKey: 
                 event.preventDefault();
                 if (!stripe || !elements) { return; }
 
+                // Completed SetupIntent -> Used to get PaymentMethod
                 const setupIntent = await wrapProcessStep_CreateSavedPaymentMethod_Stripe(
                     ProcessSteps_CreateSavedPaymentMethod_Stripe._03A_Client_CollectPaymentDetails,
                     async () => {
