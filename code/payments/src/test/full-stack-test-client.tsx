@@ -97,6 +97,7 @@ const PaymantView = (props: {
         borderColor: mainTheme.colors.border,
         backgroundColor: mainTheme.colors.background_field,
         textColor: mainTheme.colors.text,
+        buttonText: `Save`,
     } as PaymentComponentStyle);
 
     const [paymentMethods, setPaymentMethods] = useState(null as null | PaymentMethodClientInfo[]);

@@ -48,7 +48,7 @@ export const createPaymentClientComponents_stripe = (params: { stripePublicKey: 
             const inputStyle = {
                 base: {
                     color: s.textColor,
-                    fontSize: `${s.fontSize}px`,
+                    fontSize: s.fontSize ? `${s.fontSize}px` : ``,
                     fontFamily: s.fontFamily,
                     fontSmoothing: `antialiased`,
                     "::placeholder": {
@@ -72,12 +72,13 @@ export const createPaymentClientComponents_stripe = (params: { stripePublicKey: 
                 backgroundColor: s.backgroundColor,
                 borderWidth: 1, borderStyle: `solid`, borderColor: s.borderColor, borderRadius: s.borderRadius,
 
-                fontSize: `${s.fontSize}px`,
+                fontSize: s.fontSize ? `${s.fontSize}px` : ``,
                 fontFamily: s.fontFamily,
                 fontSmoothing: `antialiased`,
+                fontWeight: `bold`,
                 padding: s.textPadding,
                 marginBottom: s.elementPadding,
-            };
+            } as const;
             const buttonJustifyContent = s.buttonAlignment === `left` ? `flex-start`
                 : (s.buttonAlignment === `right` ? `flex-end`
                     : `center`);
