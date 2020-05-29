@@ -129,12 +129,13 @@ const PaymantView = (props: {
     return (
         <>
             {paymentMethods && paymentMethods.map(x => (
-                <div key={x.key}>
-                    <span>{x.title}</span>
-                    <button type='button' onClick={() => deletePaymentMethod(x.key)}>Remove Payment Method</button>
+                <div key={x.key} style={mainTheme.div_fieldRow}>
+                    <span style={mainTheme.span_fieldInfo}>{x.title}</span>
+                    <span style={mainTheme.span_fieldInfo}>Expires: {`${x.expiration.month}`.padStart(2, `0`)}/{x.expiration.year}</span>
+                    <button style={mainTheme.button_fieldInline} type='button' onClick={() => deletePaymentMethod(x.key)}>Remove Payment Method</button>
                 </div>
             ))}
-            {!setupToken && <button type='button' onClick={setupPayment}>Add Payment Method</button>}
+            {!setupToken && <div style={mainTheme.div_formActionRow}><button style={mainTheme.button_formAction} type='button' onClick={setupPayment}>Add Payment Method</button></div>}
             {setupToken && <props.comp.PaymentMethodEntryComponent style={style} paymentMethodSetupToken={setupToken} onPaymentMethodReady={onPaymentMethodReady} />}
         </>
     );

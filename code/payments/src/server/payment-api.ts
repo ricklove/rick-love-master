@@ -40,6 +40,7 @@ export const createPaymentApi_inner = (dependencies: { providers: PaymentProvide
                     await dependencies.storage.savePaymentMethod({
                         providerName,
                         title: paymentMethodData.title,
+                        expiration: paymentMethodData.expiration,
                         paymentMethodStorageToken: paymentMethodData.token,
                     });
                 });
@@ -51,6 +52,7 @@ export const createPaymentApi_inner = (dependencies: { providers: PaymentProvide
                     key: x.key,
                     providerName: x.providerName,
                     title: x.title,
+                    expiration: x.expiration,
                     extra: `ok`,
                 }));
         },

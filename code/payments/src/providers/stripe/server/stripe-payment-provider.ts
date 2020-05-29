@@ -63,15 +63,22 @@ export const createStripePaymentProviderApi = (dependencies: {
                 async () => {
                     const result = await stripe.paymentMethods.retrieve(paymentMethodId);
                     if (!result) {
-                        throw new PaymentError(`obtainSavedPaymentMethod: setupIntent.payment_method is missing`);
+                        throw new PaymentError(`obtainSavedPaymentMethod: paymentMethod was not found`);
+                    }
+                    if (!result.card) {
+                        throw new PaymentError(`obtainSavedPaymentMethod: paymentMethod.card is missing`);
                     }
                     // console.log(`obtainSavedPaymentMethod`, { title });
-                    return { title: `Last4: ...${result.card?.last4 ?? ``}` };
+                    return {
+                        title: `Last4: ...${result.card.last4}`,
+                        expiration: { year: result.card.exp_year, month: result.card.exp_month },
+                    };
                 });
 
             return {
                 token: stripeEncodeStorageToken({ paymentMethod: paymentMethodId }),
                 title: paymentMethodInfo.title,
+                expiration: paymentMethodInfo.expiration,
             };
         },
         chargeSavedPaymentMethod: async () => {

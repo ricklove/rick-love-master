@@ -62,7 +62,7 @@ export const createPaymentClientComponents_stripe = (params: { stripePublicKey: 
                 },
             };
             const inputContainerStyle = {
-                margin: s.elementPadding,
+                marginBottom: s.elementPadding,
                 padding: s.textPadding,
                 backgroundColor: s.backgroundColor,
                 borderWidth: 1, borderStyle: `solid`, borderColor: s.borderColor, borderRadius: s.borderRadius,
@@ -76,7 +76,7 @@ export const createPaymentClientComponents_stripe = (params: { stripePublicKey: 
                 fontFamily: s.fontFamily,
                 fontSmoothing: `antialiased`,
                 padding: s.textPadding,
-                margin: s.elementPadding,
+                marginBottom: s.elementPadding,
             };
             const buttonJustifyContent = s.buttonAlignment === `left` ? `flex-start`
                 : (s.buttonAlignment === `right` ? `flex-end`
