@@ -3,6 +3,7 @@
 /* eslint-disable unicorn/consistent-function-scoping */
 import { processDirectoryFiles, getFileName, readFile, getPathNormalized } from 'utils/files';
 import { PageData } from './create-page';
+import { componentTestList } from '../pageTemplates/component-tests-list';
 
 export type SitePages<T> = {
     pages: SitePageInfo<T>[];
@@ -76,12 +77,21 @@ export const loadStaticPageData = async (): Promise<SitePages<PageData>> => {
         },
     });
 
-    pages.push({
-        sitePath: `/tests/stripe`,
-        data: {
-            componentTestsPage: { testName: `stripe` },
-        },
+    componentTestList.forEach(x => {
+        pages.push({
+            sitePath: `/tests/${x.name}`,
+            data: {
+                componentTestsPage: { testName: x.name },
+            },
+        });
     });
+
+    // pages.push({
+    //     sitePath: `/tests/stripe`,
+    //     data: {
+    //         componentTestsPage: { testName: `stripe` },
+    //     },
+    // });
 
     pages.push({
         sitePath: `/404.html`,

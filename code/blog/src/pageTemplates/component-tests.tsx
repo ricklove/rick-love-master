@@ -2,9 +2,11 @@ import React, { useEffect } from 'react';
 import { useLoadable } from 'utils-react/loadable';
 import { Layout } from './layout/layout';
 import { SEO } from './layout/seo';
+import { componentTestList } from './component-tests-list';
+
 
 export type ComponentTestsPageData = {
-    testName: 'stripe';
+    testName: string;
 };
 
 export const ComponentTestsPage = (props: { data: ComponentTestsPageData }) => {
@@ -16,14 +18,10 @@ export const ComponentTestsPage = (props: { data: ComponentTestsPageData }) => {
     );
 };
 
-export const testComponentsAuto = [
-    { name: `stripe`, load: async () => (await import(`payments/providers/stripe/client-test/stripe-example`)).StripeExamplePage },
-    // { name: `theme`, load: async () => (await import(`themes/theme-example`)).ThemeExample },
-];
 
 export const TestComponentAuto = (props: { data: ComponentTestsPageData }) => {
     const { testName } = props.data;
-    const test = testComponentsAuto.find(x => x.name === testName);
+    const test = componentTestList.find(x => x.name === testName);
 
     const { LoadedComponent, load } = useLoadable(test?.load ?? (async () => (await import(`./component-tests-not-found`)).EmptyComponent));
     useEffect(() => { (async () => await load())(); }, [load]);
