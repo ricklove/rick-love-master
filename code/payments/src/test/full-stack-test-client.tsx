@@ -5,70 +5,58 @@ import { createJsonRpcClient } from 'json-rpc/json-rpc-client';
 import { createPaymentApi_simple } from '../server/create-payment-api';
 import { createPaymentClientComponents } from '../client/payment-react';
 import { PaymentComponentStyle, PaymentClientComponents } from '../common/types-react';
-import { PaymentProviderSavedPaymentMethodClientSetupToken, PaymentProviderName } from '../common/types';
-import { getFullStackTestConfig } from './full-stack-test-config';
+import { PaymentProviderSavedPaymentMethodClientSetupToken, PaymentProviderName, PaymentApi, PaymentProviderSavedPaymentMethodClientToken } from '../common/types';
+import { getFullStackTestConfig, FullStackTestConfig } from './full-stack-test-config';
 
 export const PaymentFullStackTesterHost = (props: {}) => {
 
-    const [configState, setConfigState] = useState(null as null | FullStackConfig);
-    // const [stripePublicKey, setStripePublicKey] = useState(``);
-    // const [stripeSecretKey, setStripeSecretKey] = useState(``);
-
-    // const saveConfig = () => {
-
-    //     // localStorage.stripePublicKey = stripePublicKey;
-    //     // localStorage.stripeSecretKey = stripeSecretKey;
-    //     setConfigState({
-    //         stripePublicKey,
-    //         //  stripeSecretKey,
-    //     });
-    // };
+    const [serverAccess, setServerAccess] = useState(null as null | PaymantViewServerAccess);
+    const [config, setConfig] = useState(null as null | FullStackTestConfig);
 
     useEffect(() => {
         (async () => {
-            const config = await getFullStackTestConfig();
+            const c = await getFullStackTestConfig();
+            setConfig(c);
+            const server = createJsonRpcClient<PaymentApi>({
+                serverUrl: c.serverUrl,
+                appendMethodNameToUrl: true,
+            }, {
+                setupSavedPaymentMethod: `setupSavedPaymentMethod`,
+                saveSavedPaymentMethod: `saveSavedPaymentMethod`,
+                getSavedPaymentMethods: `getSavedPaymentMethods`,
+                deleteSavedPaymentMethod: `deleteSavedPaymentMethod`,
+            });
 
-            const server = createJsonRpcClient(props.config.serverUrl, {});
-            const serverAccess: PaymantViewServerAccess = {
+            const providerName = `stripe` as PaymentProviderName;
+            const access: PaymantViewServerAccess = {
                 onSetupPayment: async () => {
                     console.log(`onSetupPayment`);
-                    return server.setupSavedPaymentMethod({ providerName });
+                    return await server.setupSavedPaymentMethod({ providerName });
+                },
+                onPaymentMethodReady: async (token) => {
+                    console.log(`onPaymentMethodReady`);
+                    return await server.saveSavedPaymentMethod({ title: `Card`, providerName, paymentMethodClientToken: token });
                 },
             };
+
+            setServerAccess(access);
         })();
     }, []);
 
     return (
         <div>
             <div>
-                <div>Loading Config...</div>
-                {/* <span >Stripe Public Key</span>
-                <input type='text' value={stripePublicKey} onChange={(e) => setStripePublicKey(e.target.value)} /> */}
-                {/* <span >Stripe Secret Key</span>
-                <input type='text' value={stripeSecretKey} onChange={(e) => setStripeSecretKey(e.target.value)} /> */}
-                {/* <button type='button' onClick={saveConfig}>Save</button> */}
+                <div>Loading...</div>
             </div>
-            {configState && <PaymentFullStackTester config={configState} />}
+            {config && serverAccess && <PaymentFullStackTester config={config} serverAccess={serverAccess} />}
         </div>
     );
 };
 
-export const PaymentFullStackTester = (props: { serverAccess: FullStackServerAccess }) => {
+export const PaymentFullStackTester = (props: { config: FullStackTestConfig, serverAccess: PaymantViewServerAccess }) => {
 
     const comp = createPaymentClientComponents({ stripePublicKey: props.config.stripePublicKey });
-    const storage = {
-        state: {} as { [key: string]: string },
-        getValue: async (key: string) => storage.state[key],
-        setValue: async (key: string, value: string) => { storage.state[key] = value; },
-    };
-    // const server = createPaymentApi_simple({
-    //     getStripeSecretKey: () => props.state.stripeSecretKey,
-    //     getUserBillingDetails: async () => ({ phone: `555-867-5309` }),
-    //     userKeyValueStorage: storage,
-    // });
     const AppWrapperComponent = comp.AppWrapperComponent ?? (({ children }) => (<>{children}</>));
-
-    const providerName = `stripe` as PaymentProviderName;
 
     return (
         <AppWrapperComponent>
@@ -77,7 +65,7 @@ export const PaymentFullStackTester = (props: { serverAccess: FullStackServerAcc
                 <hr />
                 <div>Show me the Money!</div>
                 <div >
-                    <PaymantView comp={comp} serverAccess={serverAccess} />
+                    <PaymantView comp={comp} serverAccess={props.serverAccess} />
                 </div>
             </div>
             {/* <TestControls /> */}
@@ -87,6 +75,7 @@ export const PaymentFullStackTester = (props: { serverAccess: FullStackServerAcc
 
 type PaymantViewServerAccess = {
     onSetupPayment: () => Promise<PaymentProviderSavedPaymentMethodClientSetupToken>;
+    onPaymentMethodReady: (paymentMethodToken: PaymentProviderSavedPaymentMethodClientToken) => Promise<void>;
 };
 const PaymantView = (props: {
     comp: PaymentClientComponents;
@@ -105,13 +94,18 @@ const PaymantView = (props: {
     const [setupToken, setSetupToken] = useState(null as null | PaymentProviderSavedPaymentMethodClientSetupToken);
     const setupPayment = async () => {
         const result = await props.serverAccess.onSetupPayment();
+        console.log(`setupPayment`, { result });
         setSetupToken(result);
+    };
+
+    const onPaymentMethodReady = async (paymentMethodToken: PaymentProviderSavedPaymentMethodClientToken) => {
+        await props.serverAccess.onPaymentMethodReady(paymentMethodToken);
     };
 
     return (
         <>
             {!setupToken && <button type='button' onClick={setupPayment}>Add Payment Method</button>}
-            {setupToken && <props.comp.PaymentMethodEntryComponent style={style} paymentMethodSetupToken={setupToken} onPaymentMethodReady={(params) => { console.log(`onPaymentMethodReady`, params); }} />}
+            {setupToken && <props.comp.PaymentMethodEntryComponent style={style} paymentMethodSetupToken={setupToken} onPaymentMethodReady={onPaymentMethodReady} />}
         </>
     );
 };

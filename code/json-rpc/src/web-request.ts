@@ -25,7 +25,7 @@ const fetchWithTimeout = (url: string, options: RequestInit, timeout = 15000): P
     return Promise.race([pTimeout, pMain]);
 };
 
-export const webRequest_jsonPost = async <TResponse>(url: string, data: unknown): Promise<TResponse> => {
+export const webRequest_jsonPost = async <TResponse extends {}>(url: string, data: unknown): Promise<TResponse> => {
 
     const body = JSON.stringify(data);
     const reqData: RequestInit = {

@@ -3,13 +3,13 @@
 export type FullStackTestConfig = {
     stripeSecretKey: string;
     stripePublicKey: string;
+    serverUrl: string;
 }
 
 export const getFullStackTestConfig = async (): Promise<FullStackTestConfig> => {
-    const path = `./full-stack-test-config.secret`;
-    const config = (await import(path))?.fullStackTestConfig as FullStackTestConfig;
+    const config = (await import(`./full-stack-test-config.secret`))?.fullStackTestConfig as FullStackTestConfig;
     if (!config) {
-        throw new Error(`Create config file at ${path}`);
+        throw new Error(`Create config file`);
     }
     return config;
 };
