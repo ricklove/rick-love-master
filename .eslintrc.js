@@ -195,6 +195,9 @@ module.exports = {
         // Not Needed with Typescript
         "react/prop-types": ["off"],
 
+        // Too many false positives:
+        "react-hooks/exhaustive-deps": ["off"],
+
 
         // TODO: Test
         // "require-atomic-updates": ["error"],

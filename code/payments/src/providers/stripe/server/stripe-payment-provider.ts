@@ -47,17 +47,32 @@ export const createStripePaymentProviderApi = (dependencies: {
             return { newUserToken: newUser?.newUserToken, setupToken };
         },
         obtainSavedPaymentMethod: async (userToken, clientToken) => {
-            const paymentMethod = await wrapProcessStep_CreateSavedPaymentMethod_Stripe(
+            const paymentMethodId = await wrapProcessStep_CreateSavedPaymentMethod_Stripe(
                 ProcessSteps_CreateSavedPaymentMethod_Stripe._04A_Server_ObtainPaymentMethod,
                 async () => {
                     const { setupIntent } = stripeDecodeClientToken(clientToken);
                     if (!setupIntent.payment_method) {
                         throw new PaymentError(`obtainSavedPaymentMethod: setupIntent.payment_method is missing`);
                     }
+                    // console.log(`obtainSavedPaymentMethod`, { title });
                     return setupIntent.payment_method;
                 });
 
-            return stripeEncodeStorageToken({ paymentMethod });
+            const paymentMethodInfo = await wrapProcessStep_CreateSavedPaymentMethod_Stripe(
+                ProcessSteps_CreateSavedPaymentMethod_Stripe._04B_Server_ObtainPaymentMethodDetails,
+                async () => {
+                    const result = await stripe.paymentMethods.retrieve(paymentMethodId);
+                    if (!result) {
+                        throw new PaymentError(`obtainSavedPaymentMethod: setupIntent.payment_method is missing`);
+                    }
+                    // console.log(`obtainSavedPaymentMethod`, { title });
+                    return { title: `Last4: ...${result.card?.last4 ?? ``}` };
+                });
+
+            return {
+                token: stripeEncodeStorageToken({ paymentMethod: paymentMethodId }),
+                title: paymentMethodInfo.title,
+            };
         },
         chargeSavedPaymentMethod: async () => {
             throw new Error(`Not Implemented`);

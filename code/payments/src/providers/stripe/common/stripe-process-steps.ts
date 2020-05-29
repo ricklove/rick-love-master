@@ -8,6 +8,7 @@ export enum ProcessSteps_CreateSavedPaymentMethod_Stripe {
     _02B_Server_CreateSetupIntent = ProcessSteps_CreateSavedPaymentMethod._02_Server_SetupSavedPaymentMethod + 2,
     _03A_Client_CollectPaymentDetails = ProcessSteps_CreateSavedPaymentMethod._03_Client_CollectPaymentDetails + 1,
     _04A_Server_ObtainPaymentMethod = ProcessSteps_CreateSavedPaymentMethod._04_Server_ObtainPaymentMethod + 1,
+    _04B_Server_ObtainPaymentMethodDetails = ProcessSteps_CreateSavedPaymentMethod._04_Server_ObtainPaymentMethod + 2,
 };
 
 export const logProcessStep_CreateSavedPaymentMethod_Stripe = (step: ProcessSteps_CreateSavedPaymentMethod_Stripe, status?: 'BEGIN' | 'END' | 'FAIL', data?: unknown) => {

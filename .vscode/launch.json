@@ -30,6 +30,56 @@
             ]
         },
         {
+            "name": "Run Hydrate",
+            "type": "node",
+            "request": "launch",
+            "args": [
+                "${workspaceFolder}/scripts/build/hydrate.ts"
+            ],
+            "runtimeArgs": [
+                "--nolazy",
+                "-r",
+                "ts-node/register",
+                "--preserve-symlinks",
+                "--preserve-symlinks-main",
+                "-r",
+                "tsconfig-paths/register"
+            ],
+            "sourceMaps": true,
+            "cwd": "${fileDirname}",
+            "protocol": "inspector",
+            "smartStep": true,
+            "skipFiles": [
+                "${workspaceFolder}/../../node_modules/**/*.js",
+                "<node_internals>/**/*.js"
+            ]
+        },
+        {
+            "name": "Run Test Server - Payments",
+            "type": "node",
+            "request": "launch",
+            "args": [
+                "${workspaceFolder}/code/payments/src/test/full-stack-test-server.ts"
+            ],
+            "runtimeArgs": [
+                "--nolazy",
+                "-r",
+                "ts-node/register",
+                "--preserve-symlinks",
+                "--preserve-symlinks-main",
+                "-r",
+                "tsconfig-paths/register"
+            ],
+            "sourceMaps": true,
+            "cwd": "${fileDirname}",
+            "protocol": "inspector",
+            "smartStep": true,
+            "skipFiles": [
+                "${workspaceFolder}/../../node_modules/**/*.js",
+                "<node_internals>/**/*.js"
+            ]
+        },
+        {
             "name": "Run Specific Target (Example)",
             "type": "node",
             "request": "launch",

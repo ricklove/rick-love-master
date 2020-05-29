@@ -13,6 +13,12 @@ export type PaymentProviderName = string & { __type: 'PaymentProviderName' };
 /** PaymentMethodStorageKey is the auto generated storage key to uniquely identify a stored payment method */
 export type PaymentMethodStorageKey = string & { __type: 'PaymentMethodStorageKey' };
 
+export type PaymentMethodClientInfo = {
+    key: PaymentMethodStorageKey;
+    providerName: PaymentProviderName;
+    title: string;
+};
+
 /** Payment Client to Server Calls
  * 
  * These are the calls made on the client to the server, it supports multiple payment provider types
@@ -20,10 +26,10 @@ export type PaymentMethodStorageKey = string & { __type: 'PaymentMethodStorageKe
 export type PaymentApi = {
     // Normal Flow
     setupSavedPaymentMethod: (params: { providerName: PaymentProviderName }) => Promise<PaymentProviderSavedPaymentMethodClientSetupToken>;
-    saveSavedPaymentMethod: (params: { providerName: PaymentProviderName, title: string, paymentMethodClientToken: PaymentProviderSavedPaymentMethodClientToken }) => Promise<void>;
+    saveSavedPaymentMethod: (params: { providerName: PaymentProviderName, paymentMethodClientToken: PaymentProviderSavedPaymentMethodClientToken }) => Promise<void>;
 
     // Management of Payment Methods
-    getSavedPaymentMethods: () => Promise<{ key: PaymentMethodStorageKey, providerName: PaymentProviderName, title: string }[]>;
+    getSavedPaymentMethods: () => Promise<PaymentMethodClientInfo[]>;
     deleteSavedPaymentMethod: (params: { key: PaymentMethodStorageKey }) => Promise<void>;
 }
 
@@ -34,7 +40,7 @@ export type PaymentApi = {
 export type PaymentProviderApi = {
     providerName: PaymentProviderName;
     setupSavedPaymentMethod: (userToken: PaymentProviderUserToken | null) => Promise<{ newUserToken?: PaymentProviderUserToken, setupToken: PaymentProviderSavedPaymentMethodClientSetupToken }>;
-    obtainSavedPaymentMethod: (userToken: PaymentProviderUserToken, clientToken: PaymentProviderSavedPaymentMethodClientToken) => Promise<PaymentProviderSavedPaymentMethodStorageToken>;
+    obtainSavedPaymentMethod: (userToken: PaymentProviderUserToken, clientToken: PaymentProviderSavedPaymentMethodClientToken) => Promise<{ token: PaymentProviderSavedPaymentMethodStorageToken, title: string }>;
     chargeSavedPaymentMethod: (userToken: PaymentProviderUserToken, token: PaymentProviderSavedPaymentMethodStorageToken) => Promise<void>;
 }
 

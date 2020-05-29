@@ -10,7 +10,10 @@ export const run = async () => {
     const storage = {
         state: {} as { [key: string]: string },
         getValue: async (key: string) => storage.state[key],
-        setValue: async (key: string, value: string) => { storage.state[key] = value; },
+        setValue: async (key: string, value: string) => {
+            storage.state[key] = value;
+            console.log(`storage.setValue`, { key, value, state: storage.state });
+        },
     };
     const api = createPaymentApi_simple({
         getStripeSecretKey: () => config.stripeSecretKey,

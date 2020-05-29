@@ -23,8 +23,8 @@ export const createPaymentApi_inner = (dependencies: { providers: PaymentProvide
                 });
             return setupToken;
         },
-        saveSavedPaymentMethod: async ({ providerName, title, paymentMethodClientToken }) => {
-            const paymentMethodStorageToken = await wrapProcessStep_CreateSavedPaymentMethod(
+        saveSavedPaymentMethod: async ({ providerName, paymentMethodClientToken }) => {
+            const paymentMethodData = await wrapProcessStep_CreateSavedPaymentMethod(
                 ProcessSteps_CreateSavedPaymentMethod._04_Server_ObtainPaymentMethod,
                 async () => {
                     const userToken = await dependencies.storage.getUserToken({ providerName });
@@ -39,8 +39,8 @@ export const createPaymentApi_inner = (dependencies: { providers: PaymentProvide
                 async () => {
                     await dependencies.storage.savePaymentMethod({
                         providerName,
-                        title,
-                        paymentMethodStorageToken,
+                        title: paymentMethodData.title,
+                        paymentMethodStorageToken: paymentMethodData.token,
                     });
                 });
         },

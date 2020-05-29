@@ -60,7 +60,8 @@ export const createPaymentApi_simple = (dependencies: {
         savePaymentMethod: async (data) => {
             const items = await storage.getSavedPaymentMethods();
             const ids = items.map(x => Number.parseInt(x.key, 10));
-            const nextId = Math.max(...ids) + 1;
+            const maxId = ids.length <= 0 ? 100 : Math.max(...ids);
+            const nextId = maxId + 1;
             items.push({ ...data, key: (`${nextId}`) as PaymentMethodStorageKey });
             await setValue<PaymentMethodStorageData[]>(`Payment:savedPaymentMethods`, items);
         },

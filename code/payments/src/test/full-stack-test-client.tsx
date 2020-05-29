@@ -5,7 +5,7 @@ import { createJsonRpcClient } from 'json-rpc/json-rpc-client';
 import { createPaymentApi_simple } from '../server/create-payment-api';
 import { createPaymentClientComponents } from '../client/payment-react';
 import { PaymentComponentStyle, PaymentClientComponents } from '../common/types-react';
-import { PaymentProviderSavedPaymentMethodClientSetupToken, PaymentProviderName, PaymentApi, PaymentProviderSavedPaymentMethodClientToken } from '../common/types';
+import { PaymentProviderSavedPaymentMethodClientSetupToken, PaymentProviderName, PaymentApi, PaymentProviderSavedPaymentMethodClientToken, PaymentMethodClientInfo, PaymentMethodStorageKey } from '../common/types';
 import { getFullStackTestConfig, FullStackTestConfig } from './full-stack-test-config';
 
 export const PaymentFullStackTesterHost = (props: {}) => {
@@ -35,7 +35,15 @@ export const PaymentFullStackTesterHost = (props: {}) => {
                 },
                 onPaymentMethodReady: async (token) => {
                     console.log(`onPaymentMethodReady`);
-                    return await server.saveSavedPaymentMethod({ title: `Card`, providerName, paymentMethodClientToken: token });
+                    return await server.saveSavedPaymentMethod({ providerName, paymentMethodClientToken: token });
+                },
+                getPaymentMethods: async () => {
+                    console.log(`getPaymentMethods`);
+                    return await server.getSavedPaymentMethods();
+                },
+                deletePaymentMethod: async (key: PaymentMethodStorageKey) => {
+                    console.log(`deletePaymentMethod`);
+                    await server.deleteSavedPaymentMethod({ key });
                 },
             };
 
@@ -45,9 +53,7 @@ export const PaymentFullStackTesterHost = (props: {}) => {
 
     return (
         <div>
-            <div>
-                <div>Loading...</div>
-            </div>
+            {(!config || !serverAccess) && (<div>Loading...</div>)}
             {config && serverAccess && <PaymentFullStackTester config={config} serverAccess={serverAccess} />}
         </div>
     );
@@ -74,6 +80,8 @@ export const PaymentFullStackTester = (props: { config: FullStackTestConfig, ser
 };
 
 type PaymantViewServerAccess = {
+    getPaymentMethods: () => Promise<PaymentMethodClientInfo[]>;
+    deletePaymentMethod: (key: PaymentMethodStorageKey) => Promise<void>;
     onSetupPayment: () => Promise<PaymentProviderSavedPaymentMethodClientSetupToken>;
     onPaymentMethodReady: (paymentMethodToken: PaymentProviderSavedPaymentMethodClientToken) => Promise<void>;
 };
@@ -91,6 +99,20 @@ const PaymantView = (props: {
         textColor: mainTheme.colors.text,
     } as PaymentComponentStyle);
 
+    const [paymentMethods, setPaymentMethods] = useState(null as null | PaymentMethodClientInfo[]);
+    const populatePaymentMethods = async () => {
+        const result = await props.serverAccess.getPaymentMethods();
+        setPaymentMethods(result);
+    };
+    useEffect(() => {
+        (async () => { await populatePaymentMethods(); })();
+    }, []);
+
+    const deletePaymentMethod = async (key: PaymentMethodStorageKey) => {
+        await props.serverAccess.deletePaymentMethod(key);
+        await populatePaymentMethods();
+    };
+
     const [setupToken, setSetupToken] = useState(null as null | PaymentProviderSavedPaymentMethodClientSetupToken);
     const setupPayment = async () => {
         const result = await props.serverAccess.onSetupPayment();
@@ -100,10 +122,18 @@ const PaymantView = (props: {
 
     const onPaymentMethodReady = async (paymentMethodToken: PaymentProviderSavedPaymentMethodClientToken) => {
         await props.serverAccess.onPaymentMethodReady(paymentMethodToken);
+        setSetupToken(null);
+        await populatePaymentMethods();
     };
 
     return (
         <>
+            {paymentMethods && paymentMethods.map(x => (
+                <div key={x.key}>
+                    <span>{x.title}</span>
+                    <button type='button' onClick={() => deletePaymentMethod(x.key)}>Remove Payment Method</button>
+                </div>
+            ))}
             {!setupToken && <button type='button' onClick={setupPayment}>Add Payment Method</button>}
             {setupToken && <props.comp.PaymentMethodEntryComponent style={style} paymentMethodSetupToken={setupToken} onPaymentMethodReady={onPaymentMethodReady} />}
         </>
