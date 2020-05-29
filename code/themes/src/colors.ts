@@ -1,9 +1,11 @@
 
 const mainThemeColors = {
     text: `#333333`,
+    text_button: `#333333`,
     border: `#cccccc`,
     background: `#ffffff`,
     background_field: `#dddddd`,
+    background_button: `#eeeeee`,
 } as const;
 
 const mainThemSizes = {
@@ -29,7 +31,9 @@ const createTheme = (colors: typeof mainThemeColors, sizes: typeof mainThemSizes
         button_fieldInline: {
             padding: sizes.textPadding,
             marginLeft: sizes.elementPadding,
-            color: colors.text,
+            background: colors.background_button,
+            color: colors.text_button,
+            fontWeight: `bold`,
             border: `solid ${sizes.borderWidth}px ${colors.border}`, borderRadius: `${sizes.borderRadius}px`,
         },
         div_formActionRow: {
@@ -41,7 +45,9 @@ const createTheme = (colors: typeof mainThemeColors, sizes: typeof mainThemSizes
         button_formAction: {
             padding: sizes.textPadding,
             marginLeft: sizes.elementPadding,
-            color: colors.text,
+            background: colors.background_button,
+            color: colors.text_button,
+            fontWeight: `bold`,
             border: `solid ${sizes.borderWidth}px ${colors.border}`, borderRadius: `${sizes.borderRadius}px`,
         },
     } as const;

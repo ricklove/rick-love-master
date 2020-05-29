@@ -132,7 +132,7 @@ const PaymantView = (props: {
                 <div key={x.key} style={mainTheme.div_fieldRow}>
                     <span style={mainTheme.span_fieldInfo}>{x.title}</span>
                     <span style={mainTheme.span_fieldInfo}>Expires: {`${x.expiration.month}`.padStart(2, `0`)}/{x.expiration.year}</span>
-                    <button style={mainTheme.button_fieldInline} type='button' onClick={() => deletePaymentMethod(x.key)}>Remove Payment Method</button>
+                    <button style={mainTheme.button_fieldInline} type='button' onClick={() => deletePaymentMethod(x.key)}>Remove</button>
                 </div>
             ))}
             {!setupToken && <div style={mainTheme.div_formActionRow}><button style={mainTheme.button_formAction} type='button' onClick={setupPayment}>Add Payment Method</button></div>}
