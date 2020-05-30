@@ -2,31 +2,31 @@
   "compilerOptions": {
     "paths": {
       "blog/*": [
-        "code/blog/src/*"
+        "code/blog/*"
       ],
       "console-simulator/*": [
-        "code/games/console-simulator/src/*"
+        "code/games/console-simulator/*"
       ],
       "dork/*": [
-        "code/games/dork/src/*"
+        "code/games/dork/*"
       ],
       "gatsby-lite/*": [
-        "code/gatsby-lite/src/*"
+        "code/gatsby-lite/*"
       ],
       "json-rpc/*": [
-        "code/json-rpc/src/*"
+        "code/json-rpc/*"
       ],
       "payments/*": [
-        "code/payments/src/*"
+        "code/payments/*"
       ],
       "themes/*": [
-        "code/themes/src/*"
+        "code/themes/*"
       ],
       "utils-react/*": [
-        "code/utils-react/src/*"
+        "code/utils-react/*"
       ],
       "utils/*": [
-        "code/utils/src/*"
+        "code/utils/*"
       ]
     }
   }

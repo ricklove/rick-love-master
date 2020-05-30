@@ -57,14 +57,14 @@
     "build-blog": "cd packages/blog-gatsby-site && gatsby build"
   },
   "workspaces": [
-    "code/blog/src",
-    "code/games/console-simulator/src",
-    "code/games/dork/src",
-    "code/gatsby-lite/src",
-    "code/json-rpc/src",
-    "code/payments/src",
-    "code/themes/src",
-    "code/utils-react/src",
-    "code/utils/src"
+    "code/blog",
+    "code/games/console-simulator",
+    "code/games/dork",
+    "code/gatsby-lite",
+    "code/json-rpc",
+    "code/payments",
+    "code/themes",
+    "code/utils-react",
+    "code/utils"
   ]
 }
