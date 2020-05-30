@@ -58,7 +58,7 @@ export const loadStaticPageData = async (): Promise<SitePages<PageData>> => {
 
     const pages = [] as SitePageInfo<PageData>[];
 
-    const blogContentDir = getPathNormalized(__dirname, `../../../blog-content`);
+    const blogContentDir = getPathNormalized(__dirname, `../../blog-content`);
     // console.log(`loadStaticPageData blogContentDir`, { blogContentDir });
     // await processDirectoryFiles(`${blogContentDir}`, async x => { if (x.endsWith(`.md`)) { pages.push(await createPageData_fromMarkdownFile(x, `post`)); } });
     await processDirectoryFiles(`${blogContentDir}/posts`, async x => { if (x.endsWith(`.md`)) { pages.push(await createPageData_fromMarkdownFile(x, `post`)); } });
