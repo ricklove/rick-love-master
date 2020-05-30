@@ -2,12 +2,23 @@
 export type ThemeViewStyle = {
     display?: 'flex' | 'block' | 'inline-block';
     flexDirection?: 'row' | 'column';
+    flex?: number;
     justifyContent?: 'flex-start' | 'center' | 'flex-end';
+    alignItems?: 'center';
+    overflow?: 'visible' | 'hidden';
 
-    marginLeft?: number;
-    marginBottom?: number;
     background?: string;
+
+    margin?: number;
+    marginLeft?: number;
+    marginRight?: number;
+    marginTop?: number;
+    marginBottom?: number;
     padding?: number;
+    paddingRight?: number;
+    paddingLeft?: number;
+    paddingTop?: number;
+    paddingBottom?: number;
 
     borderWidth?: number;
     borderRadius?: number;
@@ -27,11 +38,24 @@ export const extractViewStyle = (style: ThemeViewStyle & ThemeTextStyle): ThemeV
     return {
         display: style.display,
         flexDirection: style.flexDirection,
+        flex: style.flex,
         justifyContent: style.justifyContent,
-        marginLeft: style.marginLeft,
-        marginBottom: style.marginBottom,
+        alignItems: style.alignItems,
+        overflow: style.overflow,
+
         background: style.background,
+
+        margin: style.margin,
+        marginLeft: style.marginLeft,
+        marginRight: style.marginRight,
+        marginTop: style.marginTop,
+        marginBottom: style.marginBottom,
         padding: style.padding,
+        paddingRight: style.paddingRight,
+        paddingLeft: style.paddingLeft,
+        paddingTop: style.paddingTop,
+        paddingBottom: style.paddingBottom,
+
         borderWidth: style.borderWidth,
         borderRadius: style.borderRadius,
         borderColor: style.borderColor,
@@ -42,6 +66,7 @@ export const extractTextStyle = (style: ThemeViewStyle & ThemeTextStyle): ThemeT
     return {
         padding: style.padding,
         color: style.color,
+
         fontFamily: style.fontFamily,
         fontSize: style.fontSize,
         fontWeight: style.fontWeight,
@@ -72,7 +97,7 @@ export const basicThemeSizes = {
     fontSize: 14,
     fontSize_input: 16,
     fontSize_button: 14,
-    fontSize_header: 20,
+    fontSize_header: 16,
 };
 
 export const basicFont = {
@@ -104,10 +129,14 @@ const createTheme = (colors: ThemeColors, sizes: ThemeSizes, font: ThemeFont) =>
         sizes,
         font,
 
+        view_panel: sView = {
+            background: colors.background,
+            padding: sizes.elementGap,
+        },
         view_form: sView = {
             ...borderProps,
             marginBottom: sizes.sectionGap,
-            padding: 8,
+            padding: sizes.elementGap,
         },
         text_formTitle: sText = {
             padding: sizes.textPadding,
@@ -123,6 +152,7 @@ const createTheme = (colors: ThemeColors, sizes: ThemeSizes, font: ThemeFont) =>
             background: colors.background_field,
             display: `flex`,
             flexDirection: `row`,
+            alignItems: `center`,
         },
         text_fieldLabel: sText = {
             padding: sizes.textPadding,
@@ -145,7 +175,7 @@ const createTheme = (colors: ThemeColors, sizes: ThemeSizes, font: ThemeFont) =>
             fontSize: sizes.fontSize_button,
             fontWeight: font.fontWeight_button,
         },
-        div_formActionRow: sView = {
+        view_formActionRow: sView = {
             display: `flex`,
             flexDirection: `row`,
             justifyContent: `flex-end`,
@@ -160,13 +190,13 @@ const createTheme = (colors: ThemeColors, sizes: ThemeSizes, font: ThemeFont) =>
             fontWeight: font.fontWeight_button,
         },
 
-        div_error: sView = {
+        view_error: sView = {
             ...borderProps,
             marginBottom: sizes.sectionGap,
             padding: sizes.rowPadding,
             background: colors.background_error,
         },
-        span_error: sText = {
+        text_error: sText = {
             padding: sizes.textPadding,
             color: colors.text_error,
             fontSize: sizes.fontSize,

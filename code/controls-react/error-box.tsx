@@ -1,12 +1,12 @@
 import React, { useState } from 'react';
-import { View, Text, TouchableOpacity, ViewStyle, Clipboard } from 'react-native-lite';
-import { theme } from 'themes/theme';
+import { View, Text, TouchableOpacity, Clipboard } from 'react-native-lite';
+import { theme, ThemeViewStyle } from 'themes/theme';
 import { ErrorState } from 'utils/error';
 import { jsonStringify_safe } from 'utils/json';
 
 const DEBUG = true;
 
-const Icon = (props: { kind: IconKind, style: ViewStyle }) => {
+const Icon = (props: { kind: IconKind, style: ThemeViewStyle }) => {
     return (<></>);
 };
 enum IconKind {
@@ -18,9 +18,9 @@ enum IconKind {
 };
 
 const errorBoxStyle = {
-    view: theme.div_error,
-    text: theme.span_error,
-    icon: theme.span_error,
+    view: theme.view_error,
+    text: theme.text_error,
+    icon: theme.text_error,
 };
 
 export const ErrorBox = ({ error }: { error: ErrorState | null | undefined }) => {
@@ -41,13 +41,15 @@ const ErrorBox_Inner = (props: { error: ErrorState }) => {
 
     return (
         <View style={errorBoxStyle.view}>
-            <View style={{ flexDirection: `row` }}>
+            <View style={{ flexDirection: `row` as const }}>
                 <TouchableOpacity style={{ flex: 1, flexDirection: `row`, alignItems: `center` }} onPress={() => setExpanded(!expanded)}>
                     {canExpand && (expanded ? <Icon style={errorBoxStyle.icon} kind={IconKind.Expanded} /> : <Icon style={errorBoxStyle.icon} kind={IconKind.Collapsed} />)}
                     <View style={{ paddingRight: 8 }}>
                         <Icon style={errorBoxStyle.icon} kind={IconKind.Error} />
                     </View>
-                    <Text style={[errorBoxStyle.text, { flex: 1, overflow: `hidden` }]} numberOfLines={!expanded ? 1 : undefined}>{errorMessage}</Text>
+                    <View style={{ flex: 1, overflow: `hidden` }}>
+                        <Text style={errorBoxStyle.text} numberOfLines={!expanded ? 1 : undefined}>{errorMessage}</Text>
+                    </View>
                 </TouchableOpacity>
                 {DEBUG && (
                     <TouchableOpacity onPress={() => Clipboard.setString(jsonStringify_safe({ errorMessage, errorDetails, errorObjText }, true))}>

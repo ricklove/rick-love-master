@@ -11,11 +11,13 @@ type PropsOf<T> = T extends (props: infer P) => JSX.Element ? P : never;
 export const C = {
     Loading,
     ErrorBox,
+    View_Panel: (props: PropsOf<typeof View>) => (<View style={theme.view_panel} {...props} />),
     View_Form: (props: PropsOf<typeof View>) => (<View style={theme.view_form} {...props} />),
     View_FieldRow: (props: PropsOf<typeof View>) => (<View style={theme.view_fieldRow} {...props} />),
+    View_FormActionRow: (props: PropsOf<typeof View>) => (<View style={theme.view_formActionRow} {...props} />),
     Text_FormTitle: (props: PropsOf<typeof Text>) => (<Text style={theme.text_formTitle} {...props} />),
     Text_FieldLabel: (props: PropsOf<typeof Text>) => (<Text style={theme.text_fieldLabel} {...props} />),
     Button_FieldInline: (props: PropsOf<typeof Button>) => (<Button style={theme.button_fieldInline} {...props} />),
-    // <button style={theme.button_fieldInline} type='button' onClick={() => makePurchase()}>Purchase</button>
+    Button_FormAction: (props: PropsOf<typeof Button>) => (<Button style={theme.button_formAction} {...props} />),
     Input_Currency,
 };

@@ -82,14 +82,13 @@ export const PaymentFullStackTester = (props: { config: FullStackTestConfig, ser
 
     return (
         <AppWrapperComponent>
-            <div style={{ padding: 16, background: theme.colors.background, color: theme.colors.text }}>
-                <div>Page and Stuff...</div>
-                <hr />
-                <div>Show me the Money!</div>
-                <div >
-                    <PaymantView comp={comp} serverAccess={props.serverAccess} />
-                </div>
-            </div>
+            <C.View_Panel>
+
+                <C.View_Form>
+                    <C.Text_FormTitle>Page and Stuff...</C.Text_FormTitle>
+                </C.View_Form>
+                <PaymantView comp={comp} serverAccess={props.serverAccess} />
+            </C.View_Panel>
             {/* <TestControls /> */}
         </AppWrapperComponent>
     );
@@ -166,14 +165,15 @@ const PaymantView = (props: {
             <C.Loading loading={loading} />
             <C.ErrorBox error={error} />
             <C.View_Form>
+                <C.Text_FormTitle>Payment Methods</C.Text_FormTitle>
                 {paymentMethods && paymentMethods.map(x => (
                     <C.View_FieldRow key={x.key}>
-                        <span style={theme.text_fieldLabel}>{x.title}</span>
-                        <span style={theme.text_fieldLabel}>Expires: {`${x.expiration.month}`.padStart(2, `0`)}/{x.expiration.year}</span>
-                        <button style={theme.button_fieldInline} type='button' onClick={() => deletePaymentMethod(x.key)}>Remove</button>
+                        <C.Text_FieldLabel>{x.title}</C.Text_FieldLabel>
+                        <C.Text_FieldLabel>{`Expires: ${(`${x.expiration.month}`).padStart(2, `0`)}/${x.expiration.year}`}</C.Text_FieldLabel>
+                        <C.Button_FieldInline onPress={() => deletePaymentMethod(x.key)}>Remove</C.Button_FieldInline>
                     </C.View_FieldRow>
                 ))}
-                {!setupToken && <div style={theme.div_formActionRow}><button style={theme.button_formAction} type='button' onClick={setupPayment}>Add Payment Method</button></div>}
+                {!setupToken && <C.View_FormActionRow><C.Button_FormAction onPress={setupPayment}>Add Payment Method</C.Button_FormAction></C.View_FormActionRow>}
                 {setupToken && <props.comp.PaymentMethodEntryComponent style={style} paymentMethodSetupToken={setupToken} onPaymentMethodReady={onPaymentMethodReady} />}
             </C.View_Form>
 
@@ -186,69 +186,11 @@ const PaymantView = (props: {
                 </C.View_FieldRow>
                 {payments && payments.map(x => (
                     <C.View_FieldRow key={`${x.created}`}>
-                        <span style={theme.text_fieldLabel}>Created: {formatDate(x.created)}</span>
-                        <span style={theme.text_fieldLabel}>${x.amount.usdCents / 100}</span>
+                        <C.Text_FieldLabel>{`Created: ${formatDate(x.created)}`}</C.Text_FieldLabel>
+                        <C.Text_FieldLabel>{`$${x.amount.usdCents / 100}`}</C.Text_FieldLabel>
                     </C.View_FieldRow>
                 ))}
             </C.View_Form>
         </>
     );
 };
-
-
-// export const TestControls = ({ style, onChangeStyle }: { style: PaymentComponentStyle, onChangeStyle: (style: PaymentComponentStyle) => void }) => {
-//     const [styleText, setStyleText] = useState(JSON.stringify(style, null, 2));
-//     const [error, setError] = useState(null as null | { message: string, error: unknown });
-
-//     const changeStyle = () => {
-//         try {
-//             if (error) {
-//                 setError(null);
-//             }
-
-//             const s = JSON.parse(styleText);
-//             onChangeStyle(s);
-//         } catch (error_) {
-//             setError({ message: `style error`, error: error_ });
-//         }
-//     };
-
-//     return (
-//         <div>
-//             <div>Test Controls</div>
-
-//             <div>Style</div>
-//             <div>
-//                 <textarea value={styleText} onChange={(e) => setStyleText(e.target.value)} />
-//             </div>
-//             <button type='button' onClick={(e) => { e.preventDefault(); changeStyle(); }}>Set Style</button>
-
-//             <pre>
-//                 {`
-// PaymentComponentStyle = {
-//     borderColor?: string;
-//     backgroundColor?: string;
-//     textColor?: string;
-//     textColor_invalid?: string;
-//     fontSize?: number;
-//     fontFamily?: string;
-
-//     textPadding?: number;
-//     elementPadding?: number;
-//     buttonAlignment?: 'left' | 'right' | 'center';
-
-//     // Content
-//     buttonText?: string;
-// }
-//                 `}
-//             </pre>
-
-//             {error && (
-//                 <div style={{ color: `#FFCCCC` }}>
-//                     <span>{error.message}</span>
-//                     <pre>{JSON.stringify(error.error, null, 2)}</pre>
-//                 </div>
-//             )}
-//         </div>
-//     );
-// };
