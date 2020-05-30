@@ -14,7 +14,7 @@ export const processImports = async (sourceFilePath: string,
         tsConfigPath: TsConfigPath | null;
         importExpression: string;
         importPackageName: string;
-        replace: (value: string) => void;
+        replace: (match: string, replacement: string) => void;
         wholeText: string;
         match: RegExpExecArray;
     }) => void,
@@ -60,13 +60,13 @@ export const processImports = async (sourceFilePath: string,
     const regex = new RegExp(`((?:(?:import|export)\\s+[^;]*\\s+from\\s*|(?:import|require)\\s*\\(\\s*)["'\`])([^"'\`]+)(["'\`])`, `g`);
 
     let m = null as null | RegExpExecArray;
-    const replace = (value: string) => {
+    const replace = (match: string, replacement: string) => {
         if (!m) { return; }
 
         const pieces = [
             contentFinal.substr(0, m.index),
             m[1],
-            value,
+            m[2].replace(match, replacement),
             m[3],
             contentFinal.substr(m.index + m[0].length, contentFinal.length - (m.index + m.length)),
         ];
@@ -79,10 +79,11 @@ export const processImports = async (sourceFilePath: string,
     while ((m = regex.exec(contentFinal))) {
         const importExpression = m[2] ?? ``;
         const importPackageName = importExpression.startsWith(`@`) ? importExpression.split(`/`).slice(0, 2).join(`/`) : importExpression.split(`/`)[0];
+        const tsConfigPath = getTsConfigPath(importPackageName) ?? null;
         onImportFound({
             fileRelativePath: relativePath,
             fileFullPath: sourceFilePath,
-            tsConfigPath: getTsConfigPath(m[2] ?? ``) ?? null,
+            tsConfigPath,
             importExpression,
             importPackageName,
             replace,
@@ -112,7 +113,7 @@ export const processImports_expandToRelativeImports = async (sourceFilePath: str
         }
 
         const toCommon = [...new Array(rPathParts.length - 1)].map(x => `../`).join(``);
-        replace(`${toCommon}${tPathParts.join(`/`)}`);
+        replace(`${tsConfigPath.name}`, `${toCommon}${tPathParts.join(`/`)}`);
         // Simplify common path
         // contentFinal = contentFinal.replace(/\/..\/code/g, ``);
     }, root, tsconfigPaths);
