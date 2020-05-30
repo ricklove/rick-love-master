@@ -88,7 +88,7 @@ export const hydrate_yarnWorkspaces = async (root: string, rootCode: string) => 
             fileDependencies.push(r);
         }
     });
-    await saveDependenciesToModulePackageJson(fileDependencies, root, { placeNewPackageJsonInSrcFolder: true, updateRootWorkspaces: true });
+    await saveDependenciesToModulePackageJson(fileDependencies, root, { updateRootWorkspaces: true });
 
     // Add tsconfig with extends to root
 };
@@ -109,8 +109,7 @@ export const dehydrate_yarnWorkspaces = async (root: string, rootCode: string) =
 
         await removeLocalDependenciesFromModulePackageJson(x, root);
 
-        // TODO: Handle other content
-        // Leave it alone if there is other content
+        // Leave it there if there is other content
     });
     await removeRootPackageJsonWorkspaces(root);
 

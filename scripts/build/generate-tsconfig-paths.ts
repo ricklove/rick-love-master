@@ -36,7 +36,7 @@ export const generateTsconfigPaths = async (rootRaw?: string) => {
     //     "compilerOptions": {
     //         "paths": {
     //             "blog/*": [
-    //                 "c:/Projects/rick-love-master/code/blog/src/*"
+    //                 "c:/Projects/rick-love-master/code/blog/*"
     //             ], 
     // ...
     const paths = piped(pathDirs)

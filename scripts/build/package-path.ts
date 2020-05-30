@@ -1,10 +1,25 @@
 /* eslint-disable no-await-in-loop */
-import { getFiles, renameDirectory, getDirectoryContents, renameFile, getPathNormalized, getFileInfo } from 'utils/files';
+import { getFiles, renameDirectory, getDirectoryContents, renameFile, getPathNormalized, getFileInfo, getDirectoryPath } from 'utils/files';
 import { deleteEmptyDirectories } from './clean';
 
 export const isPackageRootPath = async (fullPath: string) => {
     const fileInfo = await getFileInfo(getPathNormalized(fullPath, `./.package.json`));
-    return !!fileInfo;
+    const fileInfo2 = await getFileInfo(getPathNormalized(fullPath, `./package.json`));
+    return fileInfo || fileInfo2;
+};
+
+export const getPackageRootPath = async (fullPath: string) => {
+    let dir = getDirectoryPath(fullPath);
+    let parent = dir;
+    while (!await isPackageRootPath(dir)) {
+        parent = getPathNormalized(dir, `../`);
+        if (parent === dir) {
+            throw new Error(`No package root found for: ${fullPath}`);
+        }
+        dir = parent;
+    }
+
+    return dir;
 };
 
 // const renameDotModuleJsonToDotPackageJson = async () => {

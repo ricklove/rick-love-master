@@ -5,6 +5,7 @@ import { distinct_key, mergeItems, distinct } from 'utils/arrays';
 import { toKeyValueObject, toKeyValueArray } from 'utils/objects';
 import { TsConfigPath, loadTsConfigPaths } from './generate-tsconfig-paths';
 import { PackageJson } from './types';
+import { getPackageRootPath } from './package-path';
 
 export const processImports = async (sourceFilePath: string,
     onImportFound: (args: {
@@ -155,7 +156,7 @@ export const processDependenciesInModulePackageJson = async (
     const rootPackageJson = JSON.parse(await readFile(rootPackagePath)) as PackageJson;
 
     const packageDependenciesAll = await Promise.all(fileDependencies.map(async (x) => {
-        const moduleRoot = await getProjectRootDirectoryPath(x.fileFullPath, { search: `src` });
+        const moduleRoot = await getPackageRootPath(x.fileFullPath);
         const packagePath = getPathNormalized(moduleRoot, `./package.json`);
         return {
             packageJsonPath: packagePath,
