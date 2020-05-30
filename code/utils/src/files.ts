@@ -55,6 +55,12 @@ export const deleteFile = async (filePath: string) => {
     // eslint-disable-next-line no-empty
     catch{ }
 };
+export const deleteDirectory = async (filePath: string) => {
+    try { await fs.rmdir(filePath); }
+    // eslint-disable-next-line no-empty
+    catch{ }
+};;
+
 export const readFile = async (filePath: string) => await fs.readFile(filePath, { encoding: `utf-8` });
 export const readFileAsJson = async <T>(filePath: string) => JSON.parse(await readFile(filePath)) as T;
 export const writeFile = async (filePath: string, data: string | Buffer, options?: { readonly?: boolean, overwrite?: boolean }) => {
@@ -81,10 +87,17 @@ export const copyFile = async (sourceFilePath: string, destFilePath: string, opt
         await fs.chmod(destFilePath, 0o444);
     }
 };
-export const moveFile = async (sourceFilePath: string, destFilePath: string) => {
+export const moveFile = async (sourceFilePath: string, destFilePath: string, options?: { removeEmptyDirectory?: boolean }) => {
+    await ensureDirectoryExists(getParentName(destFilePath));
     await fs.rename(sourceFilePath, destFilePath);
 };
 export const renameFile = moveFile;
+export const renameDirectory = (sourcePath: string, destPath: string) => moveFile(sourcePath, destPath, { removeEmptyDirectory: true });
+
+export async function getDirectoryContents(dir: string) {
+    const items = await fs.readdir(dir, { withFileTypes: true });
+    return items;
+}
 
 export async function getAllDirectories(dir: string) {
     const dirs = [] as string[];
