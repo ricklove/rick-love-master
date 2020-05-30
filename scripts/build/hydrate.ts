@@ -88,7 +88,7 @@ export const hydrate_yarnWorkspaces = async (root: string, rootCode: string) => 
             fileDependencies.push(r);
         }
     });
-    await saveDependenciesToModulePackageJson(fileDependencies, root, { updateRootWorkspaces: true });
+    await saveDependenciesToModulePackageJson(fileDependencies, root, { updateRootWorkspaces: true, removeRedundantDotPackage: true });
 
     // Add tsconfig with extends to root
 };
@@ -103,7 +103,6 @@ export const dehydrate_yarnWorkspaces = async (root: string, rootCode: string) =
         const hasOtherStuff = JSON.stringify(json) !== JSON.stringify({ name: json.name, version: json.version, dependencies: json.dependencies });
 
         if (!hasOtherStuff) {
-            // Add a blank .package.json
             await writeFile(x.replace(`/package.json`, `/.package.json`), ``, { readonly: true, overwrite: true });
             await deleteFile(x);
             return;
