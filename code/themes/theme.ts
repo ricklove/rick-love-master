@@ -51,19 +51,19 @@ const createTheme = (colors: ThemeColors, sizes: ThemeSizes, font: ThemeFont) =>
         sizes,
         font,
 
-        div_form: {
+        view_form: {
             ...borderProps,
             marginBottom: sizes.sectionGap,
             padding: 8,
         },
-        span_formTitle: {
+        text_formTitle: {
             padding: sizes.textPadding,
             color: colors.text,
             fontSize: sizes.fontSize_header,
             fontFamily: font.fontFamily,
             fontWeight: font.fontWeight_header,
         },
-        div_fieldRow: {
+        view_fieldRow: {
             ...borderProps,
             marginBottom: sizes.rowGap,
             padding: sizes.rowPadding,
@@ -71,7 +71,7 @@ const createTheme = (colors: ThemeColors, sizes: ThemeSizes, font: ThemeFont) =>
             display: `flex`,
             flexDirection: `row`,
         },
-        span_fieldInfo: {
+        text_fieldLabel: {
             padding: sizes.textPadding,
             color: colors.text,
             fontSize: sizes.fontSize,

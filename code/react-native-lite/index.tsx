@@ -27,6 +27,17 @@ export const Text = (props: { style?: TextStyle | TextStyle[], children?: ReactN
     }
     return (<span style={mergeStyles(props.style)}>{props.children}</span>);
 };
+export const TextInput = (props: {
+    style?: TextStyle | TextStyle[];
+    keyboardType: 'default' | 'numeric';
+    value: string;
+    onChange: (value: string) => void;
+}) => {
+    const type = props.keyboardType === `numeric` ? `number`
+        : `text`;
+    return (<input type={type} style={mergeStyles(props.style)} value={props.value} onChange={(e) => props.onChange(e.target.value)} />);
+
+};
 export const TouchableOpacity = (props: { style?: ViewStyle | ViewStyle[], children?: ReactNode, onPress: () => void }) => {
     return (
         <div style={mergeStyles(props.style)}

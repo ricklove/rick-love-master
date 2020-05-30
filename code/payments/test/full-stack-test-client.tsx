@@ -4,8 +4,7 @@ import { theme } from 'themes/theme';
 import { createJsonRpcClient } from 'json-rpc/json-rpc-client';
 import { formatDate } from 'utils/dates';
 import { useAutoLoadingError } from 'utils-react/hooks';
-import { Loading } from 'controls-react/loading';
-import { ErrorBox } from 'controls-react/error-box';
+import { C } from 'controls-react';
 import { createPaymentClientComponents } from '../client/payment-react';
 import { PaymentComponentStyle, PaymentClientComponents } from '../common/types-react';
 import {
@@ -164,34 +163,35 @@ const PaymantView = (props: {
 
     return (
         <>
-            <Loading loading={loading} />
-            <ErrorBox error={error} />
-            <div style={theme.div_form}>
+            <C.Loading loading={loading} />
+            <C.ErrorBox error={error} />
+            <C.View_Form>
                 {paymentMethods && paymentMethods.map(x => (
-                    <div key={x.key} style={theme.div_fieldRow}>
-                        <span style={theme.span_fieldInfo}>{x.title}</span>
-                        <span style={theme.span_fieldInfo}>Expires: {`${x.expiration.month}`.padStart(2, `0`)}/{x.expiration.year}</span>
+                    <C.View_FieldRow key={x.key}>
+                        <span style={theme.text_fieldLabel}>{x.title}</span>
+                        <span style={theme.text_fieldLabel}>Expires: {`${x.expiration.month}`.padStart(2, `0`)}/{x.expiration.year}</span>
                         <button style={theme.button_fieldInline} type='button' onClick={() => deletePaymentMethod(x.key)}>Remove</button>
-                    </div>
+                    </C.View_FieldRow>
                 ))}
                 {!setupToken && <div style={theme.div_formActionRow}><button style={theme.button_formAction} type='button' onClick={setupPayment}>Add Payment Method</button></div>}
                 {setupToken && <props.comp.PaymentMethodEntryComponent style={style} paymentMethodSetupToken={setupToken} onPaymentMethodReady={onPaymentMethodReady} />}
-            </div>
+            </C.View_Form>
 
-            <div style={theme.div_form}>
-                <span style={theme.span_formTitle}>Make Purchase</span>
-                <div style={theme.div_fieldRow}>
-                    <span style={theme.span_fieldInfo}>Amount $</span>
+            <C.View_Form>
+                <C.Text_FormTitle>Make Purchase</C.Text_FormTitle>
+                <C.View_FieldRow>
+                    <C.Text_FieldLabel>Amount $</C.Text_FieldLabel>
+                    <C.Input_Currency value={purchaseAmount} onChange={(value) => setPurchaseAmount(value)} />
                     <input style={theme.input_fieldEntry} type='number' min='0.00' max='10000.00' step='0.01' value={purchaseAmount} onChange={(e) => setPurchaseAmount(Number.parseFloat(e.target.value))} />
                     <button style={theme.button_fieldInline} type='button' onClick={() => makePurchase()}>Purchase</button>
-                </div>
+                </C.View_FieldRow>
                 {payments && payments.map(x => (
-                    <div key={`${x.created}`} style={theme.div_fieldRow}>
-                        <span style={theme.span_fieldInfo}>Created: {formatDate(x.created)}</span>
-                        <span style={theme.span_fieldInfo}>${x.amount.usdCents / 100}</span>
-                    </div>
+                    <C.View_FieldRow key={`${x.created}`}>
+                        <span style={theme.text_fieldLabel}>Created: {formatDate(x.created)}</span>
+                        <span style={theme.text_fieldLabel}>${x.amount.usdCents / 100}</span>
+                    </C.View_FieldRow>
                 ))}
-            </div>
+            </C.View_Form>
         </>
     );
 };
