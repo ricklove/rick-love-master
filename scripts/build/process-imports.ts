@@ -1,6 +1,6 @@
 // Clone the files and expand the imports found in each
 
-import { getFileInfo, getPathNormalized, getProjectRootDirectoryPath, readFile, writeFile, getParentName, readFileAsJson } from 'utils/files';
+import { getFileInfo, getPathNormalized, getProjectRootDirectoryPath, readFile, writeFile, getParentName, readFileAsJson, deleteFile } from 'utils/files';
 import { distinct_key, mergeItems, distinct } from 'utils/arrays';
 import { toKeyValueObject, toKeyValueArray } from 'utils/objects';
 import { TsConfigPath, loadTsConfigPaths } from './generate-tsconfig-paths';
@@ -149,7 +149,7 @@ export const processDependenciesInModulePackageJson = async (
     fileDependencies: FileDependencies[],
     root: string,
     processPackageJson: (packageJson: PackageJson, dependencies: ImportDependency[], rootPackageJson: PackageJson, packageJsonPath: string) => Promise<PackageJson>,
-    options?: { placeNewPackageJsonInSrcFolder?: boolean },
+    options?: { removeRedundantDotPackage?: boolean },
 ) => {
 
     const rootPackagePath = getPathNormalized(root, `./package.json`);
@@ -169,13 +169,9 @@ export const processDependenciesInModulePackageJson = async (
     // dependencies: { "@loadable/component": "^5.12.0", }
     await Promise.all(packageDependencies.map(async (pack) => {
         const { packageJsonPath: packageJsonPathRaw, dependencies } = pack;
-        let packageJsonPath = packageJsonPathRaw;
+        const packageJsonPath = packageJsonPathRaw;
         const packageName = getParentName(packageJsonPath);
-        let loadedPackageJson = !(await getFileInfo(packageJsonPath)) ? null : await readFileAsJson<PackageJson>(packageJsonPath);
-        if (!loadedPackageJson && options?.placeNewPackageJsonInSrcFolder) {
-            packageJsonPath = packageJsonPath.replace(`/package.json`, `/src/package.json`);
-            loadedPackageJson = !(await getFileInfo(packageJsonPath)) ? null : await readFileAsJson<PackageJson>(packageJsonPath);
-        }
+        const loadedPackageJson = !(await getFileInfo(packageJsonPath)) ? null : await readFileAsJson<PackageJson>(packageJsonPath);
 
         const loadedPackageJsonText = loadedPackageJson && JSON.stringify(loadedPackageJson, null, 2);
 
@@ -195,10 +191,17 @@ export const processDependenciesInModulePackageJson = async (
         const finalPackageJsonText = JSON.stringify(packageJson, null, 2);
         if (loadedPackageJsonText === finalPackageJsonText) { return; }
         await writeFile(packageJsonPath, finalPackageJsonText, { readonly: false, overwrite: true });
+
+        if (options?.removeRedundantDotPackage) {
+            const dotPackagePath = packageJsonPath.replace(`/package.json`, `/.package.json`);
+            if (await getFileInfo(dotPackagePath)) {
+                await deleteFile(dotPackagePath);
+            }
+        }
     }));
 };
 
-export const saveDependenciesToModulePackageJson = async (fileDependencies: FileDependencies[], root: string, options?: { placeNewPackageJsonInSrcFolder?: boolean, updateRootWorkspaces?: boolean }) => {
+export const saveDependenciesToModulePackageJson = async (fileDependencies: FileDependencies[], root: string, options?: { removeRedundantDotPackage?: boolean, updateRootWorkspaces?: boolean }) => {
 
     const packageJsonPaths = [] as string[];
     await processDependenciesInModulePackageJson(fileDependencies, root, async (packageJsonRaw, dependencies, rootPackageJson, packageJsonPath) => {
