@@ -1,7 +1,10 @@
 import { PaymentClientApi, PaymentProviderApi, PaymentStorageProviderApi, PaymentError, PaymentServerApi, PaymentMethodClientInfo } from '../common/types';
 import { wrapProcessStep_CreateSavedPaymentMethod, ProcessSteps_CreateSavedPaymentMethod } from '../common/process-steps';
 
-export const createPaymentApi_inner = (dependencies: { providers: PaymentProviderApi[], storage: PaymentStorageProviderApi }): PaymentClientApi => {
+export const createPaymentApi_inner_underUserContext = (dependencies: { providers: PaymentProviderApi[], storage: PaymentStorageProviderApi }): {
+    paymentClientApi: PaymentClientApi;
+    paymentServerApi: PaymentServerApi;
+} => {
 
     const getProvider = (providerName: string) => {
         const provider = dependencies.providers.find(x => x.providerName === providerName);
@@ -114,5 +117,5 @@ export const createPaymentApi_inner = (dependencies: { providers: PaymentProvide
         },
 
     };
-    return paymentClientApi;
+    return { paymentClientApi, paymentServerApi };
 };

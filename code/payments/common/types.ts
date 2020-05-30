@@ -36,6 +36,8 @@ export type PaymentTransaction = {
 /** Payment Client to Server Calls
  * 
  * These are the calls made on the client to the server, it supports multiple payment provider types
+ * 
+ * Note: this is scoped to the user associated with the client
  */
 export type PaymentClientApi = {
     // Normal Flow
@@ -56,6 +58,7 @@ export type PaymentClientApi = {
 /** Payment Server to Server Calls
  * 
  * These are the calls intended to be used server-side to process payments
+ * 
  */
 export type PaymentServerApi = {
     /** This will use the payment methods in order until one succeeds */

@@ -1,7 +1,7 @@
 /* eslint-disable no-console */
 import React, { useState, useEffect } from 'react';
 import { theme } from 'themes/theme';
-import { createJsonRpcClient } from 'json-rpc/json-rpc-client';
+import { createJsonRpcWebClient } from 'json-rpc/json-rpc-client';
 import { formatDate } from 'utils/dates';
 import { useAutoLoadingError } from 'utils-react/hooks';
 import { C } from 'controls-react';
@@ -23,9 +23,13 @@ export const PaymentFullStackTesterHost = (props: {}) => {
         (async () => {
             const c = await getFullStackTestConfig();
             setConfig(c);
-            const server = createJsonRpcClient<PaymentClientApi>({
+            const server = createJsonRpcWebClient<PaymentClientApi>({
                 serverUrl: c.serverUrl,
                 appendMethodNameToUrl: true,
+                credentialsAccess: {
+                    getCredentials: async () => localStorage.PaymentFullStackTesterHost_Credentials,
+                    setCredentials: async (value) => { localStorage.PaymentFullStackTesterHost_Credentials = value; },
+                },
             }, {
                 setupSavedPaymentMethod: `setupSavedPaymentMethod`,
                 saveSavedPaymentMethod: `saveSavedPaymentMethod`,

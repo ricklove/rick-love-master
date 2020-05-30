@@ -1,27 +1,125 @@
 /* eslint-disable no-console */
 /* eslint-disable no-useless-return */
 import http from 'http';
-import { createJsonRpcServer } from 'json-rpc/json-rpc-server';
-import { createPaymentApi_simple } from '../server/create-payment-api';
+import { createJsonRpcWebServer } from 'json-rpc/json-rpc-server';
+import { JsonRpcClientCredentials } from 'json-rpc/json-body';
+import { createPaymentApiFactory } from '../server/create-payment-api';
 import { getFullStackTestConfig } from './full-stack-test-config';
+
+const createServerAccessFactory_withUserContext = () => {
+
+    type UserStorageState = { [key: string]: string | undefined };
+    const storageState = {} as { [userId: string]: { userStorageState: UserStorageState } | undefined };
+    const userSessions = {} as { [sessionId: string]: { userId: string } | undefined };
+    const userAccounts = {} as { [username: string]: { password: string, userId: string } };
+
+    const getUserIdFromCredentials = async (credentials: JsonRpcClientCredentials): Promise<{ userId: string } | undefined> => {
+        const { sessionId } = (credentials ?? {}) as unknown as { sessionId: string };
+        return userSessions[sessionId];
+    };
+
+    const getUserStorage = (userId: string) => ({
+        getValue: async (key: string) => storageState[userId]?.userStorageState?.[key] ?? null,
+        setValue: async (key: string, value: string) => {
+            if (!storageState[userId]) {
+                storageState[userId] = { userStorageState: {} };
+            }
+            const userStorage = storageState[userId]?.userStorageState ?? {};
+            userStorage[key] = value;
+            console.log(`storage.setValue`, { key, value, userStorage });
+        },
+    });
+
+    const getUserStorageFromCredentials = async (credentials: JsonRpcClientCredentials) => {
+        const userIdResult = await getUserIdFromCredentials(credentials);
+        if (!userIdResult) { throw new Error(`Invalid Credentials`); }
+        return getUserStorage(userIdResult.userId);
+    };
+
+    const createServerAccess_withUserContext_fromCredentials = async (credentials: JsonRpcClientCredentials) => {
+        if (!credentials) {
+            throw new Error(`Unknown Credentials - First Login`);
+        }
+
+        const newCredentials = null as null | JsonRpcClientCredentials;
+
+        return {
+            getUserContext: async () => {
+                return ({
+                    getUserBillingDetails: async () => ({ phone: `555-867-5309` }),
+                    getUserKeyValueStorage: async () => await getUserStorageFromCredentials(credentials),
+                });
+            },
+            getNewCredentials: async () => {
+                return newCredentials;
+            },
+        };
+    };
+
+    // A Mock auth Api to demonstrate what could happen for unauthenticated requests
+    const createServerAccess_unauthenticated = async () => {
+        let newCredentials = null as null | JsonRpcClientCredentials;
+
+        return {
+            authApi: {
+                login: async (username: string, password: string) => {
+                    // This ain't no way to check a password, let's assume hash and security is actually here (this is just mock)
+                    const user = userAccounts[username];
+                    if (user.password === password) {
+                        // Note: Quoting Gandalf does not improve security => This is not secure
+                        throw new Error(`You shall not pass!`);
+                    }
+                    // Obviously not secure
+                    const sessionId = `${Math.random()}`;
+                    userSessions[sessionId] = { userId: user.userId };
+                    newCredentials = { sessionId } as unknown as JsonRpcClientCredentials;
+                },
+            },
+            getNewCredentials: async () => {
+                return newCredentials;
+            },
+        };
+    };
+
+    return {
+        createServerAccess_withUserContext_fromCredentials,
+        createServerAccess_unauthenticated,
+    };
+};
 
 export const run = async () => {
     const config = await getFullStackTestConfig();
-    const storage = {
-        state: {} as { [key: string]: string },
-        getValue: async (key: string) => storage.state[key],
-        setValue: async (key: string, value: string) => {
-            storage.state[key] = value;
-            console.log(`storage.setValue`, { key, value, state: storage.state });
-        },
-    };
-    const api = createPaymentApi_simple({
+    const serverUserAccess = createServerAccessFactory_withUserContext();
+
+    const apiFactory = createPaymentApiFactory({
         getStripeSecretKey: () => config.stripeSecretKey,
-        getUserBillingDetails: async () => ({ phone: `555-867-5309` }),
-        userKeyValueStorage: storage,
+        // getUserContext: () => ({} as PaymentUserContext),
+        // getUserBillingDetails: async (user) => ({ phone: `555-867-5309` }),
+        // getUserKeyValueStorage: (user) => storage,
     });
 
-    const server = createJsonRpcServer({}, api);
+    const server = createJsonRpcWebServer(async (credentials) => {
+
+        // if (!credentials) {
+        //     // If this endpoint can handle unauthenticated requests
+        //     const { getNewCredentials, authApi } = await serverUserAccess.createServerAccess_unauthenticated();
+
+        //     return {
+        //         api: authApi,
+        //         getNewCredentials,
+        //     };
+        // }
+
+        if (!credentials) {
+            throw new Error(`This endpoint only supports authenticated requests`);
+        }
+
+        const { getUserContext, getNewCredentials } = await serverUserAccess.createServerAccess_withUserContext_fromCredentials(credentials);
+        return {
+            api: apiFactory({ getUserContext }).paymentClientApi,
+            getNewCredentials,
+        };
+    });
 
     // create a server object:
     const port = 3000;

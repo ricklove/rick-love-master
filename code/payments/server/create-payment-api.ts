@@ -1,9 +1,9 @@
 import { PaymentStorageProviderApi, PaymentProviderApi, PaymentUserTokenData, PaymentMethodStorageData, PaymentMethodStorageKey } from '../common/types';
 import { createStripePaymentProviderApi, StripePaymentProviderConfig, StripePaymentProviderStorage } from '../providers/stripe/server/stripe-payment-provider';
 import { StripeCustomerBillingDetails } from '../providers/stripe/client/stripe-client-tokens';
-import { createPaymentApi_inner } from './payment-api';
+import { createPaymentApi_inner_underUserContext } from './payment-api';
 
-export const createPaymentApi = (dependencies: {
+const createPaymentApi_underUserContext_combineProviders = (dependencies: {
     storage: PaymentStorageProviderApi;
     stripe?: {
         config: StripePaymentProviderConfig;
@@ -25,7 +25,7 @@ export const createPaymentApi = (dependencies: {
         // providers.push(createPaypalPaymentProviderApi(paypal));
     }
 
-    const paymentApi = createPaymentApi_inner({
+    const paymentApi = createPaymentApi_inner_underUserContext({
         providers,
         storage,
     });
@@ -33,23 +33,23 @@ export const createPaymentApi = (dependencies: {
     return paymentApi;
 };
 
-export const createPaymentApi_simple = (dependencies: {
+const createPaymentApi_underUserContext = (dependencies: {
     getStripeSecretKey: () => string;
     getUserBillingDetails: () => Promise<StripeCustomerBillingDetails>;
-    userKeyValueStorage: {
-        getValue: (key: string) => Promise<string>;
+    getUserKeyValueStorage: () => Promise<{
+        getValue: (key: string) => Promise<string | null>;
         setValue: (key: string, value: string) => Promise<void>;
-    };
+    }>;
 }) => {
-    const { userKeyValueStorage } = dependencies;
+    const { getUserKeyValueStorage } = dependencies;
     const getValue = async<T>(key: string) => {
-        const value = await userKeyValueStorage.getValue(key);
+        const value = await (await getUserKeyValueStorage()).getValue(key);
         if (!value) { return null; }
         return JSON.parse(value) as T;
     };
     const setValue = async <T>(key: string, value: T) => {
         const valueJson = JSON.stringify(value);
-        await userKeyValueStorage.setValue(key, valueJson);
+        await (await getUserKeyValueStorage()).setValue(key, valueJson);
     };
 
     // This is self-storage, so it can operate independently
@@ -72,7 +72,7 @@ export const createPaymentApi_simple = (dependencies: {
         },
     };
 
-    return createPaymentApi({
+    return createPaymentApi_underUserContext_combineProviders({
         storage,
         stripe: {
             config: { getStripeSecretKey: dependencies.getStripeSecretKey },
@@ -80,3 +80,22 @@ export const createPaymentApi_simple = (dependencies: {
         },
     });
 };
+
+
+export const createPaymentApiFactory = (dependencies: {
+    getStripeSecretKey: () => string;
+}) => (userContextDependencies: {
+    getUserContext: () => Promise<{
+        getUserBillingDetails: () => Promise<StripeCustomerBillingDetails>;
+        getUserKeyValueStorage: () => Promise<{
+            getValue: (key: string) => Promise<string | null>;
+            setValue: (key: string, value: string) => Promise<void>;
+        }>;
+    }>;
+}) => {
+        return createPaymentApi_underUserContext({
+            getStripeSecretKey: dependencies.getStripeSecretKey,
+            getUserBillingDetails: async () => await (await userContextDependencies.getUserContext()).getUserBillingDetails(),
+            getUserKeyValueStorage: async () => await (await userContextDependencies.getUserContext()).getUserKeyValueStorage(),
+        });
+    };
