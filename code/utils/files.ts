@@ -48,8 +48,6 @@ export const getProjectRootDirectoryPath = async (dirStart: string, options: { s
     return dir;
 };
 
-export const directoryContains = async (dirPath: string, relativePath: string) => !!await getFileInfo(getPathNormalized(dirPath, relativePath));
-
 export const deleteFile = async (filePath: string) => {
     try { await fs.unlink(filePath); }
     // eslint-disable-next-line no-empty

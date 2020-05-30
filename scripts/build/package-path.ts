@@ -1,9 +1,10 @@
 /* eslint-disable no-await-in-loop */
-import { directoryContains, getFiles, renameDirectory, getDirectoryContents, renameFile, getPathNormalized } from 'utils/files';
+import { getFiles, renameDirectory, getDirectoryContents, renameFile, getPathNormalized, getFileInfo } from 'utils/files';
 import { deleteEmptyDirectories } from './clean';
 
-export const isModuleRootPath = async (fullPath: string) => {
-    return await directoryContains(fullPath, `.package.json`);
+export const isPackageRootPath = async (fullPath: string) => {
+    const fileInfo = await getFileInfo(getPathNormalized(fullPath, `./.package.json`));
+    return !!fileInfo;
 };
 
 // const renameDotModuleJsonToDotPackageJson = async () => {
