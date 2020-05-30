@@ -1,6 +1,6 @@
 /* eslint-disable no-console */
 import React, { useState } from 'react';
-import { mainTheme } from 'themes/colors';
+import { theme } from 'themes/theme';
 import { PaymentComponentStyle } from '../../../common/types-react';
 import { createPaymentClientComponents_stripe } from '../client/stripe-payment-react';
 import { stripeEncodeClientSetupToken } from '../client/stripe-client-tokens';
@@ -14,14 +14,14 @@ export const StripeExamplePage = (props: {}) => {
         elementPadding: 4,
         buttonAlignment: `right`,
         borderRadius: 4,
-        borderColor: mainTheme.colors.border,
-        backgroundColor: mainTheme.colors.background_field,
-        textColor: mainTheme.colors.text,
+        borderColor: theme.colors.border,
+        backgroundColor: theme.colors.background_field,
+        textColor: theme.colors.text,
     } as PaymentComponentStyle);
 
     return (
         <AppWrapperComponent>
-            <div style={{ padding: 16, background: mainTheme.colors.background, color: mainTheme.colors.text }}>
+            <div style={{ padding: 16, background: theme.colors.background, color: theme.colors.text }}>
                 <div>Page and Stuff...</div>
                 <hr />
                 <div>Show me the Money!</div>

@@ -1,8 +1,11 @@
 /* eslint-disable no-console */
 import React, { useState, useEffect } from 'react';
-import { mainTheme } from 'themes/colors';
+import { theme } from 'themes/theme';
 import { createJsonRpcClient } from 'json-rpc/json-rpc-client';
 import { formatDate } from 'utils/dates';
+import { useAutoLoadingError } from 'utils-react/hooks';
+import { Loading } from 'controls-react/loading';
+import { ErrorBox } from 'controls-react/error-box';
 import { createPaymentClientComponents } from '../client/payment-react';
 import { PaymentComponentStyle, PaymentClientComponents } from '../common/types-react';
 import {
@@ -80,7 +83,7 @@ export const PaymentFullStackTester = (props: { config: FullStackTestConfig, ser
 
     return (
         <AppWrapperComponent>
-            <div style={{ padding: 16, background: mainTheme.colors.background, color: mainTheme.colors.text }}>
+            <div style={{ padding: 16, background: theme.colors.background, color: theme.colors.text }}>
                 <div>Page and Stuff...</div>
                 <hr />
                 <div>Show me the Money!</div>
@@ -110,81 +113,82 @@ const PaymantView = (props: {
         elementPadding: 4,
         buttonAlignment: `right`,
         borderRadius: 4,
-        borderColor: mainTheme.colors.border,
-        backgroundColor: mainTheme.colors.background_field,
-        textColor: mainTheme.colors.text,
+        borderColor: theme.colors.border,
+        backgroundColor: theme.colors.background_field,
+        textColor: theme.colors.text,
         buttonText: `Save`,
     } as PaymentComponentStyle);
 
+    const { loading, error, doWork } = useAutoLoadingError();
+
     const [paymentMethods, setPaymentMethods] = useState(null as null | PaymentMethodClientInfo[]);
-    const populatePaymentMethods = async () => {
+    const populatePaymentMethods = () => doWork(async () => {
         const result = await props.serverAccess.getPaymentMethods();
         setPaymentMethods(result);
-    };
+    });
 
-
-    const deletePaymentMethod = async (key: PaymentMethodStorageKey) => {
+    const deletePaymentMethod = (key: PaymentMethodStorageKey) => doWork(async () => {
         await props.serverAccess.deletePaymentMethod(key);
-        await populatePaymentMethods();
-    };
+        populatePaymentMethods();
+    });
 
     const [setupToken, setSetupToken] = useState(null as null | PaymentProviderSavedPaymentMethodClientSetupToken);
-    const setupPayment = async () => {
+    const setupPayment = () => doWork(async () => {
         const result = await props.serverAccess.onSetupPayment();
         console.log(`setupPayment`, { result });
         setSetupToken(result);
-    };
+    });
 
-    const onPaymentMethodReady = async (paymentMethodToken: PaymentProviderSavedPaymentMethodClientToken) => {
+    const onPaymentMethodReady = (paymentMethodToken: PaymentProviderSavedPaymentMethodClientToken) => doWork(async () => {
         await props.serverAccess.onPaymentMethodReady(paymentMethodToken);
         setSetupToken(null);
-        await populatePaymentMethods();
-    };
+        populatePaymentMethods();
+    });
 
     const [payments, setPayments] = useState(null as null | PaymentTransaction[]);
-    const populatePayments = async () => {
+    const populatePayments = () => doWork(async () => {
         const result = await props.serverAccess.getPayments();
         setPayments(result);
-    };
+    });
 
     const [purchaseAmount, setPurchaseAmount] = useState(100);
-    const makePurchase = async () => {
+    const makePurchase = () => doWork(async () => {
         await props.serverAccess.onMakePurchase(purchaseAmount);
-        await populatePayments();
-    };
+        populatePayments();
+    });
 
     useEffect(() => {
-        (async () => {
-            await populatePaymentMethods();
-            await populatePayments();
-        })();
+        populatePaymentMethods();
+        populatePayments();
     }, []);
 
     return (
         <>
-            <div style={mainTheme.div_form}>
+            <Loading loading={loading} />
+            <ErrorBox error={error} />
+            <div style={theme.div_form}>
                 {paymentMethods && paymentMethods.map(x => (
-                    <div key={x.key} style={mainTheme.div_fieldRow}>
-                        <span style={mainTheme.span_fieldInfo}>{x.title}</span>
-                        <span style={mainTheme.span_fieldInfo}>Expires: {`${x.expiration.month}`.padStart(2, `0`)}/{x.expiration.year}</span>
-                        <button style={mainTheme.button_fieldInline} type='button' onClick={() => deletePaymentMethod(x.key)}>Remove</button>
+                    <div key={x.key} style={theme.div_fieldRow}>
+                        <span style={theme.span_fieldInfo}>{x.title}</span>
+                        <span style={theme.span_fieldInfo}>Expires: {`${x.expiration.month}`.padStart(2, `0`)}/{x.expiration.year}</span>
+                        <button style={theme.button_fieldInline} type='button' onClick={() => deletePaymentMethod(x.key)}>Remove</button>
                     </div>
                 ))}
-                {!setupToken && <div style={mainTheme.div_formActionRow}><button style={mainTheme.button_formAction} type='button' onClick={setupPayment}>Add Payment Method</button></div>}
+                {!setupToken && <div style={theme.div_formActionRow}><button style={theme.button_formAction} type='button' onClick={setupPayment}>Add Payment Method</button></div>}
                 {setupToken && <props.comp.PaymentMethodEntryComponent style={style} paymentMethodSetupToken={setupToken} onPaymentMethodReady={onPaymentMethodReady} />}
             </div>
 
-            <div style={mainTheme.div_form}>
-                <span style={mainTheme.span_formTitle}>Make Purchase</span>
-                <div style={mainTheme.div_fieldRow}>
-                    <span style={mainTheme.span_fieldInfo}>Amount $</span>
-                    <input style={mainTheme.input_fieldEntry} type='number' min='0.00' max='10000.00' step='0.01' value={purchaseAmount} onChange={(e) => setPurchaseAmount(Number.parseFloat(e.target.value))} />
-                    <button style={mainTheme.button_fieldInline} type='button' onClick={() => makePurchase()}>Purchase</button>
+            <div style={theme.div_form}>
+                <span style={theme.span_formTitle}>Make Purchase</span>
+                <div style={theme.div_fieldRow}>
+                    <span style={theme.span_fieldInfo}>Amount $</span>
+                    <input style={theme.input_fieldEntry} type='number' min='0.00' max='10000.00' step='0.01' value={purchaseAmount} onChange={(e) => setPurchaseAmount(Number.parseFloat(e.target.value))} />
+                    <button style={theme.button_fieldInline} type='button' onClick={() => makePurchase()}>Purchase</button>
                 </div>
                 {payments && payments.map(x => (
-                    <div key={`${x.created}`} style={mainTheme.div_fieldRow}>
-                        <span style={mainTheme.span_fieldInfo}>Created: {formatDate(x.created)}</span>
-                        <span style={mainTheme.span_fieldInfo}>${x.amount.usdCents / 100}</span>
+                    <div key={`${x.created}`} style={theme.div_fieldRow}>
+                        <span style={theme.span_fieldInfo}>Created: {formatDate(x.created)}</span>
+                        <span style={theme.span_fieldInfo}>${x.amount.usdCents / 100}</span>
                     </div>
                 ))}
             </div>

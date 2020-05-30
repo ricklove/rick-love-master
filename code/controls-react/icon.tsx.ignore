@@ -1,0 +1,69 @@
+import React from 'react';
+import { TextStyle } from 'react-native';
+import { MaterialIcons, MaterialCommunityIcons, FontAwesome } from '@expo/vector-icons';
+
+export enum IconKind {
+    Menu,
+    Back,
+    Error,
+    Expanded,
+    Collapsed,
+    Copy,
+    Retry,
+    Dashboard,
+    Add,
+    Remove,
+
+    // Main Nav
+    Account,
+    Message,
+    Subscription,
+    Campaigns,
+    Contacts,
+    Keywords,
+    Resources,
+    Admin,
+    // Solutions,
+    // Texting,
+    // Pricing,
+    // Download,
+}
+
+function getIcon(kind: IconKind) {
+    switch (kind) {
+        case IconKind.Menu: return { name: `menu`, component: MaterialIcons };
+        case IconKind.Back: return { name: `arrow-back`, component: MaterialIcons };
+        case IconKind.Error: return { name: `error-outline`, component: MaterialIcons };
+        case IconKind.Expanded: return { name: `chevron-down`, component: MaterialCommunityIcons };
+        case IconKind.Collapsed: return { name: `chevron-right`, component: MaterialCommunityIcons };
+        case IconKind.Copy: return { name: `content-copy`, component: MaterialCommunityIcons };
+        case IconKind.Retry: return { name: `reload`, component: MaterialCommunityIcons };
+        case IconKind.Dashboard: return { name: `dashboard`, component: FontAwesome };
+        case IconKind.Add: return { name: `plus`, component: FontAwesome };
+        case IconKind.Remove: return { name: `minus`, component: FontAwesome };
+
+        case IconKind.Account: return { name: `account-circle`, component: MaterialIcons };
+        case IconKind.Message: return { name: `message`, component: MaterialIcons };
+        case IconKind.Subscription: return { name: `ticket-account`, component: MaterialCommunityIcons };
+        case IconKind.Campaigns: return { name: `calendar-multiselect`, component: MaterialCommunityIcons };
+        case IconKind.Contacts: return { name: `contacts`, component: MaterialIcons };
+        case IconKind.Keywords: return { name: `key-variant`, component: MaterialCommunityIcons };
+        case IconKind.Resources: return { name: `collections-bookmark`, component: MaterialIcons };
+        case IconKind.Admin: return { name: `settings`, component: MaterialIcons };
+        // case IconKind.Solutions: return { name: '', component: FontAwesome };
+        // case IconKind.Texting: return { name: '', component: FontAwesome };
+        // case IconKind.Pricing: return { name: '', component: FontAwesome };
+        // case IconKind.Download: return { name: '', component: FontAwesome };
+
+        default:
+            return { name: `broken-image`, component: MaterialIcons };
+    }
+}
+
+export const Icon = (props: { kind: IconKind, style?: TextStyle }) => {
+    const icon = getIcon(props.kind);
+    const IconComponent = icon.component;
+    return (
+        <IconComponent name={icon.name} size={null} color={null} style={props.style} />
+    );
+};

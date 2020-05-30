@@ -32,3 +32,14 @@ export const mergeItems = <T>(items: T[], getKey: (item: T) => string, getMerged
     const merged = getValuesAsItems(groups).map(g => getMerged(g, getKey(g[0])));
     return merged;
 };
+
+export function sameArrayContents<T>(a: undefined | null | T[], b?: undefined | null | T[]) {
+    if (a === b) { return true; }
+    if (a == null && b == null) { return true; }
+    if (a == null || b == null) { return false; }
+    if (a.length !== b.length) { return false; }
+    for (const i in a) {
+        if (a[i] !== b[i]) { return false; }
+    }
+    return true;
+}

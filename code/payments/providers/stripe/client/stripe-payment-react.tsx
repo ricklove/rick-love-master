@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Elements, CardElement, useStripe, useElements } from '@stripe/react-stripe-js';
 import { loadStripe, PaymentMethod, PaymentMethodCreateParams } from '@stripe/stripe-js';
 import { PaymentClientComponents } from '../../../common/types-react';
@@ -16,33 +16,40 @@ export const createPaymentClientComponents_stripe = (params: { stripePublicKey: 
             const stripe = useStripe();
             const elements = useElements();
 
+            const [stripeError, setStripeError] = useState(null as null | { message: string, error: unknown });
+
             const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
                 event.preventDefault();
                 if (!stripe || !elements) { return; }
 
-                // Completed SetupIntent -> Used to get PaymentMethod
-                const setupIntent = await wrapProcessStep_CreateSavedPaymentMethod_Stripe(
-                    ProcessSteps_CreateSavedPaymentMethod_Stripe._03A_Client_CollectPaymentDetails,
-                    async () => {
+                try {
+                    // Completed SetupIntent -> Used to get PaymentMethod
+                    const setupIntent = await wrapProcessStep_CreateSavedPaymentMethod_Stripe(
+                        ProcessSteps_CreateSavedPaymentMethod_Stripe._03A_Client_CollectPaymentDetails,
+                        async () => {
 
-                        const setupInfo = stripeDecodeClientSetupToken(paymentMethodSetupToken);
+                            const setupInfo = stripeDecodeClientSetupToken(paymentMethodSetupToken);
 
-                        const result = await stripe.confirmCardSetup(setupInfo.clientSecret, {
-                            payment_method: {
-                                // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-                                card: elements.getElement(CardElement)!,
-                                billing_details: setupInfo.customerBillingDetails,
-                            },
+                            const result = await stripe.confirmCardSetup(setupInfo.clientSecret, {
+                                payment_method: {
+                                    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+                                    card: elements.getElement(CardElement)!,
+                                    billing_details: setupInfo.customerBillingDetails,
+                                },
+                            });
+
+                            if (result.error || !result.setupIntent) {
+                                throw new PaymentError(`Stripe Payment Error`, result.error);
+                            }
+
+                            return result.setupIntent;
                         });
+                    if (!setupIntent) { return; }
 
-                        if (result.error || !result.setupIntent) {
-                            throw new PaymentError(`Stripe Payment Error`, result.error);
-                        }
-
-                        return result.setupIntent;
-                    });
-
-                onPaymentMethodReady(stripeEncodeClientToken({ setupIntent }));
+                    onPaymentMethodReady(stripeEncodeClientToken({ setupIntent }));
+                } catch (error) {
+                    setStripeError({ message: `Stripe Payment Error`, error });
+                }
             };
 
             const s = style;
@@ -84,14 +91,38 @@ export const createPaymentClientComponents_stripe = (params: { stripePublicKey: 
                 : (s.buttonAlignment === `right` ? `flex-end`
                     : `center`);
 
+            const errorContainerStyle = {
+                marginBottom: s.elementPadding,
+                padding: s.textPadding,
+                backgroundColor: s.backgroundColor,
+                borderWidth: 1, borderStyle: `solid`, borderColor: s.borderColor, borderRadius: s.borderRadius,
+            };
+            const errorMessageStyle = {
+                color: s.textColor_invalid,
+
+                fontSize: s.fontSize ? `${s.fontSize}px` : ``,
+                fontFamily: s.fontFamily,
+                fontSmoothing: `antialiased`,
+                fontWeight: `bold`,
+                padding: s.textPadding,
+                marginBottom: s.elementPadding,
+            } as const;
+
             return (
                 <form onSubmit={handleSubmit}>
                     <div style={inputContainerStyle}>
                         <CardElement options={{ style: inputStyle }} />
                     </div>
-                    <div style={{ display: `flex`, flexDirection: `row`, justifyContent: buttonJustifyContent }}>
+                    {stripeError && (
+                        <>
+                            <div style={errorContainerStyle}>
+                                <span style={errorMessageStyle}>{stripeError.message}</span>
+                            </div>
+                        </>
+                    )}
+                    {!stripeError && (<div style={{ display: `flex`, flexDirection: `row`, justifyContent: buttonJustifyContent }}>
                         <button type='submit' disabled={!stripe || !elements} style={buttonStyle}>{s.buttonText ?? `Subscribe`}</button>
-                    </div>
+                    </div>)}
                 </form>
             );
         },

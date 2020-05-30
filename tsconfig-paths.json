@@ -7,6 +7,9 @@
       "console-simulator/*": [
         "code/games/console-simulator/*"
       ],
+      "controls-react/*": [
+        "code/controls-react/*"
+      ],
       "dork/*": [
         "code/games/dork/*"
       ],
@@ -18,6 +21,9 @@
       ],
       "payments/*": [
         "code/payments/*"
+      ],
+      "react-native-lite/*": [
+        "code/react-native-lite/*"
       ],
       "themes/*": [
         "code/themes/*"
