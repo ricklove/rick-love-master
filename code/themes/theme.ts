@@ -32,6 +32,8 @@ export type ThemeTextStyle = {
     fontFamily?: string;
     fontSize?: number;
     fontWeight?: 'normal' | 'bold';
+    whiteSpace?: 'nowrap' | 'wrap';
+    minWidth?: number;
 };
 
 export const extractViewStyle = (style: ThemeViewStyle & ThemeTextStyle): ThemeViewStyle => {
@@ -70,6 +72,7 @@ export const extractTextStyle = (style: ThemeViewStyle & ThemeTextStyle): ThemeT
         fontFamily: style.fontFamily,
         fontSize: style.fontSize,
         fontWeight: style.fontWeight,
+        whiteSpace: style.whiteSpace,
     };
 };
 
@@ -152,19 +155,21 @@ const createTheme = (colors: ThemeColors, sizes: ThemeSizes, font: ThemeFont) =>
             background: colors.background_field,
             display: `flex`,
             flexDirection: `row`,
-            alignItems: `center`,
+            // alignItems: `center`,
         },
         text_fieldLabel: sText = {
             padding: sizes.textPadding,
             color: colors.text,
             fontSize: sizes.fontSize,
             fontWeight: font.fontWeight_normal,
+            whiteSpace: `nowrap`,
         },
         input_fieldEntry: sText = {
             padding: sizes.textPadding,
             color: colors.text,
             fontSize: sizes.fontSize_input,
             fontWeight: font.fontWeight_normal,
+            minWidth: 80,
         },
         button_fieldInline: sTextView = {
             ...borderProps,
@@ -174,6 +179,7 @@ const createTheme = (colors: ThemeColors, sizes: ThemeSizes, font: ThemeFont) =>
             color: colors.text_button,
             fontSize: sizes.fontSize_button,
             fontWeight: font.fontWeight_button,
+            display: `flex`,
         },
         view_formActionRow: sView = {
             display: `flex`,
