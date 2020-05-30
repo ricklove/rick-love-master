@@ -42,7 +42,7 @@ export const Icon = (props: { kind: IconKind, style?: ThemeIconStyle }) => {
     const IconComponent = icon.component;
     const size = props.style?.size ?? theme.icon.size ?? theme.sizes.fontSize;
     return (
-        <View style={{ display: `flex`, width: size, height: size }}>
+        <View style={{ display: `inline-flex`, width: size, height: size }}>
             <IconComponent name={icon.name} size={size} color={props.style?.color ?? theme.icon.color} />
         </View>
     );

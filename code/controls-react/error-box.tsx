@@ -53,8 +53,8 @@ const ErrorBox_Inner = (props: { error: ErrorState }) => {
                     </TouchableOpacity>
                 )}
             </View>
-            {canExpand && expanded && !!errorDetails && (<Text style={errorBoxStyle.text}>{errorDetails}</Text>)}
-            {canExpand && expanded && !!errorObjText && (<Text style={errorBoxStyle.text}>{errorObjText}</Text>)}
+            {canExpand && expanded && !!errorDetails && (<Text style={{ ...errorBoxStyle.text, whiteSpace: `pre` }}>{errorDetails}</Text>)}
+            {canExpand && expanded && !!errorObjText && (<Text style={{ ...errorBoxStyle.text, whiteSpace: `pre` }}>{errorObjText}</Text>)}
         </View>
     );
 };

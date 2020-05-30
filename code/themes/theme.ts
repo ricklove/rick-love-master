@@ -35,7 +35,7 @@ export type ThemeTextStyle = {
     fontFamily?: string;
     fontSize?: number;
     fontWeight?: 'normal' | 'bold';
-    whiteSpace?: 'normal' | 'nowrap';
+    whiteSpace?: 'normal' | 'nowrap' | 'pre';
     minWidth?: number;
 };
 export type ThemeIconStyle = {
