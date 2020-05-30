@@ -32,8 +32,12 @@ export type ThemeTextStyle = {
     fontFamily?: string;
     fontSize?: number;
     fontWeight?: 'normal' | 'bold';
-    whiteSpace?: 'nowrap' | 'wrap';
+    whiteSpace?: 'normal' | 'nowrap';
     minWidth?: number;
+};
+export type ThemeIconStyle = {
+    color?: string;
+    size?: number;
 };
 
 export const extractViewStyle = (style: ThemeViewStyle & ThemeTextStyle): ThemeViewStyle => {
@@ -86,6 +90,7 @@ export const basicThemeColors = {
     background_button: `#eeeeee`,
     background_error: `#ffcccc`,
     loader: `#3333ff`,
+    icon: `#3333ff`,
 };
 
 export const basicThemeSizes = {
@@ -101,6 +106,8 @@ export const basicThemeSizes = {
     fontSize_input: 16,
     fontSize_button: 14,
     fontSize_header: 16,
+
+    icon: 14,
 };
 
 export const basicFont = {
@@ -125,6 +132,7 @@ const createTheme = (colors: ThemeColors, sizes: ThemeSizes, font: ThemeFont) =>
 
     let sView: ThemeViewStyle = {};
     let sText: ThemeTextStyle = {};
+    let sIcon: ThemeIconStyle = {};
     let sTextView: ThemeTextStyle & ThemeViewStyle = {};
 
     const theme = {
@@ -209,6 +217,11 @@ const createTheme = (colors: ThemeColors, sizes: ThemeSizes, font: ThemeFont) =>
             fontFamily: font.fontFamily,
             fontWeight: font.fontWeight_button,
         },
+
+        icon: sIcon = {
+            size: sizes.icon,
+            color: colors.icon,
+        },
     } as const;
 
     return theme;
@@ -252,6 +265,8 @@ export const purpleThemeColors: typeof basicThemeColors = {
     background_field: `#dddddd`,
     background_button: `#863d8f`,
     // background_error: `#C56364`,
+    loader: `#863d8f`,
+    icon: `#863d8f`,
 };
 
 export const vscodeThemeColors = {
@@ -264,9 +279,9 @@ export const vscodeThemeColors = {
 };
 
 // eslint-disable-next-line import/no-mutable-exports
-export let theme = createTheme(basicThemeColors, basicThemeSizes, basicFont);
+// export let theme = createTheme(basicThemeColors, basicThemeSizes, basicFont);
 // eslint-disable-next-line import/no-mutable-exports
-// export let theme = createTheme(purpleThemeColors, basicThemeSizes, basicFont);
+export let theme = createTheme(purpleThemeColors, basicThemeSizes, basicFont);
 
 export const setTheme = (colors: ThemeColors, sizes: ThemeSizes, font: ThemeFont) => {
     theme = createTheme(purpleThemeColors, basicThemeSizes, basicFont);

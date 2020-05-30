@@ -5,6 +5,7 @@
     "react-native-lite": "*",
     "themes": "*",
     "utils": "*",
-    "react": "^16.12.0"
+    "react": "^16.12.0",
+    "react-icons": "^3.10.0"
   }
 }
