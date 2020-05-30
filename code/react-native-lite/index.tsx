@@ -1,3 +1,4 @@
+import './index.css';
 import React, { ReactNode } from 'react';
 import { delay } from 'utils/delay';
 
@@ -37,6 +38,41 @@ export const TouchableOpacity = (props: { style?: ViewStyle | ViewStyle[], child
             {props.children}
         </div>
     );
+};
+
+export const ActivitySpinner = ({ size, color }: { size: 'large' | 'small', color: string }) => {
+    const sizePx = size === `small` ? 16 : 32;
+    return (
+        <CircleSvg size={sizePx} thickness={sizePx / 8} color={color} />
+    );
+};
+
+// Based on: https://glennmccomb.com/articles/building-a-pure-css-animated-svg-spinner/
+const CircleSvg = ({ size, thickness, color }: { size: number, thickness: number, color: string }) => {
+    const circumference = 2 * Math.PI * (size - thickness) * 0.5;
+    const dashLength = circumference * 0.6;
+    return (
+        <svg style={{ maxWidth: size }} viewBox={`0 0 ${size} ${size}`} xmlns='http://www.w3.org/2000/svg'>
+            <circle style={{
+                fill: `transparent`,
+                stroke: color,
+                strokeWidth: thickness,
+                opacity: 0.5,
+            }} cx={size * 0.5} cy={size * 0.5} r={size * 0.5 - thickness} />
+            <circle className='activity-spinner' style={{
+                strokeDasharray: dashLength,
+                fill: `transparent`,
+                stroke: color,
+                strokeWidth: thickness,
+                transformOrigin: `${size * 0.5}px ${size * 0.5}px`,
+            }} cx={size * 0.5} cy={size * 0.5} r={size * 0.5 - thickness} />
+        </svg>
+    );
+};
+
+
+export const Platform = {
+    OS: `web` as 'web' | 'ios' | 'android',
 };
 
 export const Clipboard = {

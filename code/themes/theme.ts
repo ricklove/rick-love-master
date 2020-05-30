@@ -8,6 +8,7 @@ export const basicThemeColors = {
     background_field: `#dddddd`,
     background_button: `#eeeeee`,
     background_error: `#ffcccc`,
+    loader: `#3333ff`,
 };
 
 export const basicThemeSizes = {

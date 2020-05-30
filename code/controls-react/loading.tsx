@@ -1,21 +1,29 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
+import { ActivitySpinner } from 'react-native-lite';
+import { theme } from 'themes/theme';
 
 export const Loading = ({ loading }: { loading?: boolean }) => {
-    if (!loading) { return <></>; }
+
+    const visible = loading;
+
+    // // Show loading for a min time
+    // const [visible, setVisible] = useState(loading);
+    // const MIN_TIME_MS = 500;
+    // useEffect(() => {
+    //     if (loading) { setVisible(true); return () => { }; }
+    //     const timeoutId = setTimeout(() => {
+    //         setVisible(false);
+    //     }, MIN_TIME_MS);
+    //     return () => {
+    //         clearTimeout(timeoutId);
+    //     };
+    // }, [loading]);
+
+    if (!visible) { return <></>; }
 
     return (
         <>
-            <LoaderSvg size={32} thickness={4} />
+            <ActivitySpinner size='large' color={theme.colors.loader} />
         </>
-    );
-};
-
-const LoaderSvg = ({ size, thickness }: { size: number, thickness: number }) => {
-    const circumference = 2 * Math.PI * size * 0.5;
-    const dashLength = circumference * 0.7;
-    return (
-        <svg viewBox={`0 0 ${size} ${size}`} xmlns='http://www.w3.org/2000/svg'>
-            <circle style={{ strokeDasharray: dashLength }} cx={size * 0.5} cy={size * 0.5} r={size * 0.5 - thickness} />
-        </svg>
     );
 };
