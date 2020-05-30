@@ -182,8 +182,7 @@ const PaymantView = (props: {
                 <C.View_FieldRow>
                     <C.Text_FieldLabel>Amount $</C.Text_FieldLabel>
                     <C.Input_Currency value={purchaseAmount} onChange={(value) => setPurchaseAmount(value)} />
-                    <input style={theme.input_fieldEntry} type='number' min='0.00' max='10000.00' step='0.01' value={purchaseAmount} onChange={(e) => setPurchaseAmount(Number.parseFloat(e.target.value))} />
-                    <button style={theme.button_fieldInline} type='button' onClick={() => makePurchase()}>Purchase</button>
+                    <C.Button_FieldInline onPress={() => makePurchase()} >Purchase</C.Button_FieldInline>
                 </C.View_FieldRow>
                 {payments && payments.map(x => (
                     <C.View_FieldRow key={`${x.created}`}>

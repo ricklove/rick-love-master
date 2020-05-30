@@ -2,7 +2,7 @@
   "name": "react-native-lite",
   "version": "1.0.0",
   "dependencies": {
-    "utils": "*",
+    "themes": "*",
     "react": "^16.12.0"
   }
 }

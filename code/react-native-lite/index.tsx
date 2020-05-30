@@ -1,9 +1,6 @@
 import './index.css';
 import React, { ReactNode } from 'react';
-import { delay } from 'utils/delay';
-
-export type ViewStyle = {};
-export type TextStyle = ViewStyle & {};
+import { ThemeTextStyle, ThemeViewStyle } from 'themes/theme';
 
 function mergeStyles<T>(items: (T | undefined | null) | (T | T[] | undefined | null)[]): T {
     if (Array.isArray(items)) {
@@ -15,8 +12,8 @@ function mergeStyles<T>(items: (T | undefined | null) | (T | T[] | undefined | n
     return items as T;
 };
 
-export const View = (props: { style?: ViewStyle | ViewStyle[], children?: ReactNode }) => { return (<div style={mergeStyles(props.style)}>{props.children}</div>); };
-export const Text = (props: { style?: TextStyle | TextStyle[], children?: ReactNode, numberOfLines?: undefined | 1 }) => {
+export const View = (props: { style?: ThemeViewStyle | ThemeViewStyle[], children?: ReactNode }) => { return (<div style={mergeStyles(props.style)}>{props.children}</div>); };
+export const Text = (props: { style?: ThemeTextStyle | ThemeTextStyle[], children?: string, numberOfLines?: undefined | 1 }) => {
     if (props.numberOfLines === 1) {
         const singleLineStyle = {
             overflow: `hidden`,
@@ -28,7 +25,7 @@ export const Text = (props: { style?: TextStyle | TextStyle[], children?: ReactN
     return (<span style={mergeStyles(props.style)}>{props.children}</span>);
 };
 export const TextInput = (props: {
-    style?: TextStyle | TextStyle[];
+    style?: ThemeTextStyle | ThemeTextStyle[];
     keyboardType: 'default' | 'numeric';
     value: string;
     onChange: (value: string) => void;
@@ -38,7 +35,7 @@ export const TextInput = (props: {
     return (<input type={type} style={mergeStyles(props.style)} value={props.value} onChange={(e) => props.onChange(e.target.value)} />);
 
 };
-export const TouchableOpacity = (props: { style?: ViewStyle | ViewStyle[], children?: ReactNode, onPress: () => void }) => {
+export const TouchableOpacity = (props: { style?: ThemeViewStyle | ThemeViewStyle[], children?: ReactNode, onPress: () => void }) => {
     return (
         <div style={mergeStyles(props.style)}
             onClick={props.onPress}

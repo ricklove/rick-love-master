@@ -1,3 +1,52 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
+export type ThemeViewStyle = {
+    display?: 'flex' | 'block' | 'inline-block';
+    flexDirection?: 'row' | 'column';
+    justifyContent?: 'flex-start' | 'center' | 'flex-end';
+
+    marginLeft?: number;
+    marginBottom?: number;
+    background?: string;
+    padding?: number;
+
+    borderWidth?: number;
+    borderRadius?: number;
+    borderColor?: string;
+    borderStyle?: 'solid';
+};
+export type ThemeTextStyle = {
+    padding?: number;
+    color?: string;
+
+    fontFamily?: string;
+    fontSize?: number;
+    fontWeight?: 'normal' | 'bold';
+};
+
+export const extractViewStyle = (style: ThemeViewStyle & ThemeTextStyle): ThemeViewStyle => {
+    return {
+        display: style.display,
+        flexDirection: style.flexDirection,
+        justifyContent: style.justifyContent,
+        marginLeft: style.marginLeft,
+        marginBottom: style.marginBottom,
+        background: style.background,
+        padding: style.padding,
+        borderWidth: style.borderWidth,
+        borderRadius: style.borderRadius,
+        borderColor: style.borderColor,
+        borderStyle: style.borderStyle,
+    };
+};
+export const extractTextStyle = (style: ThemeViewStyle & ThemeTextStyle): ThemeTextStyle => {
+    return {
+        padding: style.padding,
+        color: style.color,
+        fontFamily: style.fontFamily,
+        fontSize: style.fontSize,
+        fontWeight: style.fontWeight,
+    };
+};
 
 export const basicThemeColors = {
     text: `#333333`,
@@ -46,24 +95,28 @@ const createTheme = (colors: ThemeColors, sizes: ThemeSizes, font: ThemeFont) =>
         borderStyle: `solid`,
     } as const;
 
-    return {
+    let sView: ThemeViewStyle = {};
+    let sText: ThemeTextStyle = {};
+    let sTextView: ThemeTextStyle & ThemeViewStyle = {};
+
+    const theme = {
         colors,
         sizes,
         font,
 
-        view_form: {
+        view_form: sView = {
             ...borderProps,
             marginBottom: sizes.sectionGap,
             padding: 8,
         },
-        text_formTitle: {
+        text_formTitle: sText = {
             padding: sizes.textPadding,
             color: colors.text,
             fontSize: sizes.fontSize_header,
             fontFamily: font.fontFamily,
             fontWeight: font.fontWeight_header,
         },
-        view_fieldRow: {
+        view_fieldRow: sView = {
             ...borderProps,
             marginBottom: sizes.rowGap,
             padding: sizes.rowPadding,
@@ -71,19 +124,19 @@ const createTheme = (colors: ThemeColors, sizes: ThemeSizes, font: ThemeFont) =>
             display: `flex`,
             flexDirection: `row`,
         },
-        text_fieldLabel: {
+        text_fieldLabel: sText = {
             padding: sizes.textPadding,
             color: colors.text,
             fontSize: sizes.fontSize,
             fontWeight: font.fontWeight_normal,
         },
-        input_fieldEntry: {
+        input_fieldEntry: sText = {
             padding: sizes.textPadding,
             color: colors.text,
             fontSize: sizes.fontSize_input,
             fontWeight: font.fontWeight_normal,
         },
-        button_fieldInline: {
+        button_fieldInline: sTextView = {
             ...borderProps,
             marginLeft: sizes.elementGap,
             padding: sizes.textPadding,
@@ -92,12 +145,12 @@ const createTheme = (colors: ThemeColors, sizes: ThemeSizes, font: ThemeFont) =>
             fontSize: sizes.fontSize_button,
             fontWeight: font.fontWeight_button,
         },
-        div_formActionRow: {
+        div_formActionRow: sView = {
             display: `flex`,
             flexDirection: `row`,
             justifyContent: `flex-end`,
         },
-        button_formAction: {
+        button_formAction: sTextView = {
             ...borderProps,
             marginLeft: sizes.elementGap,
             padding: sizes.textPadding,
@@ -107,13 +160,13 @@ const createTheme = (colors: ThemeColors, sizes: ThemeSizes, font: ThemeFont) =>
             fontWeight: font.fontWeight_button,
         },
 
-        div_error: {
+        div_error: sView = {
             ...borderProps,
             marginBottom: sizes.sectionGap,
             padding: sizes.rowPadding,
             background: colors.background_error,
         },
-        span_error: {
+        span_error: sText = {
             padding: sizes.textPadding,
             color: colors.text_error,
             fontSize: sizes.fontSize,
@@ -121,6 +174,8 @@ const createTheme = (colors: ThemeColors, sizes: ThemeSizes, font: ThemeFont) =>
             fontWeight: font.fontWeight_button,
         },
     } as const;
+
+    return theme;
 };
 
 export const purpleColors = {
