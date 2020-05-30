@@ -1,10 +1,11 @@
 /* eslint-disable no-console */
 import { getProjectRootDirectoryPath, getPathNormalized, processDirectoryFiles } from 'utils/files';
 import { generateTsconfigPaths, loadTsConfigPaths } from './generate-tsconfig-paths';
-import { processImports_returnDependencies, FileDependencies, saveDependenciesToModulePackageJson } from './process-imports';
+import { processImports_returnDependencies, FileDependencies, saveDependenciesToModulePackageJson, processImports_expandToRelativeImports } from './process-imports';
+import { cloneFile } from './clone-files';
 
 export const getTargetBuildPath = (root: string) => {
-    const targetFromRootPath = getPathNormalized(root, `./build/src/`);
+    const targetFromRootPath = getPathNormalized(root, `./.build/src/`);
     return targetFromRootPath;
 };
 
@@ -20,18 +21,28 @@ const build = async (rootRaw?: string) => {
         console.log(`Statup: Clone & Process Imports`);
         const tsConfigPaths = await loadTsConfigPaths(root);
 
-        const fileDependencies = [] as FileDependencies[];
+        // Clone files and expand to relative
         await processDirectoryFiles(rootCode, async (x) => {
-            // const destFile = await cloneFile(x, root, getTargetBuildPath(root), { skipIfDestinationNewer: false });
-            // if (!destFile) { return; }
-            const destFile = x;
+            const destFile = await cloneFile(x, root, getTargetBuildPath(root), { skipIfDestinationNewer: false });
+            if (!destFile) { return; }
 
-            const r = await processImports_returnDependencies(destFile, root, tsConfigPaths);
-            if (r) {
-                fileDependencies.push(r);
-            }
+            await processImports_expandToRelativeImports(destFile, getTargetBuildPath(root), tsConfigPaths);
         });
-        await saveDependenciesToModulePackageJson(fileDependencies, root);
+
+
+        // // const fileDependencies = [] as FileDependencies[];
+        // await processDirectoryFiles(rootCode, async (x) => {
+        //     const destFile = await cloneFile(x, root, getTargetBuildPath(root), { skipIfDestinationNewer: false });
+        //     if (!destFile) { return; }
+        //     // const destFile = x;
+
+        //     const r = await processImports_expandToRelativeImports(destFile, root, tsConfigPaths);
+        //     // const r = await processImports_returnDependencies(destFile, root, tsConfigPaths);
+        //     // if (r) {
+        //     //     fileDependencies.push(r);
+        //     // }
+        // });
+        // // await saveDependenciesToModulePackageJson(fileDependencies, root);
     };
     await startup();
 

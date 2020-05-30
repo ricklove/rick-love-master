@@ -1,6 +1,7 @@
-import { getAllDirectories, getPathNormalized, getDirectoryName, readFile, writeFile, getProjectRootDirectoryPath, directoryContains } from 'utils/files';
+import { getAllDirectories, getPathNormalized, getDirectoryName, readFile, writeFile, getProjectRootDirectoryPath } from 'utils/files';
 import { toKeyValueObject, toKeyValueArray } from 'utils/objects';
 import { piped } from 'utils/piped';
+import { isPackageRootPath } from './package-path';
 
 export type TsConfigPathsRaw = { [name: string]: string[] }
 export type TsConfigPath = { path: string, name: string };
@@ -15,10 +16,6 @@ export const loadTsConfigPaths = async (rootRaw?: string): Promise<TsConfigPath[
     return paths;
 };
 
-export const isTsconfigPathDirectory = async (fullPath: string) => {
-    return await directoryContains(fullPath, `./src`);
-};
-
 export const generateTsconfigPaths = async (rootRaw?: string) => {
 
     // const parentSearch = `/code/`;
@@ -29,19 +26,22 @@ export const generateTsconfigPaths = async (rootRaw?: string) => {
     const rootCode = `${root}/code`;
 
     const dirs = await getAllDirectories(rootCode);
-    const dirsWithSrc = dirs.filter(x => x.endsWith(`/src`)).map(x => x.replace(/\/src$/, ``));
-    // const dirsOther = dirs.filter(x => !dirsWithSrc.some(d => x.startsWith(d)));
-    const pathDirs: TsConfigPath[] = [...dirsWithSrc.map(x => ({ path: `${x}/src`, name: getDirectoryName(x) }))];
+    const dirs_packageRoot = (await Promise.all(dirs.map(async x => ({ x, isRoot: await isPackageRootPath(x) }))))
+        .filter(x => x.isRoot)
+        .map(x => x.x);
+
+    const pathDirs: TsConfigPath[] = [...dirs_packageRoot.map(x => ({ path: x, name: getDirectoryName(x) }))];
 
     // {
     //     "compilerOptions": {
     //         "paths": {
     //             "blog/*": [
-    //                 "c:/Projects/rick-love-master/code/blog/src/*"
+    //                 "c:/Projects/rick-love-master/code/blog/*"
     //             ], 
     // ...
     const paths = piped(pathDirs)
         .pipe(r => r.map(x => ({ key: `${x.name}/*`, value: [`${x.path.replace(`${root}/`, ``)}/*`] })))
+        .pipe(r => r.sort((a, b) => a.key.localeCompare(b.key)))
         .pipe(r => toKeyValueObject(r))
         .out();
 
@@ -52,4 +52,5 @@ export const generateTsconfigPaths = async (rootRaw?: string) => {
     await writeFile(`${tsConfigPath}`, JSON.stringify(tsConfigObj, null, 2), { readonly: true, overwrite: true });
 };
 
+// eslint-disable-next-line @typescript-eslint/no-floating-promises
 // generateTsconfigPaths();
