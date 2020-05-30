@@ -61,6 +61,7 @@ const createServerAccessFactory_withUserContext = () => {
         let newCredentials = null as null | JsonRpcClientCredentials;
 
         return {
+            // This would probably have a callback function: onNewCredentials, etc.
             authApi: {
                 login: async (username: string, password: string) => {
                     // This ain't no way to check a password, let's assume hash and security is actually here (this is just mock)
@@ -81,9 +82,24 @@ const createServerAccessFactory_withUserContext = () => {
         };
     };
 
+    // This will create an anonymous user and session (this could also be merged with the original, by just letting it do the same if credentials is null)
+    const createServerAccess_anonymousCredentials = async () => {
+        const newSessionId = Math.random();
+        userSessions[newSessionId] = { userId: `anon_${newSessionId}` };
+        const newCredentials = { sessionId: newSessionId } as unknown as JsonRpcClientCredentials;
+
+        return {
+            ... await createServerAccess_withUserContext_fromCredentials(newCredentials),
+            getNewCredentials: async () => {
+                return newCredentials;
+            },
+        };
+    };
+
     return {
         createServerAccess_withUserContext_fromCredentials,
         createServerAccess_unauthenticated,
+        createServerAccess_anonymousCredentials,
     };
 };
 
@@ -110,8 +126,16 @@ export const run = async () => {
         //     };
         // }
 
+        // if (!credentials) {
+        //     throw new Error(`This endpoint only supports authenticated requests`);
+        // }
+
         if (!credentials) {
-            throw new Error(`This endpoint only supports authenticated requests`);
+            const { getUserContext, getNewCredentials } = await serverUserAccess.createServerAccess_anonymousCredentials();
+            return {
+                api: apiFactory({ getUserContext }).paymentClientApi,
+                getNewCredentials,
+            };
         }
 
         const { getUserContext, getNewCredentials } = await serverUserAccess.createServerAccess_withUserContext_fromCredentials(credentials);
