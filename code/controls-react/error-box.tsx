@@ -43,12 +43,12 @@ const ErrorBox_Inner = (props: { error: ErrorState }) => {
                     </View>
                 </TouchableOpacity>
                 {DEBUG && (
-                    <TouchableOpacity onPress={() => Clipboard.setString(jsonStringify_safe({ errorMessage, errorDetails, errorObjText }, true))}>
+                    <TouchableOpacity style={{ display: `flex`, flexDirection: `row`, alignItems: `center`, paddingLeft: 8 }} onPress={() => Clipboard.setString(jsonStringify_safe({ errorMessage, errorDetails, errorObjText }, true))}>
                         <Icon style={errorBoxStyle.icon} kind={IconKind.copy} />
                     </TouchableOpacity>
                 )}
                 {props.error.retryCallback && (
-                    <TouchableOpacity onPress={props.error.retryCallback}>
+                    <TouchableOpacity style={{ display: `flex`, flexDirection: `row`, alignItems: `center`, paddingLeft: 8 }} onPress={props.error.retryCallback}>
                         <Icon style={errorBoxStyle.icon} kind={IconKind.retry} />
                     </TouchableOpacity>
                 )}

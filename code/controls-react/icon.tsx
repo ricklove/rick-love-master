@@ -3,6 +3,7 @@ import { ThemeIconStyle, theme } from 'themes/theme';
 import { MdMenu, MdArrowBack, MdCheckBoxOutlineBlank, MdErrorOutline, MdContentCopy, MdDashboard } from 'react-icons/md';
 import { FiChevronRight, FiChevronDown } from 'react-icons/fi';
 import { FaRedo, FaPlus, FaMinus } from 'react-icons/fa';
+import { View } from 'react-native-lite';
 import { IconKind } from './icon-kind';
 
 function getIcon(kind: IconKind) {
@@ -39,7 +40,10 @@ function getIcon(kind: IconKind) {
 export const Icon = (props: { kind: IconKind, style?: ThemeIconStyle }) => {
     const icon = getIcon(props.kind);
     const IconComponent = icon.component;
+    const size = props.style?.size ?? theme.icon.size ?? theme.sizes.fontSize;
     return (
-        <IconComponent name={icon.name} size={props.style?.size ?? theme.icon.size} color={props.style?.color ?? theme.icon.color} />
+        <View style={{ display: `flex`, width: size, height: size }}>
+            <IconComponent name={icon.name} size={size} color={props.style?.color ?? theme.icon.color} />
+        </View>
     );
 };

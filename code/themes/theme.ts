@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 export type ThemeViewStyle = {
-    display?: 'flex' | 'block' | 'inline-block';
+    display?: 'flex' | 'block' | 'inline-flex' | 'inline-block';
     flexDirection?: 'row' | 'column';
     flex?: number;
     justifyContent?: 'flex-start' | 'center' | 'flex-end';
@@ -19,6 +19,9 @@ export type ThemeViewStyle = {
     paddingLeft?: number;
     paddingTop?: number;
     paddingBottom?: number;
+
+    width?: number;
+    height?: number;
 
     borderWidth?: number;
     borderRadius?: number;
@@ -62,6 +65,9 @@ export const extractViewStyle = (style: ThemeViewStyle & ThemeTextStyle): ThemeV
         paddingTop: style.paddingTop,
         paddingBottom: style.paddingBottom,
 
+        width: style.width,
+        height: style.height,
+
         borderWidth: style.borderWidth,
         borderRadius: style.borderRadius,
         borderColor: style.borderColor,
@@ -92,10 +98,10 @@ export const basicThemeColors = {
     loader: `#3333ff`,
     icon: `#3333ff`,
 };
-
+export type RectSize = { all?: number, left?: number, right?: number, top?: number, bottom?: number };
 export const basicThemeSizes = {
     textPadding: 4,
-    borderWidth: 1,
+    borderWidth: { all: 1 } as RectSize,
     borderRadius: 4,
     sectionGap: 16,
     elementGap: 8,
@@ -124,7 +130,12 @@ export type ThemeFont = typeof basicFont;
 const createTheme = (colors: ThemeColors, sizes: ThemeSizes, font: ThemeFont) => {
 
     const borderProps = {
-        borderWidth: sizes.borderWidth,
+        borderWidth: sizes.borderWidth.all,
+        borderLeftWidth: sizes.borderWidth.left ?? sizes.borderWidth.all,
+        borderRightWidth: sizes.borderWidth.right ?? sizes.borderWidth.all,
+        borderTopWidth: sizes.borderWidth.top ?? sizes.borderWidth.all,
+        borderBottomWidth: sizes.borderWidth.bottom ?? sizes.borderWidth.all,
+
         borderRadius: sizes.borderRadius,
         borderColor: colors.border,
         borderStyle: `solid`,
@@ -269,6 +280,11 @@ export const purpleThemeColors: typeof basicThemeColors = {
     icon: `#863d8f`,
 };
 
+export const purpleSizes: typeof basicThemeSizes = {
+    ...basicThemeSizes,
+    borderWidth: { all: 1, bottom: 4 },
+};
+
 export const vscodeThemeColors = {
     colors: {
         text: `#569CD6`,
@@ -281,7 +297,7 @@ export const vscodeThemeColors = {
 // eslint-disable-next-line import/no-mutable-exports
 // export let theme = createTheme(basicThemeColors, basicThemeSizes, basicFont);
 // eslint-disable-next-line import/no-mutable-exports
-export let theme = createTheme(purpleThemeColors, basicThemeSizes, basicFont);
+export let theme = createTheme(purpleThemeColors, purpleSizes, basicFont);
 
 export const setTheme = (colors: ThemeColors, sizes: ThemeSizes, font: ThemeFont) => {
     theme = createTheme(purpleThemeColors, basicThemeSizes, basicFont);
