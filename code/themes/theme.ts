@@ -14,8 +14,9 @@ export const basicThemeSizes = {
     textPadding: 4,
     borderWidth: 1,
     borderRadius: 4,
-    sectionPadding: 16,
-    elementPadding: 8,
+    sectionGap: 16,
+    elementGap: 8,
+    rowGap: 4,
     rowPadding: 4,
 
     fontSize: 14,
@@ -51,7 +52,7 @@ const createTheme = (colors: ThemeColors, sizes: ThemeSizes, font: ThemeFont) =>
 
         div_form: {
             ...borderProps,
-            marginBottom: sizes.sectionPadding,
+            marginBottom: sizes.sectionGap,
             padding: 8,
         },
         span_formTitle: {
@@ -63,8 +64,8 @@ const createTheme = (colors: ThemeColors, sizes: ThemeSizes, font: ThemeFont) =>
         },
         div_fieldRow: {
             ...borderProps,
-            marginBottom: sizes.rowPadding,
-            padding: sizes.elementPadding,
+            marginBottom: sizes.rowGap,
+            padding: sizes.rowPadding,
             background: colors.background_field,
             display: `flex`,
             flexDirection: `row`,
@@ -83,7 +84,7 @@ const createTheme = (colors: ThemeColors, sizes: ThemeSizes, font: ThemeFont) =>
         },
         button_fieldInline: {
             ...borderProps,
-            marginLeft: sizes.elementPadding,
+            marginLeft: sizes.elementGap,
             padding: sizes.textPadding,
             background: colors.background_button,
             color: colors.text_button,
@@ -97,7 +98,7 @@ const createTheme = (colors: ThemeColors, sizes: ThemeSizes, font: ThemeFont) =>
         },
         button_formAction: {
             ...borderProps,
-            marginLeft: sizes.elementPadding,
+            marginLeft: sizes.elementGap,
             padding: sizes.textPadding,
             background: colors.background_button,
             color: colors.text_button,
@@ -107,8 +108,8 @@ const createTheme = (colors: ThemeColors, sizes: ThemeSizes, font: ThemeFont) =>
 
         div_error: {
             ...borderProps,
-            marginBottom: sizes.sectionPadding,
-            padding: sizes.elementPadding,
+            marginBottom: sizes.sectionGap,
+            padding: sizes.rowPadding,
             background: colors.background_error,
         },
         span_error: {

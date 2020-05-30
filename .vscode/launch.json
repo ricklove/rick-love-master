@@ -59,7 +59,7 @@
             "type": "node",
             "request": "launch",
             "args": [
-                "${workspaceFolder}/code/payments/src/test/full-stack-test-server.ts"
+                "${workspaceFolder}/code/payments/test/full-stack-test-server.ts"
             ],
             "runtimeArgs": [
                 "--nolazy",
