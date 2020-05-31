@@ -2,9 +2,9 @@ import { jsonParse, jsonStringify } from 'utils/json';
 import { JsonRpcWebServer, JsonRpcSessionServer, JsonRpcBatchServer, JsonRpcSessionToken, JsonRpcSessionResponseBody, JsonRpcCoreServer, JsonRpcApiServer, JsonRpcSessionToken_New, JsonRpcWebJsonServer, JsonRpcSessionRequestBody } from './types';
 import { encodeJsonRpcResponseData, encodeJsonRpcResponseData_error } from './json-body';
 
-type ApiAccess<T> = { execute: (method: string, params: unknown, context: T) => Promise<{ result: unknown, newSessionToken?: JsonRpcSessionToken_New }> };
-const createJsonRpcApiServer = <T>(config: { apiAccess: ApiAccess<T> }): JsonRpcApiServer<T> => {
-    const server: JsonRpcApiServer<T> = {
+type ApiAccess<TContext> = { execute: (method: string, params: unknown, context: TContext) => Promise<{ result: unknown, newSessionToken?: JsonRpcSessionToken_New }> };
+const createJsonRpcApiServer = <TContext>(config: { apiAccess: ApiAccess<TContext> }): JsonRpcApiServer<TContext> => {
+    const server: JsonRpcApiServer<TContext> = {
         respond: async (method, params, context) => {
             const result = await config.apiAccess.execute(method, params, context);
             return {
@@ -16,8 +16,8 @@ const createJsonRpcApiServer = <T>(config: { apiAccess: ApiAccess<T> }): JsonRpc
     return server;
 };
 
-const createJsonRpcCoreServer = <T>(config: { upper: JsonRpcApiServer<T> }): JsonRpcCoreServer<T> => {
-    const server: JsonRpcCoreServer<T> = {
+const createJsonRpcCoreServer = <TContext>(config: { upper: JsonRpcApiServer<TContext> }): JsonRpcCoreServer<TContext> => {
+    const server: JsonRpcCoreServer<TContext> = {
         respond: async (data, context) => {
 
             try {
@@ -38,8 +38,8 @@ const createJsonRpcCoreServer = <T>(config: { upper: JsonRpcApiServer<T> }): Jso
     return server;
 };
 
-const createJsonRpcBatchServer = <T>(config: { upper: JsonRpcCoreServer<T> }): JsonRpcBatchServer<T> => {
-    const server: JsonRpcBatchServer<T> = {
+const createJsonRpcBatchServer = <TContext>(config: { upper: JsonRpcCoreServer<TContext> }): JsonRpcBatchServer<TContext> => {
+    const server: JsonRpcBatchServer<TContext> = {
         respond: async (batchData, context) => {
 
             const results = await Promise.all(batchData.map(async (x) => {
@@ -56,10 +56,10 @@ const createJsonRpcBatchServer = <T>(config: { upper: JsonRpcCoreServer<T> }): J
     return server;
 };
 
-type ContextProvider<T> = {
-    getContext: (sessionToken?: JsonRpcSessionToken) => Promise<{ context: T, error?: unknown, newSessionToken?: JsonRpcSessionToken_New }>;
+type ContextProvider<TContext> = {
+    getContext: (sessionToken?: JsonRpcSessionToken) => Promise<{ context: TContext, error?: unknown, newSessionToken?: JsonRpcSessionToken_New }>;
 };
-const createJsonRpcSessionServer = <T>(config: { upper: JsonRpcBatchServer<T>, contextProvider: ContextProvider<T> }): JsonRpcSessionServer => {
+const createJsonRpcSessionServer = <TContext>(config: { upper: JsonRpcBatchServer<TContext>, contextProvider: ContextProvider<TContext> }): JsonRpcSessionServer => {
     const server: JsonRpcSessionServer = {
         respond: async (sessionData) => {
             const contextResult = await config.contextProvider.getContext(sessionData.sessionToken);
@@ -117,11 +117,11 @@ const createJsonRpcWebJsonServer = (config: { upper: JsonRpcWebServer }): JsonRp
     return server;
 };
 
-export const createJsonRpcServer = <T>(config: { contextProvider: ContextProvider<T>, apiAccess: ApiAccess<T> }): JsonRpcWebJsonServer => {
-    const apiServer = createJsonRpcApiServer<T>({ apiAccess: config.apiAccess });
-    const coreServer = createJsonRpcCoreServer<T>({ upper: apiServer });
-    const batchServer = createJsonRpcBatchServer<T>({ upper: coreServer });
-    const sessionServer = createJsonRpcSessionServer<T>({ upper: batchServer, contextProvider: config.contextProvider });
+export const createJsonRpcServer = <TContext>(config: { contextProvider: ContextProvider<TContext>, apiAccess: ApiAccess<TContext> }): JsonRpcWebJsonServer => {
+    const apiServer = createJsonRpcApiServer<TContext>({ apiAccess: config.apiAccess });
+    const coreServer = createJsonRpcCoreServer<TContext>({ upper: apiServer });
+    const batchServer = createJsonRpcBatchServer<TContext>({ upper: coreServer });
+    const sessionServer = createJsonRpcSessionServer<TContext>({ upper: batchServer, contextProvider: config.contextProvider });
     const webServer = createJsonRpcWebServer({ upper: sessionServer });
     const webJsonServer = createJsonRpcWebJsonServer({ upper: webServer });
     return webJsonServer;
