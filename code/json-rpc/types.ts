@@ -38,6 +38,7 @@ export type JsonRpcSessionClient = {
 }
 
 export type JsonRpcSessionToken = unknown & { __type: 'JsonRpcSessionToken' };
+export type JsonRpcSessionToken_New = undefined | null | JsonRpcSessionToken | 'reset';
 
 export type JsonRpcSessionRequestBody = {
     batchRequests: JsonRpcRequestBody[];
@@ -46,20 +47,31 @@ export type JsonRpcSessionRequestBody = {
 
 export type JsonRpcSessionResponseBody = {
     batchResponses: JsonRpcResponseBody[];
-    newSessionToken?: JsonRpcSessionToken;
-    resetSessionToken?: boolean;
+    newSessionToken?: JsonRpcSessionToken_New;
 };
 
 // Web: Client => Server
 export type JsonRpcWebClient = {
-    webRequest: <T>(serverUrl: string, bodyObj: unknown) => Promise<{ responseBodyObj: T }>;
+    webRequest: (serverUrl: string, bodyObj: JsonRpcSessionRequestBody) => Promise<{ responseBodyObj: JsonRpcSessionResponseBody }>;
 }
 
-// The cookies are an alternative storage for the sessionToken
-export type JsonRpcWebServer_Handler = {
-    webHandler: (body: string, cookie?: JsonRpcSessionToken) => Promise<{ responseBody: string, responseCookie?: JsonRpcSessionToken, resetResponseCookie?: boolean }>;
+// The cookies are an alternative storage for the sessionToken (HttpOnly, Secure)
+export type JsonRpcWebServer = {
+    respond: (requestBodyObj: JsonRpcSessionRequestBody, cookieObj?: JsonRpcSessionToken) => Promise<{ responseBodyObj: JsonRpcSessionResponseBody, responseCookieObj?: JsonRpcSessionToken_New }>;
 }
 
-export type JsonRpcSessionHandler = {
-    sessionHandler: (sessionData: JsonRpcSessionRequestBody) => Promise<JsonRpcSessionResponseBody>;
+export type JsonRpcSessionServer = {
+    respond: (sessionData: JsonRpcSessionRequestBody) => Promise<JsonRpcSessionResponseBody>;
+}
+
+export type JsonRpcBatchServer<TContext> = {
+    respond: (batchData: JsonRpcRequestBody[], context: TContext) => Promise<{ responses: JsonRpcResponseBody[], newSessionToken?: JsonRpcSessionToken_New }>;
+}
+
+export type JsonRpcCoreServer<TContext> = {
+    respond: (data: JsonRpcRequestBody, context: TContext) => Promise<{ response: JsonRpcResponseBody, newSessionToken?: JsonRpcSessionToken_New }>;
+}
+
+export type JsonRpcApiServer<TContext> = {
+    respond: (method: string, params: unknown, context: TContext) => Promise<{ responseData: unknown, newSessionToken?: JsonRpcSessionToken_New }>;
 }

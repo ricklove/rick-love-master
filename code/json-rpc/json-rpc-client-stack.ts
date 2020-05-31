@@ -77,10 +77,10 @@ const createJsonRpcBatchSessionClient = (config: { inner: JsonRpcSessionClient, 
         batchRequest: async (batchData) => {
             const sessionToken = await config.sessionTokenStorage.getSessionToken();
             const response = await config.inner.sessionRequest({ batchRequests: batchData, sessionToken });
-            if (response.resetSessionToken) {
+            if (response.newSessionToken === `reset`) {
                 await config.sessionTokenStorage.resetSessionToken();
             }
-            if (response.newSessionToken) {
+            else if (response.newSessionToken) {
                 await config.sessionTokenStorage.setSessionToken(response.newSessionToken);
             }
             return response.batchResponses;
@@ -92,7 +92,7 @@ const createJsonRpcBatchSessionClient = (config: { inner: JsonRpcSessionClient, 
 const createJsonRpcSessionWebClient = (config: { inner: JsonRpcWebClient, serverUrl: string }): JsonRpcSessionClient => {
     const sessionClient: JsonRpcSessionClient = {
         sessionRequest: async (sessionData) => {
-            const response = await config.inner.webRequest<JsonRpcSessionResponseBody>(config.serverUrl, sessionData);
+            const response = await config.inner.webRequest(config.serverUrl, sessionData);
             return response.responseBodyObj;
         },
     };
@@ -101,8 +101,8 @@ const createJsonRpcSessionWebClient = (config: { inner: JsonRpcWebClient, server
 
 export const createJsonRpcClient = <T>(config: { serverUrl: string, sessionTokenStorage: JsonRpcSessionStorage, endpointNames: JsonRpcApiEndpointNames<T> }) => {
     const webClient: JsonRpcWebClient = {
-        webRequest: async <T>(serverUrl: string, reqBody: unknown) => {
-            const response = await fetchJsonPost<T>(serverUrl, reqBody);
+        webRequest: async (serverUrl: string, reqBody: unknown) => {
+            const response = await fetchJsonPost<JsonRpcSessionResponseBody>(serverUrl, reqBody);
             return { responseBodyObj: response };
         },
     };
