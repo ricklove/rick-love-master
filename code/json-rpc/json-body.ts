@@ -1,53 +1,48 @@
-import { JsonRpcClientCredentials } from './types';
+import { JsonRpcRequestBody, JsonRpcResponseBody } from './types';
 
 let _nextId = 1000;
 
-export const encodeJsonRpcRequestBody = (method: string, params: unknown, credentials?: null | JsonRpcClientCredentials) => {
-    const id = _nextId++;
+export const encodeJsonRpcRequestBody = (method: string, params: unknown): JsonRpcRequestBody => {
+    const id = `${_nextId++}`;
     const data = {
-        jsonrpc: `2.0.sec`,
+        jsonrpc: `2.0`,
         method,
         params,
         id,
-        credentials,
-    };
+    } as const;
     return data;
 };
 
-export const decodeJsonRpcRequestBody = <T>(body: {} & unknown) => {
+export const decodeJsonRpcRequestBody = <T>(body: {} & unknown): JsonRpcRequestBody => {
     const data = body as {
-        jsonrpc: `2.0.sec`;
+        jsonrpc: `2.0`;
         method: string;
         params: T;
         id: string;
-        credentials: null | JsonRpcClientCredentials;
     };
     return data;
 };
 
-export const encodeJsonRpcResponseData = (id: string, result: unknown, newCredentials: null | 'reject' | JsonRpcClientCredentials) => {
+export const encodeJsonRpcResponseData = (id: string, result: unknown): JsonRpcResponseBody => {
     return {
-        jsonrpc: `2.0.sec`,
+        jsonrpc: `2.0`,
         id,
-        newCredentials,
         result: result ?? {},
     };
 };
 
-export const encodeJsonRpcResponseData_error = (id: string, error: unknown, newCredentials: null | 'reject' | JsonRpcClientCredentials) => {
+export const encodeJsonRpcResponseData_error = (id: string, error: unknown): JsonRpcResponseBody => {
     return {
-        jsonrpc: `2.0.sec`,
+        jsonrpc: `2.0`,
         id,
-        newCredentials,
         error: error ?? {},
     };
 };
 
-export const decodeJsonRpcResponseBody = <T>(body: {} & unknown) => {
+export const decodeJsonRpcResponseBody = <T>(body: {} & unknown): JsonRpcResponseBody => {
     const data = body as {
-        jsonrpc: `2.0.sec`;
+        jsonrpc: `2.0`;
         id: string;
-        newCredentials: null | 'reject' | JsonRpcClientCredentials;
         result?: T;
         error?: unknown;
     };

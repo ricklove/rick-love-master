@@ -1,7 +1,7 @@
 /* eslint-disable no-console */
 /* eslint-disable no-useless-return */
 import http from 'http';
-import { createJsonRpcWebServer } from 'json-rpc/json-rpc-server';
+import { createJsonRpcWebServer } from 'json-rpc/json-rpc-server.ts.old';
 import { JsonRpcClientCredentials } from 'json-rpc/types';
 import { PaymentError } from '../common/types';
 import { createPaymentApiFactory } from '../server/create-payment-api';

@@ -1,0 +1,45 @@
+import { JsonRpcSessionToken, JsonRpcSessionClient } from '../types';
+import { JsonRpcSessionStorage } from './web-client';
+
+export type JsonRpcWebTransportServer_DecodeRequest = {
+    decode: (requestBody: string, requestCookie: string) => Promise<{ method: string, params: unknown }>;
+}
+export type JsonRpcWebTransportServer_EncodeResponse = {
+    encode: (response: JsonRpcTransportResponseBody) => Promise<{ responseBody: string, responseCookie: string }>;
+}
+
+export type JsonRpcRequestHandler<TClientContext> = {
+    handler: (request: { method: string, params: unknown, clientContext?: TClientContext }) => Promise<{
+        responseData: unknown;
+        responseError: unknown;
+        newClientContext?: TClientContext;
+        resetClientContext?: boolean;
+    }>;
+};
+export const createJsonRpcTransportServer = <TClientContext>(config: JsonRpcRequestHandler<TClientContext>): JsonRpcSessionClient => {
+    return {
+        request: async ({ data, clientToken: clientContext }) => {
+            try {
+                const result = await config.handler({
+                    method: data.method,
+                    params: data.params,
+                    clientContext: clientContext as unknown as undefined | TClientContext,
+                });
+                return {
+                    data: result.responseData,
+                    error: result.responseError,
+                    newClientToken: result.newClientContext,
+                    resetClientToken: result.newClientContext,
+                };
+            } catch (error) {
+                return {
+                    error,
+                };
+            }
+        },
+    };
+};
+
+export const createJsonRpcWebTransportServer = (config: JsonRpcRequestHandler) => {
+
+};

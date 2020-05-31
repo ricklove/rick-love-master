@@ -1,0 +1,26 @@
+import { JsonRpcSessionToken, JsonRpcCoreClient, JsonRpcSessionResponseBody } from 'json-rpc/types';
+import { fetchJsonPost } from '../web/fetch-request';
+
+export type JsonRpcSessionStorage = {
+    getSessionToken: () => Promise<JsonRpcSessionToken>;
+    setSessionToken: (sessionToken: JsonRpcSessionToken) => Promise<void>;
+    resetSessionToken: () => Promise<void>;
+};
+export const createJsonRpcWebClient = (config: { serverUrl: string, sessionStorage: JsonRpcSessionStorage, appendMethodNameToUrl?: boolean }): JsonRpcCoreClient => {
+    return {
+        request: async (data) => {
+            const url = !config.appendMethodNameToUrl ? config.serverUrl : `${config.serverUrl}/${data.method}`;
+            const clientContext = await config.sessionStorage.getSessionToken();
+            const bodyData = JSON.stringify({ data, clientContext });
+            const response = await fetchJsonPost<JsonRpcSessionResponseBody>(url, bodyData);
+            if (response.resetSessionToken) {
+                await config.sessionStorage.resetSessionToken();
+            }
+            if (response.newSessionToken) {
+                await config.sessionStorage.setSessionToken(response.newSessionToken);
+            }
+            return response.batchResponses;
+        },
+
+    };
+};

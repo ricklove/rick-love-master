@@ -1,7 +1,7 @@
 /* eslint-disable no-console */
 import React, { useState, useEffect } from 'react';
 import { theme } from 'themes/theme';
-import { createJsonRpcWebClient } from 'json-rpc/json-rpc-client';
+import { createJsonRpcWebClient } from 'json-rpc/json-rpc-client.ts.old';
 import { formatDate } from 'utils/dates';
 import { useAutoLoadingError } from 'utils-react/hooks';
 import { C } from 'controls-react';
@@ -44,15 +44,15 @@ export const PaymentFullStackTesterHost = (props: {}) => {
             const access: PaymantViewServerAccess = {
                 onSetupPayment: async () => {
                     console.log(`onSetupPayment`);
-                    return await server.setupSavedPaymentMethod({ providerName });
+                    return server.setupSavedPaymentMethod({ providerName });
                 },
                 onPaymentMethodReady: async (token) => {
                     console.log(`onPaymentMethodReady`);
-                    return await server.saveSavedPaymentMethod({ providerName, paymentMethodClientToken: token });
+                    return server.saveSavedPaymentMethod({ providerName, paymentMethodClientToken: token });
                 },
                 getPaymentMethods: async () => {
                     console.log(`getPaymentMethods`);
-                    return await server.getSavedPaymentMethods();
+                    return server.getSavedPaymentMethods();
                 },
                 deletePaymentMethod: async (key: PaymentMethodStorageKey) => {
                     console.log(`deletePaymentMethod`);
@@ -64,7 +64,7 @@ export const PaymentFullStackTesterHost = (props: {}) => {
                 },
                 getPayments: async () => {
                     console.log(`getPayments`);
-                    return await server.getPayments();
+                    return server.getPayments();
                 },
             };
 
