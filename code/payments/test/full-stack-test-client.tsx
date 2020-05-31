@@ -27,8 +27,9 @@ export const PaymentFullStackTesterHost = (props: {}) => {
                 serverUrl: c.serverUrl,
                 appendMethodNameToUrl: true,
                 credentialsAccess: {
-                    getCredentials: async () => localStorage.PaymentFullStackTesterHost_Credentials,
-                    setCredentials: async (value) => { localStorage.PaymentFullStackTesterHost_Credentials = value; },
+                    getCredentials: async () => { try { return JSON.parse(localStorage.PaymentFullStackTesterHost_Credentials); } catch{ return null; } },
+                    setCredentials: async (value) => { localStorage.PaymentFullStackTesterHost_Credentials = JSON.stringify(value); },
+                    resetCredentials: async () => { localStorage.PaymentFullStackTesterHost_Credentials = undefined; },
                 },
             }, {
                 setupSavedPaymentMethod: `setupSavedPaymentMethod`,

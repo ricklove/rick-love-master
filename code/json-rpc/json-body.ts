@@ -1,6 +1,6 @@
-let _nextId = 1000;
+import { JsonRpcClientCredentials } from './types';
 
-export type JsonRpcClientCredentials = unknown & { __type: 'JsonRpcClientCredentials' };
+let _nextId = 1000;
 
 export const encodeJsonRpcRequestBody = (method: string, params: unknown, credentials?: null | JsonRpcClientCredentials) => {
     const id = _nextId++;
@@ -25,7 +25,7 @@ export const decodeJsonRpcRequestBody = <T>(body: {} & unknown) => {
     return data;
 };
 
-export const encodeJsonRpcResponseData = (id: string, result: unknown, newCredentials: null | JsonRpcClientCredentials) => {
+export const encodeJsonRpcResponseData = (id: string, result: unknown, newCredentials: null | 'reject' | JsonRpcClientCredentials) => {
     return {
         jsonrpc: `2.0.sec`,
         id,
@@ -34,11 +34,11 @@ export const encodeJsonRpcResponseData = (id: string, result: unknown, newCreden
     };
 };
 
-export const encodeJsonRpcResponseData_error = (id: string, error: unknown) => {
+export const encodeJsonRpcResponseData_error = (id: string, error: unknown, newCredentials: null | 'reject' | JsonRpcClientCredentials) => {
     return {
         jsonrpc: `2.0.sec`,
         id,
-        newCredentials: null,
+        newCredentials,
         error: error ?? {},
     };
 };
@@ -47,7 +47,7 @@ export const decodeJsonRpcResponseBody = <T>(body: {} & unknown) => {
     const data = body as {
         jsonrpc: `2.0.sec`;
         id: string;
-        newCredentials: null | JsonRpcClientCredentials;
+        newCredentials: null | 'reject' | JsonRpcClientCredentials;
         result?: T;
         error?: unknown;
     };

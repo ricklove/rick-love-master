@@ -1,26 +1,35 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { decodeJsonRpcRequestBody, encodeJsonRpcResponseData, JsonRpcClientCredentials, encodeJsonRpcResponseData_error } from './json-body';
+import { jsonStringify_safe } from 'utils/json';
+import { decodeJsonRpcRequestBody, encodeJsonRpcResponseData, encodeJsonRpcResponseData_error } from './json-body';
+import { JsonRpcClientCredentials, JsonRpcError } from './types';
 
-export const createJsonRpcWebServer = (
+export const createJsonRpcWebServer = (args: {
+    verifyAndRefreshCredentials: (credentials: null | JsonRpcClientCredentials) => Promise<null | 'reject' | JsonRpcClientCredentials>;
     createHandler: (credentials: null | JsonRpcClientCredentials) => Promise<{
         api: { [method: string]: (params: any) => Promise<any> };
-        getNewCredentials: () => Promise<null | JsonRpcClientCredentials>;
-    }>,
-): {
+        getNewCredentials?: (credentials: null | JsonRpcClientCredentials) => Promise<null | 'reject' | JsonRpcClientCredentials>;
+    }>;
+}): {
     requestHandler: (request: { requestBody: string }) => Promise<{ responseBody: string }>;
 } => {
     const handler = async (request: { requestBody: string }): Promise<{ responseBody: string }> => {
         const data = decodeJsonRpcRequestBody(JSON.parse(request.requestBody));
-        const { api, getNewCredentials } = await createHandler(data.credentials);
+        const verifyResult = await args.verifyAndRefreshCredentials(data.credentials);
         try {
+            if (verifyResult === `reject`) {
+                throw new JsonRpcError(`Rejected Credentials`);
+            }
+
+            const { api, getNewCredentials } = await args.createHandler(data.credentials);
             const result = await api[data.method](data.params);
-            const newCredentials = await getNewCredentials();
-            const responseData = encodeJsonRpcResponseData(data.id, result, newCredentials);
+            const newCredentials = await getNewCredentials?.(data.credentials);
+            const responseData = encodeJsonRpcResponseData(data.id, result, newCredentials ?? null);
             const responseBody = JSON.stringify(responseData);
             return { responseBody };
         } catch (error) {
-            const responseData = encodeJsonRpcResponseData_error(data.id, error);
-            const responseBody = JSON.stringify(responseData);
+            console.error(`createJsonRpcWebServer`, { error });
+            const responseData = encodeJsonRpcResponseData_error(data.id, error, verifyResult);
+            const responseBody = jsonStringify_safe(responseData);
             return { responseBody };
         }
 

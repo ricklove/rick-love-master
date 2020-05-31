@@ -2,7 +2,8 @@
 /* eslint-disable no-useless-return */
 import http from 'http';
 import { createJsonRpcWebServer } from 'json-rpc/json-rpc-server';
-import { JsonRpcClientCredentials } from 'json-rpc/json-body';
+import { JsonRpcClientCredentials } from 'json-rpc/types';
+import { PaymentError } from '../common/types';
 import { createPaymentApiFactory } from '../server/create-payment-api';
 import { getFullStackTestConfig } from './full-stack-test-config';
 
@@ -32,19 +33,28 @@ const createServerAccessFactory_withUserContext = () => {
 
     const getUserStorageFromCredentials = async (credentials: JsonRpcClientCredentials) => {
         const userIdResult = await getUserIdFromCredentials(credentials);
-        if (!userIdResult) { throw new Error(`Invalid Credentials`); }
+        if (!userIdResult) { throw new PaymentError(`Invalid Credentials`); }
         return getUserStorage(userIdResult.userId);
     };
 
     const createServerAccess_withUserContext_fromCredentials = async (credentials: JsonRpcClientCredentials) => {
         if (!credentials) {
-            throw new Error(`Unknown Credentials - First Login`);
+            throw new PaymentError(`Unknown Credentials - First Login`);
         }
 
-        const newCredentials = null as null | JsonRpcClientCredentials;
+        let newCredentials = null as null | 'reject' | JsonRpcClientCredentials;
+
+        // Check credentials
+        const userIdResult = await getUserIdFromCredentials(credentials);
+        if (!userIdResult) {
+            // Reject the client credentials
+            newCredentials = `reject`;
+            throw new PaymentError(`Invalid Credentials - Rejected`);
+        }
 
         return {
             getUserContext: async () => {
+                console.log(`createServerAccess_withUserContext_fromCredentials.getUserContext`);
                 return ({
                     getUserBillingDetails: async () => ({ phone: `555-867-5309` }),
                     getUserKeyValueStorage: async () => await getUserStorageFromCredentials(credentials),
@@ -68,7 +78,7 @@ const createServerAccessFactory_withUserContext = () => {
                     const user = userAccounts[username];
                     if (user.password === password) {
                         // Note: Quoting Gandalf does not improve security => This is not secure
-                        throw new Error(`You shall not pass!`);
+                        throw new PaymentError(`You shall not pass!`);
                     }
                     // Obviously not secure
                     const sessionId = `${Math.random()}`;
@@ -84,7 +94,7 @@ const createServerAccessFactory_withUserContext = () => {
 
     // This will create an anonymous user and session (this could also be merged with the original, by just letting it do the same if credentials is null)
     const createServerAccess_anonymousCredentials = async () => {
-        const newSessionId = Math.random();
+        const newSessionId = `${Math.random()}`;
         userSessions[newSessionId] = { userId: `anon_${newSessionId}` };
         const newCredentials = { sessionId: newSessionId } as unknown as JsonRpcClientCredentials;
 
@@ -96,7 +106,25 @@ const createServerAccessFactory_withUserContext = () => {
         };
     };
 
+    const verifyAndRefreshCredentials = async (credentials: null | JsonRpcClientCredentials) => {
+        if (!credentials) {
+            // Allow Anonymouse
+            return null;
+            // throw new PaymentError(`Unknown Credentials - First Login`);
+        }
+        // Check credentials
+        const userIdResult = await getUserIdFromCredentials(credentials);
+        if (!userIdResult) {
+            // Reject the client credentials
+            return `reject`;
+        }
+
+        // Refresh?
+        return null;
+    };
+
     return {
+        verifyAndRefreshCredentials,
         createServerAccess_withUserContext_fromCredentials,
         createServerAccess_unauthenticated,
         createServerAccess_anonymousCredentials,
@@ -114,35 +142,38 @@ export const run = async () => {
         // getUserKeyValueStorage: (user) => storage,
     });
 
-    const server = createJsonRpcWebServer(async (credentials) => {
+    const server = createJsonRpcWebServer({
+        verifyAndRefreshCredentials: serverUserAccess.verifyAndRefreshCredentials,
+        createHandler: async (credentials) => {
 
-        // if (!credentials) {
-        //     // If this endpoint can handle unauthenticated requests
-        //     const { getNewCredentials, authApi } = await serverUserAccess.createServerAccess_unauthenticated();
+            // if (!credentials) {
+            //     // If this endpoint can handle unauthenticated requests
+            //     const { getNewCredentials, authApi } = await serverUserAccess.createServerAccess_unauthenticated();
 
-        //     return {
-        //         api: authApi,
-        //         getNewCredentials,
-        //     };
-        // }
+            //     return {
+            //         api: authApi,
+            //         getNewCredentials,
+            //     };
+            // }
 
-        // if (!credentials) {
-        //     throw new Error(`This endpoint only supports authenticated requests`);
-        // }
+            // if (!credentials) {
+            //     throw new Error(`This endpoint only supports authenticated requests`);
+            // }
 
-        if (!credentials) {
-            const { getUserContext, getNewCredentials } = await serverUserAccess.createServerAccess_anonymousCredentials();
+            if (!credentials) {
+                const { getUserContext, getNewCredentials } = await serverUserAccess.createServerAccess_anonymousCredentials();
+                return {
+                    api: apiFactory({ getUserContext }).paymentClientApi,
+                    getNewCredentials,
+                };
+            }
+
+            const { getUserContext, getNewCredentials } = await serverUserAccess.createServerAccess_withUserContext_fromCredentials(credentials);
             return {
                 api: apiFactory({ getUserContext }).paymentClientApi,
                 getNewCredentials,
             };
-        }
-
-        const { getUserContext, getNewCredentials } = await serverUserAccess.createServerAccess_withUserContext_fromCredentials(credentials);
-        return {
-            api: apiFactory({ getUserContext }).paymentClientApi,
-            getNewCredentials,
-        };
+        },
     });
 
     // create a server object:
