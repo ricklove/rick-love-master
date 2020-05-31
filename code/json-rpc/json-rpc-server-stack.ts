@@ -117,12 +117,23 @@ const createJsonRpcWebJsonServer = (config: { upper: JsonRpcWebServer }): JsonRp
     return server;
 };
 
-export const createJsonRpcServer = <TContext>(config: { contextProvider: ContextProvider<TContext>, apiAccess: ApiAccess<TContext> }): JsonRpcWebJsonServer => {
+export const createJsonRpcServer_stacks = <TContext>(config: { contextProvider: ContextProvider<TContext>, apiAccess: ApiAccess<TContext> }) => {
     const apiServer = createJsonRpcApiServer<TContext>({ apiAccess: config.apiAccess });
     const coreServer = createJsonRpcCoreServer<TContext>({ upper: apiServer });
     const batchServer = createJsonRpcBatchServer<TContext>({ upper: coreServer });
     const sessionServer = createJsonRpcSessionServer<TContext>({ upper: batchServer, contextProvider: config.contextProvider });
     const webServer = createJsonRpcWebServer({ upper: sessionServer });
     const webJsonServer = createJsonRpcWebJsonServer({ upper: webServer });
-    return webJsonServer;
+    return {
+        apiServer,
+        coreServer,
+        batchServer,
+        sessionServer,
+        webServer,
+        webJsonServer,
+    };
+};
+export const createJsonRpcServer = <TContext>(config: { contextProvider: ContextProvider<TContext>, apiAccess: ApiAccess<TContext> }): JsonRpcWebJsonServer => {
+    const stacks = createJsonRpcServer_stacks(config);
+    return stacks.webJsonServer;
 };
