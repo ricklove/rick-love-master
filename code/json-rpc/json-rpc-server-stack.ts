@@ -1,4 +1,5 @@
-import { JsonRpcWebServer, JsonRpcSessionServer, JsonRpcBatchServer, JsonRpcSessionToken, JsonRpcSessionResponseBody, JsonRpcCoreServer, JsonRpcApiServer, JsonRpcSessionToken_New } from './types';
+import { jsonParse, jsonStringify } from 'utils/json';
+import { JsonRpcWebServer, JsonRpcSessionServer, JsonRpcBatchServer, JsonRpcSessionToken, JsonRpcSessionResponseBody, JsonRpcCoreServer, JsonRpcApiServer, JsonRpcSessionToken_New, JsonRpcWebJsonServer, JsonRpcSessionRequestBody } from './types';
 import { encodeJsonRpcResponseData, encodeJsonRpcResponseData_error } from './json-body';
 
 type ApiAccess<T> = { execute: (method: string, params: unknown, context: T) => Promise<{ result: unknown, newSessionToken?: JsonRpcSessionToken_New }> };
@@ -82,10 +83,10 @@ const createJsonRpcSessionServer = <T>(config: { upper: JsonRpcBatchServer<T>, c
 
 const createJsonRpcWebServer = (config: { upper: JsonRpcSessionServer }): JsonRpcWebServer => {
     const server: JsonRpcWebServer = {
-        respond: async (requestBodyObj, cookieObj) => {
+        respond: async (requestBodyObj, requestCookieObj) => {
             const reqData = requestBodyObj;
-            if (cookieObj) {
-                reqData.sessionToken = cookieObj;
+            if (requestCookieObj) {
+                reqData.sessionToken = requestCookieObj;
             }
             const response = await config.upper.respond(reqData);
             const responseBodyObj = response;
@@ -99,11 +100,29 @@ const createJsonRpcWebServer = (config: { upper: JsonRpcSessionServer }): JsonRp
     return server;
 };
 
-export const createJsonRpcServer = <T>(config: { contextProvider: ContextProvider<T>, apiAccess: ApiAccess<T> }): JsonRpcWebServer => {
+const createJsonRpcWebJsonServer = (config: { upper: JsonRpcWebServer }): JsonRpcWebJsonServer => {
+    const server: JsonRpcWebJsonServer = {
+        respond: async (requestBodyJson, requestCookieJson) => {
+            const reqData = jsonParse(requestBodyJson);
+            const cookieData = requestCookieJson ? jsonParse(requestCookieJson) : undefined;
+            const response = await config.upper.respond(reqData, cookieData);
+            const responseBodyJson = jsonStringify(response.responseBodyObj);
+            const responseCookieJson = response.responseCookieObj ? jsonStringify(response.responseCookieObj) : undefined;
+            return {
+                responseBodyJson,
+                responseCookieJson,
+            };
+        },
+    };
+    return server;
+};
+
+export const createJsonRpcServer = <T>(config: { contextProvider: ContextProvider<T>, apiAccess: ApiAccess<T> }): JsonRpcWebJsonServer => {
     const apiServer = createJsonRpcApiServer<T>({ apiAccess: config.apiAccess });
     const coreServer = createJsonRpcCoreServer<T>({ upper: apiServer });
     const batchServer = createJsonRpcBatchServer<T>({ upper: coreServer });
     const sessionServer = createJsonRpcSessionServer<T>({ upper: batchServer, contextProvider: config.contextProvider });
     const webServer = createJsonRpcWebServer({ upper: sessionServer });
-    return webServer;
+    const webJsonServer = createJsonRpcWebJsonServer({ upper: webServer });
+    return webJsonServer;
 };
