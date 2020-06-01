@@ -7,6 +7,7 @@ const createJsonRpcApiServer = <TContext>(config: { apiAccess: ApiAccess<TContex
     const server: JsonRpcApiServer<TContext> = {
         respond: async (method, params, context) => {
             const result = await config.apiAccess.execute(method, params, context);
+            console.log(`createJsonRpcApiServer.server.respond`, { result });
             return {
                 responseData: result.result,
                 newSessionToken: result.newSessionToken,
@@ -21,11 +22,11 @@ const createJsonRpcCoreServer = <TContext>(config: { upper: JsonRpcApiServer<TCo
         respond: async (data, context) => {
 
             try {
-                const result = await config.upper.respond(data.method, data.params, context);
-                const encoded = encodeJsonRpcResponseData(data.id, result);
+                const { responseData, newSessionToken } = await config.upper.respond(data.method, data.params, context);
+                const encoded = encodeJsonRpcResponseData(data.id, responseData);
                 return {
                     response: encoded,
-                    newSessionToken: result.newSessionToken,
+                    newSessionToken,
                 };
             } catch (error) {
                 const encoded = encodeJsonRpcResponseData_error(data.id, error);
@@ -75,6 +76,9 @@ const createJsonRpcSessionServer = <TContext>(config: { upper: JsonRpcBatchServe
                 batchResponses: result.responses,
                 newSessionToken: result.newSessionToken ?? contextResult.newSessionToken,
             };
+
+            console.log(`createJsonRpcSessionServer.server.respond`, { response });
+
             return response;
         },
     };

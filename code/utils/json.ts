@@ -1,7 +1,12 @@
 export type JsonTyped<T> = string & { __json: T };
 
-export const jsonParse = <T>(json: T | JsonTyped<T>): T => {
-    if (typeof json === `string`) { return JSON.parse(json) as T; }
+export const jsonParse = <T>(json: JsonTyped<T>): T => {
+    return JSON.parse(json) as T;
+};
+export const jsonParse_smart = <T>(json: T | JsonTyped<T>): T => {
+    if (typeof json === `string`) {
+        return JSON.parse(json) as T;
+    }
     return json as T;
 };
 export const jsonStringify = <T>(obj: T) => JSON.stringify(obj) as JsonTyped<T>;

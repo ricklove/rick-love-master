@@ -1,10 +1,10 @@
 /* eslint-disable no-console */
 import React, { useState, useEffect } from 'react';
 import { theme } from 'themes/theme';
-import { createJsonRpcWebClient } from 'json-rpc/json-rpc-client.ts.old';
 import { formatDate } from 'utils/dates';
 import { useAutoLoadingError } from 'utils-react/hooks';
 import { C } from 'controls-react';
+import { createJsonRpcClient } from 'json-rpc/json-rpc-client-stack';
 import { createPaymentClientComponents } from '../client/payment-react';
 import { PaymentComponentStyle, PaymentClientComponents } from '../common/types-react';
 import {
@@ -23,36 +23,42 @@ export const PaymentFullStackTesterHost = (props: {}) => {
         (async () => {
             const c = await getFullStackTestConfig();
             setConfig(c);
-            const server = createJsonRpcWebClient<PaymentClientApi>({
+            const server = createJsonRpcClient<PaymentClientApi>({
                 serverUrl: c.serverUrl,
-                appendMethodNameToUrl: true,
-                credentialsAccess: {
-                    getCredentials: async () => { try { return JSON.parse(localStorage.PaymentFullStackTesterHost_Credentials); } catch{ return null; } },
-                    setCredentials: async (value) => { localStorage.PaymentFullStackTesterHost_Credentials = JSON.stringify(value); },
-                    resetCredentials: async () => { localStorage.PaymentFullStackTesterHost_Credentials = undefined; },
+                sessionTokenStorage: {
+                    getSessionToken: async () => { try { return JSON.parse(localStorage.PaymentFullStackTesterHost_Credentials); } catch{ return null; } },
+                    setSessionToken: async (value) => { localStorage.PaymentFullStackTesterHost_Credentials = JSON.stringify(value); },
+                    resetSessionToken: async () => { localStorage.PaymentFullStackTesterHost_Credentials = undefined; },
                 },
-            }, {
-                setupSavedPaymentMethod: `setupSavedPaymentMethod`,
-                saveSavedPaymentMethod: `saveSavedPaymentMethod`,
-                getSavedPaymentMethods: `getSavedPaymentMethods`,
-                deleteSavedPaymentMethod: `deleteSavedPaymentMethod`,
-                debug_triggerPayment: `debug_triggerPayment`,
-                getPayments: `getPayments`,
+                endpointNames: {
+                    setupSavedPaymentMethod: `setupSavedPaymentMethod`,
+                    saveSavedPaymentMethod: `saveSavedPaymentMethod`,
+                    getSavedPaymentMethods: `getSavedPaymentMethods`,
+                    deleteSavedPaymentMethod: `deleteSavedPaymentMethod`,
+                    debug_triggerPayment: `debug_triggerPayment`,
+                    getPayments: `getPayments`,
+                },
             });
 
             const providerName = `stripe` as PaymentProviderName;
             const access: PaymantViewServerAccess = {
                 onSetupPayment: async () => {
-                    console.log(`onSetupPayment`);
-                    return server.setupSavedPaymentMethod({ providerName });
+                    console.log(`onSetupPayment START`);
+                    const result = await server.setupSavedPaymentMethod({ providerName });
+                    console.log(`onSetupPayment END`, { result });
+                    return result;
                 },
                 onPaymentMethodReady: async (token) => {
-                    console.log(`onPaymentMethodReady`);
-                    return server.saveSavedPaymentMethod({ providerName, paymentMethodClientToken: token });
+                    console.log(`onPaymentMethodReady START`);
+                    const result = await server.saveSavedPaymentMethod({ providerName, paymentMethodClientToken: token });
+                    console.log(`onPaymentMethodReady END`, { result });
+                    return result;
                 },
                 getPaymentMethods: async () => {
-                    console.log(`getPaymentMethods`);
-                    return server.getSavedPaymentMethods();
+                    console.log(`getPaymentMethods START`);
+                    const result = await server.getSavedPaymentMethods();
+                    console.log(`getPaymentMethods END`, { result });
+                    return result;
                 },
                 deletePaymentMethod: async (key: PaymentMethodStorageKey) => {
                     console.log(`deletePaymentMethod`);
@@ -63,8 +69,10 @@ export const PaymentFullStackTesterHost = (props: {}) => {
                     await server.debug_triggerPayment({ amount: { currency: `usd`, usdCents: Math.floor(amount * 100) } });
                 },
                 getPayments: async () => {
-                    console.log(`getPayments`);
-                    return server.getPayments();
+                    console.log(`getPayments START`);
+                    const result = await server.getPayments();
+                    console.log(`getPayments END`, { result });
+                    return result;
                 },
             };
 
