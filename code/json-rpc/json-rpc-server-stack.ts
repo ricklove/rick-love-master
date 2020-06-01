@@ -58,13 +58,13 @@ const createJsonRpcBatchServer = <TContext>(config: { upper: JsonRpcCoreServer<T
 };
 
 type ContextProvider<TContext> = {
-    getContext: (sessionToken?: JsonRpcSessionToken) => Promise<{ context: TContext, error?: unknown, newSessionToken?: JsonRpcSessionToken_New }>;
+    getContext: (sessionToken?: JsonRpcSessionToken) => Promise<{ context: TContext, newSessionToken?: JsonRpcSessionToken_New } | { error: unknown & {}, newSessionToken?: JsonRpcSessionToken_New }>;
 };
 const createJsonRpcSessionServer = <TContext>(config: { upper: JsonRpcBatchServer<TContext>, contextProvider: ContextProvider<TContext> }): JsonRpcSessionServer => {
     const server: JsonRpcSessionServer = {
         respond: async (sessionData) => {
             const contextResult = await config.contextProvider.getContext(sessionData.sessionToken);
-            if (contextResult.error) {
+            if (`error` in contextResult) {
                 return {
                     batchResponses: sessionData.batchRequests.map(x => encodeJsonRpcResponseData_error(x.id, contextResult.error)),
                     newSessionToken: contextResult.newSessionToken,

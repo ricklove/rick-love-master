@@ -5,7 +5,7 @@ import { createJsonRpcServer } from 'json-rpc/json-rpc-server-stack';
 import { JsonRpcSessionToken, JsonRpcSessionRequestBody } from 'json-rpc/types';
 import { JsonTyped } from 'utils/json';
 import { PaymentError } from '../common/types';
-import { createPaymentApiFactory } from '../server/create-payment-api';
+import { createPaymentApi, CreatePaymentApiDependencies } from '../server/create-payment-api';
 import { getFullStackTestConfig } from './full-stack-test-config';
 
 const createServerAccessFactory_withUserContext = () => {
@@ -55,7 +55,7 @@ const createServerAccessFactory_withUserContext = () => {
         if (!userIdResult) {
             // Reject the client credentials
             return {
-                context: {},
+                error: { message: `Session Rejected` },
                 newSessionToken: `reset` as const,
             };
         }
@@ -141,26 +141,33 @@ export const run = async () => {
     const config = await getFullStackTestConfig();
     const serverUserAccess = createServerAccessFactory_withUserContext();
 
-    const apiFactory = createPaymentApiFactory({
-        getStripeSecretKey: () => config.stripeSecretKey,
-        // getUserContext: () => ({} as PaymentUserContext),
-        // getUserBillingDetails: async (user) => ({ phone: `555-867-5309` }),
-        // getUserKeyValueStorage: (user) => storage,
-    });
+    // const apiFactory = createPaymentApiFactory({
+    //     getStripeSecretKey: () => config.stripeSecretKey,
+    //     // getUserContext: () => ({} as PaymentUserContext),
+    //     // getUserBillingDetails: async (user) => ({ phone: `555-867-5309` }),
+    //     // getUserKeyValueStorage: (user) => storage,
+    // });
 
-    const server = createJsonRpcServer({
+    const server = createJsonRpcServer<CreatePaymentApiDependencies>({
         // TODO: Define the type for this
         contextProvider: {
             getContext: async (sessionToken) => {
                 try {
-                    const { context, newSessionToken } = await serverUserAccess.createServerAccess_withUserContext_fromCredentials(sessionToken);
+                    const { context, error, newSessionToken } = await serverUserAccess.createServerAccess_withUserContext_fromCredentials(sessionToken);
+                    if (error || !context) {
+                        return { error: error ?? { message: `Missing Context` }, newSessionToken };
+                    }
+                    const userContext = await context.getUserContext();
                     return {
-                        context,
+                        context: {
+                            getStripeSecretKey: () => config.stripeSecretKey,
+                            getUserBillingDetails: async () => await userContext.getUserBillingDetails(),
+                            getUserKeyValueStorage: async () => await userContext.getUserKeyValueStorage(),
+                        },
                         newSessionToken,
                     };
                 } catch (error) {
                     return {
-                        context: {},
                         error,
                     };
                 }
@@ -168,7 +175,8 @@ export const run = async () => {
         },
         apiAccess: {
             execute: async (method, params, context) => {
-                const api = apiFactory({ getUserContext: (context as any).getUserContext }).paymentClientApi;
+                const api = createPaymentApi(context).paymentClientApi;
+                // const api = apiFactory({ getUserContext: (context as any).getUserContext }).paymentClientApi;
                 const result = await api[method as keyof typeof api](params as any);
                 return { result };
             },
