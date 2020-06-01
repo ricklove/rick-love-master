@@ -72,16 +72,18 @@ export type JsonRpcSessionStorage = {
     setSessionToken: (sessionToken: JsonRpcSessionToken) => Promise<void>;
     resetSessionToken: () => Promise<void>;
 };
-const createJsonRpcBatchSessionClient = (config: { inner: JsonRpcSessionClient, sessionTokenStorage: JsonRpcSessionStorage }): JsonRpcBatchClient => {
+const createJsonRpcBatchSessionClient = (config: { inner: JsonRpcSessionClient, sessionTokenStorage?: JsonRpcSessionStorage }): JsonRpcBatchClient => {
     const batchClient: JsonRpcBatchClient = {
         batchRequest: async (batchData) => {
-            const sessionToken = await config.sessionTokenStorage.getSessionToken();
+            const sessionToken = await config.sessionTokenStorage?.getSessionToken();
             const response = await config.inner.sessionRequest({ batchRequests: batchData, sessionToken });
-            if (response.newSessionToken === `reset`) {
-                await config.sessionTokenStorage.resetSessionToken();
-            }
-            else if (response.newSessionToken) {
-                await config.sessionTokenStorage.setSessionToken(response.newSessionToken);
+            if (config.sessionTokenStorage) {
+                if (response.newSessionToken === `reset`) {
+                    await config.sessionTokenStorage.resetSessionToken();
+                }
+                else if (response.newSessionToken) {
+                    await config.sessionTokenStorage.setSessionToken(response.newSessionToken);
+                }
             }
             return response.batchResponses;
         },
@@ -99,7 +101,7 @@ const createJsonRpcSessionWebClient = (config: { inner: JsonRpcWebClient, server
     return sessionClient;
 };
 
-export const createJsonRpcClient = <T>(config: { serverUrl: string, sessionTokenStorage: JsonRpcSessionStorage, endpointNames: JsonRpcApiEndpointNames<T> }) => {
+export const createJsonRpcClient = <T>(config: { serverUrl: string, sessionTokenStorage?: JsonRpcSessionStorage, endpointNames: JsonRpcApiEndpointNames<T> }) => {
     const webClient: JsonRpcWebClient = {
         webRequest: async (serverUrl: string, reqBody: unknown) => {
             const response = await fetchJsonPost<JsonRpcSessionResponseBody>(serverUrl, reqBody);

@@ -25,11 +25,12 @@ export const PaymentFullStackTesterHost = (props: {}) => {
             setConfig(c);
             const server = createJsonRpcClient<PaymentClientApi>({
                 serverUrl: c.serverUrl,
-                sessionTokenStorage: {
-                    getSessionToken: async () => { try { return JSON.parse(localStorage.PaymentFullStackTesterHost_Credentials); } catch{ return null; } },
-                    setSessionToken: async (value) => { localStorage.PaymentFullStackTesterHost_Credentials = JSON.stringify(value); },
-                    resetSessionToken: async () => { localStorage.PaymentFullStackTesterHost_Credentials = undefined; },
-                },
+                // Use Cookies
+                // sessionTokenStorage: {
+                //     getSessionToken: async () => { try { return JSON.parse(localStorage.PaymentFullStackTesterHost_Credentials); } catch{ return null; } },
+                //     setSessionToken: async (value) => { localStorage.PaymentFullStackTesterHost_Credentials = JSON.stringify(value); },
+                //     resetSessionToken: async () => { localStorage.PaymentFullStackTesterHost_Credentials = undefined; },
+                // },
                 endpointNames: {
                     setupSavedPaymentMethod: `setupSavedPaymentMethod`,
                     saveSavedPaymentMethod: `saveSavedPaymentMethod`,
