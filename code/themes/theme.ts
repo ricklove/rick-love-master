@@ -211,7 +211,7 @@ const createTheme = (colors: ThemeColors, sizes: ThemeSizes, font: ThemeFont) =>
             padding: sizes.textPadding,
             background: colors.background_button,
             color: colors.text_button,
-            fontSize: sizes.fontSize_input,
+            fontSize: sizes.fontSize_button,
             fontWeight: font.fontWeight_button,
         },
 

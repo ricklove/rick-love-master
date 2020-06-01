@@ -120,9 +120,12 @@ export const createPaymentClientComponents_stripe = (params: { stripePublicKey: 
                             </div>
                         </>
                     )}
-                    {!stripeError && (<div style={{ display: `flex`, flexDirection: `row`, justifyContent: buttonJustifyContent }}>
-                        <button type='submit' disabled={!stripe || !elements} style={buttonStyle}>{s.buttonText ?? `Subscribe`}</button>
-                    </div>)}
+
+                    {!stripeError && (
+                        <div style={{ display: `flex`, flexDirection: `row`, justifyContent: buttonJustifyContent }}>
+                            <button type='submit' disabled={!stripe || !elements} style={buttonStyle}>{s.buttonText ?? `Subscribe`}</button>
+                        </div>
+                    )}
                 </form>
             );
         },
