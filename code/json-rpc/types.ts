@@ -61,7 +61,7 @@ export type JsonRpcWebClient = {
 // The cookies are an alternative storage for the sessionToken (HttpOnly, Secure)
 export type JsonRpcWebJsonServer = {
     respond: (requestBodyJson: JsonTyped<JsonRpcSessionRequestBody>, requestCookieJson?: JsonTyped<JsonRpcSessionToken>)
-        => Promise<{ responseBodyJson: JsonTyped<JsonRpcSessionResponseBody>, responseCookieJson?: JsonTyped<JsonRpcSessionToken_New> }>;
+        => Promise<{ responseBodyJson: JsonTyped<JsonRpcSessionResponseBody>, responseCookieJson?: JsonTyped<JsonRpcSessionToken>, responseCookieReset?: boolean }>;
 }
 
 export type JsonRpcWebServer = {

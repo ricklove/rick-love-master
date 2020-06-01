@@ -3,7 +3,7 @@
 import http from 'http';
 import { createJsonRpcServer } from 'json-rpc/json-rpc-server-stack';
 import { JsonRpcSessionToken, JsonRpcSessionRequestBody } from 'json-rpc/types';
-import { JsonTyped } from 'utils/json';
+import { JsonTyped, jsonStringify, jsonParse } from 'utils/json';
 import { PaymentError } from '../common/types';
 import { createPaymentApi, CreatePaymentApiDependencies } from '../server/create-payment-api';
 import { getFullStackTestConfig } from './full-stack-test-config';
@@ -235,16 +235,38 @@ export const run = async () => {
 
         if (req.method === `POST`) {
 
+            const getJsonCookieValue = <T>(requestCookie: undefined | string, name: string) => {
+                try {
+                    const cookieValue = requestCookie?.split(`;`).map(x => x.split(`=`)).find(x => x[0] === name)?.[1];
+                    const cookieJson = cookieValue ? JSON.parse(decodeURIComponent(cookieValue)) as T : undefined;
+                    return cookieJson;
+                } catch{ return undefined; }
+            };
+            const setJsonCookie = (headers: { [name: string]: string }, name: string, response: { responseCookieJson?: JsonTyped<JsonRpcSessionToken>, responseCookieReset?: boolean }) => {
+                const h = headers;
+                if (response.responseCookieJson) {
+                    // const cookieExtras = `Max-Age=${90 * 24 * 60 * 60};HttpOnly;Secure;SameSite=none;`;
+                    // Localhost is secure
+                    const cookieExtras = `Max-Age=${90 * 24 * 60 * 60};HttpOnly;SameSite=lax;`;
+                    h[`Set-Cookie`] = `${name}=${encodeURIComponent(JSON.stringify(response.responseCookieJson))};${cookieExtras}`;
+                }
+                if (response.responseCookieReset) {
+                    h[`Set-Cookie`] = `${name}=deleted;expires=Thu, 01 Jan 1970 00:00:00 GMT;`;
+                }
+            };
+
             const handleRequest = async (requestBody: string, requestCookie?: string) => {
                 console.log(`${req.url}`, { requestBody });
                 try {
-                    const cookieJson = undefined;
+                    const COOKIE_NAME = `sessionToken`;
+                    const cookieJson = getJsonCookieValue(requestCookie, COOKIE_NAME);
                     const response = await server.respond(requestBody as JsonTyped<JsonRpcSessionRequestBody>, cookieJson as undefined | JsonTyped<JsonRpcSessionToken>);
-                    res.writeHead(200, {
+                    const headers: { [name: string]: string } = {
                         'Content-Type': `application/json; charset=utf8`,
-                        // TODO: Fix Cookie (httpOnly, Secure)
-                        // 'Cookie': response.responseCookieJson,
-                    });
+                    };
+                    setJsonCookie(headers, COOKIE_NAME, response);
+
+                    res.writeHead(200, headers);
                     res.write(response.responseBodyJson);
                     res.end();
                     return;

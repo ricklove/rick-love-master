@@ -111,10 +111,14 @@ const createJsonRpcWebJsonServer = (config: { upper: JsonRpcWebServer }): JsonRp
             const cookieData = requestCookieJson ? jsonParse(requestCookieJson) : undefined;
             const response = await config.upper.respond(reqData, cookieData);
             const responseBodyJson = jsonStringify(response.responseBodyObj);
-            const responseCookieJson = response.responseCookieObj ? jsonStringify(response.responseCookieObj) : undefined;
+            const responseCookieJson = response.responseCookieObj !== `reset` && response.responseCookieObj
+                ? jsonStringify<JsonRpcSessionToken>(response.responseCookieObj)
+                : undefined;
+            const responseCookieReset = response.responseCookieObj === `reset`;
             return {
                 responseBodyJson,
                 responseCookieJson,
+                responseCookieReset,
             };
         },
     };
