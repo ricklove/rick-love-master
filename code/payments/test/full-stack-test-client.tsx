@@ -5,7 +5,7 @@ import { formatDate } from 'utils/dates';
 import { useAutoLoadingError } from 'utils-react/hooks';
 import { C } from 'controls-react';
 import { createJsonRpcClient } from 'json-rpc/json-rpc-client-stack';
-import { createPaymentClientComponents, createPaymentClientExtraComponents, PaymentViewServerAccess } from '../client/payment-react';
+import { createPaymentClientComponents, createPaymentClientComponents_extra, PaymentViewServerAccess, PaymentViewServerAccess_WithDebug, createPaymentClientComponents_withDebug } from '../client/payment-react';
 import { PaymentComponentStyle, PaymentClientComponents } from '../common/types-react';
 import {
     PaymentProviderSavedPaymentMethodClientSetupToken, PaymentProviderName, PaymentClientApi,
@@ -16,7 +16,7 @@ import { getFullStackTestConfig, FullStackTestConfig } from './full-stack-test-c
 
 export const PaymentFullStackTesterHost = (props: {}) => {
 
-    const [serverAccess, setServerAccess] = useState(null as null | PaymentViewServerAccess);
+    const [serverAccess, setServerAccess] = useState(null as null | PaymentViewServerAccess_WithDebug);
     const [config, setConfig] = useState(null as null | FullStackTestConfig);
 
     useEffect(() => {
@@ -42,7 +42,7 @@ export const PaymentFullStackTesterHost = (props: {}) => {
             });
 
             const providerName = `stripe` as PaymentProviderName;
-            const access: PaymentViewServerAccess = {
+            const access: PaymentViewServerAccess_WithDebug = {
                 onSetupPayment: async () => {
                     console.log(`onSetupPayment START`);
                     const result = await server.setupSavedPaymentMethod({ providerName });
@@ -65,15 +65,17 @@ export const PaymentFullStackTesterHost = (props: {}) => {
                     console.log(`deletePaymentMethod`);
                     await server.deleteSavedPaymentMethod({ key });
                 },
-                // onMakePurchase: async (amount: number) => {
-                //     console.log(`onMakePurchase`);
-                //     await server.debug_triggerPayment({ amount: { currency: `usd`, usdCents: Math.floor(amount * 100) } });
-                // },
                 getPayments: async () => {
                     console.log(`getPayments START`);
                     const result = await server.getPayments();
                     console.log(`getPayments END`, { result });
                     return result;
+                },
+
+                // Debug
+                onMakePurchase: async (amount: number) => {
+                    console.log(`onMakePurchase`);
+                    await server.debug_triggerPayment({ amount: { currency: `usd`, usdCents: Math.floor(amount * 100) } });
                 },
             };
 
@@ -89,10 +91,13 @@ export const PaymentFullStackTesterHost = (props: {}) => {
     );
 };
 
-export const PaymentFullStackTester = (props: { config: FullStackTestConfig, serverAccess: PaymentViewServerAccess }) => {
+export const PaymentFullStackTester = (props: { config: FullStackTestConfig, serverAccess: PaymentViewServerAccess_WithDebug }) => {
 
-    const comp = createPaymentClientExtraComponents({ stripePublicKey: props.config.stripePublicKey, serverAccess: props.serverAccess });
+    const comp = createPaymentClientComponents_withDebug({ stripePublicKey: props.config.stripePublicKey, serverAccess: props.serverAccess });
     const AppWrapperComponent = comp.AppWrapperComponent ?? (({ children }) => (<>{children}</>));
+
+    const [refreshId, setRefreshId] = useState(0);
+    const refresh = () => { setRefreshId(s => s + 1); };
 
     return (
         <AppWrapperComponent>
@@ -102,6 +107,7 @@ export const PaymentFullStackTester = (props: { config: FullStackTestConfig, ser
                 </C.View_Form>
                 <comp.PaymentMethodView />
                 <comp.PaymentHistoryView />
+                <comp.PaymentDebugView onPurchase={refresh} />
             </C.View_Panel>
             {/* <TestControls /> */}
         </AppWrapperComponent>

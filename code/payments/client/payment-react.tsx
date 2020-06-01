@@ -29,7 +29,7 @@ export const createPaymentClientComponents = (params: { stripePublicKey: string 
 };
 
 export type PaymentViewServerAccess = PaymentMethodViewServerAccess & PaymentHistoryViewServerAccess;
-export const createPaymentClientExtraComponents = (params: { stripePublicKey: string, serverAccess: PaymentViewServerAccess }) => {
+export const createPaymentClientComponents_extra = (params: { stripePublicKey: string, serverAccess: PaymentViewServerAccess }) => {
     const comp = createPaymentClientComponents(params);
     const compExtra = {
         PaymentMethodView: (props: {}) => (<PaymentMethodView comp={comp} serverAccess={params.serverAccess} title='Payment Methods' />),
@@ -39,6 +39,19 @@ export const createPaymentClientExtraComponents = (params: { stripePublicKey: st
     return {
         ...comp,
         ...compExtra,
+    };
+};
+
+export type PaymentViewServerAccess_WithDebug = PaymentMethodViewServerAccess & PaymentHistoryViewServerAccess & PaymentDebugViewServerAccess;
+export const createPaymentClientComponents_withDebug = (params: { stripePublicKey: string, serverAccess: PaymentViewServerAccess_WithDebug }) => {
+    const compExtra = createPaymentClientComponents_extra(params);
+    const compDebug = {
+        PaymentDebugView: (props: { onPurchase?: () => void }) => (<PaymentDebugView comp={compExtra} serverAccess={params.serverAccess} title='Payment Debug' onPurchase={props.onPurchase} />),
+    };
+
+    return {
+        ...compExtra,
+        ...compDebug,
     };
 };
 
@@ -125,17 +138,6 @@ const PaymentHistoryView = (props: {
     serverAccess: PaymentHistoryViewServerAccess;
     title: string;
 }) => {
-    const [style, setStyle] = useState({
-        textPadding: 4,
-        elementPadding: 4,
-        buttonAlignment: `right`,
-        borderRadius: 4,
-        borderColor: theme.colors.border,
-        backgroundColor: theme.colors.background_field,
-        textColor: theme.colors.text,
-        buttonText: `Save`,
-    } as PaymentComponentStyle);
-
     const { loading, error, doWork } = useAutoLoadingError();
 
     const [payments, setPayments] = useState(null as null | PaymentTransaction[]);
@@ -161,6 +163,41 @@ const PaymentHistoryView = (props: {
                         <C.Text_FieldLabel>{`$${x.amount.usdCents / 100}`}</C.Text_FieldLabel>
                     </C.View_FieldRow>
                 ))}
+            </C.View_Form>
+        </>
+    );
+};
+
+
+type PaymentDebugViewServerAccess = {
+    onMakePurchase: (amount: number) => Promise<void>;
+};
+const PaymentDebugView = (props: {
+    comp: PaymentClientComponents;
+    serverAccess: PaymentDebugViewServerAccess;
+    title: string;
+    onPurchase?: () => void;
+}) => {
+    const { loading, error, doWork } = useAutoLoadingError();
+
+    const [purchaseAmount, setPurchaseAmount] = useState(100);
+    const makePurchase = () => doWork(async () => {
+        await props.serverAccess.onMakePurchase(purchaseAmount);
+        props.onPurchase?.();
+    });
+
+    return (
+        <>
+            <C.View_Form>
+                <C.Text_FormTitle>Make Purchase</C.Text_FormTitle>
+                <C.Text_FormTitle>{props.title}</C.Text_FormTitle>
+                <C.Loading loading={loading} />
+                <C.ErrorBox error={error} />
+                <C.View_FieldRow>
+                    <C.Text_FieldLabel>Amount $</C.Text_FieldLabel>
+                    <C.Input_Currency value={purchaseAmount} onChange={(value) => setPurchaseAmount(value)} />
+                    <C.Button_FieldInline onPress={() => makePurchase()} >Purchase</C.Button_FieldInline>
+                </C.View_FieldRow>
             </C.View_Form>
         </>
     );
