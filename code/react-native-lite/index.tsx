@@ -12,22 +12,27 @@ function mergeStyles<T>(items: (T | undefined | null) | (T | T[] | undefined | n
     return items as T;
 };
 
-const styleDefaults = {
+const viewStyleDefaults = {
     display: `flex`,
     flexDirection: `column`,
 } as const;
 
-export const View = (props: { style?: ThemeViewStyle | ThemeViewStyle[], children?: ReactNode }) => { return (<div style={mergeStyles([styleDefaults, props.style])}>{props.children}</div>); };
+const textStyleDefaults = {
+    whiteSpace: `pre`,
+} as const;
+
+export const View = (props: { style?: ThemeViewStyle | ThemeViewStyle[], children?: ReactNode }) => { return (<div style={mergeStyles([viewStyleDefaults, props.style])}>{props.children}</div>); };
 export const Text = (props: { style?: ThemeTextStyle | ThemeTextStyle[], children?: string, numberOfLines?: undefined | 1 }) => {
     if (props.numberOfLines === 1) {
         const singleLineStyle = {
             overflow: `hidden`,
+            whiteSpace: `nowrap`,
             wordWrap: `break-word`,
             textOverflow: `ellipsis`,
         } as const;
-        return (<span style={mergeStyles([props.style, singleLineStyle])}>{props.children}</span>);
+        return (<span style={mergeStyles([textStyleDefaults, props.style, singleLineStyle])}>{props.children}</span>);
     }
-    return (<span style={mergeStyles(props.style)}>{props.children}</span>);
+    return (<span style={mergeStyles([textStyleDefaults, props.style])}>{props.children}</span>);
 };
 export const TextInput = (props: {
     style?: ThemeTextStyle | ThemeTextStyle[];
@@ -37,12 +42,12 @@ export const TextInput = (props: {
 }) => {
     const type = props.keyboardType === `numeric` ? `number`
         : `text`;
-    return (<input type={type} style={mergeStyles(props.style)} value={props.value} onChange={(e) => props.onChange(e.target.value)} />);
+    return (<input type={type} style={mergeStyles([textStyleDefaults, props.style])} value={props.value} onChange={(e) => props.onChange(e.target.value)} />);
 
 };
 export const TouchableOpacity = (props: { style?: ThemeViewStyle | ThemeViewStyle[], children?: ReactNode, onPress: () => void }) => {
     return (
-        <div style={mergeStyles([styleDefaults, props.style])}
+        <div style={mergeStyles([viewStyleDefaults, props.style])}
             onClick={props.onPress}
             onTouchEnd={props.onPress}
             onKeyPress={props.onPress}

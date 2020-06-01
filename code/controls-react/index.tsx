@@ -17,7 +17,7 @@ export const C = {
     View_FieldRow: (props: PropsOf<typeof View>) => (<View style={theme.view_fieldRow} {...props} />),
     View_FormActionRow: (props: PropsOf<typeof View>) => (<View style={theme.view_formActionRow} {...props} />),
     Text_FormTitle: (props: PropsOf<typeof Text>) => (<Text style={theme.text_formTitle} {...props} />),
-    Text_FieldLabel: (props: PropsOf<typeof Text>) => (<Text style={theme.text_fieldLabel} {...props} />),
+    Text_FieldLabel: (props: PropsOf<typeof Text>) => (<Text style={theme.text_fieldLabel} numberOfLines={1} {...props} />),
     Button_FieldInline: (props: PropsOf<typeof Button>) => (<Button style={theme.button_fieldInline} {...props} />),
     Button_FormAction: (props: PropsOf<typeof Button>) => (<Button style={theme.button_formAction} {...props} />),
     Input_Currency,

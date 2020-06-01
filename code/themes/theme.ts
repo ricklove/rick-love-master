@@ -35,7 +35,7 @@ export type ThemeTextStyle = {
     fontFamily?: string;
     fontSize?: number;
     fontWeight?: 'normal' | 'bold';
-    whiteSpace?: 'normal' | 'nowrap' | 'pre';
+    //  whiteSpace?: 'normal' | 'nowrap' | 'pre';
     minWidth?: number;
 };
 export type ThemeIconStyle = {
@@ -82,7 +82,7 @@ export const extractTextStyle = (style: ThemeViewStyle & ThemeTextStyle): ThemeT
         fontFamily: style.fontFamily,
         fontSize: style.fontSize,
         fontWeight: style.fontWeight,
-        whiteSpace: style.whiteSpace,
+        // whiteSpace: style.whiteSpace,
     };
 };
 
@@ -181,7 +181,7 @@ const createTheme = (colors: ThemeColors, sizes: ThemeSizes, font: ThemeFont) =>
             color: colors.text,
             fontSize: sizes.fontSize,
             fontWeight: font.fontWeight_normal,
-            whiteSpace: `nowrap`,
+            //  whiteSpace: `nowrap`,
         },
         input_fieldEntry: sText = {
             padding: sizes.textPadding,
