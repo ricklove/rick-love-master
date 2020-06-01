@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { ActivitySpinner, View } from 'react-native-lite';
+import { ActivityIndicator, View } from 'react-native-lite';
 import { theme } from 'themes/theme';
 
 export const Loading = ({ loading }: { loading?: boolean }) => {
@@ -23,7 +23,7 @@ export const Loading = ({ loading }: { loading?: boolean }) => {
 
     return (
         <View>
-            <ActivitySpinner size='large' color={theme.colors.loader} />
+            <ActivityIndicator size='large' color={theme.colors.loader} />
         </View>
     );
 };
@@ -49,7 +49,7 @@ export const LoadingInline = ({ loading }: { loading?: boolean }) => {
 
     return (
         <>
-            <ActivitySpinner size='small' color={theme.colors.loader} />
+            <ActivityIndicator size='small' color={theme.colors.loader} />
         </>
     );
 };

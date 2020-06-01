@@ -12,7 +12,12 @@ function mergeStyles<T>(items: (T | undefined | null) | (T | T[] | undefined | n
     return items as T;
 };
 
-export const View = (props: { style?: ThemeViewStyle | ThemeViewStyle[], children?: ReactNode }) => { return (<div style={mergeStyles(props.style)}>{props.children}</div>); };
+const styleDefaults = {
+    display: `flex`,
+    flexDirection: `column`,
+} as const;
+
+export const View = (props: { style?: ThemeViewStyle | ThemeViewStyle[], children?: ReactNode }) => { return (<div style={mergeStyles([styleDefaults, props.style])}>{props.children}</div>); };
 export const Text = (props: { style?: ThemeTextStyle | ThemeTextStyle[], children?: string, numberOfLines?: undefined | 1 }) => {
     if (props.numberOfLines === 1) {
         const singleLineStyle = {
@@ -37,7 +42,7 @@ export const TextInput = (props: {
 };
 export const TouchableOpacity = (props: { style?: ThemeViewStyle | ThemeViewStyle[], children?: ReactNode, onPress: () => void }) => {
     return (
-        <div style={mergeStyles(props.style)}
+        <div style={mergeStyles([styleDefaults, props.style])}
             onClick={props.onPress}
             onTouchEnd={props.onPress}
             onKeyPress={props.onPress}
@@ -48,7 +53,7 @@ export const TouchableOpacity = (props: { style?: ThemeViewStyle | ThemeViewStyl
     );
 };
 
-export const ActivitySpinner = ({ size, color }: { size: 'large' | 'small', color: string }) => {
+export const ActivityIndicator = ({ size, color }: { size: 'large' | 'small', color: string }) => {
     const sizePx = size === `small` ? 16 : 32;
     return (
         <CircleSvg size={sizePx} thickness={sizePx / 8} color={color} />
