@@ -1,11 +1,11 @@
 import { toKeyValueObject } from 'utils/objects';
 import { delay } from 'utils/delay';
-import { JsonRpcCoreClient, JsonRpcApiEndpointNames, JsonRpcApiEndpoints, JsonRpcError, JsonRpcBatchClient, JsonRpcRequestBody, JsonRpcResponseBody, JsonRpcSessionClient, JsonRpcSessionToken, JsonRpcWebClient, JsonRpcSessionResponseBody } from './types';
+import { JsonRpcCoreClient, JsonRpcApiMethodNames, JsonRpcApiMethods, JsonRpcError, JsonRpcBatchClient, JsonRpcRequestBody, JsonRpcResponseBody, JsonRpcSessionClient, JsonRpcSessionToken, JsonRpcWebClient, JsonRpcSessionResponseBody } from './types';
 import { encodeJsonRpcRequestBody, decodeJsonRpcResponseBody } from './json-body';
 import { fetchJsonPost } from './web/fetch-request';
 
-const createJsonRpcApiCoreClient = <T>(config: { inner: JsonRpcCoreClient, endpointNames: JsonRpcApiEndpointNames<T> }): JsonRpcApiEndpoints<T> => {
-    const endpointRequests = Object.keys(config.endpointNames).map(k => ({
+const createJsonRpcApiCoreClient = <T>(config: { inner: JsonRpcCoreClient, apiMethodNames: JsonRpcApiMethodNames<T> }): JsonRpcApiMethods<T> => {
+    const methodRequests = Object.keys(config.apiMethodNames).map(k => ({
         method: k,
         execute: async (params: unknown) => {
             const data = encodeJsonRpcRequestBody(k, params);
@@ -20,8 +20,8 @@ const createJsonRpcApiCoreClient = <T>(config: { inner: JsonRpcCoreClient, endpo
         },
     }));
 
-    const endpoints = toKeyValueObject(endpointRequests.map(x => ({ key: x.method, value: x.execute })));
-    return endpoints as JsonRpcApiEndpoints<T>;
+    const methods = toKeyValueObject(methodRequests.map(x => ({ key: x.method, value: x.execute })));
+    return methods as JsonRpcApiMethods<T>;
 };
 
 const createJsonRpcCoreBatchClient = (config: { inner: JsonRpcBatchClient }): JsonRpcCoreClient => {
@@ -101,7 +101,7 @@ const createJsonRpcSessionWebClient = (config: { inner: JsonRpcWebClient, server
     return sessionClient;
 };
 
-export const createJsonRpcClient = <T>(config: { serverUrl: string, sessionTokenStorage?: JsonRpcSessionStorage, endpointNames: JsonRpcApiEndpointNames<T> }) => {
+export const createJsonRpcClient = <T>(config: { serverUrl: string, sessionTokenStorage?: JsonRpcSessionStorage, apiMethodNames: JsonRpcApiMethodNames<T> }) => {
     const webClient: JsonRpcWebClient = {
         webRequest: async (serverUrl: string, reqBody: unknown) => {
             const response = await fetchJsonPost<JsonRpcSessionResponseBody>(serverUrl, reqBody);
@@ -111,6 +111,6 @@ export const createJsonRpcClient = <T>(config: { serverUrl: string, sessionToken
     const sessionClient = createJsonRpcSessionWebClient({ serverUrl: config.serverUrl, inner: webClient });
     const batchClient = createJsonRpcBatchSessionClient({ inner: sessionClient, sessionTokenStorage: config.sessionTokenStorage });
     const coreClient = createJsonRpcCoreBatchClient({ inner: batchClient });
-    const apiClient = createJsonRpcApiCoreClient<T>({ inner: coreClient, endpointNames: config.endpointNames });
+    const apiClient = createJsonRpcApiCoreClient<T>({ inner: coreClient, apiMethodNames: config.apiMethodNames });
     return apiClient;
 };

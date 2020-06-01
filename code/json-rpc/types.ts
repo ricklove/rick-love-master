@@ -20,9 +20,8 @@ export class JsonRpcError extends Error {
 
 
 // Api Endpoints (used in app)
-export type JsonRpcApiEndpointNames<T> = { [K in keyof T]: T[K] extends (...args: infer PARAMS) => Promise<infer R> ? K : never };
-export type JsonRpcApiEndpoints<T> = { [K in keyof T]: T[K] extends (...args: infer PARAMS) => Promise<infer R> ? (...args: PARAMS) => Promise<R> : never };
-export type JsonRpcApiClientFactory<T> = (endpointNames: JsonRpcApiEndpointNames<T>) => JsonRpcApiEndpoints<T>;
+export type JsonRpcApiMethodNames<T> = { [K in keyof T]: T[K] extends (...args: infer PARAMS) => Promise<infer R> ? K : never };
+export type JsonRpcApiMethods<T> = { [K in keyof T]: T[K] extends (...args: infer PARAMS) => Promise<infer R> ? (...args: PARAMS) => Promise<R> : never };
 
 // JsonRpc 2.0 Spec
 export type JsonRpcCoreClient = {

@@ -31,7 +31,7 @@ export const PaymentFullStackTesterHost = (props: {}) => {
                 //     setSessionToken: async (value) => { localStorage.PaymentFullStackTesterHost_Credentials = JSON.stringify(value); },
                 //     resetSessionToken: async () => { localStorage.PaymentFullStackTesterHost_Credentials = undefined; },
                 // },
-                endpointNames: {
+                apiMethodNames: {
                     setupSavedPaymentMethod: `setupSavedPaymentMethod`,
                     saveSavedPaymentMethod: `saveSavedPaymentMethod`,
                     getSavedPaymentMethods: `getSavedPaymentMethods`,
