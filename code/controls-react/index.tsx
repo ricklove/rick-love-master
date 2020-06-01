@@ -1,7 +1,7 @@
 import React, { } from 'react';
 import { View, Text } from 'react-native-lite';
 import { theme } from 'themes/theme';
-import { Loading } from './loading';
+import { Loading, LoadingInline } from './loading';
 import { ErrorBox } from './error-box';
 import { Input_Currency } from './inputs';
 import { Button } from './button';
@@ -10,6 +10,7 @@ type PropsOf<T> = T extends (props: infer P) => JSX.Element ? P : never;
 
 export const C = {
     Loading,
+    LoadingInline,
     ErrorBox,
     View_Panel: (props: PropsOf<typeof View>) => (<View style={theme.view_panel} {...props} />),
     View_Form: (props: PropsOf<typeof View>) => (<View style={theme.view_form} {...props} />),

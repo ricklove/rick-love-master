@@ -53,11 +53,32 @@ const createJsonRpcCoreBatchClient = (config: { inner: JsonRpcBatchClient }): Js
             const batchRequests = newRequests;
             newRequests = [];
 
-            const batchResponses = await config.inner.batchRequest(batchRequests.map(x => x.data));
+            const result = await (async () => {
+                try {
+                    return {
+                        batchResponses: await config.inner.batchRequest(batchRequests.map(x => x.data)),
+                    };
+                } catch (error) {
+                    return {
+                        error,
+                    };
+                }
+            })();
 
+            if (result.error) {
+                batchRequests.forEach(req => {
+                    req.promiseState._reject(new JsonRpcError(`Request Failed`, { request: req.data, batchRequests }));
+                });
+                return prom;
+            }
             for (const req of batchRequests) {
-                const res = batchResponses.find(x => x.id === req.data.id);
-                if (!res) { throw new JsonRpcError(`Batch Response is Missing`, { request: req.data, batchRequests, batchResponses }); }
+                const { batchResponses } = result;
+                const res = batchResponses?.find(x => x.id === req.data.id);
+                if (!res) {
+                    req.promiseState._reject(new JsonRpcError(`Batch Response is Missing`, { request: req.data, batchRequests, batchResponses }));
+                    // throw new JsonRpcError(`Batch Response is Missing`, { request: req.data, batchRequests, batchResponses });
+                    continue;
+                }
                 req.promiseState._resolve(res);
             }
 

@@ -17,7 +17,7 @@ export const jsonStringify_safe = (obj: unknown, shouldFormat?: boolean): string
     return JSON.stringify(obj, (_, val: unknown) => {
         if (val != null && typeof val == `object`) {
             if (visited.includes(val)) {
-                return `[OBJ-CYCLIC]`;
+                return `[OBJ-DUPLICATED]`;
             }
             visited.push(val);
         }
