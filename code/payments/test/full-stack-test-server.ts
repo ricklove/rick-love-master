@@ -149,6 +149,7 @@ export const run = async () => {
     // });
 
     const server = createJsonRpcServer<CreatePaymentApiDependencies>({
+        useCookieOnlySessionToken: true,
         // TODO: Define the type for this
         contextProvider: {
             getContext: async (sessionToken) => {

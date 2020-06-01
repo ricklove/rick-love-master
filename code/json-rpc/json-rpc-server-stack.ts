@@ -85,16 +85,22 @@ const createJsonRpcSessionServer = <TContext>(config: { upper: JsonRpcBatchServe
     return server;
 };
 
-const createJsonRpcWebServer = (config: { upper: JsonRpcSessionServer }): JsonRpcWebServer => {
+const createJsonRpcWebServer = (config: { upper: JsonRpcSessionServer, useCookieOnlySessionToken?: boolean }): JsonRpcWebServer => {
     const server: JsonRpcWebServer = {
         respond: async (requestBodyObj, requestCookieObj) => {
             const reqData = requestBodyObj;
+            if (config.useCookieOnlySessionToken) {
+                reqData.sessionToken = undefined;
+            }
             if (requestCookieObj) {
                 reqData.sessionToken = requestCookieObj;
             }
             const response = await config.upper.respond(reqData);
-            const responseBodyObj = response;
+            const responseBodyObj = { ...response };
             const responseCookieObj = response.newSessionToken;
+            if (config.useCookieOnlySessionToken) {
+                delete responseBodyObj.newSessionToken;
+            }
             return {
                 responseBodyObj,
                 responseCookieObj,
@@ -125,12 +131,12 @@ const createJsonRpcWebJsonServer = (config: { upper: JsonRpcWebServer }): JsonRp
     return server;
 };
 
-export const createJsonRpcServer_stacks = <TContext>(config: { contextProvider: ContextProvider<TContext>, apiAccess: ApiAccess<TContext> }) => {
+export const createJsonRpcServer_stacks = <TContext>(config: { contextProvider: ContextProvider<TContext>, apiAccess: ApiAccess<TContext>, useCookieOnlySessionToken?: boolean }) => {
     const apiServer = createJsonRpcApiServer<TContext>({ apiAccess: config.apiAccess });
     const coreServer = createJsonRpcCoreServer<TContext>({ upper: apiServer });
     const batchServer = createJsonRpcBatchServer<TContext>({ upper: coreServer });
     const sessionServer = createJsonRpcSessionServer<TContext>({ upper: batchServer, contextProvider: config.contextProvider });
-    const webServer = createJsonRpcWebServer({ upper: sessionServer });
+    const webServer = createJsonRpcWebServer({ upper: sessionServer, useCookieOnlySessionToken: config.useCookieOnlySessionToken });
     const webJsonServer = createJsonRpcWebJsonServer({ upper: webServer });
     return {
         apiServer,
@@ -141,7 +147,7 @@ export const createJsonRpcServer_stacks = <TContext>(config: { contextProvider: 
         webJsonServer,
     };
 };
-export const createJsonRpcServer = <TContext>(config: { contextProvider: ContextProvider<TContext>, apiAccess: ApiAccess<TContext> }): JsonRpcWebJsonServer => {
+export const createJsonRpcServer = <TContext>(config: { contextProvider: ContextProvider<TContext>, apiAccess: ApiAccess<TContext>, useCookieOnlySessionToken?: boolean }): JsonRpcWebJsonServer => {
     const stacks = createJsonRpcServer_stacks(config);
     return stacks.webJsonServer;
 };
