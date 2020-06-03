@@ -7,7 +7,7 @@
   "activationEvents": [
     "onCommand:codeSpace.start"
   ],
-  "main": "./out/src/extension",
+  "main": "./out/extension.js",
   "contributes": {
     "commands": [
       {
