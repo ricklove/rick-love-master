@@ -1,0 +1,7 @@
+{
+  "name": "code-space-views",
+  "version": "1.0.0",
+  "dependencies": {
+    "react": "^16.12.0"
+  }
+}

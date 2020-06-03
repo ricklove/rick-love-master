@@ -105,5 +105,20 @@
                 "<node_internals>/**/*.js"
             ]
         },
+        {
+            "name": "CodeSpaceExtension",
+            "type": "extensionHost",
+            "request": "launch",
+            "runtimeExecutable": "${execPath}",
+            "args": [
+                "--extensionDevelopmentPath=${workspaceRoot}/code/code-space/code-space-vscode/"
+            ],
+            "stopOnEntry": false,
+            "sourceMaps": true,
+            "outFiles": [
+                "${workspaceRoot}/code/code-space/code-space-vscode/out/**/*.js"
+            ],
+            // "preLaunchTask": "npm: watch"
+        },
     ]
 }

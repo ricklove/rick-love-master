@@ -4,6 +4,12 @@
       "blog/*": [
         "code/blog/*"
       ],
+      "code-space-views/*": [
+        "code/code-space/code-space-views/*"
+      ],
+      "code-space-vscode/*": [
+        "code/code-space/code-space-vscode/*"
+      ],
       "console-simulator/*": [
         "code/games/console-simulator/*"
       ],
