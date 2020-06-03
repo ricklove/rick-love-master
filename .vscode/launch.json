@@ -118,7 +118,7 @@
             "outFiles": [
                 "${workspaceRoot}/code/code-space/code-space-vscode/out/**/*.js"
             ],
-            "preLaunchTask": "npm: watch"
+            // "preLaunchTask": "npm: watch"
         },
     ]
 }

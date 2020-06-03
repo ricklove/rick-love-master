@@ -15,9 +15,10 @@ function getWebviewContent() {
   <head>
       <meta charset="UTF-8">
       <meta name="viewport" content="width=device-width, initial-scale=1.0">
-      <title>Cat Coding</title>
+      <title>Cat Coding - Test</title>
   </head>
   <body>
+      <span>Look at the cat 2!</span>
       <img src="https://media.giphy.com/media/JIX9t2j0ZTN9S/giphy.gif" width="300" />
   </body>
   </html>`;

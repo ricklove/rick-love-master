@@ -9,7 +9,8 @@
         "outDir": "out",
         "sourceMap": true,
         "strict": true,
-        "rootDir": "src"
+        "rootDir": "src",
+        "skipLibCheck": true
     },
     "exclude": [
         "node_modules",
