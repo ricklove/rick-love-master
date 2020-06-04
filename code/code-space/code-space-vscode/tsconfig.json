@@ -1,5 +1,5 @@
 {
-    // "extends": "../../../tsconfig",
+    "extends": "../../../tsconfig",
     "compilerOptions": {
         "module": "commonjs",
         "target": "es2019",
@@ -7,13 +7,17 @@
             "ES2019"
         ],
         "outDir": "out",
+        "noEmit": false,
         "sourceMap": true,
         "strict": true,
-        "rootDir": "src",
+        // "rootDir": "src",
         "skipLibCheck": true
     },
     "exclude": [
         "node_modules",
         ".vscode-test"
+    ],
+    "include": [
+        "src"
     ]
 }

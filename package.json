@@ -61,6 +61,8 @@
   },
   "workspaces": [
     "code/blog",
+    "code/code-space/code-space-logic",
+    "code/code-space/code-space-node",
     "code/code-space/code-space-views",
     "code/code-space/code-space-vscode",
     "code/controls-react",

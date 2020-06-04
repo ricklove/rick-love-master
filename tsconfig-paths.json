@@ -4,6 +4,12 @@
       "blog/*": [
         "code/blog/*"
       ],
+      "code-space-logic/*": [
+        "code/code-space/code-space-logic/*"
+      ],
+      "code-space-node/*": [
+        "code/code-space/code-space-node/*"
+      ],
       "code-space-views/*": [
         "code/code-space/code-space-views/*"
       ],
@@ -33,6 +39,9 @@
       ],
       "themes/*": [
         "code/themes/*"
+      ],
+      "typescript/*": [
+        "code/code-space/code-space-vscode/node_modules/typescript/*"
       ],
       "utils-react/*": [
         "code/utils-react/*"

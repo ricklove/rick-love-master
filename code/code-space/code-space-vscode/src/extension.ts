@@ -1,4 +1,5 @@
 import * as vscode from 'vscode';
+import { getAllDirectories } from 'utils/files';
 
 export function activate(context: vscode.ExtensionContext) {
     context.subscriptions.push(
@@ -11,11 +12,24 @@ export function activate(context: vscode.ExtensionContext) {
                 {},
             );
             panel.webview.html = getWebviewContent();
+
+            (async () => {
+                panel.webview.html = await loadData(vscode.workspace.workspaceFolders?.[0].uri.fsPath ?? null);
+            })();
+
         }),
     );
 }
 
-function getWebviewContent() {
+async function loadData(rootDir: string | null) {
+    if (!rootDir) { return getWebviewContent({ rootDir }); }
+    // Get List of Dirs
+    const allDirs = await getAllDirectories(rootDir);
+
+    return getWebviewContent({ allDirs });
+}
+
+function getWebviewContent(data?: unknown) {
     return `<!DOCTYPE html>
   <html lang="en">
   <head>
@@ -26,6 +40,7 @@ function getWebviewContent() {
   <body>
       <span>Look at the cat!</span>
       <img src="https://media.giphy.com/media/JIX9t2j0ZTN9S/giphy.gif" width="300" />
+      <dir>${JSON.stringify(data, null, 2)}</dir>
   </body>
   </html>`;
 }
