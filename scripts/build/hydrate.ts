@@ -66,10 +66,10 @@ const dehydrate_templatesAll = async (rootCode: string) => {
 
 /** Add package.json to each module with detected dependencies */
 export const hydrate_yarnWorkspaces = async (root: string, rootCode: string) => {
-    console.log(`Statup: Regenerate Tsconfig Paths`);
+    console.log(`hydrate_yarnWorkspaces: Regenerate Tsconfig Paths: ${root} ${rootCode}`);
     await generateTsconfigPaths(root);
 
-    console.log(`Statup: Clone & Process Imports`);
+    console.log(`hydrate_yarnWorkspaces: Clone & Process Imports: ${root} ${rootCode}`);
     const tsConfigPaths = await loadTsConfigPaths(root);
 
     const fileDependencies = [] as FileDependencies[];
