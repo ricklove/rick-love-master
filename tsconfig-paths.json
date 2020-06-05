@@ -40,11 +40,11 @@
       "themes/*": [
         "code/themes/*"
       ],
-      "typescript/*": [
-        "code/code-space/code-space-vscode/node_modules/typescript/*"
-      ],
       "utils-react/*": [
         "code/utils-react/*"
+      ],
+      "utils-scripts/*": [
+        "code/utils-scripts/*"
       ],
       "utils/*": [
         "code/utils/*"

@@ -2,6 +2,8 @@
   "name": "code-space-views",
   "version": "1.0.0",
   "dependencies": {
+    "code-space-logic": "*",
+    "utils": "*",
     "react": "^16.12.0"
   }
 }

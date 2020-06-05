@@ -1,4 +1,6 @@
 export type CodeSpaceNode = {
+    kind: 'filePath' | 'fileContent' | 'contentMatch';
+    id: string;
     text: string;
     links: CodeSpaceLink[];
 };
@@ -10,5 +12,5 @@ export type CodeSpaceLink = {
 
 export type CodeSpaceReference = {
     node: CodeSpaceNode;
-    range: { start: number, length: number };
+    range?: { index: number, length: number };
 };

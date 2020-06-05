@@ -2,6 +2,8 @@
   "name": "code-space-logic",
   "version": "1.0.0",
   "dependencies": {
-    "utils": "*"
+    "utils": "*",
+    "utils-scripts": "*",
+    "d3": "^5.16.0"
   }
 }

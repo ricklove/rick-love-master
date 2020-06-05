@@ -118,7 +118,7 @@ export async function getFiles(dir: string, isMatch: (filePath: string) => boole
 
 export async function processDirectoryItems(dir: string, options: {
     onDirectory?: (fullPath: string, name: string, info: Dirent) => Promise<void>;
-    shouldSkipDirectory?: (fullPath: string, name: string, info: Dirent) => Promise<boolean>;
+    shouldSkipDirectory?: (fullPath: string, name: string, info: Dirent) => boolean;
     onFile?: (fullPath: string, name: string, info: Dirent) => Promise<void>;
 }) {
     const { onDirectory, onFile, shouldSkipDirectory } = options;
