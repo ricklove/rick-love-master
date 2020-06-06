@@ -115,13 +115,18 @@ const PaymentMethodView = (props: {
                 <C.Text_FormTitle>{props.title}</C.Text_FormTitle>
                 <C.Loading loading={loading} />
                 <C.ErrorBox error={error} />
-                {paymentMethods && paymentMethods.map(x => (
-                    <C.View_FieldRow key={x.key}>
-                        <C.Text_FieldLabel>{x.title}</C.Text_FieldLabel>
-                        <C.Text_FieldLabel>{`Expires: ${(`${x.expiration.month}`).padStart(2, `0`)}/${x.expiration.year}`}</C.Text_FieldLabel>
-                        <C.Button_FieldInline onPress={() => deletePaymentMethod(x.key)}>Remove</C.Button_FieldInline>
-                    </C.View_FieldRow>
-                ))}
+
+                {paymentMethods && paymentMethods.length > 0 && (
+                    <C.View_FormFields>
+                        {paymentMethods.map(x => (
+                            <C.View_FieldRow key={x.key}>
+                                <C.Text_FieldLabel>{x.title}</C.Text_FieldLabel>
+                                <C.Text_FieldLabel>{`Expires: ${(`${x.expiration.month}`).padStart(2, `0`)}/${x.expiration.year}`}</C.Text_FieldLabel>
+                                <C.Button_FieldInline onPress={() => deletePaymentMethod(x.key)}>Remove</C.Button_FieldInline>
+                            </C.View_FieldRow>
+                        ))}
+                    </C.View_FormFields>
+                )}
                 {!setupToken && <C.View_FormActionRow><C.Button_FormAction onPress={setupPayment}>Add Payment Method</C.Button_FormAction></C.View_FormActionRow>}
                 {setupToken && <props.comp.PaymentMethodEntryComponent style={style} paymentMethodSetupToken={setupToken} onPaymentMethodReady={onPaymentMethodReady} />}
             </C.View_Form>
@@ -157,12 +162,16 @@ const PaymentHistoryView = (props: {
                 <C.Text_FormTitle>{props.title}</C.Text_FormTitle>
                 <C.Loading loading={loading} />
                 <C.ErrorBox error={error} />
-                {payments && payments.map(x => (
-                    <C.View_FieldRow key={`${x.created}`}>
-                        <C.Text_FieldLabel>{`Created: ${formatDate(x.created)}`}</C.Text_FieldLabel>
-                        <C.Text_FieldLabel>{`$${x.amount.usdCents / 100}`}</C.Text_FieldLabel>
-                    </C.View_FieldRow>
-                ))}
+                {payments && payments.length > 0 && (
+                    <C.View_FormFields>
+                        {payments.map(x => (
+                            <C.View_FieldRow key={`${x.created}`}>
+                                <C.Text_FieldLabel>{`Created: ${formatDate(x.created)}`}</C.Text_FieldLabel>
+                                <C.Text_FieldLabel>{`$${x.amount.usdCents / 100}`}</C.Text_FieldLabel>
+                            </C.View_FieldRow>
+                        ))}
+                    </C.View_FormFields>
+                )}
             </C.View_Form>
         </>
     );
@@ -193,11 +202,13 @@ const PaymentDebugView = (props: {
                 <C.Text_FormTitle>{props.title}</C.Text_FormTitle>
                 <C.Loading loading={loading} />
                 <C.ErrorBox error={error} />
-                <C.View_FieldRow>
-                    <C.Text_FieldLabel>Amount $</C.Text_FieldLabel>
-                    <C.Input_Currency value={purchaseAmount} onChange={(value) => setPurchaseAmount(value)} />
-                    <C.Button_FieldInline onPress={() => makePurchase()} >Purchase</C.Button_FieldInline>
-                </C.View_FieldRow>
+                <C.View_FormFields>
+                    <C.View_FieldRow>
+                        <C.Text_FieldLabel>Amount $</C.Text_FieldLabel>
+                        <C.Input_Currency value={purchaseAmount} onChange={(value) => setPurchaseAmount(value)} />
+                        <C.Button_FieldInline onPress={() => makePurchase()} >Purchase</C.Button_FieldInline>
+                    </C.View_FieldRow>
+                </C.View_FormFields>
             </C.View_Form>
         </>
     );

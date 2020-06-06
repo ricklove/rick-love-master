@@ -1,17 +1,9 @@
 /* eslint-disable no-console */
 import React, { useState, useEffect } from 'react';
-import { theme } from 'themes/theme';
-import { formatDate } from 'utils/dates';
-import { useAutoLoadingError } from 'utils-react/hooks';
 import { C } from 'controls-react';
 import { createJsonRpcClient } from 'json-rpc/json-rpc-client-stack';
-import { createPaymentClientComponents, createPaymentClientComponents_extra, PaymentViewServerAccess, PaymentViewServerAccess_WithDebug, createPaymentClientComponents_withDebug } from '../client/payment-react';
-import { PaymentComponentStyle, PaymentClientComponents } from '../common/types-react';
-import {
-    PaymentProviderSavedPaymentMethodClientSetupToken, PaymentProviderName, PaymentClientApi,
-    PaymentProviderSavedPaymentMethodClientToken, PaymentMethodClientInfo, PaymentMethodStorageKey,
-    PaymentTransaction,
-} from '../common/types';
+import { PaymentViewServerAccess_WithDebug, createPaymentClientComponents_withDebug } from '../client/payment-react';
+import { PaymentProviderName, PaymentClientApi, PaymentMethodStorageKey } from '../common/types';
 import { getFullStackTestConfig, FullStackTestConfig } from './full-stack-test-config';
 
 export const PaymentFullStackTesterHost = (props: {}) => {
