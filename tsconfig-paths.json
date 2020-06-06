@@ -1,6 +1,9 @@
 {
   "compilerOptions": {
     "paths": {
+      "auth/*": [
+        "code/auth/*"
+      ],
       "blog/*": [
         "code/blog/*"
       ],

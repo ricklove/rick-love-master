@@ -94,15 +94,18 @@ module.exports = {
         // React/ReactNative JS mixed with tsx?
         "react/jsx-filename-extension": [2, { "extensions": [".js", ".jsx", ".tsx"] }],
 
+        // Need to disable unfortunately because of not supporting module level const arrow functions
+        "no-use-before-define": ["off"],
+        "@typescript-eslint/explicit-function-return-type": ["off"],
         // Sometimes doesn't matter
-        "no-use-before-define": [
-            "error",
-            { functions: false, classes: true, variables: true },
-        ],
-        "@typescript-eslint/no-use-before-define": [
-            "error",
-            { functions: false, classes: true, variables: true, typedefs: false },
-        ],
+        // "no-use-before-define": [
+        //     "error",
+        //     { functions: false, classes: true, variables: true },
+        // ],
+        // "@typescript-eslint/no-use-before-define": [
+        //     "error",
+        //     { functions: false, classes: true, variables: true, typedefs: false },
+        // ],
 
         // Many Functions should use an inferred return type
         "@typescript-eslint/explicit-function-return-type": [

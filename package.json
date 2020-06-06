@@ -62,6 +62,7 @@
     "build-blog": "cd packages/blog-gatsby-site && gatsby build"
   },
   "workspaces": [
+    "code/auth",
     "code/blog",
     "code/code-space/code-space-logic",
     "code/code-space/code-space-node",

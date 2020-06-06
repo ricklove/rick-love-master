@@ -2,6 +2,8 @@
   "name": "blog",
   "version": "1.0.0",
   "dependencies": {
+    "auth": "*",
+    "code-space-views": "*",
     "console-simulator": "*",
     "payments": "*",
     "themes": "*",
