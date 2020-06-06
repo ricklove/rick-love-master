@@ -1,7 +1,7 @@
 /* eslint-disable no-console */
 import { getProjectRootDirectoryPath, getPathNormalized, processDirectoryFiles } from 'utils/files';
 import { generateTsconfigPaths, loadTsConfigPaths } from './generate-tsconfig-paths';
-import { processImports_returnDependencies, FileDependencies, saveDependenciesToModulePackageJson, processImports_expandToRelativeImports } from './process-imports';
+import { processImports_returnDependencies, FileDependencies, saveDependenciesToModulePackageJson, processImports_expandToRelativeImports, processImports } from './process-imports';
 import { cloneFile } from './clone-files';
 
 export const getTargetBuildPath = (root: string) => {
@@ -26,6 +26,7 @@ const build = async (rootRaw?: string) => {
             const destFile = await cloneFile(x, root, getTargetBuildPath(root), { skipIfDestinationNewer: false });
             if (!destFile) { return; }
 
+            await processImports(destFile, p => p.replace(`react-native-lite`, `react-native`), getTargetBuildPath(root), tsConfigPaths);
             await processImports_expandToRelativeImports(destFile, getTargetBuildPath(root), tsConfigPaths);
         });
 

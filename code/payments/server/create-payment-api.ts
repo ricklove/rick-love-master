@@ -81,21 +81,5 @@ const createPaymentApi_underUserContext = (dependencies: {
     });
 };
 
-
-export const createPaymentApiFactory = (dependencies: {
-    getStripeSecretKey: () => string;
-}) => (userContextDependencies: {
-    getUserContext: () => Promise<{
-        getUserBillingDetails: () => Promise<StripeCustomerBillingDetails>;
-        getUserKeyValueStorage: () => Promise<{
-            getValue: (key: string) => Promise<string | null>;
-            setValue: (key: string, value: string) => Promise<void>;
-        }>;
-    }>;
-}) => {
-        return createPaymentApi_underUserContext({
-            getStripeSecretKey: dependencies.getStripeSecretKey,
-            getUserBillingDetails: async () => await (await userContextDependencies.getUserContext()).getUserBillingDetails(),
-            getUserKeyValueStorage: async () => await (await userContextDependencies.getUserContext()).getUserKeyValueStorage(),
-        });
-    };
+export const createPaymentApi = createPaymentApi_underUserContext;
+export type CreatePaymentApiDependencies = Parameters<typeof createPaymentApi>[0];

@@ -12,32 +12,45 @@ function mergeStyles<T>(items: (T | undefined | null) | (T | T[] | undefined | n
     return items as T;
 };
 
-export const View = (props: { style?: ThemeViewStyle | ThemeViewStyle[], children?: ReactNode }) => { return (<div style={mergeStyles(props.style)}>{props.children}</div>); };
+const viewStyleDefaults = {
+    display: `flex`,
+    flexDirection: `column`,
+} as const;
+
+const textStyleDefaults = {
+    whiteSpace: `pre`,
+} as const;
+
+export const View = (props: { style?: ThemeViewStyle | ThemeViewStyle[], children?: ReactNode }) => { return (<div style={mergeStyles([viewStyleDefaults, props.style])}>{props.children}</div>); };
 export const Text = (props: { style?: ThemeTextStyle | ThemeTextStyle[], children?: string, numberOfLines?: undefined | 1 }) => {
     if (props.numberOfLines === 1) {
         const singleLineStyle = {
             overflow: `hidden`,
+            whiteSpace: `nowrap`,
             wordWrap: `break-word`,
             textOverflow: `ellipsis`,
         } as const;
-        return (<span style={mergeStyles([props.style, singleLineStyle])}>{props.children}</span>);
+        return (<span style={mergeStyles([textStyleDefaults, props.style, singleLineStyle])}>{props.children}</span>);
     }
-    return (<span style={mergeStyles(props.style)}>{props.children}</span>);
+    return (<span style={mergeStyles([textStyleDefaults, props.style])}>{props.children}</span>);
 };
 export const TextInput = (props: {
     style?: ThemeTextStyle | ThemeTextStyle[];
     keyboardType: 'default' | 'numeric';
+    secureTextEntry?: boolean;
     value: string;
     onChange: (value: string) => void;
 }) => {
     const type = props.keyboardType === `numeric` ? `number`
-        : `text`;
-    return (<input type={type} style={mergeStyles(props.style)} value={props.value} onChange={(e) => props.onChange(e.target.value)} />);
+        : (props.secureTextEntry ? `password`
+            : `text`);
+    return (<input type={type} style={mergeStyles([textStyleDefaults, props.style])}
+        value={props.value} onChange={(e) => props.onChange(e.target.value)} />);
 
 };
 export const TouchableOpacity = (props: { style?: ThemeViewStyle | ThemeViewStyle[], children?: ReactNode, onPress: () => void }) => {
     return (
-        <div style={mergeStyles(props.style)}
+        <div style={mergeStyles([viewStyleDefaults, props.style])}
             onClick={props.onPress}
             onTouchEnd={props.onPress}
             onKeyPress={props.onPress}
@@ -48,7 +61,7 @@ export const TouchableOpacity = (props: { style?: ThemeViewStyle | ThemeViewStyl
     );
 };
 
-export const ActivitySpinner = ({ size, color }: { size: 'large' | 'small', color: string }) => {
+export const ActivityIndicator = ({ size, color }: { size: 'large' | 'small', color: string }) => {
     const sizePx = size === `small` ? 16 : 32;
     return (
         <CircleSvg size={sizePx} thickness={sizePx / 8} color={color} />

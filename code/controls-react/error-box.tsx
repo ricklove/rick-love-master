@@ -32,8 +32,8 @@ const ErrorBox_Inner = (props: { error: ErrorState }) => {
 
     return (
         <View style={errorBoxStyle.view}>
-            <View style={{ display: `flex`, flexDirection: `row` as const }}>
-                <TouchableOpacity style={{ flex: 1, display: `flex`, flexDirection: `row`, alignItems: `center` }} onPress={() => setExpanded(!expanded)}>
+            <View style={{ flexDirection: `row` as const }}>
+                <TouchableOpacity style={{ flex: 1, flexDirection: `row`, alignItems: `center` }} onPress={() => setExpanded(!expanded)}>
                     {canExpand && (expanded ? <Icon style={errorBoxStyle.icon} kind={IconKind.expanded} /> : <Icon style={errorBoxStyle.icon} kind={IconKind.collapsed} />)}
                     <View style={{ paddingRight: 8 }}>
                         <Icon style={errorBoxStyle.icon} kind={IconKind.error} />
@@ -43,18 +43,18 @@ const ErrorBox_Inner = (props: { error: ErrorState }) => {
                     </View>
                 </TouchableOpacity>
                 {DEBUG && (
-                    <TouchableOpacity style={{ display: `flex`, flexDirection: `row`, alignItems: `center`, paddingLeft: 8 }} onPress={() => Clipboard.setString(jsonStringify_safe({ errorMessage, errorDetails, errorObjText }, true))}>
+                    <TouchableOpacity style={{ flexDirection: `row`, alignItems: `center`, paddingLeft: 8 }} onPress={() => Clipboard.setString(jsonStringify_safe({ errorMessage, errorDetails, errorObjText }, true))}>
                         <Icon style={errorBoxStyle.icon} kind={IconKind.copy} />
                     </TouchableOpacity>
                 )}
                 {props.error.retryCallback && (
-                    <TouchableOpacity style={{ display: `flex`, flexDirection: `row`, alignItems: `center`, paddingLeft: 8 }} onPress={props.error.retryCallback}>
+                    <TouchableOpacity style={{ flexDirection: `row`, alignItems: `center`, paddingLeft: 8 }} onPress={props.error.retryCallback}>
                         <Icon style={errorBoxStyle.icon} kind={IconKind.retry} />
                     </TouchableOpacity>
                 )}
             </View>
-            {canExpand && expanded && !!errorDetails && (<Text style={{ ...errorBoxStyle.text, whiteSpace: `pre` }}>{errorDetails}</Text>)}
-            {canExpand && expanded && !!errorObjText && (<Text style={{ ...errorBoxStyle.text, whiteSpace: `pre` }}>{errorObjText}</Text>)}
+            {canExpand && expanded && !!errorDetails && (<Text style={{ ...errorBoxStyle.text }}>{errorDetails}</Text>)}
+            {canExpand && expanded && !!errorObjText && (<Text style={{ ...errorBoxStyle.text }}>{errorObjText}</Text>)}
         </View>
     );
 };

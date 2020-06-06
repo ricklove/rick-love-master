@@ -182,7 +182,7 @@ export const processDependenciesInModulePackageJson = async (
         const packageJson = await processPackageJson(packageJsonInit, dependencies, rootPackageJson, packageJsonPath);
 
         // Sort Order
-        packageJson.dependencies = toKeyValueObject(toKeyValueArray(packageJson.dependencies).sort((a, b) => {
+        packageJson.dependencies = toKeyValueObject(toKeyValueArray(packageJson.dependencies ?? {}).sort((a, b) => {
             if (a.value === `*` && b.value === `*`) return a.key.localeCompare(b.key);
             if (a.value === `*`) return -1;
             if (b.value === `*`) return 1;
@@ -218,7 +218,7 @@ export const saveDependenciesToModulePackageJson = async (fileDependencies: File
 
         // Record as * for yarn workspaces to manage (if not already there)
         depPackageNames.forEach(x => {
-            if ((packageJson.dependencies[x.importPackageName] ?? packageJson.devDependencies?.[x.importPackageName] ?? packageJson.peerDependencies?.[x.importPackageName] ?? `*`) !== `*`) { return; }
+            if ((packageJson.dependencies?.[x.importPackageName] ?? packageJson.devDependencies?.[x.importPackageName] ?? packageJson.peerDependencies?.[x.importPackageName] ?? `*`) !== `*`) { return; }
             // Ignore node built-in
             if (x.importPackageName === `path`
                 || x.importPackageName === `fs`
@@ -226,8 +226,9 @@ export const saveDependenciesToModulePackageJson = async (fileDependencies: File
             ) { return; }
 
             // For external dependencies, get the version from the root package.json
+            packageJson.dependencies = packageJson.dependencies ?? {};
             packageJson.dependencies[x.importPackageName] =
-                rootPackageJson.dependencies[x.importPackageName] ??
+                rootPackageJson.dependencies?.[x.importPackageName] ??
                 rootPackageJson.devDependencies?.[x.importPackageName] ??
                 rootPackageJson.peerDependencies?.[x.importPackageName] ??
                 `*`;
@@ -252,12 +253,14 @@ export const removeLocalDependenciesFromModulePackageJson = async (packageJsonPa
     const rootPackagePath = getPathNormalized(root, `./package.json`);
     const rootPackageJson = JSON.parse(await readFile(rootPackagePath)) as PackageJson;
 
+    // console.log(`removeLocalDependenciesFromModulePackageJson`, { packageJson, rootPackageJson, packageJsonPath, rootPackagePath });
+    packageJson.dependencies = packageJson.dependencies ?? {};
     const localDeps = toKeyValueArray(packageJson.dependencies).filter(x =>
-        !rootPackageJson.dependencies[x.key]
+        !rootPackageJson.dependencies?.[x.key]
         && !rootPackageJson.devDependencies?.[x.key]
         && !rootPackageJson.peerDependencies?.[x.key]);
 
-    localDeps.forEach(x => { delete packageJson.dependencies[x.key]; });
+    localDeps.forEach(x => { delete (packageJson.dependencies ?? {})[x.key]; });
     await writeFile(packageJsonPath, JSON.stringify(packageJson, null, 2), { readonly: false, overwrite: true });
 
 };

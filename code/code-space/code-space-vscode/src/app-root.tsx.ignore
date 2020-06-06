@@ -1,0 +1,10 @@
+import React from 'react';
+import { TestCodeSpaceComponent } from 'code-space-views/test-component';
+
+export const CodeSpaceVscodeAppRoot = () => {
+    return (
+        <>
+            <TestCodeSpaceComponent />
+        </>
+    );
+};

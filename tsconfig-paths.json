@@ -1,8 +1,23 @@
 {
   "compilerOptions": {
     "paths": {
+      "auth/*": [
+        "code/auth/*"
+      ],
       "blog/*": [
         "code/blog/*"
+      ],
+      "code-space-logic/*": [
+        "code/code-space/code-space-logic/*"
+      ],
+      "code-space-node/*": [
+        "code/code-space/code-space-node/*"
+      ],
+      "code-space-views/*": [
+        "code/code-space/code-space-views/*"
+      ],
+      "code-space-vscode/*": [
+        "code/code-space/code-space-vscode/*"
       ],
       "console-simulator/*": [
         "code/games/console-simulator/*"
@@ -30,6 +45,9 @@
       ],
       "utils-react/*": [
         "code/utils-react/*"
+      ],
+      "utils-scripts/*": [
+        "code/utils-scripts/*"
       ],
       "utils/*": [
         "code/utils/*"

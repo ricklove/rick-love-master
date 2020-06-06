@@ -116,14 +116,21 @@ export async function getFiles(dir: string, isMatch: (filePath: string) => boole
     return files.map(x => getPathNormalized(x));
 }
 
-export async function processDirectoryItems(dir: string, options: { onDirectory?: (fullPath: string, name: string, info: Dirent) => Promise<void>, onFile?: (fullPath: string, name: string, info: Dirent) => Promise<void> }) {
-    const { onDirectory, onFile } = options;
+export async function processDirectoryItems(dir: string, options: {
+    onDirectory?: (fullPath: string, name: string, info: Dirent) => Promise<void>;
+    shouldSkipDirectory?: (fullPath: string, name: string, info: Dirent) => boolean;
+    onFile?: (fullPath: string, name: string, info: Dirent) => Promise<void>;
+}) {
+    const { onDirectory, onFile, shouldSkipDirectory } = options;
     const items = await fs.readdir(dir, { withFileTypes: true });
     await Promise.all(items.map(async (item) => {
         const fullPath = getPathNormalized(dir, item.name);
         if (item.isDirectory()) {
             await onDirectory?.(fullPath, item.name, item);
-            await processDirectoryItems(fullPath, options);
+            const shouldSkip = shouldSkipDirectory?.(fullPath, item.name, item) ?? false;
+            if (!shouldSkip) {
+                await processDirectoryItems(fullPath, options);
+            }
         }
         else { await onFile?.(fullPath, item.name, item); }
     }));
