@@ -141,10 +141,10 @@ export const loadCodeBase = async (projectRootPathRaw: string, rootPathRaw: stri
         nodes: [
             ...allCodeFilesWithImports.map(x => ({ id: x.projectPath, title: `${x.projectPath}\n---\n${x.text}`, group: x.packageInfo?.package.name ?? `` })),
             ...externalImportPaths.map(x => ({ id: x, title: x, group: `External` })),
-            ...allPackages.map(x => ({ id: x, title: x, group: x })),
+            // ...allPackages.map(x => ({ id: x, title: x, group: x })),
         ],
         links: [
-            ...allCodeFilesWithImports.flatMap(x => ({ source: x.packageInfo?.package.name, target: x.projectPath, priority: 1 })),
+            // ...allCodeFilesWithImports.flatMap(x => ({ source: x.packageInfo?.package.name, target: x.projectPath, priority: 1 })),
             ...allCodeFilesWithImports.flatMap(x => x.imports.map(y => ({ source: x.projectPath, target: y.projectPath, priority: y.projectPath.startsWith(`/`) ? 3 : 100 }))),
         ],
     };

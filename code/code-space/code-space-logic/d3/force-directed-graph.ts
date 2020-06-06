@@ -43,32 +43,39 @@ export const createD3ForceDirectedGraph = ({
         .force(`y`, d3.forceY())
         ;
 
-    // function setupDrag() {
-    //     function dragstarted(node: D3ForceDirectedGraphNode) {
-    //         const d = node;
-    //         if (!d3.event.active) simulation.alphaTarget(0.3).restart();
-    //         d.fx = d.x;
-    //         d.fy = d.y;
-    //     }
+    function drag(sim: typeof simulation) {
+        function dragstarted(n: D3ForceDirectedGraphNode) {
+            const d = n;
+            if (!d3.event.active) sim.alphaTarget(0.3).restart();
+            d.fx = d.x;
+            d.fy = d.y;
+        }
 
-    //     function dragged(node: D3ForceDirectedGraphNode) {
-    //         const d = node;
-    //         d.fx = d3.event.x;
-    //         d.fy = d3.event.y;
-    //     }
+        function dragged(n: D3ForceDirectedGraphNode) {
+            const d = n;
+            d.fx = d3.event.x;
+            d.fy = d3.event.y;
+        }
 
-    //     function dragended(node: D3ForceDirectedGraphNode) {
-    //         const d = node;
-    //         if (!d3.event.active) simulation.alphaTarget(0);
-    //         d.fx = null;
-    //         d.fy = null;
-    //     }
+        function dragended(n: D3ForceDirectedGraphNode) {
+            const d = n;
+            if (!d3.event.active) sim.alphaTarget(0);
+            // d.fx = null;
+            // d.fy = null;
+        }
 
-    //     return d3.drag()
-    //         .on(`start`, dragstarted)
-    //         .on(`drag`, dragged)
-    //         .on(`end`, dragended);
-    // };
+        return d3.drag<Element, D3ForceDirectedGraphNode>()
+            .on(`start`, dragstarted)
+            .on(`drag`, dragged)
+            .on(`end`, dragended)
+            ;
+    };
+
+    function dblclick(n: D3ForceDirectedGraphNode) {
+        const d = n;
+        d.fx = null;
+        d.fy = null;
+    }
 
     const svg = d3.create(`svg`)
         .attr(`viewBox`, [-width / 2, -height / 2, width, height] as unknown as string);
@@ -90,8 +97,9 @@ export const createD3ForceDirectedGraph = ({
         .join(`circle`)
         .attr(`r`, 5)
         .attr(`fill`, d => d.style.color)
+        .on(`dblclick`, dblclick)
+        .call(drag(simulation))
         ;
-    // .call(drag(simulation));
 
     node.append(`title`)
         .text(d => d.title);
@@ -107,6 +115,7 @@ export const createD3ForceDirectedGraph = ({
             .attr(`cx`, d => d.x || 0)
             .attr(`cy`, d => d.y || 0);
     });
+
 
     // invalidation.then(() => simulation.stop());
 
