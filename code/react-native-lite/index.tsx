@@ -37,15 +37,34 @@ export const Text = (props: { style?: ThemeTextStyle | ThemeTextStyle[], childre
 export const TextInput = (props: {
     style?: ThemeTextStyle | ThemeTextStyle[];
     keyboardType: 'default' | 'numeric';
+    autoCompleteType: 'off' | 'username' | 'password' | 'email' | 'name' | 'tel' | 'street-address' | 'postal-code';
     secureTextEntry?: boolean;
     value: string;
     onChange: (value: string) => void;
+    onSubmitEditing?: () => void;
 }) => {
     const type = props.keyboardType === `numeric` ? `number`
         : (props.secureTextEntry ? `password`
             : `text`);
-    return (<input type={type} style={mergeStyles([textStyleDefaults, props.style])}
-        value={props.value} onChange={(e) => props.onChange(e.target.value)} />);
+
+    const name = props.autoCompleteType === `username` ? `username`
+        : (props.autoCompleteType === `password` ? `password`
+            : undefined);
+
+    const onKeyPress = props.onSubmitEditing && ((e: React.KeyboardEvent<HTMLInputElement>) => {
+        if (e.key === `Enter` && !e.shiftKey) {
+            e.preventDefault();
+            props.onSubmitEditing?.();
+        }
+    }) || undefined;
+
+    return (<input type={type}
+        name={name} id={name}
+        style={mergeStyles([textStyleDefaults, props.style])}
+        value={props.value}
+        onChange={(e) => props.onChange(e.target.value)}
+        onKeyPress={onKeyPress}
+    />);
 
 };
 export const TouchableOpacity = (props: { style?: ThemeViewStyle | ThemeViewStyle[], children?: ReactNode, onPress: () => void }) => {

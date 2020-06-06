@@ -19,7 +19,7 @@ export const LoginView = () => {
     const [password, setPassword] = useState(``);
 
     const login = () => {
-
+        console.log(`login`, { username, password });
     };
 
     return (
@@ -28,15 +28,15 @@ export const LoginView = () => {
                 <C.View_FormFields>
                     <C.View_FieldRow>
                         <C.Text_FieldLabel>Username</C.Text_FieldLabel>
-                        <C.Input_Text value={username} onChange={setUsername} />
+                        <C.Input_Username value={username} onChange={setUsername} onSubmit={login} />
                     </C.View_FieldRow>
                     <C.View_FieldRow>
                         <C.Text_FieldLabel>Password</C.Text_FieldLabel>
-                        <C.Input_Password value={password} onChange={setPassword} />
+                        <C.Input_Password value={password} onChange={setPassword} onSubmit={login} />
                     </C.View_FieldRow>
                 </C.View_FormFields>
                 <C.View_FormActionRow>
-                    <C.Button_FormAction onPress={login} >Login</C.Button_FormAction>
+                    <C.Button_FormAction onPress={login}>Login</C.Button_FormAction>
                 </C.View_FormActionRow>
             </C.View_Form>
         </>
