@@ -24,6 +24,11 @@ export type ThemeViewStyle = {
     height?: number;
 
     borderWidth?: number;
+    borderLeftWidth?: number;
+    borderRightWidth?: number;
+    borderTopWidth?: number;
+    borderBottomWidth?: number;
+
     borderRadius?: number;
     borderColor?: string;
     borderStyle?: 'solid';
@@ -99,9 +104,20 @@ export const basicThemeColors = {
     icon: `#3333ff`,
 };
 export type RectSize = { all?: number, left?: number, right?: number, top?: number, bottom?: number };
+const getBorderSizes = (size: RectSize) => {
+    return {
+        borderWidth: size.all,
+        borderLeftWidth: size.left ?? size.all,
+        borderRightWidth: size.right ?? size.all,
+        borderTopWidth: size.top ?? size.all,
+        borderBottomWidth: size.bottom ?? size.all,
+    };
+};
+
 export const basicThemeSizes = {
     textPadding: 4,
     borderWidth: { all: 1 } as RectSize,
+    borderWidth_minor: { all: 1 } as RectSize,
     borderRadius: 4,
     sectionGap: 16,
     elementGap: 8,
@@ -130,11 +146,15 @@ export type ThemeFont = typeof basicFont;
 const createTheme = (colors: ThemeColors, sizes: ThemeSizes, font: ThemeFont) => {
 
     const borderProps = {
-        borderWidth: sizes.borderWidth.all,
-        borderLeftWidth: sizes.borderWidth.left ?? sizes.borderWidth.all,
-        borderRightWidth: sizes.borderWidth.right ?? sizes.borderWidth.all,
-        borderTopWidth: sizes.borderWidth.top ?? sizes.borderWidth.all,
-        borderBottomWidth: sizes.borderWidth.bottom ?? sizes.borderWidth.all,
+        ...getBorderSizes(sizes.borderWidth),
+
+        borderRadius: sizes.borderRadius,
+        borderColor: colors.border,
+        borderStyle: `solid`,
+    } as const;
+
+    const borderProps_minor = {
+        ...getBorderSizes(sizes.borderWidth_minor),
 
         borderRadius: sizes.borderRadius,
         borderColor: colors.border,
@@ -159,6 +179,7 @@ const createTheme = (colors: ThemeColors, sizes: ThemeSizes, font: ThemeFont) =>
             ...borderProps,
             marginBottom: sizes.sectionGap,
             padding: sizes.elementGap,
+            // background: colors.background_field,
         },
         text_formTitle: sText = {
             padding: sizes.textPadding,
@@ -167,11 +188,20 @@ const createTheme = (colors: ThemeColors, sizes: ThemeSizes, font: ThemeFont) =>
             fontFamily: font.fontFamily,
             fontWeight: font.fontWeight_header,
         },
+        view_formFields: sView = {
+            // ...borderProps,
+            ...borderProps_minor,
+            // padding: sizes.elementGap,
+            marginBottom: sizes.rowGap,
+            background: colors.background_field,
+            // alignItems: `center`,
+        },
         view_fieldRow: sView = {
-            ...borderProps,
+            // ...borderProps,
+            // ...borderProps_minor,
             marginBottom: sizes.rowGap,
             padding: sizes.rowPadding,
-            background: colors.background_field,
+            // background: colors.background_field,
             display: `flex`,
             flexDirection: `row`,
             // alignItems: `center`,
@@ -181,6 +211,7 @@ const createTheme = (colors: ThemeColors, sizes: ThemeSizes, font: ThemeFont) =>
             color: colors.text,
             fontSize: sizes.fontSize,
             fontWeight: font.fontWeight_normal,
+            minWidth: 80,
             //  whiteSpace: `nowrap`,
         },
         input_fieldEntry: sText = {
@@ -283,6 +314,7 @@ export const purpleThemeColors: typeof basicThemeColors = {
 export const purpleSizes: typeof basicThemeSizes = {
     ...basicThemeSizes,
     borderWidth: { all: 1, bottom: 4 },
+    borderWidth_minor: { all: 0, bottom: 1 },
 };
 
 export const vscodeThemeColors = {

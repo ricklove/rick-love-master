@@ -1,5 +1,5 @@
-import React from 'react';
-import { theme } from 'themes/theme';
+import React, { useState } from 'react';
+import { C } from 'controls-react';
 
 // type PaymentMethodViewServerAccess = {
 //     getPaymentMethods: () => Promise<PaymentMethodClientInfo[]>;
@@ -14,9 +14,31 @@ export const Component = () => {
 };
 
 export const LoginView = () => {
+
+    const [username, setUsername] = useState(``);
+    const [password, setPassword] = useState(``);
+
+    const login = () => {
+
+    };
+
     return (
         <>
-
+            <C.View_Form>
+                <C.View_FormFields>
+                    <C.View_FieldRow>
+                        <C.Text_FieldLabel>Username</C.Text_FieldLabel>
+                        <C.Input_Text value={username} onChange={setUsername} />
+                    </C.View_FieldRow>
+                    <C.View_FieldRow>
+                        <C.Text_FieldLabel>Password</C.Text_FieldLabel>
+                        <C.Input_Password value={password} onChange={setPassword} />
+                    </C.View_FieldRow>
+                </C.View_FormFields>
+                <C.View_FormActionRow>
+                    <C.Button_FormAction onPress={login} >Login</C.Button_FormAction>
+                </C.View_FormActionRow>
+            </C.View_Form>
         </>
     );
 };

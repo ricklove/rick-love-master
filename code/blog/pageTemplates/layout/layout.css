@@ -161,6 +161,7 @@ blockquote {
 
 /* Make it movey */
 
+/*
 main * {
     transform: translate(0px, 0);
     transition: transform 1s;
@@ -170,3 +171,4 @@ main :hover {
     transform: translate(2px, 0);
     transition: transform 1s;
 }
+*/

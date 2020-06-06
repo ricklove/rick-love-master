@@ -37,12 +37,15 @@ export const Text = (props: { style?: ThemeTextStyle | ThemeTextStyle[], childre
 export const TextInput = (props: {
     style?: ThemeTextStyle | ThemeTextStyle[];
     keyboardType: 'default' | 'numeric';
+    secureTextEntry?: boolean;
     value: string;
     onChange: (value: string) => void;
 }) => {
     const type = props.keyboardType === `numeric` ? `number`
-        : `text`;
-    return (<input type={type} style={mergeStyles([textStyleDefaults, props.style])} value={props.value} onChange={(e) => props.onChange(e.target.value)} />);
+        : (props.secureTextEntry ? `password`
+            : `text`);
+    return (<input type={type} style={mergeStyles([textStyleDefaults, props.style])}
+        value={props.value} onChange={(e) => props.onChange(e.target.value)} />);
 
 };
 export const TouchableOpacity = (props: { style?: ThemeViewStyle | ThemeViewStyle[], children?: ReactNode, onPress: () => void }) => {
