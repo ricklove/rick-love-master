@@ -45,7 +45,7 @@ export const Input_Password = (props: { style?: ThemeTextStyle, value: string, o
                 onChange={(x) => props.onChange(x)}
                 onSubmitEditing={props.onSubmit}
             />
-            <TouchableOpacity onPress={() => setShowPassword(s => !s)}>
+            <TouchableOpacity onPress={() => setShowPassword(s => !s)} style={{ outlineColor: theme.icon.outlineColor }}>
                 <View style={{ paddingLeft: 4, paddingRight: 4 }}>
                     <Icon style={theme.icon} kind={showPassword ? IconKind.eye : IconKind.eyeSlash} />
                 </View>

@@ -14,6 +14,7 @@ const errorBoxStyle = {
     text_errorMessage: theme.text_errorMessage,
     icon: theme.icon,
     icon_errorMessage: theme.icon_errorMessage,
+    button: { outlineColor: theme.colors.outline },
 };
 
 export const ErrorBox = ({ error }: { error: ErrorState | null | undefined }) => {
@@ -35,7 +36,7 @@ const ErrorBox_Inner = (props: { error: ErrorState }) => {
     return (
         <View style={errorBoxStyle.view}>
             <View style={{ flexDirection: `row` }}>
-                <TouchableOpacity style={{ flex: 1, flexDirection: `row`, alignItems: `center` }} onPress={() => setExpanded(!expanded)}>
+                <TouchableOpacity style={{ flex: 1, flexDirection: `row`, alignItems: `center`, ...errorBoxStyle.button }} onPress={() => setExpanded(!expanded)}>
                     {canExpand && (expanded ? <Icon style={errorBoxStyle.icon} kind={IconKind.expanded} /> : <Icon style={errorBoxStyle.icon} kind={IconKind.collapsed} />)}
                     <View style={{ paddingRight: 8 }}>
                         <Icon style={errorBoxStyle.icon} kind={IconKind.error} />
@@ -45,12 +46,12 @@ const ErrorBox_Inner = (props: { error: ErrorState }) => {
                     </View>
                 </TouchableOpacity>
                 {DEBUG && (
-                    <TouchableOpacity style={{ flexDirection: `row`, alignItems: `center`, paddingLeft: 8 }} onPress={() => Clipboard.setString(jsonStringify_safe({ errorMessage, errorDetails, errorObjText }, true))}>
+                    <TouchableOpacity style={{ flexDirection: `row`, alignItems: `center`, paddingLeft: 8, ...errorBoxStyle.button }} onPress={() => Clipboard.setString(jsonStringify_safe({ errorMessage, errorDetails, errorObjText }, true))}>
                         <Icon style={errorBoxStyle.icon} kind={IconKind.copy} />
                     </TouchableOpacity>
                 )}
                 {props.error.retryCallback && (
-                    <TouchableOpacity style={{ flexDirection: `row`, alignItems: `center`, paddingLeft: 8 }} onPress={props.error.retryCallback}>
+                    <TouchableOpacity style={{ flexDirection: `row`, alignItems: `center`, paddingLeft: 8, ...errorBoxStyle.button }} onPress={props.error.retryCallback}>
                         <Icon style={errorBoxStyle.icon} kind={IconKind.retry} />
                     </TouchableOpacity>
                 )}

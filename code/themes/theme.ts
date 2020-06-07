@@ -33,22 +33,35 @@ export type ThemeViewStyle = {
     borderRadius?: number;
     borderColor?: string;
     borderStyle?: 'solid';
+    outlineColor?: string;
 };
 export type ThemeTextStyle = {
+    margin?: number;
+    marginLeft?: number;
+    marginRight?: number;
+    marginTop?: number;
+    marginBottom?: number;
     padding?: number;
+    paddingRight?: number;
+    paddingLeft?: number;
+    paddingTop?: number;
+    paddingBottom?: number;
+
     color?: string;
 
     fontFamily?: string;
     fontSize?: number;
     fontWeight?: 'normal' | 'bold';
+    lineHeight?: string;
     //  whiteSpace?: 'normal' | 'nowrap' | 'pre';
     minWidth?: number;
 
-    outline?: string;
+    outlineColor?: string;
 };
 export type ThemeIconStyle = {
     color?: string;
     size?: number;
+    outlineColor?: string;
 };
 
 export const extractViewStyle = (style: ThemeViewStyle & ThemeTextStyle): ThemeViewStyle => {
@@ -80,6 +93,8 @@ export const extractViewStyle = (style: ThemeViewStyle & ThemeTextStyle): ThemeV
         borderRadius: style.borderRadius,
         borderColor: style.borderColor,
         borderStyle: style.borderStyle,
+
+        outlineColor: style.outlineColor,
     };
 };
 export const extractTextStyle = (style: ThemeViewStyle & ThemeTextStyle): ThemeTextStyle => {
@@ -90,9 +105,10 @@ export const extractTextStyle = (style: ThemeViewStyle & ThemeTextStyle): ThemeT
         fontFamily: style.fontFamily,
         fontSize: style.fontSize,
         fontWeight: style.fontWeight,
+        lineHeight: style.lineHeight,
         // whiteSpace: style.whiteSpace,
 
-        outline: style.outline,
+        outlineColor: style.outlineColor,
     };
 };
 
@@ -105,6 +121,7 @@ export const basicThemeColors = {
     border: `#cccccc`,
     border_minor: `#cccccc`,
     border_input: `#cccccc`,
+    outline: `#888888`,
     background: `#ffffff`,
     background_field: `#dddddd`,
     background_button: `#eeeeee`,
@@ -139,6 +156,8 @@ export const basicThemeSizes = {
     fontSize_button: 14,
     fontSize_header: 16,
 
+    lineHeight: `18px`,
+
     icon: 14,
 };
 
@@ -161,6 +180,7 @@ const createTheme = (colors: ThemeColors, sizes: ThemeSizes, font: ThemeFont) =>
         borderRadius: sizes.borderRadius,
         borderColor: colors.border,
         borderStyle: `solid`,
+        outlineColor: colors.outline,
     } as const;
 
     const borderProps_minor = {
@@ -169,6 +189,7 @@ const createTheme = (colors: ThemeColors, sizes: ThemeSizes, font: ThemeFont) =>
         borderRadius: sizes.borderRadius,
         borderColor: colors.border_minor,
         borderStyle: `solid`,
+        outlineColor: colors.outline,
     } as const;
 
     const borderProps_input = {
@@ -177,7 +198,7 @@ const createTheme = (colors: ThemeColors, sizes: ThemeSizes, font: ThemeFont) =>
         borderRadius: sizes.borderRadius,
         borderColor: colors.border_input,
         borderStyle: `solid`,
-        outline: `none`,
+        outlineColor: colors.outline,
     } as const;
 
     let sView: ThemeViewStyle = {};
@@ -218,8 +239,9 @@ const createTheme = (colors: ThemeColors, sizes: ThemeSizes, font: ThemeFont) =>
         view_fieldRow: sView = {
             // ...borderProps,
             // ...borderProps_minor,
-            marginBottom: sizes.rowGap,
-            padding: sizes.rowPadding,
+            // marginBottom: sizes.rowGap,
+            // padding: sizes.rowPadding,
+            marginLeft: sizes.rowPadding,
             // background: colors.background_field,
             display: `flex`,
             flexDirection: `row`,
@@ -237,21 +259,24 @@ const createTheme = (colors: ThemeColors, sizes: ThemeSizes, font: ThemeFont) =>
         },
         input_fieldEntry: sText = {
             ...borderProps_input,
+            marginBottom: sizes.rowGap,
             padding: sizes.textPadding,
             color: colors.text,
             fontSize: sizes.fontSize_input,
             fontWeight: font.fontWeight_normal,
+            lineHeight: sizes.lineHeight,
             minWidth: 80,
         },
         button_fieldInline: sTextView = {
             ...borderProps,
             // marginLeft: sizes.elementGap,
-            margin: sizes.textPadding,
+            marginBottom: sizes.rowGap,
             padding: sizes.textPadding,
             background: colors.background_button,
             color: colors.text_button,
             fontSize: sizes.fontSize_button,
             fontWeight: font.fontWeight_button,
+            lineHeight: sizes.lineHeight,
             display: `flex`,
         },
         button_fieldInline_alt: sTextView = {
@@ -274,6 +299,7 @@ const createTheme = (colors: ThemeColors, sizes: ThemeSizes, font: ThemeFont) =>
             color: colors.text_button,
             fontSize: sizes.fontSize_button,
             fontWeight: font.fontWeight_button,
+            lineHeight: sizes.lineHeight,
         },
         button_formAction_alt: sTextView = {
             ...sTextView,
@@ -306,10 +332,12 @@ const createTheme = (colors: ThemeColors, sizes: ThemeSizes, font: ThemeFont) =>
         icon: sIcon = {
             size: sizes.icon,
             color: colors.icon,
+            outlineColor: colors.outline,
         },
         icon_errorMessage: sIcon = {
             size: sizes.icon,
             color: colors.text_errorMessage,
+            outlineColor: colors.outline,
         },
     } as const;
 
