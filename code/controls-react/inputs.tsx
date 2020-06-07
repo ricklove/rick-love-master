@@ -35,7 +35,7 @@ export const Input_Password = (props: { style?: ThemeTextStyle, value: string, o
     const [showPassword, setShowPassword] = useState(false);
 
     return (
-        <View style={{ flexDirection: `row`, alignItems: `center`, flexShrink: 1 }}>
+        <View style={{ flexDirection: `row`, alignItems: `center` }}>
             <TextInput style={props.style ?? theme.input_fieldEntry}
                 keyboardType='default'
                 autoCompleteType='password'

@@ -43,6 +43,8 @@ export type ThemeTextStyle = {
     fontWeight?: 'normal' | 'bold';
     //  whiteSpace?: 'normal' | 'nowrap' | 'pre';
     minWidth?: number;
+
+    outline?: string;
 };
 export type ThemeIconStyle = {
     color?: string;
@@ -89,15 +91,20 @@ export const extractTextStyle = (style: ThemeViewStyle & ThemeTextStyle): ThemeT
         fontSize: style.fontSize,
         fontWeight: style.fontWeight,
         // whiteSpace: style.whiteSpace,
+
+        outline: style.outline,
     };
 };
 
 export const basicThemeColors = {
     text: `#333333`,
+    text_header: `#333333`,
     text_button: `#333333`,
     text_error: `#333333`,
     text_errorMessage: `#ff3333`,
     border: `#cccccc`,
+    border_minor: `#cccccc`,
+    border_input: `#cccccc`,
     background: `#ffffff`,
     background_field: `#dddddd`,
     background_button: `#eeeeee`,
@@ -120,6 +127,7 @@ export const basicThemeSizes = {
     textPadding: 4,
     borderWidth: { all: 1 } as RectSize,
     borderWidth_minor: { all: 1 } as RectSize,
+    borderWidth_input: { all: 1 } as RectSize,
     borderRadius: 4,
     sectionGap: 16,
     elementGap: 8,
@@ -159,8 +167,17 @@ const createTheme = (colors: ThemeColors, sizes: ThemeSizes, font: ThemeFont) =>
         ...getBorderSizes(sizes.borderWidth_minor),
 
         borderRadius: sizes.borderRadius,
-        borderColor: colors.border,
+        borderColor: colors.border_minor,
         borderStyle: `solid`,
+    } as const;
+
+    const borderProps_input = {
+        ...getBorderSizes(sizes.borderWidth_input),
+
+        borderRadius: sizes.borderRadius,
+        borderColor: colors.border_input,
+        borderStyle: `solid`,
+        outline: `none`,
     } as const;
 
     let sView: ThemeViewStyle = {};
@@ -185,7 +202,7 @@ const createTheme = (colors: ThemeColors, sizes: ThemeSizes, font: ThemeFont) =>
         },
         text_formTitle: sText = {
             padding: sizes.textPadding,
-            color: colors.text,
+            color: colors.text_header,
             fontSize: sizes.fontSize_header,
             fontFamily: font.fontFamily,
             fontWeight: font.fontWeight_header,
@@ -219,6 +236,7 @@ const createTheme = (colors: ThemeColors, sizes: ThemeSizes, font: ThemeFont) =>
             //  whiteSpace: `nowrap`,
         },
         input_fieldEntry: sText = {
+            ...borderProps_input,
             padding: sizes.textPadding,
             color: colors.text,
             fontSize: sizes.fontSize_input,
@@ -236,11 +254,17 @@ const createTheme = (colors: ThemeColors, sizes: ThemeSizes, font: ThemeFont) =>
             fontWeight: font.fontWeight_button,
             display: `flex`,
         },
+        button_fieldInline_alt: sTextView = {
+            ...sTextView,
+            background: colors.text_button,
+            color: colors.background_button,
+            borderColor: colors.background_button,
+        },
         view_formActionRow: sView = {
             display: `flex`,
             flexDirection: `row`,
             justifyContent: `flex-end`,
-            padding: sizes.textPadding,
+            marginBottom: sizes.elementGap,
         },
         button_formAction: sTextView = {
             ...borderProps,
@@ -250,6 +274,12 @@ const createTheme = (colors: ThemeColors, sizes: ThemeSizes, font: ThemeFont) =>
             color: colors.text_button,
             fontSize: sizes.fontSize_button,
             fontWeight: font.fontWeight_button,
+        },
+        button_formAction_alt: sTextView = {
+            ...sTextView,
+            background: colors.text_button,
+            color: colors.background_button,
+            borderColor: colors.background_button,
         },
 
         view_error: sView = {
@@ -317,9 +347,13 @@ export const purpleColors = {
 export const purpleThemeColors: typeof basicThemeColors = {
     ...basicThemeColors,
     text: `#2b2b2b`,
+    text_header: `#863d8f`,
     text_button: `#ffffff`,
     // text_error: `#ffffff`,
     border: `#863d8f`,
+    border_minor: `#863d8f`,
+    // border_minor: `#aaaaaa`,
+    border_input: `#aaaaaa`,
     background: `#ffffff`,
     background_field: `#dddddd`,
     background_button: `#863d8f`,

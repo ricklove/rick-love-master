@@ -117,10 +117,11 @@ const LoginForm = (props: { serverAccess: AuthServerAccess, onGotoCreateAccount:
     return (
         <>
             <C.View_Form>
+                <C.View_FormActionRow>
+                    <C.Button_FormAction styleAlt onPress={props.onGotoCreateAccount}>Create Account</C.Button_FormAction>
+                </C.View_FormActionRow>
                 <C.View_FormFields>
-                    <C.View_FormActionRow>
-                        <C.Button_FormAction onPress={props.onGotoCreateAccount}>Create Account</C.Button_FormAction>
-                    </C.View_FormActionRow>
+                    <C.Text_FormTitle>Login</C.Text_FormTitle>
                     <C.View_FieldRow>
                         {/* <C.Text_FieldLabel>Username</C.Text_FieldLabel> */}
                         <C.Input_Username placeholder='Username' value={username} onChange={setUsername} onSubmit={login} />
@@ -128,7 +129,7 @@ const LoginForm = (props: { serverAccess: AuthServerAccess, onGotoCreateAccount:
                     <C.View_FieldRow>
                         {/* <C.Text_FieldLabel>Password</C.Text_FieldLabel> */}
                         <C.Input_Password placeholder='Password' value={password} onChange={setPassword} onSubmit={login} />
-                        <C.Button_FieldInline onPress={props.onGotoForgotPassword}>Forgot Password</C.Button_FieldInline>
+                        <C.Button_FieldInline styleAlt onPress={props.onGotoForgotPassword}>Forgot Password</C.Button_FieldInline>
                     </C.View_FieldRow>
                     {/* <C.View_FormActionRow>
                         <C.Button_FormAction onPress={props.onGotoForgotPassword}>Forgot Password</C.Button_FormAction>
@@ -166,10 +167,11 @@ const CreateAccountForm = (props: { serverAccess: AuthServerAccess, onGotoLogin:
     return (
         <>
             <C.View_Form>
+                <C.View_FormActionRow>
+                    <C.Button_FormAction styleAlt onPress={props.onGotoLogin}>Login</C.Button_FormAction>
+                </C.View_FormActionRow>
                 <C.View_FormFields>
-                    <C.View_FormActionRow>
-                        <C.Button_FormAction onPress={props.onGotoLogin}>Login</C.Button_FormAction>
-                    </C.View_FormActionRow>
+                    <C.Text_FormTitle>Create Account</C.Text_FormTitle>
                     <C.View_FieldRow>
                         {/* <C.Text_FieldLabel>Username</C.Text_FieldLabel> */}
                         <C.Input_Username placeholder='Username' value={username} onChange={setUsername} onSubmit={createAccount} />
