@@ -39,6 +39,7 @@ export const TextInput = (props: {
     keyboardType: 'default' | 'numeric';
     autoCompleteType: 'off' | 'username' | 'password' | 'email' | 'name' | 'tel' | 'street-address' | 'postal-code';
     secureTextEntry?: boolean;
+    placeholder?: string;
     value: string;
     onChange: (value: string) => void;
     onSubmitEditing?: () => void;
@@ -61,6 +62,7 @@ export const TextInput = (props: {
     return (<input type={type}
         name={name} id={name}
         style={mergeStyles([textStyleDefaults, props.style])}
+        placeholder={props.placeholder}
         value={props.value}
         onChange={(e) => props.onChange(e.target.value)}
         onKeyPress={onKeyPress}

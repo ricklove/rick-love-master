@@ -11,6 +11,8 @@ export enum IconKind {
     dashboard,
     add,
     remove,
+    eye,
+    eyeSlash,
 
     // navigation icons
     account,

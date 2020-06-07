@@ -11,7 +11,9 @@ const DEBUG = true;
 const errorBoxStyle = {
     view: theme.view_error,
     text: theme.text_error,
+    text_errorMessage: theme.text_errorMessage,
     icon: theme.icon,
+    icon_errorMessage: theme.icon_errorMessage,
 };
 
 export const ErrorBox = ({ error }: { error: ErrorState | null | undefined }) => {
@@ -32,7 +34,7 @@ const ErrorBox_Inner = (props: { error: ErrorState }) => {
 
     return (
         <View style={errorBoxStyle.view}>
-            <View style={{ flexDirection: `row` as const }}>
+            <View style={{ flexDirection: `row` }}>
                 <TouchableOpacity style={{ flex: 1, flexDirection: `row`, alignItems: `center` }} onPress={() => setExpanded(!expanded)}>
                     {canExpand && (expanded ? <Icon style={errorBoxStyle.icon} kind={IconKind.expanded} /> : <Icon style={errorBoxStyle.icon} kind={IconKind.collapsed} />)}
                     <View style={{ paddingRight: 8 }}>
@@ -55,6 +57,20 @@ const ErrorBox_Inner = (props: { error: ErrorState }) => {
             </View>
             {canExpand && expanded && !!errorDetails && (<Text style={{ ...errorBoxStyle.text }}>{errorDetails}</Text>)}
             {canExpand && expanded && !!errorObjText && (<Text style={{ ...errorBoxStyle.text }}>{errorObjText}</Text>)}
+        </View>
+    );
+};
+
+
+export const ErrorMessage = (props: { children: string }) => {
+    return (
+        <View style={{ flexDirection: `row`, alignItems: `center` }}>
+            <View style={{ paddingLeft: 8, paddingRight: 8 }}>
+                <Icon style={errorBoxStyle.icon_errorMessage} kind={IconKind.error} />
+            </View>
+            <View style={{ overflow: `hidden` }}>
+                <Text style={errorBoxStyle.text_errorMessage} numberOfLines={1}>{props.children}</Text>
+            </View>
         </View>
     );
 };

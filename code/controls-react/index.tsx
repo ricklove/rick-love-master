@@ -2,7 +2,7 @@ import React, { } from 'react';
 import { View, Text } from 'react-native-lite';
 import { theme } from 'themes/theme';
 import { Loading, LoadingInline } from './loading';
-import { ErrorBox } from './error-box';
+import { ErrorBox, ErrorMessage } from './error-box';
 import { Input_Text, Input_Username, Input_Password, Input_Currency } from './inputs';
 import { Button } from './button';
 
@@ -12,6 +12,7 @@ export const C = {
     Loading,
     LoadingInline,
     ErrorBox,
+    ErrorMessage,
     View_Panel: (props: PropsOf<typeof View>) => (<View style={theme.view_panel} {...props} />),
     View_Form: (props: PropsOf<typeof View>) => (<View style={theme.view_form} {...props} />),
     View_FormFields: (props: PropsOf<typeof View>) => (<View style={theme.view_formFields} {...props} />),

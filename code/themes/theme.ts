@@ -2,6 +2,7 @@
 export type ThemeViewStyle = {
     display?: 'flex';
     flexDirection?: 'row' | 'column';
+    flexWrap?: 'wrap' | 'nowrap';
     flex?: number;
     justifyContent?: 'flex-start' | 'center' | 'flex-end';
     alignItems?: 'center';
@@ -60,15 +61,15 @@ export const extractViewStyle = (style: ThemeViewStyle & ThemeTextStyle): ThemeV
         background: style.background,
 
         margin: style.margin,
-        marginLeft: style.marginLeft,
-        marginRight: style.marginRight,
-        marginTop: style.marginTop,
-        marginBottom: style.marginBottom,
+        marginLeft: style.margin ?? style.marginLeft,
+        marginRight: style.margin ?? style.marginRight,
+        marginTop: style.margin ?? style.marginTop,
+        marginBottom: style.margin ?? style.marginBottom,
         padding: style.padding,
-        paddingRight: style.paddingRight,
-        paddingLeft: style.paddingLeft,
-        paddingTop: style.paddingTop,
-        paddingBottom: style.paddingBottom,
+        paddingRight: style.padding ?? style.paddingRight,
+        paddingLeft: style.padding ?? style.paddingLeft,
+        paddingTop: style.padding ?? style.paddingTop,
+        paddingBottom: style.padding ?? style.paddingBottom,
 
         width: style.width,
         height: style.height,
@@ -81,7 +82,7 @@ export const extractViewStyle = (style: ThemeViewStyle & ThemeTextStyle): ThemeV
 };
 export const extractTextStyle = (style: ThemeViewStyle & ThemeTextStyle): ThemeTextStyle => {
     return {
-        padding: style.padding,
+        // padding: style.padding,
         color: style.color,
 
         fontFamily: style.fontFamily,
@@ -95,6 +96,7 @@ export const basicThemeColors = {
     text: `#333333`,
     text_button: `#333333`,
     text_error: `#333333`,
+    text_errorMessage: `#ff3333`,
     border: `#cccccc`,
     background: `#ffffff`,
     background_field: `#dddddd`,
@@ -204,7 +206,9 @@ const createTheme = (colors: ThemeColors, sizes: ThemeSizes, font: ThemeFont) =>
             // background: colors.background_field,
             display: `flex`,
             flexDirection: `row`,
-            // alignItems: `center`,
+
+            alignItems: `center`,
+            flexWrap: `wrap`,
         },
         text_fieldLabel: sText = {
             padding: sizes.textPadding,
@@ -223,7 +227,8 @@ const createTheme = (colors: ThemeColors, sizes: ThemeSizes, font: ThemeFont) =>
         },
         button_fieldInline: sTextView = {
             ...borderProps,
-            marginLeft: sizes.elementGap,
+            // marginLeft: sizes.elementGap,
+            margin: sizes.textPadding,
             padding: sizes.textPadding,
             background: colors.background_button,
             color: colors.text_button,
@@ -235,6 +240,7 @@ const createTheme = (colors: ThemeColors, sizes: ThemeSizes, font: ThemeFont) =>
             display: `flex`,
             flexDirection: `row`,
             justifyContent: `flex-end`,
+            padding: sizes.textPadding,
         },
         button_formAction: sTextView = {
             ...borderProps,
@@ -259,10 +265,21 @@ const createTheme = (colors: ThemeColors, sizes: ThemeSizes, font: ThemeFont) =>
             fontFamily: font.fontFamily,
             fontWeight: font.fontWeight_button,
         },
+        text_errorMessage: sText = {
+            padding: sizes.textPadding,
+            color: colors.text_errorMessage,
+            fontSize: sizes.fontSize,
+            fontFamily: font.fontFamily,
+            fontWeight: font.fontWeight_button,
+        },
 
         icon: sIcon = {
             size: sizes.icon,
             color: colors.icon,
+        },
+        icon_errorMessage: sIcon = {
+            size: sizes.icon,
+            color: colors.text_errorMessage,
         },
     } as const;
 
