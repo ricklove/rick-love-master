@@ -37,9 +37,11 @@ export const Input_Password = (props: { style?: ThemeTextStyle, value: string, o
 
     const [showPassword, setShowPassword] = useState(false);
 
+    const inputStyle = props.style ?? theme.input_fieldEntry;
+    const { marginRight } = inputStyle;
     return (
         <View style={{ flexDirection: `row`, alignItems: `center` }}>
-            <TextInput style={props.style ?? theme.input_fieldEntry}
+            <TextInput style={{ ...inputStyle, marginRight: 0 }}
                 keyboardType='default'
                 autoCompleteType='password'
                 secureTextEntry={!showPassword}
@@ -51,7 +53,7 @@ export const Input_Password = (props: { style?: ThemeTextStyle, value: string, o
                 onBlur={props.onBlur}
             />
             <TouchableOpacity onPress={() => setShowPassword(s => !s)} style={{ outlineColor: theme.icon.outlineColor }}>
-                <View style={{ paddingLeft: 4, paddingRight: 4 }}>
+                <View style={{ paddingLeft: 4, paddingRight: 4, marginRight }}>
                     <Icon style={theme.icon} kind={showPassword ? IconKind.eye : IconKind.eyeSlash} />
                 </View>
             </TouchableOpacity>

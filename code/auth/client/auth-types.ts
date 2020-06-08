@@ -25,13 +25,23 @@ export type AuthServerAccess = {
     // Note: Use exponential backoff for multiple requests
 
     // Phone
-    requestPhoneVerification: (phone: PhoneNumber) => Promise<{ result: AuthenticationStatus }>;
+
+    /** Register the phone with this account and send verification code
+     * 
+     * Error if phone is already registered with another account
+     */
+    registerPhoneAndSendVerification: (phone: PhoneNumber) => Promise<void>;
     verifyPhone: (phone: PhoneNumber, code: string) => Promise<{ result: AuthenticationStatus }>;
     requestPhoneLoginCode: (phone: PhoneNumber) => Promise<void>;
     loginWithPhoneCode: (phone: PhoneNumber, code: string) => Promise<{ result: AuthenticationStatus }>;
 
     // Email
-    requestEmailVerification: (email: string) => Promise<{ result: AuthenticationStatus }>;
+
+    /** Register the email with this account and send verification code
+    * 
+    * Error if email is already registered with another account
+    */
+    registerEmailAndSendVerification: (email: string) => Promise<void>;
     verifyEmail: (email: string) => Promise<{ result: AuthenticationStatus }>;
     requestEmailLoginCode: (email: string) => Promise<void>;
     loginWithEmailCode: (email: string, code: string) => Promise<{ result: AuthenticationStatus }>;

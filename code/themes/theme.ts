@@ -260,6 +260,7 @@ const createTheme = (colors: ThemeColors, sizes: ThemeSizes, font: ThemeFont) =>
         input_fieldEntry: sText = {
             ...borderProps_input,
             marginBottom: sizes.rowGap,
+            marginRight: sizes.rowGap,
             padding: sizes.textPadding,
             color: colors.text,
             fontSize: sizes.fontSize_input,
@@ -271,6 +272,7 @@ const createTheme = (colors: ThemeColors, sizes: ThemeSizes, font: ThemeFont) =>
             ...borderProps,
             // marginLeft: sizes.elementGap,
             marginBottom: sizes.rowGap,
+            marginRight: sizes.rowGap,
             padding: sizes.textPadding,
             background: colors.background_button,
             color: colors.text_button,

@@ -6,10 +6,11 @@
 - [x] Create Account
 - [x] Logout
 - [x] Forgot Password (Phone)
-- [ ] Reset Password
-- [ ] Register Phone
+- [x] Reset Password
+- [x] Register Phone
 - [ ] Forgot Password (Email)
 - [ ] Register Email
+- [ ] Change Username
 
 ## Server
 

@@ -36,6 +36,15 @@ const authClient = createAuthenticationClient({
             mockServerState.status = { isAuthenticated: true, requiresPasswordReset: true, username: `ricklove`, phone, email: `test@test.com` };
             return { result: mockServerState.status };
         },
+        registerPhoneAndSendVerification: async (phone) => {
+
+        },
+        verifyPhone: async (phone, code) => {
+            mockServerState.status = { ...mockServerState.status, phone, requiresVerifiedPhone: false };
+            return { result: mockServerState.status };
+        },
+
+
     },
 });
 export const AuthComponent = () => {
