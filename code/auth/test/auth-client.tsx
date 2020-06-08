@@ -5,6 +5,7 @@ import { createAuthenticationClient } from '../client/login';
 const authClient = createAuthenticationClient({
     serverAccess: {
         refreshStatus: async () => ({ result: { isAuthenticated: false } }),
+        requestPhoneLoginCode: async () => { },
     },
 });
 export const AuthComponent = () => {

@@ -4,12 +4,13 @@ import { theme, ThemeTextStyle } from 'themes/theme';
 import { Icon } from './icon';
 import { IconKind } from './icon-kind';
 
-export const Input_Text = (props: { style?: ThemeTextStyle, value: string, onChange: (value: string) => void, onSubmit?: () => void, placeholder?: string }) => {
+export const Input_Text = (props: { style?: ThemeTextStyle, value: string, onChange: (value: string) => void, onSubmit?: () => void, placeholder?: string, editable?: boolean }) => {
     return (
         <TextInput style={props.style ?? theme.input_fieldEntry}
             keyboardType='default'
             autoCompleteType='off'
             placeholder={props.placeholder}
+            editable={props.editable}
             value={`${props.value}`}
             onChange={(x) => props.onChange(x)}
             onSubmitEditing={props.onSubmit}
@@ -17,12 +18,13 @@ export const Input_Text = (props: { style?: ThemeTextStyle, value: string, onCha
     );
 };
 
-export const Input_Username = (props: { style?: ThemeTextStyle, value: string, onChange: (value: string) => void, onSubmit?: () => void, placeholder?: string }) => {
+export const Input_Username = (props: { style?: ThemeTextStyle, value: string, onChange: (value: string) => void, onSubmit?: () => void, placeholder?: string, editable?: boolean }) => {
     return (
         <TextInput style={props.style ?? theme.input_fieldEntry}
             keyboardType='default'
             autoCompleteType='username'
             placeholder={props.placeholder}
+            editable={props.editable}
             value={`${props.value}`}
             onChange={(x) => props.onChange(x)}
             onSubmitEditing={props.onSubmit}
@@ -30,7 +32,7 @@ export const Input_Username = (props: { style?: ThemeTextStyle, value: string, o
     );
 };
 
-export const Input_Password = (props: { style?: ThemeTextStyle, value: string, onChange: (value: string) => void, onSubmit?: () => void, placeholder?: string }) => {
+export const Input_Password = (props: { style?: ThemeTextStyle, value: string, onChange: (value: string) => void, onSubmit?: () => void, placeholder?: string, editable?: boolean }) => {
 
     const [showPassword, setShowPassword] = useState(false);
 
@@ -41,6 +43,7 @@ export const Input_Password = (props: { style?: ThemeTextStyle, value: string, o
                 autoCompleteType='password'
                 secureTextEntry={!showPassword}
                 placeholder={props.placeholder}
+                editable={props.editable}
                 value={`${props.value}`}
                 onChange={(x) => props.onChange(x)}
                 onSubmitEditing={props.onSubmit}
@@ -55,12 +58,13 @@ export const Input_Password = (props: { style?: ThemeTextStyle, value: string, o
 };
 
 export type Currency = number;// & { __type: 'currency' };
-export const Input_Currency = (props: { style?: ThemeTextStyle, value: Currency, onChange: (value: Currency) => void, onSubmit?: () => void, placeholder?: string }) => {
+export const Input_Currency = (props: { style?: ThemeTextStyle, value: Currency, onChange: (value: Currency) => void, onSubmit?: () => void, placeholder?: string, editable?: boolean }) => {
     return (
         <TextInput style={props.style ?? theme.input_fieldEntry}
             keyboardType='numeric'
             autoCompleteType='off'
             placeholder={props.placeholder}
+            editable={props.editable}
             value={`${props.value}`}
             onChange={(x) => props.onChange(Number.parseFloat(x) || 0)}
             onSubmitEditing={props.onSubmit}

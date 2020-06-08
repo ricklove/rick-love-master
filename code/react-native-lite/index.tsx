@@ -40,6 +40,7 @@ export const TextInput = (props: {
     autoCompleteType: 'off' | 'username' | 'password' | 'email' | 'name' | 'tel' | 'street-address' | 'postal-code';
     secureTextEntry?: boolean;
     placeholder?: string;
+    editable?: boolean;
     value: string;
     onChange: (value: string) => void;
     onSubmitEditing?: () => void;
@@ -63,6 +64,7 @@ export const TextInput = (props: {
         name={name} id={name}
         style={mergeStyles([textStyleDefaults, props.style])}
         placeholder={props.placeholder}
+        disabled={!(props.editable ?? true)}
         value={props.value}
         onChange={(e) => props.onChange(e.target.value)}
         onKeyPress={onKeyPress}
