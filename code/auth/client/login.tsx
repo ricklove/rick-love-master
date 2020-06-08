@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { C } from 'controls-react';
 import { useAutoLoadingError } from 'utils-react/hooks';
-import { toStandardPhoneNumber, PhoneNumber, formatPhoneNumber_UsaCanada } from 'utils/phone-number';
+import { toStandardPhoneNumber, PhoneNumber } from 'utils/phone-number';
 import { AuthenticationStatus, AuthServerAccess } from './auth-types';
 
 
@@ -93,19 +93,19 @@ const AuthenticationView = ({ state, serverAccess, onAuthChange }: { state: Auth
 
 const UnauthenticatedView = ({ serverAccess, onAuthChange }: { serverAccess: AuthServerAccess, onAuthChange: (status: AuthenticationStatus) => void }) => {
 
-    const [tab, setTab] = useState(`login` as 'login' | 'create' | 'forgot');
-    if (tab === `create`) {
+    const [tab, setTab] = useState(`login` as 'login' | 'create-account' | 'forgot-password');
+    if (tab === `create-account`) {
         return (
-            <CreateAccountForm serverAccess={serverAccess} onGotoLogin={() => setTab(`login`)} onAuthChange={onAuthChange} />
+            <CreateAccountForm serverAccess={serverAccess} onAuthChange={onAuthChange} onNavigate={(view) => setTab(view)} />
         );
     }
-    if (tab === `forgot`) {
+    if (tab === `forgot-password`) {
         return (
-            <ForgotPasswordForm serverAccess={serverAccess} onGotoLogin={() => setTab(`login`)} onAuthChange={onAuthChange} />
+            <ForgotPasswordForm serverAccess={serverAccess} onAuthChange={onAuthChange} onNavigate={(view) => setTab(view)} />
         );
     }
     return (
-        <LoginForm serverAccess={serverAccess} onGotoCreateAccount={() => setTab(`create`)} onGotoForgotPassword={() => setTab(`forgot`)} onAuthChange={onAuthChange} />
+        <LoginForm serverAccess={serverAccess} onAuthChange={onAuthChange} onNavigate={(view) => setTab(view)} />
     );
 };
 
@@ -123,11 +123,11 @@ const AuthenticatedView = ({ serverAccess, status, onAuthChange }: { serverAcces
         );
     }
     return (
-        <AccountInfoForm serverAccess={serverAccess} status={status} onAuthChange={onAuthChange} onGotoChangeUsername={() => setTab(`change-username`)} onGotoChangePassword={() => setTab(`change-password`)} onGotoChangePhone={() => setTab(`change-phone`)} onGotoChangeEmail={() => setTab(`change-email`)} />
+        <AccountInfoForm serverAccess={serverAccess} status={status} onAuthChange={onAuthChange} onNavigate={(view) => setTab(view)} />
     );
 };
 
-const LoginForm = (props: { serverAccess: AuthServerAccess, onGotoCreateAccount: () => void, onGotoForgotPassword: () => void, onAuthChange: (status: AuthenticationStatus) => void }) => {
+const LoginForm = (props: { serverAccess: AuthServerAccess, onAuthChange: (status: AuthenticationStatus) => void, onNavigate: (view: 'create-account' | 'forgot-password') => void }) => {
 
     const [username, setUsername] = useState(``);
     const [password, setPassword] = useState(``);
@@ -155,24 +155,19 @@ const LoginForm = (props: { serverAccess: AuthServerAccess, onGotoCreateAccount:
         <>
             <C.View_Form>
                 <C.View_FormActionRow>
-                    <C.Button_FormAction styleAlt onPress={props.onGotoCreateAccount}>Create Account</C.Button_FormAction>
+                    <C.Button_FormAction styleAlt onPress={() => props.onNavigate(`create-account`)}>Create Account</C.Button_FormAction>
                 </C.View_FormActionRow>
                 <C.View_FormFields>
                     <C.Text_FormTitle>Login</C.Text_FormTitle>
                     <C.Loading loading={loading} />
                     <C.ErrorBox error={error} />
                     <C.View_FieldRow>
-                        {/* <C.Text_FieldLabel>Username</C.Text_FieldLabel> */}
                         <C.Input_Username placeholder='Username' value={username} onChange={setUsername} onSubmit={login} />
                     </C.View_FieldRow>
                     <C.View_FieldRow>
-                        {/* <C.Text_FieldLabel>Password</C.Text_FieldLabel> */}
                         <C.Input_Password placeholder='Password' value={password} onChange={setPassword} onSubmit={login} />
-                        <C.Button_FieldInline styleAlt onPress={props.onGotoForgotPassword}>Forgot Password</C.Button_FieldInline>
+                        <C.Button_FieldInline styleAlt onPress={() => props.onNavigate(`forgot-password`)}>Forgot Password</C.Button_FieldInline>
                     </C.View_FieldRow>
-                    {/* <C.View_FormActionRow>
-                        <C.Button_FormAction onPress={props.onGotoForgotPassword}>Forgot Password</C.Button_FormAction>
-                    </C.View_FormActionRow> */}
                     {hasFailed && (<C.ErrorMessage>Incorrect username or password</C.ErrorMessage>)}
                 </C.View_FormFields>
                 <C.View_FormActionRow>
@@ -184,7 +179,7 @@ const LoginForm = (props: { serverAccess: AuthServerAccess, onGotoCreateAccount:
 };
 
 
-const CreateAccountForm = (props: { serverAccess: AuthServerAccess, onGotoLogin: () => void, onAuthChange: (status: AuthenticationStatus) => void }) => {
+const CreateAccountForm = (props: { serverAccess: AuthServerAccess, onAuthChange: (status: AuthenticationStatus) => void, onNavigate: (view: 'login') => void }) => {
 
     const [username, setUsername] = useState(``);
     const [password, setPassword] = useState(``);
@@ -210,14 +205,13 @@ const CreateAccountForm = (props: { serverAccess: AuthServerAccess, onGotoLogin:
         <>
             <C.View_Form>
                 <C.View_FormActionRow>
-                    <C.Button_FormAction styleAlt onPress={props.onGotoLogin}>Login</C.Button_FormAction>
+                    <C.Button_FormAction styleAlt onPress={() => props.onNavigate(`login`)}> Login</C.Button_FormAction>
                 </C.View_FormActionRow>
                 <C.View_FormFields>
                     <C.Text_FormTitle>Create Account</C.Text_FormTitle>
                     <C.Loading loading={loading} />
                     <C.ErrorBox error={error} />
                     <C.View_FieldRow>
-                        {/* <C.Text_FieldLabel>Username</C.Text_FieldLabel> */}
                         <C.Input_Username placeholder='Username' value={username} onChange={setUsername} onSubmit={createAccount} />
                     </C.View_FieldRow>
                     <PasswordFields password={password} onPasswordChange={setPassword} />
@@ -321,14 +315,14 @@ const PasswordFields = (props: { password: string, onPasswordChange: (password: 
     );
 };
 
-const ForgotPasswordForm = (props: { serverAccess: AuthServerAccess, onGotoLogin: () => void, onAuthChange: (status: AuthenticationStatus) => void }) => {
+const ForgotPasswordForm = (props: { serverAccess: AuthServerAccess, onNavigate: (view: 'login') => void, onAuthChange: (status: AuthenticationStatus) => void }) => {
     return (
         <VerifyPhoneForm
             requestCode={props.serverAccess.requestPhoneLoginCode}
             verifyCode={props.serverAccess.loginWithPhoneCode}
             onAuthChange={props.onAuthChange}
             label='Forgot Password'
-            navButtons={[{ label: `Login`, action: props.onGotoLogin }]}
+            navButtons={[{ label: `Login`, action: () => props.onNavigate(`login`) }]}
         />
     );
 };
@@ -422,7 +416,12 @@ const VerifyPhoneForm = (props: {
 };
 
 
-const AccountInfoForm = (props: { serverAccess: AuthServerAccess, status: AuthenticationStatus, onAuthChange: (status: AuthenticationStatus) => void, onGotoChangeUsername: () => void, onGotoChangePassword: () => void, onGotoChangePhone: () => void, onGotoChangeEmail: () => void }) => {
+const AccountInfoForm = (props: {
+    serverAccess: AuthServerAccess;
+    status: AuthenticationStatus;
+    onAuthChange: (status: AuthenticationStatus) => void;
+    onNavigate: (view: 'change-username' | 'change-password' | 'change-phone' | 'change-email') => void;
+}) => {
 
     const { loading, error, doWork } = useAutoLoadingError();
 
@@ -444,16 +443,16 @@ const AccountInfoForm = (props: { serverAccess: AuthServerAccess, status: Authen
                     <C.ErrorBox error={error} />
                     <C.View_FieldRow>
                         <C.Input_Text editable={false} value={props.status.username ?? ``} onChange={() => { }} />
-                        <C.Button_FieldInline styleAlt onPress={props.onGotoChangeUsername}>Change Username</C.Button_FieldInline>
-                        <C.Button_FieldInline styleAlt onPress={props.onGotoChangePassword}>Change Password</C.Button_FieldInline>
+                        <C.Button_FieldInline styleAlt onPress={() => props.onNavigate(`change-username`)}>Change Username</C.Button_FieldInline>
+                        <C.Button_FieldInline styleAlt onPress={() => props.onNavigate(`change-password`)}>Change Password</C.Button_FieldInline>
                     </C.View_FieldRow>
                     <C.View_FieldRow>
                         <C.Input_Phone editable={false} value={props.status.phone ?? toStandardPhoneNumber(``)} onChange={() => { }} />
-                        <C.Button_FieldInline styleAlt onPress={props.onGotoChangePhone}>Change Phone</C.Button_FieldInline>
+                        <C.Button_FieldInline styleAlt onPress={() => props.onNavigate(`change-phone`)}>Change Phone</C.Button_FieldInline>
                     </C.View_FieldRow>
                     <C.View_FieldRow>
                         <C.Input_Text editable={false} value={props.status.email ?? ``} onChange={() => { }} />
-                        <C.Button_FieldInline styleAlt onPress={props.onGotoChangeEmail}>Change Email</C.Button_FieldInline>
+                        <C.Button_FieldInline styleAlt onPress={() => props.onNavigate(`change-email`)}>Change Email</C.Button_FieldInline>
                     </C.View_FieldRow>
                 </C.View_FormFields>
                 <C.View_FormActionRow>
