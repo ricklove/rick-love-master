@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { TextInput, View, TouchableOpacity } from 'react-native-lite';
 import { theme, ThemeTextStyle } from 'themes/theme';
+import { PhoneNumber, toStandardPhoneNumber, formatPhoneNumber_UsaCanada } from 'utils/phone-number';
 import { Icon } from './icon';
 import { IconKind } from './icon-kind';
 
@@ -67,6 +68,27 @@ export const Input_Currency = (props: { style?: ThemeTextStyle, value: Currency,
             editable={props.editable}
             value={`${props.value}`}
             onChange={(x) => props.onChange(Number.parseFloat(x) || 0)}
+            onSubmitEditing={props.onSubmit}
+        />
+    );
+};
+
+export type Phone = PhoneNumber;
+export const Input_Phone = (props: { style?: ThemeTextStyle, value: Phone, onChange: (value: Phone) => void, onSubmit?: () => void, placeholder?: string, editable?: boolean }) => {
+
+    const [valueActual, setValueActual] = useState(formatPhoneNumber_UsaCanada(props.value));
+    const changeValueActual = (v: string) => {
+        setValueActual(formatPhoneNumber_UsaCanada(v));
+        props.onChange(toStandardPhoneNumber(v));
+    };
+    return (
+        <TextInput style={props.style ?? theme.input_fieldEntry}
+            keyboardType='phone-pad'
+            autoCompleteType='tel'
+            placeholder={props.placeholder}
+            editable={props.editable}
+            value={valueActual}
+            onChange={changeValueActual}
             onSubmitEditing={props.onSubmit}
         />
     );

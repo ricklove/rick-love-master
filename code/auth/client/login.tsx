@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { C } from 'controls-react';
 import { useAutoLoadingError } from 'utils-react/hooks';
+import { PhoneNumber, toStandardPhoneNumber } from 'utils/phone-number';
+import { format } from 'url';
 
 type AuthenticationStatus = {
     isAuthenticated: boolean;
@@ -21,16 +23,16 @@ type AuthServerAccess = {
     createAccount: (username: string, password: string) => Promise<{ result: AuthenticationStatus }>;
 
     // Use exponential backoff for multiple requests
-    requestPhoneLoginCode: (phone: string) => Promise<void>;
-    loginWithPhoneCode: (phone: string, code: string) => Promise<{ result: AuthenticationStatus }>;
+    requestPhoneLoginCode: (phone: PhoneNumber) => Promise<void>;
+    loginWithPhoneCode: (phone: PhoneNumber, code: string) => Promise<{ result: AuthenticationStatus }>;
 
     // Use exponential backoff for multiple requests
     requestEmailLoginCode: (email: string) => Promise<void>;
     loginWithEmailCode: (email: string, code: string) => Promise<{ result: AuthenticationStatus }>;
 
     // Authenticated
-    requestPhoneVerification: (phone: string) => Promise<{ result: AuthenticationStatus }>;
-    verifyPhone: (phone: string, code: string) => Promise<{ result: AuthenticationStatus }>;
+    requestPhoneVerification: (phone: PhoneNumber) => Promise<{ result: AuthenticationStatus }>;
+    verifyPhone: (phone: PhoneNumber, code: string) => Promise<{ result: AuthenticationStatus }>;
 
     requestEmailVerification: (email: string) => Promise<{ result: AuthenticationStatus }>;
     verifyEmail: (email: string) => Promise<{ result: AuthenticationStatus }>;
@@ -215,7 +217,7 @@ const CreateAccountForm = (props: { serverAccess: AuthServerAccess, onGotoLogin:
 
 const ForgotPasswordForm = (props: { serverAccess: AuthServerAccess, onGotoLogin: () => void, onChange: (status: AuthenticationStatus) => void }) => {
 
-    const [phone, setPhone] = useState(``);
+    const [phone, setPhone] = useState(toStandardPhoneNumber(``));
     const [sentCode, setSentCode] = useState(false);
     const [code, setCode] = useState(``);
     const { loading, error, doWork } = useAutoLoadingError();
@@ -249,7 +251,7 @@ const ForgotPasswordForm = (props: { serverAccess: AuthServerAccess, onGotoLogin
                     <C.Loading loading={loading} />
                     <C.ErrorBox error={error} />
                     <C.View_FieldRow>
-                        <C.Input_Text placeholder='Phone Number' editable={!sentCode} value={phone} onChange={setPhone} onSubmit={requestCode} />
+                        <C.Input_Phone placeholder='Phone Number' editable={!sentCode} value={phone} onChange={setPhone} onSubmit={requestCode} />
                     </C.View_FieldRow>
                     {sentCode && (
                         <C.View_FieldRow>

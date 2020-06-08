@@ -3,7 +3,7 @@ import { View, Text } from 'react-native-lite';
 import { theme } from 'themes/theme';
 import { Loading, LoadingInline } from './loading';
 import { ErrorBox, ErrorMessage } from './error-box';
-import { Input_Text, Input_Username, Input_Password, Input_Currency } from './inputs';
+import { Input_Text, Input_Username, Input_Password, Input_Phone, Input_Currency } from './inputs';
 import { Button } from './button';
 
 type PropsOf<T> = T extends (props: infer P) => JSX.Element ? P : never;
@@ -25,5 +25,6 @@ export const C = {
     Input_Text,
     Input_Username,
     Input_Password,
+    Input_Phone,
     Input_Currency,
 };

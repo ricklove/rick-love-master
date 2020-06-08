@@ -36,7 +36,7 @@ export const Text = (props: { style?: ThemeTextStyle | ThemeTextStyle[], childre
 };
 export const TextInput = (props: {
     style?: ThemeTextStyle | ThemeTextStyle[];
-    keyboardType: 'default' | 'numeric';
+    keyboardType: 'default' | 'numeric' | 'phone-pad';
     autoCompleteType: 'off' | 'username' | 'password' | 'email' | 'name' | 'tel' | 'street-address' | 'postal-code';
     secureTextEntry?: boolean;
     placeholder?: string;
