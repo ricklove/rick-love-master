@@ -1,5 +1,5 @@
 import './index.css';
-import React, { ReactNode } from 'react';
+import React, { ReactNode, useRef } from 'react';
 import { ThemeTextStyle, ThemeViewStyle } from 'themes/theme';
 
 function mergeStyles<T>(items: (T | undefined | null) | (T | T[] | undefined | null)[]): T {
@@ -74,11 +74,21 @@ export const TextInput = (props: {
 
 };
 export const TouchableOpacity = (props: { style?: ThemeViewStyle | ThemeViewStyle[], children?: ReactNode, onPress: () => void }) => {
+
+    const lastPressTime = useRef(0);
+    const onPress = () => {
+        // Prevent duplicate triggers
+        if (Date.now() < lastPressTime.current + 250) { return; }
+        lastPressTime.current = Date.now();
+
+        props.onPress();
+    };
+
     return (
         <div style={mergeStyles([viewStyleDefaults, props.style])}
-            onClick={props.onPress}
-            onTouchEnd={props.onPress}
-            onKeyPress={props.onPress}
+            onClick={onPress}
+            onTouchStart={onPress}
+            onKeyPress={onPress}
             role='button'
             tabIndex={0}>
             {props.children}
