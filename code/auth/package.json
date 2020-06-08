@@ -4,6 +4,7 @@
   "dependencies": {
     "controls-react": "*",
     "themes": "*",
+    "utils": "*",
     "utils-react": "*",
     "react": "^16.12.0"
   }

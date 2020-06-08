@@ -44,6 +44,7 @@ export const TextInput = (props: {
     value: string;
     onChange: (value: string) => void;
     onSubmitEditing?: () => void;
+    onBlur?: () => void;
 }) => {
     const type = props.keyboardType === `numeric` ? `number`
         : (props.secureTextEntry ? `password`
@@ -68,6 +69,7 @@ export const TextInput = (props: {
         value={props.value}
         onChange={(e) => props.onChange(e.target.value)}
         onKeyPress={onKeyPress}
+        onBlur={props.onBlur}
     />);
 
 };

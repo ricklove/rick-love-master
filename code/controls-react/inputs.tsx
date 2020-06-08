@@ -33,7 +33,7 @@ export const Input_Username = (props: { style?: ThemeTextStyle, value: string, o
     );
 };
 
-export const Input_Password = (props: { style?: ThemeTextStyle, value: string, onChange: (value: string) => void, onSubmit?: () => void, placeholder?: string, editable?: boolean }) => {
+export const Input_Password = (props: { style?: ThemeTextStyle, value: string, onChange: (value: string) => void, onSubmit?: () => void, onBlur?: () => void, placeholder?: string, editable?: boolean }) => {
 
     const [showPassword, setShowPassword] = useState(false);
 
@@ -48,6 +48,7 @@ export const Input_Password = (props: { style?: ThemeTextStyle, value: string, o
                 value={`${props.value}`}
                 onChange={(x) => props.onChange(x)}
                 onSubmitEditing={props.onSubmit}
+                onBlur={props.onBlur}
             />
             <TouchableOpacity onPress={() => setShowPassword(s => !s)} style={{ outlineColor: theme.icon.outlineColor }}>
                 <View style={{ paddingLeft: 4, paddingRight: 4 }}>
