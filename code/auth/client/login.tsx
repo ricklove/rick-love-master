@@ -1,48 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import { C } from 'controls-react';
 import { useAutoLoadingError } from 'utils-react/hooks';
-import { PhoneNumber, toStandardPhoneNumber } from 'utils/phone-number';
+import { toStandardPhoneNumber } from 'utils/phone-number';
+import { AuthenticationStatus, AuthServerAccess } from './auth-types';
 
-export type AuthenticationStatus = {
-    isAuthenticated: boolean;
-    requiresPasswordReset?: boolean;
-    requiresVerifiedPhone?: boolean;
-    requiresVerifiedEmail?: boolean;
-
-    username?: string;
-    phone?: PhoneNumber;
-    email?: string;
-};
 
 type AuthClientState = {
     status: null | AuthenticationStatus;
 }
-type AuthServerAccess = {
-
-    refreshStatus: () => Promise<{ result: AuthenticationStatus }>;
-
-    logout: () => Promise<{ result: AuthenticationStatus }>;
-
-    // Unauthenticated
-    login: (username: string, password: string) => Promise<{ result: AuthenticationStatus }>;
-    createAccount: (username: string, password: string) => Promise<{ result: AuthenticationStatus }>;
-    changePassword: (password: string) => Promise<{ result: AuthenticationStatus }>;
-
-    // Use exponential backoff for multiple requests
-    requestPhoneLoginCode: (phone: PhoneNumber) => Promise<void>;
-    loginWithPhoneCode: (phone: PhoneNumber, code: string) => Promise<{ result: AuthenticationStatus }>;
-
-    // Use exponential backoff for multiple requests
-    requestEmailLoginCode: (email: string) => Promise<void>;
-    loginWithEmailCode: (email: string, code: string) => Promise<{ result: AuthenticationStatus }>;
-
-    // Authenticated
-    requestPhoneVerification: (phone: PhoneNumber) => Promise<{ result: AuthenticationStatus }>;
-    verifyPhone: (phone: PhoneNumber, code: string) => Promise<{ result: AuthenticationStatus }>;
-
-    requestEmailVerification: (email: string) => Promise<{ result: AuthenticationStatus }>;
-    verifyEmail: (email: string) => Promise<{ result: AuthenticationStatus }>;
-};
 type AuthConfig = {
     requiresVerifiedPhone: boolean;
     requiresVerifiedEmail: boolean;
@@ -92,7 +57,7 @@ const AuthenticationView = ({ state, serverAccess, onAuthChange }: { state: Auth
             <>
                 <C.Loading loading={loading} />
                 <C.ErrorBox error={error} />
-                <LoginOrCreateAccount serverAccess={serverAccess} onAuthChange={onAuthChangeInner} />
+                <UnauthenticatedView serverAccess={serverAccess} onAuthChange={onAuthChangeInner} />
             </>
         );
     }
@@ -111,12 +76,12 @@ const AuthenticationView = ({ state, serverAccess, onAuthChange }: { state: Auth
         <>
             <C.Loading loading={loading} />
             <C.ErrorBox error={error} />
-            <LogoutForm serverAccess={serverAccess} status={state.status} onAuthChange={onAuthChangeInner} />
+            <AuthenticatedView serverAccess={serverAccess} status={state.status} onAuthChange={onAuthChangeInner} />
         </>
     );
 };
 
-const LoginOrCreateAccount = ({ serverAccess, onAuthChange }: { serverAccess: AuthServerAccess, onAuthChange: (status: AuthenticationStatus) => void }) => {
+const UnauthenticatedView = ({ serverAccess, onAuthChange }: { serverAccess: AuthServerAccess, onAuthChange: (status: AuthenticationStatus) => void }) => {
 
     const [tab, setTab] = useState(`login` as 'login' | 'create' | 'forgot');
     if (tab === `create`) {
@@ -134,16 +99,42 @@ const LoginOrCreateAccount = ({ serverAccess, onAuthChange }: { serverAccess: Au
     );
 };
 
+const AuthenticatedView = ({ serverAccess, status, onAuthChange }: { serverAccess: AuthServerAccess, status: AuthenticationStatus, onAuthChange: (status: AuthenticationStatus) => void }) => {
+
+    const [tab, setTab] = useState(`logout` as 'logout' | 'change-password');
+    if (tab === `change-password`) {
+        return (
+            <ChangePasswordForm serverAccess={serverAccess} onAuthChange={onAuthChange} onDone={() => setTab(`logout`)} />
+        );
+    }
+    // if (tab === `forgot`) {
+    //     return (
+    //         <ForgotPasswordForm serverAccess={serverAccess} onGotoLogin={() => setTab(`login`)} onAuthChange={onAuthChange} />
+    //     );
+    // }
+    return (
+        <LogoutForm serverAccess={serverAccess} status={status} onAuthChange={onAuthChange} onGotoChangePassword={() => setTab(`change-password`)} />
+    );
+};
+
 const LoginForm = (props: { serverAccess: AuthServerAccess, onGotoCreateAccount: () => void, onGotoForgotPassword: () => void, onAuthChange: (status: AuthenticationStatus) => void }) => {
 
     const [username, setUsername] = useState(``);
     const [password, setPassword] = useState(``);
+    const [hasFailed, setHasFailed] = useState(false);
     const { loading, error, doWork } = useAutoLoadingError();
 
     const login = () => {
         doWork(async (stopIfObsolete) => {
+            setHasFailed(false);
+
             const result = await props.serverAccess.login(username, password);
             stopIfObsolete();
+
+            if (!result.result.isAuthenticated) {
+                setHasFailed(true);
+                return;
+            }
 
             props.onAuthChange(result.result);
         });
@@ -172,6 +163,7 @@ const LoginForm = (props: { serverAccess: AuthServerAccess, onGotoCreateAccount:
                     {/* <C.View_FormActionRow>
                         <C.Button_FormAction onPress={props.onGotoForgotPassword}>Forgot Password</C.Button_FormAction>
                     </C.View_FormActionRow> */}
+                    {hasFailed && (<C.ErrorMessage>Incorrect username or password</C.ErrorMessage>)}
                 </C.View_FormFields>
                 <C.View_FormActionRow>
                     <C.Button_FormAction onPress={login}>Login</C.Button_FormAction>
@@ -229,21 +221,27 @@ const CreateAccountForm = (props: { serverAccess: AuthServerAccess, onGotoLogin:
 };
 
 
-const ChangePasswordForm = (props: { serverAccess: AuthServerAccess, onAuthChange: (status: AuthenticationStatus) => void, label?: string }) => {
+const ChangePasswordForm = (props: { serverAccess: AuthServerAccess, onAuthChange: (status: AuthenticationStatus) => void, label?: string, onDone?: () => void }) => {
 
     const [password, setPassword] = useState(``);
     const { loading, error, doWork } = useAutoLoadingError();
 
-    const changePassword = () => {
-        if (!password) {
+    const changePassword = (newPassword?: string) => {
+        //  console.log(`changePassword`, { newPassword });
+        if (newPassword) {
+            setPassword(newPassword);
+        }
+        const pw = newPassword ?? password;
+        if (!pw) {
             return;
         }
 
         doWork(async (stopIfObsolete) => {
-            const result = await props.serverAccess.changePassword(password);
+            const result = await props.serverAccess.changePassword(pw);
             stopIfObsolete();
 
             props.onAuthChange(result.result);
+            props.onDone?.();
         });
     };
 
@@ -254,7 +252,7 @@ const ChangePasswordForm = (props: { serverAccess: AuthServerAccess, onAuthChang
                     <C.Text_FormTitle>{props.label ?? `Change Password`}</C.Text_FormTitle>
                     <C.Loading loading={loading} />
                     <C.ErrorBox error={error} />
-                    <PasswordFields password={password} onPasswordChange={setPassword} />
+                    <PasswordFields password={password} onPasswordChange={changePassword} />
                 </C.View_FormFields>
                 <C.View_FormActionRow>
                     <C.Button_FormAction onPress={changePassword}>{props.label ?? `Change Password`}</C.Button_FormAction>
@@ -356,7 +354,7 @@ const ForgotPasswordForm = (props: { serverAccess: AuthServerAccess, onGotoLogin
 };
 
 
-const LogoutForm = (props: { serverAccess: AuthServerAccess, status: AuthenticationStatus, onAuthChange: (status: AuthenticationStatus) => void }) => {
+const LogoutForm = (props: { serverAccess: AuthServerAccess, status: AuthenticationStatus, onAuthChange: (status: AuthenticationStatus) => void, onGotoChangePassword: () => void }) => {
 
     const { loading, error, doWork } = useAutoLoadingError();
 
@@ -382,6 +380,7 @@ const LogoutForm = (props: { serverAccess: AuthServerAccess, status: Authenticat
 
                 </C.View_FormFields>
                 <C.View_FormActionRow>
+                    <C.Button_FormAction styleAlt onPress={props.onGotoChangePassword}>Change Password</C.Button_FormAction>
                     <C.Button_FormAction onPress={logout}>Log Out</C.Button_FormAction>
                 </C.View_FormActionRow>
             </C.View_Form>

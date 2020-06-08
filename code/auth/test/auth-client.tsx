@@ -1,9 +1,10 @@
 import React from 'react';
 import { C } from 'controls-react';
-import { PhoneNumber, toStandardPhoneNumber } from 'utils/phone-number';
-import { createAuthenticationClient, AuthenticationStatus } from '../client/login';
+import { createAuthenticationClient } from '../client/login';
+import { AuthenticationStatus } from '../client/auth-types';
 
 const mockServerState = {
+    password: `42`,
     status: {
         isAuthenticated: false,
     } as AuthenticationStatus,
@@ -16,10 +17,15 @@ const authClient = createAuthenticationClient({
             return { result: mockServerState.status };
         },
         login: async (username, password) => {
+            if (password !== mockServerState.password) {
+                mockServerState.status = { isAuthenticated: false };
+                return { result: mockServerState.status };
+            }
             mockServerState.status = { isAuthenticated: true, requiresVerifiedPhone: true, username };
             return { result: mockServerState.status };
         },
         changePassword: async (password) => {
+            mockServerState.password = password;
             mockServerState.status = { ...mockServerState.status, requiresPasswordReset: false };
             return { result: mockServerState.status };
         },
