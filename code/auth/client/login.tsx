@@ -2,26 +2,27 @@ import React, { useState, useEffect } from 'react';
 import { C } from 'controls-react';
 import { useAutoLoadingError } from 'utils-react/hooks';
 import { toStandardPhoneNumber, PhoneNumber } from 'utils/phone-number';
-import { AuthenticationStatus, AuthServerAccess } from './auth-types';
+import { AuthenticationStatus, AuthServerAccess } from '../common/types';
 
 
 type AuthClientState = {
     status: null | AuthenticationStatus;
 }
 type AuthConfig = {
-    requiresVerifiedPhone: boolean;
-    requiresVerifiedEmail: boolean;
+    // requiresVerifiedPhone: boolean;
+    // requiresVerifiedEmail: boolean;
+    minPasswordLength: number;
 };
 
-export const createAuthenticationClient = ({ serverAccess }: { serverAccess: AuthServerAccess }) => {
+export const createAuthenticationClient = ({ serverAccess, config }: { serverAccess: AuthServerAccess, config: AuthConfig }) => {
     const state: AuthClientState = { status: null as null | AuthenticationStatus };
-    const props = { state, serverAccess };
+    const props = { state, serverAccess, config };
     return {
         AuthenticationView: ({ onAuthChange }: { onAuthChange?: (status: AuthenticationStatus) => void }) => <AuthenticationView {...props} onAuthChange={onAuthChange} />,
     };
 };
 
-const AuthenticationView = ({ state, serverAccess, onAuthChange }: { state: AuthClientState, serverAccess: AuthServerAccess, onAuthChange?: (status: AuthenticationStatus) => void }) => {
+const AuthenticationView = ({ state, serverAccess, config, onAuthChange }: { state: AuthClientState, serverAccess: AuthServerAccess, config: AuthConfig, onAuthChange?: (status: AuthenticationStatus) => void }) => {
 
     const { loading, error, doWork } = useAutoLoadingError();
     useEffect(() => {
@@ -57,7 +58,7 @@ const AuthenticationView = ({ state, serverAccess, onAuthChange }: { state: Auth
             <>
                 <C.Loading loading={loading} />
                 <C.ErrorBox error={error} />
-                <UnauthenticatedView serverAccess={serverAccess} onAuthChange={onAuthChangeInner} />
+                <UnauthenticatedView serverAccess={serverAccess} config={config} onAuthChange={onAuthChangeInner} />
             </>
         );
     }
@@ -67,7 +68,7 @@ const AuthenticationView = ({ state, serverAccess, onAuthChange }: { state: Auth
             <>
                 <C.Loading loading={loading} />
                 <C.ErrorBox error={error} />
-                <ChangePasswordForm serverAccess={serverAccess} onAuthChange={onAuthChangeInner} label='Reset Password' />
+                <ChangePasswordForm serverAccess={serverAccess} config={config} onAuthChange={onAuthChangeInner} label='Reset Password' />
             </>
         );
     }
@@ -86,17 +87,17 @@ const AuthenticationView = ({ state, serverAccess, onAuthChange }: { state: Auth
         <>
             <C.Loading loading={loading} />
             <C.ErrorBox error={error} />
-            <AuthenticatedView serverAccess={serverAccess} status={state.status} onAuthChange={onAuthChangeInner} />
+            <AuthenticatedView serverAccess={serverAccess} config={config} status={state.status} onAuthChange={onAuthChangeInner} />
         </>
     );
 };
 
-const UnauthenticatedView = ({ serverAccess, onAuthChange }: { serverAccess: AuthServerAccess, onAuthChange: (status: AuthenticationStatus) => void }) => {
+const UnauthenticatedView = ({ serverAccess, config, onAuthChange }: { serverAccess: AuthServerAccess, config: AuthConfig, onAuthChange: (status: AuthenticationStatus) => void }) => {
 
     const [tab, setTab] = useState(`login` as 'login' | 'create-account' | 'forgot-password');
     if (tab === `create-account`) {
         return (
-            <CreateAccountForm serverAccess={serverAccess} onAuthChange={onAuthChange} onNavigate={(view) => setTab(view)} />
+            <CreateAccountForm serverAccess={serverAccess} config={config} onAuthChange={onAuthChange} onNavigate={(view) => setTab(view)} />
         );
     }
     if (tab === `forgot-password`) {
@@ -109,12 +110,17 @@ const UnauthenticatedView = ({ serverAccess, onAuthChange }: { serverAccess: Aut
     );
 };
 
-const AuthenticatedView = ({ serverAccess, status, onAuthChange }: { serverAccess: AuthServerAccess, status: AuthenticationStatus, onAuthChange: (status: AuthenticationStatus) => void }) => {
+const AuthenticatedView = ({ serverAccess, config, status, onAuthChange }: { serverAccess: AuthServerAccess, config: AuthConfig, status: AuthenticationStatus, onAuthChange: (status: AuthenticationStatus) => void }) => {
 
     const [tab, setTab] = useState(`logout` as 'logout' | 'change-username' | 'change-password' | 'change-phone' | 'change-email');
+    if (tab === `change-username`) {
+        return (
+            <ChangeUsernameForm serverAccess={serverAccess} onAuthChange={onAuthChange} onDone={() => setTab(`logout`)} navButtons={[{ label: `Cancel`, action: () => setTab(`logout`) }]} />
+        );
+    }
     if (tab === `change-password`) {
         return (
-            <ChangePasswordForm serverAccess={serverAccess} onAuthChange={onAuthChange} onDone={() => setTab(`logout`)} navButtons={[{ label: `Cancel`, action: () => setTab(`logout`) }]} />
+            <ChangePasswordForm serverAccess={serverAccess} config={config} onAuthChange={onAuthChange} onDone={() => setTab(`logout`)} navButtons={[{ label: `Cancel`, action: () => setTab(`logout`) }]} />
         );
     }
     if (tab === `change-phone`) {
@@ -179,7 +185,7 @@ const LoginForm = (props: { serverAccess: AuthServerAccess, onAuthChange: (statu
 };
 
 
-const CreateAccountForm = (props: { serverAccess: AuthServerAccess, onAuthChange: (status: AuthenticationStatus) => void, onNavigate: (view: 'login') => void }) => {
+const CreateAccountForm = (props: { serverAccess: AuthServerAccess, config: AuthConfig, onAuthChange: (status: AuthenticationStatus) => void, onNavigate: (view: 'login') => void }) => {
 
     const [username, setUsername] = useState(``);
     const [password, setPassword] = useState(``);
@@ -214,7 +220,7 @@ const CreateAccountForm = (props: { serverAccess: AuthServerAccess, onAuthChange
                     <C.View_FieldRow>
                         <C.Input_Username placeholder='Username' value={username} onChange={setUsername} onSubmit={createAccount} />
                     </C.View_FieldRow>
-                    <PasswordFields password={password} onPasswordChange={setPassword} />
+                    <PasswordFields password={password} minPasswordLength={props.config.minPasswordLength} onPasswordChange={setPassword} onSubmit={createAccount} />
                 </C.View_FormFields>
                 <C.View_FormActionRow>
                     <C.Button_FormAction onPress={createAccount}>Create Account</C.Button_FormAction>
@@ -225,8 +231,58 @@ const CreateAccountForm = (props: { serverAccess: AuthServerAccess, onAuthChange
 };
 
 
+const ChangeUsernameForm = (props: {
+    serverAccess: AuthServerAccess;
+    onAuthChange: (status: AuthenticationStatus) => void;
+    onDone?: () => void;
+    navButtons?: { label: string, action: () => void }[];
+}) => {
+
+    const [username, setUsername] = useState(``);
+    const { loading, error, doWork } = useAutoLoadingError();
+
+    const changeUsername = () => {
+        if (!username) {
+            return;
+        }
+
+        doWork(async (stopIfObsolete) => {
+            const result = await props.serverAccess.changeUsername(username);
+            stopIfObsolete();
+
+            props.onAuthChange(result.result);
+            props.onDone?.();
+        });
+    };
+
+    return (
+        <>
+            <C.View_Form>
+                <C.View_FormActionRow>
+                    {props.navButtons?.map(x => (
+                        <C.Button_FormAction key={x.label} styleAlt onPress={x.action}>{x.label}</C.Button_FormAction>
+                    ))}
+                </C.View_FormActionRow>
+                <C.View_FormFields>
+                    <C.Text_FormTitle>Change Username</C.Text_FormTitle>
+                    <C.Loading loading={loading} />
+                    <C.ErrorBox error={error} />
+                    <C.View_FieldRow>
+                        <C.Input_Username placeholder='Username' value={username} onChange={setUsername} onSubmit={changeUsername} />
+                    </C.View_FieldRow>
+                </C.View_FormFields>
+                <C.View_FormActionRow>
+                    <C.Button_FormAction onPress={changeUsername}>Change Username</C.Button_FormAction>
+                </C.View_FormActionRow>
+            </C.View_Form>
+        </>
+    );
+};
+
+
 const ChangePasswordForm = (props: {
     serverAccess: AuthServerAccess;
+    config: AuthConfig;
     onAuthChange: (status: AuthenticationStatus) => void;
     label?: string;
     onDone?: () => void;
@@ -241,7 +297,10 @@ const ChangePasswordForm = (props: {
         if (newPassword) {
             setPassword(newPassword);
         }
-        const pw = newPassword ?? password;
+    };
+
+    const submit = async () => {
+        const pw = password;
         if (!pw) {
             return;
         }
@@ -267,10 +326,10 @@ const ChangePasswordForm = (props: {
                     <C.Text_FormTitle>{props.label ?? `Change Password`}</C.Text_FormTitle>
                     <C.Loading loading={loading} />
                     <C.ErrorBox error={error} />
-                    <PasswordFields password={password} onPasswordChange={changePassword} />
+                    <PasswordFields password={password} minPasswordLength={props.config.minPasswordLength} onPasswordChange={changePassword} onSubmit={submit} />
                 </C.View_FormFields>
                 <C.View_FormActionRow>
-                    <C.Button_FormAction onPress={changePassword}>{props.label ?? `Change Password`}</C.Button_FormAction>
+                    <C.Button_FormAction onPress={submit}>{props.label ?? `Change Password`}</C.Button_FormAction>
                 </C.View_FormActionRow>
             </C.View_Form>
         </>
@@ -278,15 +337,25 @@ const ChangePasswordForm = (props: {
 };
 
 
-const PasswordFields = (props: { password: string, onPasswordChange: (password: string) => void }) => {
+const PasswordFields = (props: { password: string, minPasswordLength: number, onPasswordChange: (password: string) => void, onSubmit: () => void }) => {
 
     const [password, setPassword] = useState(props.password);
     const [password2, setPassword2] = useState(``);
-    const [passwordError, setPasswordError] = useState(null as null | 'missing' | 'must-match');
+    const [passwordError, setPasswordError] = useState(null as null | 'missing' | 'short' | 'must-match');
 
     const changePassword = () => {
-        if (!password.trim()) {
+        if (password !== password.trim()) {
+            setPassword(password.trim());
+        }
+        if (password2 !== password2.trim()) {
+            setPassword2(password2.trim());
+        }
+        if (!password) {
             setPasswordError(`missing`);
+            return;
+        }
+        if (password.length < props.minPasswordLength) {
+            setPasswordError(`short`);
             return;
         }
         if (!password2) { return; }
@@ -301,14 +370,20 @@ const PasswordFields = (props: { password: string, onPasswordChange: (password: 
         }
     };
 
+    const submit = () => {
+        changePassword();
+        props.onSubmit();
+    };
+
     return (
         <>
             <C.View_FieldRow>
-                <C.Input_Password placeholder='Password' value={password} onChange={setPassword} onSubmit={changePassword} onBlur={changePassword} />
+                <C.Input_Password placeholder='Password' value={password} onChange={setPassword} onSubmit={submit} onBlur={changePassword} />
             </C.View_FieldRow>
             {passwordError === `missing` && (<C.ErrorMessage>Please Enter a Password</C.ErrorMessage>)}
+            {passwordError === `short` && (<C.ErrorMessage>{`The Password is too Short: (${props.minPasswordLength})`}</C.ErrorMessage>)}
             <C.View_FieldRow>
-                <C.Input_Password placeholder='Confirm Password' value={password2} onChange={setPassword2} onSubmit={changePassword} onBlur={changePassword} />
+                <C.Input_Password placeholder='Confirm Password' value={password2} onChange={setPassword2} onSubmit={submit} onBlur={changePassword} />
             </C.View_FieldRow>
             {passwordError === `must-match` && (<C.ErrorMessage>Passwords Must Match</C.ErrorMessage>)}
         </>
@@ -364,6 +439,7 @@ const VerifyPhoneForm = (props: {
     const [phone, setPhone] = useState(toStandardPhoneNumber(``));
     const [sentCode, setSentCode] = useState(false);
     const [code, setCode] = useState(``);
+    const [codeError, setCodeError] = useState(null as null | { message: string });
     const { loading, error, doWork } = useAutoLoadingError();
 
     const requestCode = () => {
@@ -377,11 +453,17 @@ const VerifyPhoneForm = (props: {
 
     const verifyCode = () => {
         doWork(async (stopIfObsolete) => {
-            const result = await props.verifyCode(phone, code);
-            stopIfObsolete();
+            try {
+                setCodeError(null);
 
-            props.onAuthChange(result.result);
-            props.onDone?.();
+                const result = await props.verifyCode(phone, code);
+                stopIfObsolete();
+
+                props.onAuthChange(result.result);
+                props.onDone?.();
+            } catch (_error) {
+                setCodeError(_error);
+            }
         });
     };
 
@@ -405,6 +487,7 @@ const VerifyPhoneForm = (props: {
                             <C.Input_Text placeholder='Verification Code' value={code} onChange={setCode} onSubmit={verifyCode} />
                         </C.View_FieldRow>
                     )}
+                    {codeError && (<C.ErrorMessage>{codeError.message ?? `Invalid Code`}</C.ErrorMessage>)}
                 </C.View_FormFields>
                 <C.View_FormActionRow>
                     {!sentCode && <C.Button_FormAction onPress={requestCode}>Send Verification Code</C.Button_FormAction>}

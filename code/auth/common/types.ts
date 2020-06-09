@@ -20,6 +20,7 @@ export type AuthServerAccess = {
     login: (username: string, password: string) => Promise<{ result: AuthenticationStatus }>;
     createAccount: (username: string, password: string) => Promise<{ result: AuthenticationStatus }>;
 
+    changeUsername: (username: string) => Promise<{ result: AuthenticationStatus }>;
     changePassword: (password: string) => Promise<{ result: AuthenticationStatus }>;
 
     // Note: Use exponential backoff for multiple requests
@@ -46,3 +47,8 @@ export type AuthServerAccess = {
     requestEmailLoginCode: (email: string) => Promise<void>;
     loginWithEmailCode: (email: string, code: string) => Promise<{ result: AuthenticationStatus }>;
 };
+
+
+export class AuthError extends Error {
+    constructor(public message: string, public data?: unknown) { super(); }
+}
