@@ -1,7 +1,7 @@
 /* eslint-disable no-console */
 import React from 'react';
 import { C } from 'controls-react';
-import { createAuthenticationClient } from '../client/login';
+import { createAuthenticationClient, createAuthenticationClient_serverAccess } from '../client/login';
 import { AuthenticationStatus, AuthError } from '../common/types';
 
 const mockServerState = {
@@ -10,11 +10,13 @@ const mockServerState = {
     phone: ``,
     phoneCode: ``,
     email: ``,
+    emailCode: ``,
+
     status: {
         isAuthenticated: false,
     } as AuthenticationStatus,
 };
-const authClient = createAuthenticationClient({
+const authClient = createAuthenticationClient_serverAccess({
     serverAccess: {
         refreshStatus: async () => ({ result: mockServerState.status }),
         logout: async () => {
@@ -46,6 +48,8 @@ const authClient = createAuthenticationClient({
             mockServerState.status = { ...mockServerState.status, requiresPasswordReset: false };
             return { result: mockServerState.status };
         },
+
+        // Phone
         requestPhoneLoginCode: async (phone) => {
             mockServerState.phoneCode = `${Math.floor(100000 + Math.random() * 899999)}`;
             console.log(`phoneCode`, { phoneCode: mockServerState.phoneCode });
@@ -57,7 +61,7 @@ const authClient = createAuthenticationClient({
                 throw new AuthError(`Invalid Login Code`);
             }
             mockServerState.phone = phone;
-            mockServerState.status = { isAuthenticated: true, requiresPasswordReset: true, username: mockServerState.username, phone, email: `test@test.com` };
+            mockServerState.status = { isAuthenticated: true, requiresPasswordReset: true, username: mockServerState.username, phone };
             return { result: mockServerState.status };
         },
         registerPhoneAndSendVerification: async (phone) => {
@@ -71,6 +75,35 @@ const authClient = createAuthenticationClient({
             }
             mockServerState.phone = phone;
             mockServerState.status = { ...mockServerState.status, phone, requiresVerifiedPhone: false };
+            return { result: mockServerState.status };
+        },
+
+        // Email
+        requestEmailLoginCode: async (email) => {
+            mockServerState.emailCode = `${Math.floor(100000 + Math.random() * 899999)}`;
+            console.log(`emailCode`, { emailCode: mockServerState.emailCode });
+        },
+        loginWithEmailCode: async (email, code) => {
+            if (mockServerState.emailCode !== code) {
+                // mockServerState.status = { isAuthenticated: false };
+                // return { result: mockServerState.status };
+                throw new AuthError(`Invalid Login Code`);
+            }
+            mockServerState.email = email;
+            mockServerState.status = { isAuthenticated: true, requiresPasswordReset: true, username: mockServerState.username, email };
+            return { result: mockServerState.status };
+        },
+        registerEmailAndSendVerification: async (email) => {
+            mockServerState.emailCode = `${Math.floor(100000 + Math.random() * 899999)}`;
+            console.log(`emailCode`, { emailCode: mockServerState.emailCode });
+        },
+        verifyEmail: async (email, code) => {
+            if (mockServerState.emailCode !== code) {
+                throw new AuthError(`Invalid Verification Code`);
+                // return { result: mockServerState.status };
+            }
+            mockServerState.email = email;
+            mockServerState.status = { ...mockServerState.status, email, requiresVerifiedEmail: false };
             return { result: mockServerState.status };
         },
 

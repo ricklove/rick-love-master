@@ -1,4 +1,5 @@
 import { PhoneNumber } from 'utils/phone-number';
+import { EmailAddress } from 'utils/email-address';
 
 export type AuthenticationStatus = {
     isAuthenticated: boolean;
@@ -8,20 +9,20 @@ export type AuthenticationStatus = {
 
     username?: string;
     phone?: PhoneNumber;
-    email?: string;
+    email?: EmailAddress;
 };
 
-export type AuthServerAccess = {
+export type AuthClientApi = {
 
     refreshStatus: () => Promise<{ result: AuthenticationStatus }>;
 
     logout: () => Promise<{ result: AuthenticationStatus }>;
 
-    login: (username: string, password: string) => Promise<{ result: AuthenticationStatus }>;
-    createAccount: (username: string, password: string) => Promise<{ result: AuthenticationStatus }>;
+    login: (params: { username: string, password: string }) => Promise<{ result: AuthenticationStatus }>;
+    createAccount: (params: { username: string, password: string }) => Promise<{ result: AuthenticationStatus }>;
 
-    changeUsername: (username: string) => Promise<{ result: AuthenticationStatus }>;
-    changePassword: (password: string) => Promise<{ result: AuthenticationStatus }>;
+    changeUsername: (params: { username: string }) => Promise<{ result: AuthenticationStatus }>;
+    changePassword: (params: { password: string }) => Promise<{ result: AuthenticationStatus }>;
 
     // Note: Use exponential backoff for multiple requests
 
@@ -31,10 +32,10 @@ export type AuthServerAccess = {
      * 
      * Error if phone is already registered with another account
      */
-    registerPhoneAndSendVerification: (phone: PhoneNumber) => Promise<void>;
-    verifyPhone: (phone: PhoneNumber, code: string) => Promise<{ result: AuthenticationStatus }>;
-    requestPhoneLoginCode: (phone: PhoneNumber) => Promise<void>;
-    loginWithPhoneCode: (phone: PhoneNumber, code: string) => Promise<{ result: AuthenticationStatus }>;
+    registerPhoneAndSendVerification: (params: { phone: PhoneNumber }) => Promise<void>;
+    verifyPhone: (params: { phone: PhoneNumber, code: string }) => Promise<{ result: AuthenticationStatus }>;
+    requestPhoneLoginCode: (params: { phone: PhoneNumber }) => Promise<void>;
+    loginWithPhoneCode: (params: { phone: PhoneNumber, code: string }) => Promise<{ result: AuthenticationStatus }>;
 
     // Email
 
@@ -42,10 +43,10 @@ export type AuthServerAccess = {
     * 
     * Error if email is already registered with another account
     */
-    registerEmailAndSendVerification: (email: string) => Promise<void>;
-    verifyEmail: (email: string) => Promise<{ result: AuthenticationStatus }>;
-    requestEmailLoginCode: (email: string) => Promise<void>;
-    loginWithEmailCode: (email: string, code: string) => Promise<{ result: AuthenticationStatus }>;
+    registerEmailAndSendVerification: (params: { email: EmailAddress }) => Promise<void>;
+    verifyEmail: (params: { email: EmailAddress, code: string }) => Promise<{ result: AuthenticationStatus }>;
+    requestEmailLoginCode: (params: { email: EmailAddress }) => Promise<void>;
+    loginWithEmailCode: (params: { email: EmailAddress, code: string }) => Promise<{ result: AuthenticationStatus }>;
 };
 
 

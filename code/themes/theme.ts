@@ -22,6 +22,8 @@ export type ThemeViewStyle = {
     paddingBottom?: number;
 
     width?: number;
+    minWidth?: number;
+    maxWidth?: number;
     height?: number;
 
     borderWidth?: number;
@@ -87,6 +89,8 @@ export const extractViewStyle = (style: ThemeViewStyle & ThemeTextStyle): ThemeV
         paddingBottom: style.padding ?? style.paddingBottom,
 
         width: style.width,
+        minWidth: style.minWidth,
+        maxWidth: style.maxWidth,
         height: style.height,
 
         borderWidth: style.borderWidth,
@@ -157,6 +161,10 @@ export const basicThemeSizes = {
     fontSize_header: 16,
 
     lineHeight: `18px`,
+
+    minWidth_label: 120,
+    minWidth_input: 120,
+    minWidth_button: 120,
 
     icon: 14,
 };
@@ -254,7 +262,7 @@ const createTheme = (colors: ThemeColors, sizes: ThemeSizes, font: ThemeFont) =>
             color: colors.text,
             fontSize: sizes.fontSize,
             fontWeight: font.fontWeight_normal,
-            minWidth: 80,
+            minWidth: sizes.minWidth_label,
             //  whiteSpace: `nowrap`,
         },
         input_fieldEntry: sText = {
@@ -266,7 +274,7 @@ const createTheme = (colors: ThemeColors, sizes: ThemeSizes, font: ThemeFont) =>
             fontSize: sizes.fontSize_input,
             fontWeight: font.fontWeight_normal,
             lineHeight: sizes.lineHeight,
-            minWidth: 80,
+            minWidth: sizes.minWidth_input,
         },
         button_fieldInline: sTextView = {
             ...borderProps,
@@ -280,6 +288,7 @@ const createTheme = (colors: ThemeColors, sizes: ThemeSizes, font: ThemeFont) =>
             fontWeight: font.fontWeight_button,
             lineHeight: sizes.lineHeight,
             display: `flex`,
+            minWidth: sizes.minWidth_button,
         },
         button_fieldInline_alt: sTextView = {
             ...sTextView,
@@ -302,6 +311,7 @@ const createTheme = (colors: ThemeColors, sizes: ThemeSizes, font: ThemeFont) =>
             fontSize: sizes.fontSize_button,
             fontWeight: font.fontWeight_button,
             lineHeight: sizes.lineHeight,
+            minWidth: sizes.minWidth_button,
         },
         button_formAction_alt: sTextView = {
             ...sTextView,

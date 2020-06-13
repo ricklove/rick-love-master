@@ -2,7 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { C } from 'controls-react';
 import { useAutoLoadingError } from 'utils-react/hooks';
 import { toStandardPhoneNumber, PhoneNumber } from 'utils/phone-number';
-import { AuthenticationStatus, AuthServerAccess } from '../common/types';
+import { toEmailAddress, EmailAddress } from 'utils/email-address';
+import { AuthenticationStatus, AuthClientApi } from '../common/types';
 
 
 type AuthClientState = {
@@ -13,12 +14,35 @@ type AuthConfig = {
     // requiresVerifiedEmail: boolean;
     minPasswordLength: number;
 };
-
-export const createAuthenticationClient = ({ serverAccess, config }: { serverAccess: AuthServerAccess, config: AuthConfig }) => {
-    const state: AuthClientState = { status: null as null | AuthenticationStatus };
-    const props = { state, serverAccess, config };
+// type AuthServerAccess = AuthClientApi;
+const createAuthServerAccess = (authClientApi: AuthClientApi) => {
     return {
-        AuthenticationView: ({ onAuthChange }: { onAuthChange?: (status: AuthenticationStatus) => void }) => <AuthenticationView {...props} onAuthChange={onAuthChange} />,
+        refreshStatus: () => authClientApi.refreshStatus(),
+        logout: () => authClientApi.logout(),
+        login: (username: string, password: string) => authClientApi.login({ username, password }),
+        createAccount: (username: string, password: string) => authClientApi.createAccount({ username, password }),
+        changeUsername: (username: string) => authClientApi.changeUsername({ username }),
+        changePassword: (password: string) => authClientApi.changePassword({ password }),
+        registerPhoneAndSendVerification: (phone: PhoneNumber) => authClientApi.registerPhoneAndSendVerification({ phone }),
+        verifyPhone: (phone: PhoneNumber, code: string) => authClientApi.verifyPhone({ phone, code }),
+        requestPhoneLoginCode: (phone: PhoneNumber) => authClientApi.requestPhoneLoginCode({ phone }),
+        loginWithPhoneCode: (phone: PhoneNumber, code: string) => authClientApi.loginWithPhoneCode({ phone, code }),
+        registerEmailAndSendVerification: (email: EmailAddress) => authClientApi.registerEmailAndSendVerification({ email }),
+        verifyEmail: (email: EmailAddress, code: string) => authClientApi.verifyEmail({ email, code }),
+        requestEmailLoginCode: (email: EmailAddress) => authClientApi.requestEmailLoginCode({ email }),
+        loginWithEmailCode: (email: EmailAddress, code: string) => authClientApi.loginWithEmailCode({ email, code }),
+    };
+};
+type AuthServerAccess = ReturnType<typeof createAuthServerAccess>;
+
+export const createAuthenticationClient = ({ authClientApi, config }: { authClientApi: AuthClientApi, config: AuthConfig }) => {
+    return createAuthenticationClient_serverAccess({ serverAccess: createAuthServerAccess(authClientApi), config });
+};
+export const createAuthenticationClient_serverAccess = ({ serverAccess, config }: { serverAccess: AuthServerAccess, config: AuthConfig }) => {
+    const state: AuthClientState = { status: null as null | AuthenticationStatus };
+    const propsSystem = { state, serverAccess, config };
+    return {
+        AuthenticationView: (props: { onAuthChange?: (status: AuthenticationStatus) => void }) => <AuthenticationView {...propsSystem} {...props} />,
     };
 };
 
@@ -83,6 +107,16 @@ const AuthenticationView = ({ state, serverAccess, config, onAuthChange }: { sta
         );
     }
 
+    if (state.status.requiresVerifiedEmail) {
+        return (
+            <>
+                <C.Loading loading={loading} />
+                <C.ErrorBox error={error} />
+                <RegisterEmailForm serverAccess={serverAccess} onAuthChange={onAuthChangeInner} />
+            </>
+        );
+    }
+
     return (
         <>
             <C.Loading loading={loading} />
@@ -126,6 +160,11 @@ const AuthenticatedView = ({ serverAccess, config, status, onAuthChange }: { ser
     if (tab === `change-phone`) {
         return (
             <ChangePhoneForm serverAccess={serverAccess} onAuthChange={onAuthChange} onDone={() => setTab(`logout`)} />
+        );
+    }
+    if (tab === `change-email`) {
+        return (
+            <ChangeEmailForm serverAccess={serverAccess} onAuthChange={onAuthChange} onDone={() => setTab(`logout`)} />
         );
     }
     return (
@@ -392,51 +431,91 @@ const PasswordFields = (props: { password: string, minPasswordLength: number, on
 
 const ForgotPasswordForm = (props: { serverAccess: AuthServerAccess, onNavigate: (view: 'login') => void, onAuthChange: (status: AuthenticationStatus) => void }) => {
     return (
-        <VerifyPhoneForm
+        <VerifyContactMethodForm
             requestCode={props.serverAccess.requestPhoneLoginCode}
             verifyCode={props.serverAccess.loginWithPhoneCode}
             onAuthChange={props.onAuthChange}
             label='Forgot Password'
             navButtons={[{ label: `Login`, action: () => props.onNavigate(`login`) }]}
+            defaultValue={toStandardPhoneNumber(``)}
+            InputComponent={(p) => <C.Input_Phone placeholder='Phone Number' {...p} />}
         />
     );
 };
 
-
 const RegisterPhoneForm = (props: { serverAccess: AuthServerAccess, onAuthChange: (status: AuthenticationStatus) => void }) => {
     return (
-        <VerifyPhoneForm
+        <VerifyContactMethodForm
             requestCode={props.serverAccess.registerPhoneAndSendVerification}
             verifyCode={props.serverAccess.verifyPhone}
             onAuthChange={props.onAuthChange}
             label='Register Phone'
+            defaultValue={toStandardPhoneNumber(``)}
+            InputComponent={(p) => <C.Input_Phone placeholder='Phone Number' {...p} />}
         />
     );
 };
 
 const ChangePhoneForm = (props: { serverAccess: AuthServerAccess, onAuthChange: (status: AuthenticationStatus) => void, onDone: () => void }) => {
     return (
-        <VerifyPhoneForm
+        <VerifyContactMethodForm
             requestCode={props.serverAccess.registerPhoneAndSendVerification}
             verifyCode={props.serverAccess.verifyPhone}
             onAuthChange={props.onAuthChange}
             onDone={props.onDone}
             label='Change Phone'
             navButtons={[{ label: `Cancel`, action: props.onDone }]}
+            defaultValue={toStandardPhoneNumber(``)}
+            InputComponent={(p) => <C.Input_Phone placeholder='Phone Number' {...p} />}
         />
     );
 };
 
-const VerifyPhoneForm = (props: {
-    requestCode: (phone: PhoneNumber) => Promise<void>;
-    verifyCode: (phone: PhoneNumber, code: string) => Promise<{ result: AuthenticationStatus }>;
+const RegisterEmailForm = (props: { serverAccess: AuthServerAccess, onAuthChange: (status: AuthenticationStatus) => void }) => {
+    return (
+        <VerifyContactMethodForm
+            requestCode={props.serverAccess.registerEmailAndSendVerification}
+            verifyCode={props.serverAccess.verifyEmail}
+            onAuthChange={props.onAuthChange}
+            label='Register Email'
+            defaultValue={toEmailAddress(``)}
+            InputComponent={(p) => <C.Input_Email placeholder='Email' {...p} />}
+        />
+    );
+};
+
+const ChangeEmailForm = (props: { serverAccess: AuthServerAccess, onAuthChange: (status: AuthenticationStatus) => void, onDone: () => void }) => {
+    return (
+        <VerifyContactMethodForm
+            requestCode={props.serverAccess.registerEmailAndSendVerification}
+            verifyCode={props.serverAccess.verifyEmail}
+            onAuthChange={props.onAuthChange}
+            onDone={props.onDone}
+            label='Change Email'
+            navButtons={[{ label: `Cancel`, action: props.onDone }]}
+            defaultValue={toEmailAddress(``)}
+            InputComponent={(p) => <C.Input_Email placeholder='Email' {...p} />}
+        />
+    );
+};
+
+const VerifyContactMethodForm = <T extends string>(props: {
+    requestCode: (value: T) => Promise<void>;
+    verifyCode: (value: T, code: string) => Promise<{ result: AuthenticationStatus }>;
     onAuthChange: (status: AuthenticationStatus) => void;
+    defaultValue: T;
+    InputComponent: (props: {
+        editable: boolean;
+        value: T;
+        onChange: (value: T) => void;
+        onSubmit: () => void;
+    }) => JSX.Element;
     label?: string;
     onDone?: () => void;
     navButtons?: { label: string, action: () => void }[];
 }) => {
 
-    const [phone, setPhone] = useState(toStandardPhoneNumber(``));
+    const [value, setValue] = useState(props.defaultValue);
     const [sentCode, setSentCode] = useState(false);
     const [code, setCode] = useState(``);
     const [codeError, setCodeError] = useState(null as null | { message: string });
@@ -444,7 +523,7 @@ const VerifyPhoneForm = (props: {
 
     const requestCode = () => {
         doWork(async (stopIfObsolete) => {
-            await props.requestCode(phone);
+            await props.requestCode(value);
             stopIfObsolete();
 
             setSentCode(true);
@@ -456,7 +535,7 @@ const VerifyPhoneForm = (props: {
             try {
                 setCodeError(null);
 
-                const result = await props.verifyCode(phone, code);
+                const result = await props.verifyCode(value, code);
                 stopIfObsolete();
 
                 props.onAuthChange(result.result);
@@ -480,7 +559,7 @@ const VerifyPhoneForm = (props: {
                     <C.Loading loading={loading} />
                     <C.ErrorBox error={error} />
                     <C.View_FieldRow>
-                        <C.Input_Phone placeholder='Phone Number' editable={!sentCode} value={phone} onChange={setPhone} onSubmit={requestCode} />
+                        <props.InputComponent editable={!sentCode} value={value} onChange={setValue} onSubmit={requestCode} />
                     </C.View_FieldRow>
                     {sentCode && (
                         <C.View_FieldRow>
