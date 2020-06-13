@@ -28,6 +28,9 @@
       "dork/*": [
         "code/games/dork/*"
       ],
+      "code/eslint-plugin-custom-rules/*": [
+        "code/eslint-plugin-custom-rules/*"
+      ],
       "gatsby-lite/*": [
         "code/gatsby-lite/*"
       ],

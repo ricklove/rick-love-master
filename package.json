@@ -69,6 +69,7 @@
     "code/code-space/code-space-views",
     "code/code-space/code-space-vscode",
     "code/controls-react",
+    "code/eslint-plugin-custom-rules",
     "code/games/console-simulator",
     "code/games/dork",
     "code/gatsby-lite",

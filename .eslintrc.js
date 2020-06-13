@@ -15,6 +15,7 @@ module.exports = {
         `import-quotes`,
         `promise`,
         `unicorn`,
+        // `custom-rules`,
     ],
     extends: [
         `airbnb-typescript`,
@@ -28,6 +29,7 @@ module.exports = {
         `prettier/@typescript-eslint`,
     ],
     rules: {
+        // 'custom-rules/no-use-before-define-variable-functions': ['error'],
         // "import/no-webpack-loader-syntax": [0],
         // // "graphql/template-strings": [
         // //     `error`,
@@ -96,7 +98,7 @@ module.exports = {
 
         // Need to disable unfortunately because of not supporting module level const arrow functions
         "no-use-before-define": ["off"],
-        "@typescript-eslint/explicit-function-return-type": ["off"],
+
         // Sometimes doesn't matter
         // "no-use-before-define": [
         //     "error",
@@ -186,7 +188,7 @@ module.exports = {
         // Debug Stack is complete
         // Try Catch won't fail
         // Code consistently marks every promise with await (which helps with the common, oops forgot to call await for Promise<void>)
-        // The original rule is completely wrong
+        // The original rule is the opposite: Runtime performance is actually better with await always
         "no-return-await": "off",
         "@typescript-eslint/return-await": ["error", "always"],
         "@typescript-eslint/no-floating-promises": ["error", { ignoreIIFE: true }],
