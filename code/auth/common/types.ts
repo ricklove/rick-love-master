@@ -32,7 +32,7 @@ export type AuthClientApi = {
      * 
      * Error if phone is already registered with another account
      */
-    registerPhoneAndSendVerification: (params: { phone: PhoneNumber }) => Promise<void>;
+    registerPhoneAndSendVerification: (params: { phone: PhoneNumber }) => Promise<{ result: { isAuthenticated: boolean } }>;
     verifyPhone: (params: { phone: PhoneNumber, code: string }) => Promise<{ result: AuthenticationStatus }>;
     requestPhoneLoginCode: (params: { phone: PhoneNumber }) => Promise<void>;
     loginWithPhoneCode: (params: { phone: PhoneNumber, code: string }) => Promise<{ result: AuthenticationStatus }>;
@@ -43,7 +43,7 @@ export type AuthClientApi = {
     * 
     * Error if email is already registered with another account
     */
-    registerEmailAndSendVerification: (params: { email: EmailAddress }) => Promise<void>;
+    registerEmailAndSendVerification: (params: { email: EmailAddress }) => Promise<{ result: { isAuthenticated: boolean } }>;
     verifyEmail: (params: { email: EmailAddress, code: string }) => Promise<{ result: AuthenticationStatus }>;
     requestEmailLoginCode: (params: { email: EmailAddress }) => Promise<void>;
     loginWithEmailCode: (params: { email: EmailAddress, code: string }) => Promise<{ result: AuthenticationStatus }>;
