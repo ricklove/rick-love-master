@@ -1,5 +1,6 @@
 /* eslint-disable func-names */
 
+// Typescript without eslint rules works perfectly for this, this rule is not needed
 
 const cantUseNum = num * 42;
 const num = 42;
