@@ -2,13 +2,14 @@ import {
     AST_NODE_TYPES,
     TSESLint,
     TSESTree,
+    ESLintUtils,
 } from '@typescript-eslint/experimental-utils';
-import { ESLintUtils } from '@typescript-eslint/experimental-utils';
+
+
 export const createRule = ESLintUtils.RuleCreator(
     name =>
         `no-use-before-define-variable-functions`,
 );
-
 
 
 const SENTINEL_TYPE = /^(?:(?:Function|Class)(?:Declaration|Expression)|ArrowFunctionExpression|CatchClause|ImportDeclaration|ExportNamedDeclaration)$/;
@@ -23,9 +24,9 @@ function parseOptions(options: string | Config | null): Required<Config> {
     let variables = true;
     let typedefs = true;
 
-    if (typeof options === 'string') {
-        functions = options !== 'nofunc';
-    } else if (typeof options === 'object' && options !== null) {
+    if (typeof options === `string`) {
+        functions = options !== `nofunc`;
+    } else if (typeof options === `object` && options !== null) {
         functions = options.functions !== false;
         classes = options.classes !== false;
         enums = options.enums !== false;
@@ -40,7 +41,7 @@ function parseOptions(options: string | Config | null): Required<Config> {
  * Checks whether or not a given scope is a top level scope.
  */
 function isTopLevelScope(scope: TSESLint.Scope.Scope): boolean {
-    return scope.type === 'module' || scope.type === 'global';
+    return scope.type === `module` || scope.type === `global`;
 }
 
 /**
@@ -64,7 +65,7 @@ function isOuterScope(
  * Checks whether or not a given variable is a function declaration.
  */
 function isFunction(variable: TSESLint.Scope.Variable): boolean {
-    return variable.defs[0].type === 'FunctionName';
+    return variable.defs[0].type === `FunctionName`;
 }
 
 /**
@@ -90,7 +91,7 @@ function isOuterClass(
     reference: TSESLint.Scope.Reference,
 ): boolean {
     return (
-        variable.defs[0].type === 'ClassName' && isOuterScope(variable, reference)
+        variable.defs[0].type === `ClassName` && isOuterScope(variable, reference)
     );
 }
 
@@ -102,7 +103,7 @@ function isOuterVariable(
     reference: TSESLint.Scope.Reference,
 ): boolean {
     return (
-        variable.defs[0].type === 'Variable' && isOuterScope(variable, reference)
+        variable.defs[0].type === `Variable` && isOuterScope(variable, reference)
     );
 }
 
@@ -175,33 +176,33 @@ interface Config {
 type Options = ['nofunc' | Config];
 type MessageIds = 'noUseBeforeDefine';
 
-export default createRule<Options, MessageIds>({
-    name: 'no-use-before-define-variable-functions',
+export const rule_noUseBeforeDefiveVaruableFunctions = createRule<Options, MessageIds>({
+    name: `no-use-before-define-variable-functions`,
     meta: {
-        type: 'problem',
+        type: `problem`,
         docs: {
-            description: 'Disallow the use of variables before they are defined',
-            category: 'Variables',
+            description: `Disallow the use of variables before they are defined`,
+            category: `Variables`,
             recommended: false,
             extendsBaseRule: true,
         },
         messages: {
-            noUseBeforeDefine: "'{{name}}' was used before it was defined.",
+            noUseBeforeDefine: `'{{name}}' was used before it was defined.`,
         },
         schema: [
             {
                 oneOf: [
                     {
-                        enum: ['nofunc'],
+                        enum: [`nofunc`],
                     },
                     {
-                        type: 'object',
+                        type: `object`,
                         properties: {
-                            functions: { type: 'boolean' },
-                            classes: { type: 'boolean' },
-                            enums: { type: 'boolean' },
-                            variables: { type: 'boolean' },
-                            typedefs: { type: 'boolean' },
+                            functions: { type: `boolean` },
+                            classes: { type: `boolean` },
+                            enums: { type: `boolean` },
+                            variables: { type: `boolean` },
+                            typedefs: { type: `boolean` },
                         },
                         additionalProperties: false,
                     },
@@ -273,14 +274,14 @@ export default createRule<Options, MessageIds>({
                 // Reports.
                 context.report({
                     node: reference.identifier,
-                    messageId: 'noUseBeforeDefine',
+                    messageId: `noUseBeforeDefine`,
                     data: {
                         name: reference.identifier.name,
                     },
                 });
             });
 
-            scope.childScopes.forEach(findVariablesInScope);
+            scope.childScopes.forEach(x => findVariablesInScope(x));
         }
 
         return {
