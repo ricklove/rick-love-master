@@ -39,7 +39,8 @@ export type AuthServerConfig = {
     requireVerifiedEmail: boolean;
 };
 export type AuthMessaging = {
-    sendPhoneMessage
+    // TODO: FIX THIS
+    // sendPhoneMessage
 };
 export const createAuthServer = (dependencies: { config: AuthServerConfig, storage: AuthServerStorage, userContext: AuthUserContext, messaging: AuthMessaging }) => {
     const { config, storage, userContext } = dependencies;
@@ -162,7 +163,7 @@ export const createAuthServer = (dependencies: { config: AuthServerConfig, stora
             // TOOD: Send Phone Verification Code
 
             return getStatus(userState);
-        };
+        },
         // verifyPhone: (params: { phone: PhoneNumber, code: string }) => Promise<{ result: AuthenticationStatus }>;
         // requestPhoneLoginCode: (params: { phone: PhoneNumber }) => Promise<void>;
         // loginWithPhoneCode: (params: { phone: PhoneNumber, code: string }) => Promise<{ result: AuthenticationStatus }>;

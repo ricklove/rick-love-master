@@ -67,6 +67,7 @@ const authClient = createAuthenticationClient_serverAccess({
         registerPhoneAndSendVerification: async (phone) => {
             mockServerState.phoneCode = `${Math.floor(100000 + Math.random() * 899999)}`;
             console.log(`phoneCode`, { phoneCode: mockServerState.phoneCode });
+            return { result: mockServerState.status };
         },
         verifyPhone: async (phone, code) => {
             if (mockServerState.phoneCode !== code) {
@@ -96,6 +97,7 @@ const authClient = createAuthenticationClient_serverAccess({
         registerEmailAndSendVerification: async (email) => {
             mockServerState.emailCode = `${Math.floor(100000 + Math.random() * 899999)}`;
             console.log(`emailCode`, { emailCode: mockServerState.emailCode });
+            return { result: mockServerState.status };
         },
         verifyEmail: async (email, code) => {
             if (mockServerState.emailCode !== code) {
