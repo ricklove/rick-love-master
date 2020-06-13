@@ -15,7 +15,7 @@ module.exports = {
         `import-quotes`,
         `promise`,
         `unicorn`,
-        `custom-rules`,
+        // `custom-rules`,
     ],
     extends: [
         `airbnb-typescript`,
@@ -29,7 +29,7 @@ module.exports = {
         `prettier/@typescript-eslint`,
     ],
     rules: {
-        'custom-rules/no-use-before-define-variable-functions': ['off'],
+        // 'custom-rules/no-use-before-define-variable-functions': ['off'],
         // "import/no-webpack-loader-syntax": [0],
         // // "graphql/template-strings": [
         // //     `error`,
