@@ -6,4 +6,3 @@ module.exports = {
         'no-use-before-define-variable-functions': no_use_before_define_variable_functions_1.rule_noUseBeforeDefiveVaruableFunctions,
     },
 };
-//# sourceMappingURL=index.js.map
