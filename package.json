@@ -62,6 +62,7 @@
     "build-blog": "cd packages/blog-gatsby-site && gatsby build"
   },
   "workspaces": [
+    "code/audio",
     "code/auth",
     "code/blog",
     "code/code-space/code-space-logic",
@@ -75,6 +76,7 @@
     "code/gatsby-lite",
     "code/json-rpc",
     "code/payments",
+    "code/performance",
     "code/react-native-lite",
     "code/themes",
     "code/utils-react",

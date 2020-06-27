@@ -1,6 +1,9 @@
 {
   "compilerOptions": {
     "paths": {
+      "audio/*": [
+        "code/audio/*"
+      ],
       "auth/*": [
         "code/auth/*"
       ],
@@ -28,7 +31,7 @@
       "dork/*": [
         "code/games/dork/*"
       ],
-      "code/eslint-plugin-custom-rules/*": [
+      "eslint-plugin-custom-rules/*": [
         "code/eslint-plugin-custom-rules/*"
       ],
       "gatsby-lite/*": [
@@ -39,6 +42,9 @@
       ],
       "payments/*": [
         "code/payments/*"
+      ],
+      "performance/*": [
+        "code/performance/*"
       ],
       "react-native-lite/*": [
         "code/react-native-lite/*"
