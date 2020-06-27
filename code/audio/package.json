@@ -1,7 +1,9 @@
 {
-  "name": "audio",
-  "version": "1.0.0",
-  "dependencies": {
-    "utils": "*"
-  }
+    "name": "audio",
+    "version": "1.0.0",
+    "dependencies": {
+        "controls-react": "*",
+        "utils-react": "*",
+        "react": "^16.12.0"
+    }
 }
