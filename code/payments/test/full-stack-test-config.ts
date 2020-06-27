@@ -1,10 +1,4 @@
-
-// Place in [SameFileName].secret.ts
-export type FullStackTestConfig = {
-    stripeSecretKey: string;
-    stripePublicKey: string;
-    serverUrl: string;
-}
+import { FullStackTestConfig } from './full-stack-test-config-types';
 
 export const getFullStackTestConfig = async (): Promise<FullStackTestConfig> => {
     const config = (await import(`./full-stack-test-config.secret`))?.fullStackTestConfig as FullStackTestConfig;
