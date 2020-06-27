@@ -41,11 +41,11 @@ export const createMidiInput = async ({
         });
     }
 
-    const outputs = midiAccess.outputs.values();
-    // const o = outputs[0];
-    // o.send();
+    // const outputs = midiAccess.outputs.values();
+    // // const o = outputs[0];
+    // // o.send();
 
-    return {
-        outputs,
-    };
+    // return {
+    //     outputs,
+    // };
 };
