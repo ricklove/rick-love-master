@@ -59,7 +59,7 @@
   },
   "scripts": {
     "build": "cd scripts/build && ts-node -r tsconfig-paths/register build.ts",
-    "build-blog": "cd packages/blog-gatsby-site && gatsby build"
+    "build-blog": "cd projects/blog-site && gatsby build"
   },
   "workspaces": [
     "code/audio",
