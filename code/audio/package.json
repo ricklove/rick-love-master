@@ -3,6 +3,7 @@
     "version": "1.0.0",
     "dependencies": {
         "controls-react": "*",
+        "utils": "*",
         "utils-react": "*",
         "react": "^16.12.0"
     }

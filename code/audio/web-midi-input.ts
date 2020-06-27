@@ -40,4 +40,12 @@ export const createMidiInput = async ({
             onMidiMessage({ command, note, velocity, event: e });
         });
     }
+
+    const outputs = midiAccess.outputs.values();
+    // const o = outputs[0];
+    // o.send();
+
+    return {
+        outputs,
+    };
 };

@@ -8,7 +8,11 @@ type MidiAccess = {
             onmidimessage: (midiMessageEvent: MIDIMessageEvent) => void;
         }[];
     };
-    // outputs: [];
+    outputs: {
+        values: () => {
+            send: (data: [number, number, number]) => void;
+        }[];
+    };
 };
 declare interface Navigator {
     requestMIDIAccess?: () => Promise<MidiAccess>;
