@@ -12,7 +12,7 @@ export const MidiTestComponent = (props: {}) => {
     const enableMidi = () => doWork(async () => {
         await createMidiInput({
             onMidiMessage: (input) => {
-                setMessages(s => [...s, JSON.stringify(input)]);
+                setMessages(s => [JSON.stringify(input), ...s]);
             },
         });
     });
