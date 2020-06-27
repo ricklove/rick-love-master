@@ -1,0 +1,87 @@
+// Based on https://stackoverflow.com/a/57117594/567524
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+// type Impossible<K extends keyof any> = {
+//     [P in K]: never;
+// };
+// type NoExtraProperties<T, U extends T = T> = U & Impossible<Exclude<keyof U, keyof T>>;
+
+// export type Exact<T> = NoExtraProperties<T>;
+// export type Exact<T> = { [K in keyof T]: T[K] extends T[K] ? T[K] : never };
+// export type Exact<T> = { [K in keyof T]: T[K] extends T[K] ? T[K] : never };
+
+// export type Exact<T> = T & { [key: string]: { ['Never Gonna Give You Up!']: 'Never Gonna Let You Down!' };
+// export type Exact<T> = T & Omit<{ [key: string]: never }, keyof T>;
+// export type Exact<T> = T & { [key: string]: unknown };
+
+
+// From: https://github.com/microsoft/TypeScript/issues/12936#issuecomment-524631270
+// (these two types MUST NOT be merged into a single declaration)
+type ExactInner<T> = <D>() => (D extends T ? D : D);
+export type Exact<T> = ExactInner<T> & T;
+export function exact<T>(obj: Exact<T> | T): Exact<T> {
+    return obj as Exact<T>;
+};
+
+
+// Tests
+/* eslint-disable @typescript-eslint/no-unused-vars */
+/* eslint-disable no-console */
+const test = () => {
+
+    type _TestOmit = Omit<{ publicKey: string, privateKey: string }, keyof { publicKey: string }>;
+    type _TestOmit2 = Omit<{ [key: string]: never }, keyof { publicKey: string }>;
+
+    const secrets = { publicKey: `keep it secret`, privateKey: `keep it safe` };
+
+    // This fails correctly as built-in
+    // const noSecrets_literal: { publicKey: string } = { publicKey: `no`, privateKey: `secrets` };
+
+    // But variables are not checked
+    const noSecrets_variable_isAllowed: { publicKey: string } = secrets;
+
+    type PublicSecrets = Exact<{ publicKey: string }>;
+    // type PublicSecretsIntended = { publicKey: string } & Omit<{ [key: string]: never }, 'publicKey'>;
+    const noSecrets_exact_shouldPass: Exact<{ publicKey: string }> = { publicKey: secrets.publicKey };
+    const noSecrets_exact_shouldFail: Exact<{ publicKey: string }> = secrets;
+
+    console.log(noSecrets_exact_shouldPass);
+    console.log(noSecrets_exact_shouldFail);
+
+    const asCallback = (onGetPublicValue: () => Exact<{ publicKey: string }>) => {
+        console.log(`Hello World!`, { allTheThings: onGetPublicValue() });
+    };
+
+    const shareSecrets = (withSecrets: { publicKey: string, privateKey: string }) => {
+        return withSecrets;
+    };
+    const protectSecrets = (withSecrets: { publicKey: string, privateKey: string }) => {
+        return { publicKey: withSecrets.publicKey };
+    };
+
+
+    // This should fail type safety
+    asCallback(() => shareSecrets(secrets));
+    // This should pass
+    asCallback(() => protectSecrets(secrets));
+
+    // As Return Value
+    type SecretKeeper = {
+        getThePublicStuff: () => Exact<{ publicKey: string }>;
+    };
+
+    // This should fail
+    // const brokenSecretKeeper: SecretKeeper = { getThePublicStuff: () => ({ random: `stuff` }) };
+
+    // This should fail
+    const badSecretKeeperLiteral: SecretKeeper = { getThePublicStuff: () => ({ publicKey: `stuff`, privateKey: `secrets` }) };
+
+    // This should fial type safety
+    const badSecretKeeper: SecretKeeper = { getThePublicStuff: () => shareSecrets(secrets) };
+
+    // This should pass
+    const goodSecretKeeper: SecretKeeper = { getThePublicStuff: () => protectSecrets(secrets) };
+
+};
+/* eslint-enable @typescript-eslint/no-unused-vars */
+/* eslint-enable no-console */

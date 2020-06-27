@@ -1,0 +1,67 @@
+/* eslint-disable unicorn/no-abusive-eslint-disable */
+/* eslint-disable eslint-comments/no-unlimited-disable */
+/* eslint-disable */
+/**
+ * A Promise with a known Error Type
+ */
+export class PromiseWithError<T, TError> {
+
+    then<TResult1 = T, TResult2 = never>(
+        onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null,
+        onrejected?: ((reason: unknown) => TResult2 | PromiseLike<TResult2>) | undefined | null): Promise<TResult1 | TResult2> {
+        throw new Error(`Not Implmented`);
+    }
+
+    catch<TResult = TError>(onrejected?: ((reason: TError) => TResult | PromiseLike<TResult>) | undefined | null): Promise<T | TResult> {
+        throw new Error(`Not Implmented`);
+    }
+}
+
+
+// Test
+/* eslint-disable @typescript-eslint/no-unused-vars */
+/* eslint-disable no-console */
+class TestError extends Error {
+    constructor(public message: string, public data: number) {
+        super();
+    }
+};
+
+const test = async () => {
+
+    // Normal Promise has an any for the catch error type
+    const normalPromise = async (): Promise<number> => {
+        if (Math.random() < 0.5) {
+            throw new TestError(`It breaks sometimes!`, 0.5);
+        }
+        return 10;
+    };
+
+    try {
+        const normResult = await normalPromise();
+        console.log(`It didn't break!`, { normResult });
+
+    } catch (error) {
+        const t: { whatever: 'cause it :any', this: 'will not exist' } = error;
+        console.log(`Error got that any type`, { error, t });
+    }
+
+    // PromiseWithError declares it's error type
+    const customPromise = async (): PromiseWithError<number, TestError> => {
+        if (Math.random() < 0.5) {
+            throw new TestError(`It breaks sometimes!`, 0.5);
+        }
+        return 10;
+    };
+
+    try {
+        const normResult = await customPromise();
+        console.log(`It didn't break!`, { normResult });
+
+    } catch (error) {
+        const t: { whatever: 'cause it :any', this: 'will not exist' } = error;
+        console.log(`Error got that any type`, { error, t });
+    }
+};
+/* eslint-enable @typescript-eslint/no-unused-vars */
+/* eslint-enable no-console */

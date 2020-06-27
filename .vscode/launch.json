@@ -1,0 +1,124 @@
+{
+    // Use IntelliSense to learn about possible attributes.
+    // Hover to view descriptions of existing attributes.
+    // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "Current TS File",
+            "type": "node",
+            "request": "launch",
+            "args": [
+                "${file}"
+            ],
+            "runtimeArgs": [
+                "--nolazy",
+                "-r",
+                "ts-node/register",
+                "--preserve-symlinks",
+                "--preserve-symlinks-main",
+                "-r",
+                "tsconfig-paths/register"
+            ],
+            "sourceMaps": true,
+            "cwd": "${fileDirname}",
+            "protocol": "inspector",
+            "smartStep": true,
+            "skipFiles": [
+                "${workspaceFolder}/node_modules/**/*.js",
+                "<node_internals>/**/*.js"
+            ]
+        },
+        {
+            "name": "Run Hydrate",
+            "type": "node",
+            "request": "launch",
+            "args": [
+                "${workspaceFolder}/scripts/build/hydrate.ts"
+            ],
+            "runtimeArgs": [
+                "--nolazy",
+                "-r",
+                "ts-node/register",
+                "--preserve-symlinks",
+                "--preserve-symlinks-main",
+                "-r",
+                "tsconfig-paths/register"
+            ],
+            "sourceMaps": true,
+            "cwd": "${fileDirname}",
+            "protocol": "inspector",
+            "smartStep": true,
+            "skipFiles": [
+                "${workspaceFolder}/../../node_modules/**/*.js",
+                "<node_internals>/**/*.js"
+            ]
+        },
+        {
+            "name": "Run Test Server - Payments",
+            "type": "node",
+            "request": "launch",
+            "args": [
+                "${workspaceFolder}/code/payments/test/full-stack-test-server.ts"
+            ],
+            "runtimeArgs": [
+                "--nolazy",
+                "-r",
+                "ts-node/register",
+                "--preserve-symlinks",
+                "--preserve-symlinks-main",
+                "-r",
+                "tsconfig-paths/register"
+            ],
+            "sourceMaps": true,
+            "cwd": "${fileDirname}",
+            "protocol": "inspector",
+            "smartStep": true,
+            "skipFiles": [
+                "${workspaceFolder}/../../node_modules/**/*.js",
+                "<node_internals>/**/*.js"
+            ]
+        },
+        {
+            "name": "Run Specific Target (Example)",
+            "type": "node",
+            "request": "launch",
+            "args": [
+                //"${workspaceFolder}/scripts/build/build.ts"
+                "${workspaceFolder}/scripts/build/hydrate.ts"
+            ],
+            "runtimeArgs": [
+                "--nolazy",
+                "-r",
+                "ts-node/register",
+                "--preserve-symlinks",
+                "--preserve-symlinks-main",
+                "-r",
+                "tsconfig-paths/register"
+            ],
+            "sourceMaps": true,
+            "cwd": "${fileDirname}",
+            "protocol": "inspector",
+            "smartStep": true,
+            "skipFiles": [
+                "${workspaceFolder}/../../node_modules/**/*.js",
+                "<node_internals>/**/*.js"
+            ]
+        },
+        {
+            "name": "CodeSpaceExtension",
+            "type": "extensionHost",
+            "request": "launch",
+            "runtimeExecutable": "${execPath}",
+            "args": [
+                "--extensionDevelopmentPath=${workspaceRoot}/code/code-space/code-space-vscode/"
+            ],
+            "stopOnEntry": false,
+            "sourceMaps": true,
+            "outFiles": [
+                "${workspaceRoot}/code/code-space/code-space-vscode/out/**/*.js"
+            ],
+            // "preLaunchTask": "npm: watch"
+        },
+    ]
+}

@@ -1,1 +1,0 @@
-Each workspace has it's own folder and the workspace is intended to be opened in vscode or another ide

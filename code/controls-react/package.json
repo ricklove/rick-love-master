@@ -1,0 +1,11 @@
+{
+  "name": "controls-react",
+  "version": "1.0.0",
+  "dependencies": {
+    "react-native-lite": "*",
+    "themes": "*",
+    "utils": "*",
+    "react": "^16.12.0",
+    "react-icons": "^3.10.0"
+  }
+}

@@ -1,9 +1,0 @@
-{
-    "name": "utils",
-    "version": "1.0.0",
-    "dependencies": {},
-    "devDependencies": {
-        "ts-node": "^8.10.1",
-        "typescript": "^3.9.3"
-    }
-}

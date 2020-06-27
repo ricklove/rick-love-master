@@ -1,0 +1,66 @@
+{
+  "compilerOptions": {
+    "paths": {
+      "audio/*": [
+        "code/audio/*"
+      ],
+      "auth/*": [
+        "code/auth/*"
+      ],
+      "blog/*": [
+        "code/blog/*"
+      ],
+      "code-space-logic/*": [
+        "code/code-space/code-space-logic/*"
+      ],
+      "code-space-node/*": [
+        "code/code-space/code-space-node/*"
+      ],
+      "code-space-views/*": [
+        "code/code-space/code-space-views/*"
+      ],
+      "code-space-vscode/*": [
+        "code/code-space/code-space-vscode/*"
+      ],
+      "console-simulator/*": [
+        "code/games/console-simulator/*"
+      ],
+      "controls-react/*": [
+        "code/controls-react/*"
+      ],
+      "dork/*": [
+        "code/games/dork/*"
+      ],
+      "eslint-plugin-custom-rules/*": [
+        "code/eslint-plugin-custom-rules/*"
+      ],
+      "gatsby-lite/*": [
+        "code/gatsby-lite/*"
+      ],
+      "json-rpc/*": [
+        "code/json-rpc/*"
+      ],
+      "payments/*": [
+        "code/payments/*"
+      ],
+      "performance/*": [
+        "code/performance/*"
+      ],
+      "react-native-lite/*": [
+        "code/react-native-lite/*"
+      ],
+      "themes/*": [
+        "code/themes/*"
+      ],
+      "utils-react/*": [
+        "code/utils-react/*"
+      ],
+      "utils-scripts/*": [
+        "code/utils-scripts/*"
+      ],
+      "utils/*": [
+        "code/utils/*"
+      ]
+    }
+  }
+}

@@ -1,23 +1,38 @@
 {
+    "extends": "./tsconfig-paths",
     "compilerOptions": {
         "moduleResolution": "node",
         // "target": "es2018",
         // "module": "es2020",
         "lib": [
             "dom",
-            "es2017"
+            "es2015",
+            "es2016",
+            "es2017",
+            "es2018",
+            "es2019",
+            "es2020",
         ],
         "allowJs": true,
+        "resolveJsonModule": true,
         // "checkJs": true,
         "jsx": "react",
         "strict": true,
         "esModuleInterop": true,
         "experimentalDecorators": true,
         "emitDecoratorMetadata": true,
+        "downlevelIteration": true,
         "noEmit": true,
-        "skipLibCheck": true
+        "skipLibCheck": true,
+        "baseUrl": "."
     },
     "exclude": [
         "node_modules"
+    ],
+    "include": [
+        "code",
+        "scripts",
+        "projects",
+        "templates",
     ]
 }
