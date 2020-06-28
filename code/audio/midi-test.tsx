@@ -4,7 +4,6 @@
 import React, { useState } from 'react';
 import { C } from 'controls-react';
 import { useAutoLoadingError } from 'utils-react/hooks';
-import { delay } from 'utils/delay';
 import { createMidiInput } from './web-midi-input';
 
 export const MidiTestComponent = (props: {}) => {
