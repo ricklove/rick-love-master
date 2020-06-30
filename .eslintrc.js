@@ -29,85 +29,19 @@ module.exports = {
         `prettier/@typescript-eslint`,
     ],
     rules: {
-        // 'custom-rules/no-use-before-define-variable-functions': ['off'],
-        // "import/no-webpack-loader-syntax": [0],
-        // // "graphql/template-strings": [
-        // //     `error`,
-        // //     {
-        // //         env: `relay`,
-        // //         schemaString: printSchema(schema, { commentDescriptions: true }),
-        // //         tagName: `graphql`,
-        // //     },
-        // // ],
-        // // https://github.com/evcohen/eslint-plugin-jsx-a11y/tree/master/docs/rules
-        // "jsx-a11y/accessible-emoji": `warn`,
-        // "jsx-a11y/alt-text": `warn`,
-        // "jsx-a11y/anchor-has-content": `warn`,
-        // "jsx-a11y/anchor-is-valid": `warn`,
-        // "jsx-a11y/aria-activedescendant-has-tabindex": `warn`,
-        // "jsx-a11y/aria-props": `warn`,
-        // "jsx-a11y/aria-proptypes": `warn`,
-        // "jsx-a11y/aria-role": `warn`,
-        // "jsx-a11y/aria-unsupported-elements": `warn`,
-        // // TODO: It looks like the `autocomplete-valid` rule hasn't been published yet
-        // // "jsx-a11y/autocomplete-valid": [
-        // //   "warn",
-        // //   {
-        // //     inputComponents: [],
-        // //   },
-        // // ],
-        // "jsx-a11y/click-events-have-key-events": `warn`,
-        // "jsx-a11y/heading-has-content": `warn`,
-        // "jsx-a11y/html-has-lang": `warn`,
-        // "jsx-a11y/iframe-has-title": `warn`,
-        // "jsx-a11y/img-redundant-alt": `warn`,
-        // "jsx-a11y/interactive-supports-focus": `warn`,
-        // "jsx-a11y/label-has-associated-control": `warn`,
-        // "jsx-a11y/lang": `warn`,
-        // "jsx-a11y/media-has-caption": `warn`,
-        // "jsx-a11y/mouse-events-have-key-events": `warn`,
-        // "jsx-a11y/no-access-key": `warn`,
-        // "jsx-a11y/no-autofocus": `warn`,
-        // "jsx-a11y/no-distracting-elements": `warn`,
-        // "jsx-a11y/no-interactive-element-to-noninteractive-role": `warn`,
-        // "jsx-a11y/no-noninteractive-element-interactions": `warn`,
-        // "jsx-a11y/no-noninteractive-element-to-interactive-role": `warn`,
-        // "jsx-a11y/no-noninteractive-tabindex": `warn`,
-        // "jsx-a11y/no-onchange": `warn`,
-        // "jsx-a11y/no-redundant-roles": `warn`,
-        // "jsx-a11y/no-static-element-interactions": `warn`,
-        // "jsx-a11y/role-has-required-aria-props": `warn`,
-        // "jsx-a11y/role-supports-aria-props": `warn`,
-        // "jsx-a11y/scope": `warn`,
-        // "jsx-a11y/tabindex-no-positive": `warn`,
-
-        // Some good rules from: https://github.com/iamturns/create-exposed-app/blob/master/.eslintrc.js
-        // Default is bad for sure, but it is required for Gatsby Pages
+        // Always Use Named Exports
         "import/prefer-default-export": "off",
         "import/no-default-export": "error",
-        // Allow nameless arrow functions: Gatsby Pages
-        // "import/no-anonymous-default-export": [2, { "allowArrowFunction": true }],
 
-        // Sometimes useful to do so, and typescript still requires types
+        // Sometimes it's useful to keep props especially when passing through to a nested component
         "react/destructuring-assignment": "off",
 
-        // Tsx react only?
-        // "react/jsx-filename-extension": [2, { "extensions": [".js", ".jsx", ".tsx"] }],
-        // React/ReactNative JS mixed with tsx?
+        // For Typescript only .tsx, for Javascript either
         "react/jsx-filename-extension": [2, { "extensions": [".js", ".jsx", ".tsx"] }],
 
-        // Need to disable unfortunately because of not supporting module level const arrow functions
+        // Need to disable because of not supporting module level const arrow functions
+        // However, typescript itself will check this, so still safe
         "no-use-before-define": ["off"],
-
-        // Sometimes doesn't matter
-        // "no-use-before-define": [
-        //     "error",
-        //     { functions: false, classes: true, variables: true },
-        // ],
-        // "@typescript-eslint/no-use-before-define": [
-        //     "error",
-        //     { functions: false, classes: true, variables: true, typedefs: false },
-        // ],
 
         // Many Functions should use an inferred return type
         "@typescript-eslint/explicit-function-return-type": [
@@ -125,9 +59,6 @@ module.exports = {
 
         // Allow Disable ESLint Rule for whole file
         "eslint-comments/disable-enable-pair": ["error", { "allowWholeFile": true }],
-
-
-        // My Preferences:
 
         // Yes, of course we use continue with loops
         "no-continue": "off",
@@ -147,7 +78,8 @@ module.exports = {
             "exports": "always-multiline",
             "functions": "always-multiline",
         }],
-        // Use semicolons to multiline types, comma for single line types
+
+        // Use semicolons for multiline types, comma for single line types
         "@typescript-eslint/member-delimiter-style": ["error", {
             "multiline": {
                 "delimiter": "semi",
@@ -158,7 +90,8 @@ module.exports = {
                 "requireLast": false
             }
         }],
-        // Normal Backticks Everywhere except jsx and imports
+
+        // Normal Backticks Everywhere (except jsx and imports)
 
         // Normal quotes must be disabled because typescript types must use single
         "quotes": ["off", "backtick"],
@@ -168,19 +101,19 @@ module.exports = {
 
         "react/jsx-props-no-spreading": ["off"],
 
-        // I want underscores
+        // Underscores are useful for long names, allow them
         "camelcase": ['off'],
         "@typescript-eslint/camelcase": ['off'],
         "react/jsx-pascal-case": ['off'],
         "no-underscore-dangle": ['off'],
 
-        // Why?
+        // This is not a problem when using semicolons, allow
         "no-plusplus": ['off'],
 
-        // No substr is preferred 
+        // Disagree with rule, substr is preferred for strings
         "unicorn/prefer-string-slice": ["off"],
 
-        // Keep your functions close to home
+        // Disagree, it's bettero to keep the functions close to usage
         "unicorn/consistent-function-scoping": ["off"],
 
         // Always Return await!
@@ -200,11 +133,7 @@ module.exports = {
         // Not Needed with Typescript
         "react/prop-types": ["off"],
 
-        // Too many false positives:
+        // Too many weird false positives:
         "react-hooks/exhaustive-deps": ["off"],
-
-
-        // TODO: Test
-        // "require-atomic-updates": ["error"],
     },
 }
