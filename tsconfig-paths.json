@@ -43,6 +43,9 @@
       "payments/*": [
         "code/payments/*"
       ],
+      "perception/*": [
+        "code/perception/*"
+      ],
       "performance/*": [
         "code/performance/*"
       ],
