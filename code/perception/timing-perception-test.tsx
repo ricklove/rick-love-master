@@ -7,14 +7,17 @@ import { delay } from 'utils/delay';
 
 export const TimingPerceptionTestComponent = (props: {}) => {
 
-    const [delayTimeMs, setDelayTimeMs] = useState(250);
-    const [target, setTarget] = useState(false);
+    const [delayTimeMs, setDelayTimeMs] = useState(500);
+    const [target, setTarget] = useState(null as null | { hit: boolean, topRatio: number, leftRatio: number });
 
     useEffect(() => {
+        const pos = { hit: true, topRatio: Math.random(), leftRatio: Math.random() };
+        setTarget(pos);
+        setSuccess(null);
+
         const timeoutId = setTimeout(() => {
-            setTarget(true);
-            setSuccess(null);
-        }, 1000);
+            setTarget(s => ({ ...pos, hit: false }));
+        }, 500 + 1000 * Math.random());
         return () => clearTimeout(timeoutId);
     }, [delayTimeMs]);
 
@@ -22,12 +25,12 @@ export const TimingPerceptionTestComponent = (props: {}) => {
 
     const onClick = async () => {
         await delay(delayTimeMs);
-        setTarget(false);
+        setTarget(null);
         setSuccess({ success: true, delayTimeMs });
 
         if (delayTimeMs < 10) {
-            setDelayTimeMs(250);
-        } else if (Math.random() < 0.1) {
+            setDelayTimeMs(500);
+        } else if (Math.random() < 0.05) {
             setDelayTimeMs(s => 0);
         } else {
             setDelayTimeMs(s => s + 1);
@@ -41,9 +44,16 @@ export const TimingPerceptionTestComponent = (props: {}) => {
                     <C.View_FieldRow>
                         {/* <C.Button_FieldInline onPress={sendInputToOutputs} >Send to Outputs test</C.Button_FieldInline> */}
                     </C.View_FieldRow>
-                    <C.View_FieldRow style={{ background: target ? `#00FF00` : `#FF0000` }} >
-                        <C.Button_FieldInline onPress={onClick} >{`${target ? `` : `Don't`}Press Button`}</C.Button_FieldInline>
-                    </C.View_FieldRow>
+                    <div style={{ position: `relative`, width: 300, height: 300 }}>
+                        {target && (
+                            <div style={{ position: `absolute`, top: 270 * target.topRatio, left: 250 * target.leftRatio }}>
+                                <C.View_FieldRow style={{ background: target ? `#00FF00` : `#FF0000` }} >
+                                    <C.Button_FieldInline onPress={onClick} >{`${target.hit ? `` : `Don't`}Press Button`}</C.Button_FieldInline>
+                                </C.View_FieldRow>
+                            </div>
+                        )}
+                    </div>
+
                     {success && (
                         <C.View_FieldRow style={{ background: success.success ? `#00FF00` : `#FF0000` }} >
                             <C.Text_FieldLabel>{`${success.success ? `Success ${success.delayTimeMs}` : `Fail`}`}</C.Text_FieldLabel>
