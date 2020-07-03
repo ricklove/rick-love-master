@@ -4,7 +4,8 @@ import { C } from 'controls-react';
 import { createJsonRpcClient } from 'json-rpc/json-rpc-client-stack';
 import { PaymentViewServerAccess_WithDebug, createPaymentClientComponents_withDebug } from '../client/payment-react';
 import { PaymentProviderName, PaymentClientApi, PaymentMethodStorageKey } from '../common/types';
-import { getFullStackTestConfig, FullStackTestConfig } from './full-stack-test-config';
+import { FullStackTestConfig } from './full-stack-test-config-types';
+import { getFullStackTestConfig } from './full-stack-test-config';
 
 export const PaymentFullStackTesterHost = (props: {}) => {
 

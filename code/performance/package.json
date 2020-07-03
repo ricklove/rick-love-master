@@ -1,5 +1,5 @@
 {
-  "name": "code-space-node",
+  "name": "performance",
   "version": "1.0.0",
   "dependencies": {
     "utils": "*"

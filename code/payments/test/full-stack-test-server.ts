@@ -3,7 +3,7 @@
 import http from 'http';
 import { createJsonRpcServer } from 'json-rpc/json-rpc-server-stack';
 import { JsonRpcSessionToken, JsonRpcSessionRequestBody } from 'json-rpc/types';
-import { JsonTyped, jsonStringify, jsonParse } from 'utils/json';
+import { JsonTyped } from 'utils/json';
 import { PaymentError } from '../common/types';
 import { createPaymentApi, CreatePaymentApiDependencies } from '../server/create-payment-api';
 import { getFullStackTestConfig } from './full-stack-test-config';
