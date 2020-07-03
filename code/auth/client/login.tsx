@@ -25,11 +25,11 @@ const createAuthServerAccess = (authClientApi: AuthClientApi) => {
         changePassword: (password: string) => authClientApi.changePassword({ password }),
         registerPhoneAndSendVerification: (phone: PhoneNumber) => authClientApi.registerPhoneAndSendVerification({ phone }),
         verifyPhone: (phone: PhoneNumber, code: string) => authClientApi.verifyPhone({ phone, code }),
-        requestPhoneLoginCode: (phone: PhoneNumber) => authClientApi.requestPhoneLoginCode({ phone }),
+        requestPhoneLoginCode: (data: { username: string, phone: PhoneNumber }) => authClientApi.requestPhoneLoginCode(data),
         loginWithPhoneCode: (phone: PhoneNumber, code: string) => authClientApi.loginWithPhoneCode({ phone, code }),
         registerEmailAndSendVerification: (email: EmailAddress) => authClientApi.registerEmailAndSendVerification({ email }),
         verifyEmail: (email: EmailAddress, code: string) => authClientApi.verifyEmail({ email, code }),
-        requestEmailLoginCode: (email: EmailAddress) => authClientApi.requestEmailLoginCode({ email }),
+        requestEmailLoginCode: (data: { username: string, email: EmailAddress }) => authClientApi.requestEmailLoginCode(data),
         loginWithEmailCode: (email: EmailAddress, code: string) => authClientApi.loginWithEmailCode({ email, code }),
     };
 };
@@ -128,6 +128,7 @@ const AuthenticationView = ({ state, serverAccess, config, onAuthChange }: { sta
 
 const UnauthenticatedView = ({ serverAccess, config, onAuthChange }: { serverAccess: AuthServerAccess, config: AuthConfig, onAuthChange: (status: AuthenticationStatus) => void }) => {
 
+    const [usernameShared, setUsernameShared] = useState(``);
     const [tab, setTab] = useState(`login` as 'login' | 'create-account' | 'forgot-password');
     if (tab === `create-account`) {
         return (
@@ -136,11 +137,11 @@ const UnauthenticatedView = ({ serverAccess, config, onAuthChange }: { serverAcc
     }
     if (tab === `forgot-password`) {
         return (
-            <ForgotPasswordForm serverAccess={serverAccess} onAuthChange={onAuthChange} onNavigate={(view) => setTab(view)} />
+            <ForgotPasswordForm serverAccess={serverAccess} onAuthChange={onAuthChange} onNavigate={(view) => setTab(view)} username={usernameShared} />
         );
     }
     return (
-        <LoginForm serverAccess={serverAccess} onAuthChange={onAuthChange} onNavigate={(view) => setTab(view)} />
+        <LoginForm serverAccess={serverAccess} onAuthChange={onAuthChange} onNavigate={(view) => setTab(view)} onUsernameChanged={setUsernameShared} />
     );
 };
 
@@ -172,7 +173,7 @@ const AuthenticatedView = ({ serverAccess, config, status, onAuthChange }: { ser
     );
 };
 
-const LoginForm = (props: { serverAccess: AuthServerAccess, onAuthChange: (status: AuthenticationStatus) => void, onNavigate: (view: 'create-account' | 'forgot-password') => void }) => {
+const LoginForm = (props: { serverAccess: AuthServerAccess, onAuthChange: (status: AuthenticationStatus) => void, onNavigate: (view: 'create-account' | 'forgot-password') => void, onUsernameChanged: (username: string) => void }) => {
 
     const [username, setUsername] = useState(``);
     const [password, setPassword] = useState(``);
@@ -207,7 +208,7 @@ const LoginForm = (props: { serverAccess: AuthServerAccess, onAuthChange: (statu
                     <C.Loading loading={loading} />
                     <C.ErrorBox error={error} />
                     <C.View_FieldRow>
-                        <C.Input_Username placeholder='Username' value={username} onChange={setUsername} onSubmit={login} />
+                        <C.Input_Username placeholder='Username' value={username} onChange={(x) => { setUsername(x); props.onUsernameChanged(x); }} onSubmit={login} />
                     </C.View_FieldRow>
                     <C.View_FieldRow>
                         <C.Input_Password placeholder='Password' value={password} onChange={setPassword} onSubmit={login} />
@@ -429,16 +430,28 @@ const PasswordFields = (props: { password: string, minPasswordLength: number, on
     );
 };
 
-const ForgotPasswordForm = (props: { serverAccess: AuthServerAccess, onNavigate: (view: 'login') => void, onAuthChange: (status: AuthenticationStatus) => void }) => {
+const ForgotPasswordForm = (props: { serverAccess: AuthServerAccess, onNavigate: (view: 'login') => void, onAuthChange: (status: AuthenticationStatus) => void, username?: string }) => {
     return (
-        <VerifyContactMethodForm
+        <VerifyContactMethodForm<{ username: string, phone: PhoneNumber }>
             requestCode={props.serverAccess.requestPhoneLoginCode}
-            verifyCode={props.serverAccess.loginWithPhoneCode}
+            verifyCode={(value, code) => props.serverAccess.loginWithPhoneCode(value.phone, code)}
             onAuthChange={props.onAuthChange}
             label='Forgot Password'
             navButtons={[{ label: `Login`, action: () => props.onNavigate(`login`) }]}
-            defaultValue={toStandardPhoneNumber(``)}
-            InputComponent={(p) => <C.Input_Phone placeholder='Phone Number' {...p} />}
+            defaultValue={{ username: props.username ?? ``, phone: toStandardPhoneNumber(``) }}
+            InputComponent={(p) => {
+                const v = p.value;
+                return (
+                    <>
+                        <C.View_FieldRow>
+                            <C.Input_Username editable={p.editable} placeholder='Username' value={v.username} onChange={x => p.onChange({ ...v, username: x })} onSubmit={() => { }} />
+                        </C.View_FieldRow>
+                        <C.View_FieldRow>
+                            <C.Input_Phone editable={p.editable} placeholder='Phone Number' value={v.phone} onChange={x => p.onChange({ ...v, phone: x })} onSubmit={p.onSubmit} />
+                        </C.View_FieldRow>
+                    </>
+                );
+            }}
         />
     );
 };
@@ -451,7 +464,7 @@ const RegisterPhoneForm = (props: { serverAccess: AuthServerAccess, onAuthChange
             onAuthChange={props.onAuthChange}
             label='Register Phone'
             defaultValue={toStandardPhoneNumber(``)}
-            InputComponent={(p) => <C.Input_Phone placeholder='Phone Number' {...p} />}
+            InputComponent={(p) => <C.View_FieldRow><C.Input_Phone placeholder='Phone Number' {...p} /></C.View_FieldRow>}
         />
     );
 };
@@ -466,7 +479,7 @@ const ChangePhoneForm = (props: { serverAccess: AuthServerAccess, onAuthChange: 
             label='Change Phone'
             navButtons={[{ label: `Cancel`, action: props.onDone }]}
             defaultValue={toStandardPhoneNumber(``)}
-            InputComponent={(p) => <C.Input_Phone placeholder='Phone Number' {...p} />}
+            InputComponent={(p) => <C.View_FieldRow><C.Input_Phone placeholder='Phone Number' {...p} /></C.View_FieldRow>}
         />
     );
 };
@@ -479,7 +492,7 @@ const RegisterEmailForm = (props: { serverAccess: AuthServerAccess, onAuthChange
             onAuthChange={props.onAuthChange}
             label='Register Email'
             defaultValue={toEmailAddress(``)}
-            InputComponent={(p) => <C.Input_Email placeholder='Email' {...p} />}
+            InputComponent={(p) => <C.View_FieldRow><C.Input_Email placeholder='Email' {...p} /></C.View_FieldRow>}
         />
     );
 };
@@ -494,13 +507,13 @@ const ChangeEmailForm = (props: { serverAccess: AuthServerAccess, onAuthChange: 
             label='Change Email'
             navButtons={[{ label: `Cancel`, action: props.onDone }]}
             defaultValue={toEmailAddress(``)}
-            InputComponent={(p) => <C.Input_Email placeholder='Email' {...p} />}
+            InputComponent={(p) => <C.View_FieldRow><C.Input_Email placeholder='Email' {...p} /></C.View_FieldRow>}
         />
     );
 };
 
-const VerifyContactMethodForm = <T extends string>(props: {
-    requestCode: (value: T) => Promise<void>;
+const VerifyContactMethodForm = <T extends string | {}>(props: {
+    requestCode: (value: T) => Promise<unknown>;
     verifyCode: (value: T, code: string) => Promise<{ result: AuthenticationStatus }>;
     onAuthChange: (status: AuthenticationStatus) => void;
     defaultValue: T;
@@ -510,7 +523,7 @@ const VerifyContactMethodForm = <T extends string>(props: {
         onChange: (value: T) => void;
         onSubmit: () => void;
     }) => JSX.Element;
-    label?: string;
+    label: string;
     onDone?: () => void;
     navButtons?: { label: string, action: () => void }[];
 }) => {
@@ -555,12 +568,10 @@ const VerifyContactMethodForm = <T extends string>(props: {
                     ))}
                 </C.View_FormActionRow>
                 <C.View_FormFields>
-                    <C.Text_FormTitle>{props.label ?? `Change Phone`}</C.Text_FormTitle>
+                    <C.Text_FormTitle>{props.label}</C.Text_FormTitle>
                     <C.Loading loading={loading} />
                     <C.ErrorBox error={error} />
-                    <C.View_FieldRow>
-                        <props.InputComponent editable={!sentCode} value={value} onChange={setValue} onSubmit={requestCode} />
-                    </C.View_FieldRow>
+                    <props.InputComponent editable={!sentCode} value={value} onChange={setValue} onSubmit={requestCode} />
                     {sentCode && (
                         <C.View_FieldRow>
                             <C.Input_Text placeholder='Verification Code' value={code} onChange={setCode} onSubmit={verifyCode} />

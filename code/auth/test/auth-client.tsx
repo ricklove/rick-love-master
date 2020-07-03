@@ -50,9 +50,15 @@ const authClient = createAuthenticationClient_serverAccess({
         },
 
         // Phone
-        requestPhoneLoginCode: async (phone) => {
+        requestPhoneLoginCode: async (data) => {
             mockServerState.phoneCode = `${Math.floor(100000 + Math.random() * 899999)}`;
             console.log(`phoneCode`, { phoneCode: mockServerState.phoneCode });
+            if (mockServerState.username !== data.username) {
+                throw new AuthError(`Invalid Username`);
+            }
+            if (mockServerState.phone !== data.phone) {
+                throw new AuthError(`Invalid Phone`);
+            }
         },
         loginWithPhoneCode: async (phone, code) => {
             if (mockServerState.phoneCode !== code) {

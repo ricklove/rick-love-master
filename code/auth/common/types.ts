@@ -34,7 +34,7 @@ export type AuthClientApi = {
      */
     registerPhoneAndSendVerification: (params: { phone: PhoneNumber }) => Promise<{ result: { isAuthenticated: boolean } }>;
     verifyPhone: (params: { phone: PhoneNumber, code: string }) => Promise<{ result: AuthenticationStatus }>;
-    requestPhoneLoginCode: (params: { phone: PhoneNumber }) => Promise<void>;
+    requestPhoneLoginCode: (params: { username: string, phone: PhoneNumber }) => Promise<void>;
     loginWithPhoneCode: (params: { phone: PhoneNumber, code: string }) => Promise<{ result: AuthenticationStatus }>;
 
     // Email
@@ -45,7 +45,7 @@ export type AuthClientApi = {
     */
     registerEmailAndSendVerification: (params: { email: EmailAddress }) => Promise<{ result: { isAuthenticated: boolean } }>;
     verifyEmail: (params: { email: EmailAddress, code: string }) => Promise<{ result: AuthenticationStatus }>;
-    requestEmailLoginCode: (params: { email: EmailAddress }) => Promise<void>;
+    requestEmailLoginCode: (params: { username: string, email: EmailAddress }) => Promise<void>;
     loginWithEmailCode: (params: { email: EmailAddress, code: string }) => Promise<{ result: AuthenticationStatus }>;
 };
 
