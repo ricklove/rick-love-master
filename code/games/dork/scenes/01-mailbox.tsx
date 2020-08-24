@@ -101,6 +101,31 @@ export const createScene_01mailbox = (gameState: GameState) => {
                 return null;
             },
         }),
+        dog: createGameObject(`Dog`, `It's a white dog. It was trying to bite you... not anymore...`, {
+            execute: async ({ command, target }) => {
+                // if (command === `put` && target.includes(`mailbox`)) {
+                //     // if (!mailbox.isOpen) {
+                //     //     return {
+                //     //         output: `The mailbox is not open.`,
+                //     //     };
+                //     // }
+                //     mailbox.isOpen = true;
+                //     if (mailbox.package) {
+
+                //         return {
+                //             output: `The mailbox has something in it already.`,
+                //         };
+                //     }
+
+                //     removeFromInventory(yardObjects.snake);
+                //     mailbox.package = yardObjects.snake;
+                //     return {
+                //         output: `You put the snake in the mailbox. He looks at you with his sad little snake eyes...`,
+                //     };
+                // }
+                return null;
+            },
+        }),
     };
 
     const yard = {
@@ -108,6 +133,9 @@ export const createScene_01mailbox = (gameState: GameState) => {
         description: () => {
             if (yard.contents.includes(yardObjects.snake)) {
                 return `This is a large yard. A snake is sunning itself on a rock in the grass.`;
+            }
+            if (yard.contents.includes(yardObjects.dog)) {
+                return `You look at the large yard and can't help but notice a small white dog that looks like it wants to rip your face off.`;
             }
             return `This is a large grass yard in front of a house. 
             Only the center of the yard is mowed and it looks like it might be in the shape of a heart.`;
@@ -165,7 +193,7 @@ export const createScene_01mailbox = (gameState: GameState) => {
     placeRandomItemInMailbox();
 
     const { tickingPackage } = mailObjects;
-    const { snake } = yardObjects;
+    const { snake, dog } = yardObjects;
 
     const deliverMail = async (input: GameInput): Promise<GameAction> => {
         mailbox.isDelivering = false;
@@ -331,7 +359,29 @@ export const createScene_01mailbox = (gameState: GameState) => {
 
             gameState.achievements.addAchievement(`🐍 You Would do Well in Slitherin`);
             return {
-                output: `You take the ${p.title} and put it in your backpack.`,
+                output: `You take the ${p.title} and put it in your backpack. 
+                
+                Just then a little white dog starts chasing you and tries to bite you. You run back to the mailbox and the dog goes back to it's own yard, but it keeps barking.`,
+            };
+        }
+
+        if (command === `throw` && inventory.includes(snake) && yard.contents.includes(dog) && isMatch(dog, target) && isMatch(snake, target)) {
+            const p = dog;
+            moveItem(p, yard.contents, inventory);
+
+            gameState.achievements.addAchievement(`🦴 Throw the dog a bone... or snake.`);
+            return {
+                output: `You throw the snake at the dog and it bites him in the face.
+                
+                The dog shakes violently until the snake goes flying into the trees. 
+                
+                Then the dog runs around the yard three times, yipping the whole way. On the third lap, the dog seems to remember you and starts running directly at you.
+
+                Right before the dog reaches you, it leaps at your face barring its jagged teeth.
+
+                As you look into his eyes, they suddenly go blank, and the dog hits you and falls to the ground. 
+                
+                It's not moving anymore now. You decide to put it in your backpack before the neighbors see you standing above their dead dog.`,
             };
         }
 
