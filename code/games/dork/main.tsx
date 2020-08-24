@@ -7,7 +7,7 @@ import { artMap, artMan } from './art';
 import { AsciiArtViewer } from './components/ascii-art-viewer';
 
 
-export const dorkVersion = `v1.4.1`;
+export const dorkVersion = `v1.4.2`;
 export const title = `*** DORK! *** ${dorkVersion} - Copyright ${new Date().getFullYear()} Rick Love`;
 
 export const createDorkGame = (onMessageInit: (message: GameAction) => void): Game => {
