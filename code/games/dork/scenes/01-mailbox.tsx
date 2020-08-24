@@ -371,7 +371,7 @@ export const createScene_01mailbox = (gameState: GameState) => {
 
             gameState.achievements.addAchievement(`🦴 Throw the dog a bone... or snake.`);
             return {
-                output: `You throw the snake at the dog and it bites him in the face.
+                output: `You throw the snake at the dog and it latches onto his face.
                 
                 The dog shakes violently until the snake goes flying into the trees. 
                 
@@ -379,7 +379,7 @@ export const createScene_01mailbox = (gameState: GameState) => {
 
                 Right before the dog reaches you, it leaps at your face barring its jagged teeth.
 
-                As you look into his eyes, they suddenly go blank, and the dog hits you and falls to the ground. 
+                As you look into his vicious eyes, they suddenly go blank. The dog hits you limply and falls to the ground. 
                 
                 It's not moving anymore now. You decide to put it in your backpack before the neighbors see you standing above their dead dog.`,
             };
