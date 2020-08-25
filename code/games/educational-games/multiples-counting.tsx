@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { View, Text, TouchableOpacity } from 'react-native-lite';
 import { distinct, shuffle } from 'utils/arrays';
 
@@ -6,6 +6,7 @@ export const EducationalGame_MultiplesCounting = (props: {}) => {
 
     const [gameBoard, setGameBoard] = useState(createDefaultGameBoardState());
     const [gameInput, setGameInput] = useState(null as null | GameInputState);
+    const lastGameBoard = useRef(gameBoard);
 
     const onGameWon = () => {
         const newGameBoard = createDefaultGameBoardState();
@@ -14,28 +15,32 @@ export const EducationalGame_MultiplesCounting = (props: {}) => {
     };
 
     const onCorrect = (value: { multiple: number, times: number }) => {
-        const newGameBoard = ({ ...gameBoard, columns: gameBoard.columns.map(x => x.multiple === value.multiple ? { maxTimesCorrect: value.times, multiple: x.multiple } : x) });
+        const newGameBoard = { ...lastGameBoard.current };
+        const col = newGameBoard.columns.find(x => x.multiple === value.multiple);
+        if (col) {
+            col.maxTimesCorrect = value.times;
+        };
 
         setGameBoard(newGameBoard);
-        setGameInput(null);
+        // setGameInput(null);
 
         setTimeout(() => {
             nextInputState(newGameBoard);
-        }, 500);
+        }, 100);
     };
     const onWrong = (value: { multiple: number, times: number }) => {
         // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-        // setGameInput(s => ({ ...s! }));
+        setGameInput(s => ({ ...s! }));
 
         // Reset column
-        const newGameBoard = ({ ...gameBoard, columns: gameBoard.columns.map(x => x.multiple === value.multiple ? { maxTimesCorrect: 0, multiple: x.multiple } : x) });
+        // const newGameBoard = ({ ...gameBoard, columns: gameBoard.columns.map(x => x.multiple === value.multiple ? { maxTimesCorrect: 0, multiple: x.multiple } : x) });
 
-        setGameBoard(newGameBoard);
-        setGameInput(null);
+        // setGameBoard(newGameBoard);
+        // setGameInput(null);
 
-        setTimeout(() => {
-            nextInputState(newGameBoard);
-        }, 500);
+        // setTimeout(() => {
+        //     nextInputState(newGameBoard);
+        // }, 500);
     };
 
     const nextInputState = (game: GameBoardState) => {
@@ -47,11 +52,13 @@ export const EducationalGame_MultiplesCounting = (props: {}) => {
         nextInputState(gameBoard);
     }, []);
 
+    lastGameBoard.current = gameBoard;
+
     return (
         <>
-            <View style={{ marginTop: 150, marginBottom: 150, padding: 2, alignItems: `center` }} >
+            <View style={{ marginTop: 50, marginBottom: 150, padding: 2, alignItems: `center` }} >
                 <View style={{ width: 24 * 12 + 4 }}>
-                    <GameBoard gameBoard={gameBoard} />
+                    <GameBoard gameBoard={gameBoard} focus={gameInput?.focus ?? { multiple: 0, times: 0 }} />
                     {gameInput && <GameInput gameInput={gameInput} />}
                 </View>
             </View>
@@ -89,6 +96,16 @@ const styles = {
         justifyContent: `center`,
         alignItems: `center`,
     },
+    focusCellView: {
+        width: 24,
+        height: 24,
+        backgroundColor: `rgba(0,0,0,0.5)`,
+        borderWidth: 1,
+        borderColor: `#0000FF`,
+        borderStyle: `solid`,
+        justifyContent: `center`,
+        alignItems: `center`,
+    },
     cellText: {
         fontFamily: `"Lucida Console", Monaco, monospace`,
         fontSize: 12,
@@ -100,7 +117,7 @@ const styles = {
     },
 } as const;
 
-const GameBoard = ({ gameBoard }: { gameBoard: GameBoardState }) => {
+const GameBoard = ({ gameBoard, focus }: { gameBoard: GameBoardState, focus: { multiple: number, times: number } }) => {
     return (
         <>
             <View style={{ flexDirection: `row` }} >
@@ -109,7 +126,7 @@ const GameBoard = ({ gameBoard }: { gameBoard: GameBoardState }) => {
                         <Text style={styles.cellHeaderText} />
                     </View>
                     {gameBoard.rows.map((r) => (
-                        <View style={styles.cellView} >
+                        <View key={r.times} style={focus.times === r.times ? styles.focusCellView : styles.cellView} >
                             <Text style={styles.cellHeaderText}>{`${r.times}`}</Text>
                         </View>
                     ))}
@@ -117,11 +134,11 @@ const GameBoard = ({ gameBoard }: { gameBoard: GameBoardState }) => {
 
                 {gameBoard.columns.map((c) => (
                     <View key={c.multiple} style={{ flexDirection: `column-reverse` }} >
-                        <View style={styles.cellView} >
+                        <View style={focus.multiple === c.multiple ? styles.focusCellView : styles.cellView} >
                             <Text style={styles.cellHeaderText}>{`${c.multiple}`}</Text>
                         </View>
                         {gameBoard.rows.map((r) => (
-                            <View style={styles.cellView} >
+                            <View key={r.times} style={focus.times === r.times || focus.multiple === c.multiple ? styles.focusCellView : styles.cellView} >
                                 {c.maxTimesCorrect >= r.times ? (
                                     <Text style={styles.cellText}>{`${c.multiple * r.times}`}</Text>
                                 ) : (
@@ -140,6 +157,7 @@ const GameBoard = ({ gameBoard }: { gameBoard: GameBoardState }) => {
 
 type GameInputState = {
     key: string;
+    focus: { multiple: number, times: number };
     buttons: {
         value: number;
         text: string;
@@ -153,7 +171,7 @@ const createGameInputState = (gameBoard: GameBoardState, onGameWon: () => void, 
     if (!nextColumn) {
         // Win state - All Complete
         onGameWon();
-        return { key: ``, buttons: [] };
+        return { key: ``, focus: { multiple: 0, times: 0 }, buttons: [] };
     }
 
     const m = nextColumn.multiple;
@@ -192,7 +210,11 @@ const createGameInputState = (gameBoard: GameBoardState, onGameWon: () => void, 
         wasAnsweredWrong: false,
     }));
 
-    return { key: `${m}*${t}`, buttons };
+    return {
+        key: `${m}*${t}`,
+        focus: { multiple: m, times: t },
+        buttons,
+    };
 };
 
 const inputStyles = {
@@ -203,9 +225,9 @@ const inputStyles = {
         margin: 16,
     },
     buttonView: {
-        width: 24,
-        height: 24,
-        borderWidth: 1,
+        width: 36,
+        height: 36,
+        borderWidth: 2,
         borderColor: `#0000FF`,
         borderStyle: `solid`,
         justifyContent: `center`,
@@ -213,20 +235,32 @@ const inputStyles = {
     },
     buttonText: {
         fontFamily: `"Lucida Console", Monaco, monospace`,
-        fontSize: 12,
+        fontSize: 18,
         color: `#FFFF00`,
     },
     buttonText_wrong: {
         fontFamily: `"Lucida Console", Monaco, monospace`,
-        fontSize: 12,
+        fontSize: 18,
         color: `#FF0000`,
     },
 } as const;
 
 const GameInput = ({ gameInput }: { gameInput: GameInputState }) => {
+
+    const [y, setY] = useState(0);
+
+    useEffect(() => {
+        setY(100);
+        const id = setInterval(() => {
+            setY(s => Math.max(0, s - 1));
+        }, 50);
+        return () => clearInterval(id);
+    }, [gameInput.key]);
+
+    // console.log(`GameInput`);
     return (
         <>
-            <View style={inputStyles.container}>
+            <View style={[inputStyles.container, { transform: `translate(0px,${y}px)` }]}>
                 {gameInput.buttons.map(x => (
                     <TouchableOpacity key={x.text + gameInput.key} onPress={x.wasAnsweredWrong ? () => {/* Ignore */ } : x.onPress}>
                         <View style={inputStyles.buttonView}>
