@@ -31,6 +31,9 @@
       "dork/*": [
         "code/games/dork/*"
       ],
+      "educational-games/*": [
+        "code/games/educational-games/*"
+      ],
       "eslint-plugin-custom-rules/*": [
         "code/eslint-plugin-custom-rules/*"
       ],

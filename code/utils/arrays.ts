@@ -12,6 +12,10 @@ export const distinct = <T>(items: T[]): T[] => {
     return [...set];
 };
 
+export const shuffle = <T>(items: T[]): T[] => {
+    return items.map(x => ({ x, value: Math.random() })).sort((a, b) => a.value - b.value).map(x => x.x);
+};
+
 export const distinct_key = <T>(items: T[], getKey: (item: T) => string): T[] => {
     const set = {} as { [key: string]: T };
     items.forEach(x => { set[getKey(x)] = x; });

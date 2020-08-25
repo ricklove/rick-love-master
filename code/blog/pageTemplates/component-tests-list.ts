@@ -5,6 +5,7 @@ export const componentTestList = [
     { name: `auth`, load: async () => (await import(`auth/test/auth-client`)).AuthComponent },
     { name: `midi-test`, load: async () => (await import(`audio/midi-test`)).MidiTestComponent },
     { name: `timing-perception-test`, load: async () => (await import(`perception/timing-perception-test`)).TimingPerceptionTestComponent },
+    { name: `multiples-counting`, load: async () => (await import(`educational-games/multiples-counting`)).EducationalGame_MultiplesCounting },
 
     // { name: `theme`, load: async () => (await import(`themes/theme-example`)).ThemeExample },
 ];
