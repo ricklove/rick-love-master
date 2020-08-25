@@ -302,6 +302,12 @@ const GameScore = ({ gameScore }: { gameScore: GameScoreState }) => {
 
     useEffect(() => {
         const id = setInterval(() => {
+            if (gameScore.gameWonTime) {
+                const timeMs = gameScore.gameWonTime - gameScore.startTime;
+                setMessage(s => `${(timeMs / 1000).toLocaleString(undefined, { minimumFractionDigits: 1, maximumFractionDigits: 1 })} seconds`);
+                return;
+            }
+
             const timeMs = Date.now() - gameScore.startTime;
             setMessage(s => `${(timeMs / 1000).toLocaleString(undefined, { minimumFractionDigits: 1, maximumFractionDigits: 1 })} seconds`);
         }, 100);
