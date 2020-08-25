@@ -9,7 +9,7 @@ const leaderboard = {
     saveScore: (name: string, score: GameScoreState) => {
         const data = leaderboard.loadScore();
         data.push({ name, score: { score: score.score, timeMs: (score.gameOverTime ?? Date.now()) - score.startTime } });
-        data.sort((a, b) => a.score.timeMs - b.score.timeMs);
+        data.sort((a, b) => b.score.score - a.score.score);
 
         localStorage.setItem(`MultiplesMonsterLeaderboard`, JSON.stringify(data));
     },
