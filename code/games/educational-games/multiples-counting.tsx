@@ -4,14 +4,17 @@ import { distinct, shuffle } from 'utils/arrays';
 
 export const EducationalGame_MultiplesCounting = (props: {}) => {
 
+    const [gameScore, setGameScore] = useState({ startTime: Date.now(), gameWonTime: undefined } as GameScoreState);
     const [gameBoard, setGameBoard] = useState(createDefaultGameBoardState());
     const [gameInput, setGameInput] = useState(null as null | GameInputState);
     const lastGameBoard = useRef(gameBoard);
 
     const onGameWon = () => {
-        const newGameBoard = createDefaultGameBoardState();
-        setGameBoard(newGameBoard);
-        nextInputState(newGameBoard);
+        setGameScore(s => ({ ...s, gameWonTime: Date.now() }));
+
+        // const newGameBoard = createDefaultGameBoardState();
+        // setGameBoard(newGameBoard);
+        // nextInputState(newGameBoard);
     };
 
     const onCorrect = (value: { multiple: number, times: number }) => {
@@ -58,6 +61,7 @@ export const EducationalGame_MultiplesCounting = (props: {}) => {
         <>
             <View style={{ marginTop: 50, marginBottom: 150, padding: 2, alignItems: `center` }} >
                 <View style={{ width: 24 * 12 + 4 }}>
+                    <GameScore gameScore={gameScore} />
                     <GameBoard gameBoard={gameBoard} focus={gameInput?.focus ?? { multiple: 0, times: 0 }} />
                     {gameInput && <GameInput gameInput={gameInput} />}
                 </View>
@@ -267,6 +271,48 @@ const GameInput = ({ gameInput }: { gameInput: GameInputState }) => {
                             <Text style={x.wasAnsweredWrong ? inputStyles.buttonText_wrong : inputStyles.buttonText}>{x.text}</Text>
                         </View>
                     </TouchableOpacity>))}
+            </View>
+        </>
+    );
+};
+
+
+const scoreStyles = {
+    container: {
+        flexDirection: `row`,
+        flex: 1,
+        justifyContent: `space-around`,
+        margin: 16,
+    },
+    text: {
+        fontFamily: `"Lucida Console", Monaco, monospace`,
+        fontSize: 18,
+        color: `#FFFF00`,
+    },
+} as const;
+
+type GameScoreState = {
+    startTime: number;
+    gameWonTime?: number;
+};
+
+const GameScore = ({ gameScore }: { gameScore: GameScoreState }) => {
+
+    const [message, setMessage] = useState(``);
+
+    useEffect(() => {
+        const id = setInterval(() => {
+            const timeMs = Date.now() - gameScore.startTime;
+            setMessage(s => `${(timeMs / 1000).toLocaleString(undefined, { minimumFractionDigits: 1, maximumFractionDigits: 1 })} seconds`);
+        }, 100);
+        return () => clearInterval(id);
+    }, [gameScore.startTime]);
+
+    // console.log(`GameInput`);
+    return (
+        <>
+            <View style={scoreStyles.container}>
+                <Text style={scoreStyles.text}>{message}</Text>
             </View>
         </>
     );
