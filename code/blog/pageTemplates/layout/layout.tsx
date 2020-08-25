@@ -5,7 +5,7 @@ import { Header } from './header';
 import * as Store from '../../site/store';
 import { ZoomWrapper } from '../../components/zoom-wrapper';
 
-export const Layout = ({ children }: { children: ReactNode }) => {
+export const Layout = ({ children, hideHeader }: { children: ReactNode, hideHeader?: boolean }) => {
     const data = {
         title: Store.site.siteMetadata.title,
         author: Store.site.siteMetadata.author,
@@ -15,7 +15,7 @@ export const Layout = ({ children }: { children: ReactNode }) => {
     return (
         <>
             <ZoomWrapper>
-                <Header siteTitle={`${data.title ?? ``}`} />
+                {!hideHeader && <Header siteTitle={`${data.title ?? ``}`} />}
                 <div>
                     <main>{children}</main>
                     <footer>
