@@ -4,6 +4,7 @@
 import { processDirectoryFiles, getFileName, readFile, getPathNormalized } from 'utils/files';
 import { PageData } from './create-page';
 import { componentTestList } from '../pageTemplates/component-tests-list';
+import { componentGamesList } from '../pageTemplates/component-games-list';
 
 export type SitePages<T> = {
     pages: SitePageInfo<T>[];
@@ -77,11 +78,19 @@ export const loadStaticPageData = async (): Promise<SitePages<PageData>> => {
         },
     });
 
-    componentTestList.forEach(x => {
+
+    pages.push({
+        sitePath: `/games`,
+        data: {
+            componentGamesPage: { showList: true },
+        },
+    });
+
+    componentGamesList.forEach(x => {
         pages.push({
-            sitePath: `/tests/${x.name}`,
+            sitePath: `/games/${x.name}`,
             data: {
-                componentTestsPage: { testName: x.name },
+                componentGamesPage: { gameName: x.name },
             },
         });
     });
@@ -92,6 +101,15 @@ export const loadStaticPageData = async (): Promise<SitePages<PageData>> => {
     //         componentTestsPage: { testName: `stripe` },
     //     },
     // });
+
+    componentTestList.forEach(x => {
+        pages.push({
+            sitePath: `/tests/${x.name}`,
+            data: {
+                componentTestsPage: { testName: x.name },
+            },
+        });
+    });
 
     pages.push({
         sitePath: `/404.html`,

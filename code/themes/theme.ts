@@ -36,6 +36,8 @@ export type ThemeViewStyle = {
     borderColor?: string;
     borderStyle?: 'solid';
     outlineColor?: string;
+
+    transform?: string;
 };
 export type ThemeTextStyle = {
     margin?: number;

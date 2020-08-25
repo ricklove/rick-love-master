@@ -7,6 +7,7 @@ import { NotFoundPage } from '../pageTemplates/404';
 import { LazyComponentExamplePage } from '../pageTemplates/lazy-component-example';
 import { SiteNavigation, setupNavigation } from './store';
 import { ComponentTestsPage, ComponentTestsPageData } from '../pageTemplates/component-tests';
+import { ComponentGamesPage, ComponentGamesPageData } from '../pageTemplates/component-games';
 
 export type PageData = {
     postPage?: PostPageData;
@@ -14,6 +15,7 @@ export type PageData = {
     notFoundPage?: {};
     lazyComponentExamplePage?: {};
     componentTestsPage?: ComponentTestsPageData;
+    componentGamesPage?: ComponentGamesPageData;
 };
 
 export const createStaticPage = (sitePath: string, data: PageData, navigation: SiteNavigation): { Component: () => JSX.Element } => {
@@ -26,7 +28,7 @@ export const createStaticPage = (sitePath: string, data: PageData, navigation: S
     // Set Navigation
     setupNavigation(navigation);
 
-    const { postPage, postIndexPage, notFoundPage, lazyComponentExamplePage, componentTestsPage } = data;
+    const { postPage, postIndexPage, notFoundPage, lazyComponentExamplePage, componentTestsPage, componentGamesPage } = data;
 
     if (postPage) {
         return {
@@ -46,6 +48,11 @@ export const createStaticPage = (sitePath: string, data: PageData, navigation: S
     if (componentTestsPage) {
         return {
             Component: () => <ComponentTestsPage data={componentTestsPage} />,
+        };
+    }
+    if (componentGamesPage) {
+        return {
+            Component: () => <ComponentGamesPage data={componentGamesPage} />,
         };
     }
 
