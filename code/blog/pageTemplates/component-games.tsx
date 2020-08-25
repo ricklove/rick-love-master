@@ -30,9 +30,10 @@ const ComponentGamesListPage = (props: {}) => {
         <Layout>
             <SEO title='Games' />
             <div>
+                <div>Games</div>
                 {componentGamesList.map(x => (
-                    <div key={x.name}>
-                        <a href={`./${x.name}`}>{x.name}</a>
+                    <div key={x.name} style={{ padding: 4 }}>
+                        <a href={`/games/${x.name}`}>{x.name}</a>
                     </div>
                 ))}
             </div>
