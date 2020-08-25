@@ -136,7 +136,7 @@ const styles = {
         width: 24,
         height: 24,
         borderWidth: 1,
-        borderColor: `#0000FF`,
+        borderColor: `#6666FF`,
         borderStyle: `solid`,
         justifyContent: `center`,
         alignItems: `center`,
@@ -146,7 +146,7 @@ const styles = {
         height: 24,
         backgroundColor: `rgba(0,0,0,0.5)`,
         borderWidth: 1,
-        borderColor: `#0000FF`,
+        borderColor: `#6666FF`,
         borderStyle: `solid`,
         justifyContent: `center`,
         alignItems: `center`,
@@ -272,23 +272,23 @@ const inputStyles = {
         margin: 16,
     },
     buttonView: {
-        width: 36,
-        height: 36,
+        width: 48,
+        height: 48,
         borderWidth: 2,
-        borderColor: `#0000FF`,
+        borderColor: `#6666FF`,
         borderStyle: `solid`,
         justifyContent: `center`,
         alignItems: `center`,
     },
     buttonText: {
         fontFamily: `"Lucida Console", Monaco, monospace`,
-        fontSize: 18,
-        color: `#FFFF00`,
+        fontSize: 24,
+        color: `#FFFFFF`,
     },
     buttonText_wrong: {
         fontFamily: `"Lucida Console", Monaco, monospace`,
-        fontSize: 18,
-        color: `#FF0000`,
+        fontSize: 24,
+        color: `#FF6666`,
     },
 } as const;
 
@@ -336,7 +336,7 @@ const scoreStyles = {
     mistakesText: {
         fontFamily: `"Lucida Console", Monaco, monospace`,
         fontSize: 14,
-        color: `#FF3333`,
+        color: `#FF6666`,
     },
 } as const;
 
