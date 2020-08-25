@@ -1,10 +1,10 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 export type ThemeViewStyle = {
     display?: 'flex';
-    flexDirection?: 'row' | 'column';
+    flexDirection?: 'row' | 'column' | 'row-reverse' | 'column-reverse';
     flexWrap?: 'wrap' | 'nowrap';
     flex?: number;
-    justifyContent?: 'flex-start' | 'center' | 'flex-end';
+    justifyContent?: 'flex-start' | 'center' | 'flex-end' | 'space-around' | 'space-between';
     alignItems?: 'center';
     overflow?: 'visible' | 'hidden';
 

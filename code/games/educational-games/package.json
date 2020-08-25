@@ -1,0 +1,9 @@
+{
+  "name": "educational-games",
+  "version": "1.0.0",
+  "dependencies": {
+    "utils": "*",
+    "react-native-lite": "*",
+    "react": "^16.12.0"
+  }
+}
