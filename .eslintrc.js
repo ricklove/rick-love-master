@@ -57,6 +57,9 @@ module.exports = {
         // Allow return null
         "unicorn/no-null": "off",
 
+        // Allow nested ternary
+        "unicorn/no-nested-ternary": "off",
+
         // Allow Disable ESLint Rule for whole file
         "eslint-comments/disable-enable-pair": ["error", { "allowWholeFile": true }],
 
