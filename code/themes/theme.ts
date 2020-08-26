@@ -38,6 +38,8 @@ export type ThemeViewStyle = {
     outlineColor?: string;
 
     transform?: string;
+
+    opacity?: number;
 };
 export type ThemeTextStyle = {
     margin?: number;

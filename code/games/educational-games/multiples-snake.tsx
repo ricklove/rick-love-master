@@ -145,6 +145,7 @@ type GameBoardCell = {
     row: number;
     value: number;
     state: 'blank' | 'body' | 'player';
+    bodyIndex: number;
 };
 
 const maxMultiple = 12;
@@ -162,6 +163,7 @@ const createDefaultGameBoardState = (): GameBoardState => {
                 row: j,
                 value: (i + 1) * (j + 1),
                 state: `blank`,
+                bodyIndex: 0,
             })),
         })),
         player: { position: { col: randomIndex(maxMultiple), row: randomIndex(maxMultiple) } },
@@ -244,16 +246,17 @@ const updateBoard = (boardRaw: GameBoardState) => {
         if (cell.state === `player`) { cell.state = `body`; }
     }));
 
-    board.body.forEach(m => {
-        updateBoardPosition(board, m.position, `body`);
+    board.body.forEach((m, i) => {
+        updateBoardPosition(board, m.position, `body`, board.body.length - i);
     });
 
-    updateBoardPosition(board, board.player.position, `player`);
+    updateBoardPosition(board, board.player.position, `player`, 0);
 };
 
-const updateBoardPosition = (boardRaw: GameBoardState, position: GameBoardPosition, kind: 'player' | 'body') => {
+const updateBoardPosition = (boardRaw: GameBoardState, position: GameBoardPosition, kind: 'player' | 'body', bodyIndex: number) => {
     const board = boardRaw;
     board.columns[position.col].cells[position.row].state = kind;
+    board.columns[position.col].cells[position.row].bodyIndex = bodyIndex;
     board.key += 1;
 };
 
@@ -320,7 +323,21 @@ const getCellText = (cell: GameBoardCell, isGameOver: boolean) => {
                 : ``;
 };
 
+const getCellOpacity = (boardTick: number, bodyIndex: number, bodyLength: number) => {
+    return 0.6 + 0.4 * (((boardTick - bodyIndex) % 10) / 10);
+};
+
 const GameBoard = ({ gameBoard, focus }: { gameBoard: GameBoardState, focus: { col: number, row: number } }) => {
+
+    const [boardTick, setBoardTick] = useState(0);
+
+    useEffect(() => {
+        const id = setInterval(() => {
+            setBoardTick(s => s + 1);
+        }, 100);
+        return () => clearInterval(id);
+    }, [/* Keep going */]);
+
     return (
         <>
             <View style={{ flexDirection: `row` }} >
@@ -341,7 +358,7 @@ const GameBoard = ({ gameBoard, focus }: { gameBoard: GameBoardState, focus: { c
                             <Text style={focus.col === c.col ? styles.focusCellHeaderText : styles.cellHeaderText}>{`${c.col + 1}`}</Text>
                         </View>
                         {c.cells.map((cell) => (
-                            <View key={cell.row} style={cell.state !== `blank` ? styles.focusCellView : styles.cellView} >
+                            <View key={cell.row} style={cell.state !== `blank` ? [styles.focusCellView, { opacity: getCellOpacity(boardTick, cell.bodyIndex, gameBoard.body.length) }] : styles.cellView} >
                                 <Text style={styles.cellText}>{getCellText(cell, gameBoard.isGameOver)}</Text>
                             </View>
                         ))}
