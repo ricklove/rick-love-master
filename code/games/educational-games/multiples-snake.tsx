@@ -62,13 +62,14 @@ export const EducationalGame_MultiplesSnake = (props: {}) => {
         // Add Body in old position
         newGameBoard.body.push({ position: newGameBoard.player.position });
 
+        // Add Score (of old cell, so end game will be correct)
+        const oldPlayerCell = newGameBoard.columns[newGameBoard.player.position.col].cells[newGameBoard.player.position.row];
+        setGameScore(s => ({ ...s, score: s.score + oldPlayerCell.value }));
+
         // Move Player
         newGameBoard.player.position = value;
-
         const newPlayerCell = newGameBoard.columns[newGameBoard.player.position.col].cells[newGameBoard.player.position.row];
-        if (newPlayerCell.state === `blank`) {
-            setGameScore(s => ({ ...s, score: s.score + newPlayerCell.value }));
-        }
+
 
         // Player Dead
         if (newPlayerCell.state === `body`) {
@@ -81,6 +82,16 @@ export const EducationalGame_MultiplesSnake = (props: {}) => {
 
         // Update body
         moveBody(newGameBoard);
+
+        // Game Won
+        if (newGameBoard.body.length + 1 === maxMultiple * maxMultiple) {
+            newGameBoard.isGameWon = true;
+            setGameScore(s => ({ ...s, score: s.score + newPlayerCell.value }));
+            updateBoard(newGameBoard);
+            setGameBoard(newGameBoard);
+            onGameOver();
+            return;
+        }
 
         // const col = newGameBoard.columns.find(x => x.col === value.col);
         // if (col) {
@@ -122,6 +133,7 @@ export const EducationalGame_MultiplesSnake = (props: {}) => {
 type GameBoardState = {
     key: number;
     isGameOver: boolean;
+    isGameWon: boolean;
     maxTimes: number;
     columns: {
         col: number;
@@ -155,6 +167,7 @@ const createDefaultGameBoardState = (): GameBoardState => {
     const gameBoard: GameBoardState = {
         key: 0,
         isGameOver: false,
+        isGameWon: false,
         maxTimes: maxMultiple,
         columns: [...new Array(maxMultiple)].map((x, i) => ({
             col: i,
@@ -316,11 +329,12 @@ const styles = {
     },
 } as const;
 
-const getCellText = (cell: GameBoardCell, isGameOver: boolean) => {
+const getCellText = (cell: GameBoardCell, isGameOver: boolean, isGameWon: boolean) => {
     return cell.state === `body` ? `${cell.value}`
-        : cell.state === `player` && !isGameOver ? `😀`
+        : cell.state === `player` && isGameWon ? `😎`
             : cell.state === `player` && isGameOver ? `💀`
-                : ``;
+                : cell.state === `player` ? `😀`
+                    : ``;
 };
 
 const getCellOpacity = (boardTick: number, bodyIndex: number, bodyLength: number) => {
@@ -359,7 +373,7 @@ const GameBoard = ({ gameBoard, focus }: { gameBoard: GameBoardState, focus: { c
                         </View>
                         {c.cells.map((cell) => (
                             <View key={cell.row} style={cell.state !== `blank` ? [styles.focusCellView, { opacity: getCellOpacity(boardTick, cell.bodyIndex, gameBoard.body.length) }] : styles.cellView} >
-                                <Text style={styles.cellText}>{getCellText(cell, gameBoard.isGameOver)}</Text>
+                                <Text style={styles.cellText}>{getCellText(cell, gameBoard.isGameOver, gameBoard.isGameWon)}</Text>
                             </View>
                         ))}
                     </View>
