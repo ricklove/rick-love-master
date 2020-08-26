@@ -239,8 +239,9 @@ const styles = {
     cellView: {
         width: 24,
         height: 24,
+        backgroundColor: `rgba(0,0,0,0.75)`,
         borderWidth: 1,
-        borderColor: `#6666FF`,
+        borderColor: `#111133`,
         borderStyle: `solid`,
         justifyContent: `center`,
         alignItems: `center`,
@@ -248,9 +249,27 @@ const styles = {
     focusCellView: {
         width: 24,
         height: 24,
-        backgroundColor: `rgba(0,0,0,0.5)`,
         borderWidth: 1,
         borderColor: `#6666FF`,
+        borderStyle: `solid`,
+        justifyContent: `center`,
+        alignItems: `center`,
+    },
+    cellHeaderView: {
+        width: 24,
+        height: 24,
+        borderWidth: 1,
+        borderColor: `#66FF66`,
+        borderStyle: `solid`,
+        justifyContent: `center`,
+        alignItems: `center`,
+    },
+    focusCellHeaderView: {
+        width: 24,
+        height: 24,
+        backgroundColor: `rgba(0,0,0,0.5)`,
+        borderWidth: 1,
+        borderColor: `#66FF66`,
         borderStyle: `solid`,
         justifyContent: `center`,
         alignItems: `center`,
@@ -278,11 +297,11 @@ const GameBoard = ({ gameBoard, focus }: { gameBoard: GameBoardState, focus: { c
         <>
             <View style={{ flexDirection: `row` }} >
                 <View style={{ flexDirection: `column-reverse` }} >
-                    <View style={styles.cellView} >
+                    <View style={styles.cellHeaderView} >
                         <Text style={styles.cellHeaderText} />
                     </View>
                     {gameBoard.columns[0].cells.map((r) => (
-                        <View key={r.row} style={focus.row === r.row ? styles.focusCellView : styles.cellView} >
+                        <View key={r.row} style={focus.row === r.row ? styles.focusCellHeaderView : styles.cellHeaderView} >
                             <Text style={styles.cellHeaderText}>{`${r.row + 1}`}</Text>
                         </View>
                     ))}
@@ -290,11 +309,11 @@ const GameBoard = ({ gameBoard, focus }: { gameBoard: GameBoardState, focus: { c
 
                 {gameBoard.columns.map((c) => (
                     <View key={c.col} style={{ flexDirection: `column-reverse` }} >
-                        <View style={focus.col === c.col ? styles.focusCellView : styles.cellView} >
+                        <View style={focus.col === c.col ? styles.focusCellHeaderView : styles.cellHeaderView} >
                             <Text style={styles.cellHeaderText}>{`${c.col + 1}`}</Text>
                         </View>
                         {c.cells.map((cell) => (
-                            <View key={cell.row} style={focus.row === cell.row || focus.col === c.col ? styles.focusCellView : styles.cellView} >
+                            <View key={cell.row} style={focus.row >= cell.row && focus.col >= c.col ? styles.focusCellView : styles.cellView} >
                                 <Text style={styles.cellText}>{getCellText(cell)}</Text>
                             </View>
                         ))}

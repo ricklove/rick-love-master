@@ -135,8 +135,9 @@ const styles = {
     cellView: {
         width: 24,
         height: 24,
+        backgroundColor: `rgba(0,0,0,0.75)`,
         borderWidth: 1,
-        borderColor: `#6666FF`,
+        borderColor: `#111133`,
         borderStyle: `solid`,
         justifyContent: `center`,
         alignItems: `center`,
@@ -144,9 +145,27 @@ const styles = {
     focusCellView: {
         width: 24,
         height: 24,
-        backgroundColor: `rgba(0,0,0,0.5)`,
         borderWidth: 1,
         borderColor: `#6666FF`,
+        borderStyle: `solid`,
+        justifyContent: `center`,
+        alignItems: `center`,
+    },
+    cellHeaderView: {
+        width: 24,
+        height: 24,
+        borderWidth: 1,
+        borderColor: `#66FF66`,
+        borderStyle: `solid`,
+        justifyContent: `center`,
+        alignItems: `center`,
+    },
+    focusCellHeaderView: {
+        width: 24,
+        height: 24,
+        backgroundColor: `rgba(0,0,0,0.5)`,
+        borderWidth: 1,
+        borderColor: `#66FF66`,
         borderStyle: `solid`,
         justifyContent: `center`,
         alignItems: `center`,
@@ -167,11 +186,11 @@ const GameBoard = ({ gameBoard, focus }: { gameBoard: GameBoardState, focus: { m
         <>
             <View style={{ flexDirection: `row` }} >
                 <View style={{ flexDirection: `column-reverse` }} >
-                    <View style={styles.cellView} >
+                    <View style={styles.cellHeaderView} >
                         <Text style={styles.cellHeaderText} />
                     </View>
                     {gameBoard.rows.map((r) => (
-                        <View key={r.times} style={focus.times === r.times ? styles.focusCellView : styles.cellView} >
+                        <View key={r.times} style={focus.times === r.times ? styles.focusCellHeaderView : styles.cellHeaderView} >
                             <Text style={styles.cellHeaderText}>{`${r.times}`}</Text>
                         </View>
                     ))}
@@ -179,11 +198,11 @@ const GameBoard = ({ gameBoard, focus }: { gameBoard: GameBoardState, focus: { m
 
                 {gameBoard.columns.map((c) => (
                     <View key={c.multiple} style={{ flexDirection: `column-reverse` }} >
-                        <View style={focus.multiple === c.multiple ? styles.focusCellView : styles.cellView} >
+                        <View style={focus.multiple === c.multiple ? styles.focusCellHeaderView : styles.cellHeaderView} >
                             <Text style={styles.cellHeaderText}>{`${c.multiple}`}</Text>
                         </View>
                         {gameBoard.rows.map((r) => (
-                            <View key={r.times} style={focus.times === r.times || focus.multiple === c.multiple ? styles.focusCellView : styles.cellView} >
+                            <View key={r.times} style={focus.times >= r.times && focus.multiple >= c.multiple ? styles.focusCellView : styles.cellView} >
                                 {c.maxTimesCorrect >= r.times ? (
                                     <Text style={styles.cellText}>{`${c.multiple * r.times}`}</Text>
                                 ) : (
@@ -198,8 +217,6 @@ const GameBoard = ({ gameBoard, focus }: { gameBoard: GameBoardState, focus: { m
         </>
     );
 };
-
-
 type GameInputState = {
     key: string;
     focus: { multiple: number, times: number };
