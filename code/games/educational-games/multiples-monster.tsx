@@ -351,9 +351,10 @@ const createGameInputState = (gameBoard: GameBoardState, onMove: (value: { col: 
         gameBoard.columns[player.position.col - 1]?.cells[player.position.row + 0],
     ].filter(x => x);
 
+    const isOnSquare = player.position.col === player.position.row;
     const buttons = nextCells.map(x => ({
         key: `${x.row} ${x.col}`,
-        text: `${x.value}`,
+        text: `${x.value}${isOnSquare && player.position.col === x.col ? `↕` : isOnSquare && player.position.row === x.row ? `↔` : ``}`,
         onPress: () => onMove(x),
     }));
 
