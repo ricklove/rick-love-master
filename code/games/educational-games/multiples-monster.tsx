@@ -250,7 +250,7 @@ const styles = {
         width: 24,
         height: 24,
         borderWidth: 1,
-        borderColor: `#6666FF`,
+        borderColor: `#66FF66`,
         borderStyle: `solid`,
         justifyContent: `center`,
         alignItems: `center`,
@@ -258,8 +258,9 @@ const styles = {
     cellHeaderView: {
         width: 24,
         height: 24,
+        backgroundColor: `rgba(0,0,0,0.5)`,
         borderWidth: 1,
-        borderColor: `#66FF66`,
+        borderColor: `#111133`,
         borderStyle: `solid`,
         justifyContent: `center`,
         alignItems: `center`,
@@ -269,7 +270,7 @@ const styles = {
         height: 24,
         backgroundColor: `rgba(0,0,0,0.5)`,
         borderWidth: 1,
-        borderColor: `#66FF66`,
+        borderColor: `#111133`,
         borderStyle: `solid`,
         justifyContent: `center`,
         alignItems: `center`,
@@ -279,6 +280,11 @@ const styles = {
         fontSize: 12,
     },
     cellHeaderText: {
+        fontFamily: `"Lucida Console", Monaco, monospace`,
+        fontSize: 12,
+        color: `#333300`,
+    },
+    focusCellHeaderText: {
         fontFamily: `"Lucida Console", Monaco, monospace`,
         fontSize: 12,
         color: `#FFFF00`,
@@ -297,12 +303,12 @@ const GameBoard = ({ gameBoard, focus }: { gameBoard: GameBoardState, focus: { c
         <>
             <View style={{ flexDirection: `row` }} >
                 <View style={{ flexDirection: `column-reverse` }} >
-                    <View style={styles.cellHeaderView} >
-                        <Text style={styles.cellHeaderText} />
+                    <View style={styles.focusCellHeaderView} >
+                        <Text style={styles.focusCellHeaderText} >x</Text>
                     </View>
                     {gameBoard.columns[0].cells.map((r) => (
                         <View key={r.row} style={focus.row === r.row ? styles.focusCellHeaderView : styles.cellHeaderView} >
-                            <Text style={styles.cellHeaderText}>{`${r.row + 1}`}</Text>
+                            <Text style={focus.row === r.row ? styles.focusCellHeaderText : styles.cellHeaderText}>{`${r.row + 1}`}</Text>
                         </View>
                     ))}
                 </View>
@@ -310,7 +316,7 @@ const GameBoard = ({ gameBoard, focus }: { gameBoard: GameBoardState, focus: { c
                 {gameBoard.columns.map((c) => (
                     <View key={c.col} style={{ flexDirection: `column-reverse` }} >
                         <View style={focus.col === c.col ? styles.focusCellHeaderView : styles.cellHeaderView} >
-                            <Text style={styles.cellHeaderText}>{`${c.col + 1}`}</Text>
+                            <Text style={focus.col === c.col ? styles.focusCellHeaderText : styles.cellHeaderText}>{`${c.col + 1}`}</Text>
                         </View>
                         {c.cells.map((cell) => (
                             <View key={cell.row} style={focus.row >= cell.row && focus.col >= c.col ? styles.focusCellView : styles.cellView} >
