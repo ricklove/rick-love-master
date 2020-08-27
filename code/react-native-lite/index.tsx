@@ -75,7 +75,8 @@ export const TextInput = (props: {
 };
 export const TouchableOpacity = (props: { style?: ThemeViewStyle | ThemeViewStyle[], children?: ReactNode, onPress: () => void }) => {
 
-    const lastPressTime = useRef(0);
+    // Prevent Initial Press (already pressing when created)
+    const lastPressTime = useRef(Date.now());
     const onPress = () => {
         // Prevent duplicate triggers
         if (Date.now() < lastPressTime.current + 250) { return; }
