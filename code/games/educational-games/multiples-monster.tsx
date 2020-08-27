@@ -275,6 +275,8 @@ const styles = {
         height: 24,
         borderWidth: 1,
         borderColor: `#66FF66`,
+        borderLeftColor: `#FF66FF`,
+        borderRightColor: `#FF66FF`,
         borderStyle: `solid`,
         justifyContent: `center`,
         alignItems: `center`,

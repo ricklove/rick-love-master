@@ -188,6 +188,24 @@ const styles = {
 } as const;
 
 const GameBoard = ({ gameBoard, focus }: { gameBoard: GameBoardState, focus: { multiple: number, times: number } }) => {
+
+    const [boardTick, setboardTick] = useState(0);
+
+    useEffect(() => {
+        setboardTick(0);
+        const id = setInterval(() => {
+            setboardTick(s => s + 1);
+        }, 1000);
+        return () => clearInterval(id);
+    }, [/* Keep Going */]);
+
+    const getBorderStyle = () => {
+        return [
+            boardTick % 2 === 0 ? { borderLeftColor: `transparent`, borderRightColor: `transparent` } as const : { borderLeftColor: styles.focusCellView.borderColor, borderRightColor: styles.focusCellView.borderColor },
+            Math.floor(boardTick / 2) % 2 === 0 ? { borderTopColor: `transparent`, borderBottomColor: `transparent` } as const : { borderTopColor: styles.focusCellView.borderColor, borderBottomColor: styles.focusCellView.borderColor },
+        ];
+    };
+
     return (
         <>
             <View style={{ flexDirection: `row` }} >
@@ -208,7 +226,7 @@ const GameBoard = ({ gameBoard, focus }: { gameBoard: GameBoardState, focus: { m
                             <Text style={focus.multiple === c.multiple ? styles.focusCellHeaderText : styles.cellHeaderText}>{`${c.multiple}`}</Text>
                         </View>
                         {gameBoard.rows.map((r) => (
-                            <View key={r.times} style={focus.times >= r.times && focus.multiple >= c.multiple ? styles.focusCellView : styles.cellView} >
+                            <View key={r.times} style={focus.times >= r.times && focus.multiple >= c.multiple ? [styles.focusCellView, ...getBorderStyle()] : styles.cellView} >
                                 {c.maxTimesCorrect >= r.times ? (
                                     <Text style={styles.cellText}>{`${c.multiple * r.times}`}</Text>
                                 ) : (

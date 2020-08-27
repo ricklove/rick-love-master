@@ -32,8 +32,14 @@ export type ThemeViewStyle = {
     borderTopWidth?: number;
     borderBottomWidth?: number;
 
-    borderRadius?: number;
     borderColor?: string;
+    borderLeftColor?: string;
+    borderRightColor?: string;
+    borderTopColor?: string;
+    borderBottomColor?: string;
+
+
+    borderRadius?: number;
     borderStyle?: 'solid';
     outlineColor?: string;
 
