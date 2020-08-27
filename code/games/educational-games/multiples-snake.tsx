@@ -379,7 +379,7 @@ const getCellStyle = (boardTick: number, cell: GameBoardCell, bodyLength: number
         borderLeftColor: cell.connected.l ? `transparent` : styles.focusCellView.borderColor,
         borderRightColor: cell.connected.r ? `transparent` : styles.focusCellView.borderColor,
         // opacity: 0.6 + 0.4 * (((boardTick - cell.bodyIndex) % 10) / 10),
-        borderWidth: (0.4 + 0.6 * (((boardTick + cell.bodyIndex) % 10) / 10)) * 5,
+        borderWidth: (0.4 + 0.6 * (((boardTick - cell.bodyIndex) % 10) / 10)) * 5,
     };
 };
 
