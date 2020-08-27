@@ -158,6 +158,12 @@ type GameBoardCell = {
     value: number;
     state: 'blank' | 'body' | 'player';
     bodyIndex: number;
+    connected: {
+        t: boolean;
+        b: boolean;
+        l: boolean;
+        r: boolean;
+    };
 };
 
 const maxMultiple = 12;
@@ -177,6 +183,12 @@ const createDefaultGameBoardState = (): GameBoardState => {
                 value: (i + 1) * (j + 1),
                 state: `blank`,
                 bodyIndex: 0,
+                connected: {
+                    t: false,
+                    b: false,
+                    l: false,
+                    r: false,
+                },
             })),
         })),
         player: { position: { col: randomIndex(maxMultiple), row: randomIndex(maxMultiple) } },
@@ -257,19 +269,42 @@ const updateBoard = (boardRaw: GameBoardState) => {
         const cell = cellRaw;
         if (cell.state === `body`) { cell.state = `blank`; }
         if (cell.state === `player`) { cell.state = `body`; }
+
+        cell.connected = {
+            t: false,
+            b: false,
+            l: false,
+            r: false,
+        };
     }));
 
+    const getConnection = (m: { position: GameBoardPosition }, lastBody?: { position: GameBoardPosition }, nextBody?: { position: GameBoardPosition }) => {
+        const connected = {
+            t: (m.position.col === lastBody?.position.col && m.position.row < lastBody?.position.row) || (m.position.col === nextBody?.position.col && m.position.row < nextBody?.position.row),
+            b: (m.position.col === lastBody?.position.col && m.position.row > lastBody?.position.row) || (m.position.col === nextBody?.position.col && m.position.row > nextBody?.position.row),
+            l: (m.position.row === lastBody?.position.row && m.position.col > lastBody?.position.col) || (m.position.row === nextBody?.position.row && m.position.col > nextBody?.position.col),
+            r: (m.position.row === lastBody?.position.row && m.position.col < lastBody?.position.col) || (m.position.row === nextBody?.position.row && m.position.col < nextBody?.position.col),
+        };
+        return connected;
+    };
+
     board.body.forEach((m, i) => {
-        updateBoardPosition(board, m.position, `body`, board.body.length - i);
+        updateBoardPosition(board, m.position, `body`, board.body.length - i, getConnection(m, board.body[i - 1], board.body[i + 1] ?? board.player));
     });
 
-    updateBoardPosition(board, board.player.position, `player`, 0);
+    updateBoardPosition(board, board.player.position, `player`, 0, getConnection(board.player, board.body[board.body.length - 1], undefined));
 };
 
-const updateBoardPosition = (boardRaw: GameBoardState, position: GameBoardPosition, kind: 'player' | 'body', bodyIndex: number) => {
+const updateBoardPosition = (boardRaw: GameBoardState, position: GameBoardPosition, kind: 'player' | 'body', bodyIndex: number, connected: {
+    t: boolean;
+    b: boolean;
+    l: boolean;
+    r: boolean;
+}) => {
     const board = boardRaw;
     board.columns[position.col].cells[position.row].state = kind;
     board.columns[position.col].cells[position.row].bodyIndex = bodyIndex;
+    board.columns[position.col].cells[position.row].connected = connected;
     board.key += 1;
 };
 
@@ -337,8 +372,15 @@ const getCellText = (cell: GameBoardCell, isGameOver: boolean, isGameWon: boolea
                     : ``;
 };
 
-const getCellOpacity = (boardTick: number, bodyIndex: number, bodyLength: number) => {
-    return 0.6 + 0.4 * (((boardTick - bodyIndex) % 10) / 10);
+const getCellStyle = (boardTick: number, cell: GameBoardCell, bodyLength: number) => {
+    return {
+        borderTopColor: cell.connected.t ? `transparent` : styles.focusCellView.borderColor,
+        borderBottomColor: cell.connected.b ? `transparent` : styles.focusCellView.borderColor,
+        borderLeftColor: cell.connected.l ? `transparent` : styles.focusCellView.borderColor,
+        borderRightColor: cell.connected.r ? `transparent` : styles.focusCellView.borderColor,
+        // opacity: 0.6 + 0.4 * (((boardTick - cell.bodyIndex) % 10) / 10),
+        borderWidth: (0.4 + 0.6 * (((boardTick + cell.bodyIndex) % 10) / 10)) * 5,
+    };
 };
 
 const GameBoard = ({ gameBoard, focus }: { gameBoard: GameBoardState, focus: { col: number, row: number } }) => {
@@ -348,7 +390,7 @@ const GameBoard = ({ gameBoard, focus }: { gameBoard: GameBoardState, focus: { c
     useEffect(() => {
         const id = setInterval(() => {
             setBoardTick(s => s + 1);
-        }, 100);
+        }, 500);
         return () => clearInterval(id);
     }, [/* Keep going */]);
 
@@ -372,7 +414,7 @@ const GameBoard = ({ gameBoard, focus }: { gameBoard: GameBoardState, focus: { c
                             <Text style={focus.col === c.col ? styles.focusCellHeaderText : styles.cellHeaderText}>{`${c.col + 1}`}</Text>
                         </View>
                         {c.cells.map((cell) => (
-                            <View key={cell.row} style={cell.state !== `blank` ? [styles.focusCellView, { opacity: getCellOpacity(boardTick, cell.bodyIndex, gameBoard.body.length) }] : styles.cellView} >
+                            <View key={cell.row} style={cell.state !== `blank` ? [styles.focusCellView, getCellStyle(boardTick, cell, gameBoard.body.length)] : styles.cellView} >
                                 <Text style={styles.cellText}>{getCellText(cell, gameBoard.isGameOver, gameBoard.isGameWon)}</Text>
                             </View>
                         ))}
