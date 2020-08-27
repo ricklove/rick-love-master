@@ -11,10 +11,10 @@ const leaderboard = {
         data.push({ name, score: { mistakes: score.mistakes, timeMs: (score.gameWonTime ?? Date.now()) - score.startTime } });
         data.sort((a, b) => a.score.timeMs - b.score.timeMs);
 
-        localStorage.setItem(`MultiplesCountingLeaderboard`, JSON.stringify(data));
+        localStorage.setItem(`MultiplesCountingWordsLeaderboard`, JSON.stringify(data));
     },
     loadScore: () => {
-        const json = localStorage.getItem(`MultiplesCountingLeaderboard`);
+        const json = localStorage.getItem(`MultiplesCountingWordsLeaderboard`);
         if (!json) { return []; }
 
         return JSON.parse(json) as LeaderboardScore[];
