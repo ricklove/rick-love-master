@@ -63,6 +63,14 @@ export const EducationalGame_MultiplesMonster = (props: {}) => {
         if (newPlayerCell.state === `blank`) {
             setGameScore(s => ({ ...s, score: s.score + newPlayerCell.value }));
         }
+        // Player Safe at House
+        if (newPlayerCell.state === `house`) {
+            // next level
+            const nextGameBoard = createDefaultGameBoardState();
+            setGameBoard(nextGameBoard);
+            nextInputState(nextGameBoard);
+            return;
+        }
 
         moveMonsters(newGameBoard);
 
@@ -122,6 +130,9 @@ type GameBoardState = {
     monsters: {
         position: GameBoardPosition;
     }[];
+    house: {
+        position: GameBoardPosition;
+    };
 };
 
 type GameBoardPosition = {
@@ -133,7 +144,7 @@ type GameBoardCell = {
     col: number;
     row: number;
     value: number;
-    state: 'blank' | 'answer' | 'monster' | 'player';
+    state: 'blank' | 'answer' | 'monster' | 'player' | 'house';
 };
 
 const maxMultiple = 12;
@@ -153,8 +164,20 @@ const createDefaultGameBoardState = (): GameBoardState => {
             })),
         })),
         player: { position: { col: randomIndex(maxMultiple), row: randomIndex(maxMultiple) } },
+        house: { position: { col: randomIndex(maxMultiple), row: randomIndex(maxMultiple) } },
         monsters: [...new Array(3)].map(x => ({ position: { col: randomIndex(maxMultiple), row: randomIndex(maxMultiple) } })),
     };
+
+    while (gameBoard.house.position.row === gameBoard.player.position.row) {
+        gameBoard.house.position = { col: randomIndex(maxMultiple), row: randomIndex(maxMultiple) };
+    }
+
+    gameBoard.monsters.forEach(m => {
+        const monster = m;
+        while (monster.position.row === gameBoard.player.position.row) {
+            monster.position = { col: randomIndex(maxMultiple), row: randomIndex(maxMultiple) };
+        }
+    });
 
     // Randomly place player
     updateBoard(gameBoard);
@@ -223,13 +246,14 @@ const updateBoard = (state: GameBoardState) => {
         if (cell.state === `player`) { cell.state = `answer`; }
     }));
 
+    updateBoardPosition(state, state.house.position, `house`);
     updateBoardPosition(state, state.player.position, `player`);
     state.monsters.forEach(m => {
         updateBoardPosition(state, m.position, `monster`);
     });
 };
 
-const updateBoardPosition = (boardRaw: GameBoardState, position: GameBoardPosition, kind: 'player' | 'monster') => {
+const updateBoardPosition = (boardRaw: GameBoardState, position: GameBoardPosition, kind: 'player' | 'monster' | 'house') => {
     const board = boardRaw;
     board.columns[position.col].cells[position.row].state = kind;
     board.key += 1;
@@ -295,7 +319,8 @@ const getCellText = (cell: GameBoardCell) => {
     return cell.state === `answer` ? `${cell.value}`
         : cell.state === `player` ? `😀`
             : cell.state === `monster` ? `💀`
-                : ``;
+                : cell.state === `house` ? `🏠`
+                    : ``;
 };
 
 const GameBoard = ({ gameBoard, focus }: { gameBoard: GameBoardState, focus: { col: number, row: number } }) => {
