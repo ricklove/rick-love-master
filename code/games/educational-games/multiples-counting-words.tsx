@@ -359,13 +359,15 @@ const inputStyles = {
         alignItems: `center`,
     },
     buttonText: {
-        fontFamily: `"Lucida Console", Monaco, monospace`,
-        fontSize: 12,
+        fontFamily: `Verdana, Geneva, sans-serif`,
+        fontSize: 16,
+        fontWeight: `lighter`,
         color: `#FFFFFF`,
     },
     buttonText_wrong: {
-        fontFamily: `"Lucida Console", Monaco, monospace`,
-        fontSize: 12,
+        fontFamily: `Verdana, Geneva, sans-serif`,
+        fontSize: 16,
+        fontWeight: `lighter`,
         color: `#FF6666`,
     },
 } as const;

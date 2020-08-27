@@ -63,7 +63,7 @@ export type ThemeTextStyle = {
 
     fontFamily?: string;
     fontSize?: number;
-    fontWeight?: 'normal' | 'bold';
+    fontWeight?: 'normal' | 'bold' | 'lighter';
     lineHeight?: string;
     //  whiteSpace?: 'normal' | 'nowrap' | 'pre';
     minWidth?: number;
