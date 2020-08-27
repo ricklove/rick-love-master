@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { View, Text, TouchableOpacity, TextInput } from 'react-native-lite';
 import { distinct, shuffle } from 'utils/arrays';
+import { randomIndex } from 'utils/random';
 
 type LeaderboardScore = { name: string, score: { mistakes: number, timeMs: number } };
 const leaderboard = {
@@ -199,11 +200,45 @@ const GameBoard = ({ gameBoard, focus }: { gameBoard: GameBoardState, focus: { m
         return () => clearInterval(id);
     }, [/* Keep Going */]);
 
+    const getBoardTickResult = () => {
+        return boardTick % 5 === 0 ? `row` :
+            boardTick % 5 === 1 ? `col` :
+                `both`;
+    };
+
     const getBorderStyle = () => {
-        return [
-            boardTick % 2 === 0 ? { borderLeftColor: `transparent`, borderRightColor: `transparent` } as const : { borderLeftColor: styles.focusCellView.borderColor, borderRightColor: styles.focusCellView.borderColor },
-            Math.floor(boardTick / 2) % 2 === 0 ? { borderTopColor: `transparent`, borderBottomColor: `transparent` } as const : { borderTopColor: styles.focusCellView.borderColor, borderBottomColor: styles.focusCellView.borderColor },
-        ];
+        const s = getBoardTickResult();
+
+        if (s === `both`) {
+            return {
+                borderLeftColor: styles.focusCellView.borderColor,
+                borderRightColor: styles.focusCellView.borderColor,
+                borderTopColor: styles.focusCellView.borderColor,
+                borderBottomColor: styles.focusCellView.borderColor,
+            } as const;
+        }
+
+        return {
+            borderLeftColor: !s.includes(`col`) ? `rgba(0,0,0,0.15)` : `#000000`,
+            borderRightColor: !s.includes(`col`) ? `rgba(0,0,0,0.15)` : `#000000`,
+            borderTopColor: !s.includes(`row`) ? `rgba(0,0,0,0.15)` : `#000000`,
+            borderBottomColor: !s.includes(`row`) ? `rgba(0,0,0,0.15)` : `#000000`,
+        } as const;
+    };
+
+    const getCellText = (col: number, row: number) => {
+        const s = getBoardTickResult();
+
+        if (s === `both`) {
+            return `${col * row}`;
+        }
+
+        return ``;
+        // if (s === `row`) {
+        //     return `${col}`;
+        // }
+
+        // return `${row}`;
     };
 
     return (
@@ -226,9 +261,9 @@ const GameBoard = ({ gameBoard, focus }: { gameBoard: GameBoardState, focus: { m
                             <Text style={focus.multiple === c.multiple ? styles.focusCellHeaderText : styles.cellHeaderText}>{`${c.multiple}`}</Text>
                         </View>
                         {gameBoard.rows.map((r) => (
-                            <View key={r.times} style={focus.times >= r.times && focus.multiple >= c.multiple ? [styles.focusCellView, ...getBorderStyle()] : styles.cellView} >
+                            <View key={r.times} style={focus.times >= r.times && focus.multiple >= c.multiple ? [styles.focusCellView, getBorderStyle()] : styles.cellView} >
                                 {c.maxTimesCorrect >= r.times ? (
-                                    <Text style={styles.cellText}>{`${c.multiple * r.times}`}</Text>
+                                    <Text style={styles.cellText}>{`${getCellText(c.multiple, r.times)}`}</Text>
                                 ) : (
                                         <Text style={styles.cellText} />
                                     )}
@@ -345,7 +380,14 @@ const GameInput = ({ gameInput }: { gameInput: GameInputState }) => {
         return () => clearInterval(id);
     }, [gameInput.key]);
 
-    // console.log(`GameInput`);
+    // // Auto answer
+    // useEffect(() => {
+    //     const id = setInterval(() => {
+    //         gameInput.buttons[randomIndex(gameInput.buttons.length)].onPress();
+    //     }, 50);
+    //     return () => clearInterval(id);
+    // }, [gameInput.key]);
+
     return (
         <>
             <View style={inputStyles.outerContainer}>

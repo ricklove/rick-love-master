@@ -201,11 +201,46 @@ const GameBoard = ({ gameBoard, focus }: { gameBoard: GameBoardState, focus: { m
         return () => clearInterval(id);
     }, [/* Keep Going */]);
 
+
+    const getBoardTickResult = () => {
+        return boardTick % 5 === 0 ? `row` :
+            boardTick % 5 === 1 ? `col` :
+                `both`;
+    };
+
     const getBorderStyle = () => {
-        return [
-            boardTick % 2 === 0 ? { borderLeftColor: `transparent`, borderRightColor: `transparent` } as const : { borderLeftColor: styles.focusCellView.borderColor, borderRightColor: styles.focusCellView.borderColor },
-            Math.floor(boardTick / 2) % 2 === 0 ? { borderTopColor: `transparent`, borderBottomColor: `transparent` } as const : { borderTopColor: styles.focusCellView.borderColor, borderBottomColor: styles.focusCellView.borderColor },
-        ];
+        const s = getBoardTickResult();
+
+        if (s === `both`) {
+            return {
+                borderLeftColor: styles.focusCellView.borderColor,
+                borderRightColor: styles.focusCellView.borderColor,
+                borderTopColor: styles.focusCellView.borderColor,
+                borderBottomColor: styles.focusCellView.borderColor,
+            } as const;
+        }
+
+        return {
+            borderLeftColor: !s.includes(`col`) ? `rgba(0,0,0,0.15)` : `#000000`,
+            borderRightColor: !s.includes(`col`) ? `rgba(0,0,0,0.15)` : `#000000`,
+            borderTopColor: !s.includes(`row`) ? `rgba(0,0,0,0.15)` : `#000000`,
+            borderBottomColor: !s.includes(`row`) ? `rgba(0,0,0,0.15)` : `#000000`,
+        } as const;
+    };
+
+    const getCellText = (col: number, row: number) => {
+        const s = getBoardTickResult();
+
+        if (s === `both`) {
+            return `${col * row}`;
+        }
+
+        return ``;
+        // if (s === `row`) {
+        //     return `${col}`;
+        // }
+
+        // return `${row}`;
     };
 
 
@@ -231,7 +266,7 @@ const GameBoard = ({ gameBoard, focus }: { gameBoard: GameBoardState, focus: { m
                         {gameBoard.rows.map((r) => (
                             <View key={r.times} style={focus.times >= r.times && focus.multiple >= c.multiple ? [styles.focusCellView, getBorderStyle()] : styles.cellView} >
                                 {c.maxTimesCorrect >= r.times ? (
-                                    <Text style={styles.cellText}>{`${c.multiple * r.times}`}</Text>
+                                    <Text style={styles.cellText}>{`${getCellText(c.multiple, r.times)}`}</Text>
                                 ) : (
                                         <Text style={styles.cellText} />
                                     )}
