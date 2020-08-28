@@ -23,17 +23,6 @@ export const createLeaderboard = <TScoreState extends {}>(args: {
             if (!json) { return []; }
 
             return JSON.parse(json) as LeaderboardScore[];
-
-            // const scores: LeaderboardScore[] = [
-            //     { name: `Rick`, score: { mistakes: 0, timeMs: 10.78 * 1000 } },
-            //     { name: `Rick`, score: { mistakes: 0, timeMs: 10.78 * 1000 } },
-            //     { name: `Rick`, score: { mistakes: 0, timeMs: 10.78 * 1000 } },
-            //     { name: `Rick`, score: { mistakes: 0, timeMs: 10.78 * 1000 } },
-            //     { name: `Rick`, score: { mistakes: 0, timeMs: 10.78 * 1000 } },
-            //     { name: `Rick`, score: { mistakes: 0, timeMs: 10.78 * 1000 } },
-            //     { name: `Rick`, score: { mistakes: 0, timeMs: 10.78 * 1000 } },
-            // ];
-            // return scores;
         },
     };
 
@@ -68,7 +57,7 @@ export const createLeaderboard = <TScoreState extends {}>(args: {
         return (
             <View style={leaderboardInputStyles.container}>
                 <TextInput style={leaderboardInputStyles.textInput} value={name} onChange={setName} placeholder='Name' keyboardType='default' autoCompleteType='off' />
-                <TouchableOpacity onPress={() => props.onSubmit(name)}>
+                <TouchableOpacity onPress={() => !!name && props.onSubmit(name)} style={!name ? { opacity: 0.5 } : {}}>
                     <View style={leaderboardInputStyles.buttonView}>
                         <Text style={leaderboardInputStyles.buttonText}>Save Score</Text>
                     </View>
@@ -76,7 +65,6 @@ export const createLeaderboard = <TScoreState extends {}>(args: {
             </View >
         );
     };
-
 
     const leaderboardStyles = {
         container: {
@@ -139,13 +127,6 @@ export const createLeaderboard = <TScoreState extends {}>(args: {
         );
     };
 
-    // return {
-    //     loadScore: leaderboard.loadScore,
-    //     saveScore: leaderboard.saveScore,
-    //     LeaderboardView,
-    // };
-
-
     const useLeaderboard = ({
         getScore,
     }: {
@@ -153,25 +134,6 @@ export const createLeaderboard = <TScoreState extends {}>(args: {
     }) => {
 
         const [leaderboardScores, setLeaderboardScores] = useState({ scores: leaderboard.loadScore() } as { scores: LeaderboardScore[] });
-
-        // const LeaderboardView = (props: {}) => {
-        //     return (
-        //         <>
-        //             <LeaderboardViewInner scores={leaderboardScores.scores} />
-        //         </>
-        //     );
-        // };
-
-
-        // const LeaderboardInputView = (props: { score: TScoreState }) => {
-
-        //     return (
-        //         <>
-        //             {!!gameScore.gameWonTime && (<LeaderboardNameInput onSubmit={onSaveScore} />)}
-        //         </>
-        //     );
-        // };
-
 
         const LeaderboardArea = (props: { gameOver: boolean, onScoreSaved: () => void }) => {
 
@@ -190,8 +152,6 @@ export const createLeaderboard = <TScoreState extends {}>(args: {
         };
 
         return {
-            // LeaderboardView,
-            // LeaderboardNameInput,
             LeaderboardArea,
         };
     };
