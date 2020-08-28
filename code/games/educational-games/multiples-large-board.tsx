@@ -211,8 +211,8 @@ const GameBoard = ({ gameBoard }: { gameBoard: GameBoardState }) => {
         `;
 
         return [styles.cellView, {
-            width: (c + 1) * unitSize,
-            height: (r + 1) * unitSize,
+            width: c * unitSize,
+            height: r * unitSize,
             margin: unitSize / 2,
             borderWidth: 0,
             background,
