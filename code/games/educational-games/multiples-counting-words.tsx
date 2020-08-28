@@ -12,6 +12,7 @@ const leaderboardService = createLeaderboard<{
 }>({
     storageKey: `MultiplesCountingWordsLeaderboard`,
     sortKey: x => x.timeMs,
+    sortDescending: true,
     scoreColumns: [
         { name: `Time`, getValue: x => `${(x.timeMs / 1000).toLocaleString(undefined, { minimumFractionDigits: 1, maximumFractionDigits: 1 })}` },
         { name: `Mistakes`, getValue: x => `${x.mistakes}` },

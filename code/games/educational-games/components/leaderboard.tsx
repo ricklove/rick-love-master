@@ -5,6 +5,7 @@ import { View, Text, TouchableOpacity, TextInput } from 'react-native-lite';
 export const createLeaderboard = <TScoreState extends {}>(args: {
     storageKey: string;
     sortKey: (item: TScoreState) => string | number;
+    sortDescending?: boolean;
     scoreColumns: { name: string, getValue: (item: TScoreState) => string }[];
 }) => {
 
@@ -22,7 +23,9 @@ export const createLeaderboard = <TScoreState extends {}>(args: {
             const json = localStorage.getItem(args.storageKey);
             if (!json) { return []; }
 
-            return JSON.parse(json) as LeaderboardScore[];
+            const data = JSON.parse(json) as LeaderboardScore[];
+            data.sort((a, b) => (args.sortKey(a.score) > args.sortKey(b.score) ? -1 : 1) * (args.sortDescending ? -1 : 1));
+            return data;
         },
     };
 
