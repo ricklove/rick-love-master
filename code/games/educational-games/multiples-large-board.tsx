@@ -157,7 +157,7 @@ const GameBoard = ({ gameBoard }: { gameBoard: GameBoardState }) => {
         const { col, row, value } = cell;
         if (col < 2) {
             return [styles.cellText, {
-                fontSize: 6,
+                fontSize: 8,
             }];
         }
         return styles.cellText;
