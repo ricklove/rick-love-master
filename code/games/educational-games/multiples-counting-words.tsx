@@ -3,51 +3,37 @@ import { View, Text, TouchableOpacity, TextInput } from 'react-native-lite';
 import { distinct, shuffle } from 'utils/arrays';
 import { randomIndex } from 'utils/random';
 import { numberNames } from './utils/number-names';
+import { createLeaderboard } from './components/leaderboard';
 
-type LeaderboardScore = { name: string, score: { mistakes: number, timeMs: number } };
-const leaderboard = {
-    saveScore: (name: string, score: GameScoreState) => {
-        const data = leaderboard.loadScore();
-        data.push({ name, score: { mistakes: score.mistakes, timeMs: (score.gameWonTime ?? Date.now()) - score.startTime } });
-        data.sort((a, b) => a.score.timeMs - b.score.timeMs);
 
-        localStorage.setItem(`MultiplesCountingWordsLeaderboard`, JSON.stringify(data));
-    },
-    loadScore: () => {
-        const json = localStorage.getItem(`MultiplesCountingWordsLeaderboard`);
-        if (!json) { return []; }
-
-        return JSON.parse(json) as LeaderboardScore[];
-
-        // const scores: LeaderboardScore[] = [
-        //     { name: `Rick`, score: { mistakes: 0, timeMs: 10.78 * 1000 } },
-        //     { name: `Rick`, score: { mistakes: 0, timeMs: 10.78 * 1000 } },
-        //     { name: `Rick`, score: { mistakes: 0, timeMs: 10.78 * 1000 } },
-        //     { name: `Rick`, score: { mistakes: 0, timeMs: 10.78 * 1000 } },
-        //     { name: `Rick`, score: { mistakes: 0, timeMs: 10.78 * 1000 } },
-        //     { name: `Rick`, score: { mistakes: 0, timeMs: 10.78 * 1000 } },
-        //     { name: `Rick`, score: { mistakes: 0, timeMs: 10.78 * 1000 } },
-        // ];
-        // return scores;
-    },
-};
+const leaderboardService = createLeaderboard<{
+    mistakes: number;
+    timeMs: number;
+}>({
+    storageKey: `MultiplesCountingWordsLeaderboard`,
+    sortKey: x => x.timeMs,
+    scoreColumns: [
+        { name: `Time`, getValue: x => `${(x.timeMs / 1000).toLocaleString(undefined, { minimumFractionDigits: 1, maximumFractionDigits: 1 })}` },
+        { name: `Mistakes`, getValue: x => `${x.mistakes}` },
+    ],
+});
 
 export const EducationalGame_MultiplesCountingWords = (props: {}) => {
 
-    const [leaderboardScores, setLeaderboardScores] = useState({ scores: leaderboard.loadScore() } as { scores: LeaderboardScore[] });
     const [gameScore, setGameScore] = useState({ key: 0, startTime: Date.now(), gameWonTime: undefined, mistakes: 0 } as GameScoreState & { key: number });
     const [gameBoard, setGameBoard] = useState(createDefaultGameBoardState());
     const [gameInput, setGameInput] = useState(null as null | GameInputState);
     const lastGameBoard = useRef(gameBoard);
 
+    const leaderboard = leaderboardService.useLeaderboard({
+        getScore: () => ({ mistakes: gameScore.mistakes, timeMs: (gameScore.gameWonTime ?? Date.now()) - gameScore.startTime }),
+    });
+
     const onGameWon = () => {
         setGameScore(s => ({ ...s, gameWonTime: Date.now(), key: s.key + 1 }));
     };
 
-    const onSaveScore = (name: string) => {
-        leaderboard.saveScore(name, gameScore);
-        setLeaderboardScores({ scores: leaderboard.loadScore() });
-
+    const onScoreSaved = () => {
         // Restart Game
         const newGameBoard = createDefaultGameBoardState();
         setGameScore({ key: 0, startTime: Date.now(), gameWonTime: undefined, mistakes: 0 });
@@ -104,8 +90,7 @@ export const EducationalGame_MultiplesCountingWords = (props: {}) => {
                     <GameScore gameScore={gameScore} />
                     <GameBoard gameBoard={gameBoard} focus={gameInput?.focus ?? { multiple: 0, times: 0 }} />
                     {gameInput && !gameScore.gameWonTime && <GameInput gameInput={gameInput} />}
-                    {!!gameScore.gameWonTime && (<LeaderboardNameInput onSubmit={onSaveScore} />)}
-                    <LeaderboardView scores={leaderboardScores.scores} />
+                    <leaderboard.LeaderboardArea gameOver={!!gameScore.gameWonTime} onScoreSaved={onScoreSaved} />
                 </View>
             </View>
         </>
@@ -114,7 +99,7 @@ export const EducationalGame_MultiplesCountingWords = (props: {}) => {
 
 
 type GameBoardState = {
-    maxTimes: number;
+    size: number;
     rows: { times: number }[];
     columns: {
         multiple: number;
@@ -123,11 +108,11 @@ type GameBoardState = {
 };
 
 const createDefaultGameBoardState = (): GameBoardState => {
-    const maxMultiple = 12;
+    const size = 12;
     const gameBoard: GameBoardState = {
-        maxTimes: maxMultiple,
-        rows: [...new Array(maxMultiple)].map((x, i) => ({ times: i + 1 })),
-        columns: [...new Array(maxMultiple)].map((x, i) => ({ multiple: i + 1, maxTimesCorrect: 0 })),
+        size,
+        rows: [...new Array(size)].map((x, i) => ({ times: i + 1 })),
+        columns: [...new Array(size)].map((x, i) => ({ multiple: i + 1, maxTimesCorrect: 0 })),
     };
 
     return gameBoard;
@@ -291,7 +276,7 @@ type GameInputState = {
 };
 
 const createGameInputState = (gameBoard: GameBoardState, onGameWon: () => void, onCorrect: (value: { multiple: number, times: number }) => void, onWrong: (value: { multiple: number, times: number }) => void): GameInputState => {
-    const nextColumn = gameBoard.columns.filter(x => x.maxTimesCorrect < gameBoard.maxTimes)[0];
+    const nextColumn = gameBoard.columns.filter(x => x.maxTimesCorrect < gameBoard.size)[0];
     if (!nextColumn) {
         // Win state - All Complete
         onGameWon();
@@ -468,105 +453,5 @@ const GameScore = ({ gameScore }: { gameScore: GameScoreState }) => {
                 </View>
             </View>
         </>
-    );
-};
-
-
-const leaderboardInputStyles = {
-    container: {
-        flex: 1,
-        alignItems: `center`,
-        margin: 16,
-    },
-    textInput: {
-        fontFamily: `"Lucida Console", Monaco, monospace`,
-        fontSize: 16,
-        color: `#0000FF`,
-    },
-    buttonView: {
-        margin: 4,
-        padding: 4,
-        borderColor: `#FFFF00`,
-        borderStyle: `solid`,
-        borderWidth: 1,
-        borderRadius: 4,
-    },
-    buttonText: {
-        fontFamily: `"Lucida Console", Monaco, monospace`,
-        fontSize: 16,
-        color: `#FFFF00`,
-    },
-} as const;
-
-const LeaderboardNameInput = (props: { onSubmit: (value: string) => void }) => {
-    const [name, setName] = useState(``);
-    return (
-        <View style={leaderboardInputStyles.container}>
-            <TextInput style={leaderboardInputStyles.textInput} value={name} onChange={setName} placeholder='Name' keyboardType='default' autoCompleteType='off' />
-            <TouchableOpacity onPress={() => props.onSubmit(name)}>
-                <View style={leaderboardInputStyles.buttonView}>
-                    <Text style={leaderboardInputStyles.buttonText}>Save Score</Text>
-                </View>
-            </TouchableOpacity>
-        </View >
-    );
-};
-
-
-const leaderboardStyles = {
-    container: {
-        marginTop: 16,
-        borderColor: `#FFFFFF`,
-        borderStyle: `solid`,
-        borderWidth: 1,
-        borderRadius: 0,
-    },
-    scoreView: {
-        flexDirection: `row`,
-        justifyContent: `space-around`,
-        padding: 4,
-        borderColor: `#FFFFFF`,
-        borderStyle: `solid`,
-        borderWidth: 1,
-        borderRadius: 0,
-    },
-    nameText: {
-        flex: 2,
-        fontFamily: `"Lucida Console", Monaco, monospace`,
-        fontSize: 12,
-        color: `#FFFFFF`,
-        overflow: `hidden`,
-    },
-    scoreText: {
-        flex: 1,
-        textAlign: `right`,
-        fontFamily: `"Lucida Console", Monaco, monospace`,
-        fontSize: 12,
-        color: `#FFFF00`,
-    },
-} as const;
-
-const LeaderboardView = (props: { scores: LeaderboardScore[] }) => {
-
-    return (
-        <View style={leaderboardStyles.container}>
-            <View style={leaderboardStyles.scoreView}>
-                <Text style={leaderboardStyles.nameText}>Leaderboard</Text>
-                <Text style={leaderboardStyles.scoreText} />
-                <Text style={leaderboardStyles.scoreText} />
-            </View>
-            <View style={leaderboardStyles.scoreView}>
-                <Text style={leaderboardStyles.nameText}>Name</Text>
-                <Text style={leaderboardStyles.scoreText}>Seconds</Text>
-                <Text style={leaderboardStyles.scoreText}>Mistakes</Text>
-            </View>
-            {props.scores.map(x => (
-                <View style={leaderboardStyles.scoreView}>
-                    <Text style={leaderboardStyles.nameText}>{x.name}</Text>
-                    <Text style={leaderboardStyles.scoreText}>{`${(x.score.timeMs / 1000).toLocaleString(undefined, { minimumFractionDigits: 1, maximumFractionDigits: 1 })}`}</Text>
-                    <Text style={leaderboardStyles.scoreText}>{`${x.score.mistakes}`}</Text>
-                </View>
-            ))}
-        </View>
     );
 };
