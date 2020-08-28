@@ -138,5 +138,8 @@ module.exports = {
 
         // Too many weird false positives:
         "react-hooks/exhaustive-deps": ["off"],
+
+        // Too strict
+        "no-param-reassign": ['off'],
     },
 }

@@ -36,15 +36,16 @@ export const EducationalGame_MultiplesLargeBoard = (props: {}) => {
 
     const changeFocus = (f: GameBoardPosition) => {
         const focus = f;
-        focus.col = focus.col < 0 ? 0 : focus.col > size - 1 ? size - 1 : focus.col;
-        focus.row = focus.row < 0 ? 0 : focus.row > size - 1 ? size - 1 : focus.row;
+        const { size } = lastGameBoard.current;
+        focus.i = focus.i < 0 ? 0 : focus.i > size - 1 ? size - 1 : focus.i;
+        focus.j = focus.j < 0 ? 0 : focus.j > size - 1 ? size - 1 : focus.j;
         const s = lastGameBoard.current;
         setGameBoard({ ...s, key: s.key + 1, focus });
     };
 
     const submitAnswer = () => {
         const s = lastGameBoard.current;
-        const cell = s.columns[s.focus.col].cells[s.focus.row];
+        const cell = s.columns[s.focus.i].cells[s.focus.j];
 
         if (cell.value === problem) {
             // Correct
@@ -61,6 +62,12 @@ export const EducationalGame_MultiplesLargeBoard = (props: {}) => {
         const s = lastGameBoard.current;
         const allCells = s.columns.flatMap(c => c.cells);
         const nextCells = allCells.filter(x => !x.text);
+        if (nextCells.length === 0) {
+            // TODO: Game Won
+            setProblem(0);
+            return;
+        }
+
         const cell = nextCells[randomIndex(nextCells.length)];
         setProblem(cell.value);
     };
@@ -74,7 +81,7 @@ export const EducationalGame_MultiplesLargeBoard = (props: {}) => {
     return (
         <>
             <View style={{ marginTop: 50, marginBottom: 150, padding: 2, alignItems: `center` }} >
-                <View style={{}}>
+                <View style={{ alignItems: `center` }}>
                     <GameBoard gameBoard={gameBoard} />
                     <ProblemView problem={problem} />
                     <GameGamepadInput gameBoard={gameBoard} onChangeFocus={changeFocus} buttons={[{ text: `🔴`, onPress: submitAnswer }]} />
@@ -95,38 +102,45 @@ type GameBoardState = {
     key: number;
     size: number;
     columns: {
-        col: number;
+        i: number;
+        c: number;
         cells: GameBoardCell[];
     }[];
     focus: GameBoardPosition;
 };
 
 type GameBoardPosition = {
-    col: number;
-    row: number;
+    i: number;
+    j: number;
 };
 
 type GameBoardCell = {
-    col: number;
-    row: number;
+    i: number;
+    j: number;
+    c: number;
+    r: number;
     value: number;
     text: string;
 };
 
-const size = 12;
 
 const createDefaultGameBoardState = (): GameBoardState => {
+    const size = 5;
+    const minC = 2 + randomIndex(7 + 1 - 2);
+    const minR = 2 + randomIndex(7 + 1 - 2);
 
     const gameBoard: GameBoardState = {
         key: 0,
         size,
         columns: [...new Array(size)].map((x, i) => ({
-            col: i,
+            i,
+            c: i + minC,
             cells: [...new Array(size)].map((r, j) => ({
-                col: i,
-                row: j,
-                value: (i + 1) * (j + 1),
-                // text: `${(i + 1) * (j + 1)}`,
+                i,
+                j,
+                c: i + minC,
+                r: j + minR,
+                value: (i + minC) * (j + minR),
                 text: ``,
                 bodyIndex: 0,
                 connected: {
@@ -137,8 +151,11 @@ const createDefaultGameBoardState = (): GameBoardState => {
                 },
             })),
         })),
-        focus: { col: 5, row: 7 },
+        focus: { i: Math.floor(size / 2), j: Math.floor(size / 2) },
     };
+
+    // Show all
+    // gameBoard.columns.forEach(x => x.cells.forEach(c => { c.text = `${c.value}`; }));
 
     return gameBoard;
 };
@@ -166,15 +183,15 @@ const GameBoard = ({ gameBoard }: { gameBoard: GameBoardState }) => {
     const { focus } = gameBoard;
 
     const getCellText = (cell: GameBoardCell) => {
-        const { col, row, value, text } = cell;
+        const { text } = cell;
         return `${text}`;
     };
 
     const getCellViewStyle = (cell: GameBoardCell) => {
-        const { col, row, value } = cell;
-        const focusState = focus.col === col && focus.row === row ? `row col`
-            : focus.col === col ? `col`
-                : focus.row === row ? `row`
+        const { i, j, c, r } = cell;
+        const focusState = focus.i === i && focus.j === j ? `row col`
+            : focus.i === i ? `col`
+                : focus.j === j ? `row`
                     : ``;
         const unitSize = 4;
         const lineColorRow = focusState.includes(`row`) ? colors.lineFocus : colors.line;
@@ -189,8 +206,8 @@ const GameBoard = ({ gameBoard }: { gameBoard: GameBoardState }) => {
         `;
 
         return [styles.cellView, {
-            width: (col + 1) * unitSize,
-            height: (row + 1) * unitSize,
+            width: (c + 1) * unitSize,
+            height: (r + 1) * unitSize,
             margin: unitSize / 2,
             borderWidth: 0,
             background,
@@ -199,8 +216,8 @@ const GameBoard = ({ gameBoard }: { gameBoard: GameBoardState }) => {
     };
 
     const getCellTextStyle = (cell: GameBoardCell) => {
-        const { col, row, value } = cell;
-        if (col < 2) {
+        const { c } = cell;
+        if (c < 2) {
             return [styles.cellText, {
                 fontSize: 8,
             }];
@@ -217,19 +234,19 @@ const GameBoard = ({ gameBoard }: { gameBoard: GameBoardState }) => {
                         <Text style={styles.focusCellHeaderText} > </Text>
                     </View>
                     {gameBoard.columns[0].cells.map((r) => (
-                        <View key={r.row} style={[...getCellViewStyle(r), { background: undefined }]} >
-                            <Text style={focus.row === r.row ? styles.focusCellHeaderText : styles.cellHeaderText}>{`${r.row + 1}`}</Text>
+                        <View key={r.r} style={[...getCellViewStyle(r), { background: undefined }]} >
+                            <Text style={focus.j === r.j ? styles.focusCellHeaderText : styles.cellHeaderText}>{`${r.r}`}</Text>
                         </View>
                     ))}
                 </View>
 
                 {gameBoard.columns.map((c) => (
-                    <View key={c.col} style={{ flexDirection: `column-reverse` }} >
+                    <View key={c.c} style={{ flexDirection: `column-reverse` }} >
                         <View style={[...getCellViewStyle(c.cells[0]), { background: undefined }]} >
-                            <Text style={focus.col === c.col ? styles.focusCellHeaderText : styles.cellHeaderText}>{`${c.col + 1}`}</Text>
+                            <Text style={focus.i === c.i ? styles.focusCellHeaderText : styles.cellHeaderText}>{`${c.c}`}</Text>
                         </View>
                         {c.cells.map((cell) => (
-                            <View key={cell.row} style={getCellViewStyle(cell)} >
+                            <View key={cell.r} style={getCellViewStyle(cell)} >
                                 <Text style={getCellTextStyle(cell)}>{getCellText(cell)}</Text>
                             </View>
                         ))}
@@ -253,11 +270,10 @@ const inputStyles = {
 const GameGamepadInput = (props: { gameBoard: GameBoardState, onChangeFocus: (focus: GameBoardPosition) => void, buttons: { text: string, onPress: () => void }[] }) => {
     const move = (col: number, row: number) => {
         props.onChangeFocus({
-            col: props.gameBoard.focus.col + col,
-            row: props.gameBoard.focus.row + row,
+            i: props.gameBoard.focus.i + col,
+            j: props.gameBoard.focus.j + row,
         });
     };
-    // ⬅⬆⬇➡
     return (
         <View style={inputStyles.container}>
             <View style={inputStyles.section}>
