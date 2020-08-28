@@ -2,53 +2,36 @@ import React, { useState, useEffect, useRef } from 'react';
 import { View, Text, TouchableOpacity, TextInput } from 'react-native-lite';
 import { distinct, shuffle, groupItems } from 'utils/arrays';
 import { randomIndex } from 'utils/random';
-import { Stats } from 'fs';
-import { toKeyValueObject, toKeyValueArray } from 'utils/objects';
+import { createLeaderboard } from './components/leaderboard';
 
-type LeaderboardScore = { name: string, score: { score: number, timeMs: number } };
-const leaderboard = {
-    saveScore: (name: string, score: GameScoreState) => {
-        const data = leaderboard.loadScore();
-        data.push({ name, score: { score: score.score, timeMs: (score.gameOverTime ?? Date.now()) - score.startTime } });
-        data.sort((a, b) => b.score.score - a.score.score);
-
-        localStorage.setItem(`MultiplesSnakeLeaderboard`, JSON.stringify(data));
-    },
-    loadScore: () => {
-        const json = localStorage.getItem(`MultiplesSnakeLeaderboard`);
-        if (!json) { return []; }
-
-        return JSON.parse(json) as LeaderboardScore[];
-
-        // const scores: LeaderboardScore[] = [
-        //     { name: `Rick`, score: { mistakes: 0, timeMs: 10.78 * 1000 } },
-        //     { name: `Rick`, score: { mistakes: 0, timeMs: 10.78 * 1000 } },
-        //     { name: `Rick`, score: { mistakes: 0, timeMs: 10.78 * 1000 } },
-        //     { name: `Rick`, score: { mistakes: 0, timeMs: 10.78 * 1000 } },
-        //     { name: `Rick`, score: { mistakes: 0, timeMs: 10.78 * 1000 } },
-        //     { name: `Rick`, score: { mistakes: 0, timeMs: 10.78 * 1000 } },
-        //     { name: `Rick`, score: { mistakes: 0, timeMs: 10.78 * 1000 } },
-        // ];
-        // return scores;
-    },
-};
+const leaderboardService = createLeaderboard<{
+    score: number;
+    timeMs: number;
+}>({
+    storageKey: `MultiplesSnakeLeaderboard`,
+    sortKey: x => x.score,
+    scoreColumns: [
+        { name: `Time`, getValue: x => `${(x.timeMs / 1000).toLocaleString(undefined, { minimumFractionDigits: 1, maximumFractionDigits: 1 })}` },
+        { name: `Score`, getValue: x => `${x.score}` },
+    ],
+});
 
 export const EducationalGame_MultiplesSnake = (props: {}) => {
 
-    const [leaderboardScores, setLeaderboardScores] = useState({ scores: leaderboard.loadScore() } as { scores: LeaderboardScore[] });
     const [gameScore, setGameScore] = useState({ key: 0, startTime: Date.now(), gameOverTime: undefined, score: 0 } as GameScoreState & { key: number });
     const [gameBoard, setGameBoard] = useState(createDefaultGameBoardState());
     const [gameInput, setGameInput] = useState(null as null | GameInputState);
     const lastGameBoard = useRef(gameBoard);
 
+    const leaderboard = leaderboardService.useLeaderboard({
+        getScore: () => ({ score: gameScore.score, timeMs: (gameScore.gameOverTime ?? Date.now()) - gameScore.startTime }),
+    });
+
     const onGameOver = () => {
         setGameScore(s => ({ ...s, gameOverTime: Date.now(), key: s.key + 1 }));
     };
 
-    const onSaveScore = (name: string) => {
-        leaderboard.saveScore(name, gameScore);
-        setLeaderboardScores({ scores: leaderboard.loadScore() });
-
+    const onScoreSaved = () => {
         // Restart Game
         const newGameBoard = createDefaultGameBoardState();
         setGameScore({ key: 0, startTime: Date.now(), gameOverTime: undefined, score: 0 });
@@ -121,8 +104,7 @@ export const EducationalGame_MultiplesSnake = (props: {}) => {
                     <GameScore gameScore={gameScore} />
                     <GameBoard gameBoard={gameBoard} focus={gameBoard.player.position ?? { col: 0, row: 0 }} />
                     {gameInput && !gameScore.gameOverTime && <GameInput gameInput={gameInput} />}
-                    {!!gameScore.gameOverTime && (<LeaderboardNameInput onSubmit={onSaveScore} />)}
-                    <LeaderboardView scores={leaderboardScores.scores} />
+                    <leaderboard.LeaderboardArea gameOver={!!gameScore.gameOverTime} onScoreSaved={onScoreSaved} />
                 </View>
             </View>
         </>
@@ -573,106 +555,5 @@ const GameScore = ({ gameScore }: { gameScore: GameScoreState }) => {
                 </View>
             </View>
         </>
-    );
-};
-
-
-const leaderboardInputStyles = {
-    container: {
-        flex: 1,
-        alignItems: `center`,
-        margin: 16,
-    },
-    textInput: {
-        fontFamily: `"Lucida Console", Monaco, monospace`,
-        fontSize: 16,
-        color: `#0000FF`,
-    },
-    buttonView: {
-        margin: 4,
-        padding: 4,
-        borderColor: `#FFFF00`,
-        borderStyle: `solid`,
-        borderWidth: 1,
-        borderRadius: 4,
-    },
-    buttonText: {
-        fontFamily: `"Lucida Console", Monaco, monospace`,
-        fontSize: 16,
-        color: `#FFFF00`,
-    },
-} as const;
-
-const LeaderboardNameInput = (props: { onSubmit: (value: string) => void }) => {
-    const [name, setName] = useState(``);
-    return (
-        <View style={leaderboardInputStyles.container}>
-            <TextInput style={leaderboardInputStyles.textInput} value={name} onChange={setName} placeholder='Name' keyboardType='default' autoCompleteType='off' />
-            <TouchableOpacity onPress={() => props.onSubmit(name)}>
-                <View style={leaderboardInputStyles.buttonView}>
-                    <Text style={leaderboardInputStyles.buttonText}>Save Score</Text>
-                </View>
-            </TouchableOpacity>
-        </View >
-    );
-};
-
-
-const leaderboardStyles = {
-    container: {
-        marginTop: 16,
-        borderColor: `#FFFFFF`,
-        borderStyle: `solid`,
-        borderWidth: 1,
-        borderRadius: 0,
-    },
-    scoreView: {
-        flexDirection: `row`,
-        justifyContent: `space-around`,
-        padding: 4,
-        borderColor: `#FFFFFF`,
-        borderStyle: `solid`,
-        borderWidth: 1,
-        borderRadius: 0,
-    },
-    nameText: {
-        flex: 2,
-        fontFamily: `"Lucida Console", Monaco, monospace`,
-        fontSize: 12,
-        color: `#FFFFFF`,
-        overflow: `hidden`,
-    },
-    scoreText: {
-        flex: 1,
-        textAlign: `right`,
-        fontFamily: `"Lucida Console", Monaco, monospace`,
-        fontSize: 12,
-        color: `#FFFF00`,
-    },
-} as const;
-
-const LeaderboardView = (props: { scores: LeaderboardScore[] }) => {
-
-    return (
-        <View style={leaderboardStyles.container}>
-            <View style={leaderboardStyles.scoreView}>
-                <Text style={leaderboardStyles.nameText}>Leaderboard</Text>
-                <Text style={leaderboardStyles.scoreText} />
-                <Text style={leaderboardStyles.scoreText} />
-            </View>
-            <View style={leaderboardStyles.scoreView}>
-                <Text style={leaderboardStyles.nameText}>Name</Text>
-                <Text style={leaderboardStyles.scoreText}>Seconds</Text>
-                <Text style={leaderboardStyles.scoreText}>Score</Text>
-            </View>
-            {props.scores.map((x, i) => (
-                // eslint-disable-next-line react/no-array-index-key
-                <View key={`${i}${x.name}${x.score}`} style={leaderboardStyles.scoreView}>
-                    <Text style={leaderboardStyles.nameText}>{x.name}</Text>
-                    <Text style={leaderboardStyles.scoreText}>{`${(x.score.timeMs / 1000).toLocaleString(undefined, { minimumFractionDigits: 1, maximumFractionDigits: 1 })}`}</Text>
-                    <Text style={leaderboardStyles.scoreText}>{`${x.score.score}`}</Text>
-                </View>
-            ))}
-        </View>
     );
 };
