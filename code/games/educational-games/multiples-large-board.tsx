@@ -50,12 +50,17 @@ export const EducationalGame_MultiplesLargeBoard = (props: {}) => {
         if (cell.value === problem) {
             // Correct
             cell.text = `${cell.value}`;
-        } else {
-            // Wrong
-            cell.text = `❌`;
+
+            // Reset any x
+            s.columns.forEach(x => x.cells.forEach(c => { if (c.text === `❌`) { c.text = ``; } }));
+
+            nextProblem();
+            return;
         }
 
-        nextProblem();
+        // Wrong
+        cell.text = `❌`;
+        setGameBoard({ ...s, key: s.key + 1 });
     };
 
     const nextProblem = () => {
