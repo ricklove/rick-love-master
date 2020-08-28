@@ -155,6 +155,11 @@ const GameBoard = ({ gameBoard }: { gameBoard: GameBoardState }) => {
 
     const getCellTextStyle = (cell: GameBoardCell) => {
         const { col, row, value } = cell;
+        if (col < 2) {
+            return [styles.cellText, {
+                fontSize: 6,
+            }];
+        }
         return styles.cellText;
     };
 
