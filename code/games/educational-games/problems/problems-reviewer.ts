@@ -1,4 +1,4 @@
-import { distinct, shuffle } from 'utils/arrays';
+import { distinct, shuffle, distinct_key } from 'utils/arrays';
 import { ProblemService, Problem, ProblemResult } from './problems-service';
 
 
@@ -11,10 +11,13 @@ export const createReviewProblemService = (problemSource: ProblemService, { maxR
     };
 
     const startReview = () => {
+        console.log(`createReviewProblemService startReview`, state);
         state.repeatState = `review`;
     };
 
     const getReviewProblem = (): null | Problem => {
+        console.log(`createReviewProblemService getReviewProblem`, state);
+
         if (state.reviewSequence && state.reviewSequence.iNext === state.reviewSequence.iEnd) {
             state.reviewSequence = null;
         }
@@ -45,6 +48,8 @@ export const createReviewProblemService = (problemSource: ProblemService, { maxR
 
     const service: ProblemService = {
         getNextProblem: (): ProblemResult => {
+            console.log(`createReviewProblemService getNextProblem`, state);
+
             if (state.repeatState === `review`) {
                 const reviewProblem = getReviewProblem();
                 if (reviewProblem) {
@@ -70,11 +75,13 @@ export const createReviewProblemService = (problemSource: ProblemService, { maxR
             return newProblem;
         },
         recordAnswer: (problem, answer) => {
+            console.log(`createReviewProblemService recordAnswer`, state);
+
             if (answer.isCorrect) { return; }
 
             const i = state.problemSourceHistory.lastIndexOf(problem);
             state.problemsToReview.push({ index: i });
-            state.problemsToReview = distinct(state.problemsToReview);
+            state.problemsToReview = distinct_key(state.problemsToReview, x => `${x.index}`);
         },
     };
 

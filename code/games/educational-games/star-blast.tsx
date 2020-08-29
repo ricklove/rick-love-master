@@ -92,7 +92,7 @@ type GameState = {
     gameStartTimeMs: number;
     lives: number;
     deadTime?: number;
-    gameOver?: boolean;
+    gameOverTime?: number;
 };
 
 
@@ -118,9 +118,7 @@ const GameView = (props: { pressState: GamepadPressState, problemService: Proble
 
     const restartGame = () => {
         gameState.current = {
-            ...gameState.current,
-            gameOver: false,
-            deadTime: undefined,
+            gameStartTimeMs: gameState.current.gameStartTimeMs,
             lives: 3,
         };
     };
@@ -129,7 +127,7 @@ const GameView = (props: { pressState: GamepadPressState, problemService: Proble
         gameState.current = {
             ...gameState.current,
             lives: 0,
-            gameOver: true,
+            gameOverTime: getGameTime().gameTime,
         };
     };
 
@@ -158,6 +156,7 @@ const GameView = (props: { pressState: GamepadPressState, problemService: Proble
                 onHit: () => {
                     setTimeout(() => {
                         console.log(`onHit`, { ans });
+                        props.problemService.recordAnswer(p, ans);
                         if (ans.isCorrect) {
                             // TODO: Update score, etc.
                             gotoNextProblem();
@@ -227,11 +226,12 @@ const GameView = (props: { pressState: GamepadPressState, problemService: Proble
             const gameResult = updateGame(getCommonState());
             gameState.current = gameResult;
 
-            if (!gameState.current.gameOver) {
+            if (!gameState.current.gameOverTime) {
                 // Player
                 const playerResult = updatePlayer(getCommonState());
                 playerPositionState.current = playerResult.playerPosition;
-            } else if (pressState.current.buttons[0].isDown) {
+            } else if (getGameTime().gameTime > 1 + gameState.current.gameOverTime
+                && pressState.current.buttons[0].isDown) {
                 setTimeout(() => {
                     restartGame();
                 }, 250);
@@ -279,17 +279,17 @@ const GameView = (props: { pressState: GamepadPressState, problemService: Proble
                         <Sprite kind={x.explodeTime ? `enemy-explode` : `enemy`} position={x.pos} />
                     </React.Fragment>
                 ))}
-                {!gameState.current.gameOver && !gameState.current.deadTime && (
+                {!gameState.current.gameOverTime && !gameState.current.deadTime && (
                     <Sprite kind='player' position={playerPositionState.current} />
                 )}
                 {projectilesState.current.shots.map(x => (
                     <Sprite key={x.key} kind={x.explodeTime ? `shot-explode` : `shot`} position={x.pos} />
                 ))}
-                {gameState.current.gameOver && (
+                {gameState.current.gameOverTime && (
                     <View>
                         <View style={{ position: `absolute`, top: gameStyles.viewscreenView.height * 0.5, width: gameStyles.viewscreenView.width }}>
                             <Text style={gameStyles.gameOver.text}>Game Over</Text>
-                            <Text style={gameStyles.gameOver.text}>Continue?</Text>
+                            {getGameTime().gameTime > 1 + gameState.current.gameOverTime && (<Text style={gameStyles.gameOver.text}>Continue?</Text>)}
                         </View>
                     </View>
                 )}
@@ -340,7 +340,7 @@ type ProjectilesState = {
 const updateProjectiles = ({ gameTime, gameDeltaTime, pressState, playerPosition: playerPos, projectilesState, gameState, onLoseLife }: CommonGameState): ProjectilesState => {
     const { shots, debris, lastShotTime } = projectilesState;
 
-    const canShoot = !gameState.deadTime && !gameState.gameOver && gameTime > 0.25 + lastShotTime;
+    const canShoot = !gameState.deadTime && !gameState.gameOverTime && gameTime > 0.25 + lastShotTime;
 
     // console.log(`updateProjectiles`, { canShoot, gameTime, lastShotTime });
 
