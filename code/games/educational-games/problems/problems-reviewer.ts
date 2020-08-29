@@ -27,8 +27,8 @@ export const createReviewProblemService = (problemSource: ProblemService, { maxR
             if (!nextProblemToReview) { return null; }
 
             state.reviewSequence = {
-                iNext: nextProblemToReview.index - 1,
-                iEnd: nextProblemToReview.index - 1 + reviewSequenceLength,
+                iNext: Math.min(0, nextProblemToReview.index - 1),
+                iEnd: nextProblemToReview.index + reviewSequenceLength,
             };
         }
 
