@@ -203,12 +203,13 @@ const updateProjectiles = ({ gameTime, gameDeltaTime, pressState, playerPos, pro
     };
 };
 
-type SpriteKind = 'player' | 'shot' | 'answer';
+type SpriteKind = 'player' | 'shot' | 'enemy' | 'answer';
 const getSpriteEmoji = (kind: SpriteKind) => {
     // ❤💙💚😀🤣😃😁😂😄😉😆😅😊😋😎🥰😙☺🤩🙄😑😐😣🤐😫🤢😬😭🤯🤒😡🤓🤠👽💀👻☠🤖👾😺🙀🙈🙉🙊🐵🐱‍🐉🐶🦁🐯🐺🐱🦒🦊🦝🐗🐷🐮🐭🐹🐰🐼🐨🐻🐸🦓🐴🚀🛸⛵🛰🚁💺🚤🛥⛴⚓🪐🌌🌍🌏🌎✈🛩🚂🚘🚔🚍🚖🔥💧❄⚡🌀🌈☄🌠⭐
     switch (kind) {
         case `player`: return { text: `🚀`, rotation: -0.125, offsetX: -0.25, offsetY: 0 };
         case `shot`: return { text: `🔥`, rotation: 0.5 };
+        case `enemy`: return { text: `🛸` };
         default: return { text: `😀` };
     }
 };

@@ -21,6 +21,22 @@ const textStyleDefaults = {
     whiteSpace: `pre`,
 } as const;
 
+const finalizeTextStyle = <T extends unknown>(style: T) => {
+    const s = style as {
+        userSelect?: 'none';
+        '-moz-user-select'?: 'none';
+        '-webkit-user-select'?: 'none';
+        '-ms-user-select'?: 'none';
+    };
+    if (s.userSelect === `none`) {
+        s[`-moz-user-select`] = `none`;
+        s[`-webkit-user-select`] = `none`;
+        s[`-ms-user-select`] = `none`;
+    }
+
+    return style;
+};
+
 export const View = (props: { style?: ThemeViewStyle | ThemeViewStyle[], children?: ReactNode }) => { return (<div style={mergeStyles([viewStyleDefaults, props.style])}>{props.children}</div>); };
 export const Text = (props: { style?: ThemeTextStyle | ThemeTextStyle[], children?: string, numberOfLines?: undefined | 1 }) => {
     if (props.numberOfLines === 1) {
@@ -30,9 +46,11 @@ export const Text = (props: { style?: ThemeTextStyle | ThemeTextStyle[], childre
             wordWrap: `break-word`,
             textOverflow: `ellipsis`,
         } as const;
-        return (<span style={mergeStyles([textStyleDefaults, props.style, singleLineStyle])}>{props.children}</span>);
+        const allStyles = mergeStyles([textStyleDefaults, props.style, singleLineStyle]);
+        return (<span style={finalizeTextStyle(allStyles)}>{props.children}</span>);
     }
-    return (<span style={mergeStyles([textStyleDefaults, props.style])}>{props.children}</span>);
+    const allStyles = mergeStyles([textStyleDefaults, props.style]);
+    return (<span style={finalizeTextStyle(allStyles)}>{props.children}</span>);
 };
 export const TextInput = (props: {
     style?: ThemeTextStyle | ThemeTextStyle[];

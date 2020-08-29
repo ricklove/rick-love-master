@@ -1,7 +1,7 @@
 import { shuffle, distinct } from 'utils/arrays';
 import { ProblemService } from './problems-service';
 
-export const createMultiplesProblemService = ({ min = 1, max = 12 }: { min?: number, max?: number }): ProblemService => {
+export const createMultiplesProblemService = ({ min = 1, max = 12, maxAnswers = 4 }: { min?: number, max?: number, maxAnswers?: number }): ProblemService => {
     let a = min - 1;
     let b = min;
 
@@ -17,7 +17,7 @@ export const createMultiplesProblemService = ({ min = 1, max = 12 }: { min?: num
             }
 
             const correctValue = a * b;
-            const wrongAnswerCount = 4;
+            const wrongAnswerCount = maxAnswers - 1;
             const wrongValues =
                 distinct(
                     [...new Array(100)].map(() =>
