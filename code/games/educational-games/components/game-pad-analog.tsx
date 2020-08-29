@@ -58,10 +58,10 @@ const inputStyles = {
     moveSectionWrapper: { transform: `rotate(0.125turn)` },
     row: { flexDirection: `row` },
     cellTouch: { outline: `none` },
-    cellView: { pointerEvents: `none`, margin: 1, width: 32, height: 32, justifyContent: `center`, alignItems: `center`, borderWidth: 0, borderStyle: `solid`, outline: `none` },
+    cellView: { pointerEvents: `none`, margin: 1, width: 48, height: 48, justifyContent: `center`, alignItems: `center`, borderWidth: 0, borderStyle: `solid`, outline: `none` },
     cellText: { userSelect: `none`, pointerEvents: `none` },
     moveCellText: { userSelect: `none`, pointerEvents: `none`, transform: `rotate(-0.125turn)` },
-    cellEmptyView: { margin: 2, width: 32, height: 32 },
+    cellEmptyView: { margin: 2, width: 48, height: 48 },
 } as const;
 
 export const GamepadAnalog = (props: {

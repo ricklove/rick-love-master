@@ -58,10 +58,10 @@ const gameStyles = {
         },
     },
     question: {
-        view: { flex: 1, justifyContent: `center` },
+        view: { flex: 1, justifyContent: `center`, padding: 4 },
         text: {
             fontFamily: `"Lucida Console", Monaco, monospace`,
-            fontSize: 16,
+            fontSize: 24,
         },
     },
 } as const;
@@ -72,7 +72,7 @@ type GamePosition = {
     rotation: number;
 };
 
-
+type AnswerState = { key: string, value: string, isCorrect: boolean, isAnsweredWrong: boolean };
 const GameView = (props: { pressState: GamepadPressState, problemService: ProblemService }) => {
 
     const pressState = useRef(props.pressState);
@@ -82,36 +82,51 @@ const GameView = (props: { pressState: GamepadPressState, problemService: Proble
     const projectilesState = useRef({ lastShotTime: 0, shots: [] } as ProjectilesState);
     const enemiesState = useRef({ enemies: [] } as EnemiesState);
 
-    const problemsState = useRef(null as null | { question: string, answers: (Problem['answers'][0] & { pos: GamePosition, isAnsweredWrong: boolean })[] });
+    const problemsState = useRef(null as null | { question: string, answers: (Problem['answers'][0] & { key: string, pos: GamePosition, isAnsweredWrong: boolean })[] });
     const [renderId, setRenderId] = useState(0);
 
-    const getNextProblem = () => {
+    const gotoNextProblem = () => {
         const p = props.problemService.getNextProblem();
-        if (p.question) {
-            const pSize = gameStyles.viewscreenView.width / (p.answers.length);
-            problemsState.current = {
-                question: p.question,
-                answers: p.answers.map((x, i) => ({ ...x, pos: { x: pSize * (0.5 + i), y: pSize * 0.5, rotation: 0 }, isAnsweredWrong: false })),
-            };
-            enemiesState.current = {
-                enemies: problemsState.current.answers.map((ans, i) => ({
-                    key: ans.value,
-                    pos: { x: pSize * (0.5 + i), y: pSize * 0.5 + gameStyles.sprite.viewSize.height, rotation: 0 },
-                    onHit: () => {
+
+        console.log(`gotoNextProblem`, { p });
+
+        if (!p.question) {
+            // Game over - problems done
+            return;
+        }
+
+        const pSize = gameStyles.viewscreenView.width / (p.answers.length);
+        const newProblemState = {
+            question: p.question,
+            answers: p.answers.map((x, i) => ({ ...x, key: `${p.question} ${x.value}`, pos: { x: pSize * (0.5 + i), y: pSize * 0.5, rotation: 0 }, isAnsweredWrong: false })),
+        };
+        const newEnemyState = {
+            enemies: newProblemState.answers.map((ans, i) => ({
+                key: `${p.question} ${ans.value}`,
+                answer: ans,
+                pos: { x: pSize * (0.5 + i), y: pSize * 0.5 + gameStyles.sprite.viewSize.height, rotation: 0 },
+                onHit: () => {
+                    setTimeout(() => {
+                        console.log(`onHit`, { ans });
                         if (ans.isCorrect) {
                             // TODO: Update score, etc.
-                            getNextProblem();
+                            gotoNextProblem();
                         } else {
                             ans.isAnsweredWrong = true;
                         }
-                    },
-                })),
-            };
-        }
+                    });
+                },
+                destroyed: false,
+            })),
+        };
+
+        problemsState.current = newProblemState;
+        enemiesState.current = newEnemyState;
+        setRenderId(s => s + 1);
     };
 
     useEffect(() => {
-        getNextProblem();
+        gotoNextProblem();
 
         // Game Loop
         const gameStart = Date.now();
@@ -162,13 +177,13 @@ const GameView = (props: { pressState: GamepadPressState, problemService: Proble
     return (
         <>
             <View style={gameStyles.viewscreenView} >
-                {problemsState.current?.answers.map(x => (
-                    <React.Fragment key={x.value}>
-                        {!x.isAnsweredWrong && (<Sprite kind='answer' position={x.pos} text={x.value} />)}
-                        {x.isAnsweredWrong && (<Sprite kind='answer-wrong' position={x.pos} />)}
+                {enemiesState.current?.enemies.filter(x => !x.destroyed).map(x => (
+                    <React.Fragment key={x.key}>
+                        {!x.answer.isAnsweredWrong && (<Sprite kind='answer' position={{ x: x.pos.x, y: x.pos.y - gameStyles.sprite.viewSize.height, rotation: 0 }} text={x.answer.value} />)}
+                        {x.answer.isAnsweredWrong && (<Sprite kind='answer-wrong' position={{ x: x.pos.x, y: x.pos.y - gameStyles.sprite.viewSize.height, rotation: 0 }} />)}
                     </React.Fragment>
                 ))}
-                {enemiesState.current?.enemies.map(x => (
+                {enemiesState.current?.enemies.filter(x => !x.destroyed).map(x => (
                     <React.Fragment key={x.key}>
                         <Sprite kind={x.explodeTime ? `enemy-explode` : `enemy`} position={x.pos} />
                     </React.Fragment>
@@ -243,7 +258,14 @@ const updateProjectiles = ({ gameTime, gameDeltaTime, pressState, playerPos, pro
 };
 
 type EnemiesState = {
-    enemies: { key: string, pos: GamePosition, explodeTime?: number, onHit: () => void }[];
+    enemies: {
+        key: string;
+        pos: GamePosition;
+        explodeTime?: number;
+        answer: AnswerState;
+        onHit: () => void;
+        destroyed?: boolean;
+    }[];
 };
 const updateEnemies = ({ gameTime, gameDeltaTime, projectilesState, enemiesState }: CommonGameState): EnemiesState => {
     const { enemies } = enemiesState;
@@ -268,10 +290,11 @@ const updateEnemies = ({ gameTime, gameDeltaTime, projectilesState, enemiesState
     }));
 
     // Cleanup
-    const newEnemies = enemies
-        // Remove exploded 
-        .filter(x => !x.explodeTime || gameTime < 1 + x.explodeTime)
-        ;
+    const newEnemies = enemies;
+    newEnemies.filter(x => x.explodeTime && gameTime > 1 + x.explodeTime).forEach(x => { x.destroyed = true; });
+    // // Remove exploded 
+    // .filter(x => !x.explodeTime || gameTime < 1 + x.explodeTime)
+    // ;
 
     return {
         enemies: newEnemies,
