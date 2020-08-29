@@ -1,14 +1,15 @@
 /* eslint-disable react/no-array-index-key */
 /* eslint-disable jsx-a11y/accessible-emoji */
 import React, { useState, useEffect, useRef } from 'react';
-import { View, Text, Pressable } from 'react-native-lite';
+import { View, Text, Pressable, TouchableOpacity } from 'react-native-lite';
 import { createMultiplesProblemService } from './problems/multiples';
 import { ProblemService, Problem } from './problems/problems-service';
 import { GamepadAnalogStateful, GamepadPressState } from './components/game-pad-analog';
 import { getDistanceSq, Vector2 } from './utils/vectors';
+import { createReviewProblemService } from './problems/problems-reviewer';
 
 export const EducationalGame_StarBlast_Multiples = (props: {}) => {
-    return <EducationalGame_StarBlast problemService={createMultiplesProblemService({ min: 1, max: 12 })} />;
+    return <EducationalGame_StarBlast problemService={createReviewProblemService(createMultiplesProblemService({ min: 1, max: 12 }), {})} />;
 };
 
 export const EducationalGame_StarBlast = (props: { problemService: ProblemService }) => {
@@ -114,6 +115,15 @@ const GameView = (props: { pressState: GamepadPressState, problemService: Proble
 
     const problemsState = useRef(null as null | { problemTime: number, question: string, answers: (Problem['answers'][0] & { key: string, pos: GamePosition, isAnsweredWrong: boolean })[] });
     const [renderId, setRenderId] = useState(0);
+
+    const restartGame = () => {
+        gameState.current = {
+            ...gameState.current,
+            gameOver: false,
+            deadTime: undefined,
+            lives: 3,
+        };
+    };
 
     const gameOver = () => {
         gameState.current = {
@@ -221,6 +231,10 @@ const GameView = (props: { pressState: GamepadPressState, problemService: Proble
                 // Player
                 const playerResult = updatePlayer(getCommonState());
                 playerPositionState.current = playerResult.playerPosition;
+            } else if (pressState.current.buttons[0].isDown) {
+                setTimeout(() => {
+                    restartGame();
+                }, 250);
             }
 
             // Projectiles
@@ -275,6 +289,7 @@ const GameView = (props: { pressState: GamepadPressState, problemService: Proble
                     <View>
                         <View style={{ position: `absolute`, top: gameStyles.viewscreenView.height * 0.5, width: gameStyles.viewscreenView.width }}>
                             <Text style={gameStyles.gameOver.text}>Game Over</Text>
+                            <Text style={gameStyles.gameOver.text}>Continue?</Text>
                         </View>
                     </View>
                 )}
