@@ -1,16 +1,6 @@
 import React, { useState, useRef } from 'react';
 import { View, Text, Pressable } from 'react-native-lite';
 
-const inputStyles = {
-    container: { flex: 1, flexDirection: `row`, justifyContent: `space-between`, alignItems: `center`, padding: 16 },
-    section: { justifyContent: `center`, alignItems: `center`, padding: 16 },
-    row: { flexDirection: `row` },
-    cellTouch: { outline: `none` },
-    cellView: { margin: 2, width: 32, height: 32, justifyContent: `center`, alignItems: `center`, borderWidth: 1, borderStyle: `solid`, outline: `none` },
-    cellText: { userSelect: `none` },
-    cellEmptyView: { margin: 2, width: 32, height: 32 },
-} as const;
-
 export type GamepadPressState = { moveDirection: { x: number, y: number }, buttons: { key: string, text: string, isDown: boolean }[] };
 export const GamepadAnalogStateful = (props: {
     style: { backgroundColor: string, borderColor: string };
@@ -62,6 +52,18 @@ export const GamepadAnalogStateful = (props: {
     );
 };
 
+const inputStyles = {
+    container: { flex: 1, alignSelf: `stretch`, flexDirection: `row`, justifyContent: `space-between`, alignItems: `center`, padding: 4 },
+    section: { justifyContent: `center`, alignItems: `center`, padding: 4 },
+    moveSectionWrapper: { transform: `rotate(0.125turn)` },
+    row: { flexDirection: `row` },
+    cellTouch: { outline: `none` },
+    cellView: { margin: 1, width: 32, height: 32, justifyContent: `center`, alignItems: `center`, borderWidth: 0, borderStyle: `solid`, outline: `none` },
+    cellText: { userSelect: `none` },
+    moveCellText: { userSelect: `none`, transform: `rotate(-0.125turn)` },
+    cellEmptyView: { margin: 2, width: 32, height: 32 },
+} as const;
+
 export const GamepadAnalog = (props: {
     style: { backgroundColor: string, borderColor: string };
     onMovePressIn: (direction: { x: number, y: number }) => void;
@@ -74,27 +76,22 @@ export const GamepadAnalog = (props: {
 
     const DirectionButton = ({ text, direction }: { text: string, direction: { x: number, y: number } }) => {
         return (
-            <Pressable style={inputStyles.cellTouch} onPressIn={() => onMoveDown(direction)} onPressOut={() => onMoveUp(direction)}><View style={cellViewStyle}><Text style={inputStyles.cellText}>{text}</Text></View></Pressable>
+            <Pressable style={inputStyles.cellTouch} onPressIn={() => onMoveDown(direction)} onPressOut={() => onMoveUp(direction)}><View style={cellViewStyle}><Text style={inputStyles.moveCellText}>{text}</Text></View></Pressable>
         );
     };
 
     return (
         <View style={inputStyles.container}>
-            <View style={inputStyles.section}>
-                <View style={inputStyles.row} >
-                    <View style={inputStyles.cellEmptyView} />
-                    <DirectionButton direction={{ x: 0, y: +1 }} text='⬆' />
-                    <View style={inputStyles.cellEmptyView} />
-                </View>
-                <View style={inputStyles.row} >
-                    <DirectionButton direction={{ x: -1, y: 0 }} text='⬅' />
-                    <View style={inputStyles.cellEmptyView} />
-                    <DirectionButton direction={{ x: +1, y: 0 }} text='➡' />
-                </View>
-                <View style={inputStyles.row} >
-                    <View style={inputStyles.cellEmptyView} />
-                    <DirectionButton direction={{ x: 0, y: -1 }} text='⬇' />
-                    <View style={inputStyles.cellEmptyView} />
+            <View style={inputStyles.moveSectionWrapper}>
+                <View style={inputStyles.section}>
+                    <View style={inputStyles.row} >
+                        <DirectionButton direction={{ x: 0, y: +1 }} text='⬆' />
+                        <DirectionButton direction={{ x: +1, y: 0 }} text='➡' />
+                    </View>
+                    <View style={inputStyles.row} >
+                        <DirectionButton direction={{ x: -1, y: 0 }} text='⬅' />
+                        <DirectionButton direction={{ x: 0, y: -1 }} text='⬇' />
+                    </View>
                 </View>
             </View>
             <View style={inputStyles.section} >
