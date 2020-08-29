@@ -59,12 +59,20 @@ const gameStyles = {
     },
 } as const;
 
+type GamePosition = {
+    x: number;
+    y: number;
+    rotation: number;
+};
+
+
 const GameView = (props: { pressState: GamepadPressState }) => {
 
     const pressState = useRef(props.pressState);
     pressState.current = props.pressState;
 
-    const playerPos = useRef({ x: 0, y: 0, rotation: 0 });
+    const playerPos = useRef({ x: 0, y: 0, rotation: 0 } as GamePosition);
+    const projectilesState = useRef({ lastShotTime: 0, shots: [] } as ProjectilesState);
 
 
     const [renderId, setRenderId] = useState(0);
@@ -88,24 +96,16 @@ const GameView = (props: { pressState: GamepadPressState }) => {
             // console.log(`gameLoop Update`);
 
             // Update
-            const targetRotation = pressState.current.moveDirection.x * 0.05;
 
-            const pos = {
-                x: playerPos.current.x + pressState.current.moveDirection.x * gameDeltaTime * 250,
-                y: playerPos.current.y - pressState.current.moveDirection.y * gameDeltaTime * 250,
-                rotation: playerPos.current.rotation * 0.9 + targetRotation * 0.1,
-            };
+            // Player
+            const playerResult = updatePlayer({ gameDeltaTime, pressState: pressState.current, playerPos: playerPos.current });
+            playerPos.current = playerResult.playerPos;
 
-            const w = gameStyles.viewscreenView.width;
-            const gw = gameStyles.player.viewSize.width * 0.5;
-            const h = gameStyles.viewscreenView.height;
-            const gh = gameStyles.player.viewSize.height * 0.5;
-            pos.x = pos.x < gw ? gw : pos.x > w - gw ? w - gw : pos.x;
-            pos.y = pos.y < gh ? gh : pos.y > h - gh ? h - gh : pos.y;
+            // Projectiles
+            const projectilesResult = updateProjectiles({ gameTime, gameDeltaTime, pressState: pressState.current, playerPos: playerPos.current, projectilesState: projectilesState.current });
+            projectilesState.current = projectilesResult;
 
-            playerPos.current = pos;
-
-
+            // Game Loop
             requestAnimationFrame(gameLoop);
             setRenderId(s => s + 1);
         };
@@ -120,17 +120,70 @@ const GameView = (props: { pressState: GamepadPressState }) => {
         <>
             <View style={gameStyles.viewscreenView} >
                 <Sprite kind='player' position={playerPos.current} />
+                {projectilesState.current.shots.map(x => (
+                    <Sprite key={x.key} kind='shot' position={x.pos} />
+                ))}
             </View>
         </>
     );
 };
 
 
-type SpriteKind = 'player';
+const updatePlayer = ({ gameDeltaTime, pressState, playerPos }: { gameDeltaTime: number, pressState: GamepadPressState, playerPos: GamePosition }) => {
+    const targetRotation = pressState.moveDirection.x * 0.05;
+
+    const pos = {
+        x: playerPos.x + pressState.moveDirection.x * gameDeltaTime * 250,
+        y: playerPos.y - pressState.moveDirection.y * gameDeltaTime * 250,
+        rotation: playerPos.rotation * 0.9 + targetRotation * 0.1,
+    };
+
+    const w = gameStyles.viewscreenView.width;
+    const gw = gameStyles.player.viewSize.width * 0.5;
+    const h = gameStyles.viewscreenView.height;
+    const gh = gameStyles.player.viewSize.height * 0.5;
+    pos.x = pos.x < gw ? gw : pos.x > w - gw ? w - gw : pos.x;
+    pos.y = pos.y < gh ? gh : pos.y > h - gh ? h - gh : pos.y;
+
+    return { playerPos: pos };
+};
+
+type ProjectilesState = {
+    lastShotTime: number;
+    shots: { key: string, pos: GamePosition }[];
+};
+const updateProjectiles = ({ gameTime, gameDeltaTime, pressState, playerPos, projectilesState }: { gameTime: number, gameDeltaTime: number, pressState: GamepadPressState, playerPos: GamePosition, projectilesState: ProjectilesState }): ProjectilesState => {
+    const { shots, lastShotTime } = projectilesState;
+
+    const canShoot = gameTime > 0.25 + lastShotTime;
+
+    console.log(`updateProjectiles`, { canShoot, gameTime, lastShotTime });
+
+    const didShoot = canShoot && pressState.buttons.find(x => x.key === `A`)?.isDown;
+    if (didShoot) {
+        shots.push({ key: `${lastShotTime}`, pos: { ...playerPos } });
+    }
+
+    // Move shots
+    shots.forEach(x => {
+        x.pos.y += -250 * gameDeltaTime;
+    });
+
+    // Remove shots offscreen
+    const newShots = shots.filter(x => x.pos.y > 0);
+
+    return {
+        lastShotTime: didShoot ? gameTime : lastShotTime,
+        shots: newShots,
+    };
+};
+
+type SpriteKind = 'player' | 'shot';
 const getSpriteEmoji = (kind: SpriteKind) => {
+    // ❤💙💚😀🤣😃😁😂😄😉😆😅😊😋😎🥰😙☺🤩🙄😑😐😣🤐😫🤢😬😭🤯🤒😡🤓🤠👽💀👻☠🤖👾😺🙀🙈🙉🙊🐵🐱‍🐉🐶🦁🐯🐺🐱🦒🦊🦝🐗🐷🐮🐭🐹🐰🐼🐨🐻🐸🦓🐴🚀🛸⛵🛰🚁💺🚤🛥⛴⚓🪐🌌🌍🌏🌎✈🛩🚂🚘🚔🚍🚖🔥💧❄⚡🌀🌈☄🌠⭐
     switch (kind) {
-        // ❤💙💚😀🤣😃😁😂😄😉😆😅😊😋😎🥰😙☺🤩🙄😑😐😣🤐😫🤢😬😭🤯🤒😡🤓🤠👽💀👻☠🤖👾😺🙀🙈🙉🙊🐵🐱‍🐉🐶🦁🐯🐺🐱🦒🦊🦝🐗🐷🐮🐭🐹🐰🐼🐨🐻🐸🦓🐴🚀🛸⛵🛰🚁💺🚤🛥⛴⚓🪐🌌🌍🌏🌎✈🛩🚂🚘🚔🚍🚖
         case `player`: return { text: `🚀`, rotation: -0.125, offsetX: -0.25, offsetY: 0 };
+        case `shot`: return { text: `🔥`, rotation: 0.5 };
         default: return { text: `😀` };
     }
 };
@@ -141,6 +194,7 @@ const Sprite = ({ kind, position }: { kind: SpriteKind, position: { x: number, y
     const { fontSize } = gameStyles.player.text;
 
     const stylePosition = {
+        position: `absolute`,
         ...size,
         transform: `translate(${position.x}px, ${position.y}px) rotate(${position.rotation ?? 0}turn)`,
         // backgroundColor: `red`,
