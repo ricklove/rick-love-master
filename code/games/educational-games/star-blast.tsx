@@ -20,10 +20,15 @@ export const EducationalGame_StarBlast = (props: { problemService: ProblemServic
 
     return (
         <>
-            <View style={{ marginTop: 50, marginBottom: 150, padding: 2, alignItems: `center` }} >
-                <View style={{ alignItems: `center` }} >
-                    <GameView pressState={pressState} problemService={props.problemService} />
-                    <GamepadAnalogStateful style={colors.gamepad} onPressStateChange={onPressStateChange} buttons={[{ key: `A`, text: `🔥` }]} />
+            <View style={{ position: `relative` }}>
+                <View style={{ marginTop: 50, marginBottom: 150, padding: 2, alignItems: `center` }} >
+                    <View style={{ alignItems: `center` }} >
+                        <GameView pressState={pressState} problemService={props.problemService} />
+                        <View style={{ position: `absolute`, top: 0, bottom: 0, left: 0, right: 0, opacity: 0 }} />
+                        <View style={{ zIndex: 10, flex: 1, alignSelf: `stretch` }}>
+                            <GamepadAnalogStateful style={colors.gamepad} onPressStateChange={onPressStateChange} buttons={[{ key: `A`, text: `🔥` }]} />
+                        </View>
+                    </View>
                 </View>
             </View>
         </>
