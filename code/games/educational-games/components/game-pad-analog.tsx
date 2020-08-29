@@ -58,10 +58,11 @@ const inputStyles = {
     moveSectionWrapper: { transform: `rotate(0.125turn)` },
     row: { flexDirection: `row` },
     cellTouch: { outline: `none` },
-    cellView: { pointerEvents: `none`, margin: 1, width: 48, height: 48, justifyContent: `center`, alignItems: `center`, borderWidth: 0, borderStyle: `solid`, outline: `none` },
+    cellView: { pointerEvents: `none`, position: `relative`, margin: 1, width: 48, height: 48, justifyContent: `center`, alignItems: `center`, borderWidth: 0, borderStyle: `solid`, outline: `none` },
     cellText: { userSelect: `none`, pointerEvents: `none` },
     moveCellText: { userSelect: `none`, pointerEvents: `none`, transform: `rotate(-0.125turn)` },
     cellEmptyView: { margin: 2, width: 48, height: 48 },
+    cellTextOcclusionView: { position: `absolute`, top: 0, bottom: 0, left: 0, right: 0, backgroundColor: `red`, opacity: 0 },
 } as const;
 
 export const GamepadAnalog = (props: {
@@ -76,7 +77,23 @@ export const GamepadAnalog = (props: {
 
     const DirectionButton = ({ text, direction }: { text: string, direction: { x: number, y: number } }) => {
         return (
-            <Pressable style={inputStyles.cellTouch} onPressIn={() => onMoveDown(direction)} onPressOut={() => onMoveUp(direction)}><View style={cellViewStyle}><Text style={inputStyles.moveCellText}>{text}</Text></View></Pressable>
+            <Pressable style={inputStyles.cellTouch} onPressIn={() => onMoveDown(direction)} onPressOut={() => onMoveUp(direction)}>
+                <View style={cellViewStyle}>
+                    <Text style={inputStyles.moveCellText}>{text}</Text>
+                    <View style={inputStyles.cellTextOcclusionView} />
+                </View>
+            </Pressable>
+        );
+    };
+
+    const ActionButton = ({ text, onPressIn, onPressOut }: { text: string, onPressIn: () => void, onPressOut: () => void }) => {
+        return (
+            <Pressable style={inputStyles.cellTouch} onPressIn={onPressIn} onPressOut={onPressOut}>
+                <View style={cellViewStyle}>
+                    <Text style={inputStyles.cellText}>{text}</Text>
+                    <View style={inputStyles.cellTextOcclusionView} />
+                </View>
+            </Pressable>
         );
     };
 
@@ -99,7 +116,7 @@ export const GamepadAnalog = (props: {
                     {props.buttons.map(x => (
                         <React.Fragment key={`${x.text}`}>
                             <View style={inputStyles.cellEmptyView} />
-                            <Pressable style={inputStyles.cellTouch} onPressIn={x.onPressIn} onPressOut={x.onPressOut}><View style={cellViewStyle}><Text style={inputStyles.cellText}>{x.text}</Text></View></Pressable>
+                            <ActionButton {...x} />
                         </React.Fragment>
                     ))}
                 </View>
