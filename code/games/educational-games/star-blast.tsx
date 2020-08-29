@@ -82,7 +82,7 @@ const GameView = (props: { pressState: GamepadPressState, problemService: Proble
     const projectilesState = useRef({ lastShotTime: 0, shots: [] } as ProjectilesState);
     const enemiesState = useRef({ enemies: [] } as EnemiesState);
 
-    const problemsState = useRef(null as null | { question: string, answers: (Problem['answers'][0] & { position: GamePosition })[] });
+    const problemsState = useRef(null as null | { question: string, answers: (Problem['answers'][0] & { pos: GamePosition, isAnsweredWrong: boolean })[] });
     const [renderId, setRenderId] = useState(0);
 
     const getNextProblem = () => {
@@ -91,7 +91,21 @@ const GameView = (props: { pressState: GamepadPressState, problemService: Proble
             const pSize = gameStyles.viewscreenView.width / (p.answers.length);
             problemsState.current = {
                 question: p.question,
-                answers: p.answers.map((x, i) => ({ ...x, position: { x: pSize * (0.5 + i), y: pSize * 0.5, rotation: 0 } })),
+                answers: p.answers.map((x, i) => ({ ...x, pos: { x: pSize * (0.5 + i), y: pSize * 0.5, rotation: 0 }, isAnsweredWrong: false })),
+            };
+            enemiesState.current = {
+                enemies: problemsState.current.answers.map((ans, i) => ({
+                    key: ans.value,
+                    pos: { x: pSize * (0.5 + i), y: pSize * 0.5 + gameStyles.sprite.viewSize.height, rotation: 0 },
+                    onHit: () => {
+                        if (ans.isCorrect) {
+                            // TODO: Update score, etc.
+                            getNextProblem();
+                        } else {
+                            ans.isAnsweredWrong = true;
+                        }
+                    },
+                })),
             };
         }
     };
@@ -150,13 +164,18 @@ const GameView = (props: { pressState: GamepadPressState, problemService: Proble
             <View style={gameStyles.viewscreenView} >
                 {problemsState.current?.answers.map(x => (
                     <React.Fragment key={x.value}>
-                        <Sprite kind='answer' position={x.position} text={x.value} />
-                        <Sprite kind='enemy' position={{ x: x.position.x, y: x.position.y + gameStyles.sprite.viewSize.height, rotation: x.position.rotation }} />
+                        {!x.isAnsweredWrong && (<Sprite kind='answer' position={x.pos} text={x.value} />)}
+                        {x.isAnsweredWrong && (<Sprite kind='answer-wrong' position={x.pos} />)}
+                    </React.Fragment>
+                ))}
+                {enemiesState.current?.enemies.map(x => (
+                    <React.Fragment key={x.key}>
+                        <Sprite kind={x.explodeTime ? `enemy-explode` : `enemy`} position={x.pos} />
                     </React.Fragment>
                 ))}
                 <Sprite kind='player' position={playerPos.current} />
                 {projectilesState.current.shots.map(x => (
-                    <Sprite key={x.key} kind='shot' position={x.pos} />
+                    <Sprite key={x.key} kind={x.explodeTime ? `shot-explode` : `shot`} position={x.pos} />
                 ))}
             </View>
             <View style={gameStyles.question.view}>
@@ -205,6 +224,8 @@ const updateProjectiles = ({ gameTime, gameDeltaTime, pressState, playerPos, pro
 
     // Move shots
     shots.forEach(x => {
+        if (x.explodeTime) { return; }
+
         x.pos.y += -250 * gameDeltaTime;
     });
 
@@ -222,24 +243,27 @@ const updateProjectiles = ({ gameTime, gameDeltaTime, pressState, playerPos, pro
 };
 
 type EnemiesState = {
-    enemies: { key: string, pos: GamePosition, explodeTime?: number }[];
+    enemies: { key: string, pos: GamePosition, explodeTime?: number, onHit: () => void }[];
 };
 const updateEnemies = ({ gameTime, gameDeltaTime, projectilesState, enemiesState }: CommonGameState): EnemiesState => {
     const { enemies } = enemiesState;
     const { shots } = projectilesState;
 
     // Detect Collisions
-    const radius = gameStyles.sprite.viewSize.width;
+    const radius = gameStyles.sprite.viewSize.width * 0.75;
     const radiusSq = radius * radius;
     enemies.forEach(e => shots.forEach(s => {
-        console.log(`Checking!`, { e, s });
+        // console.log(`Checking!`, { e, s });
 
         if (e.explodeTime) { return; }
         if (s.explodeTime) { return; }
         if (getDistanceSq(e.pos, s.pos) < radiusSq) {
             console.log(`Exploded!`, { e, s });
+
             e.explodeTime = gameTime;
             s.explodeTime = gameTime;
+
+            e.onHit();
         }
     }));
 
@@ -254,14 +278,17 @@ const updateEnemies = ({ gameTime, gameDeltaTime, projectilesState, enemiesState
     };
 };
 
-type SpriteKind = 'player' | 'shot' | 'enemy' | 'answer';
+type SpriteKind = 'player' | 'shot' | 'shot-explode' | 'enemy' | 'enemy-explode' | 'answer' | 'answer-wrong';
 const getSpriteEmoji = (kind: SpriteKind) => {
-    // ❤💙💚😀🤣😃😁😂😄😉😆😅😊😋😎🥰😙☺🤩🙄😑😐😣🤐😫🤢😬😭🤯🤒😡🤓🤠👽💀👻☠🤖👾😺🙀🙈🙉🙊🐵🐱‍🐉🐶🦁🐯🐺🐱🦒🦊🦝🐗🐷🐮🐭🐹🐰🐼🐨🐻🐸🦓🐴🚀🛸⛵🛰🚁💺🚤🛥⛴⚓🪐🌌🌍🌏🌎✈🛩🚂🚘🚔🚍🚖🔥💧❄⚡🌀🌈☄🌠⭐
+    // ❤💙💚😀🤣😃😁😂😄😉😆😅😊😋😎🥰😙☺🤩🙄😑😐😣🤐😫🤢😬😭🤯🤒😡🤓🤠👽💀👻☠🤖👾😺🙀🙈🙉🙊🐵🐱‍🐉🐶🦁🐯🐺🐱🦒🦊🦝🐗🐷🐮🐭🐹🐰🐼🐨🐻🐸🦓🐴🚀🛸⛵🛰🚁💺🚤🛥⛴⚓🪐🌌🌍🌏🌎✈🛩🚂🚘🚔🚍🚖🔥💧❄⚡🌀🌈☄🌠⭐❌💥♨🎇🎆✨🎡
     switch (kind) {
         case `player`: return { text: `🚀`, rotation: -0.125, offsetX: -0.25, offsetY: 0 };
         case `shot`: return { text: `🔥`, rotation: 0.5 };
+        case `shot-explode`: return { text: `✨`, rotation: 0, scale: 0.5 };
         case `enemy`: return { text: `🛸`, offsetX: -0.125, offsetY: -0.125 };
+        case `enemy-explode`: return { text: `💥`, offsetX: -0.125, offsetY: -0.125 };
         case `answer`: return { text: ``, offsetX: 0.25, offsetY: -0.125 };
+        case `answer-wrong`: return { text: `❌`, offsetX: -0.125, offsetY: -0.125 };
         default: return { text: `😀` };
     }
 };
@@ -280,7 +307,7 @@ const Sprite = ({ kind, position, text }: { kind: SpriteKind, position: { x: num
     };
     const styleRotation = {
         ...size,
-        transform: `translate( ${size.width * -0.5 + Math.floor((s.offsetX ?? 0) * fontSize)}px, ${size.height * -0.5 + Math.floor((s.offsetY ?? 0) * fontSize)}px) rotate(${s.rotation ?? 0}turn)`,
+        transform: `translate( ${size.width * -0.5 + Math.floor((s.offsetX ?? 0) * fontSize)}px, ${size.height * -0.5 + Math.floor((s.offsetY ?? 0) * fontSize)}px) rotate(${s.rotation ?? 0}turn) scale(${s.scale ?? 1})`,
     };
     return (
         <View style={stylePosition}>
