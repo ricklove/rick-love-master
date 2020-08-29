@@ -88,6 +88,7 @@ type GamePosition = {
 };
 
 type GameState = {
+    gameStartTimeMs: number;
     lives: number;
     deadTime?: number;
     gameOver?: boolean;
@@ -100,17 +101,23 @@ const GameView = (props: { pressState: GamepadPressState, problemService: Proble
     const pressState = useRef(props.pressState);
     pressState.current = props.pressState;
 
-    const gameState = useRef({ lives: 3 } as GameState);
+    const gameState = useRef({ lives: 3, gameStartTimeMs: Date.now() } as GameState);
+    const getGameTime = () => {
+        return {
+            gameTime: (Date.now() - gameState.current.gameStartTimeMs) / 1000,
+        };
+    };
 
     const playerPositionState = useRef({ x: gameStyles.viewscreenView.width * 0.5, y: gameStyles.viewscreenView.height * 0.85, rotation: 0 } as GamePosition);
     const projectilesState = useRef({ lastShotTime: 0, shots: [], debris: [] } as ProjectilesState);
     const enemiesState = useRef({ enemies: [] } as EnemiesState);
 
-    const problemsState = useRef(null as null | { question: string, answers: (Problem['answers'][0] & { key: string, pos: GamePosition, isAnsweredWrong: boolean })[] });
+    const problemsState = useRef(null as null | { problemTime: number, question: string, answers: (Problem['answers'][0] & { key: string, pos: GamePosition, isAnsweredWrong: boolean })[] });
     const [renderId, setRenderId] = useState(0);
 
     const gameOver = () => {
         gameState.current = {
+            ...gameState.current,
             lives: 0,
             gameOver: true,
         };
@@ -128,6 +135,7 @@ const GameView = (props: { pressState: GamepadPressState, problemService: Proble
 
         const pSize = gameStyles.viewscreenView.width / (p.answers.length);
         const newProblemState = {
+            problemTime: getGameTime().gameTime,
             question: p.question,
             answers: p.answers.map((x, i) => ({ ...x, key: `${p.question} ${x.value}`, pos: { x: pSize * (0.5 + i), y: gameStyles.sprite.viewSize.height * 0.5, rotation: 0 }, isAnsweredWrong: false })),
         };
@@ -161,10 +169,9 @@ const GameView = (props: { pressState: GamepadPressState, problemService: Proble
         gotoNextProblem();
 
         // Game Loop
-        const gameStart = Date.now();
         let gameLastTime = Date.now();
         const gameLoop = () => {
-            const gameTime = (Date.now() - gameStart) / 1000;
+            const { gameTime } = getGameTime();
             const gameDeltaTime = (Date.now() - gameLastTime) / 1000;
             gameLastTime = Date.now();
 
@@ -197,6 +204,7 @@ const GameView = (props: { pressState: GamepadPressState, problemService: Proble
                         projectilesState.current.debris.push({ key: `player${gameTime}`, kind: `player-character`, pos: { ...playerPositionState.current }, vel: { x: 0, y: 0 } });
 
                         gameState.current = {
+                            ...gameState.current,
                             lives: gameState.current.lives - 1,
                             deadTime: gameTime,
                         };
@@ -235,6 +243,8 @@ const GameView = (props: { pressState: GamepadPressState, problemService: Proble
 
     // console.log(`GameView render`, { playerStylePosition });
 
+    const timeSinceProblem = getGameTime().gameTime - (problemsState.current?.problemTime ?? 0);
+
     return (
         <>
             <View style={gameStyles.viewscreenView} >
@@ -256,7 +266,7 @@ const GameView = (props: { pressState: GamepadPressState, problemService: Proble
                     </React.Fragment>
                 ))}
                 {!gameState.current.gameOver && !gameState.current.deadTime && (
-                    <Sprite kind={gameState.current.deadTime ? `player-explode` : `player`} position={playerPositionState.current} />
+                    <Sprite kind='player' position={playerPositionState.current} />
                 )}
                 {projectilesState.current.shots.map(x => (
                     <Sprite key={x.key} kind={x.explodeTime ? `shot-explode` : `shot`} position={x.pos} />
@@ -269,7 +279,7 @@ const GameView = (props: { pressState: GamepadPressState, problemService: Proble
                     </View>
                 )}
             </View>
-            <View style={gameStyles.question.view}>
+            <View style={[gameStyles.question.view, { transform: `translate(0px,${-Math.max(0, gameStyles.viewscreenView.height * 0.5 - 125 * timeSinceProblem)}px)` }]}>
                 <Text style={gameStyles.question.text} >{problemsState.current?.question}</Text>
             </View>
         </>
