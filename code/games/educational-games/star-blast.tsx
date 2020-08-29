@@ -157,7 +157,7 @@ const updateProjectiles = ({ gameTime, gameDeltaTime, pressState, playerPos, pro
 
     const canShoot = gameTime > 0.25 + lastShotTime;
 
-    console.log(`updateProjectiles`, { canShoot, gameTime, lastShotTime });
+    // console.log(`updateProjectiles`, { canShoot, gameTime, lastShotTime });
 
     const didShoot = canShoot && pressState.buttons.find(x => x.key === `A`)?.isDown;
     if (didShoot) {
