@@ -85,7 +85,7 @@ const GameView = (props: { pressState: GamepadPressState, problemService: Proble
     pressState.current = props.pressState;
 
     const playerPos = useRef({ x: gameStyles.viewscreenView.width * 0.5, y: gameStyles.viewscreenView.height * 0.85, rotation: 0 } as GamePosition);
-    const projectilesState = useRef({ lastShotTime: 0, shots: [] } as ProjectilesState);
+    const projectilesState = useRef({ lastShotTime: 0, shots: [], debris: [] } as ProjectilesState);
     const enemiesState = useRef({ enemies: [] } as EnemiesState);
 
     const problemsState = useRef(null as null | { question: string, answers: (Problem['answers'][0] & { key: string, pos: GamePosition, isAnsweredWrong: boolean })[] });
@@ -184,6 +184,9 @@ const GameView = (props: { pressState: GamepadPressState, problemService: Proble
     return (
         <>
             <View style={gameStyles.viewscreenView} >
+                {projectilesState.current.debris.map(x => (
+                    <Sprite key={x.key} kind={x.hasHitGround ? `${x.kind}-splat` as SpriteKind : x.kind} position={x.pos} />
+                ))}
                 {enemiesState.current?.enemies.filter(x => !x.destroyed).map(x => (
                     <React.Fragment key={x.key}>
                         {!x.answer.isAnsweredWrong && (<Sprite kind='answer' position={{ x: x.pos.x, y: x.pos.y - gameStyles.sprite.viewSize.height, rotation: 0 }} text={x.answer.value} />)}
@@ -231,9 +234,10 @@ const updatePlayer = ({ gameDeltaTime, pressState, playerPos }: CommonGameState)
 type ProjectilesState = {
     lastShotTime: number;
     shots: { key: string, pos: GamePosition, explodeTime?: number }[];
+    debris: { key: string, vel: Vector2, pos: GamePosition, kind: SpriteKind, hasHitGround?: boolean }[];
 };
 const updateProjectiles = ({ gameTime, gameDeltaTime, pressState, playerPos, projectilesState }: CommonGameState): ProjectilesState => {
-    const { shots, lastShotTime } = projectilesState;
+    const { shots, debris, lastShotTime } = projectilesState;
 
     const canShoot = gameTime > 0.25 + lastShotTime;
 
@@ -251,6 +255,29 @@ const updateProjectiles = ({ gameTime, gameDeltaTime, pressState, playerPos, pro
         x.pos.y += -250 * gameDeltaTime;
     });
 
+    // Move debris
+    debris.forEach(d => {
+        if (d.hasHitGround) { return; }
+
+        // Gravity
+        d.vel.y += 100 * gameDeltaTime;
+
+        d.pos.y += d.vel.y * gameDeltaTime;
+        d.pos.x += d.vel.x * gameDeltaTime;
+
+        const pad = gameStyles.sprite.viewSize.width * 0.5;
+        const w = gameStyles.viewscreenView.width;
+        if (d.pos.x < pad) { d.pos.x = pad; d.vel.x = -d.vel.x; }
+        if (d.pos.x > w - pad) { d.pos.x = w - pad; d.vel.x = -d.vel.x; }
+
+        const hPad = gameStyles.sprite.viewSize.width * 0.5;
+        const h = gameStyles.viewscreenView.height;
+        if (d.pos.y > h - hPad) {
+            d.hasHitGround = true;
+        }
+
+    });
+
     const newShots = shots
         // Remove shots offscreen
         .filter(x => x.pos.y > 0)
@@ -259,6 +286,7 @@ const updateProjectiles = ({ gameTime, gameDeltaTime, pressState, playerPos, pro
         ;
 
     return {
+        ...projectilesState,
         lastShotTime: didShoot ? gameTime : lastShotTime,
         shots: newShots,
     };
@@ -295,6 +323,12 @@ const updateEnemies = ({ gameTime, gameDeltaTime, projectilesState, enemiesState
             s.explodeTime = gameTime;
 
             e.onHit();
+
+            if (e.answer.isCorrect) {
+                projectilesState.debris.push({ key: e.key, kind: `alien`, pos: { ...e.pos }, vel: { ...e.vel } });
+            } else {
+                projectilesState.debris.push({ key: e.key, kind: `kitten`, pos: { ...e.pos }, vel: { ...e.vel } });
+            }
         }
     }));
 
@@ -334,7 +368,10 @@ const updateEnemies = ({ gameTime, gameDeltaTime, projectilesState, enemiesState
 
     // Cleanup
     const newEnemies = enemies;
-    newEnemies.filter(x => x.explodeTime && gameTime > 1 + x.explodeTime).forEach(x => { x.destroyed = true; });
+    newEnemies.filter(x => x.explodeTime && gameTime > 1 + x.explodeTime).forEach(x => {
+        x.destroyed = true;
+
+    });
     // // Remove exploded 
     // .filter(x => !x.explodeTime || gameTime < 1 + x.explodeTime)
     // ;
@@ -344,9 +381,9 @@ const updateEnemies = ({ gameTime, gameDeltaTime, projectilesState, enemiesState
     };
 };
 
-type SpriteKind = 'player' | 'shot' | 'shot-explode' | 'enemy' | 'enemy-explode' | 'answer' | 'answer-wrong';
+type SpriteKind = 'player' | 'shot' | 'shot-explode' | 'enemy' | 'enemy-explode' | 'answer' | 'answer-wrong' | 'alien' | 'kitten' | 'alien-splat' | 'kitten-splat';
 const getSpriteEmoji = (kind: SpriteKind) => {
-    // ❤💙💚😀🤣😃😁😂😄😉😆😅😊😋😎🥰😙☺🤩🙄😑😐😣🤐😫🤢😬😭🤯🤒😡🤓🤠👽💀👻☠🤖👾😺🙀🙈🙉🙊🐵🐱‍🐉🐶🦁🐯🐺🐱🦒🦊🦝🐗🐷🐮🐭🐹🐰🐼🐨🐻🐸🦓🐴🚀🛸⛵🛰🚁💺🚤🛥⛴⚓🪐🌌🌍🌏🌎✈🛩🚂🚘🚔🚍🚖🔥💧❄⚡🌀🌈☄🌠⭐❌💥♨🎇🎆✨🎡
+    // ❤💙💚😀🤣😃😁😂😄😉😆😅😊😋😎🥰😙☺🤩🙄😑😐😣🤐😫🤢😬😭🤯🤒😡🤓🤠👽💀👻☠🤖👾😺🙀🙈🙉🙊🐵🐱‍🐉🐶🦁🐯🐺🐱🦒🦊🦝🐗🐷🐮🐭🐹🐰🐼🐨🐻🐸🦓🐴🚀🛸⛵🛰🚁💺🚤🛥⛴⚓🪐🌌🌍🌏🌎✈🛩🚂🚘🚔🚍🚖🔥💧❄⚡🌀🌈☄🌠⭐❌💥♨🎇🎆✨🎡🍖🥓🍗🥩💚👁‍🗨🥫🍥🍤🧆🥝🥑🧪🧫💉🩸⚰
     switch (kind) {
         case `player`: return { text: `🚀`, rotation: -0.125, offsetX: -0.25, offsetY: 0 };
         case `shot`: return { text: `🔥`, rotation: 0.5 };
@@ -355,6 +392,10 @@ const getSpriteEmoji = (kind: SpriteKind) => {
         case `enemy-explode`: return { text: `💥`, offsetX: -0.125, offsetY: -0.125 };
         case `answer`: return { text: ``, offsetX: 0, offsetY: -0.125 };
         case `answer-wrong`: return { text: `❌`, offsetX: -0.125, offsetY: -0.125 };
+        case `alien`: return { text: `👽`, offsetX: 0, offsetY: 0 };
+        case `kitten`: return { text: `🙀`, offsetX: 0, offsetY: 0 };
+        case `alien-splat`: return { text: `💀`, offsetX: 0, offsetY: 0 };
+        case `kitten-splat`: return { text: `🥩`, offsetX: 0, offsetY: 0 };
         default: return { text: `😀` };
     }
 };
@@ -370,7 +411,7 @@ const Sprite = ({ kind, position, text }: { kind: SpriteKind, position: { x: num
         transform: `translate(${position.x}px, ${position.y}px) rotate(${position.rotation ?? 0}turn)`,
         // backgroundColor: `red`,
         pointerEvents: `none`,
-    };
+    } as const;
     const styleRotation = {
         ...size,
         transform: `translate( ${size.width * -0.5 + Math.floor((s.offsetX ?? 0) * fontSize)}px, ${size.height * -0.5 + Math.floor((s.offsetY ?? 0) * fontSize)}px) rotate(${s.rotation ?? 0}turn) scale(${s.scale ?? 1})`,

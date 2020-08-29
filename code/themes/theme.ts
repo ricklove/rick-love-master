@@ -6,6 +6,7 @@ export type ThemeViewStyle = {
     flex?: number;
     justifyContent?: 'flex-start' | 'center' | 'flex-end' | 'space-around' | 'space-between';
     alignItems?: 'center';
+    alignSelf?: 'center' | 'stretch';
     overflow?: 'visible' | 'hidden';
 
     background?: string;
@@ -47,6 +48,13 @@ export type ThemeViewStyle = {
     transform?: string;
 
     opacity?: number;
+
+    position?: 'absolute' | 'relative';
+    top?: number;
+    bottom?: number;
+    left?: number;
+    right?: number;
+    zIndex?: number;
 };
 export type ThemeTextStyle = {
     margin?: number;
