@@ -116,7 +116,17 @@ export const TouchableOpacity = (props: { style?: ThemeViewStyle | ThemeViewStyl
 };
 
 export const Pressable = (props: { style?: ThemeViewStyle | ThemeViewStyle[], children?: ReactNode, onPressIn: () => void, onPressOut: () => void }) => {
-    const { onPressIn, onPressOut } = props;
+
+    const onPressIn = (e: React.MouseEvent | React.TouchEvent) => {
+        props.onPressIn();
+        e.preventDefault();
+        return false;
+    };
+    const onPressOut = (e: React.MouseEvent | React.TouchEvent) => {
+        props.onPressOut();
+        e.preventDefault();
+        return false;
+    };
 
     return (
         <div style={mergeStyles([viewStyleDefaults, props.style])}

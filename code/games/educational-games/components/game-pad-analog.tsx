@@ -58,9 +58,9 @@ const inputStyles = {
     moveSectionWrapper: { transform: `rotate(0.125turn)` },
     row: { flexDirection: `row` },
     cellTouch: { outline: `none` },
-    cellView: { margin: 1, width: 32, height: 32, justifyContent: `center`, alignItems: `center`, borderWidth: 0, borderStyle: `solid`, outline: `none` },
-    cellText: { userSelect: `none` },
-    moveCellText: { userSelect: `none`, transform: `rotate(-0.125turn)` },
+    cellView: { pointerEvents: `none`, margin: 1, width: 32, height: 32, justifyContent: `center`, alignItems: `center`, borderWidth: 0, borderStyle: `solid`, outline: `none` },
+    cellText: { userSelect: `none`, pointerEvents: `none` },
+    moveCellText: { userSelect: `none`, pointerEvents: `none`, transform: `rotate(-0.125turn)` },
     cellEmptyView: { margin: 2, width: 32, height: 32 },
 } as const;
 

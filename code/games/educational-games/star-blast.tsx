@@ -22,7 +22,7 @@ export const EducationalGame_StarBlast = (props: { problemService: ProblemServic
             <View style={{ marginTop: 50, marginBottom: 150, padding: 2, alignItems: `center` }} >
                 <View style={{ alignItems: `center` }} >
                     <GameView pressState={pressState} problemService={props.problemService} />
-                    <GamepadAnalogStateful style={colors.gamepad} onPressStateChange={onPressStateChange} buttons={[{ key: `A`, text: `A` }]} />
+                    <GamepadAnalogStateful style={colors.gamepad} onPressStateChange={onPressStateChange} buttons={[{ key: `A`, text: `🔥` }]} />
                 </View>
             </View>
         </>
@@ -139,7 +139,10 @@ const GameView = (props: { pressState: GamepadPressState, problemService: Proble
         <>
             <View style={gameStyles.viewscreenView} >
                 {problemsState.current?.answers.map(x => (
-                    <Sprite key={x.value} kind='answer' position={x.position} text={x.value} />
+                    <React.Fragment key={x.value}>
+                        <Sprite kind='answer' position={x.position} text={x.value} />
+                        <Sprite kind='enemy' position={{ x: x.position.x, y: x.position.y + gameStyles.player.viewSize.height, rotation: x.position.rotation }} />
+                    </React.Fragment>
                 ))}
                 <Sprite kind='player' position={playerPos.current} />
                 {projectilesState.current.shots.map(x => (
@@ -209,7 +212,8 @@ const getSpriteEmoji = (kind: SpriteKind) => {
     switch (kind) {
         case `player`: return { text: `🚀`, rotation: -0.125, offsetX: -0.25, offsetY: 0 };
         case `shot`: return { text: `🔥`, rotation: 0.5 };
-        case `enemy`: return { text: `🛸` };
+        case `enemy`: return { text: `🛸`, offsetX: -0.125, offsetY: -0.125 };
+        case `answer`: return { text: ``, offsetX: 0.25, offsetY: -0.125 };
         default: return { text: `😀` };
     }
 };
@@ -224,6 +228,7 @@ const Sprite = ({ kind, position, text }: { kind: SpriteKind, position: { x: num
         ...size,
         transform: `translate(${position.x}px, ${position.y}px) rotate(${position.rotation ?? 0}turn)`,
         // backgroundColor: `red`,
+        pointerEvents: `none`,
     };
     const styleRotation = {
         ...size,
