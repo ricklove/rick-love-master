@@ -3,7 +3,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { View, Text } from 'react-native-lite';
 import { idText } from 'typescript';
 import { createMultiplesProblemService } from './problems/multiples';
-import { ProblemService } from './problems/problems-service';
+import { ProblemService, Problem } from './problems/problems-service';
 import { GamepadAnalogStateful, GamepadPressState } from './components/game-pad-analog';
 
 export const EducationalGame_StarBlast_Multiples = (props: {}) => {
@@ -22,7 +22,7 @@ export const EducationalGame_StarBlast = (props: { problemService: ProblemServic
         <>
             <View style={{ marginTop: 50, marginBottom: 150, padding: 2, alignItems: `center` }} >
                 <View style={{ alignItems: `center` }} >
-                    <GameView pressState={pressState} />
+                    <GameView pressState={pressState} problemService={props.problemService} />
                     <GamepadAnalogStateful style={colors.gamepad} onPressStateChange={onPressStateChange} buttons={[{ key: `A`, text: `A` }]} />
                 </View>
             </View>
@@ -66,18 +66,31 @@ type GamePosition = {
 };
 
 
-const GameView = (props: { pressState: GamepadPressState }) => {
+const GameView = (props: { pressState: GamepadPressState, problemService: ProblemService }) => {
 
     const pressState = useRef(props.pressState);
     pressState.current = props.pressState;
 
-    const playerPos = useRef({ x: 0, y: 0, rotation: 0 } as GamePosition);
+    const playerPos = useRef({ x: gameStyles.viewscreenView.width * 0.5, y: gameStyles.viewscreenView.height * 0.85, rotation: 0 } as GamePosition);
     const projectilesState = useRef({ lastShotTime: 0, shots: [] } as ProjectilesState);
-
+    const problemsState = useRef(null as null | { question: string, answers: (Problem['answers'][0] & { position: GamePosition })[] });
 
     const [renderId, setRenderId] = useState(0);
 
+    const getNextProblem = () => {
+        const p = props.problemService.getNextProblem();
+        if (p.question) {
+            const pSize = gameStyles.viewscreenView.width / (p.answers.length);
+            problemsState.current = {
+                question: p.question,
+                answers: p.answers.map((x, i) => ({ ...x, position: { x: pSize * (0.5 + i), y: pSize * 0.5, rotation: 0 } })),
+            };
+        }
+    };
+
     useEffect(() => {
+        getNextProblem();
+
         // Game Loop
         const gameStart = Date.now();
         let gameLastTime = Date.now();
@@ -119,6 +132,9 @@ const GameView = (props: { pressState: GamepadPressState }) => {
     return (
         <>
             <View style={gameStyles.viewscreenView} >
+                {problemsState.current?.answers.map(x => (
+                    <Sprite key={x.value} kind='answer' position={x.position} text={x.value} />
+                ))}
                 <Sprite kind='player' position={playerPos.current} />
                 {projectilesState.current.shots.map(x => (
                     <Sprite key={x.key} kind='shot' position={x.pos} />
@@ -178,7 +194,7 @@ const updateProjectiles = ({ gameTime, gameDeltaTime, pressState, playerPos, pro
     };
 };
 
-type SpriteKind = 'player' | 'shot';
+type SpriteKind = 'player' | 'shot' | 'answer';
 const getSpriteEmoji = (kind: SpriteKind) => {
     // ❤💙💚😀🤣😃😁😂😄😉😆😅😊😋😎🥰😙☺🤩🙄😑😐😣🤐😫🤢😬😭🤯🤒😡🤓🤠👽💀👻☠🤖👾😺🙀🙈🙉🙊🐵🐱‍🐉🐶🦁🐯🐺🐱🦒🦊🦝🐗🐷🐮🐭🐹🐰🐼🐨🐻🐸🦓🐴🚀🛸⛵🛰🚁💺🚤🛥⛴⚓🪐🌌🌍🌏🌎✈🛩🚂🚘🚔🚍🚖🔥💧❄⚡🌀🌈☄🌠⭐
     switch (kind) {
@@ -188,7 +204,7 @@ const getSpriteEmoji = (kind: SpriteKind) => {
     }
 };
 
-const Sprite = ({ kind, position }: { kind: SpriteKind, position: { x: number, y: number, rotation: number } }) => {
+const Sprite = ({ kind, position, text }: { kind: SpriteKind, position: { x: number, y: number, rotation: number }, text?: string }) => {
     const s = getSpriteEmoji(kind);
     const size = gameStyles.player.viewSize;
     const { fontSize } = gameStyles.player.text;
@@ -206,7 +222,7 @@ const Sprite = ({ kind, position }: { kind: SpriteKind, position: { x: number, y
     return (
         <View style={stylePosition}>
             <View style={styleRotation}>
-                <Text style={gameStyles.player.text}>{s.text}</Text>
+                <Text style={gameStyles.player.text}>{text ?? s.text}</Text>
             </View>
         </View>
     );
