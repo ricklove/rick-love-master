@@ -4,10 +4,10 @@ import { View, Text } from 'react-native-lite';
 import { createMultiplesProblemService } from './problems/multiples';
 import { ProblemService, Problem } from './problems/problems-service';
 import { GamepadAnalogStateful, GamepadPressState } from './components/game-pad-analog';
-import { getDistanceSq } from './utils/vectors';
+import { getDistanceSq, Vector2 } from './utils/vectors';
 
 export const EducationalGame_StarBlast_Multiples = (props: {}) => {
-    return <EducationalGame_StarBlast problemService={createMultiplesProblemService({})} />;
+    return <EducationalGame_StarBlast problemService={createMultiplesProblemService({ min: 1, max: 12 })} />;
 };
 
 export const EducationalGame_StarBlast = (props: { problemService: ProblemService }) => {
@@ -55,6 +55,7 @@ const gameStyles = {
         text: {
             fontFamily: `"Lucida Console", Monaco, monospace`,
             fontSize: 32,
+            textAlign: `center`,
         },
     },
     question: {
@@ -98,13 +99,14 @@ const GameView = (props: { pressState: GamepadPressState, problemService: Proble
         const pSize = gameStyles.viewscreenView.width / (p.answers.length);
         const newProblemState = {
             question: p.question,
-            answers: p.answers.map((x, i) => ({ ...x, key: `${p.question} ${x.value}`, pos: { x: pSize * (0.5 + i), y: pSize * 0.5, rotation: 0 }, isAnsweredWrong: false })),
+            answers: p.answers.map((x, i) => ({ ...x, key: `${p.question} ${x.value}`, pos: { x: pSize * (0.5 + i), y: gameStyles.sprite.viewSize.height * 0.5, rotation: 0 }, isAnsweredWrong: false })),
         };
         const newEnemyState = {
             enemies: newProblemState.answers.map((ans, i) => ({
                 key: `${p.question} ${ans.value}`,
                 answer: ans,
-                pos: { x: pSize * (0.5 + i), y: pSize * 0.5 + gameStyles.sprite.viewSize.height, rotation: 0 },
+                pos: { x: pSize * (0.5 + i), y: gameStyles.sprite.viewSize.height * 1.5, rotation: 0 },
+                vel: { x: 0, y: 5 },
                 onHit: () => {
                     setTimeout(() => {
                         console.log(`onHit`, { ans });
@@ -261,6 +263,7 @@ type EnemiesState = {
     enemies: {
         key: string;
         pos: GamePosition;
+        vel: Vector2;
         explodeTime?: number;
         answer: AnswerState;
         onHit: () => void;
@@ -274,6 +277,7 @@ const updateEnemies = ({ gameTime, gameDeltaTime, projectilesState, enemiesState
     // Detect Collisions
     const radius = gameStyles.sprite.viewSize.width * 0.75;
     const radiusSq = radius * radius;
+
     enemies.forEach(e => shots.forEach(s => {
         // console.log(`Checking!`, { e, s });
 
@@ -288,6 +292,40 @@ const updateEnemies = ({ gameTime, gameDeltaTime, projectilesState, enemiesState
             e.onHit();
         }
     }));
+
+    enemies.forEach((e, i) => enemies.forEach((e2, i2) => {
+
+        if (i >= i2) { return; }
+        if (e.explodeTime) { return; }
+        if (e2.explodeTime) { return; }
+
+        if (getDistanceSq(e.pos, e2.pos) < radiusSq) {
+            e.vel.x = -e.vel.x;
+            e2.vel.x = -e2.vel.x;
+        }
+    }));
+
+    // Enemies move
+    enemies.forEach(e => {
+        if (e.explodeTime) { return; }
+
+        e.vel.x += (-1 + 2 * Math.random()) * 250 * gameDeltaTime;
+        e.vel.y += 1 * gameDeltaTime;
+
+        e.pos.x += e.vel.x * gameDeltaTime;
+        e.pos.y += e.vel.y * gameDeltaTime;
+
+        const pad = gameStyles.sprite.viewSize.width * 0.5;
+        const w = gameStyles.viewscreenView.width;
+        if (e.pos.x < pad) { e.pos.x = pad; e.vel.x = -e.vel.x; }
+        if (e.pos.x > w - pad) { e.pos.x = w - pad; e.vel.x = -e.vel.x; }
+
+        const hPad = gameStyles.sprite.viewSize.width * 1.5;
+        const h = gameStyles.viewscreenView.height;
+        if (e.pos.y > h - hPad) {
+            e.pos.y = h - hPad;
+        }
+    });
 
     // Cleanup
     const newEnemies = enemies;
@@ -310,7 +348,7 @@ const getSpriteEmoji = (kind: SpriteKind) => {
         case `shot-explode`: return { text: `✨`, rotation: 0, scale: 0.5 };
         case `enemy`: return { text: `🛸`, offsetX: -0.125, offsetY: -0.125 };
         case `enemy-explode`: return { text: `💥`, offsetX: -0.125, offsetY: -0.125 };
-        case `answer`: return { text: ``, offsetX: 0.25, offsetY: -0.125 };
+        case `answer`: return { text: ``, offsetX: 0, offsetY: -0.125 };
         case `answer-wrong`: return { text: `❌`, offsetX: -0.125, offsetY: -0.125 };
         default: return { text: `😀` };
     }
