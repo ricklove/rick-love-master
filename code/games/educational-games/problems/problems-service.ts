@@ -1,11 +1,16 @@
+export type ProblemAnswer = { key: string, value: string, isCorrect: boolean };
 export type Problem = {
+    key: string;
     question: string;
-    answers: { value: string, isCorrect: boolean }[];
+    answers: ProblemAnswer[];
+};
+export type ProblemResult = Problem | {
+    done: boolean;
+    key: 'done';
+    question?: undefined;
+    answers?: undefined;
 };
 export type ProblemService = {
-    getNextProblem: () => Problem | {
-        question: undefined;
-        answers: undefined;
-        done: boolean;
-    };
+    getNextProblem: () => ProblemResult;
+    recordAnswer: (problem: Problem, answer: ProblemAnswer) => void;
 };

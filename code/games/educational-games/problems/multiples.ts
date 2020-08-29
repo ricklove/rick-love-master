@@ -1,18 +1,18 @@
 import { shuffle, distinct } from 'utils/arrays';
-import { ProblemService } from './problems-service';
+import { ProblemService, ProblemResult, ProblemAnswer } from './problems-service';
 
 export const createMultiplesProblemService = ({ min = 1, max = 12, maxAnswers = 4 }: { min?: number, max?: number, maxAnswers?: number }): ProblemService => {
     let a = min - 1;
     let b = min;
 
     const problemService: ProblemService = {
-        getNextProblem: () => {
+        getNextProblem: (): ProblemResult => {
             a++;
             if (a > max) {
                 a = min;
                 b++;
                 if (b > max) {
-                    return { done: true };
+                    return { done: true, key: `done` };
                 }
             }
 
@@ -28,13 +28,15 @@ export const createMultiplesProblemService = ({ min = 1, max = 12, maxAnswers = 
                         .filter(x => x > 0),
                 ).slice(0, wrongAnswerCount);
 
-            const answers = shuffle([...wrongValues.map(x => ({ value: `${x}`, isCorrect: false })), { value: `${correctValue}`, isCorrect: true }]);
+            const answers: ProblemAnswer[] = shuffle([...wrongValues.map(x => ({ value: `${x}`, isCorrect: false })), { value: `${correctValue}`, isCorrect: true }]).map(x => ({ ...x, key: x.value }));
 
             return {
+                key: `${a} * ${b}`,
                 question: `${a} * ${b}`,
                 answers,
             };
         },
+        recordAnswer: () => { },
     };
 
     return problemService;
