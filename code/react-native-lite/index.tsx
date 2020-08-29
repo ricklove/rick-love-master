@@ -24,14 +24,12 @@ const textStyleDefaults = {
 const finalizeTextStyle = <T extends unknown>(style: T) => {
     const s = style as {
         userSelect?: 'none';
-        '-moz-user-select'?: 'none';
-        '-webkit-user-select'?: 'none';
-        '-ms-user-select'?: 'none';
+        MozUserSelect?: 'none';
+        WebkitUserSelect?: 'none';
     };
     if (s.userSelect === `none`) {
-        s[`-moz-user-select`] = `none`;
-        s[`-webkit-user-select`] = `none`;
-        s[`-ms-user-select`] = `none`;
+        s.MozUserSelect = `none`;
+        s.WebkitUserSelect = `none`;
     }
 
     return style;

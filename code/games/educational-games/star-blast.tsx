@@ -4,6 +4,7 @@ import { View, Text } from 'react-native-lite';
 import { createMultiplesProblemService } from './problems/multiples';
 import { ProblemService, Problem } from './problems/problems-service';
 import { GamepadAnalogStateful, GamepadPressState } from './components/game-pad-analog';
+import { getDistanceSq } from './utils/vectors';
 
 export const EducationalGame_StarBlast_Multiples = (props: {}) => {
     return <EducationalGame_StarBlast problemService={createMultiplesProblemService({})} />;
@@ -49,7 +50,7 @@ const gameStyles = {
         borderWidth: 1,
         borderStyle: `solid`,
     },
-    player: {
+    sprite: {
         viewSize: { width: 32, height: 32 },
         text: {
             fontFamily: `"Lucida Console", Monaco, monospace`,
@@ -79,8 +80,9 @@ const GameView = (props: { pressState: GamepadPressState, problemService: Proble
 
     const playerPos = useRef({ x: gameStyles.viewscreenView.width * 0.5, y: gameStyles.viewscreenView.height * 0.85, rotation: 0 } as GamePosition);
     const projectilesState = useRef({ lastShotTime: 0, shots: [] } as ProjectilesState);
-    const problemsState = useRef(null as null | { question: string, answers: (Problem['answers'][0] & { position: GamePosition })[] });
+    const enemiesState = useRef({ enemies: [] } as EnemiesState);
 
+    const problemsState = useRef(null as null | { question: string, answers: (Problem['answers'][0] & { position: GamePosition })[] });
     const [renderId, setRenderId] = useState(0);
 
     const getNextProblem = () => {
@@ -116,13 +118,21 @@ const GameView = (props: { pressState: GamepadPressState, problemService: Proble
 
             // Update
 
+            const getCommonState = (): CommonGameState => {
+                return { gameTime, gameDeltaTime, pressState: pressState.current, playerPos: playerPos.current, projectilesState: projectilesState.current, enemiesState: enemiesState.current };
+            };
+
             // Player
-            const playerResult = updatePlayer({ gameDeltaTime, pressState: pressState.current, playerPos: playerPos.current });
+            const playerResult = updatePlayer(getCommonState());
             playerPos.current = playerResult.playerPos;
 
             // Projectiles
-            const projectilesResult = updateProjectiles({ gameTime, gameDeltaTime, pressState: pressState.current, playerPos: playerPos.current, projectilesState: projectilesState.current });
+            const projectilesResult = updateProjectiles(getCommonState());
             projectilesState.current = projectilesResult;
+
+            // Enemies
+            const enemiesResult = updateEnemies(getCommonState());
+            enemiesState.current = enemiesResult;
 
             // Game Loop
             requestAnimationFrame(gameLoop);
@@ -141,7 +151,7 @@ const GameView = (props: { pressState: GamepadPressState, problemService: Proble
                 {problemsState.current?.answers.map(x => (
                     <React.Fragment key={x.value}>
                         <Sprite kind='answer' position={x.position} text={x.value} />
-                        <Sprite kind='enemy' position={{ x: x.position.x, y: x.position.y + gameStyles.player.viewSize.height, rotation: x.position.rotation }} />
+                        <Sprite kind='enemy' position={{ x: x.position.x, y: x.position.y + gameStyles.sprite.viewSize.height, rotation: x.position.rotation }} />
                     </React.Fragment>
                 ))}
                 <Sprite kind='player' position={playerPos.current} />
@@ -156,8 +166,9 @@ const GameView = (props: { pressState: GamepadPressState, problemService: Proble
     );
 };
 
+type CommonGameState = { gameTime: number, gameDeltaTime: number, pressState: GamepadPressState, playerPos: GamePosition, projectilesState: ProjectilesState, enemiesState: EnemiesState };
 
-const updatePlayer = ({ gameDeltaTime, pressState, playerPos }: { gameDeltaTime: number, pressState: GamepadPressState, playerPos: GamePosition }) => {
+const updatePlayer = ({ gameDeltaTime, pressState, playerPos }: CommonGameState) => {
     const targetRotation = pressState.moveDirection.x * 0.05;
 
     const pos = {
@@ -167,9 +178,9 @@ const updatePlayer = ({ gameDeltaTime, pressState, playerPos }: { gameDeltaTime:
     };
 
     const w = gameStyles.viewscreenView.width;
-    const gw = gameStyles.player.viewSize.width * 0.5;
+    const gw = gameStyles.sprite.viewSize.width * 0.5;
     const h = gameStyles.viewscreenView.height;
-    const gh = gameStyles.player.viewSize.height * 0.5;
+    const gh = gameStyles.sprite.viewSize.height * 0.5;
     pos.x = pos.x < gw ? gw : pos.x > w - gw ? w - gw : pos.x;
     pos.y = pos.y < gh ? gh : pos.y > h - gh ? h - gh : pos.y;
 
@@ -178,9 +189,9 @@ const updatePlayer = ({ gameDeltaTime, pressState, playerPos }: { gameDeltaTime:
 
 type ProjectilesState = {
     lastShotTime: number;
-    shots: { key: string, pos: GamePosition }[];
+    shots: { key: string, pos: GamePosition, explodeTime?: number }[];
 };
-const updateProjectiles = ({ gameTime, gameDeltaTime, pressState, playerPos, projectilesState }: { gameTime: number, gameDeltaTime: number, pressState: GamepadPressState, playerPos: GamePosition, projectilesState: ProjectilesState }): ProjectilesState => {
+const updateProjectiles = ({ gameTime, gameDeltaTime, pressState, playerPos, projectilesState }: CommonGameState): ProjectilesState => {
     const { shots, lastShotTime } = projectilesState;
 
     const canShoot = gameTime > 0.25 + lastShotTime;
@@ -197,12 +208,49 @@ const updateProjectiles = ({ gameTime, gameDeltaTime, pressState, playerPos, pro
         x.pos.y += -250 * gameDeltaTime;
     });
 
-    // Remove shots offscreen
-    const newShots = shots.filter(x => x.pos.y > 0);
+    const newShots = shots
+        // Remove shots offscreen
+        .filter(x => x.pos.y > 0)
+        // Remove exploded 
+        .filter(x => !x.explodeTime || gameTime < 1 + x.explodeTime)
+        ;
 
     return {
         lastShotTime: didShoot ? gameTime : lastShotTime,
         shots: newShots,
+    };
+};
+
+type EnemiesState = {
+    enemies: { key: string, pos: GamePosition, explodeTime?: number }[];
+};
+const updateEnemies = ({ gameTime, gameDeltaTime, projectilesState, enemiesState }: CommonGameState): EnemiesState => {
+    const { enemies } = enemiesState;
+    const { shots } = projectilesState;
+
+    // Detect Collisions
+    const radius = gameStyles.sprite.viewSize.width;
+    const radiusSq = radius * radius;
+    enemies.forEach(e => shots.forEach(s => {
+        console.log(`Checking!`, { e, s });
+
+        if (e.explodeTime) { return; }
+        if (s.explodeTime) { return; }
+        if (getDistanceSq(e.pos, s.pos) < radiusSq) {
+            console.log(`Exploded!`, { e, s });
+            e.explodeTime = gameTime;
+            s.explodeTime = gameTime;
+        }
+    }));
+
+    // Cleanup
+    const newEnemies = enemies
+        // Remove exploded 
+        .filter(x => !x.explodeTime || gameTime < 1 + x.explodeTime)
+        ;
+
+    return {
+        enemies: newEnemies,
     };
 };
 
@@ -220,8 +268,8 @@ const getSpriteEmoji = (kind: SpriteKind) => {
 
 const Sprite = ({ kind, position, text }: { kind: SpriteKind, position: { x: number, y: number, rotation: number }, text?: string }) => {
     const s = getSpriteEmoji(kind);
-    const size = gameStyles.player.viewSize;
-    const { fontSize } = gameStyles.player.text;
+    const size = gameStyles.sprite.viewSize;
+    const { fontSize } = gameStyles.sprite.text;
 
     const stylePosition = {
         position: `absolute`,
@@ -237,7 +285,7 @@ const Sprite = ({ kind, position, text }: { kind: SpriteKind, position: { x: num
     return (
         <View style={stylePosition}>
             <View style={styleRotation}>
-                <Text style={gameStyles.player.text}>{text ?? s.text}</Text>
+                <Text style={gameStyles.sprite.text}>{text ?? s.text}</Text>
             </View>
         </View>
     );
