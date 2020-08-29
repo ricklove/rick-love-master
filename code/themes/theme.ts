@@ -42,6 +42,7 @@ export type ThemeViewStyle = {
     borderRadius?: number;
     borderStyle?: 'solid';
     outlineColor?: string;
+    outline?: `none`;
 
     transform?: string;
 
@@ -69,6 +70,7 @@ export type ThemeTextStyle = {
     minWidth?: number;
 
     outlineColor?: string;
+    userSelect?: `none`;
 };
 export type ThemeIconStyle = {
     color?: string;

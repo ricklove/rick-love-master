@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { View, Text, TouchableOpacity, TextInput } from 'react-native-lite';
 import { randomIndex } from 'utils/random';
+import { GamepadDiscrete } from './components/game-pad-discrete';
 
 const colors = {
     text: `#FFFF00`,
@@ -9,7 +10,8 @@ const colors = {
     lineFocus: `#000000`,
     solid: `transparent`,
     solidFocus: `#7777FF55`,
-    buttonBorder: `#0000FF`,
+    buttonBackground: `#333333`,
+    buttonBorder: `#000033`,
 };
 
 const gameStyles = {
@@ -263,15 +265,6 @@ const GameBoard = ({ gameBoard }: { gameBoard: GameBoardState }) => {
     );
 };
 
-const inputStyles = {
-    container: { flex: 1, flexDirection: `row`, justifyContent: `space-between`, alignItems: `center`, padding: 16 },
-    section: { justifyContent: `center`, alignItems: `center`, padding: 16 },
-    row: { flexDirection: `row` },
-    cellView: { margin: 2, width: 32, height: 32, justifyContent: `center`, alignItems: `center`, borderWidth: 1, borderStyle: `solid`, boderColor: colors.buttonBorder },
-    cellText: {},
-    cellEmptyView: { margin: 2, width: 32, height: 32 },
-} as const;
-
 const GameGamepadInput = (props: { gameBoard: GameBoardState, onChangeFocus: (focus: GameBoardPosition) => void, buttons: { text: string, onPress: () => void }[] }) => {
     const move = (col: number, row: number) => {
         props.onChangeFocus({
@@ -279,35 +272,8 @@ const GameGamepadInput = (props: { gameBoard: GameBoardState, onChangeFocus: (fo
             j: props.gameBoard.focus.j + row,
         });
     };
+
     return (
-        <View style={inputStyles.container}>
-            <View style={inputStyles.section}>
-                <View style={inputStyles.row} >
-                    <View style={inputStyles.cellEmptyView} />
-                    <TouchableOpacity onPress={() => move(0, +1)}><View style={inputStyles.cellView}><Text>⬆</Text></View></TouchableOpacity>
-                    <View style={inputStyles.cellEmptyView} />
-                </View>
-                <View style={inputStyles.row} >
-                    <TouchableOpacity onPress={() => move(-1, 0)}><View style={inputStyles.cellView}><Text>⬅</Text></View></TouchableOpacity>
-                    <View style={inputStyles.cellEmptyView} />
-                    <TouchableOpacity onPress={() => move(+1, 0)}><View style={inputStyles.cellView}><Text>➡</Text></View></TouchableOpacity>
-                </View>
-                <View style={inputStyles.row} >
-                    <View style={inputStyles.cellEmptyView} />
-                    <TouchableOpacity onPress={() => move(0, -1)}><View style={inputStyles.cellView}><Text>⬇</Text></View></TouchableOpacity>
-                    <View style={inputStyles.cellEmptyView} />
-                </View>
-            </View>
-            <View style={inputStyles.section} >
-                <View style={inputStyles.row} >
-                    {props.buttons.map(x => (
-                        <React.Fragment key={`${x.text}`}>
-                            <View style={inputStyles.cellEmptyView} />
-                            <TouchableOpacity onPress={x.onPress}><View style={inputStyles.cellView}><Text>{x.text}</Text></View></TouchableOpacity>
-                        </React.Fragment>
-                    ))}
-                </View>
-            </View>
-        </View>
+        <GamepadDiscrete style={{ backgroundColor: colors.buttonBackground, borderColor: colors.buttonBorder }} onMove={dir => move(dir.x, dir.y)} buttons={props.buttons} />
     );
 };

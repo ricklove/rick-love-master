@@ -1,7 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { View, Text, TouchableOpacity, TextInput } from 'react-native-lite';
 import { distinct, shuffle } from 'utils/arrays';
-import { randomIndex } from 'utils/random';
 import { numberNames } from './utils/number-names';
 import { createLeaderboard } from './components/leaderboard';
 

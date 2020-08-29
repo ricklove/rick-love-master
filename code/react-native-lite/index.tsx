@@ -97,6 +97,22 @@ export const TouchableOpacity = (props: { style?: ThemeViewStyle | ThemeViewStyl
     );
 };
 
+export const Pressable = (props: { style?: ThemeViewStyle | ThemeViewStyle[], children?: ReactNode, onPressIn: () => void, onPressOut: () => void }) => {
+    const { onPressIn, onPressOut } = props;
+
+    return (
+        <div style={mergeStyles([viewStyleDefaults, props.style])}
+            onMouseDown={onPressIn}
+            onMouseUp={onPressOut}
+            onTouchStart={onPressIn}
+            onTouchEnd={onPressOut}
+            role='button'
+            tabIndex={0}>
+            {props.children}
+        </div>
+    );
+};
+
 export const ActivityIndicator = ({ size, color }: { size: 'large' | 'small', color: string }) => {
     const sizePx = size === `small` ? 16 : 32;
     return (
