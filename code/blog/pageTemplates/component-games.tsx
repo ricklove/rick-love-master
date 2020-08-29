@@ -18,7 +18,7 @@ export const ComponentGamesPage = (props: { data: ComponentGamesPageData }) => {
     }
 
     return (
-        <Layout hideHeader>
+        <Layout fullScreen>
             <SEO title={`Games: ${props.data.gameName}`} />
             <HostComponentAuto data={props.data} />
         </Layout>

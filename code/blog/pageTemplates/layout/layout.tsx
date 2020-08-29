@@ -5,17 +5,27 @@ import { Header } from './header';
 import * as Store from '../../site/store';
 import { ZoomWrapper } from '../../components/zoom-wrapper';
 
-export const Layout = ({ children, hideHeader }: { children: ReactNode, hideHeader?: boolean }) => {
+export const Layout = ({ children, fullScreen }: { children: ReactNode, fullScreen?: boolean }) => {
     const data = {
         title: Store.site.siteMetadata.title,
         author: Store.site.siteMetadata.author,
         future: Store.methodExample.getFuture(10),
     };
 
+    if (fullScreen) {
+        return (
+            <>
+                <div>
+                    {children}
+                </div>
+            </>
+        );
+    }
+
     return (
         <>
             <ZoomWrapper>
-                {!hideHeader && <Header siteTitle={`${data.title ?? ``}`} />}
+                {!fullScreen && <Header siteTitle={`${data.title ?? ``}`} />}
                 <div>
                     <main>{children}</main>
                     <footer>
