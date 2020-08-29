@@ -2,7 +2,7 @@ import { shuffle, distinct } from 'utils/arrays';
 import { ProblemService } from './problems-service';
 
 export const createMultiplesProblemService = ({ min = 1, max = 12 }: { min?: number, max?: number }): ProblemService => {
-    let a = min;
+    let a = min - 1;
     let b = min;
 
     const problemService: ProblemService = {

@@ -1,7 +1,6 @@
 /* eslint-disable jsx-a11y/accessible-emoji */
 import React, { useState, useEffect, useRef } from 'react';
 import { View, Text } from 'react-native-lite';
-import { idText } from 'typescript';
 import { createMultiplesProblemService } from './problems/multiples';
 import { ProblemService, Problem } from './problems/problems-service';
 import { GamepadAnalogStateful, GamepadPressState } from './components/game-pad-analog';
@@ -55,6 +54,13 @@ const gameStyles = {
         text: {
             fontFamily: `"Lucida Console", Monaco, monospace`,
             fontSize: 32,
+        },
+    },
+    question: {
+        view: { flex: 1, justifyContent: `center` },
+        text: {
+            fontFamily: `"Lucida Console", Monaco, monospace`,
+            fontSize: 16,
         },
     },
 } as const;
@@ -139,6 +145,9 @@ const GameView = (props: { pressState: GamepadPressState, problemService: Proble
                 {projectilesState.current.shots.map(x => (
                     <Sprite key={x.key} kind='shot' position={x.pos} />
                 ))}
+            </View>
+            <View style={gameStyles.question.view}>
+                <Text style={gameStyles.question.text} >{problemsState.current?.question}</Text>
             </View>
         </>
     );
