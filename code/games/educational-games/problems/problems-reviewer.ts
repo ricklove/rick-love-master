@@ -2,7 +2,7 @@ import { distinct, shuffle, distinct_key } from 'utils/arrays';
 import { ProblemService, Problem, ProblemResult } from './problems-service';
 
 
-export const createReviewProblemService = (problemSource: ProblemService, { maxReviewCount = 5, reviewSequenceLength = 5 }: { maxReviewCount?: number, reviewSequenceLength?: number }): ProblemService => {
+export const createReviewProblemService = (problemSource: ProblemService, { maxReviewCount = 3, reviewSequenceLength = 3, reviewSequencePreviousLength = 1 }: { maxReviewCount?: number, reviewSequenceLength?: number, reviewSequencePreviousLength?: number }): ProblemService => {
     const state = {
         problemSourceHistory: [] as Problem[],
         problemsToReview: [] as { index: number }[],
@@ -18,17 +18,22 @@ export const createReviewProblemService = (problemSource: ProblemService, { maxR
     const getReviewProblem = (): null | Problem => {
         console.log(`createReviewProblemService getReviewProblem`, state);
 
-        if (state.reviewSequence && state.reviewSequence.iNext >= state.reviewSequence.iEnd) {
+        if (state.reviewSequence && state.reviewSequence.iNext > state.reviewSequence.iEnd) {
+            console.log(`createReviewProblemService getReviewProblem - End of Sequence`, state);
             state.reviewSequence = null;
         }
 
         if (!state.reviewSequence) {
             const nextProblemToReview = state.problemsToReview[0];
-            if (!nextProblemToReview) { return null; }
+            if (!nextProblemToReview) {
+                console.log(`createReviewProblemService getReviewProblem - No Review Problems`, state);
+                return null;
+            }
 
+            console.log(`createReviewProblemService getReviewProblem - Start Review Sequence`, state);
             state.reviewSequence = {
-                iNext: Math.max(0, nextProblemToReview.index - 1),
-                iEnd: nextProblemToReview.index + reviewSequenceLength,
+                iNext: Math.max(0, nextProblemToReview.index - reviewSequencePreviousLength),
+                iEnd: Math.min(state.problemSourceHistory.length - 1, nextProblemToReview.index - reviewSequencePreviousLength + reviewSequenceLength - 1),
             };
         }
 
@@ -36,7 +41,6 @@ export const createReviewProblemService = (problemSource: ProblemService, { maxR
 
         // Remove reviewed problem
         state.problemsToReview = state.problemsToReview.filter(x => x.index !== seq.iNext);
-
         const p = state.problemSourceHistory[seq.iNext];
         seq.iNext++;
 
@@ -56,10 +60,11 @@ export const createReviewProblemService = (problemSource: ProblemService, { maxR
                     return reviewProblem;
                 }
 
+                console.log(`createReviewProblemService getNextProblem - No Review Problem - Change Mode to NEW`, state);
                 state.repeatState = `new`;
             }
 
-            if (state.problemsToReview.length > maxReviewCount) {
+            if (state.problemsToReview.length >= maxReviewCount) {
                 startReview();
                 return service.getNextProblem();
             }
