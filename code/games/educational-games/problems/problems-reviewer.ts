@@ -18,7 +18,7 @@ export const createReviewProblemService = (problemSource: ProblemService, { maxR
     const getReviewProblem = (): null | Problem => {
         console.log(`createReviewProblemService getReviewProblem`, state);
 
-        if (state.reviewSequence && state.reviewSequence.iNext === state.reviewSequence.iEnd) {
+        if (state.reviewSequence && state.reviewSequence.iNext >= state.reviewSequence.iEnd) {
             state.reviewSequence = null;
         }
 
@@ -27,7 +27,7 @@ export const createReviewProblemService = (problemSource: ProblemService, { maxR
             if (!nextProblemToReview) { return null; }
 
             state.reviewSequence = {
-                iNext: Math.min(0, nextProblemToReview.index - 1),
+                iNext: Math.max(0, nextProblemToReview.index - 1),
                 iEnd: nextProblemToReview.index + reviewSequenceLength,
             };
         }
@@ -79,7 +79,9 @@ export const createReviewProblemService = (problemSource: ProblemService, { maxR
 
             if (answer.isCorrect) { return; }
 
-            const i = state.problemSourceHistory.lastIndexOf(problem);
+            const i = state.problemSourceHistory.findIndex(x => x.key === problem.key);
+            if (i < 0) { return; }
+
             state.problemsToReview.push({ index: i });
             state.problemsToReview = distinct_key(state.problemsToReview, x => `${x.index}`);
         },

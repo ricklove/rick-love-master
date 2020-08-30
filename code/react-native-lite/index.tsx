@@ -132,6 +132,8 @@ export const Pressable = (props: { style?: ThemeViewStyle | ThemeViewStyle[], ch
             onMouseUp={onPressOut}
             onTouchStart={onPressIn}
             onTouchEnd={onPressOut}
+            onMouseLeave={onPressOut}
+            onTouchEndCapture={onPressOut}
             role='button'
             tabIndex={0}>
             {props.children}

@@ -430,9 +430,9 @@ const updateEnemies = ({ gameTime, gameDeltaTime, projectilesState, enemiesState
             e.onHit();
 
             if (e.answer.isCorrect) {
-                projectilesState.debris.push({ key: e.key, kind: `alien`, pos: { ...e.pos }, vel: { ...e.vel } });
+                projectilesState.debris.push({ key: `${e.key} ${gameTime}`, kind: `alien`, pos: { ...e.pos }, vel: { ...e.vel } });
             } else {
-                projectilesState.debris.push({ key: e.key, kind: `kitten`, pos: { ...e.pos }, vel: { ...e.vel } });
+                projectilesState.debris.push({ key: `${e.key} ${gameTime}`, kind: `kitten`, pos: { ...e.pos }, vel: { ...e.vel } });
             }
         }
     }));
