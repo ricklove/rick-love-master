@@ -2,7 +2,12 @@ import { distinct, shuffle, distinct_key } from 'utils/arrays';
 import { ProblemService, Problem, ProblemResult } from './problems-service';
 
 
-export const createReviewProblemService = (problemSource: ProblemService, { maxReviewCount = 3, reviewSequenceLength = 3, reviewSequencePreviousLength = 1 }: { maxReviewCount?: number, reviewSequenceLength?: number, reviewSequencePreviousLength?: number }): ProblemService => {
+export const createReviewProblemService = (problemSource: ProblemService, {
+    maxReviewCount = 3, reviewSequenceLength = 3, reviewSequencePreviousLength = 1, reviewQuestionPrefix = `Review `,
+}: {
+    maxReviewCount?: number; reviewSequenceLength?: number; reviewSequencePreviousLength?: number;
+    reviewQuestionPrefix?: string;
+}): ProblemService => {
     const state = {
         problemSourceHistory: [] as Problem[],
         problemsToReview: [] as { index: number }[],
@@ -46,6 +51,7 @@ export const createReviewProblemService = (problemSource: ProblemService, { maxR
 
         return {
             ...p,
+            question: reviewQuestionPrefix + p.question,
             answers: shuffle(p.answers),
         };
     };
