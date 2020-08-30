@@ -141,5 +141,8 @@ module.exports = {
 
         // Too strict
         "no-param-reassign": ['off'],
+
+        // Sometimes just want it there as a placeholder - stop getting rid of it!
+        "no-useless-return": ['off'],
     },
 }

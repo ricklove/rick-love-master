@@ -1,5 +1,5 @@
-import React, { useState, useRef } from 'react';
-import { View, Text, Pressable } from 'react-native-lite';
+import React, { useState, useRef, useEffect } from 'react';
+import { View, Text, Pressable, Platform } from 'react-native-lite';
 
 export type GamepadPressState = { moveDirection: { x: number, y: number }, buttons: { key: string, text: string, isDown: boolean }[] };
 export const GamepadAnalogStateful = (props: {
@@ -71,13 +71,42 @@ export const GamepadAnalog = (props: {
     onMovePressOut: (direction: { x: number, y: number }) => void;
     buttons: { text: string, onPressIn: () => void, onPressOut: () => void }[];
 }) => {
-    const { onMovePressIn: onMoveDown, onMovePressOut: onMoveUp } = props;
+    const { onMovePressIn, onMovePressOut } = props;
 
     const cellViewStyle = { ...inputStyles.cellView, ...props.style };
 
+    // Keyboard
+    useEffect(() => {
+        if (Platform.OS === `web`) {
+            const onKeyDown = (e: KeyboardEvent) => {
+                if (e.key === `ArrowUp`) { onMovePressIn({ x: 0, y: +1 }); return; }
+                if (e.key === `ArrowDown`) { onMovePressIn({ x: 0, y: -1 }); return; }
+                if (e.key === `ArrowLeft`) { onMovePressIn({ x: -1, y: 0 }); return; }
+                if (e.key === `ArrowRight`) { onMovePressIn({ x: +1, y: 0 }); return; }
+                if (e.key === ` `) { props.buttons[0]?.onPressIn(); return; }
+                // console.log(`onKeyDown`, { key: e.key });
+            };
+            const onKeyUp = (e: KeyboardEvent) => {
+                if (e.key === `ArrowUp`) { onMovePressOut({ x: 0, y: +1 }); return; }
+                if (e.key === `ArrowDown`) { onMovePressOut({ x: 0, y: -1 }); return; }
+                if (e.key === `ArrowLeft`) { onMovePressOut({ x: -1, y: 0 }); return; }
+                if (e.key === `ArrowRight`) { onMovePressOut({ x: +1, y: 0 }); return; }
+                if (e.key === ` `) { props.buttons[0]?.onPressOut(); return; }
+            };
+            window.addEventListener(`keydown`, onKeyDown);
+            window.addEventListener(`keyup`, onKeyUp);
+            return () => {
+                window.removeEventListener(`keydown`, onKeyDown);
+                window.removeEventListener(`keyup`, onKeyUp);
+            };
+        }
+
+        return () => { };
+    });
+
     const DirectionButton = ({ text, direction }: { text: string, direction: { x: number, y: number } }) => {
         return (
-            <Pressable style={inputStyles.cellTouch} onPressIn={() => onMoveDown(direction)} onPressOut={() => onMoveUp(direction)}>
+            <Pressable style={inputStyles.cellTouch} onPressIn={() => onMovePressIn(direction)} onPressOut={() => onMovePressOut(direction)}>
                 <View style={cellViewStyle}>
                     <Text style={inputStyles.moveCellText}>{text}</Text>
                     <View style={inputStyles.cellTextOcclusionView} />
