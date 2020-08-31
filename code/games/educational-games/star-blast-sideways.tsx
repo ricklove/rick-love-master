@@ -8,11 +8,11 @@ import { GamepadAnalogStateful, GamepadPressState } from './components/game-pad-
 import { getDistanceSq, Vector2 } from './utils/vectors';
 import { createReviewProblemService } from './problems/problems-reviewer';
 
-export const EducationalGame_StarBlast_Multiples = (props: {}) => {
-    return <EducationalGame_StarBlast problemService={createReviewProblemService(createMultiplesProblemService({ min: 1, max: 12 }), {})} />;
+export const EducationalGame_StarBlastSideways_Multiples = (props: {}) => {
+    return <EducationalGame_StarBlastSideways problemService={createReviewProblemService(createMultiplesProblemService({ min: 1, max: 12 }), {})} />;
 };
 
-export const EducationalGame_StarBlast = (props: { problemService: ProblemService }) => {
+export const EducationalGame_StarBlastSideways = (props: { problemService: ProblemService }) => {
 
     const [pressState, setPressState] = useState({ moveDirection: { x: 0, y: 0 }, buttons: [] } as GamepadPressState);
     const onPressStateChange = (value: GamepadPressState) => {
@@ -109,7 +109,9 @@ const GameView = (props: { pressState: GamepadPressState, problemService: Proble
         };
     };
 
-    const playerPositionState = useRef({ x: gameStyles.viewscreenView.width * 0.5, y: gameStyles.viewscreenView.height * 0.85, rotation: 0 } as GamePosition);
+    const playerPositionState = useRef({
+        y: gameStyles.viewscreenView.height * 0.5, x: gameStyles.viewscreenView.width * 0.15, rotation: 0,
+    } as GamePosition);
     const projectilesState = useRef({ lastShotTime: 0, shots: [], debris: [] } as ProjectilesState);
     const enemiesState = useRef({ enemies: [] } as EnemiesState);
 
@@ -141,18 +143,18 @@ const GameView = (props: { pressState: GamepadPressState, problemService: Proble
             return;
         }
 
-        const pSize = gameStyles.viewscreenView.width / (p.answers.length);
+        const pSize = gameStyles.viewscreenView.width / (p.answers.length + 1);
         const newProblemState = {
             problemTime: getGameTime().gameTime,
             question: p.question,
-            answers: p.answers.map((x, i) => ({ ...x, key: `${p.question} ${x.value}`, pos: { x: pSize * (0.5 + i), y: gameStyles.sprite.viewSize.height * 0.5, rotation: 0 }, isAnsweredWrong: false })),
+            answers: p.answers.map((x, i) => ({ ...x, key: `${p.question} ${x.value}`, pos: { y: pSize * (0.5 + i), x: gameStyles.viewscreenView.width - gameStyles.sprite.viewSize.width * 0.5, rotation: 0 }, isAnsweredWrong: false })),
         };
         const newEnemyState = {
             enemies: newProblemState.answers.map((ans, i) => ({
                 key: `${p.question} ${ans.value}`,
                 answer: ans,
-                pos: { x: pSize * (0.5 + i), y: gameStyles.sprite.viewSize.height * 1.5, rotation: 0 },
-                vel: { x: 0, y: 5 },
+                pos: { y: pSize * (0.5 + i), x: gameStyles.viewscreenView.width - gameStyles.sprite.viewSize.width * 1.5, rotation: 0 },
+                vel: { x: -5, y: 0 },
                 onHit: () => {
                     setTimeout(() => {
                         console.log(`onHit`, { ans });
@@ -209,7 +211,7 @@ const GameView = (props: { pressState: GamepadPressState, problemService: Proble
                     onLoseLife: () => {
                         projectilesState.current.debris.push({ key: `player${gameTime}`, kind: `player-character`, pos: { ...playerPositionState.current }, vel: { x: 0, y: 0 } });
                         playerPositionState.current = {
-                            x: gameStyles.viewscreenView.width * 0.5, y: gameStyles.viewscreenView.height * 0.85, rotation: 0,
+                            y: gameStyles.viewscreenView.height * 0.5, x: gameStyles.viewscreenView.width * 0.15, rotation: 0,
                         };
 
                         if (gameState.current.lives <= 1) {
@@ -274,10 +276,10 @@ const GameView = (props: { pressState: GamepadPressState, problemService: Proble
                 {projectilesState.current.debris.map(x => (
                     <Sprite key={x.key} kind={x.hasHitGround ? `${x.kind}-splat` as SpriteKind : x.kind} position={x.pos} />
                 ))}
-                {enemiesState.current?.enemies.filter(x => !x.destroyed).map(x => (
-                    <React.Fragment key={x.key}>
-                        {!x.answer.isAnsweredWrong && (<Sprite kind='answer' position={{ x: x.pos.x, y: x.pos.y - gameStyles.sprite.viewSize.height, rotation: 0 }} text={x.answer.value} />)}
-                        {x.answer.isAnsweredWrong && (<Sprite kind='answer-wrong' position={{ x: x.pos.x, y: x.pos.y - gameStyles.sprite.viewSize.height, rotation: 0 }} />)}
+                {enemiesState.current?.enemies.filter(e => !e.destroyed).map(e => (
+                    <React.Fragment key={e.key}>
+                        {!e.answer.isAnsweredWrong && (<Sprite kind='answer' position={{ y: e.pos.y, x: e.pos.x + gameStyles.sprite.viewSize.width, rotation: 0 }} text={e.answer.value} />)}
+                        {e.answer.isAnsweredWrong && (<Sprite kind='answer-wrong' position={{ y: e.pos.y, x: e.pos.x + gameStyles.sprite.viewSize.width, rotation: 0 }} />)}
                     </React.Fragment>
                 ))}
                 {enemiesState.current?.enemies.filter(x => !x.destroyed).map(x => (
@@ -320,7 +322,7 @@ const updateGame = ({ gameTime, gameDeltaTime, pressState, playerPosition, gameS
 const updatePlayer = ({ gameTime, gameDeltaTime, pressState, playerPosition, gameState }: CommonGameState): { playerPosition: GamePosition } => {
     if (gameState.deadTime) { return { playerPosition }; }
 
-    const targetRotation = pressState.moveDirection.x * 0.05;
+    const targetRotation = -pressState.moveDirection.y * 0.05;
 
     const pos = {
         x: playerPosition.x + pressState.moveDirection.x * gameDeltaTime * 250,
@@ -359,7 +361,7 @@ const updateProjectiles = ({ gameTime, gameDeltaTime, pressState, playerPosition
     shots.forEach(x => {
         if (x.explodeTime) { return; }
 
-        x.pos.y += -250 * gameDeltaTime;
+        x.pos.x += +250 * gameDeltaTime;
     });
 
     // Move debris
@@ -391,7 +393,7 @@ const updateProjectiles = ({ gameTime, gameDeltaTime, pressState, playerPosition
 
     const newShots = shots
         // Remove shots offscreen
-        .filter(x => x.pos.y > 0)
+        .filter(x => x.pos.x < gameStyles.viewscreenView.width)
         // Remove exploded 
         .filter(x => !x.explodeTime || gameTime < 1 + x.explodeTime)
         ;
@@ -458,20 +460,20 @@ const updateEnemies = ({ gameTime, gameDeltaTime, projectilesState, enemiesState
 
             // Transfer momentum
             const frictionRatio = 0.95;
-            const swap = e.vel.x;
-            e.vel.x = e2.vel.x * frictionRatio;
-            e2.vel.x = swap * frictionRatio;
+            const swap = e.vel.y;
+            e.vel.y = e2.vel.y * frictionRatio;
+            e2.vel.y = swap * frictionRatio;
             // }
 
             // if (getDistanceSq(e.pos, e2.pos) < radiusSq_enemies * 0.8 * 0.8) {
             // Move apart
-            const a = e.pos.x < e2.pos.x ? e : e2;
-            const b = e.pos.x < e2.pos.x ? e2 : e;
+            const a = e.pos.y < e2.pos.y ? e : e2;
+            const b = e.pos.y < e2.pos.y ? e2 : e;
 
-            a.pos.x -= 10 * gameDeltaTime;
-            b.pos.x += 10 * gameDeltaTime;
-            a.vel.x -= 10 * gameDeltaTime;
-            b.vel.x += 10 * gameDeltaTime;
+            a.pos.y -= 10 * gameDeltaTime;
+            b.pos.y += 10 * gameDeltaTime;
+            a.vel.y -= 10 * gameDeltaTime;
+            b.vel.y += 10 * gameDeltaTime;
         }
     }));
 
@@ -493,21 +495,24 @@ const updateEnemies = ({ gameTime, gameDeltaTime, projectilesState, enemiesState
     enemies.forEach(e => {
         if (e.explodeTime) { return; }
 
-        e.vel.x += (-1 + 2 * Math.random()) * 250 * gameDeltaTime;
-        e.vel.y += 1 * gameDeltaTime;
+        e.vel.y += (-1 + 2 * Math.random()) * 250 * gameDeltaTime;
+        e.vel.x += -1 * gameDeltaTime;
+
+        if (e.pos.y > gameStyles.viewscreenView.height * 0.7) {
+            e.vel.y += -100 * gameDeltaTime;
+        }
 
         e.pos.x += e.vel.x * gameDeltaTime;
         e.pos.y += e.vel.y * gameDeltaTime;
 
-        const pad = gameStyles.sprite.viewSize.width * 0.5;
-        const w = gameStyles.viewscreenView.width;
-        if (e.pos.x < pad) { e.pos.x = pad; e.vel.x = -e.vel.x; }
-        if (e.pos.x > w - pad) { e.pos.x = w - pad; e.vel.x = -e.vel.x; }
-
-        const hPad = gameStyles.sprite.viewSize.width * 1.5;
+        const pad = gameStyles.sprite.viewSize.height * 0.5;
         const h = gameStyles.viewscreenView.height;
-        if (e.pos.y > h - hPad) {
-            e.pos.y = h - hPad;
+        if (e.pos.y < pad) { e.pos.y = pad; e.vel.y = -e.vel.y; }
+        if (e.pos.y > h - pad) { e.pos.y = h - pad; e.vel.y = -e.vel.y; }
+
+        const wPad = gameStyles.sprite.viewSize.width * 1.5;
+        if (e.pos.x < wPad) {
+            e.pos.x = wPad;
         }
     });
 
@@ -531,10 +536,10 @@ const getSpriteEmoji = (kind: SpriteKind) => {
     // ❤💙💚😀🤣😃😁😂😄😉😆😅😊😋😎🥰😙☺🤩🙄😑😐😣🤐😫🤢😬😭🤯🤒😡🤓🤠👽💀👻☠🤖👾😺🙀🙈🙉🙊🐵🐱‍🐉🐶🦁🐯🐺🐱🦒🦊🦝🐗🐷🐮🐭🐹🐰🐼🐨🐻🐸🦓🐴🚀🛸⛵🛰🚁💺🚤🛥⛴⚓🪐🌌🌍🌏🌎
     // ✈🛩🚂🚘🚔🚍🚖🔥💧❄⚡🌀🌈☄🌠⭐❌💥♨🎇🎆✨🎡🍖🥓🍗🥩💚👁‍🗨🥫🍥🍤🧆🥝🥑🧪🧫💉🩸⚰💜🦵🐱‍🚀🐱‍🐉🐱‍🏍😾🐱‍👤😾😿😽😹😸😻🐲🐉
     switch (kind) {
-        case `player`: return { text: `🚀`, rotation: -0.125, offsetX: -0.25, offsetY: 0 };
+        case `player`: return { text: `🚀`, rotation: +0.125, offsetX: 0, offsetY: -0.25 };
         case `player-character`: return { text: `😭` };
         case `player-character-splat`: return { text: `😫`, rotation: 0.15 };
-        case `shot`: return { text: `🔥`, rotation: 0.5 };
+        case `shot`: return { text: `🔥`, rotation: -0.25 };
         case `shot-explode`: return { text: `✨`, rotation: 0, scale: 0.5 };
         case `enemy`: return { text: `🛸`, offsetX: -0.125, offsetY: -0.125 };
         case `enemy-explode`: return { text: `💥`, offsetX: -0.125, offsetY: -0.125 };
