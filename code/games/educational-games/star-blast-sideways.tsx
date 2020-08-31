@@ -499,7 +499,7 @@ const updateEnemies = ({ gameTime, gameDeltaTime, projectilesState, enemiesState
     enemies.forEach(e => {
         if (e.explodeTime) { return; }
 
-        e.vel.y += (-1 + 2 * Math.random()) * 1250 * gameDeltaTime;
+        e.vel.y += (-1 + 2 * Math.random()) * 250 * gameDeltaTime;
         // e.vel.x += -3 * gameDeltaTime;
         e.vel.x = -25;
 
