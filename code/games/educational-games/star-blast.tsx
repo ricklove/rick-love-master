@@ -160,7 +160,7 @@ const GameView = (props: { pressState: GamepadPressState, problemService: Proble
                         if (ans.isCorrect) {
                             // TODO: Update score, etc.
                             // Let bullets clear
-                            projectilesState.current.shots.forEach(x => x.ignore = true);
+                            projectilesState.current.shots.forEach(x => { x.ignore = true; });
                             gotoNextProblem();
                         } else {
                             ans.isAnsweredWrong = true;
