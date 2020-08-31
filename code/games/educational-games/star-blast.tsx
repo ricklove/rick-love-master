@@ -437,21 +437,32 @@ const updateEnemies = ({ gameTime, gameDeltaTime, projectilesState, enemiesState
         }
     }));
 
+    const radiusSq_enemies = radius * radius * 1.5 * 1.5;
+
     enemies.forEach((e, i) => enemies.forEach((e2, i2) => {
 
         if (i >= i2) { return; }
         if (e.explodeTime) { return; }
         if (e2.explodeTime) { return; }
 
-        if (getDistanceSq(e.pos, e2.pos) < radiusSq) {
+        if (getDistanceSq(e.pos, e2.pos) < radiusSq_enemies) {
 
             // Transfer momentum
-            const frictionRatio = 0.9;
+            const frictionRatio = 0.95;
             const swap = e.vel.x;
             e.vel.x = e2.vel.x * frictionRatio;
             e2.vel.x = swap * frictionRatio;
+            // }
 
+            // if (getDistanceSq(e.pos, e2.pos) < radiusSq_enemies * 0.8 * 0.8) {
+            // Move apart
+            const a = e.pos.x < e2.pos.x ? e : e2;
+            const b = e.pos.x < e2.pos.x ? e2 : e;
 
+            a.pos.x -= 10 * gameDeltaTime;
+            b.pos.y += 10 * gameDeltaTime;
+            a.vel.x -= 10 * gameDeltaTime;
+            b.vel.x += 10 * gameDeltaTime;
         }
     }));
 
