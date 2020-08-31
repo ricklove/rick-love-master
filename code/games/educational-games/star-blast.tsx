@@ -159,6 +159,8 @@ const GameView = (props: { pressState: GamepadPressState, problemService: Proble
                         props.problemService.recordAnswer(p, ans);
                         if (ans.isCorrect) {
                             // TODO: Update score, etc.
+                            // Let bullets clear
+                            projectilesState.current.shots.forEach(x => x.ignore = true);
                             gotoNextProblem();
                         } else {
                             ans.isAnsweredWrong = true;
@@ -205,12 +207,16 @@ const GameView = (props: { pressState: GamepadPressState, problemService: Proble
                     projectilesState: projectilesState.current,
                     enemiesState: enemiesState.current,
                     onLoseLife: () => {
+                        projectilesState.current.debris.push({ key: `player${gameTime}`, kind: `player-character`, pos: { ...playerPositionState.current }, vel: { x: 0, y: 0 } });
+                        playerPositionState.current = {
+                            x: gameStyles.viewscreenView.width * 0.5, y: gameStyles.viewscreenView.height * 0.85, rotation: 0,
+                        };
+
                         if (gameState.current.lives <= 1) {
                             // Game over
                             gameOver();
                             return;
                         }
-                        projectilesState.current.debris.push({ key: `player${gameTime}`, kind: `player-character`, pos: { ...playerPositionState.current }, vel: { x: 0, y: 0 } });
 
                         gameState.current = {
                             ...gameState.current,
@@ -334,7 +340,7 @@ const updatePlayer = ({ gameTime, gameDeltaTime, pressState, playerPosition, gam
 
 type ProjectilesState = {
     lastShotTime: number;
-    shots: { key: string, pos: GamePosition, explodeTime?: number }[];
+    shots: { key: string, pos: GamePosition, explodeTime?: number, ignore?: boolean }[];
     debris: { key: string, vel: Vector2, pos: GamePosition, kind: SpriteKind, hasHitGround?: boolean }[];
 };
 const updateProjectiles = ({ gameTime, gameDeltaTime, pressState, playerPosition: playerPos, projectilesState, gameState, onLoseLife }: CommonGameState): ProjectilesState => {
@@ -408,11 +414,13 @@ type EnemiesState = {
         destroyed?: boolean;
     }[];
 };
-const updateEnemies = ({ gameTime, gameDeltaTime, projectilesState, enemiesState }: CommonGameState): EnemiesState => {
+const updateEnemies = ({ gameTime, gameDeltaTime, projectilesState, enemiesState, gameState, playerPosition, onLoseLife }: CommonGameState): EnemiesState => {
     const { enemies } = enemiesState;
     const { shots } = projectilesState;
 
     // Detect Collisions
+
+    // Enemies Bullets
     const radius = gameStyles.sprite.viewSize.width * 0.75;
     const radiusSq = radius * radius;
 
@@ -420,7 +428,8 @@ const updateEnemies = ({ gameTime, gameDeltaTime, projectilesState, enemiesState
         // console.log(`Checking!`, { e, s });
 
         if (e.explodeTime) { return; }
-        if (s.explodeTime) { return; }
+        if (s.explodeTime || s.ignore) { return; }
+
         if (getDistanceSq(e.pos, s.pos) < radiusSq) {
             console.log(`Exploded!`, { e, s });
 
@@ -437,8 +446,8 @@ const updateEnemies = ({ gameTime, gameDeltaTime, projectilesState, enemiesState
         }
     }));
 
+    // Enemies - Enemies (bounce)
     const radiusSq_enemies = radius * radius * 1.5 * 1.5;
-
     enemies.forEach((e, i) => enemies.forEach((e2, i2) => {
 
         if (i >= i2) { return; }
@@ -465,6 +474,20 @@ const updateEnemies = ({ gameTime, gameDeltaTime, projectilesState, enemiesState
             b.vel.x += 10 * gameDeltaTime;
         }
     }));
+
+    // Enemies - Player
+    const radiusSq_player = radius * radius * 0.8 * 0.8;
+    enemies.forEach((e, i) => {
+        if (e.explodeTime) { return; }
+        if (gameState.deadTime || gameState.gameOverTime) { return; }
+
+        if (getDistanceSq(e.pos, playerPosition) < radiusSq_player) {
+            onLoseLife();
+
+            e.explodeTime = gameTime;
+            e.onHit();
+        }
+    });
 
     // Enemies move
     enemies.forEach(e => {
