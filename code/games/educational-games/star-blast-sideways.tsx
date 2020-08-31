@@ -119,6 +119,9 @@ const GameView = (props: { pressState: GamepadPressState, problemService: Proble
     const [renderId, setRenderId] = useState(0);
 
     const restartGame = () => {
+        // Move enemies back
+        enemiesState.current.enemies.forEach(e2 => { e2.pos.x += gameStyles.viewscreenView.width * 0.5; });
+
         gameState.current = {
             gameStartTimeMs: gameState.current.gameStartTimeMs,
             lives: 3,
@@ -219,6 +222,9 @@ const GameView = (props: { pressState: GamepadPressState, problemService: Proble
                             gameOver();
                             return;
                         }
+
+                        // Move enemies back
+                        enemiesState.current.enemies.forEach(e2 => { e2.pos.x += gameStyles.viewscreenView.width * 0.5; });
 
                         gameState.current = {
                             ...gameState.current,
@@ -489,8 +495,6 @@ const updateEnemies = ({ gameTime, gameDeltaTime, projectilesState, enemiesState
             e.explodeTime = gameTime;
             e.onHit();
 
-            // Move other enemies back
-            enemies.forEach(e2 => { e2.pos.x += gameStyles.viewscreenView.width * 0.5; });
             return;
         }
     });
