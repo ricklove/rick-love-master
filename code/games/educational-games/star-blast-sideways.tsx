@@ -422,7 +422,7 @@ const updateEnemies = ({ gameTime, gameDeltaTime, projectilesState, enemiesState
 
     // Detect Collisions
 
-    // Enemies Bullets
+    // Enemies - Bullets
     const radius = gameStyles.sprite.viewSize.width * 0.75;
     const radiusSq = radius * radius;
 
@@ -495,11 +495,13 @@ const updateEnemies = ({ gameTime, gameDeltaTime, projectilesState, enemiesState
     enemies.forEach(e => {
         if (e.explodeTime) { return; }
 
-        e.vel.y += (-1 + 2 * Math.random()) * 250 * gameDeltaTime;
+        e.vel.y += (-1 + 2 * Math.random()) * 1250 * gameDeltaTime;
         e.vel.x += -1 * gameDeltaTime;
 
+        // Move away from ground
         if (e.pos.y > gameStyles.viewscreenView.height * 0.7) {
-            e.vel.y += -100 * gameDeltaTime;
+            // e.vel.y += -100 * gameDeltaTime;
+            e.vel.y = -5;
         }
 
         e.pos.x += e.vel.x * gameDeltaTime;
@@ -507,13 +509,15 @@ const updateEnemies = ({ gameTime, gameDeltaTime, projectilesState, enemiesState
 
         const pad = gameStyles.sprite.viewSize.height * 0.5;
         const h = gameStyles.viewscreenView.height;
-        if (e.pos.y < pad) { e.pos.y = pad; e.vel.y = -e.vel.y; }
+        if (e.pos.y < pad) { e.pos.y = pad; e.vel.y = 5; }
         if (e.pos.y > h - pad) { e.pos.y = h - pad; e.vel.y = -e.vel.y; }
 
         const wPad = gameStyles.sprite.viewSize.width * 1.5;
         if (e.pos.x < wPad) {
             e.pos.x = wPad;
         }
+
+
     });
 
     // Cleanup
