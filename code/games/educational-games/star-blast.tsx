@@ -181,7 +181,7 @@ const GameView = (props: { pressState: GamepadPressState, problemService: Proble
         let gameLastTime = Date.now();
         const gameLoop = () => {
             const { gameTime } = getGameTime();
-            const gameDeltaTime = (Date.now() - gameLastTime) / 1000;
+            const gameDeltaTime = Math.min(0.1, (Date.now() - gameLastTime) / 1000);
             gameLastTime = Date.now();
 
             // if (!pressState.current.moveDirection.x
