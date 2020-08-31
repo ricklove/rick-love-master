@@ -526,7 +526,7 @@ const updateEnemies = ({ gameTime, gameDeltaTime, projectilesState, enemiesState
         if (e.pos.y < pad) { e.pos.y = pad; e.vel.y = 5; }
         if (e.pos.y > h - pad) { e.pos.y = h - pad; e.vel.y = -e.vel.y; }
 
-        const wPad = gameStyles.sprite.viewSize.width * 1.5;
+        const wPad = gameStyles.sprite.viewSize.width * 0.5;
         if (e.pos.x < wPad) {
             e.pos.x = wPad;
         }
