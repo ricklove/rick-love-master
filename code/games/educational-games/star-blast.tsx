@@ -444,10 +444,14 @@ const updateEnemies = ({ gameTime, gameDeltaTime, projectilesState, enemiesState
         if (e2.explodeTime) { return; }
 
         if (getDistanceSq(e.pos, e2.pos) < radiusSq) {
+
             // Transfer momentum
+            const frictionRatio = 0.9;
             const swap = e.vel.x;
-            e.vel.x = e2.vel.x;
-            e2.vel.x = swap;
+            e.vel.x = e2.vel.x * frictionRatio;
+            e2.vel.x = swap * frictionRatio;
+
+
         }
     }));
 
