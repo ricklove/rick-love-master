@@ -488,6 +488,10 @@ const updateEnemies = ({ gameTime, gameDeltaTime, projectilesState, enemiesState
 
             e.explodeTime = gameTime;
             e.onHit();
+
+            // Move other enemies back
+            enemies.forEach(e2 => { e2.pos.x += gameStyles.viewscreenView.width * 0.5; });
+            return;
         }
     });
 
@@ -496,12 +500,18 @@ const updateEnemies = ({ gameTime, gameDeltaTime, projectilesState, enemiesState
         if (e.explodeTime) { return; }
 
         e.vel.y += (-1 + 2 * Math.random()) * 1250 * gameDeltaTime;
-        e.vel.x += -1 * gameDeltaTime;
+        // e.vel.x += -3 * gameDeltaTime;
+        e.vel.x = -25;
 
         // Move away from ground
         if (e.pos.y > gameStyles.viewscreenView.height * 0.7) {
             // e.vel.y += -100 * gameDeltaTime;
             e.vel.y = -5;
+        }
+
+        // Keep on screen
+        if (e.pos.x > gameStyles.viewscreenView.width - gameStyles.sprite.viewSize.width * 2) {
+            e.pos.x = gameStyles.viewscreenView.width - gameStyles.sprite.viewSize.width * 2;
         }
 
         e.pos.x += e.vel.x * gameDeltaTime;
