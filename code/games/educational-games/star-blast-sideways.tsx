@@ -313,9 +313,7 @@ const GameView = (props: { pressState: GamepadPressState, problemService: Proble
                         if (gameState.current.deadTime || gameState.current.gameOverTime) { return; }
 
                         projectilesState.current.debris.push({ key: `player${gameTime}`, kind: `player-character`, pos: { ...playerPositionState.current }, vel: { x: 0, y: 0 } });
-                        playerPositionState.current = {
-                            y: gameStyles.viewscreenView.height * 0.5, x: gameStyles.viewscreenView.width * 0.15, rotation: 0,
-                        };
+
 
                         if (gameState.current.lives <= 1) {
                             // Game over
@@ -425,6 +423,9 @@ const updateGame = ({ gameTime, gameDeltaTime, pressState, playerPosition, gameS
 
     // Respawn Player
     if (gameState.deadTime && gameTime > 3 + gameState.deadTime) {
+        playerPosition.y = gameStyles.viewscreenView.height * 0.5;
+        playerPosition.x = gameStyles.viewscreenView.width * 0.15;
+
         enemiesState.enemies.forEach(e2 => { e2.pos.x += gameStyles.viewscreenView.width * 0.5; });
 
         return { ...gameState, deadTime: undefined };
@@ -644,12 +645,18 @@ const updateEnemies = ({ gameTime, gameDeltaTime, projectilesState, enemiesState
             e.pos.x = wPad;
         }
 
-        // Attack player
-        if (e.pos.x < playerPosition.x) {
-            e.pos.y = playerPosition.y;
-            // e.vel.y = (playerPosition.y - e.pos.y) * 5;
-        }
+        // // Attack player
+        // if (e.pos.x < playerPosition.x) {
+        //     e.pos.y = playerPosition.y;
+        //     // e.vel.y = (playerPosition.y - e.pos.y) * 5;
+        // }
     });
+
+    // Attack player
+    const closestEnemyToPlayer = enemiesState.enemies.sort((a, b) => Math.abs(a.pos.y - playerPosition.y) < Math.abs(b.pos.y - playerPosition.y) ? -1 : 1)[0];
+    if (closestEnemyToPlayer.pos.x < playerPosition.x + gameStyles.sprite.viewSize.width * 0.5) {
+        closestEnemyToPlayer.pos.y = playerPosition.y;
+    }
 
     // Cleanup
     const newEnemies = enemies;
