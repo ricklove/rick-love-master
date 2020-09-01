@@ -65,11 +65,22 @@ const gameStyles = {
             textAlign: `center`,
         },
     },
+    answer: {
+        text: {
+            fontFamily: `"Lucida Console", Monaco, monospace`,
+            fontSize: 24,
+            fontSize_small: 16,
+            textAlign: `center`,
+            whiteSpace: `pre-wrap`,
+        },
+    },
     question: {
         view: { flex: 1, justifyContent: `center`, padding: 4 },
         text: {
             fontFamily: `"Lucida Console", Monaco, monospace`,
             fontSize: 24,
+            fontSize_small: 16,
+            whiteSpace: `pre-wrap`,
         },
     },
     gameOver: {
@@ -284,7 +295,7 @@ const GameView = (props: { pressState: GamepadPressState, problemService: Proble
                 ))}
                 {enemiesState.current?.enemies.filter(e => !e.destroyed).map(e => (
                     <React.Fragment key={e.key}>
-                        {!e.answer.isAnsweredWrong && (<Sprite kind='answer' position={{ y: e.pos.y, x: e.pos.x + gameStyles.sprite.viewSize.width, rotation: 0 }} text={e.answer.value} />)}
+                        {!e.answer.isAnsweredWrong && (<TextPositioned position={{ y: e.pos.y, x: e.pos.x + gameStyles.sprite.viewSize.width, rotation: 0 }} text={e.answer.value} />)}
                         {e.answer.isAnsweredWrong && (<Sprite kind='answer-wrong' position={{ y: e.pos.y, x: e.pos.x + gameStyles.sprite.viewSize.width, rotation: 0 }} />)}
                     </React.Fragment>
                 ))}
@@ -308,9 +319,12 @@ const GameView = (props: { pressState: GamepadPressState, problemService: Proble
                     </View>
                 )}
             </View>
-            <View style={[gameStyles.question.view, { transform: `translate(0px,${-Math.max(0, gameStyles.viewscreenView.height * 0.5 - 125 * timeSinceProblem)}px)` }]}>
-                <Text style={gameStyles.question.text} >{problemsState.current?.question}</Text>
+            <View style={{ position: `relative`, height: gameStyles.question.text.fontSize * 3, alignSelf: `stretch` }}>
+                <TextPositioned text={problemsState.current?.question ?? ``} position={{ x: gameStyles.viewscreenView.width * 0.25, y: gameStyles.question.text.fontSize * 1 - Math.max(0, gameStyles.viewscreenView.height * 0.5 - 125 * timeSinceProblem), rotation: 0 }} />
             </View>
+            {/* <View style={[gameStyles.question.view, { transform: `translate(0px,${-Math.max(0, gameStyles.viewscreenView.height * 0.5 - 125 * timeSinceProblem)}px)` }]}>
+                <Text style={{...gameStyles.question.text, text.length > 10 ? s.fontSize_small * 0.5 : s.fontSize}} >{problemsState.current?.question}</Text>
+            </View> */}
         </>
     );
 };
@@ -549,7 +563,7 @@ const updateEnemies = ({ gameTime, gameDeltaTime, projectilesState, enemiesState
     };
 };
 
-type SpriteKind = 'player' | 'player-character' | 'player-character-splat' | 'shot' | 'shot-explode' | 'enemy' | 'enemy-explode' | 'answer' | 'answer-wrong' | 'alien' | 'kitten' | 'alien-splat' | 'kitten-splat' | 'super-kitten' | 'life';
+type SpriteKind = 'text' | 'player' | 'player-character' | 'player-character-splat' | 'shot' | 'shot-explode' | 'enemy' | 'enemy-explode' | 'answer-wrong' | 'alien' | 'kitten' | 'alien-splat' | 'kitten-splat' | 'super-kitten' | 'life';
 const getSpriteEmoji = (kind: SpriteKind) => {
     // ❤💙💚😀🤣😃😁😂😄😉😆😅😊😋😎🥰😙☺🤩🙄😑😐😣🤐😫🤢😬😭🤯🤒😡🤓🤠👽💀👻☠🤖👾😺🙀🙈🙉🙊🐵🐱‍🐉🐶🦁🐯🐺🐱🦒🦊🦝🐗🐷🐮🐭🐹🐰🐼🐨🐻🐸🦓🐴🚀🛸⛵🛰🚁💺🚤🛥⛴⚓🪐🌌🌍🌏🌎
     // ✈🛩🚂🚘🚔🚍🚖🔥💧❄⚡🌀🌈☄🌠⭐❌💥♨🎇🎆✨🎡🍖🥓🍗🥩💚👁‍🗨🥫🍥🍤🧆🥝🥑🧪🧫💉🩸⚰💜🦵🐱‍🚀🐱‍🐉🐱‍🏍😾🐱‍👤😾😿😽😹😸😻🐲🐉
@@ -561,7 +575,6 @@ const getSpriteEmoji = (kind: SpriteKind) => {
         case `shot-explode`: return { text: `✨`, rotation: 0, scale: 0.5 };
         case `enemy`: return { text: `🛸`, offsetX: -0.125, offsetY: -0.125 };
         case `enemy-explode`: return { text: `💥`, offsetX: -0.125, offsetY: -0.125 };
-        case `answer`: return { text: ``, offsetX: 0, offsetY: -0.125 };
         case `answer-wrong`: return { text: `❌`, offsetX: -0.125, offsetY: -0.125 };
         case `alien`: return { text: `👽`, offsetX: 0, offsetY: 0 };
         // case `kitten`: return { text: `🐱‍🚀`, offsetX: 0, offsetY: 0 };
@@ -571,6 +584,7 @@ const getSpriteEmoji = (kind: SpriteKind) => {
         case `super-kitten`: return { text: `🐱‍🏍`, offsetX: 0, offsetY: 0 };
         // case `kitten-splat`: return { text: `👻`, offsetX: 0, offsetY: 0 };
         case `life`: return { text: `🚀`, scale: 0.5 };
+        case `text`: return { text: ``, offsetX: 0, offsetY: -0.125 };
         default: return { text: `😀` };
     }
 };
@@ -596,6 +610,27 @@ const Sprite = ({ kind, position, text }: { kind: SpriteKind, position: { x: num
             <View style={styleRotation}>
                 <Text style={gameStyles.sprite.text}>{text ?? s.text}</Text>
             </View>
+        </View>
+    );
+};
+
+const TextPositioned = ({ text, position }: { text: string, position: { x: number, y: number, rotation: number } }) => {
+    const s = gameStyles.answer.text;
+    const fontSize = text.length > 10 ? s.fontSize_small * 0.5 : s.fontSize;
+
+    const offsetY = -fontSize * 0.5 - 4;
+
+    const stylePosition = {
+        position: `absolute`,
+        transform: `translate(${position.x}px, ${position.y + offsetY}px) rotate(${position.rotation ?? 0}turn)`,
+        pointerEvents: `none`,
+        maxWidth: gameStyles.viewscreenView.width * 0.5,
+        // backgroundColor: `red`,
+    } as const;
+
+    return (
+        <View style={stylePosition}>
+            <Text style={{ ...gameStyles.answer.text, fontSize }}>{text}</Text>
         </View>
     );
 };

@@ -31,8 +31,8 @@ export const createMultiplesProblemService = ({ min = 1, max = 12, maxAnswers = 
             const answers: ProblemAnswer[] = shuffle([...wrongValues.map(x => ({ value: `${x}`, isCorrect: false })), { value: `${correctValue}`, isCorrect: true }]).map(x => ({ ...x, key: x.value }));
 
             return {
-                key: `${b} * ${a}`,
-                question: `${b} * ${a}`,
+                key: `${b} x ${a}`,
+                question: `${b} x ${a}`,
                 answers,
             };
         },
