@@ -173,6 +173,7 @@ type GameState = {
     lives: number;
     deadTime?: number;
     gameOverTime?: number;
+    score: number;
 };
 
 
@@ -182,7 +183,7 @@ const GameView = (props: { pressState: GamepadPressState, problemService: Proble
     const pressState = useRef(props.pressState);
     pressState.current = props.pressState;
 
-    const gameState = useRef({ lives: 3, gameStartTimeMs: Date.now() } as GameState);
+    const gameState = useRef({ lives: 3, gameStartTimeMs: Date.now(), score: 0 } as GameState);
     const getGameTime = () => {
         return {
             gameTime: (Date.now() - gameState.current.gameStartTimeMs) / 1000,
@@ -205,6 +206,7 @@ const GameView = (props: { pressState: GamepadPressState, problemService: Proble
         gameState.current = {
             gameStartTimeMs: gameState.current.gameStartTimeMs,
             lives: 3,
+            score: 0,
         };
     };
 
@@ -233,27 +235,41 @@ const GameView = (props: { pressState: GamepadPressState, problemService: Proble
             answers: p.answers.map((x, i) => ({ ...x, key: `${p.question} ${x.value}`, pos: { y: pSize * (0.5 + i), x: gameStyles.viewscreenView.width - gameStyles.sprite.viewSize.width * 0.5, rotation: 0 }, isAnsweredWrong: false })),
         };
         const newEnemyState = {
-            enemies: newProblemState.answers.map((ans, i) => ({
-                key: `${p.question} ${ans.value}`,
-                answer: ans,
-                pos: { y: pSize * (0.5 + i), x: gameStyles.viewscreenView.width - gameStyles.sprite.viewSize.width * 1.5, rotation: 0 },
-                vel: { x: -5, y: 0 },
-                onHit: () => {
-                    setTimeout(() => {
-                        console.log(`onHit`, { ans });
-                        props.problemService.recordAnswer(p, ans);
-                        if (ans.isCorrect) {
-                            // TODO: Update score, etc.
-                            // Let bullets clear
-                            projectilesState.current.shots.forEach(x => { x.ignore = true; });
-                            gotoNextProblem();
-                        } else {
-                            ans.isAnsweredWrong = true;
-                        }
-                    });
-                },
-                destroyed: false,
-            })),
+            enemies: newProblemState.answers.map((ans, i) => {
+                const enemy = {
+                    key: `${p.question} ${ans.value}`,
+                    answer: ans,
+                    pos: { y: pSize * (0.5 + i), x: gameStyles.viewscreenView.width - gameStyles.sprite.viewSize.width * 1.5, rotation: 0 },
+                    vel: { x: -5, y: 0 },
+                    onHit: () => {
+                        setTimeout(() => {
+                            console.log(`onHit`, { ans });
+                            props.problemService.recordAnswer(p, ans);
+                            if (ans.isCorrect) {
+                                // TODO: Update score, etc.
+                                // Let bullets clear
+                                projectilesState.current.shots.forEach(x => { x.ignore = true; });
+                                gotoNextProblem();
+
+                                gameState.current = {
+                                    ...gameState.current,
+                                    score: gameState.current.score += Math.floor(enemy.pos.x) * 1000,
+                                };
+                            } else {
+                                ans.isAnsweredWrong = true;
+
+                                gameState.current = {
+                                    ...gameState.current,
+                                    score: gameState.current.score -= Math.floor(enemy.pos.x) * 1500,
+                                };
+                            }
+                        });
+                    },
+                    destroyed: false,
+                };
+
+                return enemy;
+            }),
         };
 
         problemsState.current = newProblemState;
@@ -358,6 +374,7 @@ const GameView = (props: { pressState: GamepadPressState, problemService: Proble
     return (
         <>
             <View style={gameStyles.viewscreenView} >
+                <TextPositioned text={`${gameState.current.score.toLocaleString()}`} position={{ x: 0, y: -0.8 * gameStyles.sprite.viewSize.height, rotation: 0 }} />
                 {[... new Array(gameState.current.lives)].map((x, i) => (
                     <Sprite key={`life${i}`} kind='life' position={{ x: gameStyles.viewscreenView.width - (gameStyles.sprite.viewSize.width * (1 + i)), y: -0.8 * gameStyles.sprite.viewSize.height, rotation: 0 }} />
                 ))}
@@ -695,7 +712,7 @@ const TextPositioned = ({ text, position }: { text: string, position: { x: numbe
         position: `absolute`,
         transform: `translate(${position.x}px, ${position.y + offsetY}px) rotate(${position.rotation ?? 0}turn)`,
         pointerEvents: `none`,
-        maxWidth: gameStyles.viewscreenView.width * 0.75,
+        maxWidth: gameStyles.viewscreenView.width * 0.5,
         // backgroundColor: `red`,
     } as const;
 
