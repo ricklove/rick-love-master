@@ -11,6 +11,8 @@ export type ProblemResult = Problem | {
     answers?: undefined;
 };
 export type ProblemService = {
+    getSections: () => string[];
+    gotoSection: (name: string) => void;
     getNextProblem: () => ProblemResult;
     recordAnswer: (problem: Problem, answer: ProblemAnswer) => void;
 };

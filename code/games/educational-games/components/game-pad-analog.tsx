@@ -77,21 +77,28 @@ export const GamepadAnalog = (props: {
 
     // Keyboard
     useEffect(() => {
+        const onIgnore = (e: KeyboardEvent) => {
+            e.preventDefault();
+            e.stopPropagation?.();
+            return false;
+        };
         if (Platform.OS === `web`) {
             const onKeyDown = (e: KeyboardEvent) => {
-                if (e.key === `ArrowUp`) { onMovePressIn({ x: 0, y: +1 }); return; }
-                if (e.key === `ArrowDown`) { onMovePressIn({ x: 0, y: -1 }); return; }
-                if (e.key === `ArrowLeft`) { onMovePressIn({ x: -1, y: 0 }); return; }
-                if (e.key === `ArrowRight`) { onMovePressIn({ x: +1, y: 0 }); return; }
-                if (e.key === ` `) { props.buttons[0]?.onPressIn(); return; }
+                if (e.key === `ArrowUp`) { onMovePressIn({ x: 0, y: +1 }); return onIgnore(e); }
+                if (e.key === `ArrowDown`) { onMovePressIn({ x: 0, y: -1 }); return onIgnore(e); }
+                if (e.key === `ArrowLeft`) { onMovePressIn({ x: -1, y: 0 }); return onIgnore(e); }
+                if (e.key === `ArrowRight`) { onMovePressIn({ x: +1, y: 0 }); return onIgnore(e); }
+                if (e.key === ` `) { props.buttons[0]?.onPressIn(); return onIgnore(e); }
                 // console.log(`onKeyDown`, { key: e.key });
+                return true;
             };
             const onKeyUp = (e: KeyboardEvent) => {
-                if (e.key === `ArrowUp`) { onMovePressOut({ x: 0, y: +1 }); return; }
-                if (e.key === `ArrowDown`) { onMovePressOut({ x: 0, y: -1 }); return; }
-                if (e.key === `ArrowLeft`) { onMovePressOut({ x: -1, y: 0 }); return; }
-                if (e.key === `ArrowRight`) { onMovePressOut({ x: +1, y: 0 }); return; }
-                if (e.key === ` `) { props.buttons[0]?.onPressOut(); return; }
+                if (e.key === `ArrowUp`) { onMovePressOut({ x: 0, y: +1 }); return onIgnore(e); }
+                if (e.key === `ArrowDown`) { onMovePressOut({ x: 0, y: -1 }); return onIgnore(e); }
+                if (e.key === `ArrowLeft`) { onMovePressOut({ x: -1, y: 0 }); return onIgnore(e); }
+                if (e.key === `ArrowRight`) { onMovePressOut({ x: +1, y: 0 }); return onIgnore(e); }
+                if (e.key === ` `) { props.buttons[0]?.onPressOut(); return onIgnore(e); }
+                return true;
             };
             window.addEventListener(`keydown`, onKeyDown);
             window.addEventListener(`keyup`, onKeyUp);

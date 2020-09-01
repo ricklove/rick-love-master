@@ -57,6 +57,9 @@ export const createReviewProblemService = (problemSource: ProblemService, {
     };
 
     const service: ProblemService = {
+        getSections: problemSource.getSections,
+        gotoSection: problemSource.gotoSection,
+
         getNextProblem: (): ProblemResult => {
             console.log(`createReviewProblemService getNextProblem`, state);
 

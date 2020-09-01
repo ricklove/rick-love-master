@@ -25,20 +25,69 @@ export const EducationalGame_StarBlastSideways = (props: { problemService: Probl
         setPressState(value);
     };
 
+    const [problemSourceKey, setProblemSourceKey] = useState(0);
+
     return (
         <>
             <View style={{ position: `relative` }}>
                 <View style={{ marginTop: 50, marginBottom: 150, padding: 2, alignItems: `center` }} >
                     <View style={{ alignItems: `center` }} >
-                        <GameView pressState={pressState} problemService={props.problemService} />
-                        <Pressable style={{ position: `absolute`, top: 0, bottom: 0, left: 0, right: 0, opacity: 0 }} onPressIn={() => { }} onPressOut={() => { }} />
-                        <View style={{ zIndex: 10, flex: 1, alignSelf: `stretch` }}>
-                            <GamepadAnalogStateful style={colors.gamepad} onPressStateChange={onPressStateChange} buttons={[{ key: `A`, text: `🔥` }]} />
+                        <View style={{ position: `relative` }}>
+                            <GameView pressState={pressState} problemService={props.problemService} problemSourceKey={`${problemSourceKey}`} />
+                            <Pressable style={{ position: `absolute`, top: 0, bottom: 0, left: 0, right: 0, opacity: 0 }} onPressIn={() => { }} onPressOut={() => { }} />
+                            <View style={{ zIndex: 10, flex: 1, alignSelf: `stretch` }}>
+                                <GamepadAnalogStateful style={colors.gamepad} onPressStateChange={onPressStateChange} buttons={[{ key: `A`, text: `🔥` }]} />
+                            </View>
                         </View>
+                        <SubjectNavigator problemService={props.problemService} onSubjectNavigation={() => setProblemSourceKey(s => s + 1)} />
                     </View>
                 </View>
             </View>
         </>
+    );
+};
+
+const subjectStyles = {
+    container: {
+        margin: 64,
+    },
+    header: {
+        view: {
+            margin: 4,
+        },
+        text: {
+            fontSize: 16,
+        },
+    },
+    section: {
+        view: {
+            margin: 4,
+            marginLeft: 16,
+        },
+        text: {
+            fontSize: 16,
+        },
+    },
+};
+
+const SubjectNavigator = (props: { problemService: ProblemService, onSubjectNavigation: () => void }) => {
+    return (
+        <View style={subjectStyles.container}>
+            <View style={subjectStyles.header.view}>
+                <Text style={subjectStyles.header.text}>Sections</Text>
+            </View>
+            {props.problemService.getSections().map(s => (
+                <TouchableOpacity key={s} onPress={() => {
+                    console.log(`SubjectNavigator onSection`, { s });
+                    props.problemService.gotoSection(s);
+                    props.onSubjectNavigation();
+                }}>
+                    <View style={subjectStyles.section.view}>
+                        <Text style={subjectStyles.section.text}>{s}</Text>
+                    </View>
+                </TouchableOpacity>
+            ))}
+        </View>
     );
 };
 
@@ -113,7 +162,7 @@ type GameState = {
 
 
 type AnswerState = { key: string, value: string, isCorrect: boolean, isAnsweredWrong: boolean };
-const GameView = (props: { pressState: GamepadPressState, problemService: ProblemService }) => {
+const GameView = (props: { pressState: GamepadPressState, problemService: ProblemService, problemSourceKey: string }) => {
 
     const pressState = useRef(props.pressState);
     pressState.current = props.pressState;
@@ -199,7 +248,9 @@ const GameView = (props: { pressState: GamepadPressState, problemService: Proble
 
     useEffect(() => {
         gotoNextProblem();
+    }, [props.problemSourceKey]);
 
+    useEffect(() => {
         // Game Loop
         let gameLastTime = Date.now();
         const gameLoop = () => {

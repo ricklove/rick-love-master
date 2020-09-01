@@ -10,6 +10,8 @@ export const createDefinitionProblemService = ({ subject, maxAnswers = 4 }: { su
     let iSection = null as null | number;
     let iNext = null as null | number;
     const problemService: ProblemService = {
+        getSections: () => subject.sections.map(x => x.name),
+        gotoSection: (name: string) => { iSection = subject.sections.findIndex(x => x.name === name); },
         getNextProblem: (): ProblemResult => {
             if (iSection == null) {
                 // Prompt section?
