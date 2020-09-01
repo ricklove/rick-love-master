@@ -11,7 +11,10 @@ export const createDefinitionProblemService = ({ subject, maxAnswers = 4 }: { su
     let iNext = null as null | number;
     const problemService: ProblemService = {
         getSections: () => subject.sections.map(x => x.name),
-        gotoSection: (name: string) => { iSection = subject.sections.findIndex(x => x.name === name); },
+        gotoSection: (name: string) => {
+            iSection = subject.sections.findIndex(x => x.name === name);
+            iNext = 0;
+        },
         getNextProblem: (): ProblemResult => {
             if (iSection == null) {
                 // Prompt section?
