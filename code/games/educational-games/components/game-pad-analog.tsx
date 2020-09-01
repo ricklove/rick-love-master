@@ -55,7 +55,7 @@ export const GamepadAnalogStateful = (props: {
 const inputStyles = {
     container: { flex: 1, alignSelf: `stretch`, flexDirection: `row`, justifyContent: `space-between`, alignItems: `center`, padding: 4 },
     section: { justifyContent: `center`, alignItems: `center`, padding: 4 },
-    moveSectionWrapper: { transform: `rotate(0.125turn)` },
+    moveSectionWrapper: { transform: `rotate(0.125turn)`, margin: 16 },
     row: { flexDirection: `row` },
     cellTouch: { outline: `none` },
     cellView: { pointerEvents: `none`, position: `relative`, margin: 1, width: 48, height: 48, justifyContent: `center`, alignItems: `center`, borderWidth: 0, borderStyle: `solid`, outline: `none` },

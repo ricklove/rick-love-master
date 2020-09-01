@@ -30,8 +30,8 @@ export const EducationalGame_StarBlastSideways = (props: { problemService: Probl
     return (
         <>
             <View>
-                <View style={{ marginTop: 50, marginBottom: 150, padding: 2, alignItems: `center` }} >
-                    <View style={{ alignItems: `center` }} >
+                <View style={{ alignItems: `center`, alignSelf: `stretch` }} >
+                    <View style={{ overflow: `hidden`, padding: 10, paddingTop: 48, paddingBottom: 64 }}>
                         <View style={{ position: `relative` }}>
                             <GameView pressState={pressState} problemService={props.problemService} problemSourceKey={`${problemSourceKey}`} />
                             <Pressable style={{ position: `absolute`, top: 0, bottom: 0, left: 0, right: 0, opacity: 0 }} onPressIn={() => { }} onPressOut={() => { }} />
@@ -49,7 +49,7 @@ export const EducationalGame_StarBlastSideways = (props: { problemService: Probl
 
 const subjectStyles = {
     container: {
-        margin: 64,
+        margin: 16,
     },
     header: {
         view: {
@@ -62,7 +62,6 @@ const subjectStyles = {
     section: {
         view: {
             margin: 4,
-            marginLeft: 16,
         },
         text: {
             fontSize: 16,
@@ -71,25 +70,38 @@ const subjectStyles = {
 };
 
 const SubjectNavigator = (props: { problemService: ProblemService, onSubjectNavigation: () => void }) => {
+
+    const [isExpanded, setIsExpanded] = useState(false);
+
     return (
         <View style={subjectStyles.container}>
-            <View style={subjectStyles.header.view}>
-                <Text style={subjectStyles.header.text}>Sections</Text>
-            </View>
-            {props.problemService.getSections().map(s => (
-                <TouchableOpacity key={s} onPress={() => {
-                    console.log(`SubjectNavigator onSection`, { s });
-                    props.problemService.gotoSection(s);
-                    props.onSubjectNavigation();
-                    if (Platform.OS === `web`) {
-                        window.scrollTo(0, 0);
-                    }
-                }}>
-                    <View style={subjectStyles.section.view}>
-                        <Text style={subjectStyles.section.text}>{s}</Text>
-                    </View>
-                </TouchableOpacity>
-            ))}
+            <TouchableOpacity onPress={() => {
+                setIsExpanded(s => !s);
+            }}>
+                <View style={subjectStyles.header.view}>
+                    <Text style={subjectStyles.header.text}>Sections</Text>
+                </View>
+            </TouchableOpacity>
+            {isExpanded && (
+                <View>
+                    {props.problemService.getSections().map(s => (
+                        <TouchableOpacity key={s} onPress={() => {
+                            console.log(`SubjectNavigator onSection`, { s });
+                            props.problemService.gotoSection(s);
+                            props.onSubjectNavigation();
+                            setIsExpanded(false);
+                            if (Platform.OS === `web`) {
+                                window.scrollTo(0, 0);
+                            }
+                        }}>
+                            <View style={subjectStyles.section.view}>
+                                <Text style={subjectStyles.section.text}>{s}</Text>
+                            </View>
+                        </TouchableOpacity>
+                    ))}
+                </View>
+            )}
+
         </View>
     );
 };
