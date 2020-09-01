@@ -4,28 +4,27 @@ import React, { ReactNode } from 'react';
 import { Header } from './header';
 import * as Store from '../../site/store';
 import { ZoomWrapper } from '../../components/zoom-wrapper';
+import { LayoutGame } from './layout-game';
 
-export const Layout = ({ children, fullScreen }: { children: ReactNode, fullScreen?: boolean }) => {
+export const Layout = ({ children, gameMode }: { children: ReactNode, gameMode?: boolean }) => {
     const data = {
         title: Store.site.siteMetadata.title,
         author: Store.site.siteMetadata.author,
         future: Store.methodExample.getFuture(10),
     };
 
-    if (fullScreen) {
+    if (gameMode) {
         return (
-            <>
-                <div>
-                    {children}
-                </div>
-            </>
+            <LayoutGame>
+                {children}
+            </LayoutGame>
         );
     }
 
     return (
         <>
             <ZoomWrapper>
-                {!fullScreen && <Header siteTitle={`${data.title ?? ``}`} />}
+                {!gameMode && <Header siteTitle={`${data.title ?? ``}`} />}
                 <div>
                     <main>{children}</main>
                     <footer>
