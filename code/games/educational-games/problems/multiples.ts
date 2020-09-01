@@ -6,7 +6,7 @@ export const createMultiplesProblemService = ({ min = 1, max = 12, maxAnswers = 
     let m = min;
 
     const problemService: ProblemService = {
-        getSections: () => [...new Array(max - min)].map((x, i) => `Multiples of ${i + min}`),
+        getSections: () => [...new Array(max - min + 1)].map((x, i) => `Multiples of ${i + min}`),
         gotoSection: (name: string) => {
             const parts = name.split(` `);
             const v = parts[parts.length - 1];
