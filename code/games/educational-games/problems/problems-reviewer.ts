@@ -3,7 +3,7 @@ import { ProblemService, Problem, ProblemResult } from './problems-service';
 
 
 export const createReviewProblemService = (problemSource: ProblemService, {
-    maxReviewCount = 3, reviewSequenceLength = 3, reviewSequencePreviousLength = 1, reviewQuestionPrefix = `Review `,
+    maxReviewCount = 3, reviewSequenceLength = 3, reviewSequencePreviousLength = 1, reviewQuestionPrefix = `🔄 `,
 }: {
     maxReviewCount?: number; reviewSequenceLength?: number; reviewSequencePreviousLength?: number;
     reviewQuestionPrefix?: string;
