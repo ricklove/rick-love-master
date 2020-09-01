@@ -69,7 +69,7 @@ const gameStyles = {
         text: {
             fontFamily: `"Lucida Console", Monaco, monospace`,
             fontSize: 24,
-            fontSize_small: 16,
+            fontSize_small: 14,
             textAlign: `center`,
             whiteSpace: `pre-wrap`,
         },
@@ -79,7 +79,7 @@ const gameStyles = {
         text: {
             fontFamily: `"Lucida Console", Monaco, monospace`,
             fontSize: 24,
-            fontSize_small: 16,
+            fontSize_small: 14,
             whiteSpace: `pre-wrap`,
         },
     },
@@ -616,7 +616,7 @@ const Sprite = ({ kind, position, text }: { kind: SpriteKind, position: { x: num
 
 const TextPositioned = ({ text, position }: { text: string, position: { x: number, y: number, rotation: number } }) => {
     const s = gameStyles.answer.text;
-    const fontSize = text.length > 10 ? s.fontSize_small * 0.5 : s.fontSize;
+    const fontSize = text.length > 10 ? s.fontSize_small : s.fontSize;
 
     const offsetY = -fontSize * 0.5 - 4;
 
