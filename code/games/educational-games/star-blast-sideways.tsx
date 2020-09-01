@@ -310,6 +310,8 @@ const GameView = (props: { pressState: GamepadPressState, problemService: Proble
                     projectilesState: projectilesState.current,
                     enemiesState: enemiesState.current,
                     onLoseLife: () => {
+                        if (gameState.current.deadTime || gameState.current.gameOverTime) { return; }
+
                         projectilesState.current.debris.push({ key: `player${gameTime}`, kind: `player-character`, pos: { ...playerPositionState.current }, vel: { x: 0, y: 0 } });
                         playerPositionState.current = {
                             y: gameStyles.viewscreenView.height * 0.5, x: gameStyles.viewscreenView.width * 0.15, rotation: 0,
@@ -322,7 +324,7 @@ const GameView = (props: { pressState: GamepadPressState, problemService: Proble
                         }
 
                         // Move enemies back
-                        enemiesState.current.enemies.forEach(e2 => { e2.pos.x += gameStyles.viewscreenView.width * 0.5; });
+                        // enemiesState.current.enemies.forEach(e2 => { e2.pos.x += gameStyles.viewscreenView.width * 0.5; });
 
                         gameState.current = {
                             ...gameState.current,
@@ -419,8 +421,12 @@ const GameView = (props: { pressState: GamepadPressState, problemService: Proble
 
 type CommonGameState = { gameTime: number, gameDeltaTime: number, gameState: GameState, pressState: GamepadPressState, playerPosition: GamePosition, projectilesState: ProjectilesState, enemiesState: EnemiesState, onLoseLife: () => void };
 
-const updateGame = ({ gameTime, gameDeltaTime, pressState, playerPosition, gameState }: CommonGameState): GameState => {
+const updateGame = ({ gameTime, gameDeltaTime, pressState, playerPosition, gameState, enemiesState }: CommonGameState): GameState => {
+
+    // Respawn Player
     if (gameState.deadTime && gameTime > 3 + gameState.deadTime) {
+        enemiesState.enemies.forEach(e2 => { e2.pos.x += gameStyles.viewscreenView.width * 0.5; });
+
         return { ...gameState, deadTime: undefined };
     }
 
@@ -502,7 +508,7 @@ const updateProjectiles = ({ gameTime, gameDeltaTime, pressState, playerPosition
     const newShots = shots
         // Remove shots offscreen
         .filter(x => x.pos.x < gameStyles.viewscreenView.width)
-        // Remove exploded 
+        // Remove exploded
         .filter(x => !x.explodeTime || gameTime < 1 + x.explodeTime)
         ;
 
@@ -607,7 +613,12 @@ const updateEnemies = ({ gameTime, gameDeltaTime, projectilesState, enemiesState
 
         e.vel.y += (-1 + 2 * Math.random()) * 250 * gameDeltaTime;
         // e.vel.x += -3 * gameDeltaTime;
-        e.vel.x = -25;
+
+        if (!gameState.deadTime && !gameState.gameOverTime) {
+            e.vel.x = -25;
+        } else {
+            e.vel.x = 0;
+        }
 
         // Move away from ground
         if (e.pos.y > gameStyles.viewscreenView.height * 0.7) {
@@ -633,7 +644,11 @@ const updateEnemies = ({ gameTime, gameDeltaTime, projectilesState, enemiesState
             e.pos.x = wPad;
         }
 
-
+        // Attack player
+        if (e.pos.x < playerPosition.x) {
+            e.pos.y = playerPosition.y;
+            // e.vel.y = (playerPosition.y - e.pos.y) * 5;
+        }
     });
 
     // Cleanup
@@ -642,7 +657,7 @@ const updateEnemies = ({ gameTime, gameDeltaTime, projectilesState, enemiesState
         x.destroyed = true;
 
     });
-    // // Remove exploded 
+    // // Remove exploded
     // .filter(x => !x.explodeTime || gameTime < 1 + x.explodeTime)
     // ;
 
