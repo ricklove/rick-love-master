@@ -12,7 +12,7 @@ export const createMultiplesProblemService = ({ min = 1, max = 12, maxAnswers = 
             const v = parts[parts.length - 1];
             const bVal = Number.parseInt(v, 10);
             m = bVal;
-            n = min;
+            n = min - 1;
         },
         getNextProblem: (): ProblemResult => {
             n++;
