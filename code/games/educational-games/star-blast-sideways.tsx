@@ -624,7 +624,7 @@ const TextPositioned = ({ text, position }: { text: string, position: { x: numbe
         position: `absolute`,
         transform: `translate(${position.x}px, ${position.y + offsetY}px) rotate(${position.rotation ?? 0}turn)`,
         pointerEvents: `none`,
-        maxWidth: gameStyles.viewscreenView.width * 0.5,
+        maxWidth: gameStyles.viewscreenView.width * 0.75,
         // backgroundColor: `red`,
     } as const;
 
