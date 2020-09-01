@@ -1,8 +1,8 @@
 import { createDefinitionProblemService, parseDefinitionDocument } from './definition-problem-service';
 
 export const createSpanishProblemService = () => {
-    const def = parseDefinitionDocument(document);
-    return createDefinitionProblemService({ definitions: def });
+    const subject = parseDefinitionDocument(document, `Spanish`);
+    return createDefinitionProblemService({ subject });
 };
 
 const document = `
