@@ -1,7 +1,7 @@
 /* eslint-disable react/no-array-index-key */
 /* eslint-disable jsx-a11y/accessible-emoji */
 import React, { useState, useEffect, useRef } from 'react';
-import { View, Text, Pressable, TouchableOpacity } from 'react-native-lite';
+import { View, Text, Pressable, TouchableOpacity, Platform } from 'react-native-lite';
 import { createMultiplesProblemService } from './problems/multiples';
 import { ProblemService, Problem } from './problems/problems-service';
 import { GamepadAnalogStateful, GamepadPressState } from './components/game-pad-analog';
@@ -81,6 +81,9 @@ const SubjectNavigator = (props: { problemService: ProblemService, onSubjectNavi
                     console.log(`SubjectNavigator onSection`, { s });
                     props.problemService.gotoSection(s);
                     props.onSubjectNavigation();
+                    if (Platform.OS === `web`) {
+                        window.scrollTo(0, 0);
+                    }
                 }}>
                     <View style={subjectStyles.section.view}>
                         <Text style={subjectStyles.section.text}>{s}</Text>
