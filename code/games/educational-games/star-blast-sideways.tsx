@@ -7,9 +7,14 @@ import { ProblemService, Problem } from './problems/problems-service';
 import { GamepadAnalogStateful, GamepadPressState } from './components/game-pad-analog';
 import { getDistanceSq, Vector2 } from './utils/vectors';
 import { createReviewProblemService } from './problems/problems-reviewer';
+import { createSpanishProblemService } from './problems/definition-spanish';
 
 export const EducationalGame_StarBlastSideways_Multiples = (props: {}) => {
     return <EducationalGame_StarBlastSideways problemService={createReviewProblemService(createMultiplesProblemService({ min: 1, max: 12 }), {})} />;
+};
+
+export const EducationalGame_StarBlastSideways_Spanish = (props: {}) => {
+    return <EducationalGame_StarBlastSideways problemService={createReviewProblemService(createSpanishProblemService(), {})} />;
 };
 
 export const EducationalGame_StarBlastSideways = (props: { problemService: ProblemService }) => {
