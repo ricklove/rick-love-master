@@ -29,7 +29,7 @@ export const EducationalGame_StarBlastSideways = (props: { problemService: Probl
 
     return (
         <>
-            <View style={{ position: `relative` }}>
+            <View>
                 <View style={{ marginTop: 50, marginBottom: 150, padding: 2, alignItems: `center` }} >
                     <View style={{ alignItems: `center` }} >
                         <View style={{ position: `relative` }}>
@@ -39,9 +39,9 @@ export const EducationalGame_StarBlastSideways = (props: { problemService: Probl
                                 <GamepadAnalogStateful style={colors.gamepad} onPressStateChange={onPressStateChange} buttons={[{ key: `A`, text: `🔥` }]} />
                             </View>
                         </View>
-                        <SubjectNavigator problemService={props.problemService} onSubjectNavigation={() => setProblemSourceKey(s => s + 1)} />
                     </View>
                 </View>
+                <SubjectNavigator problemService={props.problemService} onSubjectNavigation={() => setProblemSourceKey(s => s + 1)} />
             </View>
         </>
     );
