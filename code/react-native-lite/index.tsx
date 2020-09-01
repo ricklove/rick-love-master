@@ -115,15 +115,21 @@ export const TouchableOpacity = (props: { style?: ThemeViewStyle | ThemeViewStyl
 
 export const Pressable = (props: { style?: ThemeViewStyle | ThemeViewStyle[], children?: ReactNode, onPressIn: () => void, onPressOut: () => void }) => {
 
+    const onIgnore = (e: React.MouseEvent | React.TouchEvent) => {
+        e.preventDefault();
+        e.stopPropagation?.();
+        (e as unknown as { [key: string]: boolean }).cancelBubble = true;
+        (e as unknown as { [key: string]: boolean }).returnValue = false;
+        return false;
+    };
+
     const onPressIn = (e: React.MouseEvent | React.TouchEvent) => {
         props.onPressIn();
-        e.preventDefault();
-        return false;
+        return onIgnore(e);
     };
     const onPressOut = (e: React.MouseEvent | React.TouchEvent) => {
         props.onPressOut();
-        e.preventDefault();
-        return false;
+        return onIgnore(e);
     };
 
     return (
@@ -132,6 +138,8 @@ export const Pressable = (props: { style?: ThemeViewStyle | ThemeViewStyle[], ch
             onMouseUp={onPressOut}
             onTouchStart={onPressIn}
             onTouchEnd={onPressOut}
+            onTouchCancel={onPressOut}
+            onTouchMove={onIgnore}
             onMouseLeave={onPressOut}
             onTouchEndCapture={onPressOut}
             role='button'
