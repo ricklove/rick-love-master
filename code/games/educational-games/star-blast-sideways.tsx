@@ -594,8 +594,8 @@ const updateEnemies = ({ gameTime, gameDeltaTime, projectilesState, enemiesState
         if (getDistanceSq(e.pos, playerPosition) < radiusSq_player) {
             onLoseLife();
 
-            e.explodeTime = gameTime;
-            e.onHit();
+            // e.explodeTime = gameTime;
+            // e.onHit();
 
             return;
         }
