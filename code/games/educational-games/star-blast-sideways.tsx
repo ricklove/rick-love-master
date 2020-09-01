@@ -203,6 +203,10 @@ const GameView = (props: { pressState: GamepadPressState, problemService: Proble
         // Move enemies back
         enemiesState.current.enemies.forEach(e2 => { e2.pos.x += gameStyles.viewscreenView.width * 0.5; });
 
+        // Reset Player
+        playerPositionState.current.y = gameStyles.viewscreenView.height * 0.5;
+        playerPositionState.current.x = gameStyles.viewscreenView.width * 0.15;
+
         gameState.current = {
             gameStartTimeMs: gameState.current.gameStartTimeMs,
             lives: 3,
@@ -653,7 +657,8 @@ const updateEnemies = ({ gameTime, gameDeltaTime, projectilesState, enemiesState
     });
 
     // Attack player
-    const closestEnemyToPlayer = enemiesState.enemies.sort((a, b) => Math.abs(a.pos.y - playerPosition.y) < Math.abs(b.pos.y - playerPosition.y) ? -1 : 1)[0];
+    const closestEnemyToPlayer = enemiesState.enemies.filter(x => !x.explodeTime && !x.destroyed)
+        .sort((a, b) => Math.abs(a.pos.y - playerPosition.y) < Math.abs(b.pos.y - playerPosition.y) ? -1 : 1)[0];
     if (closestEnemyToPlayer.pos.x < playerPosition.x + gameStyles.sprite.viewSize.width * 0.5) {
         closestEnemyToPlayer.pos.y = playerPosition.y;
     }
