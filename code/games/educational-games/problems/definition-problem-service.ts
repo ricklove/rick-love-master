@@ -7,13 +7,18 @@ export type DefinitionEntry = { prompt: string, response: string };
 export const createDefinitionProblemService = ({ subject, maxAnswers = 4 }: { subject: DefinitionSubject, maxAnswers?: number }): ProblemService => {
     // console.log(`createDefinitionProblemService`, { subject });
 
+    let isReversed = false;
     let iSection = null as null | number;
     let iNext = null as null | number;
+    const reveresedPrefix = `Reversed - `;
     const problemService: ProblemService = {
-        getSections: () => subject.sections.map(x => x.name),
+        getSections: () => [...subject.sections.map(x => x.name), ...subject.sections.map(x => `${reveresedPrefix}${x.name}`)],
         gotoSection: (name: string) => {
-            iSection = subject.sections.findIndex(x => x.name === name);
+            const isRev = name.startsWith(reveresedPrefix);
+            const n = isRev ? name.substr(reveresedPrefix.length) : name;
+            iSection = subject.sections.findIndex(x => x.name === n);
             iNext = 0;
+            isReversed = isRev;
         },
         getNextProblem: (): ProblemResult => {
             if (iSection == null) {
@@ -28,31 +33,34 @@ export const createDefinitionProblemService = ({ subject, maxAnswers = 4 }: { su
             if (iSection >= subject.sections.length) {
                 iSection = 0;
                 iNext = null;
+                isReversed = !isReversed;
             }
             if (iNext == null) {
                 iNext = 0;
             }
 
             const section = subject.sections[iSection];
-            const def = section.entries[iNext];
-            if (!def) {
+            const defRaw = section.entries[iNext];
+            if (!defRaw) {
                 return { done: true, key: `done` };
             }
+
+            const prob = isReversed ? { question: defRaw.response, anwer: defRaw.prompt } : { question: defRaw.prompt, anwer: defRaw.response };
 
             const wrongAnswerCount = maxAnswers - 1;
             const wrongAnswers =
                 distinct(shuffle(
                     section.entries
                         .slice(Math.max(0, iNext - 10), iNext + 10)
-                        .map(x => x.response)
-                        .filter(x => x !== def.response))).slice(0, wrongAnswerCount);
+                        .map(x => isReversed ? x.prompt : x.response)
+                        .filter(x => x !== prob.anwer))).slice(0, wrongAnswerCount);
 
-            const answers: ProblemAnswer[] = shuffle([...wrongAnswers.map(x => ({ value: `${x}`, isCorrect: false })), { value: `${def.response}`, isCorrect: true }]).map(x => ({ ...x, key: x.value }));
+            const answers: ProblemAnswer[] = shuffle([...wrongAnswers.map(x => ({ value: `${x}`, isCorrect: false })), { value: `${prob.anwer}`, isCorrect: true }]).map(x => ({ ...x, key: x.value }));
 
             iNext++;
             return {
-                key: `${def.prompt}`,
-                question: def.prompt,
+                key: `${prob.question}`,
+                question: prob.question,
                 answers,
             };
         },
