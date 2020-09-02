@@ -6,7 +6,6 @@ export const componentGamesList = [
     { name: `multiples-large-board`, load: async () => (await import(`educational-games/multiples-large-board`)).EducationalGame_MultiplesLargeBoard },
     { name: `multiples-star-blast`, load: async () => (await import(`educational-games/star-blast`)).EducationalGame_StarBlast_Multiples },
     { name: `multiples-star-blast-sideways`, load: async () => (await import(`educational-games/star-blast-sideways`)).EducationalGame_StarBlastSideways_Multiples },
-    { name: `spanish-star-blast-sideways`, load: async () => (await import(`educational-games/star-blast-sideways`)).EducationalGame_StarBlastSideways_Spanish },
-
-    //
+    { name: `spanish-star-blast-sideways`, load: async () => (await import(`educational-games/star-blast-sideways-with-subjects/star-blast-spanish`)).EducationalGame_StarBlastSideways_Spanish },
+    { name: `spelling-star-blast-sideways`, load: async () => (await import(`educational-games/star-blast-sideways-with-subjects/star-blast-spelling`)).EducationalGame_StarBlastSideways_Spelling },
 ];
