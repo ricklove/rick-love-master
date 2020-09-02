@@ -59,6 +59,14 @@ export const createSpellingProblemService = ({ speechService, maxAnswers = 4 }: 
                 ];
                 speech.speak(randomItem(phrases));
                 speech.speak(p.answers.find(x => x.isCorrect)?.value ?? ``);
+            } else {
+                if (Math.random() < 0.1) { return; }
+                const phrases = [
+                    `Good job! Thank you for the alien skulls`,
+                    `Great! I like bones`,
+                    `Amazing! Keep getting better`,
+                ];
+                speech.speak(randomItem(phrases));
             }
         },
     };
