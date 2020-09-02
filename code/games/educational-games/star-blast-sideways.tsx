@@ -300,7 +300,9 @@ const GameView = (props: { pressState: GamepadPressState, pauseState: { paused: 
         enemiesState.current = newEnemyState;
         setRenderId(s => s + 1);
 
-        p.onQuestion?.();
+        setTimeout(() => {
+            p.onQuestion?.();
+        }, 250);
     };
 
     useEffect(() => {
@@ -715,7 +717,7 @@ const updateEnemies = ({ gameTime, gameDeltaTime, projectilesState, enemiesState
     };
 
     // Attack Player
-    if (closestEnemyToPlayer.pos.x < playerPosition.x + gameStyles.sprite.viewSize.width * 0.5) {
+    if (closestEnemyToPlayer?.pos.x < playerPosition.x + gameStyles.sprite.viewSize.width * 0.5) {
         closestEnemyToPlayer.pos.y = playerPosition.y;
     } else {
         // Lock on Enemy

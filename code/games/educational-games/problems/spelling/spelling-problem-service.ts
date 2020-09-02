@@ -1,4 +1,5 @@
 import { distinct, shuffle } from 'utils/arrays';
+import { randomIndex, randomItem } from 'utils/random';
 import { createSpeechService } from '../../utils/speech';
 import { ProblemService, ProblemAnswer } from '../problems-service';
 import { getSpellingEntries } from './spelling-entries';
@@ -44,6 +45,22 @@ export const createSpellingProblemService = ({ maxAnswers = 4 }: { maxAnswers?: 
                 answers,
             };
         },
-        recordAnswer: () => { },
+        recordAnswer: (p, a) => {
+            if (!a.isCorrect) {
+                // Demotivation!
+                const phrases = [
+                    `I've got a dog that spells better`,
+                    `That was horrible`,
+                    `What are you trying to do?`,
+                    `That is not a word`,
+                    `No, select the correct answer`,
+                    `Absolutely Incorrect`,
+                    `Completely Wrong`,
+                    `This is supposed to be English`,
+                ];
+                speech.speak(randomItem(phrases));
+                speech.speak(p.answers.find(x => x.isCorrect)?.value ?? ``);
+            }
+        },
     };
 };

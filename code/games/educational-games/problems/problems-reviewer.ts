@@ -98,6 +98,8 @@ export const createReviewProblemService = (problemSource: ProblemService, {
 
             state.problemsToReview.push({ index: i });
             state.problemsToReview = distinct_key(state.problemsToReview, x => `${x.index}`);
+
+            problemSource.recordAnswer(problem, answer);
         },
     };
 
