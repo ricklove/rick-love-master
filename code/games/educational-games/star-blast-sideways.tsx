@@ -19,6 +19,7 @@ export const EducationalGame_StarBlastSideways_Spanish = (props: {}) => {
 
 export const EducationalGame_StarBlastSideways = (props: { problemService: ProblemService }) => {
 
+    const [pauseState, setPauseState] = useState({ paused: false } as { paused: boolean });
     const [pressState, setPressState] = useState({ moveDirection: { x: 0, y: 0 }, buttons: [] } as GamepadPressState);
     const onPressStateChange = (value: GamepadPressState) => {
         // console.log(`onPressStateChange`, { ...x, dir: { ...x.moveDirection }, buttons: x.buttons.map(b => ({ ...b })) });
@@ -30,10 +31,15 @@ export const EducationalGame_StarBlastSideways = (props: { problemService: Probl
     return (
         <>
             <View>
+                <SubjectNavigator problemService={props.problemService}
+                    onOpen={() => setPauseState({ paused: true })}
+                    onClose={() => setPauseState({ paused: false })}
+                    onSubjectNavigation={() => { setPauseState({ paused: false }); setProblemSourceKey(s => s + 1); }}
+                />
                 <View style={{ alignItems: `center`, alignSelf: `stretch` }} >
                     <View style={{ overflow: `hidden`, padding: 10, paddingTop: 48, paddingBottom: 64 }}>
                         <View style={{ position: `relative` }}>
-                            <GameView pressState={pressState} problemService={props.problemService} problemSourceKey={`${problemSourceKey}`} />
+                            <GameView pressState={pressState} pauseState={pauseState} problemService={props.problemService} problemSourceKey={`${problemSourceKey}`} />
                             <Pressable style={{ position: `absolute`, top: 0, bottom: 0, left: 0, right: 0, opacity: 0 }} onPressIn={() => { }} onPressOut={() => { }} />
                             <View style={{ zIndex: 10, flex: 1, alignSelf: `stretch` }}>
                                 <GamepadAnalogStateful style={colors.gamepad} onPressStateChange={onPressStateChange} buttons={[{ key: `A`, text: `🔥` }]} />
@@ -41,7 +47,6 @@ export const EducationalGame_StarBlastSideways = (props: { problemService: Probl
                         </View>
                     </View>
                 </View>
-                <SubjectNavigator problemService={props.problemService} onSubjectNavigation={() => setProblemSourceKey(s => s + 1)} />
             </View>
         </>
     );
@@ -69,15 +74,22 @@ const subjectStyles = {
     },
 };
 
-const SubjectNavigator = (props: { problemService: ProblemService, onSubjectNavigation: () => void }) => {
+const SubjectNavigator = (props: { problemService: ProblemService, onOpen: () => void, onClose: () => void, onSubjectNavigation: () => void }) => {
 
     const [isExpanded, setIsExpanded] = useState(false);
+    const toggle = () => {
+        if (!isExpanded) {
+            props.onOpen();
+        }
+        if (isExpanded) {
+            props.onClose();
+        }
+        setIsExpanded(s => !s);
+    };
 
     return (
         <View style={subjectStyles.container}>
-            <TouchableOpacity onPress={() => {
-                setIsExpanded(s => !s);
-            }}>
+            <TouchableOpacity onPress={toggle}>
                 <View style={subjectStyles.header.view}>
                     <Text style={subjectStyles.header.text}>Sections</Text>
                 </View>
@@ -183,10 +195,13 @@ type GameState = {
 
 
 type AnswerState = { key: string, value: string, isCorrect: boolean, isAnsweredWrong: boolean };
-const GameView = (props: { pressState: GamepadPressState, problemService: ProblemService, problemSourceKey: string }) => {
+const GameView = (props: { pressState: GamepadPressState, pauseState: { paused: boolean }, problemService: ProblemService, problemSourceKey: string }) => {
 
     const pressState = useRef(props.pressState);
     pressState.current = props.pressState;
+
+    const pauseState = useRef(props.pauseState);
+    pauseState.current = props.pauseState;
 
     const gameState = useRef({ lives: 3, gameStartTimeMs: Date.now(), score: 0 } as GameState);
     const getGameTime = () => {
@@ -297,6 +312,11 @@ const GameView = (props: { pressState: GamepadPressState, problemService: Proble
             const { gameTime } = getGameTime();
             const gameDeltaTime = Math.min(0.1, (Date.now() - gameLastTime) / 1000);
             gameLastTime = Date.now();
+
+            if (pauseState.current.paused) {
+                requestAnimationFrame(gameLoop);
+                return;
+            }
 
             // if (!pressState.current.moveDirection.x
             //     && !pressState.current.moveDirection.y) {
@@ -422,6 +442,9 @@ const GameView = (props: { pressState: GamepadPressState, problemService: Proble
             <View style={{ position: `relative`, height: gameStyles.question.text.fontSize * 3, alignSelf: `stretch` }}>
                 <TextPositioned text={problemsState.current?.question ?? ``} position={{ x: gameStyles.viewscreenView.width * 0.25, y: gameStyles.question.text.fontSize * 1 - Math.max(0, gameStyles.viewscreenView.height * 0.5 - 125 * timeSinceProblem), rotation: 0 }} />
             </View>
+            {/* <View>
+                <Text>{`${renderId}`}</Text>
+            </View> */}
             {/* <View style={[gameStyles.question.view, { transform: `translate(0px,${-Math.max(0, gameStyles.viewscreenView.height * 0.5 - 125 * timeSinceProblem)}px)` }]}>
                 <Text style={{...gameStyles.question.text, text.length > 10 ? s.fontSize_small * 0.5 : s.fontSize}} >{problemsState.current?.question}</Text>
             </View> */}

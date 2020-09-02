@@ -101,11 +101,15 @@ export const TouchableOpacity = (props: { style?: ThemeViewStyle | ThemeViewStyl
         props.onPress();
     };
 
+    const hasTouchStarted = useRef(true);
+
     return (
         <div style={mergeStyles([viewStyleDefaults, props.style])}
             onClick={onPress}
-            onTouchStart={onPress}
             onKeyPress={onPress}
+            onTouchStart={() => { hasTouchStarted.current = true; }}
+            onTouchMove={() => { hasTouchStarted.current = false; }}
+            onTouchEnd={() => { if (hasTouchStarted.current) { onPress(); } }}
             role='button'
             tabIndex={0}>
             {props.children}
