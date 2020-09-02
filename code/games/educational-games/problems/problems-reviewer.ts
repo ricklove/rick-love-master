@@ -91,7 +91,10 @@ export const createReviewProblemService = (problemSource: ProblemService, {
         recordAnswer: (problem, answer) => {
             console.log(`createReviewProblemService recordAnswer`, state);
 
-            if (answer.isCorrect) { return; }
+            if (answer.isCorrect) {
+                problemSource.recordAnswer(problem, answer);
+                return;
+            }
 
             const i = state.problemSourceHistory.findIndex(x => x.key === problem.key);
             if (i < 0) { return; }
