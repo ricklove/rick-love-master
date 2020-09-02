@@ -522,6 +522,11 @@ const updateProjectiles = ({ gameTime, gameDeltaTime, pressState, playerPosition
 
     });
 
+    // Clean up too much debris
+    if (debris.length > 25) {
+        debris.shift();
+    }
+
     const newShots = shots
         // Remove shots offscreen
         .filter(x => x.pos.x < gameStyles.viewscreenView.width)
