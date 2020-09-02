@@ -55,13 +55,14 @@ export const GamepadAnalogStateful = (props: {
 const inputStyles = {
     container: { flex: 1, alignSelf: `stretch`, flexDirection: `row`, justifyContent: `space-between`, alignItems: `center`, padding: 4 },
     section: { justifyContent: `center`, alignItems: `center`, padding: 4 },
-    moveSectionWrapper: { transform: `rotate(0.125turn)`, margin: 16 },
+    moveSectionWrapper: { overflow: `hidden` },
+    moveSectionRotation: { transform: `rotate(0.125turn)`, margin: 0 },
     row: { flexDirection: `row` },
     cellTouch: { outline: `none` },
-    cellView: { pointerEvents: `none`, position: `relative`, margin: 1, width: 48, height: 48, justifyContent: `center`, alignItems: `center`, borderWidth: 0, borderStyle: `solid`, outline: `none` },
+    cellView: { pointerEvents: `none`, position: `relative`, margin: 4, width: 56, height: 56, justifyContent: `center`, alignItems: `center`, borderWidth: 0, borderStyle: `solid`, outline: `none` },
     cellText: { userSelect: `none`, pointerEvents: `none` },
     moveCellText: { userSelect: `none`, pointerEvents: `none`, transform: `rotate(-0.125turn)` },
-    cellEmptyView: { margin: 2, width: 48, height: 48 },
+    cellEmptyView: { margin: 2, width: 56, height: 56 },
     cellTextOcclusionView: { position: `absolute`, top: 0, bottom: 0, left: 0, right: 0, backgroundColor: `red`, opacity: 0 },
 } as const;
 
@@ -136,14 +137,16 @@ export const GamepadAnalog = (props: {
     return (
         <View style={inputStyles.container}>
             <View style={inputStyles.moveSectionWrapper}>
-                <View style={inputStyles.section}>
-                    <View style={inputStyles.row} >
-                        <DirectionButton direction={{ x: 0, y: +1 }} text='⬆' />
-                        <DirectionButton direction={{ x: +1, y: 0 }} text='➡' />
-                    </View>
-                    <View style={inputStyles.row} >
-                        <DirectionButton direction={{ x: -1, y: 0 }} text='⬅' />
-                        <DirectionButton direction={{ x: 0, y: -1 }} text='⬇' />
+                <View style={inputStyles.moveSectionRotation}>
+                    <View style={inputStyles.section}>
+                        <View style={inputStyles.row} >
+                            <DirectionButton direction={{ x: 0, y: +1 }} text='⬆' />
+                            <DirectionButton direction={{ x: +1, y: 0 }} text='➡' />
+                        </View>
+                        <View style={inputStyles.row} >
+                            <DirectionButton direction={{ x: -1, y: 0 }} text='⬅' />
+                            <DirectionButton direction={{ x: 0, y: -1 }} text='⬇' />
+                        </View>
                     </View>
                 </View>
             </View>
