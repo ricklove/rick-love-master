@@ -394,6 +394,9 @@ const GameView = (props: { pressState: GamepadPressState, problemService: Proble
                 {enemiesState.current?.enemies.filter(x => !x.destroyed).map(x => (
                     <React.Fragment key={x.key}>
                         <Sprite kind={x.explodeTime ? `enemy-explode` : `enemy`} position={x.pos} />
+                        {x.hasWeaponsLock && (
+                            <Sprite kind='lock' position={x.pos} />
+                        )}
                     </React.Fragment>
                 ))}
                 {!gameState.current.gameOverTime && !gameState.current.deadTime && (
@@ -461,10 +464,10 @@ const updatePlayer = ({ gameTime, gameDeltaTime, pressState, playerPosition, gam
 
 type ProjectilesState = {
     lastShotTime: number;
-    shots: { key: string, pos: GamePosition, explodeTime?: number, ignore?: boolean }[];
+    shots: { key: string, pos: GamePosition, explodeTime?: number, ignore?: boolean, lockedEnemy?: { pos: GamePosition } }[];
     debris: { key: string, vel: Vector2, pos: GamePosition, kind: SpriteKind, hasHitGround?: boolean }[];
 };
-const updateProjectiles = ({ gameTime, gameDeltaTime, pressState, playerPosition: playerPos, projectilesState, gameState, onLoseLife }: CommonGameState): ProjectilesState => {
+const updateProjectiles = ({ gameTime, gameDeltaTime, pressState, playerPosition: playerPos, enemiesState, projectilesState, gameState, onLoseLife }: CommonGameState): ProjectilesState => {
     const { shots, debris, lastShotTime } = projectilesState;
 
     const canShoot = !gameState.deadTime && !gameState.gameOverTime && gameTime > 0.25 + lastShotTime;
@@ -473,7 +476,8 @@ const updateProjectiles = ({ gameTime, gameDeltaTime, pressState, playerPosition
 
     const didShoot = canShoot && pressState.buttons.find(x => x.key === `A`)?.isDown;
     if (didShoot) {
-        shots.push({ key: `${lastShotTime}`, pos: { ...playerPos } });
+        const lockedEnemy = enemiesState.enemies.find(x => x.hasWeaponsLock);
+        shots.push({ key: `${lastShotTime}`, pos: { ...playerPos }, lockedEnemy });
     }
 
     // Move shots
@@ -481,6 +485,9 @@ const updateProjectiles = ({ gameTime, gameDeltaTime, pressState, playerPosition
         if (x.explodeTime) { return; }
 
         x.pos.x += +250 * gameDeltaTime;
+        if (x.lockedEnemy) {
+            x.pos.y += (x.lockedEnemy.pos.y - x.pos.y) * 0.25;
+        }
     });
 
     // Move debris
@@ -533,6 +540,7 @@ type EnemiesState = {
         answer: AnswerState;
         onHit: () => void;
         destroyed?: boolean;
+        hasWeaponsLock?: boolean;
     }[];
 };
 const updateEnemies = ({ gameTime, gameDeltaTime, projectilesState, enemiesState, gameState, playerPosition, onLoseLife }: CommonGameState): EnemiesState => {
@@ -656,12 +664,20 @@ const updateEnemies = ({ gameTime, gameDeltaTime, projectilesState, enemiesState
         // }
     });
 
-    // Attack player
+    // Closest Enemy
     const closestEnemyToPlayer = enemiesState.enemies.filter(x => !x.explodeTime && !x.destroyed)
         .sort((a, b) => Math.abs(a.pos.y - playerPosition.y) < Math.abs(b.pos.y - playerPosition.y) ? -1 : 1)[0];
+
+    enemiesState.enemies.forEach(x => { x.hasWeaponsLock = false; });
+
+    // Attack Player
     if (closestEnemyToPlayer.pos.x < playerPosition.x + gameStyles.sprite.viewSize.width * 0.5) {
         closestEnemyToPlayer.pos.y = playerPosition.y;
+    } else {
+        // Lock on Enemy
+        closestEnemyToPlayer.hasWeaponsLock = true;
     }
+
 
     // Cleanup
     const newEnemies = enemies;
@@ -678,16 +694,17 @@ const updateEnemies = ({ gameTime, gameDeltaTime, projectilesState, enemiesState
     };
 };
 
-type SpriteKind = 'text' | 'player' | 'player-character' | 'player-character-splat' | 'shot' | 'shot-explode' | 'enemy' | 'enemy-explode' | 'answer-wrong' | 'alien' | 'kitten' | 'alien-splat' | 'kitten-splat' | 'super-kitten' | 'life';
+type SpriteKind = 'text' | 'player' | 'player-character' | 'player-character-splat' | 'shot' | 'shot-explode' | 'lock' | 'enemy' | 'enemy-explode' | 'answer-wrong' | 'alien' | 'kitten' | 'alien-splat' | 'kitten-splat' | 'super-kitten' | 'life';
 const getSpriteEmoji = (kind: SpriteKind) => {
     // ❤💙💚😀🤣😃😁😂😄😉😆😅😊😋😎🥰😙☺🤩🙄😑😐😣🤐😫🤢😬😭🤯🤒😡🤓🤠👽💀👻☠🤖👾😺🙀🙈🙉🙊🐵🐱‍🐉🐶🦁🐯🐺🐱🦒🦊🦝🐗🐷🐮🐭🐹🐰🐼🐨🐻🐸🦓🐴🚀🛸⛵🛰🚁💺🚤🛥⛴⚓🪐🌌🌍🌏🌎
-    // ✈🛩🚂🚘🚔🚍🚖🔥💧❄⚡🌀🌈☄🌠⭐❌💥♨🎇🎆✨🎡🍖🥓🍗🥩💚👁‍🗨🥫🍥🍤🧆🥝🥑🧪🧫💉🩸⚰💜🦵🐱‍🚀🐱‍🐉🐱‍🏍😾🐱‍👤😾😿😽😹😸😻🐲🐉
+    // ✈🛩🚂🚘🚔🚍🚖🔥💧❄⚡🌀🌈☄🌠⭐❌💥♨🎇🎆✨🎡🍖🥓🍗🥩💚👁‍🗨🥫🍥🍤🧆🥝🥑🧪🧫💉🩸⚰💜🦵🐱‍🚀🐱‍🐉🐱‍🏍😾🐱‍👤😾😿😽😹😸😻🐲🐉💢⭕
     switch (kind) {
         case `player`: return { text: `🚀`, rotation: +0.125, offsetX: 0, offsetY: -0.25 };
         case `player-character`: return { text: `😭` };
         case `player-character-splat`: return { text: `😫`, rotation: 0.15 };
         case `shot`: return { text: `🔥`, rotation: -0.25 };
         case `shot-explode`: return { text: `✨`, rotation: 0, scale: 0.5 };
+        case `lock`: return { text: `💢`, offsetX: -0.25, offsetY: -0.125, scale: 1.5 };
         case `enemy`: return { text: `🛸`, offsetX: -0.125, offsetY: -0.125 };
         case `enemy-explode`: return { text: `💥`, offsetX: -0.125, offsetY: -0.125 };
         case `answer-wrong`: return { text: `❌`, offsetX: -0.125, offsetY: -0.125 };
