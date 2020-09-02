@@ -4,16 +4,22 @@ export const createSpeechService = (): { speak: (text: string) => void } => {
     if (Platform.OS !== `web`) { return { speak: () => { } }; }
 
     const synth = window.speechSynthesis;
-    const voices = synth.getVoices();
-    const voice = voices[0];
+    // const voices = synth.getVoices();
+    // const voice = voices[0];
 
     const speak = (text: string) => {
-        const utterThis = new SpeechSynthesisUtterance(text);
-        utterThis.voice = voice;
-        synth.speak(utterThis);
+        try {
+            const u = new SpeechSynthesisUtterance(text);
+            // u.voice = voice;
+            synth.speak(u);
+        } catch {
+            // Ignore
+        }
     };
 
     return {
         speak,
     };
 };
+
+export type SpeechService = ReturnType<typeof createSpeechService>;

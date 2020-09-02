@@ -1,15 +1,14 @@
 import { distinct, shuffle } from 'utils/arrays';
-import { randomIndex, randomItem } from 'utils/random';
-import { createSpeechService } from '../../utils/speech';
+import { randomItem } from 'utils/random';
+import { SpeechService } from '../../utils/speech';
 import { ProblemService, ProblemAnswer } from '../problems-service';
 import { getSpellingEntries } from './spelling-entries';
 
-export const createSpellingProblemService = ({ maxAnswers = 4 }: { maxAnswers?: number }): ProblemService => {
+export const createSpellingProblemService = ({ speechService, maxAnswers = 4 }: { speechService: SpeechService, maxAnswers?: number }): ProblemService => {
+    const speech = speechService;
     const spellingEntries = getSpellingEntries();
     const sectionSize = 25;
     const sectionCount = Math.ceil(spellingEntries.length / sectionSize);
-
-    const speech = createSpeechService();
 
     let nextIndex = 0;
 
