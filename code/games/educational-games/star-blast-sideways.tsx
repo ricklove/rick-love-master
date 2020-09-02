@@ -174,6 +174,11 @@ type GameState = {
     deadTime?: number;
     gameOverTime?: number;
     score: number;
+
+    weaponsLock?: {
+        lockedAtPlayerPosition: GamePosition;
+        lockedEnemy: { pos: GamePosition };
+    };
 };
 
 
@@ -394,7 +399,7 @@ const GameView = (props: { pressState: GamepadPressState, problemService: Proble
                 {enemiesState.current?.enemies.filter(x => !x.destroyed).map(x => (
                     <React.Fragment key={x.key}>
                         <Sprite kind={x.explodeTime ? `enemy-explode` : `enemy`} position={x.pos} />
-                        {x.hasWeaponsLock && (
+                        {x === gameState.current.weaponsLock?.lockedEnemy && (
                             <Sprite kind='lock' position={x.pos} />
                         )}
                     </React.Fragment>
@@ -476,7 +481,7 @@ const updateProjectiles = ({ gameTime, gameDeltaTime, pressState, playerPosition
 
     const didShoot = canShoot && pressState.buttons.find(x => x.key === `A`)?.isDown;
     if (didShoot) {
-        const lockedEnemy = enemiesState.enemies.find(x => x.hasWeaponsLock);
+        const lockedEnemy = gameState.weaponsLock?.lockedEnemy;
         shots.push({ key: `${lastShotTime}`, pos: { ...playerPos }, lockedEnemy });
     }
 
@@ -540,7 +545,6 @@ type EnemiesState = {
         answer: AnswerState;
         onHit: () => void;
         destroyed?: boolean;
-        hasWeaponsLock?: boolean;
     }[];
 };
 const updateEnemies = ({ gameTime, gameDeltaTime, projectilesState, enemiesState, gameState, playerPosition, onLoseLife }: CommonGameState): EnemiesState => {
@@ -668,14 +672,24 @@ const updateEnemies = ({ gameTime, gameDeltaTime, projectilesState, enemiesState
     const closestEnemyToPlayer = enemiesState.enemies.filter(x => !x.explodeTime && !x.destroyed)
         .sort((a, b) => Math.abs(a.pos.y - playerPosition.y) < Math.abs(b.pos.y - playerPosition.y) ? -1 : 1)[0];
 
-    enemiesState.enemies.forEach(x => { x.hasWeaponsLock = false; });
+    const updateWeaponsLock = (enemy: typeof enemiesState.enemies[0]) => {
+        // Only update on player movement
+        if (gameState.weaponsLock?.lockedAtPlayerPosition.y === playerPosition.y) {
+            return;
+        }
+
+        gameState.weaponsLock = {
+            lockedAtPlayerPosition: playerPosition,
+            lockedEnemy: enemy,
+        };
+    };
 
     // Attack Player
     if (closestEnemyToPlayer.pos.x < playerPosition.x + gameStyles.sprite.viewSize.width * 0.5) {
         closestEnemyToPlayer.pos.y = playerPosition.y;
     } else {
         // Lock on Enemy
-        closestEnemyToPlayer.hasWeaponsLock = true;
+        updateWeaponsLock(closestEnemyToPlayer);
     }
 
 
