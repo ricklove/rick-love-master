@@ -1,4 +1,5 @@
 import { distinct, shuffle } from 'utils/arrays';
+import { createSpeechService } from '../../utils/speech';
 import { ProblemService, ProblemAnswer } from '../problems-service';
 import { getSpellingEntries } from './spelling-entries';
 
@@ -6,6 +7,8 @@ export const createSpellingProblemService = ({ maxAnswers = 4 }: { maxAnswers?: 
     const spellingEntries = getSpellingEntries();
     const sectionSize = 25;
     const sectionCount = Math.ceil(spellingEntries.length / sectionSize);
+
+    const speech = createSpeechService();
 
     let nextIndex = 0;
 
@@ -33,9 +36,11 @@ export const createSpellingProblemService = ({ maxAnswers = 4 }: { maxAnswers?: 
 
             const answers: ProblemAnswer[] = shuffle([...wrongValues.map(x => ({ value: `${x}`, isCorrect: false })), { value: `${correctValue}`, isCorrect: true }]).map(x => ({ ...x, key: x.value }));
 
+
             return {
                 key: `${i + 1}`,
                 question: `Word ${i + 1}`,
+                onQuestion: () => { speech.speak(correctValue); },
                 answers,
             };
         },

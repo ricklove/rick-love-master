@@ -2,6 +2,7 @@ export type ProblemAnswer = { key: string, value: string, isCorrect: boolean };
 export type Problem = {
     key: string;
     question: string;
+    onQuestion?: () => void;
     answers: ProblemAnswer[];
 };
 export type ProblemResult = Problem | {

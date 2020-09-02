@@ -299,6 +299,8 @@ const GameView = (props: { pressState: GamepadPressState, pauseState: { paused: 
         problemsState.current = newProblemState;
         enemiesState.current = newEnemyState;
         setRenderId(s => s + 1);
+
+        p.onQuestion?.();
     };
 
     useEffect(() => {
