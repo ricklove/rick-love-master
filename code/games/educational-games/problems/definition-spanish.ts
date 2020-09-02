@@ -252,7 +252,7 @@ Diciembre	December
 Actions	
 ¿Qué pasa?	What's happening?	
 Necesito...	I need...	
-Tengo que...	I want...	
+Tengo que...	I have to...	
 Prefiero...	I prefer...	
 Puedo...	I am able (can)...	
 Presentar	To present	
@@ -316,7 +316,7 @@ Usted Quiere	You want
 Usted Prefiere	You prefer	
 Usted Lleva	You wear	
 El sombrero	The hat	
-The camisa	The shirt	
+La camisa	The shirt	
 La corbata	The tie	
 Los pantalones	The pants	
 El cinturón	The belt	
