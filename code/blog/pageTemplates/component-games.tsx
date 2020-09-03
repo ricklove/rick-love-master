@@ -2,7 +2,7 @@
 /* eslint-disable jsx-a11y/anchor-is-valid */
 /* eslint-disable jsx-a11y/click-events-have-key-events */
 /* eslint-disable jsx-a11y/no-static-element-interactions */
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useLoadable } from 'utils-react/loadable';
 import { Layout } from './layout/layout';
 import { SEO } from './layout/seo';
@@ -35,26 +35,36 @@ export const ComponentGamesPage = (props: { data: ComponentGamesPageData }) => {
 
 const ComponentGamesListPage = (props: {}) => {
 
-    const openLinkInSameWebApp = (e: React.MouseEvent, url: string) => {
-        e.preventDefault();
-        window.location.href = url;
-        return false;
+    const [game, setGame] = useState(null as null | string);
+    const openLinkInSameView = (e: React.MouseEvent, gameName: string) => {
+        setGame(gameName);
     };
     return (
-        <Layout>
+        <Layout gameMode>
             <SEO title='Games' meta={[
                 { name: `viewport`, content: `width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no` },
                 { name: `apple-mobile-web-app-capable`, content: `yes` },
                 { name: `mobile-web-app-capable`, content: `yes` },
             ]} />
-            <div style={{ margin: 16 }}>
-                <div>Games</div>
-                {componentGamesList.map(x => (
-                    <div key={x.name} style={{ padding: 4 }} onClick={(e) => openLinkInSameWebApp(e, `/games/${x.name}`)}>
-                        <span>🎮 {x.name}</span>
+
+            {!game && (
+                <div style={{ margin: 16 }}>
+                    <div>Games</div>
+                    {componentGamesList.map(x => (
+                        <div key={x.name} style={{ padding: 4 }} onClick={(e) => openLinkInSameView(e, x.name)}>
+                            <span>🎮 {x.name}</span>
+                        </div>
+                    ))}
+                </div>
+            )}
+            {!!game && (
+                <>
+                    <div style={{ display: `inline-block` }} onClick={() => setGame(null)}>
+                        <span>🎮 Games</span>
                     </div>
-                ))}
-            </div>
+                    <HostComponentAuto data={{ gameName: game }} />
+                </>
+            )}
         </Layout>
     );
 };
