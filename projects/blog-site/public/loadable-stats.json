@@ -4,7 +4,7 @@
     "./.cache/static-entry.js\nModule not found: Error: Can't resolve '../src/html' in 'D:\\Projects\\rick-love-master\\projects\\blog-site\\.cache'\n @ ./.cache/static-entry.js"
   ],
   "version": "4.43.0",
-  "hash": "70d82ccef611f29e8d37",
+  "hash": "8af7092f4af0cef8ec31",
   "publicPath": "/",
   "outputPath": "D:\\\\Projects\\\\rick-love-master\\\\projects\\\\blog-site\\\\public",
   "assetsByChunkName": {
@@ -16,7 +16,7 @@
   "assets": [
     {
       "name": "render-page.js",
-      "size": 6101940,
+      "size": 6101946,
       "chunks": [
         "main"
       ],
@@ -28,7 +28,7 @@
     },
     {
       "name": "render-page.js.map",
-      "size": 4985518,
+      "size": 4985534,
       "chunks": [
         "main"
       ],
