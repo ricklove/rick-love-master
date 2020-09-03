@@ -724,7 +724,6 @@ const updateEnemies = ({ gameTime, gameDeltaTime, projectilesState, enemiesState
         updateWeaponsLock(closestEnemyToPlayer);
     }
 
-
     // Cleanup
     const newEnemies = enemies;
     newEnemies.filter(x => x.explodeTime && gameTime > 1 + x.explodeTime).forEach(x => {
@@ -742,7 +741,8 @@ const updateEnemies = ({ gameTime, gameDeltaTime, projectilesState, enemiesState
 
 type SpriteKind = 'text' | 'player' | 'player-character' | 'player-character-splat' | 'shot' | 'shot-explode' | 'lock' | 'enemy' | 'enemy-explode' | 'answer-wrong' | 'alien' | 'kitten' | 'alien-splat' | 'kitten-splat' | 'super-kitten' | 'life';
 const getSpriteEmoji = (kind: SpriteKind) => {
-    // ❤💙💚😀🤣😃😁😂😄😉😆😅😊😋😎🥰😙☺🤩🙄😑😐😣🤐😫🤢😬😭🤯🤒😡🤓🤠👽💀👻☠🤖👾😺🙀🙈🙉🙊🐵🐱‍🐉🐶🦁🐯🐺🐱🦒🦊🦝🐗🐷🐮🐭🐹🐰🐼🐨🐻🐸🦓🐴🚀🛸⛵🛰🚁💺🚤🛥⛴⚓🪐🌌🌍🌏🌎
+    // ❤💙💚😀🤣😃😁😂😄😉😆😅😊😋😎🥰😙☺🤩🙄😑😐😣🤐😫🤢😬😭🤯🤒😡🤓🤠
+    // 👽💀👻☠🤖👾😺🙀🙈🙉🙊🐵🐱‍🐉🐶🦁🐯🐺🐱🦒🦊🦝🐗🐷🐮🐭🐹🐰🐼🐨🐻🐸🦓🐴🚀🛸⛵🛰🚁💺🚤🛥⛴⚓🪐🌌🌍🌏🌎
     // ✈🛩🚂🚘🚔🚍🚖🔥💧❄⚡🌀🌈☄🌠⭐❌💥♨🎇🎆✨🎡🍖🥓🍗🥩💚👁‍🗨🥫🍥🍤🧆🥝🥑🧪🧫💉🩸⚰💜🦵🐱‍🚀🐱‍🐉🐱‍🏍😾🐱‍👤😾😿😽😹😸😻🐲🐉💢⭕
     switch (kind) {
         case `player`: return { text: `🚀`, rotation: +0.125, offsetX: 0, offsetY: -0.25 };
