@@ -742,7 +742,8 @@ const updateEnemies = ({ gameTime, gameDeltaTime, projectilesState, enemiesState
 type SpriteKind = 'text' | 'player' | 'player-character' | 'player-character-splat' | 'shot' | 'shot-explode' | 'lock' | 'enemy' | 'enemy-explode' | 'answer-wrong' | 'alien' | 'kitten' | 'alien-splat' | 'kitten-splat' | 'super-kitten' | 'life';
 const getSpriteEmoji = (kind: SpriteKind) => {
     // ❤💙💚😀🤣😃😁😂😄😉😆😅😊😋😎🥰😙☺🤩🙄😑😐😣🤐😫🤢😬😭🤯🤒😡🤓🤠
-    // 👽💀👻☠🤖👾😺🙀🙈🙉🙊🐵🐱‍🐉🐶🦁🐯🐺🐱🦒🦊🦝🐗🐷🐮🐭🐹🐰🐼🐨🐻🐸🦓🐴🚀🛸⛵🛰🚁💺🚤🛥⛴⚓🪐🌌🌍🌏🌎
+    // 👽💀👻☠🤖👾😺🙀🙈🙉🙊🐵🐱‍🐉🐶🦁🐯🐺🐱🦒🦊🦝🐗🐷🐮🐭🐹🐰🐼🐨🐻🐸🦓🐴
+    // 🚀🛸⛵🛰🚁💺🚤🛥⛴⚓🪐🌌🌍🌏🌎
     // ✈🛩🚂🚘🚔🚍🚖🔥💧❄⚡🌀🌈☄🌠⭐❌💥♨🎇🎆✨🎡🍖🥓🍗🥩💚👁‍🗨🥫🍥🍤🧆🥝🥑🧪🧫💉🩸⚰💜🦵
     // 🐱‍🚀🐱‍🐉🐱‍🏍😾🐱‍👤😾😿😽😹😸😻🐲🐉💢⭕
     switch (kind) {
