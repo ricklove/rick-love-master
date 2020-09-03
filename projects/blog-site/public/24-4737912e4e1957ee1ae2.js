@@ -1,0 +1,2 @@
+(window.__LOADABLE_LOADED_CHUNKS__=window.__LOADABLE_LOADED_CHUNKS__||[]).push([[24],{dnRP:function(a,t,e){"use strict";e.r(t),e.d(t,"EducationalGame_StarBlastSideways_Spanish",(function(){return c}));var n=e("ERkP"),_=e.n(n),i=e("pzhj"),r=e("9u8u"),u=e("4iSX"),c=function(a){return _.a.createElement(i.EducationalGame_StarBlastSideways,{problemService:Object(r.a)(Object(u.a)(),{})})}}}]);
+//# sourceMappingURL=24-4737912e4e1957ee1ae2.js.map
