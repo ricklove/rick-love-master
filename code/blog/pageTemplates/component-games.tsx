@@ -20,6 +20,7 @@ export const ComponentGamesPage = (props: { data: ComponentGamesPageData }) => {
     return (
         <Layout gameMode>
             <SEO title={`Games: ${props.data.gameName}`} meta={[
+                { name: `viewport`, content: `width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no` },
                 { name: `apple-mobile-web-app-capable`, content: `yes` },
                 { name: `mobile-web-app-capable`, content: `yes` },
             ]} />
