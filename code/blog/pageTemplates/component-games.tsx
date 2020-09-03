@@ -1,3 +1,4 @@
+/* eslint-disable jsx-a11y/accessible-emoji */
 /* eslint-disable jsx-a11y/anchor-is-valid */
 /* eslint-disable jsx-a11y/click-events-have-key-events */
 /* eslint-disable jsx-a11y/no-static-element-interactions */
@@ -46,11 +47,11 @@ const ComponentGamesListPage = (props: {}) => {
                 { name: `apple-mobile-web-app-capable`, content: `yes` },
                 { name: `mobile-web-app-capable`, content: `yes` },
             ]} />
-            <div>
+            <div style={{ margin: 16 }}>
                 <div>Games</div>
                 {componentGamesList.map(x => (
-                    <div key={x.name} style={{ padding: 4 }}>
-                        <a onClick={(e) => openLinkInSameWebApp(e, `/games/${x.name}`)}>{x.name}</a>
+                    <div key={x.name} style={{ padding: 4 }} onClick={(e) => openLinkInSameWebApp(e, `/games/${x.name}`)}>
+                        <span>🎮 {x.name}</span>
                     </div>
                 ))}
             </div>
