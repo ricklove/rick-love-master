@@ -34,7 +34,8 @@ export const ComponentGamesPage = (props: { data: ComponentGamesPageData }) => {
 
 const ComponentGamesListPage = (props: {}) => {
 
-    const openLinkInSameWebApp = (url: string) => {
+    const openLinkInSameWebApp = (e: React.MouseEvent, url: string) => {
+        e.preventDefault();
         window.location.href = url;
         return false;
     };
@@ -49,7 +50,7 @@ const ComponentGamesListPage = (props: {}) => {
                 <div>Games</div>
                 {componentGamesList.map(x => (
                     <div key={x.name} style={{ padding: 4 }}>
-                        <a onClick={() => openLinkInSameWebApp(`/games/${x.name}`)}>{x.name}</a>
+                        <a onClick={(e) => openLinkInSameWebApp(e, `/games/${x.name}`)}>{x.name}</a>
                     </div>
                 ))}
             </div>
