@@ -19,7 +19,10 @@ export const ComponentGamesPage = (props: { data: ComponentGamesPageData }) => {
 
     return (
         <Layout gameMode>
-            <SEO title={`Games: ${props.data.gameName}`} />
+            <SEO title={`Games: ${props.data.gameName}`} meta={[
+                { name: `apple-mobile-web-app-capable`, content: `yes` },
+                { name: `mobile-web-app-capable`, content: `yes` },
+            ]} />
             <HostComponentAuto data={props.data} />
         </Layout>
     );
