@@ -1,3 +1,6 @@
+/* eslint-disable jsx-a11y/anchor-is-valid */
+/* eslint-disable jsx-a11y/click-events-have-key-events */
+/* eslint-disable jsx-a11y/no-static-element-interactions */
 import React, { useEffect } from 'react';
 import { useLoadable } from 'utils-react/loadable';
 import { Layout } from './layout/layout';
@@ -30,6 +33,11 @@ export const ComponentGamesPage = (props: { data: ComponentGamesPageData }) => {
 };
 
 const ComponentGamesListPage = (props: {}) => {
+
+    const openLinkInSameWebApp = (url: string) => {
+        window.location.href = url;
+        return false;
+    };
     return (
         <Layout>
             <SEO title='Games' meta={[
@@ -41,7 +49,7 @@ const ComponentGamesListPage = (props: {}) => {
                 <div>Games</div>
                 {componentGamesList.map(x => (
                     <div key={x.name} style={{ padding: 4 }}>
-                        <a href={`/games/${x.name}`}>{x.name}</a>
+                        <a onClick={() => openLinkInSameWebApp(`/games/${x.name}`)}>{x.name}</a>
                     </div>
                 ))}
             </div>
