@@ -6,6 +6,7 @@ import { createSpeechService } from '../utils/speech';
 import { EducationalGame_StarBlastSideways } from '../star-blast-sideways';
 import { createReviewProblemService } from '../problems/problems-reviewer';
 import { createSpellingProblemService } from '../problems/spelling/spelling-problem-service';
+import { VoiceChooser } from './voice-chooser';
 
 export const EducationalGame_StarBlastSideways_Spelling = (props: {}) => {
     const speechService = useRef(createSpeechService());
@@ -15,11 +16,14 @@ export const EducationalGame_StarBlastSideways_Spelling = (props: {}) => {
     if (!hasStarted) {
         const speak = () => { speechService.current.speak(`Start`); setHasStarted(true); };
         return (
-            <div onClick={() => speak()}>
-                <View style={{ height: 300, alignSelf: `center`, alignItems: `center`, justifyContent: `center` }}>
-                    <Text style={{ fontSize: 36 }}>Start</Text>
-                </View>
-            </div>
+            <View>
+                <VoiceChooser languange='en' speechService={speechService.current} />
+                <div onClick={() => speak()}>
+                    <View style={{ height: 300, alignSelf: `center`, alignItems: `center`, justifyContent: `center` }}>
+                        <Text style={{ fontSize: 36 }}>Start</Text>
+                    </View>
+                </div>
+            </View>
         );
     }
 
