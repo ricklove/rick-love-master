@@ -6,7 +6,7 @@ export const createSpanishProblemService = ({ speechService }: { speechService: 
     return createDefinitionProblemService({
         subject,
         onQuestion: (q) => { speechService.speak(q, `es`); },
-        onQuestionReverse: (q) => { speechService.speak(q); },
+        onQuestionReverse: (q) => { speechService.speak(q, `en`); },
     });
 };
 
