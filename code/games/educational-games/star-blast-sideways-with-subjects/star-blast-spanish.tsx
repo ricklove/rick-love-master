@@ -33,11 +33,17 @@ export const EducationalGame_StarBlastSideways_Spanish = (props: {}) => {
 const VoiceChooser = ({ languange, speechService }: { languange: string, speechService: SpeechService }) => {
     const [loading, setLoading] = useState(true);
     const [renderId, setRenderId] = useState(0);
-    useEffect(() => {
+
+    const refresh = () => {
+        setLoading(true);
         setTimeout(() => {
             setLoading(false);
         }, 1000);
-    });
+    };
+
+    useEffect(() => {
+        refresh();
+    }, []);
 
     const selectVoice = (voice: SpeechSynthesisVoice) => {
         speechService.setVoiceForLanguange(languange, voice);
@@ -47,7 +53,9 @@ const VoiceChooser = ({ languange, speechService }: { languange: string, speechS
 
     return (
         <View>
-            <Text style={{ fontSize: 24 }}>{`Voice for ${languange}`}</Text>
+            <TouchableOpacity onPress={refresh}>
+                <Text style={{ fontSize: 24 }}>{`Voice for ${languange}`}</Text>
+            </TouchableOpacity>
             {loading && <ActivityIndicator size='small' color='red' />}
             {!loading && (
                 <>

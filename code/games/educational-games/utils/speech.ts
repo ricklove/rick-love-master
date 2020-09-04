@@ -14,11 +14,11 @@ export const createSpeechService = (): {
     }
 
     const synth = window.speechSynthesis;
-    const voices = synth.getVoices();
+
     const selectedVoices = {} as { [languange: string]: SpeechSynthesisVoice };
 
     const speak = (text: string, languange?: string) => {
-        const voiceLang = selectedVoices[languange ?? ``] ?? voices[0];
+        const voiceLang = selectedVoices[languange ?? ``] ?? null;
 
         try {
             const u = new SpeechSynthesisUtterance(text);
@@ -32,6 +32,8 @@ export const createSpeechService = (): {
     return {
         speak,
         getVoicesForLanguange: (languange) => {
+            const voices = synth.getVoices();
+            console.log(`voices`, { voices });
             const v = voices.filter(x => x.lang.startsWith(languange)).map(x => ({
                 voice: x,
                 isSelected: selectedVoices[languange] === x,
