@@ -4,7 +4,10 @@ import { ProblemService, ProblemResult, ProblemAnswer } from './problems-service
 export type DefinitionSubject = { subjectName: string, sections: DefinitionSection[] };
 export type DefinitionSection = { name: string, entries: DefinitionEntry[] };
 export type DefinitionEntry = { prompt: string, response: string };
-export const createDefinitionProblemService = ({ subject, maxAnswers = 4 }: { subject: DefinitionSubject, maxAnswers?: number }): ProblemService => {
+export const createDefinitionProblemService = ({ subject, maxAnswers = 4, onQuestion, onQuestionReverse }: {
+    subject: DefinitionSubject; maxAnswers?: number;
+    onQuestion?: (question: string) => void; onQuestionReverse?: (question: string) => void;
+}): ProblemService => {
     // console.log(`createDefinitionProblemService`, { subject });
 
     let isReversed = false;
@@ -61,6 +64,7 @@ export const createDefinitionProblemService = ({ subject, maxAnswers = 4 }: { su
             return {
                 key: `${prob.question}`,
                 question: prob.question,
+                onQuestion: isReversed ? (() => onQuestionReverse?.(prob.question)) : (() => onQuestion?.(prob.question)),
                 answers,
             };
         },
