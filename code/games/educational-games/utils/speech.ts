@@ -1,14 +1,24 @@
 import { Platform } from 'react-native-lite';
 
-export const createSpeechService = (): { speak: (text: string, languange?: 'en' | 'es') => void } => {
-    if (Platform.OS !== `web`) { return { speak: () => { } }; }
+export const createSpeechService = (): {
+    speak: (text: string, languange?: string) => void;
+    getVoicesForLanguange: (languange: string) => { voice: SpeechSynthesisVoice, isSelected: boolean }[];
+    setVoiceForLanguange: (languange: string, voice: SpeechSynthesisVoice) => void;
+} => {
+    if (Platform.OS !== `web`) {
+        return {
+            speak: () => { },
+            getVoicesForLanguange: () => [],
+            setVoiceForLanguange: () => { },
+        };
+    }
 
     const synth = window.speechSynthesis;
     const voices = synth.getVoices();
-    console.log(`voices`, { voices });
+    const selectedVoices = {} as { [languange: string]: SpeechSynthesisVoice };
 
-    const speak = (text: string, languange?: 'en' | 'es') => {
-        const voiceLang = voices.filter(x => !languange || x.lang.startsWith(languange))[0];
+    const speak = (text: string, languange?: string) => {
+        const voiceLang = selectedVoices[languange ?? ``] ?? voices[0];
 
         try {
             const u = new SpeechSynthesisUtterance(text);
@@ -21,6 +31,16 @@ export const createSpeechService = (): { speak: (text: string, languange?: 'en' 
 
     return {
         speak,
+        getVoicesForLanguange: (languange) => {
+            const v = voices.filter(x => x.lang.startsWith(languange)).map(x => ({
+                voice: x,
+                isSelected: selectedVoices[languange] === x,
+            }));
+            return v;
+        },
+        setVoiceForLanguange: (language, voice) => {
+            selectedVoices[language] = voice;
+        },
     };
 };
 

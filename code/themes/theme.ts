@@ -74,7 +74,7 @@ export type ThemeTextStyle = {
     fontSize?: number;
     fontWeight?: 'normal' | 'bold' | 'lighter';
     lineHeight?: string;
-    //  whiteSpace?: 'normal' | 'nowrap' | 'pre';
+    whiteSpace?: 'normal' | 'nowrap' | 'pre' | 'pre-wrap';
     minWidth?: number;
 
     outlineColor?: string;
