@@ -18,7 +18,7 @@ export const createSpeechService = (): {
     const selectedVoices = {} as { [languange: string]: SpeechSynthesisVoice };
 
     const speak = (text: string, languange?: string) => {
-        const voiceLang = selectedVoices[languange ?? ``] ?? null;
+        const voiceLang = selectedVoices[languange ?? `en`] ?? null;
 
         try {
             const u = new SpeechSynthesisUtterance(text);
