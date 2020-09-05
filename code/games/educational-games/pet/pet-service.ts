@@ -55,8 +55,10 @@ const createPetService = () => {
 
         // Increase hunger
         if (s.hunger < maxHunger && Date.now() > s.lastHungerIncreaseTimestamp + 1 * min) {
+            const timeDelta = Date.now() - s.lastHungerIncreaseTimestamp;
+            const hunderIncrease = Math.floor(timeDelta / min);
             changePetState({
-                hunger: s.hunger + 1,
+                hunger: Math.min(maxHunger, s.hunger + hunderIncrease),
                 lastHungerIncreaseTimestamp: Date.now(),
             });
         }
