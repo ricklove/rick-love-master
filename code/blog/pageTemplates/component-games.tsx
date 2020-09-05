@@ -6,7 +6,7 @@ import React, { useEffect, useState } from 'react';
 import { useLoadable } from 'utils-react/loadable';
 import { Layout } from './layout/layout';
 import { SEO } from './layout/seo';
-import { componentGamesList } from './component-games-list';
+import { componentGamesList, componentGameUtils } from './component-games-list';
 
 
 export type ComponentGamesPageData = {
@@ -46,7 +46,7 @@ const ComponentGamesListPage = (props: {}) => {
                 { name: `apple-mobile-web-app-capable`, content: `yes` },
                 { name: `mobile-web-app-capable`, content: `yes` },
             ]} />
-
+            <HostComponentAsync component={componentGameUtils.pet} />
             {!game && (
                 <div style={{ margin: 16 }}>
                     <div>Games</div>
@@ -69,21 +69,30 @@ const ComponentGamesListPage = (props: {}) => {
     );
 };
 
+
 const HostComponentAuto = (props: { data: ComponentGamesPageData }) => {
     const { gameName } = props.data;
     const game = componentGamesList.find(x => x.name === gameName);
 
-    const { LoadedComponent, load } = useLoadable(game?.load ?? (async () => (await import(`./component-tests-not-found`)).EmptyComponent));
+    if (!game) {
+        return (
+            <div>
+                <h1>GAME NOT FOUND</h1>
+                <p>testName: {props.data.gameName}</p>
+            </div>
+        );
+    }
+
+    return <HostComponentAsync component={game} />;
+};
+
+
+const HostComponentAsync = ({ component }: { component: { name: string, load: () => Promise<(props: {}) => JSX.Element> } }) => {
+    const { LoadedComponent, load } = useLoadable(component?.load ?? (async () => (await import(`./component-tests-not-found`)).EmptyComponent));
     useEffect(() => { (async () => await load())(); }, [load]);
     return (
         <div>
             {LoadedComponent && <LoadedComponent />}
-            {!game && (
-                <>
-                    <h1>GAME NOT FOUND</h1>
-                    <p>testName: {props.data.gameName}</p>
-                </>
-            )}
         </div>
     );
 };

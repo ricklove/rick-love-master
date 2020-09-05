@@ -3,6 +3,7 @@ import { View, Text, TouchableOpacity, TextInput } from 'react-native-lite';
 import { distinct, shuffle } from 'utils/arrays';
 import { numberNames } from './utils/number-names';
 import { createLeaderboard } from './components/leaderboard';
+import { PetService } from './pet/pet-service';
 
 
 const leaderboardService = createLeaderboard<{
@@ -42,6 +43,8 @@ export const EducationalGame_MultiplesCountingWords = (props: {}) => {
     };
 
     const onCorrect = (value: { multiple: number, times: number }) => {
+        PetService.get().feed();
+
         const newGameBoard = { ...lastGameBoard.current };
         const col = newGameBoard.columns.find(x => x.multiple === value.multiple);
         if (col) {

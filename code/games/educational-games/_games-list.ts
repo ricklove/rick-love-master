@@ -9,3 +9,6 @@ export const educationalGamesList = [
     { name: `spanish-star-blast-sideways`, load: async () => (await import(`./star-blast-sideways-with-subjects/star-blast-spanish`)).EducationalGame_StarBlastSideways_Spanish },
     { name: `spelling-star-blast-sideways`, load: async () => (await import(`./star-blast-sideways-with-subjects/star-blast-spelling`)).EducationalGame_StarBlastSideways_Spelling },
 ];
+export const educationalGameUtils = {
+    pet: { name: `pet`, load: async () => (await import(`./pet/pet-view`)).PetView },
+};

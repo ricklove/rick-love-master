@@ -4,6 +4,7 @@ import { distinct, shuffle } from 'utils/arrays';
 import { randomIndex } from 'utils/random';
 import { Stats } from 'fs';
 import { createLeaderboard } from './components/leaderboard';
+import { PetService } from './pet/pet-service';
 
 const leaderboardService = createLeaderboard<{
     score: number;
@@ -46,6 +47,7 @@ export const EducationalGame_MultiplesMonster = (props: {}) => {
 
         let newPlayerCell = newGameBoard.columns[newGameBoard.player.position.col].cells[newGameBoard.player.position.row];
         if (newPlayerCell.state === `blank`) {
+            PetService.get().feed();
             setGameScore(s => ({ ...s, score: s.score + newPlayerCell.value }));
         }
         // Player Safe at House

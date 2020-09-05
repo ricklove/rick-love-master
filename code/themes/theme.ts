@@ -49,7 +49,7 @@ export type ThemeViewStyle = {
 
     opacity?: number;
 
-    position?: 'absolute' | 'relative';
+    position?: 'absolute' | 'relative' | 'fixed';
     top?: number;
     bottom?: number;
     left?: number;

@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { View, Text, TouchableOpacity, TextInput } from 'react-native-lite';
 import { randomIndex } from 'utils/random';
 import { GamepadDiscrete } from './components/game-pad-discrete';
+import { PetService } from './pet/pet-service';
 
 const colors = {
     text: `#FFFF00`,
@@ -49,8 +50,10 @@ export const EducationalGame_MultiplesLargeBoard = (props: {}) => {
         const s = lastGameBoard.current;
         const cell = s.columns[s.focus.i].cells[s.focus.j];
 
+        // Correct
         if (cell.value === problem) {
-            // Correct
+            PetService.get().feed();
+
             cell.text = `${cell.value}`;
 
             // Reset any x

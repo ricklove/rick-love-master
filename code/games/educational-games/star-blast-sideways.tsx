@@ -7,13 +7,18 @@ import { ProblemService, Problem } from './problems/problems-service';
 import { GamepadAnalogStateful, GamepadPressState } from './components/game-pad-analog';
 import { getDistanceSq, Vector2 } from './utils/vectors';
 import { createReviewProblemService } from './problems/problems-reviewer';
+import { createPetFeederProblemService } from './pet/pet-feeder-problems-service';
 
 export const EducationalGame_StarBlastSideways_Multiples = (props: {}) => {
     return <EducationalGame_StarBlastSideways problemService={createReviewProblemService(createMultiplesProblemService({ min: 1, max: 12 }), {})} />;
 };
 
 export const EducationalGame_StarBlastSideways = (props: { problemService: ProblemService }) => {
+    // Add Pet Feeder
+    return <EducationalGame_StarBlastSideways_Inner problemService={createPetFeederProblemService(props.problemService)} />;
+};
 
+const EducationalGame_StarBlastSideways_Inner = (props: { problemService: ProblemService }) => {
     const [pauseState, setPauseState] = useState({ paused: false } as { paused: boolean });
     const [pressState, setPressState] = useState({ moveDirection: { x: 0, y: 0 }, buttons: [] } as GamepadPressState);
     const onPressStateChange = (value: GamepadPressState) => {

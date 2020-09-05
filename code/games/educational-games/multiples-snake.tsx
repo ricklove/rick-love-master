@@ -3,6 +3,7 @@ import { View, Text, TouchableOpacity, TextInput } from 'react-native-lite';
 import { distinct, shuffle, groupItems } from 'utils/arrays';
 import { randomIndex } from 'utils/random';
 import { createLeaderboard } from './components/leaderboard';
+import { PetService } from './pet/pet-service';
 
 const leaderboardService = createLeaderboard<{
     score: number;
@@ -62,6 +63,8 @@ export const EducationalGame_MultiplesSnake = (props: {}) => {
             onGameOver();
             return;
         }
+
+        PetService.get().feed();
 
         // Update body
         moveBody(newGameBoard);
