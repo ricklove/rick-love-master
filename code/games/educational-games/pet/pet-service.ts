@@ -72,6 +72,7 @@ const createPetService = () => {
                 hunger: 0,
                 food: s.food - foodEaten,
                 lastMealTimestamp: Date.now(),
+                lastHungerIncreaseTimestamp: Date.now(),
             });
         }
 
