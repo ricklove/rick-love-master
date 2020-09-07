@@ -19,8 +19,7 @@ export type EmojiIdleState = {
     money: number;
 
     multiplier: number;
-    lastMultipleDecreaseTimestamp: number;
-
+    lastMultiplierChangeTimestamp: number;
 };
 
 const storageKey = `EmojiIdleState`;
@@ -46,7 +45,7 @@ const createService = () => {
         lastEmotionTimestamp: Date.now(),
         money: 0,
         multiplier: 1,
-        lastMultipleDecreaseTimestamp: Date.now(),
+        lastMultiplierChangeTimestamp: Date.now(),
         lastPurchaseTimestamp: Date.now(),
     };
     let s: EmojiIdleState = storage.load() ?? defaultState;
@@ -61,17 +60,20 @@ const createService = () => {
     };
 
     const rewardInner = (value: number) => {
+        // max multiplier - keeps things more linear?
+        const maxMultiplier = 100;
         changeState({
             money: s.money + s.multiplier,
-            multiplier: s.multiplier + value,
-            lastMultipleDecreaseTimestamp: Date.now(),
+            multiplier: Math.min(maxMultiplier, s.multiplier + value),
+            lastMultiplierChangeTimestamp: Date.now(),
         });
     };
 
     const punish = () => {
+        // This is the only way to lose multiplier
         changeState({
-            multiplier: Math.max(1, s.multiplier - 10),
-            lastMultipleDecreaseTimestamp: Date.now(),
+            multiplier: Math.max(1, s.multiplier - 5),
+            lastMultiplierChangeTimestamp: Date.now(),
         });
     };
 
@@ -118,18 +120,19 @@ const createService = () => {
 
         // console.log(`emoji-idle-service update`, {});
 
-        // Decrease Multiplier over time
-        const decTime = 3 * second;
-        if (s.multiplier > 1 && Date.now() > s.lastMultipleDecreaseTimestamp + decTime) {
-            const timeDelta = Date.now() - s.lastMultipleDecreaseTimestamp;
-            const multChange = Math.floor(timeDelta / decTime);
+        // This is too powerful against slow players
+        // // Decrease Multiplier over time
+        // const decTime = 3 * second;
+        // if (s.multiplier > 1 && Date.now() > s.lastMultiplierChangeTimestamp + decTime) {
+        //     const timeDelta = Date.now() - s.lastMultiplierChangeTimestamp;
+        //     const multChange = Math.floor(timeDelta / decTime);
 
-            // console.log(`emoji-idle-service`, { timeDelta, multChange });
-            changeState({
-                multiplier: Math.max(1, s.multiplier - multChange),
-                lastMultipleDecreaseTimestamp: Date.now(),
-            });
-        }
+        //     // console.log(`emoji-idle-service`, { timeDelta, multChange });
+        //     changeState({
+        //         multiplier: Math.max(1, s.multiplier - multChange),
+        //         lastMultiplierChangeTimestamp: Date.now(),
+        //     });
+        // }
 
         // Choose target
         if (!s.targetEmoji && !s.targetOptions) {
