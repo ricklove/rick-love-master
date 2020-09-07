@@ -5,7 +5,7 @@ import { EmojiIdleService, EmojiIdleState, EmojiIdleEmotionKind } from './emoji-
 
 export const styles = {
     container: {
-        height: 36,
+        height: 40,
     },
     fixed: {
         position: `fixed`,
@@ -14,7 +14,11 @@ export const styles = {
     },
     inner: {
         position: `relative`,
-        height: 36,
+        height: 40,
+    },
+    emotionEmoji: {
+        fontFamily: `"Lucida Console", Monaco, monospace`,
+        fontSize: 24,
     },
     characterEmoji: {
         fontFamily: `"Lucida Console", Monaco, monospace`,
@@ -22,7 +26,7 @@ export const styles = {
     },
     characterEmoji_small: {
         fontFamily: `"Lucida Console", Monaco, monospace`,
-        fontSize: 12,
+        fontSize: 16,
     },
     costText: {
         fontFamily: `"Lucida Console", Monaco, monospace`,
@@ -38,10 +42,7 @@ export const styles = {
         fontFamily: `"Lucida Console", Monaco, monospace`,
         fontSize: 16,
     },
-    emotionEmoji: {
-        fontFamily: `"Lucida Console", Monaco, monospace`,
-        fontSize: 24,
-    },
+
     money: {
         fontFamily: `"Lucida Console", Monaco, monospace`,
         fontSize: 20,
@@ -78,8 +79,7 @@ export const EmojiIdleView = (props: {}) => {
         <View style={styles.container}>
             <View style={styles.fixed}>
                 <View style={styles.inner}>
-                    <EmojiCharacterView emoji={gameState?.characterEmoji ?? ``} targetEmoji={gameState?.targetEmoji ?? ``} />
-                    <EmotionView emotion={gameState?.emotion ?? null} />
+                    <EmojiCharacterView emoji={gameState?.characterEmoji ?? ``} targetEmoji={gameState?.targetEmoji ?? ``} emotion={gameState?.emotion ?? null} />
                     {gameState && <CommandsView gameState={gameState} />}
                     {/* {gameState && gameState.food > 0 && [...new Array(gameState.food)].map((x, i) => (
                         // eslint-disable-next-line react/no-array-index-key
@@ -95,72 +95,75 @@ export const EmojiIdleView = (props: {}) => {
 
 const CommandsView = ({ gameState }: { gameState: EmojiIdleState }) => {
 
+    const [offset, setOffset] = useState(0);
+    useEffect(() => {
+        setOffset(0);
+    }, [gameState.targetOptions, gameState.requirementsAvailable]);
+
     if (gameState.targetOptions && gameState.targetOptions.length > 0) {
+        const listSize = 5;
+        const targetOptionsLength = gameState.targetOptions.length;
         return (
             <View style={{ position: `absolute`, top: 0, left: 0, right: 0 }} >
                 <View style={{ flexDirection: `row`, justifyContent: `center` }}>
-                    <View>
-                        <Text style={styles.characterEmoji}>{` ❔ `}</Text>
-                    </View>
-                    {gameState.targetOptions.map(x => (
+                    {gameState.targetOptions.slice(offset, listSize).map(x => (
                         <TouchableOpacity key={x.emoji} onPress={() => EmojiIdleService.get().selectOption(x.emoji)}>
                             <View>
                                 <Text style={styles.characterEmoji}>{x.emoji}</Text>
                             </View>
                         </TouchableOpacity>
                     ))}
-                    <View>
-                        <Text style={styles.characterEmoji}>{` ❔ `}</Text>
-                    </View>
+                    {offset + listSize < targetOptionsLength && (
+                        <TouchableOpacity onPress={() => setOffset(s => { const i = s + 5; return i >= targetOptionsLength ? 0 : i; })}>
+                            <View>
+                                <Text style={styles.characterEmoji}>{` ⏩ `}</Text>
+                            </View>
+                        </TouchableOpacity>
+                    )}
                 </View>
             </View>
         );
     }
 
-    if (gameState.requirementsAvailable && gameState.requirementsAvailable.length > 0) {
-        return (
-            <View style={{ position: `absolute`, top: 0, left: 0, right: 0 }} >
-                <View style={{ alignSelf: `center`, alignItems: `center`, background: `#222222`, borderRadius: 4, padding: 4 }}>
-                    <View style={{ flexDirection: `row`, justifyContent: `center` }}>
-                        {gameState.requirementsAvailable.slice(0, 5).map(x => (
-                            <TouchableOpacity key={x.emoji} onPress={() => EmojiIdleService.get().selectOption(x.emoji)}>
-                                <View style={{ flexDirection: `column`, margin: 4, alignItems: `center`, background: `#333333`, borderRadius: 4 }}>
-                                    <Text style={styles.characterEmoji}>{x.emoji}</Text>
-                                    <Text style={styles.costText}>{`$${x.cost.toLocaleString()}`}</Text>
-                                </View>
-                            </TouchableOpacity>
-                        ))}
-                    </View>
-                    <Text style={styles.money_small}>{`$${(gameState.money ?? 0).toLocaleString()}`}</Text>
-                </View>
-            </View>
-        );
-    }
+    // if (gameState.requirementsAvailable && gameState.requirementsAvailable.length > 0) {
+    //     return (
+    //         <View style={{ position: `absolute`, top: 0, left: 0, right: 0 }} >
+    //             <View style={{ alignSelf: `center`, alignItems: `center`, background: `#222222`, borderRadius: 4, padding: 4 }}>
+    //                 <View style={{ flexDirection: `row`, justifyContent: `center` }}>
+    //                     {gameState.requirementsAvailable.slice(0, 5).map(x => (
+    //                         <TouchableOpacity key={x.emoji} onPress={() => EmojiIdleService.get().selectOption(x.emoji)}>
+    //                             <View style={{ flexDirection: `column`, margin: 4, alignItems: `center`, background: `#333333`, borderRadius: 4 }}>
+    //                                 <Text style={styles.characterEmoji}>{x.emoji}</Text>
+    //                                 <Text style={styles.costText}>{`$${x.cost.toLocaleString()}`}</Text>
+    //                             </View>
+    //                         </TouchableOpacity>
+    //                     ))}
+    //                 </View>
+    //                 <Text style={styles.money_small}>{`$${(gameState.money ?? 0).toLocaleString()}`}</Text>
+    //             </View>
+    //         </View>
+    //     );
+    // }
 
+    const reqs = gameState.requirementsRemaining ?? [];
+    const reqShowLength = 3;
     return (
         <View>
-            <View style={{ position: `absolute`, left: 40, top: 0 }} >
-                {gameState.requirementsRemaining && gameState.requirementsRemaining.length > 0 && (
-                    <View style={{ flexDirection: `column`, alignItems: `center`, background: `#553300`, borderRadius: 4, paddingLeft: 1, paddingRight: 1 }}>
-                        <Text style={styles.characterEmoji_small}>{gameState.requirementsRemaining[0].emoji}</Text>
-                        <Text style={styles.costText_small}>{`$${gameState.requirementsRemaining[0].cost.toLocaleString()}`}</Text>
-                    </View>
-                )}
+            <View style={{ position: `absolute`, left: 60, top: 0, flexDirection: `row` }} >
+                {reqs.slice(0, reqShowLength).map(x => (
+                    <TouchableOpacity key={x.emoji} onPress={() => EmojiIdleService.get().selectOption(x.emoji)}>
+                        <View style={{ flexDirection: `column`, alignItems: `center`, background: x.cost <= gameState.money ? `#003300` : `#553300`, borderRadius: 4, paddingLeft: 2, paddingRight: 2 }}>
+                            <Text style={styles.characterEmoji_small}>{x.emoji}</Text>
+                            <Text style={styles.costText_small}>{`$${x.cost.toLocaleString()}`}</Text>
+                        </View>
+                    </TouchableOpacity>
+                ))}
             </View>
             <ScoreView {...gameState ?? { money: 0, multiplier: 1 }} />
         </View>
     );
 };
 
-
-const EmojiCharacterView = ({ emoji, targetEmoji }: { emoji: string, targetEmoji: string }) => {
-    return (
-        <View style={{ position: `absolute`, right: 4, top: 0, flexDirection: `column`, alignItems: `flex-end` }} >
-            <Text style={styles.characterEmoji}>{emoji}</Text>
-            <Text style={styles.targetCharacterEmoji}>{`🔹${targetEmoji}`}</Text>
-        </View>
-    );
-};
 
 const ScoreView = ({ money, multiplier }: { money: number, multiplier: number }) => {
 
@@ -210,7 +213,7 @@ const ScoreView = ({ money, multiplier }: { money: number, multiplier: number })
 
 
     return (
-        <View style={{ position: `absolute`, left: 40, top: 0, right: 40 }} >
+        <View style={{ position: `absolute`, top: 0, right: 4 }} >
             <View style={{ flexDirection: `row`, justifyContent: `flex-end` }}>
                 <View style={{ transform: `translate(-${moneySizeOffset}px,${2 * moneySizeOffset}px) scale(${moneySizeOffset * 0.1 + 1})` }}>
                     <Text style={styles.money}>{`$${(money ?? 0).toLocaleString()}`}</Text>
@@ -223,13 +226,31 @@ const ScoreView = ({ money, multiplier }: { money: number, multiplier: number })
     );
 };
 
+const EmojiCharacterView = ({ emoji, targetEmoji, emotion }: { emoji: string, targetEmoji: string, emotion: null | EmojiIdleEmotionKind }) => {
+    return (
+        <>
+            <View style={{ position: `absolute`, left: 4, top: 0, flexDirection: `column`, alignItems: `flex-end` }} >
+                <EmotionView emotion={emotion ?? null} emoji={emoji} />
+            </View>
+            <View style={{ position: `absolute`, left: 36, top: 0, flexDirection: `column`, alignItems: `flex-end` }} >
+                <Text style={styles.targetCharacterEmoji}>{`${targetEmoji}`}</Text>
+            </View>
+        </>
+    );
+};
 
-const EmotionView = ({ emotion }: { emotion: null | EmojiIdleEmotionKind }) => {
-    const [emoji, setEmoji] = useState(getEmoji(emotion, 0));
+const EmotionView = ({ emotion, emoji }: { emotion: null | EmojiIdleEmotionKind, emoji: string }) => {
+    const [display, setDisplay] = useState({ text: emoji, isEmotion: false });
     useEffect(() => {
+        let showEmotion = true;
         let variant = 0;
         const update = () => {
-            setEmoji(getEmoji(emotion, variant++));
+            showEmotion = !showEmotion;
+            if (!showEmotion) {
+                setDisplay({ text: emoji, isEmotion: false });
+                return;
+            }
+            setDisplay({ text: getEmoji(emotion, variant++), isEmotion: true });
         };
         update();
 
@@ -238,9 +259,7 @@ const EmotionView = ({ emotion }: { emotion: null | EmojiIdleEmotionKind }) => {
     }, [emotion]);
 
     return (
-        <View style={{ position: `absolute`, left: 4, top: 0 }} >
-            <Text style={styles.emotionEmoji}>{emoji}</Text>
-        </View>
+        <Text style={display.isEmotion ? styles.emotionEmoji : styles.characterEmoji}>{display.text}</Text>
     );
 };
 

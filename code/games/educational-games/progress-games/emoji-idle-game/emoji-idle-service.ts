@@ -81,7 +81,7 @@ const createService = () => {
         }
 
         const r = s.requirementsAvailable?.find(x => x.emoji === emoji);
-        if (r) {
+        if (r && r.cost <= s.money) {
             // Purchase 
             changeState({
                 requirementsPurchased: [...s.requirementsPurchased ?? [], r.emoji],
@@ -91,6 +91,7 @@ const createService = () => {
             });
         }
 
+        // Ignore
     };
 
     // Update state
@@ -140,7 +141,7 @@ const createService = () => {
                 const reqs = targetSkillNode.requirementEmojis.map(x => reqMap.get(x)).filter(x => x).map(x => x!);
                 const reqs_remaining = reqs.filter(x => !s.requirementsPurchased?.includes(x.emoji));
                 reqs_remaining.sort((a, b) => a.cost - b.cost);
-                const reqs_available = reqs_remaining.filter(x => x.cost < s.money);
+                const reqs_available = reqs_remaining.filter(x => x.cost <= s.money);
 
                 if (reqs_available.length !== s.requirementsAvailable?.length) {
                     changeState({
