@@ -42,7 +42,7 @@ const createService = () => {
 
     const defaultState: EmojiIdleState = {
         characterEmoji: skillTree.root.emoji,
-        emotion: `happy`,
+        emotion: `normal`,
         lastEmotionTimestamp: Date.now(),
         money: 0,
         multiplier: 1,
@@ -86,6 +86,9 @@ const createService = () => {
                 emotion: `excited`,
                 lastEmotionTimestamp: Date.now(),
                 lastPurchaseTimestamp: Date.now(),
+
+                money: 0,
+                // money: emoji === skillTree.root.emoji ? 0 : s.money,
             });
         }
 
@@ -133,12 +136,19 @@ const createService = () => {
             const skillNode = skillTree.allNodes.find(x => x.emoji === s.characterEmoji);
             if (skillNode) {
                 const t = skillNode.children.map(x => ({ emoji: x.emoji }));
-                if (t.length === 1) {
-                    // Auto select
+                if (t.length === 0) {
+                    // Top of skill tree
                     changeState({
-                        targetEmoji: t[0].emoji,
+                        targetOptions: [{ emoji: skillTree.root.emoji }],
                     });
-                } else {
+                }
+                // else if (t.length === 1) {
+                //     // Auto select
+                //     changeState({
+                //         targetEmoji: t[0].emoji,
+                //     });
+                // } 
+                else {
                     changeState({
                         targetOptions: t,
                     });

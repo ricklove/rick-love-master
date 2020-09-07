@@ -105,22 +105,22 @@ const CommandsView = ({ gameState }: { gameState: EmojiIdleState }) => {
     }, [gameState.targetOptions, gameState.requirementsAvailable]);
 
     if (gameState.targetOptions && gameState.targetOptions.length > 0) {
-        const listSize = 5;
+        const listSize = 4;
         const targetOptionsLength = gameState.targetOptions.length;
         return (
             <View style={{ position: `absolute`, top: 0, left: 0, right: 0 }} >
                 <View style={{ flexDirection: `row`, justifyContent: `center` }}>
-                    {gameState.targetOptions.slice(offset, listSize).map(x => (
+                    {gameState.targetOptions.slice(offset, offset + listSize).map(x => (
                         <TouchableOpacity key={x.emoji} onPress={() => EmojiIdleService.get().selectOption(x.emoji)}>
                             <View>
                                 <Text style={styles.characterEmoji}>{x.emoji}</Text>
                             </View>
                         </TouchableOpacity>
                     ))}
-                    {offset + listSize < targetOptionsLength && (
+                    {targetOptionsLength > listSize && (
                         <TouchableOpacity onPress={() => setOffset(s => { const i = s + 5; return i >= targetOptionsLength ? 0 : i; })}>
                             <View>
-                                <Text style={styles.characterEmoji}>{` ⏩ `}</Text>
+                                <Text style={styles.characterEmoji}>{offset + listSize < targetOptionsLength ? `⏩` : `⏮`}</Text>
                             </View>
                         </TouchableOpacity>
                     )}
@@ -153,7 +153,8 @@ const CommandsView = ({ gameState }: { gameState: EmojiIdleState }) => {
     const reqShowLength = 3;
     return (
         <View>
-            <View style={{ position: `absolute`, left: 90, top: 0, flexDirection: `row` }} >
+            <ScoreView {...gameState ?? { money: 0, multiplier: 1 }} />
+            <View style={{ position: `absolute`, left: 90, top: 0, flexDirection: `row`, zIndex: 10 }} >
                 {reqs.slice(0, reqShowLength).map(x => {
                     const canBuy = x.cost <= gameState.money;
                     return (
@@ -166,7 +167,6 @@ const CommandsView = ({ gameState }: { gameState: EmojiIdleState }) => {
                     );
                 })}
             </View>
-            <ScoreView {...gameState ?? { money: 0, multiplier: 1 }} />
         </View>
     );
 };
@@ -289,7 +289,7 @@ const EmotionView = ({ emotion, emoji }: { emotion: null | EmojiIdleEmotionKind,
 
         const id = setInterval(update, 3000);
         return () => clearInterval(id);
-    }, [emotion]);
+    }, [emotion, emoji]);
 
     return (
         <Text style={display.isEmotion ? styles.emotionEmoji : styles.characterEmoji}>{display.text}</Text>
