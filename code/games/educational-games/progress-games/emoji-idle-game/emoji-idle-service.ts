@@ -2,7 +2,7 @@ import { createSubscribable } from 'utils/subscribable';
 import { toMap } from 'utils/objects';
 import { buildEmojiSkillTree } from './emoji-skills/emoji-skill-tree';
 
-export type EmojiIdleEmotionKind = 'excited' | 'happy' | 'angry' | 'sick' | 'dead';
+export type EmojiIdleEmotionKind = 'excited' | 'happy' | 'normal' | 'angry' | 'sick' | 'dead';
 export type EmojiIdleState = {
     characterEmoji: string;
     targetEmoji?: string;
@@ -11,8 +11,10 @@ export type EmojiIdleState = {
     requirementsAvailable?: { emoji: string, cost: number }[];
     requirementsRemaining?: { emoji: string, cost: number }[];
     requirementsNeeded?: { emoji: string, cost: number }[];
+    lastPurchaseTimestamp: number;
 
     emotion: EmojiIdleEmotionKind;
+    lastEmotionTimestamp: number;
 
     money: number;
 
@@ -41,9 +43,11 @@ const createService = () => {
     const defaultState: EmojiIdleState = {
         characterEmoji: skillTree.root.emoji,
         emotion: `happy`,
+        lastEmotionTimestamp: Date.now(),
         money: 0,
         multiplier: 1,
         lastMultipleDecreaseTimestamp: Date.now(),
+        lastPurchaseTimestamp: Date.now(),
     };
     let s: EmojiIdleState = storage.load() ?? defaultState;
 
@@ -73,13 +77,19 @@ const createService = () => {
 
     const selectOption = (emoji: string) => {
         // console.log(`selectOption`, { emoji });
+
+        // Choose character
         if (s.targetOptions?.find(x => x.emoji === emoji)) {
             changeState({
                 targetEmoji: emoji,
                 targetOptions: undefined,
+                emotion: `excited`,
+                lastEmotionTimestamp: Date.now(),
+                lastPurchaseTimestamp: Date.now(),
             });
         }
 
+        // Purchases
         const r = s.requirementsAvailable?.find(x => x.emoji === emoji);
         if (r && r.cost <= s.money) {
             // Purchase 
@@ -88,6 +98,9 @@ const createService = () => {
                 requirementsRemaining: undefined,
                 money: s.money - r.cost,
                 requirementsAvailable: undefined,
+                emotion: `excited`,
+                lastEmotionTimestamp: Date.now(),
+                lastPurchaseTimestamp: Date.now(),
             });
         }
 
@@ -108,7 +121,7 @@ const createService = () => {
             const timeDelta = Date.now() - s.lastMultipleDecreaseTimestamp;
             const multChange = Math.floor(timeDelta / decTime);
 
-            console.log(`emoji-idle-service`, { timeDelta, multChange });
+            // console.log(`emoji-idle-service`, { timeDelta, multChange });
             changeState({
                 multiplier: Math.max(1, s.multiplier - multChange),
                 lastMultipleDecreaseTimestamp: Date.now(),
@@ -166,6 +179,17 @@ const createService = () => {
                         requirementsNeeded: undefined,
                         requirementsPurchased: undefined,
                     });
+                }
+            }
+
+            // Emotion
+            if (Date.now() > (s.lastEmotionTimestamp ?? 0) + 15 * second) {
+                // TODO: Sickness
+                const emotion = Date.now() > (s.lastPurchaseTimestamp ?? 0) + 5 * minute ? `angry`
+                    : `normal`;
+
+                if (s.emotion !== emotion) {
+                    changeState({ emotion, lastEmotionTimestamp: Date.now() });
                 }
             }
         }

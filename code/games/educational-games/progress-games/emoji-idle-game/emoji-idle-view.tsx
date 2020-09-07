@@ -42,6 +42,10 @@ export const styles = {
         fontFamily: `"Lucida Console", Monaco, monospace`,
         fontSize: 16,
     },
+    objectEmoji: {
+        fontFamily: `"Lucida Console", Monaco, monospace`,
+        fontSize: 12,
+    },
 
     money: {
         fontFamily: `"Lucida Console", Monaco, monospace`,
@@ -79,7 +83,7 @@ export const EmojiIdleView = (props: {}) => {
         <View style={styles.container}>
             <View style={styles.fixed}>
                 <View style={styles.inner}>
-                    <EmojiCharacterView emoji={gameState?.characterEmoji ?? ``} targetEmoji={gameState?.targetEmoji ?? ``} emotion={gameState?.emotion ?? null} />
+                    <EmojiCharacterView emoji={gameState?.characterEmoji ?? ``} targetEmoji={gameState?.targetEmoji ?? ``} emotion={gameState?.emotion ?? null} purchased={gameState?.requirementsPurchased ?? []} />
                     {gameState && <CommandsView gameState={gameState} />}
                     {/* {gameState && gameState.food > 0 && [...new Array(gameState.food)].map((x, i) => (
                         // eslint-disable-next-line react/no-array-index-key
@@ -149,7 +153,7 @@ const CommandsView = ({ gameState }: { gameState: EmojiIdleState }) => {
     const reqShowLength = 3;
     return (
         <View>
-            <View style={{ position: `absolute`, left: 60, top: 0, flexDirection: `row` }} >
+            <View style={{ position: `absolute`, left: 90, top: 0, flexDirection: `row` }} >
                 {reqs.slice(0, reqShowLength).map(x => (
                     <TouchableOpacity key={x.emoji} onPress={() => EmojiIdleService.get().selectOption(x.emoji)}>
                         <View style={{ flexDirection: `column`, alignItems: `center`, background: x.cost <= gameState.money ? `#003300` : `#553300`, borderRadius: 4, paddingLeft: 2, paddingRight: 2 }}>
@@ -226,15 +230,41 @@ const ScoreView = ({ money, multiplier }: { money: number, multiplier: number })
     );
 };
 
-const EmojiCharacterView = ({ emoji, targetEmoji, emotion }: { emoji: string, targetEmoji: string, emotion: null | EmojiIdleEmotionKind }) => {
+const EmojiCharacterView = ({ emoji, targetEmoji, emotion, purchased }: { emoji: string, targetEmoji: string, emotion: null | EmojiIdleEmotionKind, purchased: string[] }) => {
     return (
         <>
-            <View style={{ position: `absolute`, left: 4, top: 0, flexDirection: `column`, alignItems: `flex-end` }} >
+            <PurchasedView purchased={purchased} />
+            <View style={{ position: `absolute`, left: 20, top: 0, flexDirection: `column`, alignItems: `flex-end` }} >
                 <EmotionView emotion={emotion ?? null} emoji={emoji} />
             </View>
-            <View style={{ position: `absolute`, left: 36, top: 0, flexDirection: `column`, alignItems: `flex-end` }} >
+            <View style={{ position: `absolute`, left: 66, top: 0, flexDirection: `column`, alignItems: `flex-end` }} >
                 <Text style={styles.targetCharacterEmoji}>{`${targetEmoji}`}</Text>
             </View>
+        </>
+    );
+};
+
+const PurchasedView = ({ purchased }: { purchased: string[] }) => {
+    const [offset, setOffset] = useState(0);
+    useEffect(() => {
+        const update = () => {
+            setOffset(s => s + 1);
+        };
+        update();
+
+        const id = setInterval(update, 200);
+        return () => clearInterval(id);
+    }, [purchased.length]);
+
+    return (
+        <>
+            {purchased.map((x, i) => (
+                <View style={{ position: `absolute`, left: 0, top: 0, flexDirection: `column`, alignItems: `flex-end` }} >
+                    <View style={{ transform: `translate(${((i * 17) + offset) % 60}px,${((i * 5) + offset) % 24}px)` }}>
+                        <Text style={styles.objectEmoji}>{`${x}`}</Text>
+                    </View>
+                </View>
+            ))}
         </>
     );
 };
@@ -242,7 +272,7 @@ const EmojiCharacterView = ({ emoji, targetEmoji, emotion }: { emoji: string, ta
 const EmotionView = ({ emotion, emoji }: { emotion: null | EmojiIdleEmotionKind, emoji: string }) => {
     const [display, setDisplay] = useState({ text: emoji, isEmotion: false });
     useEffect(() => {
-        let showEmotion = true;
+        let showEmotion = false;
         let variant = 0;
         const update = () => {
             showEmotion = !showEmotion;
@@ -280,6 +310,11 @@ const getEmoji = (emotion: null | EmojiIdleEmotionKind, variant: number) => {
     }
     if (emotion === `happy`) {
         const items = [`😀`, `🙂`, `😄`, `😃`, `😊`];
+        return items[variant % items.length];
+    }
+    if (emotion === `normal`) {
+        // const items = [`🙂`, `😋`, `😮`, `🤔`, `🙄`, `🥱`, `😴`];
+        const items = [`🙂`, `😋`, `😮`, `🙄`];
         return items[variant % items.length];
     }
     if (emotion === `angry`) {
