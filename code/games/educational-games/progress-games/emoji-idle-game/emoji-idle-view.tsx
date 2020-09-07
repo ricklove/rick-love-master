@@ -154,14 +154,17 @@ const CommandsView = ({ gameState }: { gameState: EmojiIdleState }) => {
     return (
         <View>
             <View style={{ position: `absolute`, left: 90, top: 0, flexDirection: `row` }} >
-                {reqs.slice(0, reqShowLength).map(x => (
-                    <TouchableOpacity key={x.emoji} onPress={() => EmojiIdleService.get().selectOption(x.emoji)}>
-                        <View style={{ flexDirection: `column`, alignItems: `center`, background: x.cost <= gameState.money ? `#003300` : `#553300`, borderRadius: 4, paddingLeft: 2, paddingRight: 2 }}>
-                            <Text style={styles.characterEmoji_small}>{x.emoji}</Text>
-                            <Text style={styles.costText_small}>{`$${x.cost.toLocaleString()}`}</Text>
-                        </View>
-                    </TouchableOpacity>
-                ))}
+                {reqs.slice(0, reqShowLength).map(x => {
+                    const canBuy = x.cost <= gameState.money;
+                    return (
+                        <TouchableOpacity key={x.emoji} onPress={() => EmojiIdleService.get().selectOption(x.emoji)}>
+                            <View style={{ flexDirection: `column`, alignItems: `center`, background: canBuy ? `#003300` : `#553300`, borderRadius: 4, paddingLeft: 2, paddingRight: 2 }}>
+                                <Text style={styles.characterEmoji_small}>{x.emoji}</Text>
+                                <Text style={{ ...styles.costText_small, ...(canBuy ? {} : { color: `#FF0000` }) }}>{`$${x.cost.toLocaleString()}`}</Text>
+                            </View>
+                        </TouchableOpacity>
+                    );
+                })}
             </View>
             <ScoreView {...gameState ?? { money: 0, multiplier: 1 }} />
         </View>
