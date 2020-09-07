@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { View, Text, TouchableOpacity, TextInput } from 'react-native-lite';
 import { randomIndex } from 'utils/random';
 import { GamepadDiscrete } from './components/game-pad-discrete';
-import { PetService } from './pet/pet-service';
+import { ProgressGameService } from './progress-games/progress-game';
 
 const colors = {
     text: `#FFFF00`,
@@ -52,7 +52,7 @@ export const EducationalGame_MultiplesLargeBoard = (props: {}) => {
 
         // Correct
         if (cell.value === problem) {
-            PetService.get().feed();
+            ProgressGameService.onCorrect();
 
             cell.text = `${cell.value}`;
 

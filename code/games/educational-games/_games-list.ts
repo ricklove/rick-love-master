@@ -10,5 +10,5 @@ export const educationalGamesList = [
     { name: `spelling-star-blast-sideways`, load: async () => (await import(`./star-blast-sideways-with-subjects/star-blast-spelling`)).EducationalGame_StarBlastSideways_Spelling },
 ];
 export const educationalGameUtils = {
-    pet: { name: `pet`, load: async () => (await import(`./pet/pet-view`)).PetView },
+    progressGame: { name: `progressGame`, load: async () => (await import(`./progress-games/progress-game`)).ProgressGameView },
 };

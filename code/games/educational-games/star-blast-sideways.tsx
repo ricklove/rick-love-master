@@ -7,7 +7,7 @@ import { ProblemService, Problem } from './problems/problems-service';
 import { GamepadAnalogStateful, GamepadPressState } from './components/game-pad-analog';
 import { getDistanceSq, Vector2 } from './utils/vectors';
 import { createReviewProblemService } from './problems/problems-reviewer';
-import { createPetFeederProblemService } from './pet/pet-feeder-problems-service';
+import { createProgressGameProblemService } from './progress-games/progress-game';
 
 export const EducationalGame_StarBlastSideways_Multiples = (props: {}) => {
     return <EducationalGame_StarBlastSideways problemService={createReviewProblemService(createMultiplesProblemService({ min: 1, max: 12 }), {})} />;
@@ -15,7 +15,7 @@ export const EducationalGame_StarBlastSideways_Multiples = (props: {}) => {
 
 export const EducationalGame_StarBlastSideways = (props: { problemService: ProblemService }) => {
     // Add Pet Feeder
-    return <EducationalGame_StarBlastSideways_Inner problemService={createPetFeederProblemService(props.problemService)} />;
+    return <EducationalGame_StarBlastSideways_Inner problemService={createProgressGameProblemService(props.problemService)} />;
 };
 
 const EducationalGame_StarBlastSideways_Inner = (props: { problemService: ProblemService }) => {

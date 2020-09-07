@@ -36,12 +36,15 @@ export const createSpellingProblemService = ({ speechService, maxAnswers = 4 }: 
 
             const answers: ProblemAnswer[] = shuffle([...wrongValues.map(x => ({ value: `${x}`, isCorrect: false })), { value: `${correctValue}`, isCorrect: true }]).map(x => ({ ...x, key: x.value }));
 
-
+            const isLastOfSection = (i + 1) % sectionSize === 0;
+            const isLastOfSubject = i === spellingEntries.length - 1;
             return {
                 key: `${i + 1}`,
                 question: `Word ${i + 1}`,
                 onQuestion: () => { speech.speak(correctValue); },
                 answers,
+                isLastOfSection,
+                isLastOfSubject,
             };
         },
         recordAnswer: (p, a) => {

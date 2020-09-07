@@ -1,9 +1,9 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { View, Text, TouchableOpacity, TextInput } from 'react-native-lite';
-import { distinct, shuffle, groupItems } from 'utils/arrays';
+import { View, Text, TouchableOpacity } from 'react-native-lite';
+import { shuffle } from 'utils/arrays';
 import { randomIndex } from 'utils/random';
 import { createLeaderboard } from './components/leaderboard';
-import { PetService } from './pet/pet-service';
+import { ProgressGameService } from './progress-games/progress-game';
 
 const leaderboardService = createLeaderboard<{
     score: number;
@@ -64,7 +64,7 @@ export const EducationalGame_MultiplesSnake = (props: {}) => {
             return;
         }
 
-        PetService.get().feed();
+        ProgressGameService.onCorrect();
 
         // Update body
         moveBody(newGameBoard);

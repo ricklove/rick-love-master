@@ -1,4 +1,4 @@
-import { ProblemService } from '../problems/problems-service';
+import { ProblemService } from '../../problems/problems-service';
 import { PetService } from './pet-service';
 
 export const createPetFeederProblemService = (problemSource: ProblemService, options?: {}): ProblemService => {

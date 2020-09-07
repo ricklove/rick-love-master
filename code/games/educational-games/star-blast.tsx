@@ -1,7 +1,7 @@
 /* eslint-disable react/no-array-index-key */
 /* eslint-disable jsx-a11y/accessible-emoji */
 import React, { useState, useEffect, useRef } from 'react';
-import { View, Text, Pressable, TouchableOpacity } from 'react-native-lite';
+import { View, Text, Pressable } from 'react-native-lite';
 import { createMultiplesProblemService } from './problems/multiples';
 import { ProblemService, Problem } from './problems/problems-service';
 import { GamepadAnalogStateful, GamepadPressState } from './components/game-pad-analog';

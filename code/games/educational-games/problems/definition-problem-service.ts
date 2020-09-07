@@ -60,12 +60,16 @@ export const createDefinitionProblemService = ({ subject, maxAnswers = 4, onQues
 
             const answers: ProblemAnswer[] = shuffle([...wrongAnswers.map(x => ({ value: `${x}`, isCorrect: false })), { value: `${prob.anwer}`, isCorrect: true }]).map(x => ({ ...x, key: x.value }));
 
+            const isLastOfSection = iNext === section.entries.length - 1;
+            const isLastOfSubject = isLastOfSection && iSection === subject.sections.length - 1;
             iNext++;
             return {
                 key: `${prob.question}`,
                 question: prob.question,
                 onQuestion: isReversed ? (() => onQuestionReverse?.(prob.question)) : (() => onQuestion?.(prob.question)),
                 answers,
+                isLastOfSection,
+                isLastOfSubject,
             };
         },
         recordAnswer: () => { },

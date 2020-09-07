@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { View, Text, TouchableOpacity } from 'react-native-lite';
 import { distinct, shuffle } from 'utils/arrays';
 import { createLeaderboard } from './components/leaderboard';
-import { PetService } from './pet/pet-service';
+import { ProgressGameService } from './progress-games/progress-game';
 
 
 const leaderboardService = createLeaderboard<{
@@ -42,7 +42,7 @@ export const EducationalGame_MultiplesCounting = (props: {}) => {
     };
 
     const onCorrect = (value: { multiple: number, times: number }) => {
-        PetService.get().feed();
+        ProgressGameService.onCorrect();
 
         const newGameBoard = { ...lastGameBoard.current };
         const col = newGameBoard.columns.find(x => x.multiple === value.multiple);

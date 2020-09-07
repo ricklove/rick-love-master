@@ -46,7 +46,7 @@ const ComponentGamesListPage = (props: {}) => {
                 { name: `apple-mobile-web-app-capable`, content: `yes` },
                 { name: `mobile-web-app-capable`, content: `yes` },
             ]} />
-            <HostComponentAsync component={componentGameUtils.pet} />
+            <HostComponentAsync component={componentGameUtils.progressGame} />
             {!game && (
                 <div style={{ margin: 16 }}>
                     <div>Games</div>

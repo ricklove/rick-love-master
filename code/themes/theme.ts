@@ -5,7 +5,7 @@ export type ThemeViewStyle = {
     flexWrap?: 'wrap' | 'nowrap';
     flex?: number;
     justifyContent?: 'flex-start' | 'center' | 'flex-end' | 'space-around' | 'space-between';
-    alignItems?: 'center';
+    alignItems?: 'flex-start' | 'center' | 'flex-end';
     alignSelf?: 'center' | 'stretch';
     overflow?: 'visible' | 'hidden';
 

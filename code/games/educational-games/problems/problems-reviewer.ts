@@ -66,7 +66,7 @@ export const createReviewProblemService = (problemSource: ProblemService, {
             if (state.repeatState === `review`) {
                 const reviewProblem = getReviewProblem();
                 if (reviewProblem) {
-                    return reviewProblem;
+                    return { ...reviewProblem, isReview: true };
                 }
 
                 console.log(`createReviewProblemService getNextProblem - No Review Problem - Change Mode to NEW`, state);

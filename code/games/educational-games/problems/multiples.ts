@@ -45,6 +45,8 @@ export const createMultiplesProblemService = ({ min = 1, max = 12, maxAnswers = 
                 key: `${m} x ${n}`,
                 question: `${m} x ${n}`,
                 answers,
+                isLastOfSection: n === max,
+                isLastOfSubject: n === max && m === max,
             };
         },
         recordAnswer: () => { },

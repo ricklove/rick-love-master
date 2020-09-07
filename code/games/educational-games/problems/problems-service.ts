@@ -4,6 +4,10 @@ export type Problem = {
     question: string;
     onQuestion?: () => void;
     answers: ProblemAnswer[];
+
+    isReview?: boolean;
+    isLastOfSection?: boolean;
+    isLastOfSubject?: boolean;
 };
 export type ProblemResult = Problem | {
     done: boolean;
