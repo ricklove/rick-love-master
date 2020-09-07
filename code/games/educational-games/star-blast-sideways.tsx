@@ -31,13 +31,8 @@ const EducationalGame_StarBlastSideways_Inner = (props: { problemService: Proble
     return (
         <>
             <View>
-                <SubjectNavigator problemService={props.problemService}
-                    onOpen={() => setPauseState({ paused: true })}
-                    onClose={() => setPauseState({ paused: false })}
-                    onSubjectNavigation={() => { setPauseState({ paused: false }); setProblemSourceKey(s => s + 1); }}
-                />
                 <View style={{ alignItems: `center`, alignSelf: `stretch` }} >
-                    <View style={{ overflow: `hidden`, padding: 10, paddingTop: 48, paddingBottom: 64 }}>
+                    <View style={{ overflow: `hidden`, padding: 10, paddingTop: 4, paddingBottom: 64 }}>
                         <View style={{ position: `relative` }}>
                             <GameView pressState={pressState} pauseState={pauseState} problemService={props.problemService} problemSourceKey={`${problemSourceKey}`} />
                             <Pressable style={{ position: `absolute`, top: 0, bottom: 0, left: 0, right: 0, opacity: 0 }} onPressIn={() => { }} onPressOut={() => { }} />
@@ -47,6 +42,11 @@ const EducationalGame_StarBlastSideways_Inner = (props: { problemService: Proble
                         </View>
                     </View>
                 </View>
+                <SubjectNavigator problemService={props.problemService}
+                    onOpen={() => setPauseState({ paused: true })}
+                    onClose={() => setPauseState({ paused: false })}
+                    onSubjectNavigation={() => { setPauseState({ paused: false }); setProblemSourceKey(s => s + 1); }}
+                />
             </View>
         </>
     );
@@ -407,9 +407,9 @@ const GameView = (props: { pressState: GamepadPressState, pauseState: { paused: 
     return (
         <>
             <View style={gameStyles.viewscreenView} >
-                <TextPositioned text={`${gameState.current.score.toLocaleString()}`} position={{ x: 0, y: -0.8 * gameStyles.sprite.viewSize.height, rotation: 0 }} />
+                {/* <TextPositioned text={`${gameState.current.score.toLocaleString()}`} position={{ x: 0, y: -0.8 * gameStyles.sprite.viewSize.height, rotation: 0 }} /> */}
                 {[... new Array(gameState.current.lives)].map((x, i) => (
-                    <Sprite key={`life${i}`} kind='life' position={{ x: gameStyles.viewscreenView.width - (gameStyles.sprite.viewSize.width * (1 + i)), y: -0.8 * gameStyles.sprite.viewSize.height, rotation: 0 }} />
+                    <Sprite key={`life${i}`} kind='life' position={{ x: gameStyles.viewscreenView.width - (gameStyles.sprite.viewSize.width * (1 + i)), y: gameStyles.viewscreenView.height - 0.5 * gameStyles.sprite.viewSize.height, rotation: 0 }} />
                 ))}
                 {projectilesState.current.debris.map(x => (
                     <Sprite key={x.key} kind={x.hasHitGround ? `${x.kind}-splat` as SpriteKind : x.kind} position={x.pos} />
