@@ -566,7 +566,7 @@ const updatePlayer = ({ gameTime, gameDeltaTime, pressState, playerPosition, gam
 
 type ProjectilesState = {
     lastShotActualTime: number;
-    shots: { key: string, pos: GamePosition, explodeTime?: number, ignore?: boolean, lockedEnemy?: { pos: GamePosition } }[];
+    shots: { key: string, pos: GamePosition, explodeTime?: number, ignore?: boolean, lockedEnemy?: { pos: GamePosition, explodeTime?: number, destoyed?: boolean } }[];
     debris: { key: string, vel: Vector2, pos: GamePosition, kind: SpriteKind, hasHitGround?: boolean }[];
 };
 const updateProjectiles = ({ gameTime, gameDeltaTime, pressState, playerPosition: playerPos, enemiesState, projectilesState, gameState, onLoseLife }: CommonGameState): ProjectilesState => {
@@ -586,7 +586,7 @@ const updateProjectiles = ({ gameTime, gameDeltaTime, pressState, playerPosition
     shots.forEach(x => {
         if (x.explodeTime) { return; }
 
-        if (x.lockedEnemy) {
+        if (x.lockedEnemy && !x.lockedEnemy.explodeTime && !x.lockedEnemy.destoyed) {
             x.pos.y += (x.lockedEnemy.pos.y - x.pos.y) * 0.25;
             x.pos.x += Math.min(250 * gameDeltaTime, (x.lockedEnemy.pos.x - x.pos.x) * 0.5);
         } else {
