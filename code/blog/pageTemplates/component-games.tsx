@@ -60,7 +60,7 @@ const ComponentGamesListPage = (props: {}) => {
             {!!game && (
                 <>
                     <HostComponentAuto data={{ gameName: game }} />
-                    <div style={{ display: `inline-block` }} onClick={() => setGame(null)}>
+                    <div style={{ display: `inline-block`, padding: 4 }} onClick={() => setGame(null)}>
                         <span>🎮 Games</span>
                     </div>
                 </>

@@ -10,23 +10,44 @@ export const createSpellingProblemService = ({ speechService, maxAnswers = 4 }: 
     const sectionSize = 25;
     const sectionCount = Math.ceil(spellingEntries.length / sectionSize);
 
-    let nextIndex = 0;
+    let state = {
+        nextIndex: 0,
+        completedSectionKeys: [] as string[],
+    };
 
-    return {
-        getSections: () => [...new Array(sectionCount)].map((x, i) => `Spelling ${i + 1}`),
-        gotoSection: (name: string) => {
-            const parts = name.split(` `);
-            const v = parts[parts.length - 1];
-            const a = Number.parseInt(v, 10);
-            nextIndex = (a - 1) * sectionSize;
+    const getSectionKey = (sectionIndex: number) => {
+        return `${sectionIndex}`;
+    };
+    const getSectionName = (sectionIndex: number) => {
+        return `Spelling ${sectionIndex + 1}`;
+    };
+
+    const service: ProblemService = {
+        load: async (storage) => {
+            const loaded = await storage.load<typeof state>();
+            if (loaded) {
+                state = loaded;
+            }
+        },
+        save: async (storage) => {
+            await storage.save(state);
+        },
+        getSections: () => [...new Array(sectionCount)].map((x, i) => ({
+            key: getSectionKey(i),
+            name: getSectionName(i),
+            isComplete: state.completedSectionKeys.includes(getSectionKey(i)),
+        })),
+        gotoSection: ({ key }) => {
+            const a = Number.parseInt(key, 10);
+            state.nextIndex = (a - 1) * sectionSize;
         },
         getNextProblem: () => {
-            if (nextIndex >= spellingEntries.length) {
-                nextIndex = 0;
+            if (state.nextIndex >= spellingEntries.length) {
+                state.nextIndex = 0;
             }
 
-            const i = nextIndex;
-            nextIndex++;
+            const i = state.nextIndex;
+            state.nextIndex++;
 
             const p = spellingEntries[i];
             const correctValue = p.word;
@@ -43,12 +64,18 @@ export const createSpellingProblemService = ({ speechService, maxAnswers = 4 }: 
                 question: `Word ${i + 1}`,
                 onQuestion: () => { speech.speak(correctValue); },
                 answers,
+                sectionKey: getSectionKey(Math.floor(i / sectionSize)),
                 isLastOfSection,
                 isLastOfSubject,
             };
         },
-        recordAnswer: (p, a) => {
-            if (!a.isCorrect) {
+        recordAnswer: (problem, answer) => {
+            if (answer.isCorrect && problem.isLastOfSection) {
+                state.completedSectionKeys.push(problem.sectionKey);
+            }
+
+            // Responses
+            if (!answer.isCorrect) {
                 // Demotivation!
                 const phrases = [
                     `I've got a dog that spells better`,
@@ -62,8 +89,9 @@ export const createSpellingProblemService = ({ speechService, maxAnswers = 4 }: 
                     `What does the fox say?`,
                 ];
                 speech.speak(randomItem(phrases));
-                speech.speak(p.answers.find(x => x.isCorrect)?.value ?? ``);
+                speech.speak(problem.answers.find(x => x.isCorrect)?.value ?? ``);
             } else {
+
                 console.log(`recordAnswer correct`);
                 if (Math.random() > 0.1) { return; }
                 const phrases = [
@@ -75,4 +103,6 @@ export const createSpellingProblemService = ({ speechService, maxAnswers = 4 }: 
             }
         },
     };
+
+    return service;
 };

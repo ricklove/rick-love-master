@@ -10,69 +10,99 @@ export const createDefinitionProblemService = ({ subject, maxAnswers = 4, onQues
 }): ProblemService => {
     // console.log(`createDefinitionProblemService`, { subject });
 
-    let isReversed = false;
-    let iSection = null as null | number;
-    let iNext = null as null | number;
-    const reveresedPrefix = `Reversed - `;
+    let state = {
+        isReversed: false,
+        iSection: null as null | number,
+        iNext: null as null | number,
+        completedSectionKeys: [] as string[],
+    };
+
+    const reversedPrefix = `Reversed - `;
+    const getSectionKey = (name: string, isReversed: boolean) => {
+        return !isReversed ? name : `${reversedPrefix}${name}`;
+    };
+
     const problemService: ProblemService = {
-        getSections: () => [...subject.sections.map(x => x.name), ...subject.sections.map(x => `${reveresedPrefix}${x.name}`)],
-        gotoSection: (name: string) => {
-            const isRev = name.startsWith(reveresedPrefix);
-            const n = isRev ? name.substr(reveresedPrefix.length) : name;
-            iSection = subject.sections.findIndex(x => x.name === n);
-            iNext = 0;
-            isReversed = isRev;
+        load: async (storage) => {
+            const loaded = await storage.load<typeof state>();
+            if (loaded) {
+                state = loaded;
+            }
+        },
+        save: async (storage) => {
+            await storage.save(state);
+        },
+        getSections: () => [...subject.sections.map(x => ({
+            key: getSectionKey(x.name, false),
+            name: getSectionKey(x.name, false),
+            isComplete: state.completedSectionKeys.includes(getSectionKey(x.name, false)),
+        })), ...subject.sections.map(x => ({
+            key: getSectionKey(x.name, true),
+            name: getSectionKey(x.name, true),
+            isComplete: state.completedSectionKeys.includes(getSectionKey(x.name, true)),
+        }))],
+        gotoSection: ({ key }) => {
+            const isRev = key.startsWith(reversedPrefix);
+            const n = isRev ? key.substr(reversedPrefix.length) : key;
+            state.iSection = subject.sections.findIndex(x => x.name === n);
+            state.iNext = 0;
+            state.isReversed = isRev;
         },
         getNextProblem: (): ProblemResult => {
-            if (iSection == null) {
+            if (state.iSection == null) {
                 // Prompt section?
-                iSection = 0;
-                iNext = null;
+                state.iSection = 0;
+                state.iNext = null;
             }
-            if ((iNext ?? 0) >= (subject.sections[iSection]?.entries.length ?? 0)) {
-                iSection++;
-                iNext = null;
+            if ((state.iNext ?? 0) >= (subject.sections[state.iSection]?.entries.length ?? 0)) {
+                state.iSection++;
+                state.iNext = null;
             }
-            if (iSection >= subject.sections.length) {
-                iSection = 0;
-                iNext = null;
-                isReversed = !isReversed;
+            if (state.iSection >= subject.sections.length) {
+                state.iSection = 0;
+                state.iNext = null;
+                state.isReversed = !state.isReversed;
             }
-            if (iNext == null) {
-                iNext = 0;
+            if (state.iNext == null) {
+                state.iNext = 0;
             }
 
-            const section = subject.sections[iSection];
-            const defRaw = section.entries[iNext];
+            const section = subject.sections[state.iSection];
+            const defRaw = section.entries[state.iNext];
             if (!defRaw) {
                 return { done: true, key: `done` };
             }
 
-            const prob = isReversed ? { question: defRaw.response, anwer: defRaw.prompt } : { question: defRaw.prompt, anwer: defRaw.response };
+            const prob = state.isReversed ? { question: defRaw.response, anwer: defRaw.prompt } : { question: defRaw.prompt, anwer: defRaw.response };
 
             const wrongAnswerCount = maxAnswers - 1;
             const wrongAnswers =
                 distinct(shuffle(
                     section.entries
-                        .slice(Math.max(0, iNext - 10), iNext + 10)
-                        .map(x => isReversed ? x.prompt : x.response)
+                        .slice(Math.max(0, state.iNext - 10), state.iNext + 10)
+                        .map(x => state.isReversed ? x.prompt : x.response)
                         .filter(x => x !== prob.anwer))).slice(0, wrongAnswerCount);
 
             const answers: ProblemAnswer[] = shuffle([...wrongAnswers.map(x => ({ value: `${x}`, isCorrect: false })), { value: `${prob.anwer}`, isCorrect: true }]).map(x => ({ ...x, key: x.value }));
 
-            const isLastOfSection = iNext === section.entries.length - 1;
-            const isLastOfSubject = isLastOfSection && iSection === subject.sections.length - 1;
-            iNext++;
+            const isLastOfSection = state.iNext === section.entries.length - 1;
+            const isLastOfSubject = isLastOfSection && state.iSection === subject.sections.length - 1;
+            state.iNext++;
             return {
                 key: `${prob.question}`,
                 question: prob.question,
-                onQuestion: isReversed ? (() => onQuestionReverse?.(prob.question)) : (() => onQuestion?.(prob.question)),
+                onQuestion: state.isReversed ? (() => onQuestionReverse?.(prob.question)) : (() => onQuestion?.(prob.question)),
                 answers,
+                sectionKey: getSectionKey(section.name, state.isReversed),
                 isLastOfSection,
                 isLastOfSubject,
             };
         },
-        recordAnswer: () => { },
+        recordAnswer: (problem, answer) => {
+            if (answer.isCorrect && problem.isLastOfSection) {
+                state.completedSectionKeys.push(problem.sectionKey);
+            }
+        },
     };
 
     return problemService;

@@ -2,6 +2,7 @@
 /* eslint-disable jsx-a11y/no-static-element-interactions */
 import React, { useRef, useState, useEffect } from 'react';
 import { Text, View, Platform, ActivityIndicator, TouchableOpacity } from 'react-native-lite';
+import { createAutoSavedProblemService } from '../problems/problem-state-storage';
 import { createSpeechService, SpeechService } from '../utils/speech';
 import { EducationalGame_StarBlastSideways } from '../star-blast-sideways';
 import { createReviewProblemService } from '../problems/problems-reviewer';
@@ -28,5 +29,5 @@ export const EducationalGame_StarBlastSideways_Spanish = (props: {}) => {
         );
     }
 
-    return <EducationalGame_StarBlastSideways problemService={createReviewProblemService(createSpanishProblemService({ speechService: speechService.current }), {})} />;
+    return <EducationalGame_StarBlastSideways problemService={createAutoSavedProblemService(createReviewProblemService(createSpanishProblemService({ speechService: speechService.current }), {}), `ProblemsSpanish`)} />;
 };

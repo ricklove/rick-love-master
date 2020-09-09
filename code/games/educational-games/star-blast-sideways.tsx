@@ -8,9 +8,10 @@ import { GamepadAnalogStateful, GamepadPressState } from './components/game-pad-
 import { getDistanceSq, Vector2 } from './utils/vectors';
 import { createReviewProblemService } from './problems/problems-reviewer';
 import { createProgressGameProblemService } from './progress-games/progress-game';
+import { createAutoSavedProblemService } from './problems/problem-state-storage';
 
 export const EducationalGame_StarBlastSideways_Multiples = (props: {}) => {
-    return <EducationalGame_StarBlastSideways problemService={createReviewProblemService(createMultiplesProblemService({ min: 1, max: 12 }), {})} />;
+    return <EducationalGame_StarBlastSideways problemService={createAutoSavedProblemService(createReviewProblemService(createMultiplesProblemService({ min: 1, max: 12 }), {}), `ProblemsMultiples`)} />;
 };
 
 export const EducationalGame_StarBlastSideways = (props: { problemService: ProblemService }) => {
@@ -67,12 +68,13 @@ const subjectStyles = {
     section: {
         view: {
             margin: 4,
+            flexDirection: `row`,
         },
         text: {
             fontSize: 16,
         },
     },
-};
+} as const;
 
 const SubjectNavigator = (props: { problemService: ProblemService, onOpen: () => void, onClose: () => void, onSubjectNavigation: () => void }) => {
 
@@ -97,7 +99,7 @@ const SubjectNavigator = (props: { problemService: ProblemService, onOpen: () =>
             {isExpanded && (
                 <View>
                     {props.problemService.getSections().map(s => (
-                        <TouchableOpacity key={s} onPress={() => {
+                        <TouchableOpacity key={s.key} onPress={() => {
                             console.log(`SubjectNavigator onSection`, { s });
                             props.problemService.gotoSection(s);
                             props.onSubjectNavigation();
@@ -107,7 +109,8 @@ const SubjectNavigator = (props: { problemService: ProblemService, onOpen: () =>
                             }
                         }}>
                             <View style={subjectStyles.section.view}>
-                                <Text style={subjectStyles.section.text}>{s}</Text>
+                                <Text style={subjectStyles.section.text}>{s.isComplete ? `✅` : `⬜`}</Text>
+                                <Text style={subjectStyles.section.text}>{s.name}</Text>
                             </View>
                         </TouchableOpacity>
                     ))}

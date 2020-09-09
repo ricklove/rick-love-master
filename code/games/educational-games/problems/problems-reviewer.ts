@@ -1,7 +1,5 @@
-import { distinct, shuffle, distinct_key } from 'utils/arrays';
-import { strictEqual } from 'assert';
+import { shuffle } from 'utils/arrays';
 import { ProblemService, Problem, ProblemResult } from './problems-service';
-
 
 export const createReviewProblemService = (problemSource: ProblemService, {
     maxNewReviewCount = 3,
@@ -71,6 +69,9 @@ export const createReviewProblemService = (problemSource: ProblemService, {
     };
 
     const service: ProblemService = {
+        load: problemSource.load,
+        save: problemSource.save,
+
         getSections: problemSource.getSections,
         gotoSection: problemSource.gotoSection,
 

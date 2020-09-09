@@ -7,6 +7,7 @@ import { EducationalGame_StarBlastSideways } from '../star-blast-sideways';
 import { createReviewProblemService } from '../problems/problems-reviewer';
 import { createSpellingProblemService } from '../problems/spelling/spelling-problem-service';
 import { VoiceChooser } from './voice-chooser';
+import { createAutoSavedProblemService } from '../problems/problem-state-storage';
 
 export const EducationalGame_StarBlastSideways_Spelling = (props: {}) => {
     const speechService = useRef(createSpeechService());
@@ -27,5 +28,5 @@ export const EducationalGame_StarBlastSideways_Spelling = (props: {}) => {
         );
     }
 
-    return <EducationalGame_StarBlastSideways problemService={createReviewProblemService(createSpellingProblemService({ speechService: speechService.current }), {})} />;
+    return <EducationalGame_StarBlastSideways problemService={createAutoSavedProblemService(createReviewProblemService(createSpellingProblemService({ speechService: speechService.current }), {}), `ProblemsSpelling`)} />;
 };
