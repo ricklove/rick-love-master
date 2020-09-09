@@ -1,6 +1,8 @@
 export type EmojiSkillNode = {
     emoji: string;
     name: string;
+    gender: `baby` | `male` | `female`;
+    pay: number;
     startEmoji: null | string;
     requirementEmojis: string[];
     debug_totalRequirementsCost?: string;
@@ -22,11 +24,13 @@ export type EmojiSkillTree = {
 export const buildEmojiSkillTree = (): EmojiSkillTree => {
     const maleSkillDoc = `${child_male}\n${student_male}\n${skillDoc}`;
     const femaleSkillDoc = `${child_female}\n${student_female}\n\n${getFemaleVariant(skillDoc)}`;
-    const maleNodes = parseSkillDoc(maleSkillDoc);
-    const femaleNodes = parseSkillDoc(femaleSkillDoc);
+    const maleNodes = parseSkillDoc(maleSkillDoc, `male`);
+    const femaleNodes = parseSkillDoc(femaleSkillDoc, `female`);
     const babyNode: EmojiSkillNode = {
         emoji: babyEmoji,
         name: `baby`,
+        gender: `baby`,
+        pay: 0,
         requirementEmojis: [],
         startEmoji: null,
         parent: null,
@@ -70,7 +74,7 @@ export const buildEmojiSkillTree = (): EmojiSkillTree => {
     console.log(`buildSkillTree`, { tree, maleSkillDoc, femaleSkillDoc });
     return tree;
 };
-setTimeout(buildEmojiSkillTree);
+// setTimeout(buildEmojiSkillTree);
 
 const parseRequirementsDoc = (doc: string) => {
     const lines = doc.split(`\n`).map(x => x.trim()).filter(x => x);
@@ -85,18 +89,19 @@ const parseRequirementsDoc = (doc: string) => {
     return nodes;
 };
 
-const parseSkillDoc = (doc: string) => {
+const parseSkillDoc = (doc: string, gender: 'male' | 'female') => {
     const lines = doc.split(`\n`).map(x => x.trim()).filter(x => x);
-    const nodes = lines.map(x => parseSkillLine(x));
+    const nodes = lines.map(x => parseSkillLine(x, gender));
     return nodes;
 };
 
-const parseSkillLine = (skillLine: string): EmojiSkillNode => {
-    const [name, p1] = skillLine.split(`:`).map(x => x.trim());
+const parseSkillLine = (skillLine: string, gender: 'male' | 'female'): EmojiSkillNode => {
+    const [name, payText, p1] = skillLine.split(`:`).map(x => x.trim());
+    const pay = Number.parseInt(payText, 10);
     const [end, p2] = p1.split(`=`).map(x => x.trim());
     const [start, requirementsStr] = p2.split(`+`).map(x => x.trim());
     const requirements = requirementsStr.split(` `).map(x => x.trim()).filter(x => x);
-    return { name, emoji: end, startEmoji: start, requirementEmojis: requirements, children: [], parent: null };
+    return { name, pay, emoji: end, startEmoji: start, requirementEmojis: requirements, children: [], parent: null, gender };
 };
 
 const getFemaleVariant = (emoji: string) => {
@@ -113,30 +118,30 @@ const genderCharCodes = {
 };
 
 const babyEmoji = `👶`;
-const child_male = `boy    : 👦 = 👶 + 🍼 🧸 👕 👖 🧦 🩲 👟 📖 🪁 🚲 🎮`;
-const child_female = `girl  : 👧 = 👶 + 🍼 🧸 👚 👗 🩰 🩱 🥿 📖 🪁 🚲 🎮`;
-const student_male = `  student_boy   : 👨‍🎓 = 👦 + 🍕 ✏️ 📓 📚 ⏰ 📱 💻 🚗 🧳 🎓`;
-const student_female = `student_girl  : 👩‍🎓 = 👧 + 🍕 ✏️ 📓 📚 ⏰ 📱 💻 🚗 🧳 🎓`;
+const child_male = `boy               : 0 : 👦 = 👶 + 🍼 🧸 👕 👖 🧦 🩲 👟 📖 🪁 🚲 🎮`;
+const child_female = `girl            : 0 : 👧 = 👶 + 🍼 🧸 👚 👗 🩰 🩱 🥿 📖 🪁 🚲 🎮`;
+const student_male = `  student_boy   : 0 : 👨‍🎓 = 👦 + 🍕 ✏️ 📓 📚 ⏰ 📱 💻 🚗 🧳 🎓`;
+const student_female = `student_girl  : 0 : 👩‍🎓 = 👧 + 🍕 ✏️ 📓 📚 ⏰ 📱 💻 🚗 🧳 🎓`;
 
 const skillDoc = `
-factory_worker         : 👨‍🏭 = 👨‍🎓 + 🧤 🥾 🔧 ⏲ 📋 🚗              
-mechanic               : 👨‍🔧 = 👨‍🎓 + 🧤 🥾 🧰 🔧 🔩 🚚         
-construction_worker    : 👷‍♂️ = 👨‍🎓 + 🦺 🥾 🧰 🔧 🔨 ⚒ 🧱 🧨 🚙                    
-artist                 : 👨‍🎨 = 👨‍🎓 + 🎨 🖌 🖊 🖋 🖍 ✏️ 📒 🖼 💡 📷 🚗          
-singer                 : 👨‍🎤 = 👨‍🎓 + 🎤 🎧 🎼 🎹 🥁 🎻 🎥 🚗       
-farmer                 : 👨‍🌾 = 👨‍🎓 + 🧢 🥾 🥚 🐕 🐈 🐓 🐄 🐖 🐑 🐐 🚜        
-cook                   : 👨‍🍳 = 👨‍🎓 + 🍓 🥑 🥕 🥩 🍤 🥚 🥫 🥄 🍴 🧂 ⏰ 🔪 🚗      
-firefighter            : 👨‍🚒 = 👨‍🎓 + ⛑️ 🧯 🥾 🪓 🔔 🚒    
-police_officer         : 👮‍♂️ = 👨‍🎓 + 🧢 ⚖️ 🔫 🥊 🤼 📢 🚓             
-detective              : 🕵️‍♂️ = 👨‍🎓 + 👔 ⚖️ 🔦 🔎 📋 💼 🚓          
-teacher                : 👨‍🏫 = 👨‍🎓 + 📝 📒 📕 📗 📘 📙 🚐
-office_worker          : 👨‍💼 = 👨‍🎓 + 👔 💼 💻 🗄 🪑 📁 📊 🚗             
-technologist           : 👨‍💻 = 👨‍🎓 + 💻 ⌨️ 🖥 📱 🖱 🎮 🤖 🚗              
-scientist              : 👨‍🔬 = 👨‍🎓 + 🥼 🥽 🔬 💻 🧫 🧪 ⚗️ 🚗            
-judge                  : 👨‍⚖️ = 👨‍🎓 + 👔 ⚖️ 💼 📚 🗃 🕰 🚗   
-health_worker          : 👨‍⚕️ = 👨‍🎓 + 🥼 ⛑ 🔬 🩹 🩺 💊 💉 🧫 ⛑ 🚑
-pilot                  : 👨‍✈️ = 👨‍🎓 + 🧥 🧭 💻 🕹 ✈️       
-astronaut              : 👨‍🚀 = 👨‍🎓 + 🧥 🔭 💻 🕹 🚀  
+factory_worker      :   20000 : 👨‍🏭 = 👨‍🎓 + 🧤 🥾 🔧 ⏲ 📋 🚗              
+mechanic            :   30000 : 👨‍🔧 = 👨‍🎓 + 🧤 🥾 🧰 🔧 🔩 🚚         
+construction_worker :   75000 : 👷‍♂️ = 👨‍🎓 + 🦺 🥾 🧰 🔧 🔨 ⚒ 🧱 🧨 🚙                    
+artist              :   35000 : 👨‍🎨 = 👨‍🎓 + 🎨 🖌 🖊 🖋 🖍 ✏️ 📒 🖼 💡 📷 🚗          
+singer              :   40000 : 👨‍🎤 = 👨‍🎓 + 🎤 🎧 🎼 🎹 🥁 🎻 🎥 🚗       
+farmer              :   50000 : 👨‍🌾 = 👨‍🎓 + 🧢 🥾 🥚 🐕 🐈 🐓 🐄 🐖 🐑 🐐 🚜        
+cook                :   40000 : 👨‍🍳 = 👨‍🎓 + 🍓 🥑 🥕 🥩 🍤 🥚 🥫 🥄 🍴 🧂 ⏰ 🔪 🚗      
+firefighter         :   55000 : 👨‍🚒 = 👨‍🎓 + ⛑️ 🧯 🥾 🪓 🔔 🚒    
+police_officer      :   60000 : 👮‍♂️ = 👨‍🎓 + 🧢 ⚖️ 🔫 🥊 🤼 📢 🚓             
+detective           :   70000 : 🕵️‍♂️ = 👨‍🎓 + 👔 ⚖️ 🔦 🔎 📋 💼 🚓          
+teacher             :   50000 : 👨‍🏫 = 👨‍🎓 + 📝 📒 📕 📗 📘 📙 🚐
+office_worker       :   60000 : 👨‍💼 = 👨‍🎓 + 👔 💼 💻 🗄 🪑 📁 📊 🚗             
+technologist        :   80000 : 👨‍💻 = 👨‍🎓 + 💻 ⌨️ 🖥 📱 🖱 🎮 🤖 🚗              
+scientist           :   90000 : 👨‍🔬 = 👨‍🎓 + 🥼 🥽 🔬 💻 🧫 🧪 ⚗️ 🚗            
+judge               :  120000 : 👨‍⚖️ = 👨‍🎓 + 👔 ⚖️ 💼 📚 🗃 🕰 🚗   
+health_worker       :  100000 : 👨‍⚕️ = 👨‍🎓 + 🥼 ⛑ 🔬 🩹 🩺 💊 💉 🧫 ⛑ 🚑
+pilot               :  110000 : 👨‍✈️ = 👨‍🎓 + 🧥 🧭 💻 🕹 ✈️       
+astronaut           :  130000 : 👨‍🚀 = 👨‍🎓 + 🧥 🔭 💻 🕹 🚀  
 `;
 
 const requirementsDoc = `

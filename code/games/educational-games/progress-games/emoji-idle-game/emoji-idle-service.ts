@@ -20,6 +20,14 @@ export type EmojiIdleState = {
 
     multiplier: number;
     lastMultiplierChangeTimestamp: number;
+
+    townState: {
+        characters: {
+            characterEmoji: string;
+            finishedTimestamp: number;
+            // requirementsPurchased: string[];
+        }[];
+    };
 };
 
 const storageKey = `EmojiIdleState`;
@@ -47,8 +55,28 @@ const createService = () => {
         multiplier: 1,
         lastMultiplierChangeTimestamp: Date.now(),
         lastPurchaseTimestamp: Date.now(),
+        townState: {
+            characters: [],
+        },
     };
     let s: EmojiIdleState = storage.load() ?? defaultState;
+
+    // Load missing state fields
+    s = { ...defaultState, ...s };
+
+    // // Hard coded - add town characters
+    // s.townState = {
+    //     // characters: [...skillTree.allNodes.filter(x => x.children.length <= 0).slice(0, 5).map(x => ({
+    //     //     characterEmoji: x.emoji,
+    //     //     finishedTimestamp: Date.now() - Math.random() * 1000 * 60 * 60 * 24 * 7,
+    //     // }))],
+    //     characters: [...skillTree.allNodes
+    //         .filter(x => x.name === `health_worker` && x.gender === `female`)
+    //         .map(x => ({
+    //             characterEmoji: x.emoji,
+    //             finishedTimestamp: Math.floor(Date.now() - 0.25 * 1000 * 60 * 60 * 24),
+    //         }))],
+    // };
 
     const sub = createSubscribable<EmojiIdleState>(s);
 
@@ -82,6 +110,14 @@ const createService = () => {
 
         // Choose character
         if (s.targetOptions?.find(x => x.emoji === emoji)) {
+            if (emoji === skillTree.root.emoji) {
+                // Add finished character to town
+                s.townState.characters.push({
+                    characterEmoji: s.characterEmoji,
+                    finishedTimestamp: Date.now(),
+                });
+            }
+
             changeState({
                 targetEmoji: emoji,
                 targetOptions: undefined,
@@ -118,7 +154,7 @@ const createService = () => {
         const minute = 60 * second;
         const hour = 60 * minute;
 
-        // console.log(`emoji-idle-service update`, {});
+        // console.log(`emoji - idle - service update`, {});
 
         // This is too powerful against slow players
         // // Decrease Multiplier over time
@@ -127,7 +163,7 @@ const createService = () => {
         //     const timeDelta = Date.now() - s.lastMultiplierChangeTimestamp;
         //     const multChange = Math.floor(timeDelta / decTime);
 
-        //     // console.log(`emoji-idle-service`, { timeDelta, multChange });
+        //     // console.log(`emoji - idle - service`, { timeDelta, multChange });
         //     changeState({
         //         multiplier: Math.max(1, s.multiplier - multChange),
         //         lastMultiplierChangeTimestamp: Date.now(),
@@ -138,7 +174,13 @@ const createService = () => {
         if (!s.targetEmoji && !s.targetOptions) {
             const skillNode = skillTree.allNodes.find(x => x.emoji === s.characterEmoji);
             if (skillNode) {
-                const t = skillNode.children.map(x => ({ emoji: x.emoji }));
+                let t = skillNode.children.map(x => ({ emoji: x.emoji }));
+                const remainingSkills = t.filter(x => !s.townState.characters.find(c => c.characterEmoji));
+
+                if (remainingSkills.length > 0) {
+                    t = remainingSkills;
+                }
+
                 if (t.length === 0) {
                     // Top of skill tree
                     changeState({

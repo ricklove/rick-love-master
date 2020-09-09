@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { View, Text, TouchableOpacity } from 'react-native-lite';
 import { shuffle } from 'utils/arrays';
 import { EmojiIdleService, EmojiIdleState, EmojiIdleEmotionKind } from './emoji-idle-service';
+import { buildEmojiSkillTree } from './emoji-skills/emoji-skill-tree';
 
 export const styles = {
     container: {
@@ -73,17 +74,30 @@ export const styles = {
 
 export const EmojiIdleView = (props: {}) => {
     const [gameState, setGameState] = useState(null as null | EmojiIdleState);
+    const [isExpanded, setIsExpanded] = useState(false);
     useEffect(() => {
         const service = EmojiIdleService.get();
         const sub = service.subscribePetStateChange(setGameState);
         return () => sub.unsubscribe();
     });
 
+    if (isExpanded && gameState) {
+        return (
+            <TownView gameState={gameState} onClose={() => setIsExpanded(false)} />
+        );
+    }
+
     return (
         <View style={styles.container}>
             <View style={styles.fixed}>
                 <View style={styles.inner}>
-                    <EmojiCharacterView emoji={gameState?.characterEmoji ?? ``} targetEmoji={gameState?.targetEmoji ?? ``} emotion={gameState?.emotion ?? null} purchased={gameState?.requirementsPurchased ?? []} />
+                    <EmojiCharacterView
+                        emoji={gameState?.characterEmoji ?? ``}
+                        targetEmoji={gameState?.targetEmoji ?? ``}
+                        emotion={gameState?.emotion ?? null}
+                        purchased={gameState?.requirementsPurchased ?? []}
+                        onPress={() => setIsExpanded(s => !s)}
+                    />
                     {gameState && <CommandsView gameState={gameState} />}
                     {/* {gameState && gameState.food > 0 && [...new Array(gameState.food)].map((x, i) => (
                         // eslint-disable-next-line react/no-array-index-key
@@ -93,6 +107,119 @@ export const EmojiIdleView = (props: {}) => {
                     ))} */}
                 </View>
             </View>
+        </View>
+    );
+};
+
+export const townStyles = {
+    container: {
+        background: `#555555`,
+    },
+    payText: {
+        fontFamily: `"Lucida Console", Monaco, monospace`,
+        fontSize: 14,
+        color: `#FFFFFF`,
+    },
+    payText_disabled: {
+        fontFamily: `"Lucida Console", Monaco, monospace`,
+        fontSize: 14,
+        color: `#CCCCCC`,
+    },
+    moneyText: {
+        fontFamily: `"Lucida Console", Monaco, monospace`,
+        fontSize: 16,
+        color: `#FFFF00`,
+    },
+    townMoneyText: {
+        fontFamily: `"Lucida Console", Monaco, monospace`,
+        fontSize: 16,
+        color: `#00FF00`,
+    },
+} as const;
+
+const skillTree = buildEmojiSkillTree();
+const TownView = ({ gameState, onClose }: { gameState: EmojiIdleState, onClose: () => void }) => {
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+    const townPersons = gameState.townState.characters.map(x => ({
+        character: x,
+        skill: skillTree.allNodes.find(n => n.emoji === x.characterEmoji) ?? skillTree.root,
+    }))
+        .filter(x => x.skill.pay)
+        .map(x => ({
+            ...x,
+            years: (Date.now() - x.character.finishedTimestamp) / (24 * 60 * 60 * 1000),
+            money: Math.floor((Date.now() - x.character.finishedTimestamp) / (24 * 60 * 60 * 1000) * x.skill.pay),
+        }));
+    const missingSkills = skillTree.allNodes.filter(x => x.children.length <= 0 && !gameState.townState.characters.find(t => t.characterEmoji === x.emoji));
+    // eslint-disable-next-line unicorn/no-reduce
+    const townMoney = townPersons.reduce((out, x) => { out += x.money ?? 0; return out; }, 0);
+    return (
+        <View style={townStyles.container}>
+            <View>
+                <View style={{ background: `#333333`, flexDirection: `row`, alignItems: `center` }}>
+                    <View style={{ position: `relative`, width: 100, height: 40 }}>
+                        <View style={{ position: `absolute`, left: 0, top: 0, flexDirection: `column`, alignItems: `flex-end` }} >
+                            <TouchableOpacity onPress={() => onClose()}>
+                                <Text style={styles.characterEmoji}>{` 🏙 `}</Text>
+                            </TouchableOpacity>
+                        </View>
+                    </View>
+                    <View style={{ flex: 1 }} />
+                    <View style={{ padding: 4 }}>
+                        <Text style={townStyles.townMoneyText}>{`$${(townMoney).toLocaleString()}`}</Text>
+                    </View>
+                </View>
+            </View>
+            <View style={{ background: `#333333`, flexDirection: `row`, alignItems: `center` }}>
+                <View style={{ position: `relative`, width: 100, height: 40 }}>
+                    <EmojiCharacterView
+                        emoji={gameState?.characterEmoji ?? ``}
+                        targetEmoji={gameState?.targetEmoji ?? ``}
+                        emotion={gameState?.emotion ?? null}
+                        purchased={gameState?.requirementsPurchased ?? []}
+                        onPress={() => onClose()}
+                    />
+                </View>
+            </View>
+            {/* Finished Characters */}
+            {townPersons.map(x => (
+                <View style={{ background: `#333333`, flexDirection: `row`, alignItems: `center` }}>
+                    <View style={{ position: `relative`, width: 100, height: 40 }}>
+                        <EmojiCharacterView
+                            emoji={x.character.characterEmoji}
+                            targetEmoji=''
+                            emotion='happy'
+                            purchased={x.skill?.requirementEmojis ?? []}
+                        />
+                    </View>
+                    <View style={{ padding: 4 }}>
+                        <Text style={townStyles.payText}>{`$${(x.skill?.pay ?? 0).toLocaleString()}`}</Text>
+                    </View>
+                    <View style={{ padding: 4 }}>
+                        <Text style={townStyles.payText}>{`x${(x.years).toFixed(1)}`}</Text>
+                    </View>
+                    <View style={{ flex: 1 }} />
+                    <View style={{ padding: 4 }}>
+                        <Text style={townStyles.moneyText}>{`$${(x.money).toLocaleString()}`}</Text>
+                    </View>
+                </View>
+            ))}
+            {/* Missing Characters */}
+            {missingSkills.map(x => (
+                <View style={{ background: `#555555`, flexDirection: `row`, alignItems: `center` }}>
+                    <View style={{ position: `relative`, width: 100, height: 40, opacity: 0.5 }}>
+                        <EmojiCharacterView
+                            emoji={x.emoji}
+                            targetEmoji=''
+                            emotion={null}
+                            purchased={[]}
+                        />
+                    </View>
+                    <View style={{ padding: 4 }}>
+                        <Text style={townStyles.payText_disabled}>{`$${(x.pay).toLocaleString()}`}</Text>
+                    </View>
+                </View>
+            ))}
         </View>
     );
 };
@@ -233,12 +360,14 @@ const ScoreView = ({ money, multiplier }: { money: number, multiplier: number })
     );
 };
 
-const EmojiCharacterView = ({ emoji, targetEmoji, emotion, purchased }: { emoji: string, targetEmoji: string, emotion: null | EmojiIdleEmotionKind, purchased: string[] }) => {
+const EmojiCharacterView = ({ emoji, targetEmoji, emotion, purchased, onPress }: { emoji: string, targetEmoji: string, emotion: null | EmojiIdleEmotionKind, purchased: string[], onPress?: () => void }) => {
     return (
         <>
             <PurchasedView purchased={purchased} />
             <View style={{ position: `absolute`, left: 20, top: 0, flexDirection: `column`, alignItems: `flex-end` }} >
-                <EmotionView emotion={emotion ?? null} emoji={emoji} />
+                <TouchableOpacity onPress={() => onPress?.()}>
+                    <EmotionView emotion={emotion ?? null} emoji={emoji} />
+                </TouchableOpacity>
             </View>
             <View style={{ position: `absolute`, left: 66, top: 0, flexDirection: `column`, alignItems: `flex-end` }} >
                 <Text style={styles.targetCharacterEmoji}>{`${targetEmoji}`}</Text>
@@ -275,6 +404,9 @@ const PurchasedView = ({ purchased }: { purchased: string[] }) => {
 const EmotionView = ({ emotion, emoji }: { emotion: null | EmojiIdleEmotionKind, emoji: string }) => {
     const [display, setDisplay] = useState({ text: emoji, isEmotion: false });
     useEffect(() => {
+        if (!emotion) {
+            return () => { };
+        }
         let showEmotion = false;
         let variant = 0;
         const update = () => {

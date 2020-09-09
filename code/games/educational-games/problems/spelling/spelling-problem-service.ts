@@ -59,6 +59,7 @@ export const createSpellingProblemService = ({ speechService, maxAnswers = 4 }: 
                     `Absolutely Incorrect`,
                     `Completely Wrong`,
                     `This is supposed to be English`,
+                    `What does the fox say?`,
                 ];
                 speech.speak(randomItem(phrases));
                 speech.speak(p.answers.find(x => x.isCorrect)?.value ?? ``);
