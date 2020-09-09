@@ -132,6 +132,7 @@ const colors = {
 const gameStyles = {
     directAnswerButtonContainer: { alignSelf: `flex-end`, justifyContent: `space-around`, height: 250, padding: 4 },
     directAnswerButton: { width: 40, height: 40, backgroundColor: `#FFFFFF`, opacity: 0.1 },
+    directAnswerButton_hidden: { width: 40, height: 40 },
     viewscreenView: {
         height: 300,
         width: 300,
@@ -210,7 +211,8 @@ const GameView = (props: { pressState: GamepadPressState, pauseState: { paused: 
     pauseState.current = props.pauseState;
 
     const gameAcceleration = 0.1;
-    const maxGameSpeed = 10;
+    const gameDeceleration = 0.2;
+    const maxGameSpeed = 5;
     const minGameSpeed = 0.5;
 
     const getDefaultGameState = (): GameState => ({
@@ -316,7 +318,7 @@ const GameView = (props: { pressState: GamepadPressState, pauseState: { paused: 
                                 gameState.current = {
                                     ...gameState.current,
                                     score: gameState.current.score -= Math.floor(enemy.pos.x) * 1500,
-                                    gameSpeed: Math.max(minGameSpeed, gameState.current.gameSpeed * 1 - gameAcceleration * 3),
+                                    gameSpeed: Math.max(minGameSpeed, gameState.current.gameSpeed * 1 - gameDeceleration),
                                 };
                             }
                         });
@@ -488,7 +490,7 @@ const GameView = (props: { pressState: GamepadPressState, pauseState: { paused: 
                 <View style={gameStyles.directAnswerButtonContainer}>
                     {enemiesState.current?.enemies.map(e => (
                         <TouchableOpacity key={e.key} onPress={() => directAnswer(e)} >
-                            <View style={gameStyles.directAnswerButton} />
+                            <View style={!e.destroyed && !e.explodeTime ? gameStyles.directAnswerButton : gameStyles.directAnswerButton_hidden} />
                         </TouchableOpacity>
                     ))}
                 </View>
