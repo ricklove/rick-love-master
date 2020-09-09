@@ -1,22 +1,23 @@
 import { distinct, shuffle, distinct_key } from 'utils/arrays';
+import { strictEqual } from 'assert';
 import { ProblemService, Problem, ProblemResult } from './problems-service';
 
 
 export const createReviewProblemService = (problemSource: ProblemService, {
-    maxReviewCount = 3,
+    maxNewReviewCount = 3,
     reviewSequencePreviousLength = 1,
     reviewQuestionPrefix = `🔄 `,
     requiredCorrectInRow = 3,
 }: {
-    maxReviewCount?: number;
+    maxNewReviewCount?: number;
     reviewSequencePreviousLength?: number;
     reviewQuestionPrefix?: string;
     requiredCorrectInRow?: number;
 }): ProblemService => {
     const state = {
         problemSourceHistory: [] as Problem[],
-        reviewProblems: [] as { index: number, correctsInRow: number, order: number }[],
-        lastReviewProblem: null as null | { index: number, correctsInRow: number, order: number },
+        reviewProblems: [] as { index: number, correctsInRow: number }[],
+        lastReviewProblem: null as null | { index: number, correctsInRow: number },
         reviewSequence: null as null | { iNext: number, iStart: number, iEnd: number },
         repeatState: `new` as 'new' | 'review',
     };
@@ -32,23 +33,12 @@ export const createReviewProblemService = (problemSource: ProblemService, {
         const rSeq = state.reviewSequence;
         if (rSeq && rSeq.iNext > rSeq.iEnd) {
             console.log(`createReviewProblemService getReviewProblem - End of Sequence`, { rSeq, state });
-
-            // Skip just reviewed
-            const lastRev = state.lastReviewProblem;
-            if (lastRev) {
-                const reviewProblemsSameRange = state.reviewProblems.filter(x => x.order > lastRev.order && x.index >= rSeq.iStart && x.index <= rSeq.iEnd);
-                if (reviewProblemsSameRange.length > 0) {
-                    console.log(`createReviewProblemService getReviewProblem - Skip overlapping review problem`, { reviewProblemsSameRange, lastRev, state });
-                    state.lastReviewProblem = reviewProblemsSameRange[reviewProblemsSameRange.length - 1] ?? null;
-                }
-            }
-
             state.reviewSequence = null;
         }
 
         if (!state.reviewSequence) {
             // If reached end of review problems, exit review mode
-            const reviewProblem = state.reviewProblems.find(x => x.order > (state.lastReviewProblem?.order ?? -1));
+            const reviewProblem = state.reviewProblems.find(x => x.index > (state.lastReviewProblem?.index ?? -1));
             if (!reviewProblem) {
                 console.log(`createReviewProblemService getReviewProblem - No Review Problem (with greater order than last)`, { reviewProblems: state.reviewProblems, lastReviewProblem: state.lastReviewProblem, state });
                 state.lastReviewProblem = null;
@@ -97,7 +87,7 @@ export const createReviewProblemService = (problemSource: ProblemService, {
                 state.repeatState = `new`;
             }
 
-            if (state.reviewProblems.length >= maxReviewCount) {
+            if (state.reviewProblems.filter(x => x.correctsInRow <= 1).length >= maxNewReviewCount) {
                 startReview();
                 return service.getNextProblem();
             }
@@ -133,8 +123,8 @@ export const createReviewProblemService = (problemSource: ProblemService, {
                 if (problemAlreadyInReview) {
                     problemAlreadyInReview.correctsInRow++;
 
-                    // Remove if enough corrects in a row
-                    state.reviewProblems = state.reviewProblems.filter(x => x.correctsInRow < requiredCorrectInRow);
+                    // Remove if enough corrects in a row 
+                    state.reviewProblems = state.reviewProblems.filter(x => x.correctsInRow <= requiredCorrectInRow);
                 }
             } else {
                 // Wrong 
@@ -142,8 +132,10 @@ export const createReviewProblemService = (problemSource: ProblemService, {
                 if (problemAlreadyInReview) {
                     problemAlreadyInReview.correctsInRow = 0;
                 } else {
-                    // Add to review
-                    state.reviewProblems.push({ index: i, correctsInRow: 0, order: (state.reviewProblems[state.reviewProblems.length - 1]?.order ?? 0) + 1 });
+                    // Insert Review Problem in Index order
+                    const newReview = { index: i, correctsInRow: 0, _debug_problemKey: problem.key };
+                    state.reviewProblems.push(newReview);
+                    state.reviewProblems.sort((a, b) => a.index - b.index);
                     // state.problemsToReview = distinct_key(state.problemsToReview, x => `${x.index}`);
                 }
             }
