@@ -64,19 +64,19 @@ const createService = () => {
     // Load missing state fields
     s = { ...defaultState, ...s };
 
-    // // Hard coded - add town characters
-    // s.townState = {
-    //     // characters: [...skillTree.allNodes.filter(x => x.children.length <= 0).slice(0, 5).map(x => ({
-    //     //     characterEmoji: x.emoji,
-    //     //     finishedTimestamp: Date.now() - Math.random() * 1000 * 60 * 60 * 24 * 7,
-    //     // }))],
-    //     characters: [...skillTree.allNodes
-    //         .filter(x => x.name === `health_worker` && x.gender === `female`)
-    //         .map(x => ({
-    //             characterEmoji: x.emoji,
-    //             finishedTimestamp: Math.floor(Date.now() - 0.25 * 1000 * 60 * 60 * 24),
-    //         }))],
-    // };
+    // Hard code Missing Town Characters for Kids Accounts
+    s.townState = {
+        // characters: [...skillTree.allNodes.filter(x => x.children.length <= 0).slice(0, 5).map(x => ({
+        //     characterEmoji: x.emoji,
+        //     finishedTimestamp: Date.now() - Math.random() * 1000 * 60 * 60 * 24 * 7,
+        // }))],
+        characters: [...skillTree.allNodes
+            .filter(x => x.name === `health_worker` && x.gender === `female`)
+            .map(x => ({
+                characterEmoji: x.emoji,
+                finishedTimestamp: Math.floor(Date.now() - 0.25 * 1000 * 60 * 60 * 24),
+            }))],
+    };
 
     const sub = createSubscribable<EmojiIdleState>(s);
 
