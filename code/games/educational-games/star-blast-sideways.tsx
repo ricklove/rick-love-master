@@ -181,7 +181,10 @@ type GamePosition = {
 };
 
 type GameState = {
-    gameStartTimeMs: number;
+    lastActualTimeMs: number;
+    lastGameTime: number;
+    gameSpeed: number;
+
     lives: number;
     deadTime?: number;
     gameOverTime?: number;
@@ -203,17 +206,45 @@ const GameView = (props: { pressState: GamepadPressState, pauseState: { paused: 
     const pauseState = useRef(props.pauseState);
     pauseState.current = props.pauseState;
 
-    const gameState = useRef({ lives: 3, gameStartTimeMs: Date.now(), score: 0 } as GameState);
+    const gameAcceleration = 0.1;
+    const maxGameSpeed = 10;
+    const minGameSpeed = 0.5;
+
+    const getDefaultGameState = (): GameState => ({
+        lastActualTimeMs: Date.now(),
+        lastGameTime: 0,
+        gameSpeed: 1,
+        lives: 3,
+        score: 0,
+    });
+    const gameState = useRef(getDefaultGameState());
     const getGameTime = () => {
+        const now = Date.now();
+        let actualTimePassed = (now - gameState.current.lastActualTimeMs) / 1000;
+        gameState.current.lastActualTimeMs = now;
+
+        if (actualTimePassed === 0) {
+            return { gameTime: gameState.current.lastGameTime };
+        }
+
+        // Left App, frozen, etc?
+        if (actualTimePassed > 0.1) {
+            actualTimePassed = 0.1;
+        }
+
+        const gameTimePassed = actualTimePassed * gameState.current.gameSpeed;
+        const gameTime = gameState.current.lastGameTime + gameTimePassed;
+        gameState.current.lastGameTime = gameTime;
+
         return {
-            gameTime: (Date.now() - gameState.current.gameStartTimeMs) / 1000,
+            gameTime,
         };
     };
 
     const playerPositionState = useRef({
         y: gameStyles.viewscreenView.height * 0.5, x: gameStyles.viewscreenView.width * 0.15, rotation: 0,
     } as GamePosition);
-    const projectilesState = useRef({ lastShotTime: 0, shots: [], debris: [] } as ProjectilesState);
+    const projectilesState = useRef({ lastShotActualTime: 0, shots: [], debris: [] } as ProjectilesState);
     const enemiesState = useRef({ enemies: [] } as EnemiesState);
 
     const problemsState = useRef(null as null | { problemTime: number, question: string, answers: (Problem['answers'][0] & { key: string, pos: GamePosition, isAnsweredWrong: boolean })[] });
@@ -227,11 +258,7 @@ const GameView = (props: { pressState: GamepadPressState, pauseState: { paused: 
         playerPositionState.current.y = gameStyles.viewscreenView.height * 0.5;
         playerPositionState.current.x = gameStyles.viewscreenView.width * 0.15;
 
-        gameState.current = {
-            gameStartTimeMs: gameState.current.gameStartTimeMs,
-            lives: 3,
-            score: 0,
-        };
+        gameState.current = { ...getDefaultGameState(), lastGameTime: gameState.current.lastGameTime };
     };
 
     const gameOver = () => {
@@ -278,6 +305,7 @@ const GameView = (props: { pressState: GamepadPressState, pauseState: { paused: 
                                 gameState.current = {
                                     ...gameState.current,
                                     score: gameState.current.score += Math.floor(enemy.pos.x) * 1000,
+                                    gameSpeed: Math.min(maxGameSpeed, gameState.current.gameSpeed * 1 + gameAcceleration),
                                 };
                             } else {
                                 ans.isAnsweredWrong = true;
@@ -285,6 +313,7 @@ const GameView = (props: { pressState: GamepadPressState, pauseState: { paused: 
                                 gameState.current = {
                                     ...gameState.current,
                                     score: gameState.current.score -= Math.floor(enemy.pos.x) * 1500,
+                                    gameSpeed: Math.max(minGameSpeed, gameState.current.gameSpeed * 1 - gameAcceleration * 3),
                                 };
                             }
                         });
@@ -311,13 +340,13 @@ const GameView = (props: { pressState: GamepadPressState, pauseState: { paused: 
 
     useEffect(() => {
         // Game Loop
-        let gameLastTime = Date.now();
+        let gameLastTime = getGameTime().gameTime;
         const gameLoop = () => {
             const { gameTime } = getGameTime();
-            const gameDeltaTime = Math.min(0.1, (Date.now() - gameLastTime) / 1000);
-            gameLastTime = Date.now();
+            const gameDeltaTime = gameTime - gameLastTime;
+            gameLastTime = gameTime;
 
-            if (pauseState.current.paused) {
+            if (pauseState.current.paused || gameDeltaTime <= 0) {
                 requestAnimationFrame(gameLoop);
                 return;
             }
@@ -495,21 +524,21 @@ const updatePlayer = ({ gameTime, gameDeltaTime, pressState, playerPosition, gam
 };
 
 type ProjectilesState = {
-    lastShotTime: number;
+    lastShotActualTime: number;
     shots: { key: string, pos: GamePosition, explodeTime?: number, ignore?: boolean, lockedEnemy?: { pos: GamePosition } }[];
     debris: { key: string, vel: Vector2, pos: GamePosition, kind: SpriteKind, hasHitGround?: boolean }[];
 };
 const updateProjectiles = ({ gameTime, gameDeltaTime, pressState, playerPosition: playerPos, enemiesState, projectilesState, gameState, onLoseLife }: CommonGameState): ProjectilesState => {
-    const { shots, debris, lastShotTime } = projectilesState;
+    const { shots, debris, lastShotActualTime } = projectilesState;
 
-    const canShoot = !gameState.deadTime && !gameState.gameOverTime && gameTime > 0.25 + lastShotTime;
+    const canShoot = !gameState.deadTime && !gameState.gameOverTime && (Date.now() / 1000) > 0.25 + lastShotActualTime;
 
     // console.log(`updateProjectiles`, { canShoot, gameTime, lastShotTime });
 
     const didShoot = canShoot && pressState.buttons.find(x => x.key === `A`)?.isDown;
     if (didShoot) {
         const lockedEnemy = gameState.weaponsLock?.lockedEnemy;
-        shots.push({ key: `${lastShotTime}`, pos: { ...playerPos }, lockedEnemy });
+        shots.push({ key: `${lastShotActualTime}`, pos: { ...playerPos }, lockedEnemy });
     }
 
     // Move shots
@@ -563,7 +592,7 @@ const updateProjectiles = ({ gameTime, gameDeltaTime, pressState, playerPosition
 
     return {
         ...projectilesState,
-        lastShotTime: didShoot ? gameTime : lastShotTime,
+        lastShotActualTime: didShoot ? (Date.now() / 1000) : lastShotActualTime,
         shots: newShots,
     };
 };
