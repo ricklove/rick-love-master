@@ -35,7 +35,7 @@ const EducationalGame_StarBlastSideways_Inner = (props: { problemService: Proble
                     <View style={{ overflow: `hidden`, padding: 10, paddingTop: 4, paddingBottom: 64 }}>
                         <View style={{ position: `relative` }}>
                             <GameView pressState={pressState} pauseState={pauseState} problemService={props.problemService} problemSourceKey={`${problemSourceKey}`} />
-                            <Pressable style={{ position: `absolute`, top: 0, bottom: 0, left: 0, right: 0, opacity: 0 }} onPressIn={() => { }} onPressOut={() => { }} />
+                            {/* <Pressable style={{ position: `absolute`, top: 0, bottom: 0, left: 0, right: 0, opacity: 0 }} onPressIn={() => { }} onPressOut={() => { }} /> */}
                             <View style={{ zIndex: 10, flex: 1, alignSelf: `stretch` }}>
                                 <GamepadAnalogStateful style={colors.gamepad} onPressStateChange={onPressStateChange} buttons={[{ key: `A`, text: `🔥` }]} />
                             </View>
@@ -130,6 +130,8 @@ const colors = {
 };
 
 const gameStyles = {
+    directAnswerButtonContainer: { alignSelf: `flex-end`, justifyContent: `space-around`, height: 250, padding: 4 },
+    directAnswerButton: { width: 40, height: 40, backgroundColor: `#FFFFFF`, opacity: 0.1 },
     viewscreenView: {
         height: 300,
         width: 300,
@@ -194,6 +196,7 @@ type GameState = {
         lockedAtPlayerPosition: GamePosition;
         lockedEnemy: { pos: GamePosition };
     };
+    playerTargetPosition?: { x: number, y: number };
 };
 
 
@@ -433,6 +436,16 @@ const GameView = (props: { pressState: GamepadPressState, pauseState: { paused: 
 
     const timeSinceProblem = getGameTime().gameTime - (problemsState.current?.problemTime ?? 0);
 
+    const directAnswer = (enemy: EnemiesState['enemies'][0]) => {
+        if (gameState.current.gameOverTime) { restartGame(); return; }
+        if (gameState.current.deadTime) { return; }
+        if (enemy.destroyed || enemy.explodeTime) { return; }
+        gameState.current.weaponsLock = { lockedEnemy: enemy, lockedAtPlayerPosition: playerPositionState.current };
+        const { shots } = projectilesState.current;
+        shots.push({ key: `${getGameTime()}${shots.length}`, pos: { ...playerPositionState.current }, lockedEnemy: enemy });
+        gameState.current.playerTargetPosition = { x: playerPositionState.current.x, y: enemy.pos.y };
+    };
+
     return (
         <>
             <View style={gameStyles.viewscreenView} >
@@ -471,6 +484,14 @@ const GameView = (props: { pressState: GamepadPressState, pauseState: { paused: 
                         </View>
                     </View>
                 )}
+
+                <View style={gameStyles.directAnswerButtonContainer}>
+                    {enemiesState.current?.enemies.map(e => (
+                        <TouchableOpacity key={e.key} onPress={() => directAnswer(e)} >
+                            <View style={gameStyles.directAnswerButton} />
+                        </TouchableOpacity>
+                    ))}
+                </View>
             </View>
             <View style={{ position: `relative`, height: gameStyles.question.text.fontSize * 3, alignSelf: `stretch` }}>
                 <TextPositioned text={problemsState.current?.question ?? ``} position={{ x: gameStyles.viewscreenView.width * 0.25, y: gameStyles.question.text.fontSize * 1 - Math.max(0, gameStyles.viewscreenView.height * 0.5 - 125 * timeSinceProblem), rotation: 0 }} />
@@ -481,6 +502,7 @@ const GameView = (props: { pressState: GamepadPressState, pauseState: { paused: 
             {/* <View style={[gameStyles.question.view, { transform: `translate(0px,${-Math.max(0, gameStyles.viewscreenView.height * 0.5 - 125 * timeSinceProblem)}px)` }]}>
                 <Text style={{...gameStyles.question.text, text.length > 10 ? s.fontSize_small * 0.5 : s.fontSize}} >{problemsState.current?.question}</Text>
             </View> */}
+
         </>
     );
 };
@@ -505,11 +527,30 @@ const updateGame = ({ gameTime, gameDeltaTime, pressState, playerPosition, gameS
 const updatePlayer = ({ gameTime, gameDeltaTime, pressState, playerPosition, gameState }: CommonGameState): { playerPosition: GamePosition } => {
     if (gameState.deadTime) { return { playerPosition }; }
 
-    const targetRotation = -pressState.moveDirection.y * 0.05;
+    const dirPress = pressState.moveDirection;
+    const targetPos = gameState.playerTargetPosition;
+    const dir = dirPress.x || dirPress.y ? { x: dirPress.x, y: -dirPress.y }
+        : targetPos ? { x: targetPos.x - playerPosition.x, y: targetPos.y - playerPosition.y }
+            : { x: 0, y: 0 };
+    dir.x = dir.x === 0 ? 0 : Math.sign(dir.x);
+    dir.y = dir.y === 0 ? 0 : Math.sign(dir.y);
+
+    if (gameState.playerTargetPosition) {
+        console.log(`updatePlayer`, { dirPress, dir, targetPos, playerPosition });
+    }
+
+    if (dirPress.x || dirPress.y) {
+        gameState.playerTargetPosition = undefined;
+    }
+    if (gameState.playerTargetPosition && getDistanceSq(playerPosition, gameState.playerTargetPosition) < 5 * 5) {
+        gameState.playerTargetPosition = undefined;
+    }
+
+    const targetRotation = dir.y * 0.05;
 
     const pos = {
-        x: playerPosition.x + pressState.moveDirection.x * gameDeltaTime * 250,
-        y: playerPosition.y - pressState.moveDirection.y * gameDeltaTime * 250,
+        x: playerPosition.x + dir.x * gameDeltaTime * 250,
+        y: playerPosition.y + dir.y * gameDeltaTime * 250,
         rotation: playerPosition.rotation * 0.9 + targetRotation * 0.1,
     };
 
@@ -538,16 +579,18 @@ const updateProjectiles = ({ gameTime, gameDeltaTime, pressState, playerPosition
     const didShoot = canShoot && pressState.buttons.find(x => x.key === `A`)?.isDown;
     if (didShoot) {
         const lockedEnemy = gameState.weaponsLock?.lockedEnemy;
-        shots.push({ key: `${lastShotActualTime}`, pos: { ...playerPos }, lockedEnemy });
+        shots.push({ key: `${gameTime}${shots.length}`, pos: { ...playerPos }, lockedEnemy });
     }
 
     // Move shots
     shots.forEach(x => {
         if (x.explodeTime) { return; }
 
-        x.pos.x += +250 * gameDeltaTime;
         if (x.lockedEnemy) {
             x.pos.y += (x.lockedEnemy.pos.y - x.pos.y) * 0.25;
+            x.pos.x += Math.min(250 * gameDeltaTime, (x.lockedEnemy.pos.x - x.pos.x) * 0.5);
+        } else {
+            x.pos.x += 250 * gameDeltaTime;
         }
     });
 
@@ -623,6 +666,9 @@ const updateEnemies = ({ gameTime, gameDeltaTime, projectilesState, enemiesState
 
         if (e.explodeTime) { return; }
         if (s.explodeTime || s.ignore) { return; }
+
+        // Only shoot locked enemy
+        if (s.lockedEnemy && s.lockedEnemy !== e) { return; }
 
         if (getDistanceSq(e.pos, s.pos) < radiusSq) {
             console.log(`Exploded!`, { e, s });
