@@ -71,7 +71,7 @@ const createService = () => {
         //     finishedTimestamp: Date.now() - Math.random() * 1000 * 60 * 60 * 24 * 7,
         // }))],
         characters: [...skillTree.allNodes
-            .filter(x => x.name === `health_worker` && x.gender === `female`)
+            .filter(x => x.name === `artist` && x.gender === `female`)
             .map(x => ({
                 characterEmoji: x.emoji,
                 finishedTimestamp: Math.floor(Date.now() - 0.25 * 1000 * 60 * 60 * 24),
