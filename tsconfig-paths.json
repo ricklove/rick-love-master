@@ -64,6 +64,9 @@
       "upload-api/*": [
         "code/upload-api/*"
       ],
+      "user-data-service/*": [
+        "code/user-data-service/*"
+      ],
       "utils-react/*": [
         "code/utils-react/*"
       ],

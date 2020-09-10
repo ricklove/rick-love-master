@@ -1,6 +1,6 @@
 import { ApiError } from './error';
 
-function fetchWithTimeout(url: string, options: RequestInit, timeout = 10000): Promise<Response> {
+export function fetchWithTimeout(url: string, options: RequestInit, timeout = 10000): Promise<Response> {
     return Promise.race([
         fetch(url, options),
         new Promise((resolve, reject) =>
@@ -9,11 +9,11 @@ function fetchWithTimeout(url: string, options: RequestInit, timeout = 10000): P
     ]);
 }
 
-export async function webRequest(url: string, data: unknown) {
+export async function webRequest(url: string, data: unknown, options?: { method: 'POST' | 'PUT' }) {
 
     const body = JSON.stringify(data);
     const reqData: RequestInit = {
-        method: `POST`,
+        method: options?.method ?? `POST`,
         headers: {
             'Accept': `application/json`,
             'Content-Type': `application/json`,

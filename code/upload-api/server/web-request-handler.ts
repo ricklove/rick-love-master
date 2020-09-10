@@ -6,6 +6,8 @@ const settings = {
     bucket: process.env.BUCKET!,
     // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
     keyBucket: process.env.KEYBUCKET!,
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+    tempBucket: process.env.TEMPBUCKET!,
 };
 
 export const handleUploadApiWebRequest = async (requestData: UploadApiRequestData) => {

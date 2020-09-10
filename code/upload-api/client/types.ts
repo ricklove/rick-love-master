@@ -7,10 +7,11 @@ export type UploadUrl = {
     contentType: string;
     expirationTimestamp: number;
     secretKey: SecureToken;
+    isTemporaryObject: boolean;
 };
 
 export type UploadApi = {
-    createUploadUrl: (data: { contentType: string }) => Promise<{ uploadUrl: UploadUrl }>;
+    createUploadUrl: (data: { contentType: string, shareablePath?: boolean }) => Promise<{ uploadUrl: UploadUrl }>;
     renewUploadUrl: (data: { uploadUrl: UploadUrl }) => Promise<{ uploadUrl: UploadUrl }>;
 };
 

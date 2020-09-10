@@ -1,6 +1,6 @@
 import AWS from 'aws-sdk';
 import { v4 as uuidv4 } from 'uuid';
-import { generateSecureToken, SecureToken } from 'utils/secure-token';
+import { generateSecureToken, SecureToken, generateHumanReadableRandomCode } from 'utils/secure-token';
 import { ApiError } from 'utils/error';
 import { UploadApi, UploadUrl } from '../client/types';
 
@@ -9,14 +9,16 @@ const s3 = new AWS.S3({ signatureVersion: `v4` });
 export type Settings = {
     bucket: string;
     keyBucket: string;
+    tempBucket: string;
 };
 
-export const createPresignedUploadUrl = async (relativePath: string, contentType: string, settings: Settings, options?: { existingSecretKey?: SecureToken }): Promise<{ uploadUrl: UploadUrl }> => {
+export const createPresignedUploadUrl = async (relativePath: string, contentType: string, settings: Settings, options?: { existingSecretKey?: SecureToken, useTempBucket?: boolean }): Promise<{ uploadUrl: UploadUrl }> => {
+    const bucket = options?.useTempBucket ? settings.tempBucket : settings.bucket;
 
     console.log(`createPresignedUploadUrl - create putUrl`);
     const putUrl = await s3.getSignedUrlPromise(`putObject`, {
 
-        Bucket: settings.bucket,
+        Bucket: bucket,
         // bucket path
         Key: relativePath,
         // Expire Upload Url in N secs
@@ -30,7 +32,7 @@ export const createPresignedUploadUrl = async (relativePath: string, contentType
         // ACL: 'public-read',
     });
 
-    const getUrl = `https://${settings.bucket}.s3.amazonaws.com/${relativePath}`;
+    const getUrl = `https://${bucket}.s3.amazonaws.com/${relativePath}`;
 
     // Save a secretKey
     console.log(`createPresignedUploadUrl - save secretKey in keyBucket`);
@@ -54,20 +56,22 @@ export const createPresignedUploadUrl = async (relativePath: string, contentType
         expirationTimestamp: Date.now() + 7 * 24 * 60 * 60 * 1000,
         contentType,
         secretKey,
+        isTemporaryObject: options?.useTempBucket ?? false,
     };
 
     return { uploadUrl: result };
 };
 
-export const createPresignedUploadUrl_random = (contentType: string, settings: Settings) => {
-    const relPath = uuidv4();
-    return createPresignedUploadUrl(relPath, contentType, settings);
+export const createPresignedUploadUrl_random = async (contentType: string, settings: Settings, options?: { shareablePath: boolean }) => {
+    const relPath = options?.shareablePath ? await generateHumanReadableRandomCode() : uuidv4();
+    return await createPresignedUploadUrl(relPath, contentType, settings, { useTempBucket: options?.shareablePath });
 };
+
 
 export const createUploadApi = (settings: Settings): UploadApi => {
 
     const uploadApi: UploadApi = {
-        createUploadUrl: (data) => createPresignedUploadUrl_random(data.contentType, settings),
+        createUploadUrl: (data) => createPresignedUploadUrl_random(data.contentType, settings, { shareablePath: data.shareablePath ?? false }),
         renewUploadUrl: async (data) => {
             // Verify Key
             console.log(`renewUploadUrl - verify secretKey`);

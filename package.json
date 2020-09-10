@@ -99,6 +99,7 @@
     "code/react-native-lite",
     "code/themes",
     "code/upload-api",
+    "code/user-data-service",
     "code/utils-react",
     "code/utils-scripts",
     "code/utils"
