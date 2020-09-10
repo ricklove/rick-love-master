@@ -1,0 +1,4 @@
+# From ../../.build/src/code/blog-serverless/server-lambda/user-data/index.ts
+lambda/user-data/index.js
+lambda/user-data/package.json
+lambda/user-data/package-lock.json

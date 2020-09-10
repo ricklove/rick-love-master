@@ -1,0 +1,16 @@
+{
+  "dependencies": {
+    "utils": "*",
+    "@babel/core": "^7.11.6",
+    "glob": "^7.1.6",
+    "rollup": "^2.26.11",
+    "rollup-plugin-babel": "^4.4.0",
+    "rollup-plugin-node-resolve": "^5.2.0",
+    "ts-node": "^8.10.1",
+    "typescript": "^3.9.3"
+  },
+  "scripts": {},
+  "devDependencies": {
+    "@types/glob": "^7.1.3"
+  }
+}

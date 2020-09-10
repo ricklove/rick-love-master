@@ -1,0 +1,43 @@
+service: rick-love-blog-aws
+
+custom:
+  bucket: rick-love-blog-user-data
+
+resources:
+  Resources:
+    UploadsBucket:
+      Type: AWS::S3::Bucket
+      Properties:
+        BucketName: ${self:custom.bucket}
+        AccessControl: PublicRead
+        CorsConfiguration:
+          CorsRules:
+            - AllowedHeaders: ['*']
+              AllowedMethods: [GET, PUT]
+              AllowedOrigins: ['*']
+
+provider:
+  name: aws
+  runtime: nodejs12.x
+  profile: gator-texting
+  region: us-west-2
+  stage: prod
+  iamRoleStatements:
+    - Effect: Allow
+      Action:
+        - s3:PutObject
+        - s3:PutObjectAcl
+        - s3:GetObject
+        - s3:GetObjectAcl
+      Resource: arn:aws:s3:::${self:custom.bucket}/*
+
+functions:
+  upload-api:
+    handler: lambda/upload-api/index.handler
+    environment:
+      BUCKET: ${self:custom.bucket}
+    events:
+      - http:
+          path: upload-api/{param}
+          method: POST
+          cors: true

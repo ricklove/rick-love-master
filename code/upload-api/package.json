@@ -1,0 +1,13 @@
+{
+    "name": "upload-api",
+    "version": "1.0.0",
+    "dependencies": {
+        "utils": "*",
+        "aws-sdk": "^2.749.0",
+        "uuid": "^8.3.0"
+    },
+    "devDependencies": {
+        "@types/aws-sdk": "^2.7.0",
+        "@types/uuid": "^8.3.0"
+    }
+}

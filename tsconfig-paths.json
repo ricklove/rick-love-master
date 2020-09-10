@@ -10,6 +10,9 @@
       "blog/*": [
         "code/blog/*"
       ],
+      "blog-serverless/*": [
+        "code/blog-serverless/*"
+      ],
       "code-space-logic/*": [
         "code/code-space/code-space-logic/*"
       ],
@@ -57,6 +60,9 @@
       ],
       "themes/*": [
         "code/themes/*"
+      ],
+      "upload-api/*": [
+        "code/upload-api/*"
       ],
       "utils-react/*": [
         "code/utils-react/*"
