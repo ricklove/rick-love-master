@@ -19,7 +19,6 @@ resources:
 provider:
   name: aws
   runtime: nodejs12.x
-  profile: gator-texting
   region: us-west-2
   stage: prod
   iamRoleStatements:
