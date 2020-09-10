@@ -70,7 +70,9 @@
     "source-map-support": "^0.5.19",
     "ts-node": "^8.10.1",
     "tsconfig-paths": "^3.9.0",
-    "typescript": "^3.9.3"
+    "typescript": "^3.9.3",
+    "aws-sdk": "^2.749.0",
+    "uuid": "^8.3.0"
   },
   "scripts": {
     "build": "cd scripts/build && ts-node -r tsconfig-paths/register build.ts",
@@ -96,6 +98,7 @@
     "code/performance",
     "code/react-native-lite",
     "code/themes",
+    "code/upload-api",
     "code/utils-react",
     "code/utils-scripts",
     "code/utils"

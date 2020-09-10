@@ -2,6 +2,7 @@ service: rick-love-blog-aws
 
 custom:
   bucket: rick-love-blog-user-data
+  keybucket: rick-love-blog-user-data-keys
 
 resources:
   Resources:
@@ -15,6 +16,10 @@ resources:
             - AllowedHeaders: ['*']
               AllowedMethods: [GET, PUT]
               AllowedOrigins: ['*']
+    UploadsKeyBucket:
+      Type: AWS::S3::Bucket
+      Properties:
+        BucketName: ${self:custom.keybucket}
 
 provider:
   name: aws
@@ -29,12 +34,20 @@ provider:
         - s3:GetObject
         - s3:GetObjectAcl
       Resource: arn:aws:s3:::${self:custom.bucket}/*
+    - Effect: Allow
+      Action:
+        - s3:PutObject
+        - s3:PutObjectAcl
+        - s3:GetObject
+        - s3:GetObjectAcl
+      Resource: arn:aws:s3:::${self:custom.keybucket}/*
 
 functions:
   upload-api:
     handler: lambda/upload-api/index.handler
     environment:
       BUCKET: ${self:custom.bucket}
+      KEYBUCKET: ${self:custom.keybucket}
     events:
       - http:
           path: upload-api/{param}

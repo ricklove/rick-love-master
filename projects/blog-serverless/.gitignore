@@ -1,4 +1,2 @@
-# From ../../.build/src/code/blog-serverless/server-lambda/upload-api/index.ts
-lambda/upload-api/index.js
-lambda/upload-api/package.json
-lambda/upload-api/package-lock.json
+.serverless
+lambda

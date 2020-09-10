@@ -1,5 +1,17 @@
+import { SecureToken } from 'utils/secure-token';
+
+export type UploadUrl = {
+    getUrl: string;
+    putUrl: string;
+    relativePath: string;
+    contentType: string;
+    expirationTimestamp: number;
+    secretKey: SecureToken;
+};
+
 export type UploadApi = {
-    createUploadUrl: (data: { contentType: string }) => Promise<{ uploadUrl: string, readUrl: string }>;
+    createUploadUrl: (data: { contentType: string }) => Promise<{ uploadUrl: UploadUrl }>;
+    renewUploadUrl: (data: { uploadUrl: UploadUrl }) => Promise<{ uploadUrl: UploadUrl }>;
 };
 
 export type UploadApiEndpointName = keyof UploadApi;

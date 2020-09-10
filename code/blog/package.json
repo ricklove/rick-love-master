@@ -8,6 +8,7 @@
     "educational-games": "*",
     "payments": "*",
     "themes": "*",
+    "upload-api": "*",
     "utils": "*",
     "utils-react": "*",
     "highlight.js": "^10.0.3",

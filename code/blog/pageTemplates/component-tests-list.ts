@@ -6,6 +6,7 @@ export const componentTestList = [
     { name: `midi-test`, load: async () => (await import(`audio/midi-test`)).MidiTestComponent },
     { name: `timing-perception-test`, load: async () => (await import(`perception/timing-perception-test`)).TimingPerceptionTestComponent },
     { name: `multiples-counting`, load: async () => (await import(`educational-games/multiples-counting`)).EducationalGame_MultiplesCounting },
+    { name: `uploads`, load: async () => (await import(`upload-api/client/upload-test-view`)).UploadTestView },
 
     // { name: `theme`, load: async () => (await import(`themes/theme-example`)).ThemeExample },
 ];

@@ -5,7 +5,7 @@ import * as path from 'path';
 import { rollup } from 'rollup';
 import * as child_process from 'child_process';
 import { consoleColors } from 'utils/console-colors';
-import { toKeyValueObject } from 'utils/objects';
+import { toKeyValueObject, toKeyValueArray } from 'utils/objects';
 import { cloneToBuildFolder } from './clone';
 
 const babel = require(`rollup-plugin-babel`);
@@ -51,7 +51,8 @@ async function runBuildFunction(sourceFunDir: string, destFunDir: string, funNam
         const extensions = [`.js`, `.jsx`, `.ts`, `.tsx`];
         console.log(`Bundling ${funName}`);
 
-        const packageJsonDependencies = (await import(`../../package.json`)).dependencies;
+        const packageJson = (await import(`../../package.json`));
+        const packageJsonDependencies = { ...packageJson.dependencies, ...packageJson.devDependencies };
         const external = Object.keys(packageJsonDependencies);
         console.log(`External: ${external.join(` `)}`);
 
@@ -188,24 +189,24 @@ async function runSync(changedFiles: string[]) {
         await runBuildFunction(sourceFunDir, destFunDir, fun);
     }
 
-    // Update gitIgnore
-    const gitIgnoreRootPath = `../../projects/blog-serverless/`;
-    const gitIgnorePath = `${gitIgnoreRootPath}.gitignore`;
+    //     // Update gitIgnore (not needed - entire destination folder is ignored)
+    //     const gitIgnoreRootPath = destFunDir;
+    //     const gitIgnorePath = `${gitIgnoreRootPath}.gitignore`;
 
-    const gitIgnore = state.gitIgnoreFileGroups
-        .map(x => `# From ${x.sourcePath}
-${x.destintionFilePaths
-                .map(p => p.replace(gitIgnoreRootPath, ``))
-                .join(`
-`)}
-`)
-        .join(`
+    //     const gitIgnore = state.gitIgnoreFileGroups
+    //         .map(x => `# From ${x.sourcePath}
+    // ${x.destintionFilePaths
+    //                 .map(p => p.replace(gitIgnoreRootPath, ``))
+    //                 .join(`
+    // `)}
+    // `)
+    //         .join(`
 
-`);
-    if (gitIgnore !== state.lastGitIgnore) {
-        state.lastGitIgnore = gitIgnore;
-        await fs.writeFile(gitIgnorePath, gitIgnore);
-    }
+    // `);
+    //     if (gitIgnore !== state.lastGitIgnore) {
+    //         state.lastGitIgnore = gitIgnore;
+    //         await fs.writeFile(gitIgnorePath, gitIgnore);
+    //     }
 
 }
 
