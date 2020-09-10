@@ -19,7 +19,7 @@ resources:
 provider:
   name: aws
   runtime: nodejs12.x
-  region: us-west-2
+  region: us-east-1
   stage: prod
   iamRoleStatements:
     - Effect: Allow
