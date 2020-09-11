@@ -227,6 +227,16 @@ const createUserDataService = () => {
                 throw error_;
             }
         },
+        getActiveUser: (): null | UserProfileInfo => {
+            const user = getActiveUserProfile();
+            if (!user) { return null; }
+            return {
+                key: user.key,
+                name: user.name,
+                emoji: user.emoji ?? `👤`,
+                isActive: true,
+            };
+        },
         setActiveUser: async (userProfileKey: string) => {
             const state = storage.getUserDataServiceState();
             if (!state) { return; }
