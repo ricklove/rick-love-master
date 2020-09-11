@@ -2,7 +2,9 @@
     "name": "user-data-service",
     "version": "1.0.0",
     "dependencies": {
+        "controls-react": "*",
         "utils": "*",
+        "utils-react": "*",
         "upload-api": "*",
         "react-native-lite": "*",
         "aws-sdk": "^2.749.0",

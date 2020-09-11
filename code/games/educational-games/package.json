@@ -3,6 +3,8 @@
   "version": "1.0.0",
   "dependencies": {
     "utils": "*",
+    "utils-react": "*",
+    "user-data-service": "*",
     "react-native-lite": "*",
     "react": "^16.12.0"
   }

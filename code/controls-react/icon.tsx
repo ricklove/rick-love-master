@@ -2,7 +2,7 @@ import React from 'react';
 import { ThemeIconStyle, theme } from 'themes/theme';
 import { MdMenu, MdArrowBack, MdCheckBoxOutlineBlank, MdErrorOutline, MdContentCopy, MdDashboard } from 'react-icons/md';
 import { FiChevronRight, FiChevronDown } from 'react-icons/fi';
-import { FaRedo, FaPlus, FaMinus, FaEye, FaEyeSlash } from 'react-icons/fa';
+import { FaRedo, FaPlus, FaMinus, FaEye, FaEyeSlash, FaCheck, FaCheckSquare, FaSquare } from 'react-icons/fa';
 import { View } from 'react-native-lite';
 import { IconKind } from './icon-kind';
 
@@ -20,6 +20,8 @@ function getIcon(kind: IconKind) {
         case IconKind.remove: return { name: `minus`, component: FaMinus };
         case IconKind.eye: return { name: `eye`, component: FaEye };
         case IconKind.eyeSlash: return { name: `eye-slash`, component: FaEyeSlash };
+        case IconKind.checkChecked: return { name: `checked`, component: FaCheckSquare };
+        case IconKind.checkUnchecked: return { name: `unchecked`, component: FaSquare };
 
         // case IconKind.Account: return { name: `account-circle`, component: MaterialIcons };
         // case IconKind.Message: return { name: `message`, component: MaterialIcons };

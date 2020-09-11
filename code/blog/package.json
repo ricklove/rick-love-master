@@ -9,6 +9,7 @@
     "payments": "*",
     "themes": "*",
     "upload-api": "*",
+    "user-data-service": "*",
     "utils": "*",
     "utils-react": "*",
     "highlight.js": "^10.0.3",

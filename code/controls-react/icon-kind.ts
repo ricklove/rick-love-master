@@ -14,6 +14,9 @@ export enum IconKind {
     eye,
     eyeSlash,
 
+    checkChecked,
+    checkUnchecked,
+
     // navigation icons
     account,
     message,

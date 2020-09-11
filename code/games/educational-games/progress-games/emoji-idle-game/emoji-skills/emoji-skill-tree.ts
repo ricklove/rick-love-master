@@ -71,7 +71,7 @@ export const buildEmojiSkillTree = (): EmojiSkillTree => {
     // const allRequirements = distinct(allNodes.flatMap(x => x.requirementEmojis));
     // const allRequirementsDoc = allRequirements.map(x => `${x} = 0`).join(`\n`);
 
-    console.log(`buildSkillTree`, { tree, maleSkillDoc, femaleSkillDoc });
+    // console.log(`buildSkillTree`, { tree, maleSkillDoc, femaleSkillDoc });
     return tree;
 };
 // setTimeout(buildEmojiSkillTree);

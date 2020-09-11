@@ -272,4 +272,7 @@ export const EmojiIdleService = {
         // eslint-disable-next-line no-return-assign
         return serviceState.instance ?? (serviceState.instance = createService());
     },
+    reset: () => {
+        serviceState.instance = createService();
+    },
 };

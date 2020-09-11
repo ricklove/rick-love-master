@@ -1,11 +1,24 @@
 import { fetchWithTimeout } from 'utils/web-request';
+import { AppError } from 'utils/error';
 import { UploadUrl } from './types';
+
+export const downloadData = async (getUrl: string) => {
+    const result = await fetchWithTimeout(getUrl, {
+        method: `GET`,
+        headers: {
+            'Accept': `application/json`,
+        },
+    });
+    const json = await result.json() as { data: unknown };
+    return json.data;
+};
+
 
 export const createUploader = (uploadUrl: UploadUrl) => {
     return {
         uploadData: async (data: unknown) => {
             const body = JSON.stringify({ data });
-            await fetchWithTimeout(uploadUrl.putUrl, {
+            const result = await fetchWithTimeout(uploadUrl.putUrl, {
                 method: `PUT`,
                 headers: {
                     'Accept': `application/json`,
@@ -14,16 +27,13 @@ export const createUploader = (uploadUrl: UploadUrl) => {
                 },
                 body,
             });
+
+            if (!result.ok) {
+                throw new AppError(`Upload Failed`);
+            }
         },
         downloadData: async (): Promise<unknown> => {
-            const result = await fetchWithTimeout(uploadUrl.getUrl, {
-                method: `GET`,
-                headers: {
-                    'Accept': `application/json`,
-                },
-            });
-            const json = await result.json() as { data: unknown };
-            return json.data;
+            return await downloadData(uploadUrl.getUrl);
         },
     };
 };

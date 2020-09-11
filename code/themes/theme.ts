@@ -438,9 +438,9 @@ export const vscodeThemeColors = {
 };
 
 // eslint-disable-next-line import/no-mutable-exports
-// export let theme = createTheme(basicThemeColors, basicThemeSizes, basicFont);
+export let theme = createTheme(basicThemeColors, basicThemeSizes, basicFont);
 // eslint-disable-next-line import/no-mutable-exports
-export let theme = createTheme(purpleThemeColors, purpleSizes, basicFont);
+// export let theme = createTheme(purpleThemeColors, purpleSizes, basicFont);
 
 export const setTheme = (colors: ThemeColors, sizes: ThemeSizes, font: ThemeFont) => {
     theme = createTheme(purpleThemeColors, basicThemeSizes, basicFont);
