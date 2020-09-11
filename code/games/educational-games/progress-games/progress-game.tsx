@@ -80,7 +80,7 @@ export const ProgressGameView = () => {
         // setHasSelectedProfile(false);
         // Force Reload Page
         if (Platform.OS === `web`) {
-            window.location.href = `${window.location.href}`;
+            window.location.reload();
         }
     };
 
