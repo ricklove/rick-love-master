@@ -256,8 +256,9 @@ const createUserDataService = () => {
                 throw new AppError(`User Profile not found`);
             }
 
-            // Upload old user data
-            await service.uploadUserData();
+            // Don't upload old user data - the chance of this being out of date is high
+            // // Upload old user data
+            // await service.uploadUserData();
 
             state.activeUserProfileKey = userProfileKey;
             state.changeTimestamp = 0;
