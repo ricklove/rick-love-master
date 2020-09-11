@@ -63,12 +63,21 @@ const createUserDataService = () => {
             }
             return data;
         },
-        setUserData: (userData: UserData) => {
+        clearUserData: () => {
             // Remove all old data
             const keys = Object.keys(localStorage).filter(x => !x.startsWith(`_`));
             for (const k of keys) {
                 localStorage.removeItem(k);
             }
+
+            // Load metadata
+            const state = storage.getUserDataServiceState();
+            if (!state) { return; }
+            state.userProfiles.forEach(x => { x.lastUploadTimestamp = undefined; });
+            storage.setUserDataServiceState(state);
+        },
+        setUserData: (userData: UserData) => {
+            storage.clearUserData();
 
             // Set New data
             for (const k of Object.keys(userData.data)) {
@@ -131,7 +140,7 @@ const createUserDataService = () => {
         }
     };
 
-    const updateUserProfile = async (userProfileKey: string) => {
+    const updateUserProfileFromServer = async (userProfileKey: string) => {
         console.log(`updateUserProfile`, { userProfileKey });
         const state = storage.getUserDataServiceState();
         const userState = state && state.userProfiles.find(x => x.key === userProfileKey);
@@ -158,14 +167,14 @@ const createUserDataService = () => {
             storage.setUserData(userData);
         }
     };
-    const updateAllProfiles = async () => {
+    const updateAllProfilesFromServer = async () => {
         const state = storage.getUserDataServiceState();
         if (!state) { return; }
 
         for (const userState of state.userProfiles) {
             try {
                 // eslint-disable-next-line no-await-in-loop
-                await updateUserProfile(userState.key);
+                await updateUserProfileFromServer(userState.key);
             } catch (error_) {
                 console.log(`updateAllProfiles - ERROR Updating user profile`, { error: error_ });
             }
@@ -190,7 +199,7 @@ const createUserDataService = () => {
 
                 const a = getActiveUserProfile();
                 if (a) {
-                    await updateAllProfiles();
+                    await updateAllProfilesFromServer();
                     return;
                 }
 
@@ -198,7 +207,7 @@ const createUserDataService = () => {
                 if (state && state.userProfiles.length > 0) {
                     state.activeUserProfileKey = state.userProfiles[0].key;
                     storage.setUserDataServiceState(state);
-                    await updateAllProfiles();
+                    await updateAllProfilesFromServer();
                     return;
                 }
 
@@ -238,10 +247,12 @@ const createUserDataService = () => {
             };
         },
         setActiveUser: async (userProfileKey: string) => {
+            console.log(`setActiveUser`, { userProfileKey });
             const state = storage.getUserDataServiceState();
             if (!state) { return; }
 
             if (!state.userProfiles.find(x => x.key === userProfileKey)) {
+                console.log(`setActiveUser - User Profile Not Found`, { userProfileKey });
                 throw new AppError(`User Profile not found`);
             }
 
@@ -251,6 +262,12 @@ const createUserDataService = () => {
             state.activeUserProfileKey = userProfileKey;
             state.changeTimestamp = 0;
             storage.setUserDataServiceState(state);
+
+            console.log(`setActiveUser - before download`, { stateJson: JSON.stringify(storage.getUserDataServiceState()) });
+
+            // Clear Current State
+            storage.clearUserData();
+            console.log(`setActiveUser - cleared user data`, {});
 
             // Download new user data
             await service.downloadUserDataIfNewer();
@@ -388,7 +405,7 @@ const createUserDataService = () => {
             console.log(`addUserFromShareCode - ADDED`, { userKey: sharedUploadUrl.relativePath });
 
             // Reload profile
-            await updateUserProfile(sharedUploadUrl.relativePath);
+            await updateUserProfileFromServer(sharedUploadUrl.relativePath);
         },
     };
     return service;

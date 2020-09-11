@@ -391,7 +391,7 @@ const PurchasedView = ({ purchased }: { purchased: string[] }) => {
     return (
         <>
             {purchased.map((x, i) => (
-                <View style={{ position: `absolute`, left: 0, top: 0, flexDirection: `column`, alignItems: `flex-end` }} >
+                <View key={x} style={{ position: `absolute`, left: 0, top: 0, flexDirection: `column`, alignItems: `flex-end` }} >
                     <View style={{ transform: `translate(${((i * 17) + offset) % 60}px,${((i * 5) + offset) % 24}px)` }}>
                         <Text style={styles.objectEmoji}>{`${x}`}</Text>
                     </View>

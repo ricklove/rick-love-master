@@ -3,7 +3,7 @@ import { UserDataService, UserProfileInfo } from 'user-data-service/user-data-se
 import { useAutoLoadingError } from 'utils-react/hooks';
 import { UserProfileManagerView } from 'user-data-service/user-profile-manager-view';
 import { UserProfileSelectionView } from 'user-data-service/user-profile-selection-view';
-import { View, Text, TouchableOpacity } from 'react-native-lite';
+import { View, Text, TouchableOpacity, Platform } from 'react-native-lite';
 import { ProblemService } from '../problems/problems-service';
 import { EmojiIdleView } from './emoji-idle-game/emoji-idle-view';
 import { EmojiIdleService } from './emoji-idle-game/emoji-idle-service';
@@ -65,6 +65,7 @@ export const ProgressGameView = () => {
 
     useEffect(() => {
         setUserProfile(UserDataService.get().getActiveUser() ?? null);
+        EmojiIdleService.reset();
     }, [hasSelectedProfile]);
 
     useEffect(() => {
@@ -74,6 +75,14 @@ export const ProgressGameView = () => {
             EmojiIdleService.reset();
         });
     }, []);
+
+    const onChangeProfile = () => {
+        // setHasSelectedProfile(false);
+        // Force Reload Page
+        if (Platform.OS === `web`) {
+            window.location.href = `${window.location.href}`;
+        }
+    };
 
     if (loading) {
         return <></>;
@@ -87,7 +96,7 @@ export const ProgressGameView = () => {
         <>
             <EmojiIdleView />
             <View>
-                <TouchableOpacity onPress={() => setHasSelectedProfile(false)}>
+                <TouchableOpacity onPress={onChangeProfile}>
                     <View style={{ flexDirection: `row`, alignItems: `center`, justifyContent: `flex-start`, padding: 4 }}>
                         <Text style={{ fontSize: 32 }}>{userProfile?.emoji ?? `👤`}</Text>
                         <Text style={{ fontSize: 14 }}>{userProfile?.name ?? ``}</Text>
