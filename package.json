@@ -102,6 +102,7 @@
     "code/user-data-service",
     "code/utils-react",
     "code/utils-scripts",
-    "code/utils"
+    "code/utils",
+    "code/websockets-api"
   ]
 }

@@ -54,7 +54,7 @@ async function runBuildFunction(sourceFunDir: string, destFunDir: string, funNam
         const packageJson = (await import(`../../package.json`));
         const packageJsonDependencies = { ...packageJson.dependencies, ...packageJson.devDependencies };
         const external = Object.keys(packageJsonDependencies);
-        console.log(`External: ${external.join(` `)}`);
+        // console.log(`External: ${external.join(` `)}`);
 
         // const tsconfigPaths = (await import(`../../tsconfig-paths.json`)).compilerOptions.paths;
         // const allPaths = Object.values(tsconfigPaths).flatMap(x => x).map(x => ROOT + x.replace(/\/\*/, ``));
@@ -116,7 +116,7 @@ async function runBuildFunction(sourceFunDir: string, destFunDir: string, funNam
             },
         });
 
-        idLog.forEach(x => console.log(x));
+        //  idLog.forEach(x => console.log(x));
         // console.log(`External Packages: ${idLog.filter(x => x.isInPackages).map(x => x.id).join(` `)}`);
         // console.log(`External Packages (Built-in): ${idLog.filter(x => !x.isInPackages && x.isWithoutDot).map(x => x.id).join(` `)}`);
 

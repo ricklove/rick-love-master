@@ -8,6 +8,7 @@ export const componentTestList = [
     { name: `multiples-counting`, load: async () => (await import(`educational-games/multiples-counting`)).EducationalGame_MultiplesCounting },
     { name: `uploads`, load: async () => (await import(`upload-api/client/upload-test-view`)).UploadTestView },
     { name: `user-profiles-manager`, load: async () => (await import(`user-data-service/user-profile-manager-view`)).UserProfileManagerView },
+    { name: `websocket-client-test-view`, load: async () => (await import(`websockets-api/client/websocket-client-test-view`)).WebsocketClientTestView },
 
     // { name: `theme`, load: async () => (await import(`themes/theme-example`)).ThemeExample },
 ];

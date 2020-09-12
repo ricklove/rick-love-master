@@ -1,10 +1,19 @@
-export const createSubscribable = <T>(initialState: T) => {
+
+export type Subscription<T> = (state: T) => void;
+
+export const createSubscribable = <T>(initialState?: T) => {
     let lastState = initialState;
-    const callbacks = [] as (null | ((state: T) => void))[];
-    const subscribe = (callback: (state: T) => void) => {
+    const callbacks = [] as (null | Subscription<T>)[];
+    const subscribe = (callback: Subscription<T>) => {
         const i = callbacks.length;
         callbacks.push(callback);
-        setTimeout(() => { callback(lastState); });
+
+        // Send Initial State if it exists
+        setTimeout(() => {
+            if (!lastState) { return; }
+            callback(lastState);
+        });
+
         return {
             unsubscribe: () => {
                 callbacks[i] = null;

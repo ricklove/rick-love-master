@@ -4,6 +4,7 @@ custom:
   bucket: rick-love-blog-user-data
   keybucket: rick-love-blog-user-data-keys
   tempbucket: rick-love-blog-user-data-temp
+  websocketstable: rick-love-blog-websockets-table
 
 resources:
   Resources:
@@ -66,6 +67,17 @@ resources:
               Resource: arn:aws:s3:::${self:custom.tempbucket}/*
         Bucket:
           Ref: UploadsTempBucket
+    WebsocketsTable:
+      Type: AWS::DynamoDB::Table
+      Properties:
+        TableName: ${self:custom.websocketstable}
+        AttributeDefinitions:
+          - AttributeName: key
+            AttributeType: S
+        KeySchema:
+          - AttributeName: key
+            KeyType: HASH
+        BillingMode: PAY_PER_REQUEST
 
 provider:
   name: aws
@@ -94,6 +106,11 @@ provider:
         - s3:GetObject
         - s3:GetObjectAcl
       Resource: arn:aws:s3:::${self:custom.tempbucket}/*
+    - Effect: Allow
+      Action:
+        - dynamodb:GetItem
+        - dynamodb:PutItem
+      Resource: 'arn:aws:dynamodb:${self:provider.region}:*:table/${self:custom.websocketstable}'
 
 functions:
   upload-api:
@@ -107,3 +124,11 @@ functions:
           path: upload-api/{param}
           method: POST
           cors: true
+  websocket-api:
+    handler: lambda/websocket-api/index.handler
+    environment:
+      TABLE: ${self:custom.websocketstable}
+    events:
+      - websocket: $default
+      # - websocket: $connect
+      # - websocket: $disconnect
