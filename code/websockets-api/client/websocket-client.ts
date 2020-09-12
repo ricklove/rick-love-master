@@ -19,54 +19,57 @@ export const createWebsocketClient = (config: { websocketsApiUrl: string }): Web
             const subscribableEvents = createSubscribable<WebsocketConnectionEvent>();
 
             // Connect to websocket (and reconnect, etc.)
-            let socket = new WebSocket(`${config.websocketsApiUrl}`);
+            const createSocket = () => {
+                const socket = new WebSocket(`${config.websocketsApiUrl}`);
 
-            // Connection opened
-            socket.addEventListener(`open`, (event) => {
-                subscribableEvents.onStateChange({ connectionStatus: `opened` });
+                // Connection opened
+                socket.addEventListener(`open`, (event) => {
+                    subscribableEvents.onStateChange({ connectionStatus: `opened` });
 
-                // Send a key message
-                const messageContainer: MessageContainer = {
-                    message: null,
-                    key,
-                };
-                socket.send(JSON.stringify(messageContainer));
+                    // Send a key message
+                    const messageContainer: MessageContainer = {
+                        message: null,
+                        key,
+                    };
+                    socket.send(JSON.stringify(messageContainer));
 
-            });
-            socket.addEventListener(`close`, (event) => {
-                subscribableEvents.onStateChange({ connectionStatus: `closed` });
+                });
+                socket.addEventListener(`close`, (event) => {
+                    subscribableEvents.onStateChange({ connectionStatus: `closed` });
+                    reconnect();
+                });
+                socket.addEventListener(`error`, (event) => {
+                    subscribableEvents.onStateChange({ connectionStatus: `error`, error: { message: `Websocket Error`, error: event } });
+                    reconnect();
+                });
 
-                // Try to reconnect
+                // Listen for messages
+                socket.addEventListener(`message`, (event) => {
+                    const m = JSON.parse(event.data) as MessageContainer;
+                    if (m.key !== key || !m.message) { return; }
+                    subscribable.onStateChange(m.message);
+                });
+
+                return socket;
+            };
+
+            let activeSocket: WebSocket = createSocket();
+            const reconnect = () => {
                 setTimeout(() => {
-                    socket = new WebSocket(config.websocketsApiUrl);
+                    activeSocket = createSocket();
                 }, 50);
-            });
-            socket.addEventListener(`error`, (event) => {
-                subscribableEvents.onStateChange({ connectionStatus: `error`, error: { message: `Websocket Error`, error: event } });
-
-                // Try to reconnect
-                setTimeout(() => {
-                    socket = new WebSocket(config.websocketsApiUrl);
-                }, 50);
-            });
-
-            // Listen for messages
-            socket.addEventListener(`message`, (event) => {
-                const m = JSON.parse(event.data) as MessageContainer;
-                if (m.key !== key || !m.message) { return; }
-                subscribable.onStateChange(m.message);
-            });
+            };
 
             // Send Messages
             const send = (message: T) => {
-                if (socket.readyState !== WebSocket.OPEN) {
+                if (activeSocket.readyState !== WebSocket.OPEN) {
                     throw new AppError(`Websocket is not open`);
                 }
                 const messageContainer: MessageContainer = {
                     message,
                     key,
                 };
-                socket.send(JSON.stringify(messageContainer));
+                activeSocket.send(JSON.stringify(messageContainer));
             };
 
             return {
