@@ -69,16 +69,14 @@ resources:
           Ref: UploadsTempBucket
     WebsocketsTable:
       Type: AWS::DynamoDB::Table
-      AttributeDefinitions:
-        - AttributeName: key
-          AttributeType: S
-        - AttributeName: value
-          AttributeType: S
-      KeySchema:
-        - AttributeName: key
-          KeyType: HASH
       Properties:
         TableName: ${self:custom.websocketstable}
+        AttributeDefinitions:
+          - AttributeName: key
+            AttributeType: S
+        KeySchema:
+          - AttributeName: key
+            KeyType: HASH
         BillingMode: PAY_PER_REQUEST
 
 provider:
@@ -108,6 +106,11 @@ provider:
         - s3:GetObject
         - s3:GetObjectAcl
       Resource: arn:aws:s3:::${self:custom.tempbucket}/*
+    - Effect: Allow
+      Action:
+        - dynamodb:GetItem
+        - dynamodb:PutItem
+      Resource: 'arn:aws:dynamodb:${self:provider.region}:*:table/${self:custom.websocketstable}'
 
 functions:
   upload-api:
@@ -127,3 +130,5 @@ functions:
       TABLE: ${self:custom.websocketstable}
     events:
       - websocket: $default
+      # - websocket: $connect
+      # - websocket: $disconnect

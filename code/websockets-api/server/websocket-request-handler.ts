@@ -1,4 +1,5 @@
 import AWS from 'aws-sdk';
+import { distinct } from 'utils/arrays';
 import { WebsocketConnectionData } from '../client/types';
 
 
@@ -11,11 +12,17 @@ export type WebsocketEvent = {
         connectionId: string;
         domainName: string;
         stage: string;
+        eventType: 'CONNECT' | 'DISCONNECT' | 'MESSAGE';
     };
     body: string;
 };
 export const handleWebsocketEvent = async (event: WebsocketEvent) => {
     console.log(`handleWebsocketEvent`, { body: event.body, requestContext: event.requestContext });
+
+    // Connect and Disconnect don't have the key, so don't work with this table structure
+    if (event.requestContext.eventType !== `MESSAGE`) {
+        return;
+    }
 
     const data = JSON.parse(event.body) as WebsocketConnectionData;
 
@@ -24,29 +31,74 @@ export const handleWebsocketEvent = async (event: WebsocketEvent) => {
         endpoint: `https://${event.requestContext.domainName}/${event.requestContext.stage}`,
     });
 
-    const connectionIds = await getConnectionIds_DynamoDb({ websocketKey: data.key, connectionId: event.requestContext.connectionId });
+    const connectionInfo = await getOrAddConnectionId_DynamoDb({ websocketKey: data.key, connectionIds: [event.requestContext.connectionId] });
+    // console.log(`handleWebsocketEvent - connectionIds`, { connectionIds: connectionIds.connectionIds });
 
     // Echo all messages to every client
-    await Promise.all(connectionIds.connectionIds.map(async () => {
-        return await webSocketClient
-            .postToConnection({
-                ConnectionId: event.requestContext.connectionId,
-                Data: `${event.body}`,
-            })
-            .promise();
+    await Promise.all(connectionInfo.connectionIds.map(async (x) => {
+        try {
+            await webSocketClient
+                .postToConnection({
+                    ConnectionId: x,
+                    Data: `${event.body}`,
+                })
+                .promise();
+        } catch{
+            // Remove failed connections
+            // await removeConnectionId_DynamoDb({ websocketKey: data.key, connectionId: x });
+        }
     }));
 
+    // Periodically clean up clients (5 mins)
+    if (Date.now() > 5 * 60 * 1000 + connectionInfo.lastConnectionChangeTimestamp) {
+        const invalidConnectionIds = [] as string[];
+        await Promise.all(connectionInfo.connectionIds.map(async (x) => {
+            try {
+                const result = await webSocketClient
+                    .getConnection({
+                        ConnectionId: x,
+                    })
+                    .promise();
+                if (!result.LastActiveAt) {
+                    invalidConnectionIds.push(x);
+                }
+            } catch{
+                // Remove failed connections
+                // await removeConnectionId_DynamoDb({ websocketKey: data.key, connectionId: x });
+            }
+        }));
+
+        if (invalidConnectionIds.length > 0) {
+            console.log(`Removing invalid connectionIds`, { invalidConnectionIds });
+            await removeConnectionId_DynamoDb({ websocketKey: data.key, connectionIds: invalidConnectionIds });
+        }
+    }
+};
+
+type ConnectionInfo = {
+    connectionIds: string[];
+    lastConnectionChangeTimestamp: number;
 };
 
 // DynamoDB
 const db = new AWS.DynamoDB();
-const getConnectionIds_DynamoDb = async ({
+const getOrAddConnectionId_DynamoDb = async (args: { websocketKey: string, connectionIds: string[] }): Promise<ConnectionInfo> => {
+    return await getAndUpdateConnectionInfo({ ...args, action: `add` });
+};
+const removeConnectionId_DynamoDb = async (args: { websocketKey: string, connectionIds: string[] }): Promise<ConnectionInfo> => {
+    return await getAndUpdateConnectionInfo({ ...args, action: `remove` });
+};
+
+export const getAndUpdateConnectionInfo = async ({
     websocketKey,
-    connectionId,
+    connectionIds,
+    action,
 }: {
     websocketKey: string;
-    connectionId: string;
-}): Promise<{ connectionIds: string[] }> => {
+    connectionIds: string[];
+    action: 'add' | 'remove';
+}): Promise<ConnectionInfo> => {
+    // console.log(`updateConnectionIds`, { websocketKey, connectionId });
 
     type ItemKeyType = {
         key: {
@@ -61,9 +113,6 @@ const getConnectionIds_DynamoDb = async ({
             S: string;
         };
     };
-    type ValueJsonType = {
-        connectionIds: string[];
-    };
 
     const key: ItemKeyType = { key: { S: websocketKey } };
 
@@ -72,21 +121,29 @@ const getConnectionIds_DynamoDb = async ({
         Key: key,
     }).promise();
 
-    const existingItem = result.Item as undefined | ItemType;
-    const existingConnectionIds = existingItem ? (JSON.parse(existingItem.value.S) as ValueJsonType).connectionIds : [];
-    let allIds = existingConnectionIds;
+    // console.log(`updateConnectionIds - existing`, { item: result.item, result });
 
-    if (!existingConnectionIds.includes(connectionId)) {
-        allIds = [...existingConnectionIds, connectionId];
-        const valueJsonObj: ValueJsonType = {
+    const existingItem = result.Item as undefined | ItemType;
+
+    const existingConnectionInfo = existingItem ? (JSON.parse(existingItem.value.S) as ConnectionInfo) : null;
+    const existingConnectionIds = existingConnectionInfo?.connectionIds ?? [];
+    const allIds = action === `add` ? distinct([...existingConnectionIds, ...connectionIds]) : distinct(existingConnectionIds.filter(x => !connectionIds.includes(x)));
+
+    if (existingConnectionIds.length !== allIds.length) {
+        // console.log(`updateConnectionIds - connectionIds changed`, {});
+
+        const valueJsonObj: ConnectionInfo = {
             connectionIds: allIds,
+            lastConnectionChangeTimestamp: Date.now(),
         };
         const item: ItemType = { ...key, value: { S: JSON.stringify(valueJsonObj) } };
         await db.putItem({
             TableName: settings.table,
             Item: item,
         }).promise();
+
+        // console.log(`updateConnectionIds - putItem`, { item });
     }
 
-    return { connectionIds: allIds };
+    return { connectionIds: allIds, lastConnectionChangeTimestamp: existingConnectionInfo?.lastConnectionChangeTimestamp ?? Date.now() };
 };

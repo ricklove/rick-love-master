@@ -1,3 +1,4 @@
+/* eslint-disable react/no-array-index-key */
 import React, { useRef, useState, useEffect } from 'react';
 import { View, Text, TouchableOpacity, TextInput } from 'react-native-lite';
 import { createWebsocketClient } from './websocket-client';
@@ -45,14 +46,14 @@ export const WebsocketClientTestView = (props: {}) => {
             <View style={{ padding: 4 }}>
 
                 <Text style={{ whiteSpace: `pre-wrap`, fontSize: 18 }}>Events</Text>
-                {events.map(x => (
-                    <Text style={{ whiteSpace: `pre-wrap`, fontSize: 14 }}>{JSON.stringify(x)}</Text>
+                {events.map((x, i) => (
+                    <Text key={i} style={{ whiteSpace: `pre-wrap`, fontSize: 14 }}>{JSON.stringify(x)}</Text>
                 ))}
             </View>
             <View style={{ padding: 4 }}>
                 <Text style={{ whiteSpace: `pre-wrap`, fontSize: 18 }}>Messages</Text>
-                {messages.map(x => (
-                    <Text style={{ whiteSpace: `pre-wrap`, fontSize: 14 }}>{x.text}</Text>
+                {messages.map((x, i) => (
+                    <Text key={i} style={{ whiteSpace: `pre-wrap`, fontSize: 14 }}>{x.text}</Text>
                 ))}
             </View>
             <View style={{ padding: 4 }}>

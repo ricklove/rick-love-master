@@ -11,7 +11,7 @@ export const createWebsocketClient = (config: { websocketsApiUrl: string }): Web
             // NOTE: When the server filters via keys (providing privacy), this will continue to work without changes
 
             type MessageContainer = {
-                message: T;
+                message: T | null;
                 key: string;
             };
 
@@ -24,6 +24,14 @@ export const createWebsocketClient = (config: { websocketsApiUrl: string }): Web
             // Connection opened
             socket.addEventListener(`open`, (event) => {
                 subscribableEvents.onStateChange({ connectionStatus: `opened` });
+
+                // Send a key message
+                const messageContainer: MessageContainer = {
+                    message: null,
+                    key,
+                };
+                socket.send(JSON.stringify(messageContainer));
+
             });
             socket.addEventListener(`close`, (event) => {
                 subscribableEvents.onStateChange({ connectionStatus: `closed` });
@@ -45,7 +53,7 @@ export const createWebsocketClient = (config: { websocketsApiUrl: string }): Web
             // Listen for messages
             socket.addEventListener(`message`, (event) => {
                 const m = JSON.parse(event.data) as MessageContainer;
-                if (m.key !== key) { return; }
+                if (m.key !== key || !m.message) { return; }
                 subscribable.onStateChange(m.message);
             });
 

@@ -9,9 +9,11 @@ export const handler = async (event: APIGatewayEvent): Promise<unknown> => {
         const result = await handleWebsocketEvent({
             body: event.body ?? ``,
             requestContext: {
+                ...event.requestContext,
                 connectionId: event.requestContext.connectionId ?? ``,
                 domainName: event.requestContext.domainName ?? ``,
                 stage: event.requestContext.stage,
+                eventType: event.requestContext.eventType ?? ``,
             },
         });
         return {
