@@ -24,6 +24,11 @@ export const createWebsocketClient = (config: { websocketsApiUrl: string }): Web
 
                 // Connection opened
                 socket.addEventListener(`open`, (event) => {
+                    if (socket !== activeSocket) {
+                        socket.close();
+                        return;
+                    }
+
                     subscribableEvents.onStateChange({ connectionStatus: `opened` });
 
                     // Send a key message
@@ -35,16 +40,31 @@ export const createWebsocketClient = (config: { websocketsApiUrl: string }): Web
 
                 });
                 socket.addEventListener(`close`, (event) => {
+                    if (socket !== activeSocket) {
+                        socket.close();
+                        return;
+                    }
+
                     subscribableEvents.onStateChange({ connectionStatus: `closed` });
                     reconnect();
                 });
                 socket.addEventListener(`error`, (event) => {
+                    if (socket !== activeSocket) {
+                        socket.close();
+                        return;
+                    }
+
                     subscribableEvents.onStateChange({ connectionStatus: `error`, error: { message: `Websocket Error`, error: event } });
                     reconnect();
                 });
 
                 // Listen for messages
                 socket.addEventListener(`message`, (event) => {
+                    if (socket !== activeSocket) {
+                        socket.close();
+                        return;
+                    }
+
                     const m = JSON.parse(event.data) as MessageContainer;
                     if (m.key !== key || !m.message) { return; }
                     subscribable.onStateChange(m.message);
