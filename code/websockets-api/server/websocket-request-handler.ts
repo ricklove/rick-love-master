@@ -12,7 +12,7 @@ export type WebsocketEvent = {
         connectionId: string;
         domainName: string;
         stage: string;
-        eventType: 'CONNECT' | 'DISCONNECT' | 'MESSAGE';
+        eventType: 'CONNECT' | 'DISCONNECT' | 'MESSAGE' | 'UNKNOWN';
     };
     body: string;
 };

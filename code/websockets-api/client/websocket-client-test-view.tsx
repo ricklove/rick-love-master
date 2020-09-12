@@ -5,12 +5,16 @@ import { createWebsocketClient } from './websocket-client';
 import { websocketsApiConfig } from './config';
 import { WebsocketConnectionEvent } from './types';
 
+const key = `${Date.now()}${Math.random()}`;
+
 export const WebsocketClientTestView = (props: {}) => {
 
     type TestMessage = {
-        text: string;
+        text?: string;
+        timestamp: number;
+        senderKey: string;
     };
-    const [messages, setMessages] = useState([] as TestMessage[]);
+    const [messages, setMessages] = useState([] as (TestMessage & { receivedAtTimestamp: number })[]);
     const [events, setEvents] = useState([] as WebsocketConnectionEvent[]);
     const send = useRef(null as null | ((message: TestMessage) => void));
 
@@ -22,7 +26,8 @@ export const WebsocketClientTestView = (props: {}) => {
         send.current = connection.send;
 
         const unsubMessages = connection.subscribeMessages(message => {
-            setMessages(s => [...s, message]);
+
+            setMessages(s => [...s, { ...message, receivedAtTimestamp: Date.now() }]);
         });
         const unsubEvents = connection.subscribeConnectionEvents(event => {
             setEvents(s => [...s, event]);
@@ -37,7 +42,7 @@ export const WebsocketClientTestView = (props: {}) => {
     const [messageText, setMessageText] = useState(``);
     const sendMessage = () => {
         if (!send.current) { return; }
-        send.current?.({ text: messageText });
+        send.current?.({ text: messageText, timestamp: Date.now(), senderKey: key });
         setMessageText(``);
     };
 
@@ -53,7 +58,7 @@ export const WebsocketClientTestView = (props: {}) => {
             <View style={{ padding: 4 }}>
                 <Text style={{ whiteSpace: `pre-wrap`, fontSize: 18 }}>Messages</Text>
                 {messages.map((x, i) => (
-                    <Text key={i} style={{ whiteSpace: `pre-wrap`, fontSize: 14 }}>{x.text}</Text>
+                    <Text key={i} style={{ whiteSpace: `pre-wrap`, fontSize: 14 }}>{`${x.timestamp} ${x.receivedAtTimestamp - x.timestamp}: ${x.text ?? JSON.stringify(x)}`}</Text>
                 ))}
             </View>
             <View style={{ padding: 4 }}>

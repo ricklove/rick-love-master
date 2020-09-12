@@ -13,7 +13,7 @@ export const handler = async (event: APIGatewayEvent): Promise<unknown> => {
                 connectionId: event.requestContext.connectionId ?? ``,
                 domainName: event.requestContext.domainName ?? ``,
                 stage: event.requestContext.stage,
-                eventType: event.requestContext.eventType ?? ``,
+                eventType: event.requestContext.eventType as 'CONNECT' | 'DISCONNECT' | 'MESSAGE' ?? `UNKNOWN`,
             },
         });
         return {
