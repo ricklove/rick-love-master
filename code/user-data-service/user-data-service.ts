@@ -111,10 +111,19 @@ const createUserDataService = () => {
         return state.userProfiles.find(x => x.key === state.activeUserProfileKey);
     };
 
+    const uploadBackup = async (userState: UserProfileData, userData: UserData) => {
+        const uploadUrl = await uploadApi.createUploadUrl({ contentType: `application/json`, prefix: `${userState.name}/${userState.uploadUrl.relativePath}/${Date.now()}` });
+        const uploader = createUploader(uploadUrl.uploadUrl);
+        await uploader.uploadData(userData);
+    };
+
     const uploadWithAutoRenew = async (userProfileKey: string, userData: UserData) => {
         const state = storage.getUserDataServiceState();
         const userState = state && state.userProfiles.find(x => x.key === userProfileKey);
         if (!state || !userState) { return; }
+
+        // Upload backup
+        await uploadBackup(userState, userData);
 
         const upload = async () => {
             const uploader = createUploader(userState.uploadUrl);

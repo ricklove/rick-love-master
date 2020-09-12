@@ -62,8 +62,8 @@ export const createPresignedUploadUrl = async (relativePath: string, contentType
     return { uploadUrl: result };
 };
 
-export const createPresignedUploadUrl_random = async (contentType: string, settings: Settings, options?: { shareablePath: boolean }) => {
-    const relPath = options?.shareablePath ? await generateHumanReadableRandomCode() : uuidv4();
+export const createPresignedUploadUrl_random = async (contentType: string, settings: Settings, options?: { prefix?: string, shareablePath?: boolean }) => {
+    const relPath = `${options?.prefix ? `${options.prefix}/` : ``}${options?.shareablePath ? await generateHumanReadableRandomCode() : uuidv4()}`;
     return await createPresignedUploadUrl(relPath, contentType, settings, { useTempBucket: options?.shareablePath });
 };
 
@@ -71,7 +71,7 @@ export const createPresignedUploadUrl_random = async (contentType: string, setti
 export const createUploadApi = (settings: Settings): UploadApi => {
 
     const uploadApi: UploadApi = {
-        createUploadUrl: (data) => createPresignedUploadUrl_random(data.contentType, settings, { shareablePath: data.shareablePath ?? false }),
+        createUploadUrl: (data) => createPresignedUploadUrl_random(data.contentType, settings, { prefix: data.prefix, shareablePath: data.shareablePath ?? false }),
         renewUploadUrl: async (data) => {
             // Verify Key
             console.log(`renewUploadUrl - verify secretKey`);

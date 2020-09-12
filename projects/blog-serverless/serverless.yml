@@ -52,7 +52,6 @@ resources:
         LifecycleConfiguration:
           Rules:
             - ExpirationInDays: 1
-              Prefix: '/'
               Status: Enabled
     UploadsTempBucketPolicy:
       Type: 'AWS::S3::BucketPolicy'
