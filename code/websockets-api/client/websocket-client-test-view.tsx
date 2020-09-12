@@ -65,7 +65,7 @@ export const WebsocketClientTestView = (props: {}) => {
                 <Text style={{ whiteSpace: `pre-wrap`, fontSize: 18 }}>Send Message</Text>
                 <View style={{ flexDirection: `row`, alignItems: `center` }}>
                     <View style={{ flex: 1, paddingRight: 4 }}>
-                        <TextInput style={{ fontSize: 16 }} value={messageText} onChange={setMessageText} keyboardType='default' autoCompleteType='off' />
+                        <TextInput style={{ fontSize: 16 }} value={messageText} onChange={setMessageText} keyboardType='default' autoCompleteType='off' onBlur={sendMessage} onSubmitEditing={sendMessage} />
                     </View>
                     <TouchableOpacity onPress={sendMessage} >
                         <Text style={{ whiteSpace: `pre-wrap`, fontSize: 18 }}>Send</Text>
