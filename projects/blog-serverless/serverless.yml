@@ -107,3 +107,7 @@ functions:
           path: upload-api/{param}
           method: POST
           cors: true
+  websocket-api:
+    handler: lambda/websocket-api/index.handler
+    events:
+      - websocket: $default
