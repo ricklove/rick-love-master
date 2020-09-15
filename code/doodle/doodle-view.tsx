@@ -1,43 +1,35 @@
 /* eslint-disable react/no-array-index-key */
 /* eslint-disable jsx-a11y/no-static-element-interactions */
 import React, { useState, useRef, useEffect } from 'react';
+import { defaultDoodleDrawing, DoodleSegment, DoodleDrawing, encodeDoodleDrawing, decodeDoodleDrawing } from './doodle';
 
-type DoodleDrawing = {
-    width: number;
-    height: number;
-    segments: DoodleSegment[];
-};
-type DoodleSegment = {
-    points: { x: number, y: number }[];
-};
-
-// const sampleDrawing: DoodleDrawing = {
-//     width: 128,
-//     height: 128,
-//     segments: [{
-//         points: [
-//             { x: 10, y: 10 },
-//             { x: 50, y: 10 },
-//             { x: 50, y: 50 },
-//             { x: 10, y: 50 },
-//             { x: 10, y: 10 },
-//         ],
-//     }],
-// };
-
-const emptyDrawing: DoodleDrawing = {
-    width: 104,
-    height: 104,
-    segments: [],
-};
 
 export const DoodleView = (props: {}) => {
 
-    const [doodle, setDoodle] = useState(emptyDrawing);
+    const [doodle, setDoodle] = useState(defaultDoodleDrawing());
+    const changeDoodle = (value: DoodleDrawing) => {
+        setDoodle(value);
+
+        // TEST Encoding
+        // setDoodle(decodeDoodleDrawing(encodeDoodleDrawing(value)));
+    };
 
     return (
         <>
-            <DoodleSvg style={{ width: 312, height: 312, color: `#FFFFFF`, backgroundColor: `#000000` }} drawing={doodle} onChange={setDoodle} />
+            <DoodleSvg style={{ width: 312, height: 312, color: `#FFFFFF`, backgroundColor: `#000000` }} drawing={doodle} onChange={changeDoodle} />
+            {/* <div>
+                {JSON.stringify(doodle)}
+            </div>
+            <div>
+                {JSON.stringify(decodeDoodleDrawing(encodeDoodleDrawing(doodle)))}
+            </div>
+
+            <div>
+                {encodeDoodleDrawing(doodle).doodleText}
+            </div>
+            <div>
+                {encodeDoodleDrawing(decodeDoodleDrawing(encodeDoodleDrawing(doodle))).doodleText}
+            </div> */}
         </>
     );
 };
