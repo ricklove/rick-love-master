@@ -68,15 +68,15 @@ const DoodleSvg = (props: { style: { width: number, height: number, color: strin
     const segmentClientStart = useRef({ clientX: 0, clientY: 0, x: 0, y: 0 });
     const divHost = useRef(null as null | HTMLDivElement);
 
-    const onIgnore = (e: React.SyntheticEvent) => {
+    const onIgnore = (e: Event) => {
         e.preventDefault();
         e.stopPropagation();
-        e.nativeEvent.cancelBubble = true;
-        e.nativeEvent.returnValue = false;
+        e.cancelBubble = true;
+        e.returnValue = false;
         return false;
     };
 
-    const onPressIn = (event: (React.SyntheticEvent) & { clientX?: number, clientY?: number }, pos?: { clientX: number, clientY: number }) => {
+    const onPressIn = (event: (Event) & { clientX?: number, clientY?: number }, pos?: { clientX: number, clientY: number }) => {
         const div = divHost.current;
         if (!div) { return onIgnore(event); }
 
@@ -98,7 +98,7 @@ const DoodleSvg = (props: { style: { width: number, height: number, color: strin
 
         return onIgnore(event);
     };
-    const onPressOut = (event: React.SyntheticEvent) => {
+    const onPressOut = (event: Event) => {
         const s = segment;
         if (!s) { return onIgnore(event); }
 
@@ -116,7 +116,7 @@ const DoodleSvg = (props: { style: { width: number, height: number, color: strin
             return { points: [...s.points, pos] };
         });
     };
-    const onClientMove = (event: (React.SyntheticEvent) & { clientX?: number, clientY?: number }, pos?: { clientX: number, clientY: number }) => {
+    const onClientMove = (event: (Event) & { clientX?: number, clientY?: number }, pos?: { clientX: number, clientY: number }) => {
         const p = {
             clientX: pos?.clientX ?? event.clientX ?? 0,
             clientY: pos?.clientY ?? event.clientY ?? 0,
@@ -130,17 +130,46 @@ const DoodleSvg = (props: { style: { width: number, height: number, color: strin
         return onIgnore(event);
     };
 
+    useEffect(() => {
+        const div = divHost.current;
+        if (!div) { return () => { }; }
+
+        const onTouchStart = (x: Event) => onPressIn(x, (x as TouchEvent).touches[0]);
+        const onTouchMove = (x: Event) => onClientMove(x, (x as TouchEvent).touches[0]);
+
+        div.addEventListener(`mouseDown`, onPressIn, { passive: false });
+        div.addEventListener(`onTouchStart`, onTouchStart, { passive: false });
+        div.addEventListener(`onMouseUp`, onPressOut, { passive: false });
+        div.addEventListener(`onTouchEnd`, onPressOut, { passive: false });
+        div.addEventListener(`onMouseLeave`, onPressOut, { passive: false });
+        div.addEventListener(`onTouchEndCapture`, onPressOut, { passive: false });
+        div.addEventListener(`onMouseMove`, onClientMove, { passive: false });
+        div.addEventListener(`onTouchMove`, onTouchMove, { passive: false });
+
+        return () => {
+            div.removeEventListener(`mouseDown`, onPressIn);
+            div.removeEventListener(`onTouchStart`, onTouchStart);
+            div.removeEventListener(`onMouseUp`, onPressOut);
+            div.removeEventListener(`onTouchEnd`, onPressOut);
+            div.removeEventListener(`onMouseLeave`, onPressOut);
+            div.removeEventListener(`onTouchEndCapture`, onPressOut);
+            div.removeEventListener(`onMouseMove`, onClientMove);
+            div.removeEventListener(`onTouchMove`, onTouchMove);
+        };
+    }, [divHost.current]);
+
     return (
         <div ref={divHost} style={{ width: style.width, height: style.height, backgroundColor: style.backgroundColor }}
-            onMouseDown={onPressIn}
-            onMouseUp={onPressOut}
-            onMouseMove={onClientMove}
-            onMouseLeave={onPressOut}
-            onTouchStart={x => onPressIn(x, x.touches[0])}
-            onTouchEnd={onPressOut}
-            onTouchCancel={onPressOut}
-            onTouchMove={x => onClientMove(x, x.touches[0])}
-            onTouchEndCapture={onPressOut}>
+        // onMouseDown={onPressIn}
+        // onMouseUp={onPressOut}
+        // onMouseMove={onClientMove}
+        // onMouseLeave={onPressOut}
+        // onTouchStart={x => onPressIn(x, x.touches[0])}
+        // onTouchEnd={onPressOut}
+        // onTouchCancel={onPressOut}
+        // onTouchMove={x => onClientMove(x, x.touches[0])}
+        // onTouchEndCapture={onPressOut}
+        >
             <svg style={{ width: style.width, height: style.height }} viewBox={`0 0 ${drawing.width} ${drawing.height}`} preserveAspectRatio='none' xmlns='http://www.w3.org/2000/svg'>
                 {drawing.segments.map(x => (
                     <path d={createLinePath(x)} stroke={style.color} fill='transparent' />
