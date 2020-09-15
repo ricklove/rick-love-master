@@ -1,5 +1,5 @@
 /* eslint-disable jsx-a11y/no-static-element-interactions */
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 
 type DoodleDrawing = {
     width: number;
@@ -68,15 +68,15 @@ const DoodleSvg = (props: { style: { width: number, height: number, color: strin
     const segmentClientStart = useRef({ clientX: 0, clientY: 0, x: 0, y: 0 });
     const divHost = useRef(null as null | HTMLDivElement);
 
-    const onIgnore = (e: React.MouseEvent | React.TouchEvent) => {
+    const onIgnore = (e: React.SyntheticEvent) => {
         e.preventDefault();
-        e.stopPropagation?.();
-        (e as unknown as { [key: string]: boolean }).cancelBubble = true;
-        (e as unknown as { [key: string]: boolean }).returnValue = false;
+        e.stopPropagation();
+        e.nativeEvent.cancelBubble = true;
+        e.nativeEvent.returnValue = false;
         return false;
     };
 
-    const onPressIn = (event: (React.MouseEvent | React.TouchEvent) & { clientX?: number, clientY?: number }, pos?: { clientX: number, clientY: number }) => {
+    const onPressIn = (event: (React.SyntheticEvent) & { clientX?: number, clientY?: number }, pos?: { clientX: number, clientY: number }) => {
         const div = divHost.current;
         if (!div) { return onIgnore(event); }
 
@@ -98,7 +98,7 @@ const DoodleSvg = (props: { style: { width: number, height: number, color: strin
 
         return onIgnore(event);
     };
-    const onPressOut = (event: React.MouseEvent | React.TouchEvent) => {
+    const onPressOut = (event: React.SyntheticEvent) => {
         const s = segment;
         if (!s) { return onIgnore(event); }
 
@@ -116,7 +116,7 @@ const DoodleSvg = (props: { style: { width: number, height: number, color: strin
             return { points: [...s.points, pos] };
         });
     };
-    const onClientMove = (event: (React.MouseEvent | React.TouchEvent) & { clientX?: number, clientY?: number }, pos?: { clientX: number, clientY: number }) => {
+    const onClientMove = (event: (React.SyntheticEvent) & { clientX?: number, clientY?: number }, pos?: { clientX: number, clientY: number }) => {
         const p = {
             clientX: pos?.clientX ?? event.clientX ?? 0,
             clientY: pos?.clientY ?? event.clientY ?? 0,
