@@ -26,8 +26,8 @@ type DoodleSegment = {
 // };
 
 const emptyDrawing: DoodleDrawing = {
-    width: 128,
-    height: 128,
+    width: 104,
+    height: 104,
     segments: [],
 };
 
@@ -37,7 +37,7 @@ export const DoodleView = (props: {}) => {
 
     return (
         <>
-            <DoodleSvg style={{ width: 256, height: 256, color: `#FFFFFF`, backgroundColor: `#000000` }} drawing={doodle} onChange={setDoodle} />
+            <DoodleSvg style={{ width: 312, height: 312, color: `#FFFFFF`, backgroundColor: `#000000` }} drawing={doodle} onChange={setDoodle} />
         </>
     );
 };
@@ -80,13 +80,12 @@ const DoodleSvg = (props: { style: { width: number, height: number, color: strin
     };
 
     const onPressIn = (event: (Ev) & { clientX?: number, clientY?: number }, pos?: { clientX: number, clientY: number }) => {
-        console.log(`onPressIn`, { event, pos });
+        // console.log(`onPressIn`, { event, pos });
         const div = divHost.current;
         if (!div) { return onIgnore(event); }
 
         const rect = div.getBoundingClientRect();
 
-        setSegment({ points: [] });
 
         const p = {
             clientX: pos?.clientX ?? event.clientX ?? 0,
@@ -100,10 +99,17 @@ const DoodleSvg = (props: { style: { width: number, height: number, color: strin
             y: Math.floor((p.clientY - rect.y) / scale),
         };
 
+        setSegment({
+            points: [{
+                x: segmentClientStart.current.x,
+                y: segmentClientStart.current.y,
+            }],
+        });
+
         return onIgnore(event);
     };
     const onPressOut = (event: Ev) => {
-        console.log(`onPressOut`, { event });
+        // console.log(`onPressOut`, { event });
         const s = segment;
         if (!s) { return onIgnore(event); }
 
@@ -119,6 +125,10 @@ const DoodleSvg = (props: { style: { width: number, height: number, color: strin
     const onMove = (pos: { x: number, y: number }) => {
         setSegment(s => {
             if (!s) { return null; }
+            const lastPos = s.points[s.points.length - 1];
+            if (Math.abs(lastPos.x - pos.x) + Math.abs(lastPos.y - pos.y) <= 2) {
+                return s;
+            }
             return { points: [...s.points, pos] };
         });
     };
@@ -127,7 +137,7 @@ const DoodleSvg = (props: { style: { width: number, height: number, color: strin
             return onIgnore(event);
         }
 
-        console.log(`onClientMove`, { event, pos });
+        // console.log(`onClientMove`, { event, pos });
         const p = {
             clientX: pos?.clientX ?? event.clientX ?? 0,
             clientY: pos?.clientY ?? event.clientY ?? 0,
