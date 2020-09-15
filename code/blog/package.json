@@ -5,6 +5,7 @@
     "auth": "*",
     "code-space-views": "*",
     "console-simulator": "*",
+    "doodle": "*",
     "educational-games": "*",
     "payments": "*",
     "themes": "*",

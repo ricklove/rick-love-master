@@ -1,0 +1,15 @@
+{
+    "name": "doodle",
+    "version": "1.0.0",
+    "dependencies": {
+        "utils": "*",
+        "react-native-lite": "*",
+        "aws-sdk": "^2.749.0",
+        "react": "^16.12.0",
+        "uuid": "^8.3.0"
+    },
+    "devDependencies": {
+        "@types/aws-sdk": "^2.7.0",
+        "@types/uuid": "^8.3.0"
+    }
+}
