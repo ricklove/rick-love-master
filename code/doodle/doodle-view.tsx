@@ -165,6 +165,23 @@ const DoodleSvg = (props: { style: { width: number, height: number, color: strin
     //     };
     // }, [divHost.current]);
 
+    useEffect(() => {
+        console.log(`Disable scroll on touch`);
+        // Disable document scroll
+        const onIgnoreNative = (e: Event) => {
+            console.log(`Prevent scroll on touch`);
+            e.preventDefault();
+            e.stopPropagation();
+            e.cancelBubble = true;
+            e.returnValue = false;
+            return false;
+        };
+        document.addEventListener(`touchmove`, onIgnoreNative, { passive: false });
+        return () => {
+            document.removeEventListener(`touchmove`, onIgnoreNative);
+        };
+    }, []);
+
     return (
         <div style={{ position: `relative`, width: style.width, height: style.height, backgroundColor: style.backgroundColor }}>
             <svg style={{ width: style.width, height: style.height }} viewBox={`0 0 ${drawing.width} ${drawing.height}`} preserveAspectRatio='none' xmlns='http://www.w3.org/2000/svg'>
