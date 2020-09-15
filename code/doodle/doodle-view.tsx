@@ -166,10 +166,13 @@ const DoodleSvg = (props: { style: { width: number, height: number, color: strin
     // }, [divHost.current]);
 
     useEffect(() => {
-        console.log(`Disable scroll on touch`);
+        // console.log(`Disable scroll on touch`);
         // Disable document scroll
         const onIgnoreNative = (e: Event) => {
-            console.log(`Prevent scroll on touch`);
+            // If not drawing, don't ignore
+            if (!segmentClientStart.current) { return true; }
+
+            // console.log(`Prevent scroll on touch`);
             e.preventDefault();
             e.stopPropagation();
             e.cancelBubble = true;
