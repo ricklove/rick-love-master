@@ -6,7 +6,7 @@ import { createSpeechService } from '../utils/speech';
 import { EducationalGame_StarBlastSideways } from '../star-blast-sideways';
 import { createReviewProblemService } from '../problems/problems-reviewer';
 import { createSpellingProblemService } from '../problems/spelling/spelling-problem-service';
-import { VoiceChooser } from './voice-chooser';
+import { VoiceChooser } from '../utils/voice-chooser';
 import { createAutoSavedProblemService } from '../problems/problem-state-storage';
 
 export const EducationalGame_StarBlastSideways_Spelling = (props: {}) => {

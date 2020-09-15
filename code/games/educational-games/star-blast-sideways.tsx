@@ -9,6 +9,7 @@ import { getDistanceSq, Vector2 } from './utils/vectors';
 import { createReviewProblemService } from './problems/problems-reviewer';
 import { createProgressGameProblemService } from './progress-games/progress-game';
 import { createAutoSavedProblemService } from './problems/problem-state-storage';
+import { SubjectNavigator } from './utils/subject-navigator';
 
 export const EducationalGame_StarBlastSideways_Multiples = (props: {}) => {
     return <EducationalGame_StarBlastSideways problemService={createAutoSavedProblemService(createReviewProblemService(createMultiplesProblemService({ min: 1, max: 12 }), {}), `ProblemsMultiples`)} />;
@@ -53,73 +54,6 @@ const EducationalGame_StarBlastSideways_Inner = (props: { problemService: Proble
     );
 };
 
-const subjectStyles = {
-    container: {
-        margin: 16,
-    },
-    header: {
-        view: {
-            margin: 4,
-        },
-        text: {
-            fontSize: 16,
-        },
-    },
-    section: {
-        view: {
-            margin: 4,
-            flexDirection: `row`,
-        },
-        text: {
-            fontSize: 16,
-        },
-    },
-} as const;
-
-const SubjectNavigator = (props: { problemService: ProblemService, onOpen: () => void, onClose: () => void, onSubjectNavigation: () => void }) => {
-
-    const [isExpanded, setIsExpanded] = useState(false);
-    const toggle = () => {
-        if (!isExpanded) {
-            props.onOpen();
-        }
-        if (isExpanded) {
-            props.onClose();
-        }
-        setIsExpanded(s => !s);
-    };
-
-    return (
-        <View style={subjectStyles.container}>
-            <TouchableOpacity onPress={toggle}>
-                <View style={subjectStyles.header.view}>
-                    <Text style={subjectStyles.header.text}>Sections</Text>
-                </View>
-            </TouchableOpacity>
-            {isExpanded && (
-                <View>
-                    {props.problemService.getSections().map(s => (
-                        <TouchableOpacity key={s.key} onPress={() => {
-                            console.log(`SubjectNavigator onSection`, { s });
-                            props.problemService.gotoSection(s);
-                            props.onSubjectNavigation();
-                            setIsExpanded(false);
-                            if (Platform.OS === `web`) {
-                                window.scrollTo(0, 0);
-                            }
-                        }}>
-                            <View style={subjectStyles.section.view}>
-                                <Text style={subjectStyles.section.text}>{s.isComplete ? `✅` : `⬜`}</Text>
-                                <Text style={subjectStyles.section.text}>{s.name}</Text>
-                            </View>
-                        </TouchableOpacity>
-                    ))}
-                </View>
-            )}
-
-        </View>
-    );
-};
 
 const colors = {
     gamepad: {

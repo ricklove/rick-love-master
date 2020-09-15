@@ -1,3 +1,7 @@
+export type DoodleWithPrompt = {
+    drawing: DoodleDrawing;
+    prompt: string;
+};
 
 export type DoodleDrawing = {
     width: number;
@@ -92,4 +96,41 @@ export const decodeDoodleDrawing = (doodle: DoodleDrawingEncoded): DoodleDrawing
             };
         }),
     };
+};
+
+
+// const doodleSegmentToSvgPath_bezier = (segment: DoodleSegment) => {
+//     const delta1 = {
+//         x: segment.points[2].x - segment.points[1].x,
+//         y: segment.points[2].y - segment.points[1].y,
+//     };
+//     const controlPoint = {
+//         x: segment.points[1].x - delta1.x * 0.5,
+//         y: segment.points[1].y - delta1.y * 0.5,
+//     };
+//     return `M${segment.points[0].x} ${segment.points[0].y} Q${controlPoint.x} ${controlPoint.y} ${segment.points[1].x} ${segment.points[1].y}T${segment.points.slice(2, -1).map(p => `${p.x} ${p.y}`).join(` `)}`;
+// };
+
+
+export const doodleSegmentToSvgPath_line = (segment: DoodleSegment) => {
+    if (segment.points.length <= 0) { return ``; }
+    if (segment.points.length === 1) { return `M${segment.points[0].x} ${segment.points[0].y} L${segment.points[0].x} ${segment.points[0].y}`; }
+
+    let last = segment.points[0];
+    return `M${segment.points[0].x} ${segment.points[0].y} l${segment.points.slice(1).map(p => {
+        const t = `${p.x - last.x} ${p.y - last.y}`;
+        last = p;
+        return t;
+    }).join(` `)}`;
+};
+
+export const doodleToSvg = (drawing: DoodleDrawing) => {
+    // preserveAspectRatio='none' stroke='#000000' fill='transparent' xmlns='http://www.w3.org/2000/svg'
+    return `
+<svg viewBox='0 0 ${drawing.width} ${drawing.height}' stroke='#000000' fill='transparent'>
+    ${drawing.segments.map((x, i) => (
+        `<path d='${doodleSegmentToSvgPath_line(x)}' />`
+    )).join(``)}
+</svg>
+    `.trim();
 };

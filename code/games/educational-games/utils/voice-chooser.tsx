@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Text, View, ActivityIndicator, TouchableOpacity } from 'react-native-lite';
-import { SpeechService } from '../utils/speech';
+import { SpeechService } from './speech';
 
 export const VoiceChooser = ({ languange, speechService }: { languange: string, speechService: SpeechService }) => {
     const [loading, setLoading] = useState(true);

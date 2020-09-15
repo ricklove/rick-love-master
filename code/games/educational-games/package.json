@@ -2,6 +2,7 @@
   "name": "educational-games",
   "version": "1.0.0",
   "dependencies": {
+    "doodle": "*",
     "utils": "*",
     "utils-react": "*",
     "user-data-service": "*",

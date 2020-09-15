@@ -7,6 +7,7 @@ export const educationalGamesList = [
     { name: `multiples-star-blast`, load: async () => (await import(`./star-blast-sideways`)).EducationalGame_StarBlastSideways_Multiples },
     { name: `spanish-star-blast`, load: async () => (await import(`./star-blast-sideways-with-subjects/star-blast-spanish`)).EducationalGame_StarBlastSideways_Spanish },
     { name: `spelling-star-blast`, load: async () => (await import(`./star-blast-sideways-with-subjects/star-blast-spelling`)).EducationalGame_StarBlastSideways_Spelling },
+    { name: `doodle-spelling`, load: async () => (await import(`./doodle-subjects/doodle-spelling`)).EducationalGame_Doodle_Spelling },
 ];
 export const educationalGameUtils = {
     progressGame: { name: `progressGame`, load: async () => (await import(`./progress-games/progress-game`)).ProgressGameView },

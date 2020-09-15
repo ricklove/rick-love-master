@@ -1,59 +1,58 @@
 /* eslint-disable react/no-array-index-key */
 /* eslint-disable jsx-a11y/no-static-element-interactions */
 import React, { useState, useRef, useEffect } from 'react';
-import { defaultDoodleDrawing, DoodleSegment, DoodleDrawing, encodeDoodleDrawing, decodeDoodleDrawing } from './doodle';
+import { defaultDoodleDrawing, DoodleSegment, DoodleDrawing, encodeDoodleDrawing, decodeDoodleDrawing, doodleSegmentToSvgPath_line, doodleToSvg } from './doodle';
 
+export const styles = {
+    drawing: {
+        width: 312,
+        height: 312,
+        color: `#FFFFFF`,
+        backgroundColor: `#000000`,
+    },
+};
 
-export const DoodleView = (props: {}) => {
-
+export const DoodleTestView = (props: {}) => {
     const [doodle, setDoodle] = useState(defaultDoodleDrawing());
-    const changeDoodle = (value: DoodleDrawing) => {
-        setDoodle(value);
-
-        // TEST Encoding
-        // setDoodle(decodeDoodleDrawing(encodeDoodleDrawing(value)));
-    };
 
     return (
         <>
-            <DoodleSvg style={{ width: 312, height: 312, color: `#FFFFFF`, backgroundColor: `#000000` }} drawing={doodle} onChange={changeDoodle} />
-            {/* <div>
-                {JSON.stringify(doodle)}
-            </div> */}
-            {/* <div>
-                {JSON.stringify(decodeDoodleDrawing(encodeDoodleDrawing(doodle)))}
-            </div> */}
-
-            {/* <div>
-                {encodeDoodleDrawing(doodle).doodleText}
-            </div> */}
-            {/* <div>
-                {encodeDoodleDrawing(decodeDoodleDrawing(encodeDoodleDrawing(doodle))).doodleText}
-            </div>  */}
+            <DoodleDrawerView style={styles.drawing} drawing={doodle} onChange={setDoodle} />
+            <DoodleDisplayView style={styles.drawing} drawing={doodle} />
         </>
     );
 };
 
-// const createBezierCurvePath = (segment: DoodleSegment) => {
-//     const delta1 = {
-//         x: segment.points[2].x - segment.points[1].x,
-//         y: segment.points[2].y - segment.points[1].y,
+// export const DoodleDrawingView = (props: { drawing?: DoodleDrawing, onDrawingChanged: (drawing: DoodleDrawing) => void }) => {
+
+//     const [doodle, setDoodle] = useState(props.drawing ?? defaultDoodleDrawing());
+//     const changeDoodle = (value: DoodleDrawing) => {
+//         setDoodle(value);
+//         props.onDrawingChanged(value);
 //     };
-//     const controlPoint = {
-//         x: segment.points[1].x - delta1.x * 0.5,
-//         y: segment.points[1].y - delta1.y * 0.5,
-//     };
-//     return `M${segment.points[0].x} ${segment.points[0].y} Q${controlPoint.x} ${controlPoint.y} ${segment.points[1].x} ${segment.points[1].y}T${segment.points.slice(2, -1).map(p => `${p.x} ${p.y}`).join(` `)}`;
+
+//     return (
+//         <>
+//             <DoodleDrawer style={styles.drawing} drawing={doodle} onChange={changeDoodle} />
+//             {/* <div>
+//                 {JSON.stringify(doodle)}
+//             </div> */}
+//             {/* <div>
+//                 {JSON.stringify(decodeDoodleDrawing(encodeDoodleDrawing(doodle)))}
+//             </div> */}
+
+//             {/* <div>
+//                 {encodeDoodleDrawing(doodle).doodleText}
+//             </div> */}
+//             {/* <div>
+//                 {encodeDoodleDrawing(decodeDoodleDrawing(encodeDoodleDrawing(doodle))).doodleText}
+//             </div>  */}
+//         </>
+//     );
 // };
 
-const createLinePath = (segment: DoodleSegment) => {
-    if (segment.points.length <= 0) { return ``; }
-    if (segment.points.length === 1) { return `M${segment.points[0].x} ${segment.points[0].y} L${segment.points[0].x} ${segment.points[0].y}`; }
 
-    return `M${segment.points[0].x} ${segment.points[0].y} L${segment.points.slice(1).map(p => `${p.x} ${p.y}`).join(` `)}`;
-};
-
-const DoodleSvg = (props: { style: { width: number, height: number, color: string, backgroundColor: string }, drawing: DoodleDrawing, onChange: (drawing: DoodleDrawing) => void }) => {
+export const DoodleDrawerView = (props: { style: { width: number, height: number, color: string, backgroundColor: string }, drawing: DoodleDrawing, onChange: (drawing: DoodleDrawing) => void }) => {
     const { style, drawing, onChange } = props;
     const scale = style.width / drawing.width;
 
@@ -193,26 +192,42 @@ const DoodleSvg = (props: { style: { width: number, height: number, color: strin
     }, []);
 
     return (
-        <div style={{ position: `relative`, width: style.width, height: style.height, backgroundColor: style.backgroundColor }}>
+        <>
+            <div style={{ position: `relative`, width: style.width, height: style.height, backgroundColor: style.backgroundColor }}>
+                <svg style={{ width: style.width, height: style.height }} viewBox={`0 0 ${drawing.width} ${drawing.height}`} preserveAspectRatio='none' xmlns='http://www.w3.org/2000/svg'>
+                    {drawing.segments.map((x, i) => (
+                        <path key={i} d={doodleSegmentToSvgPath_line(x)} stroke={style.color} fill='transparent' />
+                    ))}
+                    {segment && (
+                        <path d={doodleSegmentToSvgPath_line(segment)} stroke={style.color} fill='transparent' />
+                    )}
+                </svg>
+                <div ref={divHost} style={{ position: `absolute`, left: 0, right: 0, top: 0, bottom: 0, zIndex: 10 }}
+                    onMouseDown={onPressIn}
+                    onMouseUp={onPressOut}
+                    onMouseMove={onClientMove}
+                    onMouseLeave={onPressOut}
+                    onTouchStart={x => onPressIn(x, x.touches[0])}
+                    onTouchEnd={onPressOut}
+                    onTouchCancel={onPressOut}
+                    onTouchMove={x => onClientMove(x, x.touches[0])}
+                    onTouchEndCapture={onPressOut}
+                />
+            </div>
+            {/* <div>{doodleToSvg(drawing)}</div>
+            <div>{encodeDoodleDrawing(drawing).doodleText}</div> */}
+        </>
+    );
+};
+
+export const DoodleDisplayView = ({ style, drawing }: { style: { width: number, height: number, color: string, backgroundColor: string }, drawing: DoodleDrawing }) => {
+    return (
+        <div style={{ width: style.width, height: style.height, backgroundColor: style.backgroundColor }}>
             <svg style={{ width: style.width, height: style.height }} viewBox={`0 0 ${drawing.width} ${drawing.height}`} preserveAspectRatio='none' xmlns='http://www.w3.org/2000/svg'>
                 {drawing.segments.map((x, i) => (
-                    <path key={i} d={createLinePath(x)} stroke={style.color} fill='transparent' />
+                    <path key={i} d={doodleSegmentToSvgPath_line(x)} stroke={style.color} fill='transparent' />
                 ))}
-                {segment && (
-                    <path d={createLinePath(segment)} stroke={style.color} fill='transparent' />
-                )}
             </svg>
-            <div ref={divHost} style={{ position: `absolute`, left: 0, right: 0, top: 0, bottom: 0, zIndex: 10 }}
-                onMouseDown={onPressIn}
-                onMouseUp={onPressOut}
-                onMouseMove={onClientMove}
-                onMouseLeave={onPressOut}
-                onTouchStart={x => onPressIn(x, x.touches[0])}
-                onTouchEnd={onPressOut}
-                onTouchCancel={onPressOut}
-                onTouchMove={x => onClientMove(x, x.touches[0])}
-                onTouchEndCapture={onPressOut}
-            > </div>
         </div>
     );
 };
