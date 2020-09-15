@@ -31,6 +31,9 @@
       "controls-react/*": [
         "code/controls-react/*"
       ],
+      "doodle/*": [
+        "code/games/doodle/*"
+      ],
       "dork/*": [
         "code/games/dork/*"
       ],
