@@ -19,17 +19,17 @@ export const DoodleView = (props: {}) => {
             <DoodleSvg style={{ width: 312, height: 312, color: `#FFFFFF`, backgroundColor: `#000000` }} drawing={doodle} onChange={changeDoodle} />
             {/* <div>
                 {JSON.stringify(doodle)}
-            </div>
-            <div>
-                {JSON.stringify(decodeDoodleDrawing(encodeDoodleDrawing(doodle)))}
-            </div>
-
-            <div>
-                {encodeDoodleDrawing(doodle).doodleText}
-            </div>
-            <div>
-                {encodeDoodleDrawing(decodeDoodleDrawing(encodeDoodleDrawing(doodle))).doodleText}
             </div> */}
+            {/* <div>
+                {JSON.stringify(decodeDoodleDrawing(encodeDoodleDrawing(doodle)))}
+            </div> */}
+
+            {/* <div>
+                {encodeDoodleDrawing(doodle).doodleText}
+            </div> */}
+            {/* <div>
+                {encodeDoodleDrawing(decodeDoodleDrawing(encodeDoodleDrawing(doodle))).doodleText}
+            </div>  */}
         </>
     );
 };
