@@ -66,7 +66,7 @@ const DoodleSvg = (props: { style: { width: number, height: number, color: strin
     const scale = style.width / drawing.width;
 
     const [segment, setSegment] = useState(null as null | DoodleSegment);
-    const segmentClientStart = useRef({ clientX: 0, clientY: 0, x: 0, y: 0 });
+    const segmentClientStart = useRef(null as null | { clientX: number, clientY: number, x: number, y: number });
     const divHost = useRef(null as null | HTMLDivElement);
 
     type Ev = React.SyntheticEvent;
@@ -112,6 +112,7 @@ const DoodleSvg = (props: { style: { width: number, height: number, color: strin
             segments: [...drawing.segments, s],
         });
         setSegment(null);
+        segmentClientStart.current = null;
 
         return onIgnore(event);
     };
@@ -122,6 +123,10 @@ const DoodleSvg = (props: { style: { width: number, height: number, color: strin
         });
     };
     const onClientMove = (event: (Ev) & { clientX?: number, clientY?: number }, pos?: { clientX: number, clientY: number }) => {
+        if (!segmentClientStart.current) {
+            return onIgnore(event);
+        }
+
         console.log(`onClientMove`, { event, pos });
         const p = {
             clientX: pos?.clientX ?? event.clientX ?? 0,
