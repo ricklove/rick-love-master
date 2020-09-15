@@ -68,29 +68,47 @@ const DoodleSvg = (props: { style: { width: number, height: number, color: strin
     const segmentClientStart = useRef({ clientX: 0, clientY: 0, x: 0, y: 0 });
     const divHost = useRef(null as null | HTMLDivElement);
 
-    const onPressIn = (event: { clientX: number, clientY: number }) => {
+    const onIgnore = (e: React.MouseEvent | React.TouchEvent) => {
+        e.preventDefault();
+        e.stopPropagation?.();
+        (e as unknown as { [key: string]: boolean }).cancelBubble = true;
+        (e as unknown as { [key: string]: boolean }).returnValue = false;
+        return false;
+    };
+
+    const onPressIn = (event: (React.MouseEvent | React.TouchEvent) & { clientX?: number, clientY?: number }, pos?: { clientX: number, clientY: number }) => {
         const div = divHost.current;
-        if (!div) { return; }
+        if (!div) { return onIgnore(event); }
 
         const rect = div.getBoundingClientRect();
 
         setSegment({ points: [] });
-        segmentClientStart.current = {
-            clientX: event.clientX,
-            clientY: event.clientY,
-            x: Math.floor((event.clientX - rect.x) / scale),
-            y: Math.floor((event.clientY - rect.y) / scale),
+
+        const p = {
+            clientX: pos?.clientX ?? event.clientX ?? 0,
+            clientY: pos?.clientY ?? event.clientY ?? 0,
         };
+
+        segmentClientStart.current = {
+            clientX: p.clientX,
+            clientY: p.clientY,
+            x: Math.floor((p.clientX - rect.x) / scale),
+            y: Math.floor((p.clientY - rect.y) / scale),
+        };
+
+        return onIgnore(event);
     };
-    const onPressOut = () => {
+    const onPressOut = (event: React.MouseEvent | React.TouchEvent) => {
         const s = segment;
-        if (!s) { return; }
+        if (!s) { return onIgnore(event); }
 
         onChange({
             ...drawing,
             segments: [...drawing.segments, s],
         });
         setSegment(null);
+
+        return onIgnore(event);
     };
     const onMove = (pos: { x: number, y: number }) => {
         setSegment(s => {
@@ -98,13 +116,18 @@ const DoodleSvg = (props: { style: { width: number, height: number, color: strin
             return { points: [...s.points, pos] };
         });
     };
-    const onClientMove = (event: { clientX: number, clientY: number }) => {
-        const pos = {
-            x: Math.floor((event.clientX - segmentClientStart.current.clientX) / scale) + segmentClientStart.current.x,
-            y: Math.floor((event.clientY - segmentClientStart.current.clientY) / scale) + segmentClientStart.current.y,
+    const onClientMove = (event: (React.MouseEvent | React.TouchEvent) & { clientX?: number, clientY?: number }, pos?: { clientX: number, clientY: number }) => {
+        const p = {
+            clientX: pos?.clientX ?? event.clientX ?? 0,
+            clientY: pos?.clientY ?? event.clientY ?? 0,
+        };
+        const dPos = {
+            x: Math.floor((p.clientX - segmentClientStart.current.clientX) / scale) + segmentClientStart.current.x,
+            y: Math.floor((p.clientY - segmentClientStart.current.clientY) / scale) + segmentClientStart.current.y,
         };
 
-        onMove(pos);
+        onMove(dPos);
+        return onIgnore(event);
     };
 
     return (
@@ -113,10 +136,10 @@ const DoodleSvg = (props: { style: { width: number, height: number, color: strin
             onMouseUp={onPressOut}
             onMouseMove={onClientMove}
             onMouseLeave={onPressOut}
-            onTouchStart={x => onPressIn(x.touches[0])}
+            onTouchStart={x => onPressIn(x, x.touches[0])}
             onTouchEnd={onPressOut}
             onTouchCancel={onPressOut}
-            onTouchMove={x => onClientMove(x.touches[0])}
+            onTouchMove={x => onClientMove(x, x.touches[0])}
             onTouchEndCapture={onPressOut}>
             <svg style={{ width: style.width, height: style.height }} viewBox={`0 0 ${drawing.width} ${drawing.height}`} preserveAspectRatio='none' xmlns='http://www.w3.org/2000/svg'>
                 {drawing.segments.map(x => (
