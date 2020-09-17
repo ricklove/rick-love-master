@@ -32,7 +32,7 @@
         "code/controls-react/*"
       ],
       "doodle/*": [
-        "code/games/doodle/*"
+        "code/doodle/*"
       ],
       "dork/*": [
         "code/games/dork/*"

@@ -5,7 +5,7 @@ import { Text, View, Platform, ActivityIndicator } from 'react-native-lite';
 import { createDoodleDrawingStorageService } from 'doodle/doodle-storage';
 import { DoodleDrawingStorageService } from 'doodle/doodle';
 import { useAutoLoadingError } from 'utils-react/hooks';
-import { EducationalGame_Doodle } from '../doodle';
+import { EducationalGame_Doodle } from '../doodle-game';
 import { createSpeechService } from '../utils/speech';
 import { createReviewProblemService } from '../problems/problems-reviewer';
 import { createSpellingProblemService } from '../problems/spelling/spelling-problem-service';
