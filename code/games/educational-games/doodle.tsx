@@ -31,12 +31,21 @@ export const styles = {
         color: `#FFFFFF`,
         backgroundColor: `#000000`,
     },
+    titleView: {
+        justifyContent: `center`,
+        alignItems: `center`,
+    },
+    titleText: {
+        fontSize: 20,
+        color: `#FFFFFF`,
+    },
     promptView: {
         justifyContent: `center`,
         alignItems: `center`,
     },
     promptText: {
         fontSize: 20,
+        color: `#FFFF00`,
     },
     buttonView: {
         padding: 8,
@@ -187,6 +196,9 @@ export const DoodleGameView_DrawWord = (props: { prompt: string, onDone: (drawin
 
     return (
         <View style={styles.container}>
+            <View style={styles.titleView}>
+                <Text style={styles.titleText}>Draw</Text>
+            </View>
             <DoodleDrawerView style={styles.drawing} drawing={drawing} onChange={changeDoodle} />
             <View style={styles.promptView}>
                 <Text style={styles.promptText}>{props.prompt}</Text>
@@ -203,6 +215,9 @@ export const DoodleGameView_DrawWord = (props: { prompt: string, onDone: (drawin
 export const DoodleGameView_ChooseBest = (props: { prompt: string, drawings: DoodleData[], onChooseBest: (drawing: DoodleData) => void }) => {
     return (
         <View style={styles.container}>
+            <View style={styles.titleView}>
+                <Text style={styles.titleText}>Choose Best</Text>
+            </View>
             <View style={styles.promptView}>
                 <Text style={styles.promptText}>{props.prompt}</Text>
             </View>
@@ -247,6 +262,9 @@ export const DoodleGameView_Type = (props: { prompt: string, drawings: DoodleDat
 
     return (
         <View style={styles.container}>
+            <View style={styles.titleView}>
+                <Text style={styles.titleText}>Type Word</Text>
+            </View>
             <View style={styles.drawingChoicesView} >
                 {props.drawings.map(x => (
                     <View style={styles.drawingChoiceWrapper} >
