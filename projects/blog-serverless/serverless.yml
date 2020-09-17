@@ -5,6 +5,7 @@ custom:
   keybucket: rick-love-blog-user-data-keys
   tempbucket: rick-love-blog-user-data-temp
   websocketstable: rick-love-blog-websockets-table
+  serverstatebucket: rick-love-blog-server-state
 
 resources:
   Resources:
@@ -67,6 +68,14 @@ resources:
               Resource: arn:aws:s3:::${self:custom.tempbucket}/*
         Bucket:
           Ref: UploadsTempBucket
+
+    # Holds server-only data
+    ServerStateBucket:
+      Type: AWS::S3::Bucket
+      Properties:
+        BucketName: ${self:custom.serverstatebucket}
+
+    # websocket table
     WebsocketsTable:
       Type: AWS::DynamoDB::Table
       Properties:
@@ -88,24 +97,24 @@ provider:
     - Effect: Allow
       Action:
         - s3:PutObject
-        - s3:PutObjectAcl
         - s3:GetObject
-        - s3:GetObjectAcl
       Resource: arn:aws:s3:::${self:custom.bucket}/*
     - Effect: Allow
       Action:
         - s3:PutObject
-        - s3:PutObjectAcl
         - s3:GetObject
-        - s3:GetObjectAcl
       Resource: arn:aws:s3:::${self:custom.keybucket}/*
     - Effect: Allow
       Action:
         - s3:PutObject
-        - s3:PutObjectAcl
         - s3:GetObject
-        - s3:GetObjectAcl
       Resource: arn:aws:s3:::${self:custom.tempbucket}/*
+    - Effect: Allow
+      Action:
+        - s3:ListObjects
+        - s3:PutObject
+        - s3:GetObject
+      Resource: arn:aws:s3:::${self:custom.serverstatebucket}/*
     - Effect: Allow
       Action:
         - dynamodb:GetItem
@@ -130,5 +139,11 @@ functions:
       TABLE: ${self:custom.websocketstable}
     events:
       - websocket: $default
-      # - websocket: $connect
-      # - websocket: $disconnect
+
+  doodle-task:
+    handler: lambda/doodle-task/index.handler
+    environment:
+      BUCKET: ${self:custom.bucket}
+      SERVERSTATEBUCKET: ${self:custom.serverstatebucket}
+    events:
+      - schedule: rate(15 minutes)
