@@ -71,7 +71,7 @@ export const createPresignedUploadUrl_random = async (contentType: string, setti
 export const createUploadApi = (settings: Settings): UploadApi => {
 
     const uploadApi: UploadApi = {
-        createUploadUrl: (data) => createPresignedUploadUrl_random(data.contentType, settings, { prefix: data.prefix, shareablePath: data.shareablePath ?? false }),
+        createUploadUrl: (data) => createPresignedUploadUrl_random(data.contentType ?? `application/json`, settings, { prefix: data.prefix, shareablePath: data.shareablePath ?? false }),
         renewUploadUrl: async (data) => {
             // Verify Key
             console.log(`renewUploadUrl - verify secretKey`);

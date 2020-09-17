@@ -1,6 +1,20 @@
-export type DoodleWithPrompt = {
+export type DoodleDrawingStorageService = {
+    saveDrawing: (prompt: string, drawing: DoodleDrawing) => Promise<void>;
+    getDrawings: (prompt: string, options?: { includeOtherPrompts?: boolean, maxCount?: number }) => Promise<{ doodles: DoodleData[] }>;
+    saveBestDrawingSelection: (doodle: DoodleData) => Promise<void>;
+};
+
+export type DoodleData = {
+    key: string;
     drawing: DoodleDrawing;
     prompt: string;
+    score?: number;
+};
+export type DoodleData_Encoded = {
+    key: string;
+    drawingEncoded: DoodleDrawingEncoded;
+    prompt: string;
+    score?: number;
 };
 
 export type DoodleDrawing = {

@@ -4,10 +4,9 @@ import { SpeechService } from '../../utils/speech';
 import { ProblemService, ProblemAnswer } from '../problems-service';
 import { getSpellingEntries } from './spelling-entries';
 
-export const createSpellingProblemService = ({ speechService, maxAnswers = 4 }: { speechService: SpeechService, maxAnswers?: number }): ProblemService => {
+export const createSpellingProblemService = ({ speechService, maxAnswers = 4, sectionSize = 25 }: { speechService: SpeechService, maxAnswers?: number, sectionSize?: number }): ProblemService => {
     const speech = speechService;
     const spellingEntries = getSpellingEntries();
-    const sectionSize = 25;
     const sectionCount = Math.ceil(spellingEntries.length / sectionSize);
 
     let state = {

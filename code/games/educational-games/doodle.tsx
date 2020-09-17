@@ -1,10 +1,11 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { DoodleDisplayView, DoodleDrawerView } from 'doodle/doodle-view';
-import { defaultDoodleDrawing, DoodleDrawing, DoodleWithPrompt } from 'doodle/doodle';
+import { defaultDoodleDrawing, DoodleDrawing, DoodleData, DoodleDrawingStorageService } from 'doodle/doodle';
 import { View, Text, TouchableOpacity } from 'react-native-lite';
 import { useAutoLoadingError } from 'utils-react/hooks';
 import { ProblemService, Problem } from './problems/problems-service';
 import { SubjectNavigator } from './utils/subject-navigator';
+import { KeyboardSimplified } from './utils/keyboard-simplified';
 
 export const styles = {
     container: {
@@ -48,12 +49,6 @@ export const styles = {
 } as const;
 
 
-export type DoodleDrawingStorageService = {
-    saveDrawing: (drawing: DoodleDrawing, prompt: string) => Promise<void>;
-    getDrawings: (prompt: string, options?: { includeOtherPrompts?: boolean, maxCount?: number }) => Promise<{ drawings: DoodleWithPrompt[] }>;
-    // saveSelection: (drawing:DoodleDrawing)
-};
-
 export const EducationalGame_Doodle = (props: { problemService: ProblemService, drawingStorage: DoodleDrawingStorageService }) => {
     const [problemSourceKey, setProblemSourceKey] = useState(0);
 
@@ -70,15 +65,16 @@ export const EducationalGame_Doodle = (props: { problemService: ProblemService, 
 export const EducationalGame_Doodle_Inner = (props: { problemService: ProblemService, drawingStorage: DoodleDrawingStorageService, problemSourceKey: number }) => {
 
     const [problem, setProblem] = useState(null as null | Problem);
-    const [mode, setMode] = useState(`drawPrompt` as 'drawPrompt' | 'chooseCorrect' | 'chooseBest');
-    const [drawings, setDrawings] = useState(null as null | DoodleWithPrompt[]);
-    const prompt = problem?.answers.find(x => x.isCorrect)?.value ?? ``;
+    const [mode, setMode] = useState(`type` as 'type' | 'drawPrompt' | 'chooseCorrect' | 'chooseBest');
+    const [drawings, setDrawings] = useState(null as null | DoodleData[]);
+    const prompt = useRef(problem?.answers.find(x => x.isCorrect)?.value ?? ``);
+    prompt.current = problem?.answers.find(x => x.isCorrect)?.value ?? ``;
 
     const gotoNextProblem = () => {
         const p = props.problemService.getNextProblem();
         if (!p.question) { return; }
         setProblem(p);
-        setMode(`drawPrompt`);
+        setTimeout(gotoTypeMode);
         p.onQuestion?.();
     };
 
@@ -88,31 +84,60 @@ export const EducationalGame_Doodle_Inner = (props: { problemService: ProblemSer
 
     const { loading, error, doWork } = useAutoLoadingError();
 
+    const gotoTypeMode = () => {
+        doWork(async (stopIfObsolete) => {
+            const result = await props.drawingStorage.getDrawings(prompt.current);
+            setDrawings(result.doodles);
+            setMode(`type`);
+        });
+    };
+
+    const onTypeDone = () => {
+        doWork(async (stopIfObsolete) => {
+            setTimeout(gotoDrawPromptMode);
+        });
+    };
+
+    const gotoDrawPromptMode = () => {
+        setMode(`drawPrompt`);
+    };
+
     const onDrawingDone = (drawing: DoodleDrawing) => {
         // props.onDone(drawing);
 
         // Save drawing with word prompt
         doWork(async (stopIfObsolete) => {
             if (drawing.segments.length > 0) {
-                await props.drawingStorage.saveDrawing(drawing, prompt);
+                await props.drawingStorage.saveDrawing(prompt.current, drawing);
             }
             stopIfObsolete();
+            setTimeout(gotoChooseBestMode);
+        });
+    };
 
-            const result = await props.drawingStorage.getDrawings(prompt);
+    const gotoChooseBestMode = () => {
+        doWork(async (stopIfObsolete) => {
+            const result = await props.drawingStorage.getDrawings(prompt.current);
+            stopIfObsolete();
 
-            if (result.drawings.length <= 1) {
+            if (result.doodles.length <= 1) {
                 gotoNextProblem();
                 return;
             }
 
-            setDrawings(result.drawings);
+            setDrawings(result.doodles);
             setMode(`chooseBest`);
         });
     };
 
-    const onChooseBest = (value: DoodleWithPrompt) => {
-        gotoNextProblem();
+    const onChooseBest = (value: DoodleData) => {
+        doWork(async (stopIfObsolete) => {
+            await props.drawingStorage.saveBestDrawingSelection(value);
+            stopIfObsolete();
+            gotoNextProblem();
+        });
     };
+
 
     if (!problem) {
         return (
@@ -121,17 +146,25 @@ export const EducationalGame_Doodle_Inner = (props: { problemService: ProblemSer
         );
     }
 
+    if (mode === `type`) {
+        return (
+            <>
+                <DoodleGameView_Type prompt={prompt.current} drawings={drawings ?? []} onDone={onTypeDone} />
+            </>
+        );
+    }
+
     if (mode === `chooseBest` && drawings) {
         return (
             <>
-                <DoodleGameView_ChooseBest prompt={prompt} drawings={drawings} onChooseBest={onChooseBest} />
+                <DoodleGameView_ChooseBest prompt={prompt.current} drawings={drawings} onChooseBest={onChooseBest} />
             </>
         );
     }
 
     return (
         <>
-            <DoodleGameView_DrawWord prompt={prompt} onDone={onDrawingDone} />
+            <DoodleGameView_DrawWord prompt={prompt.current} onDone={onDrawingDone} />
             {/* <DoodleDisplayView style={styles.drawing} drawing={defaultDoodleDrawing()} /> */}
         </>
     );
@@ -167,7 +200,7 @@ export const DoodleGameView_DrawWord = (props: { prompt: string, onDone: (drawin
     );
 };
 
-export const DoodleGameView_ChooseBest = (props: { prompt: string, drawings: DoodleWithPrompt[], onChooseBest: (drawing: DoodleWithPrompt) => void }) => {
+export const DoodleGameView_ChooseBest = (props: { prompt: string, drawings: DoodleData[], onChooseBest: (drawing: DoodleData) => void }) => {
     return (
         <View style={styles.container}>
             <View style={styles.promptView}>
@@ -182,6 +215,49 @@ export const DoodleGameView_ChooseBest = (props: { prompt: string, drawings: Doo
                     </TouchableOpacity>
                 ))}
             </View>
+        </View>
+    );
+};
+
+const typeStyles = {
+    completedText: {
+        fontSize: 16,
+        color: `#FFFF00`,
+    },
+} as const;
+export const DoodleGameView_Type = (props: { prompt: string, drawings: DoodleData[], onDone: () => void }) => {
+
+    const [status, setStatus] = useState({ completed: ``, remaining: props.prompt });
+    useEffect(() => {
+        setStatus({ completed: ``, remaining: props.prompt });
+    }, [props.prompt, props.drawings]);
+
+    const onExpectedKeyPress = () => {
+        setStatus(s => {
+            if (s.remaining.length <= 1) {
+                props.onDone();
+            }
+            const nextChar = s.remaining[0];
+            return {
+                completed: s.completed + nextChar,
+                remaining: s.remaining.substr(1),
+            };
+        });
+    };
+
+    return (
+        <View style={styles.container}>
+            <View style={styles.drawingChoicesView} >
+                {props.drawings.map(x => (
+                    <View style={styles.drawingChoiceWrapper} >
+                        <DoodleDisplayView style={styles.drawingChoice} drawing={x.drawing} />
+                    </View>
+                ))}
+            </View>
+            <View>
+                <Text style={typeStyles.completedText}>{`${status.completed}${status.remaining.length > 0 ? `_` : ``}`}</Text>
+            </View>
+            <KeyboardSimplified expectedCharacter={status.remaining[0] ?? ` `} showHints onExpectedKeyPress={onExpectedKeyPress} />
         </View>
     );
 };
