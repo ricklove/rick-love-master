@@ -2,9 +2,10 @@ import { randomItem } from 'utils/random';
 import { shuffle } from 'utils/arrays';
 import { UploadUrl } from 'upload-api/client/types';
 import { uploadApiConfig } from 'upload-api/client/config';
-import { createSmartUploader } from 'upload-api/client/uploader';
+import { createSmartUploader, downloadData } from 'upload-api/client/uploader';
 import { toKeyValueArray } from 'utils/objects';
-import { DoodleDrawingStorageService, DoodleData, decodeDoodleDrawing, encodeDoodleDrawing, DoodleScoreVote, DoodleScore, DoodleUserDrawingDataJson, DoodleUserVotesDataJson } from './doodle';
+import { createUploadApiWebClient } from 'upload-api/client/web-client';
+import { DoodleDrawingStorageService, DoodleData, decodeDoodleDrawing, encodeDoodleDrawing, DoodleScoreVote, DoodleScore, DoodleUserDrawingDataJson, DoodleUserVotesDataJson, DoodleSummaryDataJson } from './doodle';
 import { doodleStoragePaths } from './doodle-paths';
 
 type DoodleStorageData = {
@@ -15,11 +16,11 @@ type DoodleStorageData = {
 const storageAccess = {
     load: (): null | DoodleStorageData => {
         try {
-            return JSON.parse(localStorage.getItem(`doodleStorage`) ?? `NULL!{}`);
+            return JSON.parse(localStorage.getItem(`doodleStorage.v2`) ?? `NULL!{}`);
         } catch{ return null; }
     },
     save: (value: DoodleStorageData) => {
-        localStorage.setItem(`doodleStorage`, JSON.stringify(value));
+        localStorage.setItem(`doodleStorage.v2`, JSON.stringify(value));
     },
 };
 
@@ -39,11 +40,42 @@ export const createDoodleDrawingStorageService = async () => {
         uploadUrlPrefix: doodleStoragePaths.doodleVotesPrefix,
     });
 
+    const getSummaryData = async () => {
+        try {
+            let uploadUrl = storageAccess.load()?.doodleUploadUrl;
+
+            if (!uploadUrl) {
+                const uploadApiWebClient = createUploadApiWebClient(uploadApiConfig);
+                uploadUrl = (await uploadApiWebClient.createUploadUrl({})).uploadUrl;
+            }
+
+            const serverUrl = uploadUrl?.getUrl.replace(uploadUrl.relativePath, ``);
+            const summaryUrl = `${serverUrl}${doodleStoragePaths.doodleSummary}`;
+            console.log(`getSummaryData`, { uploadUrl, serverUrl, summaryUrl });
+
+            const summaryDataRaw = await downloadData(summaryUrl) as DoodleSummaryDataJson;
+            const summaryData = {
+                doodles: summaryDataRaw.doodles.map(x => ({
+                    key: x.k,
+                    prompt: x.p,
+                    timestamp: x.t,
+                    drawing: decodeDoodleDrawing(x.d),
+                    score: x.s,
+                })),
+            };
+            return summaryData;
+        } catch{
+            return { doodles: [] };
+        }
+    };
+    const summaryData = await getSummaryData();
+
     const memory = {
         doodles: [] as DoodleData[],
         doodleScores: [] as DoodleScore[],
         doodleVotes: [] as DoodleScoreVote[],
     };
+
 
     // Load from server
     memory.doodles = (await remoteDoodle.load())?.doodles.map(x => ({
@@ -53,8 +85,10 @@ export const createDoodleDrawingStorageService = async () => {
         drawing: x.d ? decodeDoodleDrawing(x.d) : (x as unknown as DoodleData).drawing,
     })) ?? [];
     memory.doodleVotes = (await remoteVotes.load())?.doodleVotes ?? [];
+
     const voteTotals = {} as { [key: string]: number };
-    memory.doodleVotes.forEach(x => { voteTotals[x.k] = (voteTotals[x.k] ?? 0) + 1; });
+    // memory.doodleVotes.forEach(x => { voteTotals[x.k] = (voteTotals[x.k] ?? 0) + 1; });
+    summaryData.doodles.forEach(x => { voteTotals[x.key] = (voteTotals[x.key] ?? 0) + x.score; });
     memory.doodleScores = toKeyValueArray(voteTotals).map(x => ({
         doodleKey: x.key,
         score: x.value,
@@ -106,8 +140,10 @@ export const createDoodleDrawingStorageService = async () => {
                 maxCount = 4,
             } = options ?? {};
 
-            const samePromptDrawings = memory.doodles.filter(x => x.prompt === prompt);
-            const otherPromptDrawings = includeOtherPrompts ? memory.doodles.filter(x => x.prompt !== prompt) : [];
+            const allDoodles = [...summaryData.doodles, ...memory.doodles];
+
+            const samePromptDrawings = allDoodles.filter(x => x.prompt === prompt);
+            const otherPromptDrawings = includeOtherPrompts ? allDoodles.filter(x => x.prompt !== prompt) : [];
             const allDrawings =
                 includeOtherPrompts ? [randomItem(samePromptDrawings), ...shuffle(otherPromptDrawings).slice(0, maxCount - 1)]
                     : samePromptDrawings;

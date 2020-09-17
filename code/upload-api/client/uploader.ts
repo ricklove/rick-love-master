@@ -50,7 +50,7 @@ export const createSmartUploader = <T extends {}>(args: { getUploadUrl: () => Pr
         _uploadUrl = await args.getUploadUrl();
         if (_uploadUrl) { return _uploadUrl; }
 
-        _uploadUrl = (await uploadApiWebClient.createUploadUrl({ prefix: `doodle` })).uploadUrl;
+        _uploadUrl = (await uploadApiWebClient.createUploadUrl({ prefix: args.uploadUrlPrefix })).uploadUrl;
         await args.setUploadUrl(_uploadUrl);
         return _uploadUrl;
     };
@@ -83,7 +83,7 @@ export const createSmartUploader = <T extends {}>(args: { getUploadUrl: () => Pr
             }
 
             // Upload backup (temp)
-            const backupUrl = (await uploadApiWebClient.createUploadUrl({ prefix: `${uploadUrl.relativePath}/backup` })).uploadUrl;
+            const backupUrl = (await uploadApiWebClient.createUploadUrl({ prefix: `backup/${uploadUrl.relativePath}` })).uploadUrl;
             const backupUploader = createUploader(backupUrl);
             await backupUploader.uploadData(data);
         },

@@ -13,21 +13,20 @@ const settings = {
     serverStateBucket: process.env.SERVERSTATEBUCKET!,
 };
 
-const getJsonObject = async <T>(bucket: string, key: string): Promise<null | T> => {
-    const result = await s3.getObject({
-        Bucket: bucket,
-        Key: key,
-    }).promise();
-
-    if (!result) { return null; }
-
+const getObjectJsonData = async <T>(bucket: string, key: string): Promise<null | T> => {
     try {
+        const result = await s3.getObject({
+            Bucket: bucket,
+            Key: key,
+        }).promise();
+        if (!result) { return null; }
+
         return JSON.parse((`${result.Body ?? `NULL!{}`}`)) as T;
     } catch{
         return null;
     }
 };
-const setJsonObject = async <T>(bucket: string, key: string, value: T): Promise<void> => {
+const setObjectJsonData = async <T>(bucket: string, key: string, value: T): Promise<void> => {
     await s3.putObject({
         Bucket: bucket,
         Key: key,
@@ -42,16 +41,19 @@ const processAllObjects = async <T>(
     shouldProcess: (itemInfo: { key: string, lastModifiedTimestamp: number }) => boolean,
     processItem: (item: T, itemInfo: { key: string, lastModifiedTimestamp: number }) => Promise<void>,
 ): Promise<void> => {
+    console.log(`processAllObjects - listObjectsV2`);
     let results = await s3.listObjectsV2({
         Bucket: bucket,
         Prefix: prefix,
     }).promise();
 
     const processResults = async () => {
+        console.log(`processAllObjects.processResults`, { bucket, prefix, length: results.Contents?.length, keyCount: results.KeyCount });
+
         const itemInfos = results.Contents?.map(x => ({ key: x.Key ?? ``, lastModifiedTimestamp: x.LastModified?.getTime() ?? 0 })) ?? [];
         const itemsToProcess = itemInfos.filter(x => shouldProcess(x));
         await Promise.all(itemsToProcess.map(async (x) => {
-            const obj = await getJsonObject<T>(bucket, x.key ?? ``);
+            const obj = await getObjectJsonData<T>(bucket, x.key ?? ``);
             if (!obj) { return; }
             await processItem(obj, x);
         }));
@@ -60,18 +62,23 @@ const processAllObjects = async <T>(
     await processResults();
 
     while (results.IsTruncated) {
+        console.log(`processAllObjects - listObjectsV2 (NextContinuationToken)`);
+
         // eslint-disable-next-line no-await-in-loop
         results = await s3.listObjectsV2({
             Bucket: bucket,
             Prefix: prefix,
             ContinuationToken: results.NextContinuationToken,
         }).promise();
+
         // eslint-disable-next-line no-await-in-loop
         await processResults();
     }
 };
 
 export const handleDoodleTask = async () => {
+    console.log(`handleDoodleTask`);
+    const runStartTimestamp = Date.now();
 
     // Get Task State
     type TaskStateData = {
@@ -81,8 +88,10 @@ export const handleDoodleTask = async () => {
         doodleSources: { [bucketKey: string]: string[] };
     };
 
+    // Get Task State
+    console.log(`handleDoodleTask - get task state`);
     const TASK_STATE_KEY = `doodleTaskState`;
-    const taskState: TaskStateData = await getJsonObject<TaskStateData>(settings.serverStateBucket, TASK_STATE_KEY) ?? {
+    const taskState: TaskStateData = await getObjectJsonData<TaskStateData>(settings.serverStateBucket, TASK_STATE_KEY) ?? {
         lastRunTimestamp: 0,
         doodleScores: {},
         doodlePrompts: {},
@@ -90,19 +99,23 @@ export const handleDoodleTask = async () => {
     };
 
     // Update all scores from votes
-    await processAllObjects<DoodleUserVotesDataJson>(settings.bucket, doodleStoragePaths.doodleVotesPrefix, x => x.lastModifiedTimestamp > taskState.lastRunTimestamp, async jsonObj => {
-        const { doodleVotes } = jsonObj;
+    console.log(`handleDoodleTask - processAllObjects - votes`);
+    await processAllObjects<{ data: DoodleUserVotesDataJson }>(settings.bucket, `${doodleStoragePaths.doodleVotesPrefix}/`, x => x.lastModifiedTimestamp > taskState.lastRunTimestamp, async jsonObj => {
+        const { doodleVotes } = jsonObj.data;
         doodleVotes.forEach(x => {
-            if (x.t <= taskState.lastRunTimestamp) { return; }
+            if (x.t <= taskState.lastRunTimestamp || x.t > runStartTimestamp) { return; }
+
             taskState.doodleScores[x.k] = (taskState.doodleScores[x.k] ?? 0) + 1;
         });
     });
 
     // Update doodles
-    await processAllObjects<DoodleUserDrawingDataJson>(settings.bucket, doodleStoragePaths.doodleVotesPrefix, x => x.lastModifiedTimestamp > taskState.lastRunTimestamp, async (jsonObj, itemInfo) => {
-        const { doodles } = jsonObj;
+    console.log(`handleDoodleTask - processAllObjects - doodles`);
+    await processAllObjects<{ data: DoodleUserDrawingDataJson }>(settings.bucket, `${doodleStoragePaths.doodleDrawingsPrefix}/`, x => x.lastModifiedTimestamp > taskState.lastRunTimestamp, async (jsonObj, itemInfo) => {
+        const { doodles } = jsonObj.data;
         doodles.forEach(x => {
-            if (x.t <= taskState.lastRunTimestamp) { return; }
+            if (x.t <= taskState.lastRunTimestamp || x.t > runStartTimestamp) { return; }
+
             taskState.doodleScores[x.k] = 0;
             taskState.doodlePrompts[x.p] = taskState.doodlePrompts[x.p] ?? [];
             taskState.doodlePrompts[x.p].push(x.k);
@@ -114,6 +127,8 @@ export const handleDoodleTask = async () => {
     });
 
     // Create Summary File (choose 4 best doodles & 4 random doodles for each prompt and copy into a single file for client usage)
+    console.log(`handleDoodleTask - create Summary File`);
+
     // TODO: moderation, etc.
     const doodlePromptsSelected = Object.keys(taskState.doodlePrompts).map(p => {
         const d = taskState.doodlePrompts[p].map(doodleKey => ({ doodleKey, score: taskState.doodleScores[doodleKey] }));
@@ -134,9 +149,9 @@ export const handleDoodleTask = async () => {
         if (!doodleKeys.some(x => doodleKeysIncluded[x])) { continue; }
 
         // eslint-disable-next-line no-await-in-loop
-        const d = await getJsonObject<DoodleUserDrawingDataJson>(settings.bucket, bucketKey);
+        const d = await getObjectJsonData<{ data: DoodleUserDrawingDataJson }>(settings.bucket, bucketKey);
         if (!d) { continue; }
-        for (const doodle of d.doodles) {
+        for (const doodle of d.data.doodles) {
             if (!doodleKeysIncluded[doodle.k]) { continue; }
             doodleData.doodles.push({
                 ...doodle,
@@ -146,9 +161,11 @@ export const handleDoodleTask = async () => {
     }
 
     // Save doodle summary
-    await setJsonObject(settings.bucket, doodleStoragePaths.doodleSummary, JSON.stringify(doodleData));
+    console.log(`handleDoodleTask - save summary`);
+    await setObjectJsonData(settings.bucket, doodleStoragePaths.doodleSummary, { data: doodleData });
 
     // Save state
-    taskState.lastRunTimestamp = Date.now();
-    await setJsonObject(settings.serverStateBucket, TASK_STATE_KEY, taskState);
+    console.log(`handleDoodleTask - save task state`);
+    taskState.lastRunTimestamp = runStartTimestamp;
+    await setObjectJsonData(settings.serverStateBucket, TASK_STATE_KEY, taskState);
 };

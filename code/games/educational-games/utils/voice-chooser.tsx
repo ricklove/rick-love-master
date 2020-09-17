@@ -33,7 +33,7 @@ export const VoiceChooser = ({ languange, speechService }: { languange: string, 
             {!loading && (
                 <>
                     {speechService.getVoicesForLanguange(languange).map(x => (
-                        <TouchableOpacity onPress={() => { selectVoice(x.voice); }}>
+                        <TouchableOpacity key={x.voice.name} onPress={() => { selectVoice(x.voice); }}>
                             <View>
                                 <Text style={{ margin: 4, fontSize: 14, whiteSpace: `normal` }} >{`${x.isSelected ? `✅` : `🔲`} ${x.voice.lang} - ${x.voice.name} - ${x.voice.localService ? `local` : `web`}`}</Text>
                             </View>

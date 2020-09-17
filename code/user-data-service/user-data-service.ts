@@ -112,7 +112,7 @@ const createUserDataService = () => {
     };
 
     const uploadBackup = async (userState: UserProfileData, userData: UserData) => {
-        const uploadUrl = await uploadApi.createUploadUrl({ contentType: `application/json`, prefix: `${userState.name}/${userState.uploadUrl.relativePath}/${Date.now()}` });
+        const uploadUrl = await uploadApi.createUploadUrl({ prefix: `backup/users/${userState.name}/${userState.uploadUrl.relativePath}/${Date.now()}` });
         const uploader = createUploader(uploadUrl.uploadUrl);
         await uploader.uploadData(userData);
     };
@@ -220,7 +220,7 @@ const createUserDataService = () => {
                     return;
                 }
 
-                const newUploadUrlResult = await uploadApi.createUploadUrl({ contentType: `application/json` });
+                const newUploadUrlResult = await uploadApi.createUploadUrl({ prefix: `users` });
                 const newState: UserServiceState = state ?? {
                     userProfiles: [{
                         key: newUploadUrlResult.uploadUrl.relativePath,
@@ -371,7 +371,7 @@ const createUserDataService = () => {
                 throw new AppError(`user should not be null`);
             }
 
-            const shareUrlResult = await uploadApi.createUploadUrl({ contentType: `application/json`, shareablePath: true });
+            const shareUrlResult = await uploadApi.createUploadUrl({ shareablePath: true });
 
             // Save user uploadUrl to shared path
             const uploader = createUploader(shareUrlResult.uploadUrl);
@@ -385,7 +385,7 @@ const createUserDataService = () => {
             console.log(`addUserFromShareCode`, { shareCode });
 
             // Don't have a clean way to get the path, but can generate a new path from the server and use it as a template
-            const shareUrlResult = await uploadApi.createUploadUrl({ contentType: `application/json`, shareablePath: true });
+            const shareUrlResult = await uploadApi.createUploadUrl({ shareablePath: true });
             const shareGetUrl = shareUrlResult.uploadUrl.getUrl.replace(shareUrlResult.uploadUrl.relativePath, shareCode.toUpperCase());
             const sharedUploadUrl = await downloadData(shareGetUrl) as UploadUrl;
             if (!sharedUploadUrl.putUrl) {
