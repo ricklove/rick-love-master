@@ -1,0 +1,1 @@
+{"version":3,"sources":["webpack:///D:/Projects/rick-love-master/code/blog/pageTemplates/component-tests-not-found.tsx"],"names":["EmptyComponent","props"],"mappings":"uHAAA,+EAEaA,EAAiB,SAACC,GAAgB,OAAQ","file":"7-0a0a1936c0b1de1c57a4.js","sourcesContent":["import React from 'react';\r\n\r\nexport const EmptyComponent = (props: {}) => { return (<></>); };\r\n"],"sourceRoot":""}
