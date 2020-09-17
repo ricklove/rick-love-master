@@ -2,6 +2,7 @@
     "name": "blog-serverless",
     "version": "1.0.0",
     "dependencies": {
+        "doodle": "*",
         "upload-api": "*",
         "websockets-api": "*",
         "@babel/polyfill": "^7.11.5",

@@ -4,17 +4,49 @@ export type DoodleDrawingStorageService = {
     saveBestDrawingSelection: (doodle: DoodleData) => Promise<void>;
 };
 
+
+export type DoodleSummaryDataJson = {
+    doodles: DoodleData_EncodedWithScore[];
+};
+export type DoodleData_EncodedWithScore = DoodleData_Encoded & {
+    s: number;
+};
+
+export type DoodleUserDrawingDataJson = {
+    doodles: DoodleData_Encoded[];
+};
+
+export type DoodleUserVotesDataJson = {
+    doodleVotes: DoodleScoreVote[];
+};
+
+export type DoodleScoreVote = {
+    // Doodle Key
+    k: string;
+    // Doodle Timestamp
+    t: number;
+};
+
+export type DoodleScore = {
+    doodleKey: string;
+    score: number;
+};
+
 export type DoodleData = {
     key: string;
     drawing: DoodleDrawing;
     prompt: string;
-    score?: number;
+    timestamp: number;
 };
 export type DoodleData_Encoded = {
-    key: string;
-    drawingEncoded: DoodleDrawingEncoded;
-    prompt: string;
-    score?: number;
+    // Doodle Key
+    k: string;
+    // Doodle Drawing
+    d: DoodleDrawingEncoded;
+    // Prompt
+    p: string;
+    // Doodle Timestamp
+    t: number;
 };
 
 export type DoodleDrawing = {

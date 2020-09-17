@@ -1,6 +1,7 @@
 import { fetchWithTimeout } from 'utils/web-request';
 import { AppError } from 'utils/error';
 import { UploadUrl } from './types';
+import { createUploadApiWebClient } from './web-client';
 
 export const downloadData = async (getUrl: string) => {
     const result = await fetchWithTimeout(getUrl, {
@@ -34,6 +35,57 @@ export const createUploader = (uploadUrl: UploadUrl) => {
         },
         downloadData: async (): Promise<unknown> => {
             return await downloadData(uploadUrl.getUrl);
+        },
+    };
+};
+
+export const createSmartUploader = <T extends {}>(args: { getUploadUrl: () => Promise<null | UploadUrl>, setUploadUrl: (uploadUrl: UploadUrl) => Promise<void>, uploadUrlPrefix: string, uploadApiUrl: string }) => {
+    const uploadApiWebClient = createUploadApiWebClient(args);
+
+    let _uploadUrl = null as null | UploadUrl;
+
+    const setupUploadUrl = async () => {
+        if (_uploadUrl) { return _uploadUrl; }
+
+        _uploadUrl = await args.getUploadUrl();
+        if (_uploadUrl) { return _uploadUrl; }
+
+        _uploadUrl = (await uploadApiWebClient.createUploadUrl({ prefix: `doodle` })).uploadUrl;
+        await args.setUploadUrl(_uploadUrl);
+        return _uploadUrl;
+    };
+
+    return {
+        load: async (): Promise<null | T> => {
+            const uploadUrl = await setupUploadUrl();
+
+            try {
+                const data = await downloadData(uploadUrl.getUrl);
+                return data as T;
+            } catch{
+                return null;
+            }
+        },
+        save: async (data: T) => {
+            let uploadUrl = await setupUploadUrl();
+
+            try {
+                const uploader = createUploader(uploadUrl);
+                await uploader.uploadData(data);
+            } catch{
+                // Try again after renew upload token
+                uploadUrl = (await uploadApiWebClient.renewUploadUrl({ uploadUrl })).uploadUrl;
+                await args.setUploadUrl(uploadUrl);
+                _uploadUrl = uploadUrl;
+
+                const uploader = createUploader(uploadUrl);
+                await uploader.uploadData(data);
+            }
+
+            // Upload backup (temp)
+            const backupUrl = (await uploadApiWebClient.createUploadUrl({ prefix: `${uploadUrl.relativePath}/backup` })).uploadUrl;
+            const backupUploader = createUploader(backupUrl);
+            await backupUploader.uploadData(data);
         },
     };
 };
