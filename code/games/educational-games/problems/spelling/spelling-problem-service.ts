@@ -1,5 +1,4 @@
 import { distinct, shuffle } from 'utils/arrays';
-import { randomItem } from 'utils/random';
 import { SpeechService } from '../../utils/speech';
 import { ProblemService, ProblemAnswer } from '../problems-service';
 import { getSpellingEntries } from './spelling-entries';
@@ -38,7 +37,8 @@ export const createSpellingProblemService = ({ speechService, maxAnswers = 4, se
         })),
         gotoSection: ({ key }) => {
             const a = Number.parseInt(key, 10);
-            state.nextIndex = (a - 1) * sectionSize;
+            state.nextIndex = a * sectionSize;
+            console.log(`createSpellingProblemService gotoSection`, { key, a, state });
         },
         getNextProblem: () => {
             if (state.nextIndex >= spellingEntries.length) {
@@ -71,34 +71,6 @@ export const createSpellingProblemService = ({ speechService, maxAnswers = 4, se
         recordAnswer: (problem, answer) => {
             if (answer.isCorrect && problem.isLastOfSection) {
                 state.completedSectionKeys.push(problem.sectionKey);
-            }
-
-            // Responses
-            if (!answer.isCorrect) {
-                // Demotivation!
-                const phrases = [
-                    `I've got a dog that spells better`,
-                    `That was horrible`,
-                    `What are you trying to do?`,
-                    `That is not a word`,
-                    `No, select the correct answer`,
-                    `Absolutely Incorrect`,
-                    `Completely Wrong`,
-                    `This is supposed to be English`,
-                    `What does the fox say?`,
-                ];
-                speech.speak(randomItem(phrases));
-                speech.speak(problem.answers.find(x => x.isCorrect)?.value ?? ``);
-            } else {
-
-                console.log(`recordAnswer correct`);
-                if (Math.random() > 0.1) { return; }
-                const phrases = [
-                    `Good job! Thank you for the alien skulls.`,
-                    `Great! That's a nice pile of bones.`,
-                    // `Amazing! Keep getting better`,
-                ];
-                speech.speak(randomItem(phrases));
             }
         },
     };

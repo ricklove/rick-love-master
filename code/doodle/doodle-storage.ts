@@ -1,5 +1,5 @@
 import { randomItem } from 'utils/random';
-import { shuffle } from 'utils/arrays';
+import { shuffle, distinct_key } from 'utils/arrays';
 import { UploadUrl } from 'upload-api/client/types';
 import { uploadApiConfig } from 'upload-api/client/config';
 import { createSmartUploader, downloadData } from 'upload-api/client/uploader';
@@ -140,7 +140,7 @@ export const createDoodleDrawingStorageService = async () => {
                 maxCount = 4,
             } = options ?? {};
 
-            const allDoodles = [...summaryData.doodles, ...memory.doodles.map(x => ({ ...x, score: memory.doodleScores.find(s => s.doodleKey === x.key)?.score ?? 0 }))];
+            const allDoodles = distinct_key([...summaryData.doodles, ...memory.doodles.map(x => ({ ...x, score: memory.doodleScores.find(s => s.doodleKey === x.key)?.score ?? 0 }))], x => x.key);
 
             const samePromptDrawings = allDoodles.filter(x => x.prompt === prompt).sort((a, b) => -(a.score - b.score));
             console.log(`getDrawings`, { samePromptDrawings });

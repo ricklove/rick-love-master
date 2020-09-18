@@ -224,10 +224,12 @@ export const DoodleDisplayView = ({
     style,
     drawing,
     shouldAnimate = true,
+    animatePointsPerSecond = 20,
 }: {
     style: { width: number, height: number, color: string, backgroundColor: string };
     drawing: DoodleDrawing;
     shouldAnimate?: boolean;
+    animatePointsPerSecond?: number;
 }) => {
     const [tick, setTick] = useState(0);
 
@@ -235,8 +237,8 @@ export const DoodleDisplayView = ({
         if (!shouldAnimate) { return () => { }; }
 
         const id = setInterval(() => {
-            setTick(s => s + 1);
-        }, 30);
+            setTick(s => s + Math.ceil(animatePointsPerSecond / 10));
+        }, 10);
 
         return () => {
             clearInterval(id);
