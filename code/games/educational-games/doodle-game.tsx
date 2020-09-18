@@ -50,7 +50,11 @@ export const styles = {
         fontSize: 14,
         color: `#FFFF00`,
     },
+    buttonRowView: {
+        flexDirection: `row`,
+    },
     buttonView: {
+        margin: 4,
         padding: 8,
         backgroundColor: `#111111`,
     },
@@ -136,6 +140,9 @@ export const EducationalGame_Doodle_Inner = (props: { problemService: DoodleProb
             setTimeout(gotoChooseBestMode);
         });
     };
+    const onDrawingSkip = () => {
+        setTimeout(gotoChooseBestMode);
+    };
 
     const gotoChooseBestMode = () => {
         doWork(async (stopIfObsolete) => {
@@ -186,13 +193,13 @@ export const EducationalGame_Doodle_Inner = (props: { problemService: DoodleProb
 
     return (
         <>
-            <DoodleGameView_DrawWord prompt={prompt.current} hint={problem.hint} onDone={onDrawingDone} />
+            <DoodleGameView_DrawWord prompt={prompt.current} hint={problem.hint} onDone={onDrawingDone} onSkip={onDrawingSkip} />
             {/* <DoodleDisplayView style={styles.drawing} drawing={defaultDoodleDrawing()} /> */}
         </>
     );
 };
 
-export const DoodleGameView_DrawWord = (props: { prompt: string, hint?: string, onDone: (drawing: DoodleDrawing) => void }) => {
+export const DoodleGameView_DrawWord = (props: { prompt: string, hint?: string, onDone: (drawing: DoodleDrawing) => void, onSkip: () => void }) => {
     const [drawing, setDrawing] = useState(defaultDoodleDrawing());
     const changeDoodle = (value: DoodleDrawing) => {
         setDrawing(value);
@@ -200,6 +207,9 @@ export const DoodleGameView_DrawWord = (props: { prompt: string, hint?: string, 
 
     const done = () => {
         props.onDone(drawing);
+    };
+    const skip = () => {
+        props.onSkip();
     };
 
     useEffect(() => {
@@ -217,11 +227,18 @@ export const DoodleGameView_DrawWord = (props: { prompt: string, hint?: string, 
                 <Text style={styles.promptText}>{props.prompt}</Text>
                 {!!props.hint && (<Text style={styles.hintText}>{props.hint}</Text>)}
             </View>
-            <TouchableOpacity onPress={done}>
-                <View style={styles.buttonView}>
-                    <Text style={styles.buttonText}>Done</Text>
-                </View>
-            </TouchableOpacity>
+            <View style={styles.buttonRowView}>
+                <TouchableOpacity onPress={skip}>
+                    <View style={styles.buttonView}>
+                        <Text style={styles.buttonText}>Skip</Text>
+                    </View>
+                </TouchableOpacity>
+                <TouchableOpacity onPress={done}>
+                    <View style={styles.buttonView}>
+                        <Text style={styles.buttonText}>Done</Text>
+                    </View>
+                </TouchableOpacity>
+            </View>
         </View>
     );
 };
