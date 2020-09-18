@@ -3,6 +3,7 @@
     "version": "1.0.0",
     "dependencies": {
         "utils": "*",
+        "utils-react": "*",
         "react-native-lite": "*",
         "upload-api": "*",
         "aws-sdk": "^2.749.0",

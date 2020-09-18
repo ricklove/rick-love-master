@@ -1,7 +1,12 @@
 /* eslint-disable react/no-array-index-key */
 /* eslint-disable jsx-a11y/no-static-element-interactions */
 import React, { useState, useRef, useEffect } from 'react';
-import { defaultDoodleDrawing, DoodleSegment, DoodleDrawing, encodeDoodleDrawing, decodeDoodleDrawing, doodleSegmentToSvgPath_line, doodleToSvg } from './doodle';
+import { View, Text, ActivityIndicator, TouchableOpacity } from 'react-native-lite';
+import { groupItems } from 'utils/arrays';
+import { toKeyValueArray } from 'utils/objects';
+import { useAutoLoadingError } from 'utils-react/hooks';
+import { defaultDoodleDrawing, DoodleSegment, DoodleDrawing, doodleSegmentToSvgPath_line, DoodleDataWithScore } from './doodle';
+import { createDoodleDrawingStorageService } from './doodle-storage';
 
 export const styles = {
     drawing: {
@@ -220,7 +225,33 @@ export const DoodleDrawerView = (props: { style: { width: number, height: number
     );
 };
 
-export const DoodleDisplayView = ({
+export const DoodleDisplayView = (props: {
+    style: { width: number, height: number, color: string, backgroundColor: string };
+    drawing: DoodleDrawing;
+    shouldAnimate?: boolean;
+    animatePointsPerSecond?: number;
+    enableRedraw?: boolean;
+}) => {
+
+    const [redrawId, setRedrawId] = useState(0);
+
+    const redraw = () => {
+        if (!props.enableRedraw) { return; }
+        setRedrawId(s => s + 1);
+    };
+
+    if (props.enableRedraw) {
+        return (
+            <TouchableOpacity onPress={redraw}>
+                <DoodleDisplayView_Inner key={redrawId} {...props} shouldAnimate={redrawId > 0 ? true : (props.shouldAnimate ?? true)} />
+            </TouchableOpacity>
+        );
+    }
+    return (
+        <DoodleDisplayView_Inner {...props} />
+    );
+};
+const DoodleDisplayView_Inner = ({
     style,
     drawing,
     shouldAnimate = true,
@@ -232,21 +263,26 @@ export const DoodleDisplayView = ({
     animatePointsPerSecond?: number;
 }) => {
     const [tick, setTick] = useState(0);
+    const totalPoints = drawing.segments.flatMap(x => x.points).length;
 
     useEffect(() => {
         if (!shouldAnimate) { return () => { }; }
 
+        // console.log(`DoodleDisplayView_Inner.useEffect`);
         const id = setInterval(() => {
-            setTick(s => s + Math.ceil(animatePointsPerSecond / 10));
+            // console.log(`DoodleDisplayView_Inner.useEffect.setInterval`);
+            setTick(s => {
+                if (s > totalPoints) { clearInterval(id); }
+                return s + Math.ceil(animatePointsPerSecond / 10);
+            });
         }, 10);
 
         return () => {
             clearInterval(id);
         };
-    }, [drawing, shouldAnimate]);
+    }, [drawing]);
 
-    let remainingPoints = tick;
-
+    let remainingPoints = shouldAnimate ? tick : Number.MAX_SAFE_INTEGER;
     return (
         <div style={{ width: style.width, height: style.height, backgroundColor: style.backgroundColor }}>
             <svg style={{ width: style.width, height: style.height }} viewBox={`0 0 ${drawing.width} ${drawing.height}`} preserveAspectRatio='none' xmlns='http://www.w3.org/2000/svg'>
@@ -259,5 +295,48 @@ export const DoodleDisplayView = ({
                 })}
             </svg>
         </div>
+    );
+};
+
+export const DoodleBrowser = () => {
+    const { loading, error, doWork } = useAutoLoadingError();
+    const [doodles, setDoodles] = useState([] as DoodleDataWithScore[]);
+    useEffect(() => {
+        doWork(async () => {
+            const service = await createDoodleDrawingStorageService();
+            const result = await service.getAllDrawings();
+            setDoodles(result.doodles);
+        });
+    }, []);
+
+    if (loading) {
+        return (
+            <ActivityIndicator size='large' color='#FFFF00' />
+        );
+    }
+
+    return (
+        <DoodleBrowseView doodles={doodles} />
+    );
+};
+export const DoodleBrowseView = ({ doodles }: { doodles: DoodleDataWithScore[] }) => {
+
+    const grouped = toKeyValueArray(groupItems(doodles, x => x.prompt));
+
+    return (
+        <>
+            {grouped.map(g => (
+                <View key={g.key} style={{ padding: 4 }}>
+                    <Text style={{ fontSize: 12 }} >{g.key}</Text>
+                    <View style={{ padding: 4, flexDirection: `row`, flexWrap: `wrap` }}>
+                        {g.value.map(x => (
+                            <View key={x.key} style={{ padding: 4 }}>
+                                <DoodleDisplayView style={{ width: 104, height: 104, color: `#FFFFFF`, backgroundColor: `#000000` }} drawing={x.drawing} shouldAnimate={false} enableRedraw />
+                            </View>
+                        ))}
+                    </View>
+                </View>
+            ))}
+        </>
     );
 };

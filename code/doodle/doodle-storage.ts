@@ -152,6 +152,10 @@ export const createDoodleDrawingStorageService = async () => {
             const drawings = shuffle(allDrawings).slice(0, maxCount);
             return { doodles: drawings };
         },
+        getAllDrawings: async () => {
+            const allDoodles = distinct_key([...summaryData.doodles, ...memory.doodles.map(x => ({ ...x, score: memory.doodleScores.find(s => s.doodleKey === x.key)?.score ?? 0 }))], x => x.key);
+            return { doodles: allDoodles };
+        },
     };
 
     return service;

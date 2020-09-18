@@ -95,7 +95,10 @@ export const TouchableOpacity = (props: { style?: ThemeViewStyle | ThemeViewStyl
     const lastPressTime = useRef(Date.now());
     const onPress = () => {
         // Prevent duplicate triggers
-        if (Date.now() < lastPressTime.current + 250) { return; }
+        if (Date.now() < lastPressTime.current + 250) {
+            // console.log(`TouchableOpacity - prevented duplicate trigger`, { lastPressTime: lastPressTime.current, now: Date.now() });
+            return;
+        }
         lastPressTime.current = Date.now();
 
         props.onPress();
