@@ -2,32 +2,36 @@
 
 ## Spelling
 
-### Voice -> Type
+### [x] Voice -> Type
 
 - Hear a word
 - Type the word (easy keyboard with helps)
 
 ## Doodle 
 
-### Mode: Word -> Doodle
+### [x] Mode: Word -> Doodle
 
 - See a word (+ Hints: Voice / Translation)
 - Doodle it
 
-### Mode: Doodle -> Word (Multiple Choice)
+### [x] Mode: Doodle -> Word (Multiple Choice)
 
 - See a doodle
 - Select the word (from multiple choice)
 
-### Mode: Doodle -> Word (Typing)
+### [x] Mode: Doodle -> Word (Typing)
 
 - See a doodle
 - Type the word (easy keyboard)
 
-### Mode: Best Doodle
+### [x] Mode: Best Doodle
 
 - See a word
 - Select the best doodle for that word
+
+### [x] Animate Doodles
+
+- Slowly animate doodles (if single doodle on screen)
 
 ### Mode: Multiplayer (2 persons)
 

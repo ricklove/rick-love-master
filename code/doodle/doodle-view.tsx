@@ -220,13 +220,41 @@ export const DoodleDrawerView = (props: { style: { width: number, height: number
     );
 };
 
-export const DoodleDisplayView = ({ style, drawing }: { style: { width: number, height: number, color: string, backgroundColor: string }, drawing: DoodleDrawing }) => {
+export const DoodleDisplayView = ({
+    style,
+    drawing,
+    shouldAnimate = true,
+}: {
+    style: { width: number, height: number, color: string, backgroundColor: string };
+    drawing: DoodleDrawing;
+    shouldAnimate?: boolean;
+}) => {
+    const [tick, setTick] = useState(0);
+
+    useEffect(() => {
+        if (!shouldAnimate) { return () => { }; }
+
+        const id = setInterval(() => {
+            setTick(s => s + 1);
+        }, 30);
+
+        return () => {
+            clearInterval(id);
+        };
+    }, [drawing, shouldAnimate]);
+
+    let remainingPoints = tick;
+
     return (
         <div style={{ width: style.width, height: style.height, backgroundColor: style.backgroundColor }}>
             <svg style={{ width: style.width, height: style.height }} viewBox={`0 0 ${drawing.width} ${drawing.height}`} preserveAspectRatio='none' xmlns='http://www.w3.org/2000/svg'>
-                {drawing.segments.map((x, i) => (
-                    <path key={i} d={doodleSegmentToSvgPath_line(x)} stroke={style.color} fill='transparent' />
-                ))}
+                {drawing.segments.map((x, i) => {
+                    const maxPoints = remainingPoints;
+                    remainingPoints = Math.max(0, remainingPoints - x.points.length);
+                    return (
+                        <path key={i} d={doodleSegmentToSvgPath_line({ points: [...x.points.slice(0, maxPoints)] })} stroke={style.color} fill='transparent' />
+                    );
+                })}
             </svg>
         </div>
     );
