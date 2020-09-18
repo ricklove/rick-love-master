@@ -77,13 +77,14 @@ type DoodleProblem = {
 
 export const EducationalGame_Doodle = (props: { problemService: DoodleProblemService, drawingStorage: DoodleDrawingStorageService }) => {
     const [problemSourceKey, setProblemSourceKey] = useState(0);
+    const [isNavigatorOpen, setIsNavigatorOpen] = useState(false);
 
     return (<>
-        <EducationalGame_Doodle_Inner {...props} problemSourceKey={problemSourceKey} />
+        {!isNavigatorOpen && (<EducationalGame_Doodle_Inner {...props} problemSourceKey={problemSourceKey} />)}
         <SubjectNavigator problemService={props.problemService}
-            onOpen={() => { }}
-            onClose={() => { }}
-            onSubjectNavigation={() => { setProblemSourceKey(s => s + 1); }}
+            onOpen={() => setIsNavigatorOpen(true)}
+            onClose={() => setIsNavigatorOpen(false)}
+            onSubjectNavigation={() => setProblemSourceKey(s => s + 1)}
         />
     </>);
 };

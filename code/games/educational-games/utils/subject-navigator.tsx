@@ -57,6 +57,7 @@ export const SubjectNavigator = (props: { problemService: SubjectProblemService,
                             console.log(`SubjectNavigator onSection`, { s });
                             props.problemService.gotoSection(s);
                             props.onSubjectNavigation();
+                            props.onClose();
                             setIsExpanded(false);
                             if (Platform.OS === `web`) {
                                 window.scrollTo(0, 0);
