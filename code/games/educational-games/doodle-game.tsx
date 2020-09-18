@@ -124,6 +124,10 @@ export const EducationalGame_Doodle_Inner = (props: { problemService: DoodleProb
         });
     };
 
+    const sayAgain = () => {
+        problem?.speakPrompt?.();
+    };
+
     const gotoDrawPromptMode = () => {
         setMode(`drawPrompt`);
     };
@@ -178,7 +182,7 @@ export const EducationalGame_Doodle_Inner = (props: { problemService: DoodleProb
     if (mode === `type`) {
         return (
             <>
-                <DoodleGameView_Type prompt={prompt.current} drawings={drawings ?? []} onDone={onTypeDone} />
+                <DoodleGameView_Type prompt={prompt.current} drawings={drawings ?? []} onDone={onTypeDone} sayAgain={sayAgain} />
             </>
         );
     }
@@ -271,7 +275,7 @@ const typeStyles = {
         color: `#FFFF00`,
     },
 } as const;
-export const DoodleGameView_Type = (props: { prompt: string, drawings: DoodleData[], onDone: () => void }) => {
+export const DoodleGameView_Type = (props: { prompt: string, drawings: DoodleData[], onDone: () => void, sayAgain: () => void }) => {
 
     const [status, setStatus] = useState({ completed: ``, remaining: props.prompt });
     useEffect(() => {
@@ -303,6 +307,11 @@ export const DoodleGameView_Type = (props: { prompt: string, drawings: DoodleDat
                     </View>
                 ))}
             </View>
+            <TouchableOpacity onPress={props.sayAgain}>
+                <View style={styles.buttonView}>
+                    <Text style={styles.buttonText}>Say Again</Text>
+                </View>
+            </TouchableOpacity>
             <View>
                 <Text style={typeStyles.completedText}>{`${status.completed}${status.remaining.length > 0 ? `_` : ``}`}</Text>
             </View>
