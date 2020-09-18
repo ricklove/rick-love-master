@@ -269,15 +269,16 @@ const createUserDataService = () => {
             // // Upload old user data
             // await service.uploadUserData();
 
-            state.activeUserProfileKey = userProfileKey;
-            state.changeTimestamp = 0;
-            storage.setUserDataServiceState(state);
+            if (state.activeUserProfileKey !== userProfileKey) {
+                console.log(`setActiveUser - user changed - clearing state`);
+
+                state.activeUserProfileKey = userProfileKey;
+                state.changeTimestamp = 0;
+                storage.setUserDataServiceState(state);
+                storage.clearUserData();
+            }
 
             console.log(`setActiveUser - before download`, { stateJson: JSON.stringify(storage.getUserDataServiceState()) });
-
-            // Clear Current State
-            storage.clearUserData();
-            console.log(`setActiveUser - cleared user data`, {});
 
             // Download new user data
             await service.downloadUserDataIfNewer();
@@ -362,6 +363,7 @@ const createUserDataService = () => {
             }
 
             console.log(`downloadUserDataIfNewer - UPDATING`, { state, userData });
+            storage.clearUserData();
             storage.setUserData(userData);
         },
         createShareCode: async (userProfileKey: string) => {

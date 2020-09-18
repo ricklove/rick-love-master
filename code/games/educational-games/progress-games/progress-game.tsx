@@ -63,9 +63,29 @@ export const ProgressGameView = () => {
     const [hasSelectedProfile, setHasSelectedProfile] = useState(false);
     const [userProfile, setUserProfile] = useState(null as null | UserProfileInfo);
 
+    // Save UserData after Purchase
+    const subscribeToSaveOnPurchase = () => {
+        let lastPurchase = Date.now();
+        const subscription = EmojiIdleService.get().subscribePetStateChange((x) => {
+            console.log(`ProgressGameView subscribePetStateChange`, { lastPurchase, x });
+            if (lastPurchase >= x.lastPurchaseTimestamp) { return; }
+            lastPurchase = x.lastPurchaseTimestamp;
+            // Save User Data (delayed to let other state update)
+            setTimeout(async () => {
+                await UserDataService.get().uploadUserData();
+            }, 1000);
+        });
+        return subscription;
+    };
+
     useEffect(() => {
         setUserProfile(UserDataService.get().getActiveUser() ?? null);
         EmojiIdleService.reset();
+
+        const sub = subscribeToSaveOnPurchase();
+        return () => {
+            sub.unsubscribe();
+        };
     }, [hasSelectedProfile]);
 
     useEffect(() => {
