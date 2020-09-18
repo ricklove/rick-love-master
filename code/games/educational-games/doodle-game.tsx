@@ -3,7 +3,6 @@ import { DoodleDisplayView, DoodleDrawerView } from 'doodle/doodle-view';
 import { defaultDoodleDrawing, DoodleDrawing, DoodleData, DoodleDrawingStorageService } from 'doodle/doodle';
 import { View, Text, TouchableOpacity } from 'react-native-lite';
 import { useAutoLoadingError } from 'utils-react/hooks';
-import { ProblemService, Problem } from './problems/problems-service';
 import { SubjectNavigator } from './utils/subject-navigator';
 import { KeyboardSimplified } from './utils/keyboard-simplified';
 
@@ -47,6 +46,10 @@ export const styles = {
         fontSize: 20,
         color: `#FFFF00`,
     },
+    hintText: {
+        fontSize: 14,
+        color: `#FFFF00`,
+    },
     buttonView: {
         padding: 8,
         backgroundColor: `#111111`,
@@ -57,8 +60,18 @@ export const styles = {
     },
 } as const;
 
+export type DoodleProblemService = {
+    getSections: () => { key: string, name: string, isComplete: boolean }[];
+    gotoSection: (section: { key: string }) => void;
+    getNextProblem: () => DoodleProblem | null;
+};
+type DoodleProblem = {
+    prompt: string;
+    hint?: string;
+    speakPrompt?: () => void;
+};
 
-export const EducationalGame_Doodle = (props: { problemService: ProblemService, drawingStorage: DoodleDrawingStorageService }) => {
+export const EducationalGame_Doodle = (props: { problemService: DoodleProblemService, drawingStorage: DoodleDrawingStorageService }) => {
     const [problemSourceKey, setProblemSourceKey] = useState(0);
 
     return (<>
@@ -71,20 +84,20 @@ export const EducationalGame_Doodle = (props: { problemService: ProblemService, 
     </>);
 };
 
-export const EducationalGame_Doodle_Inner = (props: { problemService: ProblemService, drawingStorage: DoodleDrawingStorageService, problemSourceKey: number }) => {
+export const EducationalGame_Doodle_Inner = (props: { problemService: DoodleProblemService, drawingStorage: DoodleDrawingStorageService, problemSourceKey: number }) => {
 
-    const [problem, setProblem] = useState(null as null | Problem);
+    const [problem, setProblem] = useState(null as null | DoodleProblem);
     const [mode, setMode] = useState(`type` as 'type' | 'drawPrompt' | 'chooseCorrect' | 'chooseBest');
     const [drawings, setDrawings] = useState(null as null | DoodleData[]);
-    const prompt = useRef(problem?.answers.find(x => x.isCorrect)?.value ?? ``);
-    prompt.current = problem?.answers.find(x => x.isCorrect)?.value ?? ``;
+    const prompt = useRef(problem?.prompt ?? ``);
+    prompt.current = problem?.prompt ?? ``;
 
     const gotoNextProblem = () => {
         const p = props.problemService.getNextProblem();
-        if (!p.question) { return; }
+        if (!p) { return; }
         setProblem(p);
         setTimeout(gotoTypeMode);
-        p.onQuestion?.();
+        p.speakPrompt?.();
     };
 
     useEffect(() => {
@@ -95,7 +108,7 @@ export const EducationalGame_Doodle_Inner = (props: { problemService: ProblemSer
 
     const gotoTypeMode = () => {
         doWork(async (stopIfObsolete) => {
-            const result = await props.drawingStorage.getDrawings(prompt.current);
+            const result = await props.drawingStorage.getDrawings(prompt.current, { maxCount: 1, includeOtherPrompts: false });
             setDrawings(result.doodles);
             setMode(`type`);
         });
@@ -173,13 +186,13 @@ export const EducationalGame_Doodle_Inner = (props: { problemService: ProblemSer
 
     return (
         <>
-            <DoodleGameView_DrawWord prompt={prompt.current} onDone={onDrawingDone} />
+            <DoodleGameView_DrawWord prompt={prompt.current} hint={problem.hint} onDone={onDrawingDone} />
             {/* <DoodleDisplayView style={styles.drawing} drawing={defaultDoodleDrawing()} /> */}
         </>
     );
 };
 
-export const DoodleGameView_DrawWord = (props: { prompt: string, onDone: (drawing: DoodleDrawing) => void }) => {
+export const DoodleGameView_DrawWord = (props: { prompt: string, hint?: string, onDone: (drawing: DoodleDrawing) => void }) => {
     const [drawing, setDrawing] = useState(defaultDoodleDrawing());
     const changeDoodle = (value: DoodleDrawing) => {
         setDrawing(value);
@@ -202,6 +215,7 @@ export const DoodleGameView_DrawWord = (props: { prompt: string, onDone: (drawin
             <DoodleDrawerView style={styles.drawing} drawing={drawing} onChange={changeDoodle} />
             <View style={styles.promptView}>
                 <Text style={styles.promptText}>{props.prompt}</Text>
+                {!!props.hint && (<Text style={styles.hintText}>{props.hint}</Text>)}
             </View>
             <TouchableOpacity onPress={done}>
                 <View style={styles.buttonView}>
@@ -223,7 +237,7 @@ export const DoodleGameView_ChooseBest = (props: { prompt: string, drawings: Doo
             </View>
             <View style={styles.drawingChoicesView} >
                 {props.drawings.map(x => (
-                    <TouchableOpacity onPress={() => props.onChooseBest(x)}>
+                    <TouchableOpacity key={x.key} onPress={() => props.onChooseBest(x)}>
                         <View style={styles.drawingChoiceWrapper} >
                             <DoodleDisplayView style={styles.drawingChoice} drawing={x.drawing} />
                         </View>
@@ -267,7 +281,7 @@ export const DoodleGameView_Type = (props: { prompt: string, drawings: DoodleDat
             </View>
             <View style={styles.drawingChoicesView} >
                 {props.drawings.map(x => (
-                    <View style={styles.drawingChoiceWrapper} >
+                    <View key={x.key} style={styles.drawingChoiceWrapper} >
                         <DoodleDisplayView style={styles.drawingChoice} drawing={x.drawing} />
                     </View>
                 ))}

@@ -5,9 +5,9 @@ import { Text, View, Platform, ActivityIndicator } from 'react-native-lite';
 import { createDoodleDrawingStorageService } from 'doodle/doodle-storage';
 import { DoodleDrawingStorageService } from 'doodle/doodle';
 import { useAutoLoadingError } from 'utils-react/hooks';
-import { EducationalGame_Doodle } from '../doodle-game';
+import { Problem } from '../problems/problems-service';
+import { EducationalGame_Doodle, DoodleProblemService } from '../doodle-game';
 import { createSpeechService } from '../utils/speech';
-import { createReviewProblemService } from '../problems/problems-reviewer';
 import { createSpellingProblemService } from '../problems/spelling/spelling-problem-service';
 import { VoiceChooser } from '../utils/voice-chooser';
 import { createAutoSavedProblemService } from '../problems/problem-state-storage';
@@ -18,9 +18,34 @@ export const EducationalGame_Doodle_Spelling = (props: {}) => {
 
     const { loading, error, doWork } = useAutoLoadingError();
     const drawingStorage = useRef(null as null | DoodleDrawingStorageService);
+    const problemService = useRef(null as null | DoodleProblemService);
     useEffect(() => {
         doWork(async (stopIfObsolete) => {
             drawingStorage.current = await createDoodleDrawingStorageService();
+            stopIfObsolete();
+
+            const inner = createAutoSavedProblemService(createSpellingProblemService({ speechService: speechService.current, sectionSize: 8 }), `ProblemsSpellingDoodle`);
+            let lastProblem = null as null | Problem;
+            problemService.current = {
+                getSections: inner.getSections,
+                gotoSection: inner.gotoSection,
+                getNextProblem: () => {
+                    if (lastProblem) {
+                        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+                        inner.recordAnswer(lastProblem, lastProblem.answers.find(x => x.isCorrect)!);
+                    }
+
+                    const p = inner.getNextProblem();
+                    if (!p.question) { return null; }
+                    lastProblem = p;
+
+                    return {
+                        prompt: p.answers.find(x => x.isCorrect)?.value ?? ``,
+                        // hint: p.question,
+                        speakPrompt: p.onQuestion,
+                    };
+                },
+            };
         });
     }, []);
 
@@ -39,7 +64,7 @@ export const EducationalGame_Doodle_Spelling = (props: {}) => {
         );
     }
 
-    if (loading || !drawingStorage.current) {
+    if (loading || !drawingStorage.current || !problemService.current) {
         return (
             <>
                 <ActivityIndicator size='large' color='#FFFF00' />
@@ -48,7 +73,7 @@ export const EducationalGame_Doodle_Spelling = (props: {}) => {
     }
 
     return <EducationalGame_Doodle
-        problemService={createAutoSavedProblemService(createReviewProblemService(createSpellingProblemService({ speechService: speechService.current, sectionSize: 8 }), {}), `ProblemsSpellingDoodle`)}
+        problemService={problemService.current}
         drawingStorage={drawingStorage.current}
     />;
 };

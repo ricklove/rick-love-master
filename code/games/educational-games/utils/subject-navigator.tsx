@@ -26,7 +26,11 @@ const subjectStyles = {
     },
 } as const;
 
-export const SubjectNavigator = (props: { problemService: ProblemService, onOpen: () => void, onClose: () => void, onSubjectNavigation: () => void }) => {
+export type SubjectProblemService = {
+    getSections: () => { key: string, name: string, isComplete: boolean }[];
+    gotoSection: (section: { key: string }) => void;
+};
+export const SubjectNavigator = (props: { problemService: SubjectProblemService, onOpen: () => void, onClose: () => void, onSubjectNavigation: () => void }) => {
 
     const [isExpanded, setIsExpanded] = useState(false);
     const toggle = () => {

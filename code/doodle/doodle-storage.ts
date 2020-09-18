@@ -140,9 +140,11 @@ export const createDoodleDrawingStorageService = async () => {
                 maxCount = 4,
             } = options ?? {};
 
-            const allDoodles = [...summaryData.doodles, ...memory.doodles];
+            const allDoodles = [...summaryData.doodles, ...memory.doodles.map(x => ({ ...x, score: memory.doodleScores.find(s => s.doodleKey === x.key)?.score ?? 0 }))];
 
-            const samePromptDrawings = allDoodles.filter(x => x.prompt === prompt);
+            const samePromptDrawings = allDoodles.filter(x => x.prompt === prompt).sort((a, b) => -(a.score - b.score));
+            console.log(`getDrawings`, { samePromptDrawings });
+
             const otherPromptDrawings = includeOtherPrompts ? allDoodles.filter(x => x.prompt !== prompt) : [];
             const allDrawings =
                 includeOtherPrompts ? [randomItem(samePromptDrawings), ...shuffle(otherPromptDrawings).slice(0, maxCount - 1)]
