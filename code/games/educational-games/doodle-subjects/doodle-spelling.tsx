@@ -11,6 +11,7 @@ import { createSpeechService } from '../utils/speech';
 import { createSpellingProblemService } from '../problems/spelling/spelling-problem-service';
 import { VoiceChooser } from '../utils/voice-chooser';
 import { createAutoSavedProblemService } from '../problems/problem-state-storage';
+import { createProgressGameProblemService } from '../progress-games/progress-game';
 
 export const EducationalGame_Doodle_Spelling = (props: {}) => {
     const speechService = useRef(createSpeechService());
@@ -24,7 +25,10 @@ export const EducationalGame_Doodle_Spelling = (props: {}) => {
             drawingStorage.current = await createDoodleDrawingStorageService();
             stopIfObsolete();
 
-            const inner = createAutoSavedProblemService(createSpellingProblemService({ speechService: speechService.current, sectionSize: 8 }), `ProblemsSpellingDoodle`);
+            const inner = createProgressGameProblemService(
+                createAutoSavedProblemService(createSpellingProblemService({ speechService: speechService.current, sectionSize: 8 })
+                    , `ProblemsSpellingDoodle`));
+
             let lastProblem = null as null | Problem;
             problemService.current = {
                 getSections: inner.getSections,
