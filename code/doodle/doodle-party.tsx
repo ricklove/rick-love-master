@@ -105,8 +105,9 @@ const PartyViewer = (props: { controller: DoodlePartyController }) => {
         <View>
             <Text>Players</Text>
             <DoodlePartyPlayerList controller={props.controller} />
-            <Text>Doodles</Text>
-            <DoodleBrowseView doodles={props.controller.gameState.doodles} />
+            <Text>Rounds</Text>
+            <Text>{`${props.controller.gameState.history.rounds.length}`}</Text>
+            {/* <DoodleBrowseView doodles={props.controller.gameState.doodles} /> */}
         </View>
     );
 };

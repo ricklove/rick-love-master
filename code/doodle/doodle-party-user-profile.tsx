@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { C } from 'controls-react';
 import { View, Text, TouchableOpacity } from 'react-native-lite';
-import { DoodlePartyController } from './doodle-party-state';
+import { DoodlePartyController, PlayerState } from './doodle-party-state';
 
 export const DoodlePartyProfileView = (props: { controller: DoodlePartyController, onDone: () => void }) => {
     const { clientPlayer } = props.controller.gameState.client;
@@ -41,13 +41,21 @@ export const DoodlePartyProfileView = (props: { controller: DoodlePartyControlle
 };
 
 export const DoodlePartyPlayerList = (props: { controller: DoodlePartyController }) => {
+
+    const getPlayerIcon = (p: PlayerState) => {
+        if (!p.isReady) return `◻`;
+        if (p.assignment && !p.assignment.isDone && p.assignment.kind === `doodle`) return `🎨`;
+        if (p.assignment && !p.assignment.isDone && p.assignment.kind === `describe`) return `✏`;
+        return `✔`;
+    };
+
     return (
         <>
             <View>
                 {props.controller.gameState.players.map(x => (
                     <View key={x.clientKey} style={{ flexDirection: `row`, alignItems: `center` }}>
                         <View>
-                            <Text style={{ fontSize: 24 }} >{x.isReady ? `✔` : `◻`}</Text>
+                            <Text style={{ fontSize: 24 }} >{getPlayerIcon(x)}</Text>
                         </View>
                         <View style={{ width: 48 }}>
                             <Text style={{ fontSize: 32 }} >{x.emoji}</Text>

@@ -27,9 +27,9 @@ export const DoodlePartyStatusBar = (props: { controller: DoodlePartyController 
                         </>
                     )}
                 <View style={{ flex: 1 }} />
-                <View>
+                {/* <View>
                     <Text style={{ fontSize: 16 }}>{gameState.client.clientPlayer.clientKey}</Text>
-                </View>
+                </View> */}
                 <View>
                     <Text style={{ fontSize: 16 }}>{gameState.masterClientKey === gameState.client.clientPlayer.clientKey ? `🟢` : ``}</Text>
                 </View>

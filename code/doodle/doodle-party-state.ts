@@ -5,8 +5,7 @@ import { createWebsocketClient } from 'websockets-api/client/websocket-client';
 import { websocketsApiConfig } from 'websockets-api/client/config';
 import { toKeyValueArray } from 'utils/objects';
 import { randomIndex } from 'utils/random';
-import { create } from 'domain';
-import { DoodleDataWithScore, DoodleDrawingEncoded, DoodleData_Encoded } from './doodle';
+import { DoodleDataWithScore, DoodleData_Encoded } from './doodle';
 
 type GameState = {
     client: {
@@ -14,25 +13,33 @@ type GameState = {
         room: string;
         role: 'debug' | 'viewer' | 'player';
 
-        clientPlayer: PlayerProfile;
+        clientPlayer: PlayerState;
     };
     masterClientKey?: string;
-    players: PlayerProfile[];
-    doodles: DoodleDataWithScore[];
-    playerAssignments: PlayerAssignment[];
+    players: PlayerState[];
+    history: GameHistory;
+    // doodles: DoodleDataWithScore[];
 };
-type PlayerAssignment = {
-    clientKey: string;
+type Assignment = {
     kind: 'doodle' | 'describe';
+    isDone: boolean;
     prompt?: string;
     doodle?: DoodleData_Encoded;
 };
-type PlayerProfile = {
+export type PlayerState = {
     clientKey: string;
     name: string;
     emoji: string;
     isReady: boolean;
     isUser?: boolean;
+
+    assignment?: Assignment;
+};
+type GameHistory = { rounds: { completed: PlayerState[] }[] };
+type PlayerProfile = {
+    clientKey: string;
+    name: string;
+    emoji: string;
 };
 
 const createClientStorage = () => {
@@ -81,8 +88,7 @@ const createDefaultGameState = (): GameState => {
             },
         },
         players: [],
-        doodles: [],
-        playerAssignments: [],
+        history: { rounds: [] },
     };
 
     return gameState;
@@ -98,8 +104,8 @@ type DoodlePartyMessage = {
     requestedClientKey: string;
     gameState: {
         masterClientKey: string;
-        players: PlayerProfile[];
-        doodles: DoodleDataWithScore[];
+        players: PlayerState[];
+        history: GameHistory;
     };
 } | {
     kind: 'setPlayer';
@@ -119,8 +125,19 @@ type DoodlePartyMessage = {
     droppedClientKey: string;
 } | {
     kind: 'assign';
-    playerAssignments: PlayerAssignment[];
+    players: PlayerState[];
+    history: GameHistory;
+} | {
+    kind: 'completeAssignment';
+    playerAssignment: Assignment & { clientKey: string };
 });
+const createNewAssigment = (): Assignment => {
+    return {
+        kind: `doodle`,
+        isDone: false,
+        prompt: `Choose Your Own Word`,
+    };
+};
 const createMessageHandler = (gameState: GameState, refresh: () => void, send: (message: DoodlePartyMessage) => void) => {
     console.log(`createMessageHandler`);
     const { clientKey } = gameState.client.clientPlayer;
@@ -135,7 +152,7 @@ const createMessageHandler = (gameState: GameState, refresh: () => void, send: (
             gameState: {
                 masterClientKey: gameState.masterClientKey,
                 players: gameState.players,
-                doodles: gameState.doodles,
+                history: gameState.history,
             },
             clientKey,
             timestamp: Date.now(),
@@ -145,6 +162,37 @@ const createMessageHandler = (gameState: GameState, refresh: () => void, send: (
     const masterState = {
         startTimestamp: Date.now(),
         clientStates: {} as { [clientKey: string]: { lastMessageTimestamp: number } },
+    };
+
+    const sendNewAssignmentsIfReady = () => {
+        if (gameState.players.some(x => !x.isReady || !(x.assignment?.isDone ?? true))) { return; }
+
+        // Save Round
+        gameState.history.rounds.push({ completed: gameState.players });
+
+        // Rotate next assignment
+        const old = gameState.players.map(x => x.assignment);
+        for (let i = 0; i < gameState.players.length; i++) {
+            const iNext = i < gameState.players.length - 1 ? i + 1 : 0;
+            const newAssignment = { ...old[i] ?? createNewAssigment() };
+            // Switch assignment types
+            if (newAssignment.kind === `doodle`) {
+                newAssignment.kind = `describe`;
+                newAssignment.prompt = undefined;
+            } else {
+                newAssignment.kind = `doodle`;
+                newAssignment.doodle = undefined;
+            }
+            gameState.players[iNext].assignment = newAssignment;
+        }
+
+        send({
+            kind: `assign`,
+            players: gameState.players,
+            history: gameState.history,
+            clientKey,
+            timestamp: Date.now(),
+        });
     };
 
     const aliveTimeout = 15;
@@ -205,6 +253,14 @@ const createMessageHandler = (gameState: GameState, refresh: () => void, send: (
             p.name = message.clientPlayer.name;
             p.emoji = message.clientPlayer.emoji;
             p.isReady = message.clientPlayer.isReady;
+
+            // If master
+            if (clientKey === gameState.masterClientKey) {
+                setTimeout(() => {
+                    sendNewAssignmentsIfReady();
+                }, 3000);
+            }
+
             refresh();
             return;
         }
@@ -221,7 +277,24 @@ const createMessageHandler = (gameState: GameState, refresh: () => void, send: (
 
         // Assigments
         if (message.kind === `assign`) {
-            gameState.playerAssignments = message.playerAssignments;
+            gameState.players = message.players;
+            gameState.history = message.history;
+            refresh();
+            return;
+        }
+        if (message.kind === `completeAssignment`) {
+            // Add Doodle, Prompt
+            const assigment = gameState.players.find(x => x.clientKey === message.clientKey)?.assignment;
+            if (!assigment) { return; }
+            assigment.prompt = message.playerAssignment.prompt;
+            assigment.doodle = message.playerAssignment.doodle;
+            assigment.isDone = true;
+
+            // If master
+            if (clientKey === gameState.masterClientKey) {
+                sendNewAssignmentsIfReady();
+            }
+
             refresh();
             return;
         }
@@ -252,7 +325,7 @@ const createMessageHandler = (gameState: GameState, refresh: () => void, send: (
             if (message.requestedClientKey !== clientKey) {
                 // Verify master is correct
                 if (message.gameState.players.length < gameState.players.length
-                    || message.gameState.doodles.length < gameState.doodles.length
+                    || message.gameState.history.rounds.length < gameState.history.rounds.length
                 ) {
                     // The master is wrong - claim master and correct data
                     sendGameState(message.clientKey);
