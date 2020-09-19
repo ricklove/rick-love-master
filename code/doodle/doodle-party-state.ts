@@ -154,8 +154,8 @@ const createMessageHandler = (gameState: GameState, refresh: () => void, send: (
         const m = masterState.clientStates[gameState.masterClientKey ?? ``] ?? { lastMessageTimestamp: masterState.startTimestamp };
         // console.log(`createMessageHandler`, { m, masterState });
 
+        // Clients - Detect Dead Master
         if (gameState.masterClientKey !== gameState.client.clientPlayer.clientKey) {
-            // Clients
             if (Date.now() > deadTimeout * 1000 + m.lastMessageTimestamp) {
                 console.log(`createMessageHandler - Master not responsive!`, { m, masterState });
                 // Master is not active, take over (send game state to self will work)
@@ -164,6 +164,7 @@ const createMessageHandler = (gameState: GameState, refresh: () => void, send: (
             return;
         }
 
+        // Keep Master Alive
         if (Date.now() > aliveTimeout * 1000 + m.lastMessageTimestamp) {
             // Master (self) is not being active - send a message before another client takes over
             send({ kind: `aliveResponse`, clientKey, timestamp: Date.now() });
@@ -378,8 +379,6 @@ export const useDoodlePartyController = () => {
         });
 
     }, [send.current]);
-
-    // Master sending
 
     return {
         loading,
