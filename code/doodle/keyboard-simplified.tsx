@@ -17,7 +17,8 @@ const styles = {
     keyView: {
         margin: 2,
         padding: 2,
-        width: 20,
+        // width: 20,
+        flex: 1,
         height: 20,
         backgroundColor: `#111111`,
         justifyContent: `center`,

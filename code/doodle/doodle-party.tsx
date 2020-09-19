@@ -1,10 +1,9 @@
 /* eslint-disable react/no-array-index-key */
 import React, { useState } from 'react';
 import { View, Text, ActivityIndicator } from 'react-native-lite';
-import { DoodleBrowseView } from './doodle-view';
 import { useDoodlePartyController, DoodlePartyController } from './doodle-party-state';
-import { DoodlePartyProfileView, DoodlePartyPlayerList } from './doodle-party-user-profile';
-import { DoodlePartyStatusBar } from './doodle-party-components';
+import { DoodlePartyProfileView } from './doodle-party-user-profile';
+import { DoodlePartyStatusBar, DoodlePartyPlayView, PartyViewer } from './doodle-party-components';
 
 export const DoodlePartyView = () => {
 
@@ -65,49 +64,39 @@ export const DoodlePartyView_Inner = ({ controller }: { controller: DoodlePartyC
 
     // Play View
     return (
-        <DebugView controller={controller} />
+        <DoodlePartyPlayView controller={controller} />
     );
 };
 
 const DebugView = (props: { controller: DoodlePartyController }) => {
     const { gameState, _messages, _events } = props.controller;
     return (
-        <View style={{ padding: 8 }}>
+        <>
             <PartyViewer controller={props.controller} />
+            <View style={{ marginTop: 64, background: `#555555` }}>
 
-            <Text style={{ fontSize: 20 }}>Setup</Text>
-            <View>
-                <Text>{`Query: ${JSON.stringify(gameState.client._query)}`}</Text>
-                <Text>{`Room: ${gameState.client.room}`}</Text>
-                <Text>{`Role: ${gameState.client.role}`}</Text>
-            </View>
-            <Text style={{ fontSize: 20 }}>Web Sockets</Text>
-            <View>
-                <View style={{ padding: 4 }}>
-                    <Text style={{ whiteSpace: `pre-wrap`, fontSize: 18 }}>Events</Text>
-                    {_events.map((x, i) => (
-                        <Text key={i} style={{ whiteSpace: `pre-wrap`, fontSize: 14 }}>{JSON.stringify(x)}</Text>
-                    ))}
+                <Text style={{ fontSize: 20 }}>Debug</Text>
+                <View>
+                    <Text>{`Query: ${JSON.stringify(gameState.client._query)}`}</Text>
+                    <Text>{`Room: ${gameState.client.room}`}</Text>
+                    <Text>{`Role: ${gameState.client.role}`}</Text>
                 </View>
-                <View style={{ padding: 4 }}>
-                    <Text style={{ whiteSpace: `pre-wrap`, fontSize: 18 }}>Messages</Text>
-                    {_messages.map((x, i) => (
-                        <Text key={i} style={{ whiteSpace: `pre-wrap`, fontSize: 14 }}>{`${x.timestamp} ${x.receivedAtTimestamp - x.timestamp}: ${JSON.stringify(x)}`}</Text>
-                    ))}
+                <Text style={{ fontSize: 20 }}>Web Sockets</Text>
+                <View>
+                    <View style={{ padding: 4 }}>
+                        <Text style={{ whiteSpace: `pre-wrap`, fontSize: 18 }}>Events</Text>
+                        {_events.map((x, i) => (
+                            <Text key={i} style={{ whiteSpace: `pre-wrap`, fontSize: 14 }}>{JSON.stringify(x)}</Text>
+                        ))}
+                    </View>
+                    <View style={{ padding: 4 }}>
+                        <Text style={{ whiteSpace: `pre-wrap`, fontSize: 18 }}>Messages</Text>
+                        {_messages.map((x, i) => (
+                            <Text key={i} style={{ whiteSpace: `pre-wrap`, fontSize: 14 }}>{`${x.timestamp} ${x.receivedAtTimestamp - x.timestamp}: ${JSON.stringify(x)}`}</Text>
+                        ))}
+                    </View>
                 </View>
             </View>
-        </View>
-    );
-};
-
-const PartyViewer = (props: { controller: DoodlePartyController }) => {
-    return (
-        <View>
-            <Text>Players</Text>
-            <DoodlePartyPlayerList controller={props.controller} />
-            <Text>Rounds</Text>
-            <Text>{`${props.controller.gameState.history.rounds.length}`}</Text>
-            {/* <DoodleBrowseView doodles={props.controller.gameState.doodles} /> */}
-        </View>
+        </>
     );
 };
