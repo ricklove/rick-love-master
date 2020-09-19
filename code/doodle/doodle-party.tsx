@@ -4,15 +4,25 @@ import { View, Text, ActivityIndicator } from 'react-native-lite';
 import { DoodleBrowseView } from './doodle-view';
 import { useDoodlePartyController, DoodlePartyController } from './doodle-party-state';
 import { DoodlePartyProfileView, DoodlePartyPlayerList } from './doodle-party-user-profile';
+import { DoodlePartyStatusBar } from './doodle-party-components';
 
 export const DoodlePartyView = () => {
 
     const controller = useDoodlePartyController();
+    return (
+        <>
+            <DoodlePartyStatusBar controller={controller} />
+            <DoodlePartyView_Inner controller={controller} />
+        </>
+    );
+};
+
+export const DoodlePartyView_Inner = ({ controller }: { controller: DoodlePartyController }) => {
 
     const [mode, setMode] = useState(`profile` as 'profile' | 'play' | 'viewer');
 
     const onProfileDone = () => {
-        console.log(`onProfileDone`);
+        // console.log(`onProfileDone`);
         setMode(`play`);
     };
 
@@ -40,7 +50,7 @@ export const DoodlePartyView = () => {
 
     // Profile
     if (mode === `profile`) {
-        console.log(`DoodlePartyView profile`, { controller });
+        // console.log(`DoodlePartyView profile`, { controller });
         return (
             <DoodlePartyProfileView controller={controller} onDone={onProfileDone} />
         );
@@ -63,6 +73,8 @@ const DebugView = (props: { controller: DoodlePartyController }) => {
     const { gameState, _messages, _events } = props.controller;
     return (
         <View style={{ padding: 8 }}>
+            <PartyViewer controller={props.controller} />
+
             <Text style={{ fontSize: 20 }}>Setup</Text>
             <View>
                 <Text>{`Query: ${JSON.stringify(gameState.client._query)}`}</Text>
@@ -84,8 +96,6 @@ const DebugView = (props: { controller: DoodlePartyController }) => {
                     ))}
                 </View>
             </View>
-
-            <PartyViewer controller={props.controller} />
         </View>
     );
 };

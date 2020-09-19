@@ -60,7 +60,7 @@ export const createWebsocketClient = (config: { websocketsApiUrl: string }): Web
 
                 // Listen for messages
                 socket.addEventListener(`message`, (event) => {
-                    console.log(`socket message`, { event });
+                    // console.log(`socket message`, { event });
                     if (socket !== activeSocket) {
                         socket.close();
                         return;

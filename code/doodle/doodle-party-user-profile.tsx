@@ -21,7 +21,7 @@ export const DoodlePartyProfileView = (props: { controller: DoodlePartyControlle
         setUsedEmojis(props.controller.gameState.players.filter(x => !x.isUser).map(x => x.emoji));
     }, [props.controller.renderId]);
 
-    console.log(`DoodlePartyProfileView`, { userProfile, usedEmojis });
+    // console.log(`DoodlePartyProfileView`, { userProfile, usedEmojis });
     return (
         <>
             <C.View_Panel>
@@ -43,21 +43,21 @@ export const DoodlePartyProfileView = (props: { controller: DoodlePartyControlle
 export const DoodlePartyPlayerList = (props: { controller: DoodlePartyController }) => {
     return (
         <>
-            <C.View_Panel>
+            <View>
                 {props.controller.gameState.players.map(x => (
                     <View key={x.clientKey} style={{ flexDirection: `row`, alignItems: `center` }}>
                         <View>
-                            <Text style={{ fontSize: 32 }} >{x.isReady ? `✔` : `◻`}</Text>
+                            <Text style={{ fontSize: 24 }} >{x.isReady ? `✔` : `◻`}</Text>
                         </View>
                         <View style={{ width: 48 }}>
                             <Text style={{ fontSize: 32 }} >{x.emoji}</Text>
                         </View>
                         <View>
-                            <C.Text_FieldLabel >{x.name}</C.Text_FieldLabel>
+                            <Text style={{ fontSize: 16 }}>{x.name}</Text>
                         </View>
                     </View>
                 ))}
-            </C.View_Panel>
+            </View>
         </>
     );
 };
@@ -86,7 +86,7 @@ const UserProfileView = ({ userProfile, onUserProfileChange, usedEmojis }: { use
         setAvailableEmojis(userProfileEmojis.filter(x => !usedEmojis.includes(x)));
     }, [usedEmojis]);
 
-    console.log(`UserProfileView`, { usedEmojis });
+    // console.log(`UserProfileView`, { usedEmojis });
 
     if (isShowingEmojiSelection) {
         return (

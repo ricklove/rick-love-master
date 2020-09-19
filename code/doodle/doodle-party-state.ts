@@ -3,7 +3,10 @@ import { parseQuery } from 'utils/query';
 import { WebsocketConnectionEvent } from 'websockets-api/client/types';
 import { createWebsocketClient } from 'websockets-api/client/websocket-client';
 import { websocketsApiConfig } from 'websockets-api/client/config';
-import { DoodleDataWithScore } from './doodle';
+import { toKeyValueArray } from 'utils/objects';
+import { randomIndex } from 'utils/random';
+import { create } from 'domain';
+import { DoodleDataWithScore, DoodleDrawingEncoded, DoodleData_Encoded } from './doodle';
 
 type GameState = {
     client: {
@@ -13,8 +16,16 @@ type GameState = {
 
         clientPlayer: PlayerProfile;
     };
+    masterClientKey?: string;
     players: PlayerProfile[];
     doodles: DoodleDataWithScore[];
+    playerAssignments: PlayerAssignment[];
+};
+type PlayerAssignment = {
+    clientKey: string;
+    kind: 'doodle' | 'describe';
+    prompt?: string;
+    doodle?: DoodleData_Encoded;
 };
 type PlayerProfile = {
     clientKey: string;
@@ -71,6 +82,7 @@ const createDefaultGameState = (): GameState => {
         },
         players: [],
         doodles: [],
+        playerAssignments: [],
     };
 
     return gameState;
@@ -85,6 +97,7 @@ type DoodlePartyMessage = {
     kind: 'syncResponse';
     requestedClientKey: string;
     gameState: {
+        masterClientKey: string;
         players: PlayerProfile[];
         doodles: DoodleDataWithScore[];
     };
@@ -96,17 +109,98 @@ type DoodlePartyMessage = {
         emoji: string;
         isReady: boolean;
     };
+} | {
+    kind: 'aliveRequest';
+    requestedClientKey: string;
+} | {
+    kind: 'aliveResponse';
+} | {
+    kind: 'dropPlayer';
+    droppedClientKey: string;
+} | {
+    kind: 'assign';
+    playerAssignments: PlayerAssignment[];
 });
 const createMessageHandler = (gameState: GameState, refresh: () => void, send: (message: DoodlePartyMessage) => void) => {
+    console.log(`createMessageHandler`);
+    const { clientKey } = gameState.client.clientPlayer;
+
     let syncResponseId = setTimeout(() => { });
+    const sendGameState = (requestedClientKey: string) => {
+        // Claim the master 
+        gameState.masterClientKey = clientKey;
+        send({
+            kind: `syncResponse`,
+            requestedClientKey,
+            gameState: {
+                masterClientKey: gameState.masterClientKey,
+                players: gameState.players,
+                doodles: gameState.doodles,
+            },
+            clientKey,
+            timestamp: Date.now(),
+        });
+    };
+
+    const masterState = {
+        startTimestamp: Date.now(),
+        clientStates: {} as { [clientKey: string]: { lastMessageTimestamp: number } },
+    };
+
+    const aliveTimeout = 15;
+    const deadTimeout = 30;
+
+    setInterval(() => {
+        const m = masterState.clientStates[gameState.masterClientKey ?? ``] ?? { lastMessageTimestamp: masterState.startTimestamp };
+        // console.log(`createMessageHandler`, { m, masterState });
+
+        if (gameState.masterClientKey !== gameState.client.clientPlayer.clientKey) {
+            // Clients
+            if (Date.now() > deadTimeout * 1000 + m.lastMessageTimestamp) {
+                console.log(`createMessageHandler - Master not responsive!`, { m, masterState });
+                // Master is not active, take over (send game state to self will work)
+                sendGameState(clientKey);
+            }
+            return;
+        }
+
+        if (Date.now() > aliveTimeout * 1000 + m.lastMessageTimestamp) {
+            // Master (self) is not being active - send a message before another client takes over
+            send({ kind: `aliveResponse`, clientKey, timestamp: Date.now() });
+        }
+
+        // Drop unresponsive players
+        toKeyValueArray(masterState.clientStates)
+            .filter(x => x.key !== clientKey)
+            .filter(x => Date.now() > aliveTimeout * 1000 + x.value.lastMessageTimestamp)
+            .map(x => send({
+                kind: `aliveRequest`,
+                requestedClientKey: x.key,
+                clientKey: gameState.client.clientPlayer.clientKey,
+                timestamp: Date.now(),
+            }));
+        toKeyValueArray(masterState.clientStates)
+            .filter(x => x.key !== clientKey)
+            .filter(x => Date.now() > deadTimeout * 1000 + x.value.lastMessageTimestamp)
+            .map(x => send({
+                kind: `dropPlayer`,
+                droppedClientKey: x.key,
+                clientKey: gameState.client.clientPlayer.clientKey,
+                timestamp: Date.now(),
+            }));
+
+    }, 3000 + randomIndex(3000));
+
     const handleMessage = (message: DoodlePartyMessage) => {
+        masterState.clientStates[message.clientKey] = { lastMessageTimestamp: Date.now() };
+
         if (message.kind === `setPlayer`) {
             let p = gameState.players.find(x => x.clientKey === message.clientPlayer.clientKey);
             if (!p) {
                 p = { ...message.clientPlayer };
                 gameState.players.push(p);
             }
-            p.isUser = p.clientKey === gameState.client.clientPlayer.clientKey;
+            p.isUser = p.clientKey === clientKey;
             p.name = message.clientPlayer.name;
             p.emoji = message.clientPlayer.emoji;
             p.isReady = message.clientPlayer.isReady;
@@ -114,68 +208,77 @@ const createMessageHandler = (gameState: GameState, refresh: () => void, send: (
             return;
         }
 
-        // Ignore own messages
-        if (message.clientKey === gameState.client.clientPlayer.clientKey) { return; }
-
-        if (message.kind === `syncRequest`) {
-            clearTimeout(syncResponseId);
-            syncResponseId = setTimeout(() => {
-                send({
-                    kind: `syncResponse`,
-                    requestedClientKey: message.clientKey,
-                    gameState: {
-                        players: gameState.players,
-                        doodles: gameState.doodles,
-                    },
-                    clientKey: gameState.client.clientPlayer.clientKey,
-                    timestamp: Date.now(),
-                });
-            }, Math.random() * 1000);
+        if (message.kind === `dropPlayer`) {
+            gameState.players = gameState.players.filter(x => x.clientKey !== message.droppedClientKey);
+            console.log(`dropPlayer`, { players_after: [...gameState.players], message });
+            refresh();
+            return;
         }
-        if (message.kind === `syncResponse`) {
-            clearTimeout(syncResponseId);
-            if (message.requestedClientKey !== gameState.client.clientPlayer.clientKey) {
-                // Verify no data is missing
-                if (message.gameState.players.length < gameState.players.length
-                    || message.gameState.doodles.length < gameState.doodles.length
-                ) {
-                    // The response is wrong - correct the sender (and the original)
-                    send({
-                        kind: `syncResponse`,
-                        requestedClientKey: message.clientKey,
-                        gameState: {
-                            players: gameState.players,
-                            doodles: gameState.doodles,
-                        },
-                        clientKey: gameState.client.clientPlayer.clientKey,
-                        timestamp: Date.now(),
-                    });
-                    send({
-                        kind: `syncResponse`,
-                        requestedClientKey: message.requestedClientKey,
-                        gameState: {
-                            players: gameState.players,
-                            doodles: gameState.doodles,
-                        },
-                        clientKey: gameState.client.clientPlayer.clientKey,
-                        timestamp: Date.now(),
-                    });
-                }
+
+        // Ignore own messages
+        if (message.clientKey === clientKey) { return; }
+
+        // Assigments
+        if (message.kind === `assign`) {
+            gameState.playerAssignments = message.playerAssignments;
+            refresh();
+            return;
+        }
+
+        // Alive Request
+        if (message.kind === `aliveRequest`) {
+            if (message.requestedClientKey !== clientKey) { return; }
+            send({ kind: `aliveResponse`, clientKey, timestamp: Date.now() });
+            return;
+        }
+
+        // Sync
+        if (message.kind === `syncRequest`) {
+            if (gameState.masterClientKey === clientKey) {
+                sendGameState(message.clientKey);
                 return;
             }
 
-            gameState.players = message.gameState.players;
+            clearTimeout(syncResponseId);
+            syncResponseId = setTimeout(() => {
+                // Master has not responded in a timely manner - claim it
+                sendGameState(message.clientKey);
+            }, 1000 + randomIndex(3000));
+        }
+        if (message.kind === `syncResponse`) {
+            clearTimeout(syncResponseId);
+
+            if (message.requestedClientKey !== clientKey) {
+                // Verify master is correct
+                if (message.gameState.players.length < gameState.players.length
+                    || message.gameState.doodles.length < gameState.doodles.length
+                ) {
+                    // The master is wrong - claim master and correct data
+                    sendGameState(message.clientKey);
+                    sendGameState(message.requestedClientKey);
+                    return;
+                }
+
+                // The master is right - accept the master
+                gameState.masterClientKey = message.gameState.masterClientKey;
+            }
+
+            // Use received state
+            const clientState = gameState.client;
+            Object.assign(gameState, message.gameState);
+            gameState.client = clientState;
             gameState.players.forEach(x => { x.isUser = false; });
-            const p = gameState.players.find(x => x.clientKey === gameState.client.clientPlayer.clientKey);
+            const p = gameState.players.find(x => x.clientKey === clientState.clientPlayer.clientKey);
             if (p) { p.isUser = true; }
-            gameState.doodles = message.gameState.doodles;
         }
     };
+
 
     return {
         handleMessage,
     };
 };
+type MessageHandler = ReturnType<typeof createMessageHandler>;
 
 export const useDoodlePartyController = () => {
     const gameStateRef = useRef(createDefaultGameState());
@@ -203,11 +306,10 @@ export const useDoodlePartyController = () => {
         refresh();
     };
 
-
     const [messages, setMessages] = useState([] as (DoodlePartyMessage & { receivedAtTimestamp: number })[]);
     const [events, setEvents] = useState([] as WebsocketConnectionEvent[]);
     const send = useRef(null as null | ((message: DoodlePartyMessage) => void));
-    const messageHandler = useRef(createMessageHandler(gameState, refresh, (message) => send.current?.(message)));
+    const messageHandler = useRef(null as null | MessageHandler);
 
     useEffect(() => {
         loadClientPlayerFromStorage();
@@ -216,6 +318,7 @@ export const useDoodlePartyController = () => {
             .connect<DoodlePartyMessage>({ key: gameState.client.room });
 
         const unsubMessages = connection.subscribeMessages(message => {
+            if (!messageHandler.current) { messageHandler.current = createMessageHandler(gameState, refresh, (x) => send.current?.(x)); }
             messageHandler.current.handleMessage(message);
             setMessages(s => [...s, { ...message, receivedAtTimestamp: Date.now() }]);
         });
@@ -275,6 +378,8 @@ export const useDoodlePartyController = () => {
         });
 
     }, [send.current]);
+
+    // Master sending
 
     return {
         loading,
