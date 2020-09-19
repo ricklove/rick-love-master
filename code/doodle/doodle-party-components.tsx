@@ -1,7 +1,8 @@
+/* eslint-disable react/no-array-index-key */
 import React, { useState, useEffect } from 'react';
 import { View, Text, ActivityIndicator, TextInput } from 'react-native-lite';
 import { C } from 'controls-react';
-import { DoodlePartyController } from './doodle-party-state';
+import { DoodlePartyController, Assignment, PlayerState } from './doodle-party-state';
 import { DoodlePartyPlayerList } from './doodle-party-user-profile';
 import { DoodleGameView_DrawWord } from './doodle-components';
 import { encodeDoodleDrawing, decodeDoodleDrawing } from './doodle';
@@ -49,7 +50,28 @@ export const PartyViewer = (props: { controller: DoodlePartyController }) => {
             <DoodlePartyPlayerList controller={props.controller} />
             <Text>Rounds</Text>
             <Text>{`${props.controller.gameState.history.rounds.length}`}</Text>
-            {/* <DoodleBrowseView doodles={props.controller.gameState.doodles} /> */}
+            {props.controller.gameState.history.rounds.map((x, i) => (
+                <View key={`${i}`} style={{ flexDirection: `row`, alignItems: `center` }}>
+                    {x.completed.map(p => (
+                        <AssignmentView key={p.clientKey} player={p} />
+                    ))}
+                </View>
+            ))}
+        </View>
+    );
+};
+
+const AssignmentView = (props: { player: PlayerState }) => {
+    const p = props.player;
+    const { assignment } = props.player;
+    return (
+        <View style={{ flexDirection: `column`, alignItems: `center` }}>
+            <Text>{p.name}</Text>
+            <Text>{p.emoji}</Text>
+            {!!assignment?.doodle && (
+                <DoodleDisplayView style={{ width: 104, height: 104, color: `#FFFFFF`, backgroundColor: `#000000` }} drawing={decodeDoodleDrawing(assignment.doodle)} shouldAnimate enableRedraw />
+            )}
+            <Text>{assignment?.prompt ?? ``}</Text>
         </View>
     );
 };

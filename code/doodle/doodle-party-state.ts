@@ -20,9 +20,8 @@ type GameState = {
     history: GameHistory;
     // doodles: DoodleDataWithScore[];
 };
-type Assignment = {
+export type Assignment = {
     kind: 'doodle' | 'describe';
-    isDone: boolean;
     prompt?: string;
     doodle?: DoodleDrawingEncoded;
 };
@@ -135,7 +134,6 @@ type DoodlePartyMessage = {
 const createNewAssigment = (): Assignment => {
     return {
         kind: `doodle`,
-        isDone: false,
         prompt: `Choose Your Own Word`,
     };
 };
@@ -166,7 +164,7 @@ const createMessageHandler = (gameState: GameState, refresh: () => void, send: (
     };
 
     const sendNewAssignmentsIfReady = () => {
-        if (gameState.players.some(x => !x.isReady || !(x.assignment?.isDone ?? true))) { return; }
+        if (gameState.players.some(x => !x.isReady || (x.assignment && (!x.assignment.doodle || !x.assignment.prompt)))) { return; }
 
         // Save Round
         const lastRound = { completed: [...gameState.players.map(x => ({ ...x, assignment: x.assignment ? { ...x.assignment } : undefined }))] };
@@ -192,7 +190,6 @@ const createMessageHandler = (gameState: GameState, refresh: () => void, send: (
                 newAssignment.kind = `doodle`;
                 newAssignment.doodle = undefined;
             }
-            newAssignment.isDone = false;
 
             gameState.players[iNext].assignment = newAssignment;
         }
@@ -302,7 +299,6 @@ const createMessageHandler = (gameState: GameState, refresh: () => void, send: (
             if (!assigment) { return; }
             assigment.prompt = message.playerAssignment.prompt;
             assigment.doodle = message.playerAssignment.doodle;
-            assigment.isDone = true;
 
             // If master
             if (clientKey === gameState.masterClientKey) {
