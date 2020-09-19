@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
+import { View, Text, ActivityIndicator, TextInput } from 'react-native-lite';
 import { C } from 'controls-react';
-import { View, Text, TouchableOpacity } from 'react-native-lite';
 import { DoodlePartyController } from './doodle-party-state';
 import { DoodlePartyPlayerList } from './doodle-party-user-profile';
 import { DoodleGameView_DrawWord } from './doodle-components';
@@ -58,6 +58,12 @@ export const DoodlePartyPlayView = (props: { controller: DoodlePartyController }
     const { gameState } = props.controller;
     const { clientKey } = gameState.client.clientPlayer;
     const assigment = gameState.players.find(x => x.clientKey === clientKey)?.assignment;
+    const [text, setText] = useState(``);
+
+    useEffect(() => {
+        setText(``);
+    }, [assigment]);
+
     if (!assigment) {
         return (
             <>
@@ -69,10 +75,28 @@ export const DoodlePartyPlayView = (props: { controller: DoodlePartyController }
         );
     }
 
-    if (assigment.kind === `describe`) {
+    if (assigment.kind === `describe` && assigment.doodle) {
+        const onDoneDescribe = () => {
+            assigment.prompt = text;
+            props.controller.sendAssignment(assigment);
+        };
+
         return (
             <>
-                <Text>Play</Text>
+                <View style={{ flexDirection: `column`, alignItems: `center` }}>
+                    <Text style={{ fontSize: 20, margin: 8 }}>Describe</Text>
+                    <DoodleDisplayView style={{ width: 312, height: 312, color: `#FFFFFF`, backgroundColor: `#000000` }} drawing={decodeDoodleDrawing(assigment.doodle)} shouldAnimate enableRedraw />
+                    {!assigment.prompt && (
+                        <>
+                            <Text style={{ fontSize: 20, margin: 8, color: `#FFFF00` }}>What is this?</Text>
+                            <C.Input_Text value={text} onChange={setText} onSubmit={onDoneDescribe} />
+                            <C.Button_FieldInline onPress={onDoneDescribe}>Done</C.Button_FieldInline>
+                        </>
+                    )}
+                    {assigment.prompt && (
+                        <Text style={{ fontSize: 20, margin: 8, color: `#FFFF00` }}>{assigment.prompt}</Text>
+                    )}
+                </View>
             </>
         );
     }
@@ -82,8 +106,10 @@ export const DoodlePartyPlayView = (props: { controller: DoodlePartyController }
         return (
             <>
                 <View style={{ flexDirection: `column`, alignItems: `center` }}>
-                    <Text>Draw (Done)</Text>
+                    <Text style={{ fontSize: 20, margin: 8 }}>Draw</Text>
                     <DoodleDisplayView style={{ width: 312, height: 312, color: `#FFFFFF`, backgroundColor: `#000000` }} drawing={decodeDoodleDrawing(assigment.doodle)} shouldAnimate enableRedraw />
+                    <Text style={{ fontSize: 20, margin: 8, color: `#FFFF00` }}>Waiting for other players</Text>
+                    <ActivityIndicator size='large' color='#FFFF00' />
                 </View>
             </>
         );
@@ -91,7 +117,7 @@ export const DoodlePartyPlayView = (props: { controller: DoodlePartyController }
 
     return (
         <>
-            <Text>Draw</Text>
+            <Text style={{ fontSize: 20, margin: 8 }}>Draw</Text>
             <DoodleGameView_DrawWord prompt={assigment.prompt ?? ``} onDone={(x) => {
                 assigment.doodle = encodeDoodleDrawing(x);
                 props.controller.sendAssignment(assigment);
