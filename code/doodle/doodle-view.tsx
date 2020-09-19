@@ -330,8 +330,9 @@ export const DoodleBrowseView = ({ doodles }: { doodles: DoodleDataWithScore[] }
                     <Text style={{ fontSize: 12 }} >{g.key}</Text>
                     <View style={{ padding: 4, flexDirection: `row`, flexWrap: `wrap` }}>
                         {g.value.map(x => (
-                            <View key={x.key} style={{ padding: 4 }}>
+                            <View key={x.key} style={{ padding: 4, alignItems: `center` }}>
                                 <DoodleDisplayView style={{ width: 104, height: 104, color: `#FFFFFF`, backgroundColor: `#000000` }} drawing={x.drawing} shouldAnimate={false} enableRedraw />
+                                <Text >{`${x.score}`}</Text>
                             </View>
                         ))}
                     </View>

@@ -60,6 +60,7 @@ export const TextInput = (props: {
     value: string;
     onChange: (value: string) => void;
     onSubmitEditing?: () => void;
+    onFocus?: () => void;
     onBlur?: () => void;
 }) => {
     const type = props.keyboardType === `numeric` ? `number`
@@ -83,6 +84,7 @@ export const TextInput = (props: {
         placeholder={props.placeholder}
         disabled={!(props.editable ?? true)}
         value={props.value}
+        onFocus={props.onFocus}
         onChange={(e) => props.onChange(e.target.value)}
         onKeyPress={onKeyPress}
         onBlur={props.onBlur}

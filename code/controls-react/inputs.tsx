@@ -6,7 +6,7 @@ import { EmailAddress, toEmailAddress } from 'utils/email-address';
 import { Icon } from './icon';
 import { IconKind } from './icon-kind';
 
-export const Input_Text = (props: { style?: ThemeTextStyle, value: string, onChange: (value: string) => void, onSubmit?: () => void, placeholder?: string, editable?: boolean }) => {
+export const Input_Text = (props: { style?: ThemeTextStyle, value: string, onChange: (value: string) => void, onSubmit?: () => void, placeholder?: string, editable?: boolean, onFocus?: () => void, onBlur?: () => void }) => {
     return (
         <TextInput style={props.style ?? theme.input_fieldEntry}
             keyboardType='default'
@@ -16,6 +16,8 @@ export const Input_Text = (props: { style?: ThemeTextStyle, value: string, onCha
             value={`${props.value}`}
             onChange={(x) => props.onChange(x)}
             onSubmitEditing={props.onSubmit}
+            onFocus={props.onFocus}
+            onBlur={props.onBlur}
         />
     );
 };

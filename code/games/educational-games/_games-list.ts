@@ -9,6 +9,7 @@ export const educationalGamesList = [
     { name: `spelling-star-blast`, load: async () => (await import(`./star-blast-sideways-with-subjects/star-blast-spelling`)).EducationalGame_StarBlastSideways_Spelling },
     { name: `doodle-spelling`, load: async () => (await import(`./doodle-subjects/doodle-spelling`)).EducationalGame_Doodle_Spelling },
     { name: `doodle-browser`, load: async () => (await import(`doodle/doodle-view`)).DoodleBrowser },
+    { name: `doodle-party`, load: async () => (await import(`doodle/doodle-party`)).DoodlePartyView },
 ];
 export const educationalGameUtils = {
     progressGame: { name: `progressGame`, load: async () => (await import(`./progress-games/progress-game`)).ProgressGameView },

@@ -49,7 +49,6 @@ export const WebsocketClientTestView = (props: {}) => {
     return (
         <View style={{ padding: 4 }}>
             <View style={{ padding: 4 }}>
-
                 <Text style={{ whiteSpace: `pre-wrap`, fontSize: 18 }}>Events</Text>
                 {events.map((x, i) => (
                     <Text key={i} style={{ whiteSpace: `pre-wrap`, fontSize: 14 }}>{JSON.stringify(x)}</Text>
