@@ -5,7 +5,7 @@ import { createWebsocketClient } from 'websockets-api/client/websocket-client';
 import { websocketsApiConfig } from 'websockets-api/client/config';
 import { toKeyValueArray } from 'utils/objects';
 import { randomIndex } from 'utils/random';
-import { DoodleDataWithScore, DoodleData_Encoded, DoodleDrawingEncoded } from './doodle';
+import { DoodleDataWithScore, DoodleData_Encoded, DoodleDrawingEncoded, decodeDoodleDrawing } from './doodle';
 
 type GameState = {
     client: {
@@ -172,12 +172,18 @@ const createMessageHandler = (gameState: GameState, refresh: () => void, send: (
 
         // Rotate next assignment
         const old = gameState.players.map(x => x.assignment);
+
+        // Rotate Players
+        const firstPlayer = gameState.players.shift();
+        if (!firstPlayer) { return; }
+        gameState.players.push(firstPlayer);
         for (let i = 0; i < gameState.players.length; i++) {
-            const iNext = i < gameState.players.length - 1 ? i + 1 : 0;
 
             const oldAssigment = old[i];
-            if (!oldAssigment) {
-                gameState.players[iNext].assignment = createNewAssigment();
+            const doodle = oldAssigment?.doodle;
+            const prompt = oldAssigment?.prompt;
+            if (!oldAssigment || !prompt || !doodle || decodeDoodleDrawing(doodle).segments.length <= 0) {
+                gameState.players[i].assignment = createNewAssigment();
                 continue;
             }
 
@@ -191,7 +197,7 @@ const createMessageHandler = (gameState: GameState, refresh: () => void, send: (
                 newAssignment.doodle = undefined;
             }
 
-            gameState.players[iNext].assignment = newAssignment;
+            gameState.players[i].assignment = newAssignment;
         }
 
         send({
