@@ -5,7 +5,11 @@ import { createWebsocketClient } from 'websockets-api/client/websocket-client';
 import { websocketsApiConfig } from 'websockets-api/client/config';
 import { toKeyValueArray } from 'utils/objects';
 import { randomIndex } from 'utils/random';
-import { DoodleDataWithScore, DoodleData_Encoded, DoodleDrawingEncoded, decodeDoodleDrawing } from './doodle';
+import { createSmartUploader, createUploader } from 'upload-api/client/uploader';
+import { uploadApiConfig } from 'upload-api/client/config';
+import { createUploadApiWebClient } from 'upload-api/client/web-client';
+import { doodleStoragePaths } from './doodle-paths';
+import { DoodleDataWithScore, DoodleData_Encoded, DoodleDrawingEncoded, decodeDoodleDrawing, DoodleUserDrawingDataJson } from './doodle';
 
 type GameState = {
     client: {
@@ -228,6 +232,16 @@ const createMessageHandler = (gameState: GameState, refresh: () => void, send: (
             lastRound,
             clientKey,
             timestamp: Date.now(),
+        });
+
+        // Save to server (for data)
+        setTimeout(async () => {
+            const uploadApiWebClient = createUploadApiWebClient(uploadApiConfig);
+            const backupUrl = (await uploadApiWebClient.createUploadUrl({ prefix: `${doodleStoragePaths.doodlePartyDrawingsPrefix}/${Date.now()}` })).uploadUrl;
+            const backupUploader = createUploader(backupUrl);
+            await backupUploader.uploadData({
+                history: gameState.history,
+            });
         });
     };
 
