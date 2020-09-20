@@ -126,7 +126,7 @@ type DoodlePartyMessage = {
 } | {
     kind: 'assign';
     players: PlayerState[];
-    lastRound: GameRound;
+    lastRound?: GameRound;
 } | {
     kind: 'completeAssignment';
     playerAssignment: Assignment & { clientKey: string };
@@ -164,7 +164,24 @@ const createMessageHandler = (gameState: GameState, refresh: () => void, send: (
     };
 
     const sendNewAssignmentsIfReady = () => {
-        if (gameState.players.some(x => !x.isReady || (x.assignment && (!x.assignment.doodle || !x.assignment.prompt)))) { return; }
+        if (gameState.players.some(x => !x.isReady || (x.assignment && (!x.assignment.doodle || !x.assignment.prompt)))) {
+            // Add new player assignments
+            const missingAssignments = gameState.players.filter(x => x.isReady && !x.assignment);
+            if (missingAssignments.length > 0) {
+                missingAssignments.forEach(x => { x.assignment = createNewAssigment(); });
+
+                send({
+                    kind: `assign`,
+                    players: gameState.players,
+                    lastRound: undefined,
+                    clientKey,
+                    timestamp: Date.now(),
+                });
+                refresh();
+                return;
+            }
+            return;
+        }
 
         // Save Round
         const lastRound = { completed: [...gameState.players.map(x => ({ ...x, assignment: x.assignment ? { ...x.assignment } : undefined }))] };
@@ -300,7 +317,9 @@ const createMessageHandler = (gameState: GameState, refresh: () => void, send: (
         // Assigments
         if (message.kind === `assign`) {
             gameState.players = message.players;
-            gameState.history.rounds.push(message.lastRound);
+            if (message.lastRound) {
+                gameState.history.rounds.push(message.lastRound);
+            }
             refresh();
             return;
         }
