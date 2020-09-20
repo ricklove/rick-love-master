@@ -64,12 +64,14 @@ export const PartyViewer = (props: { controller: DoodlePartyController }) => {
                 </View>
             ))} */}
             <Text>Chains</Text>
-            <View style={{ margin: 4, padding: 4, background: `#444444` }}>
+            <View>
                 {chains.map((x, i) => (
-                    <View key={`${i}`} style={{ flexDirection: `row`, alignItems: `center` }}>
-                        {x.items.map(p => (
-                            <AssignmentView key={p.item.clientKey} player={p.item} />
-                        ))}
+                    <View key={`${i}`} style={{ flexDirection: `row`, alignItems: `center`, flexWrap: `wrap` }}>
+                        <View style={{ margin: 4, padding: 4, background: `#444444` }}>
+                            {x.items.map(p => (
+                                <AssignmentView key={p.item.clientKey} player={p.item} />
+                            ))}
+                        </View>
                     </View>
                 ))}
             </View>
@@ -81,18 +83,14 @@ const AssignmentView = (props: { player: PlayerState }) => {
     const p = props.player;
     const { assignment } = props.player;
     return (
-        <View style={{ flexDirection: `column`, alignItems: `center` }}>
+        <View style={{ flexDirection: `column`, alignItems: `center`, width: 104 }}>
             <Text>{p.name}</Text>
             <Text>{p.emoji}</Text>
-            {assignment?.kind === `doodle` && (
-                <Text style={{ color: `#FFFF00`, whiteSpace: `pre-wrap` }}>{assignment?.prompt ?? ``}</Text>
-            )}
+            <Text style={{ color: `#FFFF00`, whiteSpace: `pre-wrap` }}>{assignment?.kind === `doodle` ? assignment?.prompt ?? `` : ``}</Text>
             {!!assignment?.doodle && (
                 <DoodleDisplayView style={{ width: 104, height: 104, color: `#FFFFFF`, backgroundColor: `#000000` }} drawing={decodeDoodleDrawing(assignment.doodle)} shouldAnimate enableRedraw />
             )}
-            {assignment?.kind === `describe` && (
-                <Text style={{ color: `#FFFF00`, whiteSpace: `pre-wrap` }}>{assignment?.prompt ?? ``}</Text>
-            )}
+            <Text style={{ color: `#FFFF00`, whiteSpace: `pre-wrap` }}>{assignment?.kind === `describe` ? assignment?.prompt ?? `` : ``}</Text>
         </View>
     );
 };
