@@ -82,10 +82,15 @@ const AssignmentView = (props: { player: PlayerState }) => {
         <View style={{ flexDirection: `column`, alignItems: `center` }}>
             <Text>{p.name}</Text>
             <Text>{p.emoji}</Text>
+            {assignment?.kind === `doodle` && (
+                <Text style={{ color: `#FFFF00` }}>{assignment?.prompt ?? ``}</Text>
+            )}
             {!!assignment?.doodle && (
                 <DoodleDisplayView style={{ width: 104, height: 104, color: `#FFFFFF`, backgroundColor: `#000000` }} drawing={decodeDoodleDrawing(assignment.doodle)} shouldAnimate enableRedraw />
             )}
-            <Text>{assignment?.prompt ?? ``}</Text>
+            {assignment?.kind === `describe` && (
+                <Text style={{ color: `#FFFF00` }}>{assignment?.prompt ?? ``}</Text>
+            )}
         </View>
     );
 };
