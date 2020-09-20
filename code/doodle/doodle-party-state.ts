@@ -205,8 +205,8 @@ const createMessageHandler = (gameState: GameState, refresh: () => void, send: (
             const doodle = oldAssigment?.doodle;
             const prompt = oldAssigment?.prompt;
             if (!oldAssigment || !prompt || !doodle || decodeDoodleDrawing(doodle).segments.length <= 0
-                // Or if player has had this prompt before
-                || (gameState.history.rounds.flatMap(x => x.completed).find(x => x.clientKey === p.clientKey && prompt === p.assignment?.prompt))
+                // Or if player has had to draw this prompt before (previous was describe)
+                || (oldAssigment.kind === `describe` && gameState.history.rounds.flatMap(x => x.completed).find(x => x.clientKey === p.clientKey && prompt === p.assignment?.prompt))
             ) {
                 gameState.players[i].assignment = createNewAssigment();
                 continue;
