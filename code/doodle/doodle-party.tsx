@@ -55,12 +55,12 @@ export const DoodlePartyView_Inner = ({ controller }: { controller: DoodlePartyC
         );
     }
 
-    // Waiting
-    if (controller.gameState.players.some(x => !x.isReady)) {
-        return (
-            <PartyViewer controller={controller} />
-        );
-    }
+    // // Waiting
+    // if (controller.gameState.players.some(x => !x.isReady)) {
+    //     return (
+    //         <PartyViewer controller={controller} />
+    //     );
+    // }
 
     // Play View
     return (
