@@ -54,6 +54,15 @@ export const PartyViewer = (props: { controller: DoodlePartyController }) => {
         <View>
             <Text>Players</Text>
             <DoodlePartyPlayerList controller={props.controller} />
+            <Text>Rounds</Text>
+            <Text>{`${props.controller.gameState.history.rounds.length}`}</Text>
+            {/* {props.controller.gameState.history.rounds.map((x, i) => (
+                <View key={`${i}`} style={{ flexDirection: `row`, alignItems: `center` }}>
+                    {x.completed.map(p => (
+                        <AssignmentView key={p.clientKey} player={p} />
+                    ))}
+                </View>
+            ))} */}
             <Text>Chains</Text>
             {chains.map((x, i) => (
                 <View key={`${i}`} style={{ flexDirection: `row`, alignItems: `center` }}>
@@ -62,15 +71,6 @@ export const PartyViewer = (props: { controller: DoodlePartyController }) => {
                     ))}
                 </View>
             ))}
-            {/* <Text>Rounds</Text>
-            <Text>{`${props.controller.gameState.history.rounds.length}`}</Text>
-            {props.controller.gameState.history.rounds.map((x, i) => (
-                <View key={`${i}`} style={{ flexDirection: `row`, alignItems: `center` }}>
-                    {x.completed.map(p => (
-                        <AssignmentView key={p.clientKey} player={p} />
-                    ))}
-                </View>
-            ))} */}
         </View>
     );
 };
