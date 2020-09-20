@@ -69,7 +69,9 @@ export const PartyViewer = (props: { controller: DoodlePartyController }) => {
                     <View style={{ margin: 4, padding: 4, background: `#444444` }}>
                         <View key={`${i}`} style={{ flexDirection: `row`, alignItems: `center`, flexWrap: `wrap` }}>
                             {x.items.map(p => (
-                                <AssignmentView key={p.item.clientKey} player={p.item} />
+                                <View style={{ padding: 4 }}>
+                                    <AssignmentView key={p.item.clientKey} player={p.item} />
+                                </View>
                             ))}
                         </View>
                     </View>
