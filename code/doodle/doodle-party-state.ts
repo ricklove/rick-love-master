@@ -178,14 +178,19 @@ const createMessageHandler = (gameState: GameState, refresh: () => void, send: (
         if (!firstPlayer) { return; }
         gameState.players.push(firstPlayer);
         for (let i = 0; i < gameState.players.length; i++) {
+            const p = gameState.players[i];
 
             const oldAssigment = old[i];
             const doodle = oldAssigment?.doodle;
             const prompt = oldAssigment?.prompt;
-            if (!oldAssigment || !prompt || !doodle || decodeDoodleDrawing(doodle).segments.length <= 0) {
+            if (!oldAssigment || !prompt || !doodle || decodeDoodleDrawing(doodle).segments.length <= 0
+                // Or if player has had this prompt before
+                || (gameState.history.rounds.flatMap(x => x.completed).find(x => x.clientKey === p.clientKey && prompt === p.assignment?.prompt))
+            ) {
                 gameState.players[i].assignment = createNewAssigment();
                 continue;
             }
+
 
             const newAssignment = { ...oldAssigment };
             // Switch assignment types
