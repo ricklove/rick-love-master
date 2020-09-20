@@ -1,8 +1,10 @@
 /* eslint-disable react/no-array-index-key */
 import React, { useState, useEffect } from 'react';
-import { View, Text, ActivityIndicator, TextInput } from 'react-native-lite';
+import { View, Text, ActivityIndicator } from 'react-native-lite';
 import { C } from 'controls-react';
-import { DoodlePartyController, Assignment, PlayerState } from './doodle-party-state';
+import { groupItems } from 'utils/arrays';
+import { toKeyValueArray } from 'utils/objects';
+import { DoodlePartyController, PlayerState } from './doodle-party-state';
 import { DoodlePartyPlayerList } from './doodle-party-user-profile';
 import { DoodleGameView_DrawWord } from './doodle-components';
 import { encodeDoodleDrawing, decodeDoodleDrawing } from './doodle';
@@ -44,11 +46,23 @@ export const DoodlePartyStatusBar = (props: { controller: DoodlePartyController 
 };
 
 export const PartyViewer = (props: { controller: DoodlePartyController }) => {
+
+    const allItems = props.controller.gameState.history.rounds.flatMap((x, iRound) => x.completed.map(y => ({ iRound, item: y, chainKey: y.assignment?.chainKey })));
+    const chains = toKeyValueArray(groupItems(allItems, x => x.chainKey ?? ``)).map(x => ({ chain: x.key, items: x.value.sort((a, b) => a.iRound - b.iRound) }));
+
     return (
         <View>
             <Text>Players</Text>
             <DoodlePartyPlayerList controller={props.controller} />
-            <Text>Rounds</Text>
+            <Text>Chains</Text>
+            {chains.map((x, i) => (
+                <View key={`${i}`} style={{ flexDirection: `row`, alignItems: `center` }}>
+                    {x.items.map(p => (
+                        <AssignmentView key={p.item.clientKey} player={p.item} />
+                    ))}
+                </View>
+            ))}
+            {/* <Text>Rounds</Text>
             <Text>{`${props.controller.gameState.history.rounds.length}`}</Text>
             {props.controller.gameState.history.rounds.map((x, i) => (
                 <View key={`${i}`} style={{ flexDirection: `row`, alignItems: `center` }}>
@@ -56,7 +70,7 @@ export const PartyViewer = (props: { controller: DoodlePartyController }) => {
                         <AssignmentView key={p.clientKey} player={p} />
                     ))}
                 </View>
-            ))}
+            ))} */}
         </View>
     );
 };
