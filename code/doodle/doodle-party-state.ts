@@ -26,6 +26,7 @@ type GameState = {
 };
 export type Assignment = {
     kind: 'doodle' | 'describe';
+    chainKey: string;
     prompt?: string;
     doodle?: DoodleDrawingEncoded;
 };
@@ -139,6 +140,7 @@ const createNewAssigment = (): Assignment => {
     return {
         kind: `doodle`,
         prompt: `Choose Your Own Word`,
+        chainKey: `${Date.now()}-${Math.floor(Math.random() * 999999)}`,
     };
 };
 const createMessageHandler = (gameState: GameState, refresh: () => void, send: (message: DoodlePartyMessage) => void) => {
