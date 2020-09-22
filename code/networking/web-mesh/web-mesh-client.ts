@@ -14,12 +14,15 @@ const createWebMeshClient_websocketOnly = <TMeshState, TMeshMessage>({
     initialState: TMeshState;
     reduceState: (previousState: TMeshState, message: TMeshMessage) => TMeshState;
 }) => {
+    const WEB_MESH_CLIENT_KEY = `_webMeshClientKey`;
+    const clientKey = (localStorage.getItem(WEB_MESH_CLIENT_KEY) ?? (`${Date.now()}-${Math.floor(Math.random() * 999999)}`)) as ClientKey;
+    localStorage.setItem(WEB_MESH_CLIENT_KEY, clientKey);
+
     const stateSub = createSubscribable<TMeshState>();
-    const clientKey = (`${Date.now()}-${Math.floor(Math.random() * 999999)}`) as ClientKey;
     const state = {
         meshState: initialMeshState,
         meshMetaData: {
-            clientKeys: [] as string[],
+            clients: [] as { key: string, lastActivityTimestamp: Timestamp }[],
             firstMessageTimestamp: 0 as Timestamp,
             lastMessageTimestamp: 0 as Timestamp,
         },
@@ -34,12 +37,18 @@ const createWebMeshClient_websocketOnly = <TMeshState, TMeshMessage>({
     );
     type WebSocketMessageWithSenderInfo = { t: Timestamp, c: ClientKey } & WebSocketMessage;
 
+    const addClientKey = (message: { c: ClientKey, t: Timestamp }) => {
+        state.meshMetaData.clients = state.meshMetaData.clients.filter(x => x.key !== message.c);
+        state.meshMetaData.clients.push({ key: message.c, lastActivityTimestamp: message.t });
+        state.meshMetaData.clients.sort((a, b) => -(a.lastActivityTimestamp - b.lastActivityTimestamp));
+    };
+
     let sendSyncStateTimeoutId = setTimeout(() => { }, 0);
     const websocket = createWebsocketConnection_smart<WebSocketMessageWithSenderInfo>({ websocketsApiUrl: websocketsApiConfig.websocketsApiUrl, channelKey: `wm_${channelKey}` }, message => {
 
         if (message.kind === `close`) {
             clearTimeout(sendSyncStateTimeoutId);
-            state.meshMetaData.clientKeys = state.meshMetaData.clientKeys.filter(x => x !== message.c);
+            state.meshMetaData.clients = state.meshMetaData.clients.filter(x => x.key !== message.c);
             return;
         }
 
@@ -47,21 +56,18 @@ const createWebMeshClient_websocketOnly = <TMeshState, TMeshMessage>({
             clearTimeout(sendSyncStateTimeoutId);
 
             // Add Client Key
-            state.meshMetaData.clientKeys = state.meshMetaData.clientKeys.filter(x => x !== message.c);
-            state.meshMetaData.clientKeys.push(message.c);
+            addClientKey(message);
 
             // Is self, ignore
             if (message.c === clientKey) { return; }
 
             // Respond with sync
-            const clientPriority = state.meshMetaData.clientKeys.indexOf(clientKey);
+            const clientPriority = state.meshMetaData.clients.findIndex(x => x.key === clientKey) - 1;
             const waitTime = clientPriority >= 0 ? clientPriority * 2000 : 10 * 1000;
             sendSyncStateTimeoutId = setTimeout(sendSyncState, waitTime);
             return;
         }
         if (message.kind === `sync`) {
-            clearTimeout(sendSyncStateTimeoutId);
-
             // Is self, ignore
             if (message.c === clientKey) { return; }
 
@@ -71,6 +77,8 @@ const createWebMeshClient_websocketOnly = <TMeshState, TMeshMessage>({
                 sendSyncStateTimeoutId = setTimeout(sendSyncState, 10 * 1000);
                 return;
             }
+
+            clearTimeout(sendSyncStateTimeoutId);
 
             state.meshMetaData = message.state.meshMetaData;
             state.meshState = message.state.meshState;
@@ -106,8 +114,8 @@ const createWebMeshClient_websocketOnly = <TMeshState, TMeshMessage>({
     };
     const sendSyncState = () => {
         // Move self to front of client list
-        state.meshMetaData.clientKeys = state.meshMetaData.clientKeys.filter(x => x !== clientKey);
-        state.meshMetaData.clientKeys.unshift(clientKey);
+        state.meshMetaData.clients = state.meshMetaData.clients.filter(x => x.key !== clientKey);
+        state.meshMetaData.clients.unshift({ key: clientKey, lastActivityTimestamp: Date.now() as Timestamp });
 
         sendWebSocketMessage({ kind: `sync`, state });
     };
