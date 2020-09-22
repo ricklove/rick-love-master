@@ -1,10 +1,19 @@
 import { createWebsocketConnection_smart } from 'websockets-api/client/websocket-client-smart';
-import { uploadApiConfig } from 'upload-api/client/config';
 import { createSubscribable } from 'utils/subscribable';
+import { AppError } from 'utils/error';
+import { websocketsApiConfig } from 'websockets-api/client/config';
 
 type Timestamp = number & { __type: 'Timestamp' }
 type ClientKey = string & { __type: 'ClientKey' }
-const createWebMeshClient_websocketOnly = <TMeshState, TMeshMessage>(channelKey: string, initialMeshState: TMeshState, reduceState: (previousState: TMeshState, message: TMeshMessage) => TMeshState) => {
+const createWebMeshClient_websocketOnly = <TMeshState, TMeshMessage>({
+    channelKey,
+    initialState: initialMeshState,
+    reduceState,
+}: {
+    channelKey: string;
+    initialState: TMeshState;
+    reduceState: (previousState: TMeshState, message: TMeshMessage) => TMeshState;
+}) => {
     const stateSub = createSubscribable<TMeshState>();
     const clientKey = (`${Date.now()}-${Math.floor(Math.random() * 999999)}`) as ClientKey;
     const state = {
@@ -15,21 +24,24 @@ const createWebMeshClient_websocketOnly = <TMeshState, TMeshMessage>(channelKey:
             lastMessageTimestamp: 0 as Timestamp,
         },
     };
+    const messageHistory = [] as WebSocketMessageWithSenderInfo[];
 
     type WebSocketMessage = (
         { kind: 'join' }
+        | { kind: 'close' }
         | { kind: 'sync', state: typeof state }
         | { kind: 'message', message: TMeshMessage }
     );
     type WebSocketMessageWithSenderInfo = { t: Timestamp, c: ClientKey } & WebSocketMessage;
 
-    const websocket = createWebsocketConnection_smart<WebSocketMessageWithSenderInfo>({ websocketsApiUrl: uploadApiConfig.uploadApiUrl, channelKey }, message => {
-        let sendSyncStateTimeoutId = setTimeout(() => { }, 0);
+    let sendSyncStateTimeoutId = setTimeout(() => { }, 0);
+    const websocket = createWebsocketConnection_smart<WebSocketMessageWithSenderInfo>({ websocketsApiUrl: websocketsApiConfig.websocketsApiUrl, channelKey: `wm_${channelKey}` }, message => {
 
-        if (!state.meshMetaData.firstMessageTimestamp) {
-            state.meshMetaData.firstMessageTimestamp = message.t;
+        if (message.kind === `close`) {
+            clearTimeout(sendSyncStateTimeoutId);
+            state.meshMetaData.clientKeys = state.meshMetaData.clientKeys.filter(x => x !== message.c);
+            return;
         }
-        state.meshMetaData.lastMessageTimestamp = message.t;
 
         if (message.kind === `join`) {
             clearTimeout(sendSyncStateTimeoutId);
@@ -53,7 +65,8 @@ const createWebMeshClient_websocketOnly = <TMeshState, TMeshMessage>(channelKey:
             // Is self, ignore
             if (message.c === clientKey) { return; }
 
-            if (state.meshMetaData.firstMessageTimestamp < message.state.meshMetaData.firstMessageTimestamp) {
+            if (state.meshMetaData.firstMessageTimestamp
+                && state.meshMetaData.firstMessageTimestamp < message.state.meshMetaData.firstMessageTimestamp) {
                 // Ignore if the data is not complete (and send new sync message if needed)
                 sendSyncStateTimeoutId = setTimeout(sendSyncState, 10 * 1000);
                 return;
@@ -61,13 +74,26 @@ const createWebMeshClient_websocketOnly = <TMeshState, TMeshMessage>(channelKey:
 
             state.meshMetaData = message.state.meshMetaData;
             state.meshState = message.state.meshState;
+
+            // TODO: What about out of order messages?
+            // Replay missing messages
+            const missingMessages = messageHistory.filter(x => x.t > state.meshMetaData.lastMessageTimestamp);
+            for (const m of missingMessages) {
+                if (m.kind !== `message`) { return; }
+                state.meshState = reduceState(state.meshState, m.message);
+                state.meshMetaData.lastMessageTimestamp = m.t;
+            }
+
             stateSub.onStateChange(state.meshState);
             return;
         }
         if (message.kind === `message`) {
-            // Accept own message when it returns
+            // Accept own message into state once it returns
+            messageHistory.push(message);
 
             state.meshState = reduceState(state.meshState, message.message);
+            if (!state.meshMetaData.firstMessageTimestamp) { state.meshMetaData.firstMessageTimestamp = message.t; }
+            state.meshMetaData.lastMessageTimestamp = message.t;
             stateSub.onStateChange(state.meshState);
         }
     });
@@ -79,19 +105,36 @@ const createWebMeshClient_websocketOnly = <TMeshState, TMeshMessage>(channelKey:
         sendWebSocketMessage({ kind: `join` });
     };
     const sendSyncState = () => {
+        // Move self to front of client list
+        state.meshMetaData.clientKeys = state.meshMetaData.clientKeys.filter(x => x !== clientKey);
+        state.meshMetaData.clientKeys.unshift(clientKey);
+
         sendWebSocketMessage({ kind: `sync`, state });
     };
+    let isClosed = false;
+    const close = () => {
+        if (isClosed) { return; }
+        isClosed = true;
+        sendWebSocketMessage({ kind: `close` });
+        websocket.unsubscribe();
+    };
     const sendMessage = (message: TMeshMessage) => {
+        if (isClosed) { throw new AppError(`The connection is closed`); }
         sendWebSocketMessage({ kind: `message`, message });
     };
+
 
     // Begin
     connect();
 
     return {
+        _webSocket: {
+            history: websocket.history,
+        },
         clientKey,
         sendMessage,
         subscribe: stateSub.subscribe,
+        close,
     };
 };
 

@@ -9,6 +9,7 @@ export const componentTestList = [
     { name: `uploads`, load: async () => (await import(`upload-api/client/upload-test-view`)).UploadTestView },
     { name: `user-profiles-manager`, load: async () => (await import(`user-data-service/user-profile-manager-view`)).UserProfileManagerView },
     { name: `websocket-client-test-view`, load: async () => (await import(`websockets-api/client/websocket-client-test-view`)).WebsocketClientTestView },
+    { name: `web-mesh-client-test-view`, load: async () => (await import(`web-mesh/web-mesh-client-test`)).WebMeshClientTestView },
     { name: `doodle-view`, load: async () => (await import(`doodle/doodle-view`)).DoodleTestView },
 
     // { name: `theme`, load: async () => (await import(`themes/theme-example`)).ThemeExample },
