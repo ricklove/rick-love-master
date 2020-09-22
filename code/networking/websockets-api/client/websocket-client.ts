@@ -5,7 +5,7 @@ import { WebsocketApi, WebsocketConnectionEvent, WebsocketConnectionData } from 
 export const createWebsocketClient = (config: { websocketsApiUrl: string }): WebsocketApi => {
 
     const api: WebsocketApi = {
-        connect: <T>({ key }: WebsocketConnectionData) => {
+        connect: <T>({ channelKey }: WebsocketConnectionData) => {
             // With this implementation, the server simply echos all messages to all clients
             // The client will filter those messages client-side with the key
             // NOTE: When the server filters via keys (providing privacy), this will continue to work without changes
@@ -34,7 +34,7 @@ export const createWebsocketClient = (config: { websocketsApiUrl: string }): Web
                     // Send a key message
                     const messageContainer: MessageContainer = {
                         message: null,
-                        key,
+                        key: channelKey,
                     };
                     socket.send(JSON.stringify(messageContainer));
 
@@ -67,15 +67,18 @@ export const createWebsocketClient = (config: { websocketsApiUrl: string }): Web
                     }
 
                     const m = JSON.parse(event.data) as MessageContainer;
-                    if (m.key !== key || !m.message) { return; }
+                    if (m.key !== channelKey || !m.message) { return; }
                     subscribable.onStateChange(m.message);
                 });
 
                 return socket;
             };
 
-            let activeSocket: WebSocket = createSocket();
+            let isClosed = false;
+            let activeSocket: null | WebSocket = createSocket();
             const reconnect = () => {
+                if (isClosed) { return; }
+
                 setTimeout(() => {
                     activeSocket = createSocket();
                 }, 50);
@@ -83,21 +86,26 @@ export const createWebsocketClient = (config: { websocketsApiUrl: string }): Web
 
             // Send Messages
             const send = (message: T) => {
-                if (activeSocket.readyState !== WebSocket.OPEN) {
+                if (!activeSocket || activeSocket.readyState !== WebSocket.OPEN) {
                     throw new AppError(`Websocket is not open`);
                 }
                 const messageContainer: MessageContainer = {
                     message,
-                    key,
+                    key: channelKey,
                 };
                 activeSocket.send(JSON.stringify(messageContainer));
             };
 
             return {
                 send,
-                isConnected: () => activeSocket.readyState === WebSocket.OPEN,
+                isConnected: () => activeSocket?.readyState === WebSocket.OPEN,
                 subscribeMessages: subscribable.subscribe,
                 subscribeConnectionEvents: subscribableEvents.subscribe,
+                close: () => {
+                    isClosed = true;
+                    activeSocket?.close();
+                    activeSocket = null;
+                },
             };
         },
     };

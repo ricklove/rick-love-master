@@ -446,7 +446,7 @@ export const useDoodlePartyController = () => {
         loadClientPlayerFromStorage();
 
         const connection = createWebsocketClient({ websocketsApiUrl: websocketsApiConfig.websocketsApiUrl })
-            .connect<DoodlePartyMessage>({ key: gameState.client.room });
+            .connect<DoodlePartyMessage>({ channelKey: gameState.client.room });
 
         const unsubMessages = connection.subscribeMessages(message => {
             if (!messageHandler.current) { messageHandler.current = createMessageHandler(gameState, refresh, (x) => send.current?.(x)); }

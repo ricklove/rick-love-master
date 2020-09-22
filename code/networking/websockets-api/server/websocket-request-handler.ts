@@ -33,7 +33,7 @@ export const handleWebsocketEvent = async (event: WebsocketEvent) => {
     });
 
     console.log(`handleWebsocketEvent - Getting connection info`, {});
-    const connectionInfo = await getOrAddConnectionId_DynamoDb({ websocketKey: data.key, connectionIds: [event.requestContext.connectionId] });
+    const connectionInfo = await getOrAddConnectionId_DynamoDb({ websocketKey: data.channelKey, connectionIds: [event.requestContext.connectionId] });
     // console.log(`handleWebsocketEvent - connectionIds`, { connectionIds: connectionIds.connectionIds });
 
     // Echo all messages to every client
@@ -81,7 +81,7 @@ export const handleWebsocketEvent = async (event: WebsocketEvent) => {
 
         if (sendFailureIds.length > 0) {
             console.log(`Removing invalid connectionIds`, { sendFailureIds });
-            await removeConnectionId_DynamoDb({ websocketKey: data.key, connectionIds: sendFailureIds });
+            await removeConnectionId_DynamoDb({ websocketKey: data.channelKey, connectionIds: sendFailureIds });
         }
 
         const removedConnectionIds = [...sendFailureIds] as string[];
@@ -113,14 +113,14 @@ export const handleWebsocketEvent = async (event: WebsocketEvent) => {
                 console.log(`Removing invalid connectionIds`, { toRemove });
 
                 // eslint-disable-next-line no-await-in-loop
-                await removeConnectionId_DynamoDb({ websocketKey: data.key, connectionIds: toRemove });
+                await removeConnectionId_DynamoDb({ websocketKey: data.channelKey, connectionIds: toRemove });
                 removedConnectionIds.push(...toRemove);
             }
         }
 
         if (invalidConnectionIds.length > 0) {
             console.log(`Removing invalid connectionIds`, { invalidConnectionIds });
-            await removeConnectionId_DynamoDb({ websocketKey: data.key, connectionIds: invalidConnectionIds });
+            await removeConnectionId_DynamoDb({ websocketKey: data.channelKey, connectionIds: invalidConnectionIds });
         }
     }
 };

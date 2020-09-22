@@ -21,7 +21,7 @@ export const WebsocketClientTestView = (props: {}) => {
 
     useEffect(() => {
         const connection = createWebsocketClient({ websocketsApiUrl: websocketsApiConfig.websocketsApiUrl })
-            .connect<TestMessage>({ key: `test` });
+            .connect<TestMessage>({ channelKey: `test` });
 
         send.current = connection.send;
 
