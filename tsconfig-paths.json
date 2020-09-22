@@ -32,7 +32,7 @@
         "code/controls-react/*"
       ],
       "doodle/*": [
-        "code/doodle/*"
+        "code/games/doodle/*"
       ],
       "dork/*": [
         "code/games/dork/*"
@@ -65,10 +65,10 @@
         "code/themes/*"
       ],
       "upload-api/*": [
-        "code/upload-api/*"
+        "code/networking/upload-api/*"
       ],
       "user-data-service/*": [
-        "code/user-data-service/*"
+        "code/networking/user-data-service/*"
       ],
       "utils-react/*": [
         "code/utils-react/*"
@@ -79,8 +79,11 @@
       "utils/*": [
         "code/utils/*"
       ],
+      "web-mesh/*": [
+        "code/networking/web-mesh/*"
+      ],
       "websockets-api/*": [
-        "code/websockets-api/*"
+        "code/networking/websockets-api/*"
       ]
     }
   }
