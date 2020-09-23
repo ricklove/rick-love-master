@@ -137,7 +137,11 @@ export const DoodlePartyPlayView = (props: { controller: DoodlePartyController }
                         </>
                     )}
                     {assigment.prompt && (
-                        <Text style={{ fontSize: 20, margin: 8, color: `#FFFF00` }}>{assigment.prompt}</Text>
+                        <>
+                            <Text style={{ fontSize: 20, margin: 8, color: `#FFFF00` }}>{assigment.prompt}</Text>
+                            <Text style={{ fontSize: 20, margin: 8, color: `#FFFF00` }}>Waiting for other players</Text>
+                            <ActivityIndicator size='large' color='#FFFF00' />
+                        </>
                     )}
                 </View>
             </>
