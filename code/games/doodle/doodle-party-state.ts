@@ -169,8 +169,13 @@ const sendNewAssignmentsIfReady = (meshState: MeshState, send: (message: DoodleP
     for (let i = 0; i < meshState.players.length; i++) {
         const p = meshState.players[i];
 
+        const lastPlayerRound = meshState.history.rounds[meshState.history.rounds.length - 1].completed.find(x => x.clientKey === p.clientKey);
         const playerChains = new Set(meshState.history.rounds.flatMap(x => x.completed).filter(x => x.clientKey === p.clientKey).map(x => x.assignment?.chainKey ?? ``));
-        const iRemaining = remaining.findIndex(x => !playerChains.has(x.chainKey));
+        const iRemaining = remaining.findIndex(x =>
+            !playerChains.has(x.chainKey)
+            // Same type as last round (so swap will be correct)
+            && (!lastPlayerRound?.assignment?.chainKey || x.kind === lastPlayerRound.assignment.kind));
+
         if (iRemaining < 0) {
             meshState.players[i].assignment = createNewAssigment();
             continue;

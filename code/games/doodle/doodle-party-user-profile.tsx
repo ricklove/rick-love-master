@@ -43,6 +43,7 @@ export const DoodlePartyProfileView = (props: { controller: DoodlePartyControlle
 export const DoodlePartyPlayerList = (props: { controller: DoodlePartyController }) => {
 
     const getPlayerIcon = (p: PlayerState) => {
+        if (!p.isActive) return `❌`;
         if (!p.isReady) return `◻`;
         if (p.assignment && (p.assignment && (!p.assignment.doodle)) && p.assignment.kind === `doodle`) return `🎨`;
         if (p.assignment && (p.assignment && (!p.assignment.prompt)) && p.assignment.kind === `describe`) return `✏`;
