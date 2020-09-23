@@ -40,7 +40,7 @@ export const DoodlePartyProfileView = (props: { controller: DoodlePartyControlle
     );
 };
 
-export const DoodlePartyPlayerList = (props: { controller: DoodlePartyController }) => {
+export const DoodlePartyPlayerList = (props: { controller: DoodlePartyController, hideInactive?: boolean }) => {
 
     const getPlayerIcon = (p: PlayerState) => {
         if (!p.isActive) return `❌`;
@@ -53,7 +53,7 @@ export const DoodlePartyPlayerList = (props: { controller: DoodlePartyController
     return (
         <>
             <View>
-                {props.controller.meshState?.players.map(x => (
+                {props.controller.meshState?.players.filter(x => !props.hideInactive || x.isActive).map(x => (
                     <View key={x.clientKey} style={{ flexDirection: `row`, alignItems: `center` }}>
                         <View>
                             <Text style={{ fontSize: 24 }} >{getPlayerIcon(x)}</Text>

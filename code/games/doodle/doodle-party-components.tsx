@@ -140,7 +140,10 @@ export const DoodlePartyPlayView = (props: { controller: DoodlePartyController }
                         <>
                             <Text style={{ fontSize: 20, margin: 8, color: `#FFFF00` }}>{assigment.prompt}</Text>
                             <Text style={{ fontSize: 20, margin: 8, color: `#FFFF00` }}>Waiting for other players</Text>
-                            <ActivityIndicator size='large' color='#FFFF00' />
+                            <DoodlePartyPlayerList controller={props.controller} hideInactive />
+                            <View style={{ padding: 8 }}>
+                                <ActivityIndicator size='large' color='#FFFF00' />
+                            </View>
                         </>
                     )}
                 </View>
@@ -156,7 +159,10 @@ export const DoodlePartyPlayView = (props: { controller: DoodlePartyController }
                     <Text style={{ fontSize: 20, margin: 8 }}>Draw</Text>
                     <DoodleDisplayView style={{ width: 312, height: 312, color: `#FFFFFF`, backgroundColor: `#000000` }} drawing={decodeDoodleDrawing(assigment.doodle)} shouldAnimate enableRedraw />
                     <Text style={{ fontSize: 20, margin: 8, color: `#FFFF00` }}>Waiting for other players</Text>
-                    <ActivityIndicator size='large' color='#FFFF00' />
+                    <DoodlePartyPlayerList controller={props.controller} hideInactive />
+                    <View style={{ padding: 8 }}>
+                        <ActivityIndicator size='large' color='#FFFF00' />
+                    </View>
                 </View>
             </>
         );

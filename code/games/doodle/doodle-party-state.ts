@@ -122,23 +122,70 @@ type DoodlePartyMessage = {
     playerAssignment: Assignment & { clientKey: string };
 };
 
-const DEFAULT_PROMPT = `Choose Your Own Word`;
-const createNewAssigment = (): Assignment => {
-    return {
-        kind: `doodle`,
-        prompt: DEFAULT_PROMPT,
-        chainKey: `${Date.now()}-${Math.floor(Math.random() * 999999)}`,
+const createPlayerAssignment = (meshState: MeshState, playerClientKey: string, previousAssigments: Assignment[]) => {
+    const DEFAULT_PROMPT = `Choose Your Own Word`;
+    const createNewAssigment = (): Assignment => {
+        return {
+            kind: `doodle`,
+            prompt: DEFAULT_PROMPT,
+            chainKey: `${Date.now()}-${Math.floor(Math.random() * 999999)}`,
+        };
     };
+
+    const p = meshState.players.find(x => x.clientKey === playerClientKey);
+    if (!p) { return createNewAssigment(); }
+
+    const playerRounds = meshState.history.rounds.flatMap(x => x.completed).filter(x => x.clientKey === p.clientKey);
+    const lastPlayerRound = playerRounds[playerRounds.length - 1] ?? undefined;
+    const lastKind = lastPlayerRound?.assignment?.kind ?? `doodle`;
+
+    // const playerChains = new Set(meshState.history.rounds.flatMap(x => x.completed).filter(x => x.clientKey === p.clientKey).map(x => x.assignment?.chainKey ?? ``));
+    const playerPrompts = new Set(meshState.history.rounds
+        .flatMap(x => x.completed)
+        .filter(x => x.clientKey === p.clientKey)
+        .filter(x => x.assignment?.prompt !== DEFAULT_PROMPT)
+        .map(x => x.assignment?.prompt?.toLowerCase().trim() ?? ``));
+
+    const iRemaining = previousAssigments.findIndex(x =>
+        // New prompt for player
+        !playerPrompts.has(x.prompt?.toLowerCase().trim() ?? ``)
+        // Same type as last round (so swap will be correct)
+        && (x.kind === lastKind));
+
+    if (iRemaining < 0) {
+        return createNewAssigment();
+    }
+
+    const oldAssigment = previousAssigments.splice(iRemaining, 1)[0];
+    const newAssignment = { ...oldAssigment };
+
+    // Switch assignment types
+    if (newAssignment.kind === `doodle`) {
+        newAssignment.kind = `describe`;
+        newAssignment.prompt = undefined;
+    } else {
+        newAssignment.kind = `doodle`;
+        newAssignment.doodle = undefined;
+    }
+
+    return newAssignment;
 };
 
 const sendNewAssignmentsIfReady = (meshState: MeshState, send: (message: DoodlePartyMessage) => void) => {
+    if (meshState.players.filter(x => x.isActive && x.isReady).length <= 0) { return; }
+
+    // Assign Next Item in Chain
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+    const chains = toKeyValueArray(groupItems(meshState.history.rounds.flatMap(x => x.completed).map(x => x.assignment).filter(x => x).map(x => x!), x => x?.chainKey ?? ``));
+    const previousAssigments = chains.map(x => x.value[x.value.length - 1]);
+
     // If some players aren't done yet
     if (meshState.players.some(x => x.isActive && x.isReady && x.assignment && (!x.assignment.doodle || !x.assignment.prompt))) {
 
         // Add new player assignments
         const missingAssignments = meshState.players.filter(x => !x.assignment);
         if (missingAssignments.length > 0) {
-            missingAssignments.forEach(x => { x.assignment = createNewAssigment(); });
+            missingAssignments.forEach(x => { x.assignment = createPlayerAssignment(meshState, x.clientKey, previousAssigments); });
 
             send({
                 kind: `assign`,
@@ -160,47 +207,10 @@ const sendNewAssignmentsIfReady = (meshState: MeshState, send: (message: DoodleP
     };
     meshState.history.rounds.push(lastRound);
 
-    // Assign Next Item in Chain
-    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-    const chains = toKeyValueArray(groupItems(meshState.history.rounds.flatMap(x => x.completed).map(x => x.assignment).filter(x => x).map(x => x!), x => x?.chainKey ?? ``));
-    const lastAssignments = chains.map(x => x.value[x.value.length - 1]);
-    const remaining = [...lastAssignments];
 
     // Assign Players to new chain
     for (let i = 0; i < meshState.players.length; i++) {
-        const p = meshState.players[i];
-
-        const lastPlayerRound = meshState.history.rounds[meshState.history.rounds.length - 1].completed.find(x => x.clientKey === p.clientKey);
-        // const playerChains = new Set(meshState.history.rounds.flatMap(x => x.completed).filter(x => x.clientKey === p.clientKey).map(x => x.assignment?.chainKey ?? ``));
-        const playerPrompts = new Set(meshState.history.rounds
-            .flatMap(x => x.completed)
-            .filter(x => x.clientKey === p.clientKey)
-            .map(x => x.assignment?.prompt?.toLowerCase().trim() ?? ``)
-            .filter(x => x !== DEFAULT_PROMPT));
-        const iRemaining = remaining.findIndex(x =>
-            // New prompt for player
-            !playerPrompts.has(x.prompt?.toLowerCase().trim() ?? ``)
-            // Same type as last round (so swap will be correct)
-            && (!lastPlayerRound?.assignment?.chainKey || x.kind === lastPlayerRound.assignment.kind));
-
-        if (iRemaining < 0) {
-            meshState.players[i].assignment = createNewAssigment();
-            continue;
-        }
-
-        const oldAssigment = remaining.splice(iRemaining, 1)[0];
-        const newAssignment = { ...oldAssigment };
-
-        // Switch assignment types
-        if (newAssignment.kind === `doodle`) {
-            newAssignment.kind = `describe`;
-            newAssignment.prompt = undefined;
-        } else {
-            newAssignment.kind = `doodle`;
-            newAssignment.doodle = undefined;
-        }
-
-        meshState.players[i].assignment = newAssignment;
+        meshState.players[i].assignment = createPlayerAssignment(meshState, meshState.players[i].clientKey, previousAssigments);
     }
 
     send({
