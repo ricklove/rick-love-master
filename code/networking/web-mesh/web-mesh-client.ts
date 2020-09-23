@@ -222,5 +222,6 @@ const createWebMeshClient_websocketOnly = <TMeshState, TMeshMessage>({
     };
 };
 
-
+export type WebMeshClient = ReturnType<typeof createWebMeshClient>;
+export type WebMeshClientWebSocketHistory = WebMeshClient['_webSocket']['history'];
 export const createWebMeshClient = createWebMeshClient_websocketOnly;
