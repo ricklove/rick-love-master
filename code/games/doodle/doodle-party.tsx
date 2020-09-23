@@ -1,5 +1,5 @@
 /* eslint-disable react/no-array-index-key */
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { View, Text, ActivityIndicator } from 'react-native-lite';
 import { useDoodlePartyController, DoodlePartyController } from './doodle-party-state';
 import { DoodlePartyProfileView } from './doodle-party-user-profile';
@@ -69,7 +69,16 @@ export const DoodlePartyView_Inner = ({ controller }: { controller: DoodlePartyC
 };
 
 const DebugView = (props: { controller: DoodlePartyController }) => {
-    const { clientState } = props.controller;
+    const { clientState, meshState, _events, _messages } = props.controller;
+
+    const [renderId, setRenderId] = useState(0);
+    useEffect(() => {
+        const intervalId = setInterval(() => { setRenderId(s => s + 1); }, 1000);
+        return () => {
+            clearInterval(intervalId);
+        };
+    }, []);
+
     return (
         <>
             <PartyViewer controller={props.controller} />
@@ -81,7 +90,18 @@ const DebugView = (props: { controller: DoodlePartyController }) => {
                     <Text>{`Room: ${clientState.client.room}`}</Text>
                     <Text>{`Role: ${clientState.client.role}`}</Text>
                 </View>
-                {/* <Text style={{ fontSize: 20 }}>Web Sockets</Text>
+
+                <View style={{ padding: 4 }}>
+                    <Text style={{ whiteSpace: `pre-wrap`, fontSize: 18 }}>Host</Text>
+                    <Text style={{ whiteSpace: `pre-wrap`, fontSize: 14 }}>{`'${meshState?.hostClientKey ?? ``}'`}</Text>
+
+                    <Text style={{ whiteSpace: `pre-wrap`, fontSize: 18 }}>Players</Text>
+                    {meshState?.players.map((x, i) => (
+                        <Text key={i} style={{ whiteSpace: `pre-wrap`, fontSize: 14 }}>{JSON.stringify(x)}</Text>
+                    ))}
+                </View>
+
+                <Text style={{ fontSize: 20 }}>Web Sockets</Text>
                 <View>
                     <View style={{ padding: 4 }}>
                         <Text style={{ whiteSpace: `pre-wrap`, fontSize: 18 }}>Events</Text>
@@ -92,10 +112,10 @@ const DebugView = (props: { controller: DoodlePartyController }) => {
                     <View style={{ padding: 4 }}>
                         <Text style={{ whiteSpace: `pre-wrap`, fontSize: 18 }}>Messages</Text>
                         {_messages.map((x, i) => (
-                            <Text key={i} style={{ whiteSpace: `pre-wrap`, fontSize: 14 }}>{`${x.timestamp} ${x.receivedAtTimestamp - x.timestamp}: ${JSON.stringify(x)}`}</Text>
+                            <Text key={i} style={{ whiteSpace: `pre-wrap`, fontSize: 14 }}>{`${x.t} ${x._r - x.t}: ${JSON.stringify(x)}`}</Text>
                         ))}
                     </View>
-                </View> */}
+                </View>
             </View>
         </>
     );

@@ -3,8 +3,8 @@ import { parseQuery } from 'utils/query';
 import { createUploader } from 'upload-api/client/uploader';
 import { uploadApiConfig } from 'upload-api/client/config';
 import { createUploadApiWebClient } from 'upload-api/client/web-client';
-import { createWebMeshClient } from 'web-mesh/web-mesh-client';
-import { distinct_key, groupItems } from 'utils/arrays';
+import { createWebMeshClient, WebMeshClientWebSocketHistory } from 'web-mesh/web-mesh-client';
+import { distinct_key, groupItems, distinct } from 'utils/arrays';
 import { toKeyValueArray } from 'utils/objects';
 import { doodleStoragePaths } from './doodle-paths';
 import { DoodleDrawingEncoded, decodeDoodleDrawing } from './doodle';
@@ -20,9 +20,10 @@ type ClientState = {
     };
 };
 type MeshState = {
+    hostClientKey: string;
+    clients: { key: string, isActive: boolean }[];
     players: PlayerState[];
     history: GameHistory;
-    hostClientKey: string;
 };
 export type Assignment = {
     kind: 'doodle' | 'describe';
@@ -97,6 +98,8 @@ const createClientState = (): ClientState => {
 };
 
 type DoodlePartyMessage = {
+    kind: 'start';
+} | {
     kind: 'setHost';
     hostClientKey: string;
 } | {
@@ -202,6 +205,7 @@ const sendNewAssignmentsIfReady = (meshState: MeshState, send: (message: DoodleP
 };
 
 const reduceState = (previousState: MeshState, message: DoodlePartyMessage): MeshState => {
+    console.log(`reduceState`, { message });
 
     if (message.kind === `setHost`) {
         previousState.hostClientKey = message.hostClientKey;
@@ -245,10 +249,12 @@ const reduceState = (previousState: MeshState, message: DoodlePartyMessage): Mes
 };
 
 const reduceClientsState = (previousState: MeshState, clients: { key: string, lastActivityTimestamp: number }[]): MeshState => {
+    console.log(`reduceClientsState`, { clients });
 
     previousState.players.forEach(x => {
         x.isActive = !!clients.find(c => c.key === x.clientKey);
     });
+    previousState.clients = distinct([...previousState.clients, ...clients].map(x => x.key)).map(x => ({ key: x, isActive: !!clients.find(c => c.key === x) }));
 
     return previousState;
 };
@@ -280,8 +286,9 @@ export const useDoodlePartyController = () => {
         refresh();
     };
 
-    const [meshState, setMeshState] = useState(null as null | MeshState);
+    const meshState = useRef(null as null | MeshState);
     const send = useRef(null as null | ((message: DoodlePartyMessage) => void));
+    const webSocketHistory = useRef(null as null | { history: WebMeshClientWebSocketHistory });
 
     useEffect(() => {
 
@@ -290,16 +297,19 @@ export const useDoodlePartyController = () => {
             channelKey: `doodle_${clientState.client.room}`,
             initialState: {
                 hostClientKey: ``,
-                history: { rounds: [] },
+                clients: [],
                 players: [],
+                history: { rounds: [] },
             },
             reduceState,
             reduceClientsState,
         });
         const sub = webMeshClient.subscribe((m) => {
-            setMeshState(m);
+            meshState.current = m;
+            refresh();
         });
 
+        webSocketHistory.current = ({ history: webMeshClient._webSocket.history });
         send.current = webMeshClient.sendMessage;
 
         // Setup Client State
@@ -308,8 +318,16 @@ export const useDoodlePartyController = () => {
 
         // Host
         const hostIntervalId = setInterval(() => {
-            if (!meshState?.hostClientKey
-                || !meshState.players.find(x => x.clientKey === meshState.hostClientKey)?.isActive) {
+            const mState = meshState.current;
+            if (!mState) {
+                // webMeshClient.sendMessage({
+                //     kind: `start`,
+                // });
+                return;
+            }
+
+            const hasActiveHost = mState.clients.find(x => x.key === mState.hostClientKey)?.isActive;
+            if (!hasActiveHost) {
                 webMeshClient.sendMessage({
                     kind: `setHost`,
                     hostClientKey: webMeshClient.clientKey,
@@ -317,10 +335,10 @@ export const useDoodlePartyController = () => {
                 return;
             }
 
-            if (meshState.hostClientKey !== webMeshClient.clientKey) { return; }
+            if (mState.hostClientKey !== webMeshClient.clientKey) { return; }
 
             // Act as host
-            sendNewAssignmentsIfReady(meshState, webMeshClient.sendMessage);
+            sendNewAssignmentsIfReady(mState, webMeshClient.sendMessage);
 
         }, 3000 + Math.floor(3000 * Math.random()));
 
@@ -369,11 +387,11 @@ export const useDoodlePartyController = () => {
         loading,
         renderId,
         clientState,
-        meshState,
+        meshState: meshState.current,
         setClientPlayer,
         sendAssignment,
-        // _messages: messages,
-        // _events: events,
+        _messages: webSocketHistory.current?.history.messages ?? [],
+        _events: webSocketHistory.current?.history.events ?? [],
     };
 };
 export type DoodlePartyController = ReturnType<typeof useDoodlePartyController>;
