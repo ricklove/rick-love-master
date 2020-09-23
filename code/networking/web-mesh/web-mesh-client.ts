@@ -33,11 +33,14 @@ const createWebMeshClient_websocketOnly = <TMeshState, TMeshMessage>({
         { kind: 'join' }
         | { kind: 'close' }
         | { kind: 'sync', state: typeof state }
+        | { kind: 'ping', clientKeys: string[] }
+        | { kind: 'pong' }
+        | { kind: 'drop', clientKeys: string[] }
         | { kind: 'message', message: TMeshMessage }
     );
     type WebSocketMessageWithSenderInfo = { t: Timestamp, c: ClientKey } & WebSocketMessage;
 
-    const addClientKey = (message: { c: ClientKey, t: Timestamp }) => {
+    const updateClients = (message: { c: ClientKey, t: Timestamp }) => {
         state.meshMetaData.clients = state.meshMetaData.clients.filter(x => x.key !== message.c);
         state.meshMetaData.clients.push({ key: message.c, lastActivityTimestamp: message.t });
         state.meshMetaData.clients.sort((a, b) => -(a.lastActivityTimestamp - b.lastActivityTimestamp));
@@ -52,11 +55,30 @@ const createWebMeshClient_websocketOnly = <TMeshState, TMeshMessage>({
             return;
         }
 
+        updateClients(message);
+
+        if (message.kind === `pong`) {
+            clearTimeout(pingPongDropTimeoutId ?? 0);
+            pingPongDropTimeoutId = null;
+            return;
+        }
+        if (message.kind === `ping`) {
+            clearTimeout(pingPongDropTimeoutId ?? 0);
+            pingPongDropTimeoutId = null;
+            if (message.clientKeys.includes(clientKey)) {
+                setTimeout(sendPong);
+            }
+            return;
+        }
+        if (message.kind === `drop`) {
+            clearTimeout(pingPongDropTimeoutId ?? 0);
+            pingPongDropTimeoutId = null;
+            state.meshMetaData.clients = state.meshMetaData.clients.filter(x => !message.clientKeys.some(c => c === x.key));
+            return;
+        }
+
         if (message.kind === `join`) {
             clearTimeout(sendSyncStateTimeoutId);
-
-            // Add Client Key
-            addClientKey(message);
 
             // Is self, ignore
             if (message.c === clientKey) { return; }
@@ -119,12 +141,49 @@ const createWebMeshClient_websocketOnly = <TMeshState, TMeshMessage>({
 
         sendWebSocketMessage({ kind: `sync`, state });
     };
+
+    // Ping-pong (Keep Alive)
+    const sendPong = () => {
+        sendWebSocketMessage({ kind: `pong` });
+    };
+    let pingPongDropTimeoutId = null as null | ReturnType<typeof setTimeout>;
+    const pingPongInterval = setInterval(() => {
+        if (pingPongDropTimeoutId) { return; }
+
+        const deadClients = state.meshMetaData.clients.filter(x => Date.now() > 45 * 1000 + x.lastActivityTimestamp);
+        if (deadClients.length > 0) {
+            // state.meshMetaData.clients = state.meshMetaData.clients.filter(x => !deadClients.some(d => d.key === x.key));
+            const clientPriority = state.meshMetaData.clients.findIndex(x => x.key === clientKey);
+            pingPongDropTimeoutId = setTimeout(() => {
+                pingPongDropTimeoutId = null;
+                const deadClients2 = state.meshMetaData.clients.filter(x => Date.now() > 45 * 1000 + x.lastActivityTimestamp);
+                if (deadClients2.length <= 0) { return; }
+                sendWebSocketMessage({ kind: `drop`, clientKeys: deadClients2.map(x => x.key) });
+            }, clientPriority * 5000);
+            return;
+        }
+
+        const oldClients = state.meshMetaData.clients.filter(x => Date.now() > 30 * 1000 + x.lastActivityTimestamp);
+        if (oldClients.length <= 0) { return; }
+
+        const clientPriority = state.meshMetaData.clients.findIndex(x => x.key === clientKey);
+        pingPongDropTimeoutId = setTimeout(() => {
+            pingPongDropTimeoutId = null;
+            const oldClients2 = state.meshMetaData.clients.filter(x => Date.now() > 30 * 1000 + x.lastActivityTimestamp);
+            if (oldClients2.length <= 0) { return; }
+
+            sendWebSocketMessage({ kind: `ping`, clientKeys: oldClients2.map(x => x.key) });
+        }, clientPriority * 5000);
+    }, 5000);
+
+    // Close
     let isClosed = false;
     const close = () => {
         if (isClosed) { return; }
         isClosed = true;
         sendWebSocketMessage({ kind: `close` });
         websocket.unsubscribe();
+        clearInterval(pingPongInterval);
     };
     const sendMessage = (message: TMeshMessage) => {
         if (isClosed) { throw new AppError(`The connection is closed`); }
