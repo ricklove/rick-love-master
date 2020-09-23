@@ -1,17 +1,16 @@
 import { useRef, useState, useEffect } from 'react';
 import { parseQuery } from 'utils/query';
-import { WebsocketConnectionEvent } from 'websockets-api/client/types';
-import { createWebsocketClient } from 'websockets-api/client/websocket-client';
-import { websocketsApiConfig } from 'websockets-api/client/config';
-import { toKeyValueArray } from 'utils/objects';
-import { randomIndex } from 'utils/random';
-import { createSmartUploader, createUploader } from 'upload-api/client/uploader';
+import { createUploader } from 'upload-api/client/uploader';
 import { uploadApiConfig } from 'upload-api/client/config';
 import { createUploadApiWebClient } from 'upload-api/client/web-client';
+import { createWebMeshClient } from 'web-mesh/web-mesh-client';
+import { distinct_key, groupItems } from 'utils/arrays';
+import { toKeyValueArray } from 'utils/objects';
 import { doodleStoragePaths } from './doodle-paths';
-import { DoodleDataWithScore, DoodleData_Encoded, DoodleDrawingEncoded, decodeDoodleDrawing, DoodleUserDrawingDataJson } from './doodle';
+import { DoodleDrawingEncoded, decodeDoodleDrawing } from './doodle';
 
-type GameState = {
+
+type ClientState = {
     client: {
         _query: { [key: string]: undefined | string };
         room: string;
@@ -19,10 +18,11 @@ type GameState = {
 
         clientPlayer: PlayerState;
     };
-    masterClientKey?: string;
+};
+type MeshState = {
     players: PlayerState[];
     history: GameHistory;
-    // doodles: DoodleDataWithScore[];
+    hostClientKey: string;
 };
 export type Assignment = {
     kind: 'doodle' | 'describe';
@@ -31,18 +31,16 @@ export type Assignment = {
     doodle?: DoodleDrawingEncoded;
 };
 export type PlayerState = {
+    isActive: boolean;
     clientKey: string;
     name: string;
     emoji: string;
     isReady: boolean;
-    isUser?: boolean;
-
     assignment?: Assignment;
 };
 type GameRound = { completed: PlayerState[] };
 type GameHistory = { rounds: GameRound[] };
 type PlayerProfile = {
-    clientKey: string;
     name: string;
     emoji: string;
 };
@@ -68,50 +66,39 @@ const createClientStorage = () => {
         clientStorage,
     };
 };
-const createDefaultGameState = (): GameState => {
+
+const createClientState = (): ClientState => {
     const query = parseQuery(window.location.search);
     const parseRoom = (value: undefined | string) => value ?? `UnknownRoom`;
-    const parseRole = (value: undefined | string): GameState['client']['role'] => {
+    const parseRole = (value: undefined | string): ClientState['client']['role'] => {
         switch (value) {
             case `debug`: return `debug`;
             case `viewer`: return `viewer`;
             default: return `player`;
         }
     };
-
-    const gameState: GameState = {
+    const clientState: ClientState = {
         client: {
             _query: query,
             room: parseRoom(query.room),
             role: parseRole(query.role),
 
             clientPlayer: {
-                clientKey: (`${Math.random()}`).substr(2),
+                isActive: true,
+                clientKey: ``,
                 name: ``,
                 emoji: `👤`,
                 isReady: false,
             },
         },
-        players: [],
-        history: { rounds: [] },
     };
 
-    return gameState;
+    return clientState;
 };
 
 type DoodlePartyMessage = {
-    timestamp: number;
-    clientKey: string;
-} & ({
-    kind: 'syncRequest';
-} | {
-    kind: 'syncResponse';
-    requestedClientKey: string;
-    gameState: {
-        masterClientKey: string;
-        players: PlayerState[];
-        history: GameHistory;
-    };
+    kind: 'setHost';
+    hostClientKey: string;
 } | {
     kind: 'setPlayer';
     clientPlayer: {
@@ -121,21 +108,14 @@ type DoodlePartyMessage = {
         isReady: boolean;
     };
 } | {
-    kind: 'aliveRequest';
-    requestedClientKey: string;
-} | {
-    kind: 'aliveResponse';
-} | {
-    kind: 'dropPlayer';
-    droppedClientKey: string;
-} | {
     kind: 'assign';
     players: PlayerState[];
     lastRound?: GameRound;
 } | {
     kind: 'completeAssignment';
     playerAssignment: Assignment & { clientKey: string };
-});
+};
+
 const createNewAssigment = (): Assignment => {
     return {
         kind: `doodle`,
@@ -143,277 +123,140 @@ const createNewAssigment = (): Assignment => {
         chainKey: `${Date.now()}-${Math.floor(Math.random() * 999999)}`,
     };
 };
-const createMessageHandler = (gameState: GameState, refresh: () => void, send: (message: DoodlePartyMessage) => void) => {
-    console.log(`createMessageHandler`);
-    const { clientKey } = gameState.client.clientPlayer;
 
-    let syncResponseId = setTimeout(() => { });
-    const sendGameState = (requestedClientKey: string) => {
-        // Claim the master 
-        gameState.masterClientKey = clientKey;
-        send({
-            kind: `syncResponse`,
-            requestedClientKey,
-            gameState: {
-                masterClientKey: gameState.masterClientKey,
-                players: gameState.players,
-                history: gameState.history,
-            },
-            clientKey,
-            timestamp: Date.now(),
-        });
-    };
+const sendNewAssignmentsIfReady = (meshState: MeshState, send: (message: DoodlePartyMessage) => void) => {
+    // If some players aren't done yet
+    if (meshState.players.some(x => x.isActive && x.isReady && x.assignment && (!x.assignment.doodle || !x.assignment.prompt))) {
 
-    const masterState = {
-        startTimestamp: Date.now(),
-        clientStates: {} as { [clientKey: string]: { lastMessageTimestamp: number } },
-    };
+        // Add new player assignments
+        const missingAssignments = meshState.players.filter(x => !x.assignment);
+        if (missingAssignments.length > 0) {
+            missingAssignments.forEach(x => { x.assignment = createNewAssigment(); });
 
-    const sendNewAssignmentsIfReady = () => {
-        if (gameState.players.some(x => !x.isReady || (x.assignment && (!x.assignment.doodle || !x.assignment.prompt)))) {
-            // Add new player assignments
-            const missingAssignments = gameState.players.filter(x => x.isReady && !x.assignment);
-            if (missingAssignments.length > 0) {
-                missingAssignments.forEach(x => { x.assignment = createNewAssigment(); });
-
-                send({
-                    kind: `assign`,
-                    players: gameState.players,
-                    lastRound: undefined,
-                    clientKey,
-                    timestamp: Date.now(),
-                });
-                refresh();
-                return;
-            }
-            return;
-        }
-
-        // Save Round
-        const lastRound = { completed: [...gameState.players.map(x => ({ ...x, assignment: x.assignment ? { ...x.assignment } : undefined }))] };
-        gameState.history.rounds.push(lastRound);
-
-        // Rotate next assignment
-        const old = gameState.players.map(x => x.assignment);
-
-        // Rotate Players
-        const firstPlayer = gameState.players.shift();
-        if (!firstPlayer) { return; }
-        gameState.players.push(firstPlayer);
-        for (let i = 0; i < gameState.players.length; i++) {
-            const p = gameState.players[i];
-
-            const oldAssigment = old[i];
-            const doodle = oldAssigment?.doodle;
-            const prompt = oldAssigment?.prompt;
-            if (!oldAssigment || !prompt || !doodle || decodeDoodleDrawing(doodle).segments.length <= 0
-                // Or if player has had to draw this prompt before (previous was describe)
-                || (oldAssigment.kind === `describe` && gameState.history.rounds.flatMap(x => x.completed).find(x => x.clientKey === p.clientKey && prompt === p.assignment?.prompt))
-            ) {
-                gameState.players[i].assignment = createNewAssigment();
-                continue;
-            }
-
-
-            const newAssignment = { ...oldAssigment };
-            // Switch assignment types
-            if (newAssignment.kind === `doodle`) {
-                newAssignment.kind = `describe`;
-                newAssignment.prompt = undefined;
-            } else {
-                newAssignment.kind = `doodle`;
-                newAssignment.doodle = undefined;
-            }
-
-            gameState.players[i].assignment = newAssignment;
-        }
-
-        send({
-            kind: `assign`,
-            players: gameState.players,
-            lastRound,
-            clientKey,
-            timestamp: Date.now(),
-        });
-
-        // Save to server (for data)
-        setTimeout(async () => {
-            const uploadApiWebClient = createUploadApiWebClient(uploadApiConfig);
-            const backupUrl = (await uploadApiWebClient.createUploadUrl({ prefix: `${doodleStoragePaths.doodlePartyDrawingsPrefix}/${Date.now()}` })).uploadUrl;
-            const backupUploader = createUploader(backupUrl);
-            await backupUploader.uploadData({
-                history: gameState.history,
+            send({
+                kind: `assign`,
+                players: meshState.players,
+                lastRound: undefined,
             });
+            return;
+        }
+        return;
+    }
+
+    // Save Round (when all players are done)
+    const completed = [...meshState.players
+        .filter(x => x.assignment && x.assignment.doodle && x.assignment.prompt && decodeDoodleDrawing(x.assignment.doodle).segments.length > 0)
+        .map(x => ({ ...x, assignment: x.assignment ? { ...x.assignment } : undefined }))];
+    const lastRound = {
+        completed,
+    };
+    meshState.history.rounds.push(lastRound);
+
+    // Assign Next Item in Chain
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+    const chains = toKeyValueArray(groupItems(meshState.history.rounds.flatMap(x => x.completed).map(x => x.assignment).filter(x => x).map(x => x!), x => x?.chainKey ?? ``));
+    const lastAssignments = chains.map(x => x.value[x.value.length - 1]);
+    const remaining = [...lastAssignments];
+
+    // Assign Players to new chain
+    for (let i = 0; i < meshState.players.length; i++) {
+        const p = meshState.players[i];
+
+        const playerChains = new Set(meshState.history.rounds.flatMap(x => x.completed).filter(x => x.clientKey === p.clientKey).map(x => x.assignment?.chainKey ?? ``));
+        const iRemaining = remaining.findIndex(x => !playerChains.has(x.chainKey));
+        if (iRemaining < 0) {
+            meshState.players[i].assignment = createNewAssigment();
+            continue;
+        }
+
+        const oldAssigment = remaining.splice(iRemaining, 1)[0];
+        const newAssignment = { ...oldAssigment };
+
+        // Switch assignment types
+        if (newAssignment.kind === `doodle`) {
+            newAssignment.kind = `describe`;
+            newAssignment.prompt = undefined;
+        } else {
+            newAssignment.kind = `doodle`;
+            newAssignment.doodle = undefined;
+        }
+
+        meshState.players[i].assignment = newAssignment;
+    }
+
+    send({
+        kind: `assign`,
+        players: meshState.players,
+        lastRound,
+    });
+
+    // Save to server (for data)
+    setTimeout(async () => {
+        const uploadApiWebClient = createUploadApiWebClient(uploadApiConfig);
+        const backupUrl = (await uploadApiWebClient.createUploadUrl({ prefix: `${doodleStoragePaths.doodlePartyDrawingsPrefix}/${Date.now()}` })).uploadUrl;
+        const backupUploader = createUploader(backupUrl);
+        await backupUploader.uploadData({
+            history: meshState.history,
         });
-    };
-
-    const aliveTimeout = 15;
-    const deadTimeout = 30;
-
-    setInterval(() => {
-        const m = masterState.clientStates[gameState.masterClientKey ?? ``] ?? { lastMessageTimestamp: masterState.startTimestamp };
-        // console.log(`createMessageHandler`, { m, masterState });
-
-        // Clients - Detect Dead Master
-        if (gameState.masterClientKey !== clientKey) {
-            if (Date.now() > deadTimeout * 1000 + m.lastMessageTimestamp) {
-                console.log(`createMessageHandler - Master not responsive!`, { m, masterState });
-                // Master is not active, take over (send game state to self will work)
-                sendGameState(clientKey);
-            }
-            return;
-        }
-
-        // Make sure assignments are out
-        sendNewAssignmentsIfReady();
-
-        // Keep Master Alive
-        if (Date.now() > aliveTimeout * 1000 + m.lastMessageTimestamp) {
-            // Master (self) is not being active - send a message before another client takes over
-            send({ kind: `aliveResponse`, clientKey, timestamp: Date.now() });
-        }
-
-        // Drop unresponsive players
-        toKeyValueArray(masterState.clientStates)
-            .filter(x => x.key !== clientKey)
-            .filter(x => Date.now() > aliveTimeout * 1000 + x.value.lastMessageTimestamp)
-            .map(x => send({
-                kind: `aliveRequest`,
-                requestedClientKey: x.key,
-                clientKey,
-                timestamp: Date.now(),
-            }));
-        toKeyValueArray(masterState.clientStates)
-            .filter(x => x.key !== clientKey)
-            .filter(x => Date.now() > deadTimeout * 1000 + x.value.lastMessageTimestamp)
-            .map(x => send({
-                kind: `dropPlayer`,
-                droppedClientKey: x.key,
-                clientKey,
-                timestamp: Date.now(),
-            }));
-
-    }, 3000 + randomIndex(3000));
-
-    const handleMessage = (message: DoodlePartyMessage) => {
-        masterState.clientStates[message.clientKey] = { lastMessageTimestamp: Date.now() };
-
-        if (message.kind === `setPlayer`) {
-            let p = gameState.players.find(x => x.clientKey === message.clientPlayer.clientKey);
-            if (!p) {
-                p = { ...message.clientPlayer };
-                gameState.players.push(p);
-            }
-            p.isUser = p.clientKey === clientKey;
-            p.name = message.clientPlayer.name;
-            p.emoji = message.clientPlayer.emoji;
-            p.isReady = message.clientPlayer.isReady;
-
-            // If master
-            if (clientKey === gameState.masterClientKey) {
-                setTimeout(() => {
-                    sendNewAssignmentsIfReady();
-                }, 3000);
-            }
-
-            refresh();
-            return;
-        }
-
-        if (message.kind === `dropPlayer`) {
-            gameState.players = gameState.players.filter(x => x.clientKey !== message.droppedClientKey);
-            console.log(`dropPlayer`, { players_after: [...gameState.players], message });
-            refresh();
-            return;
-        }
-
-        // Ignore own messages
-        if (message.clientKey === clientKey) { return; }
-
-        // Assigments
-        if (message.kind === `assign`) {
-            gameState.players = message.players;
-            if (message.lastRound) {
-                gameState.history.rounds.push(message.lastRound);
-            }
-            refresh();
-            return;
-        }
-        if (message.kind === `completeAssignment`) {
-            // Add Doodle, Prompt
-            const assigment = gameState.players.find(x => x.clientKey === message.clientKey)?.assignment;
-            if (!assigment) { return; }
-            assigment.prompt = message.playerAssignment.prompt;
-            assigment.doodle = message.playerAssignment.doodle;
-
-            // If master
-            if (clientKey === gameState.masterClientKey) {
-                sendNewAssignmentsIfReady();
-            }
-
-            refresh();
-            return;
-        }
-
-        // Alive Request
-        if (message.kind === `aliveRequest`) {
-            if (message.requestedClientKey !== clientKey) { return; }
-            send({ kind: `aliveResponse`, clientKey, timestamp: Date.now() });
-            return;
-        }
-
-        // Sync
-        if (message.kind === `syncRequest`) {
-            if (gameState.masterClientKey === clientKey) {
-                sendGameState(message.clientKey);
-                return;
-            }
-
-            clearTimeout(syncResponseId);
-            syncResponseId = setTimeout(() => {
-                // Master has not responded in a timely manner - claim it
-                sendGameState(message.clientKey);
-            }, 1000 + randomIndex(3000));
-        }
-        if (message.kind === `syncResponse`) {
-            clearTimeout(syncResponseId);
-
-            if (message.requestedClientKey !== clientKey) {
-                // Verify master is correct
-                if (message.gameState.players.length < gameState.players.length
-                    || message.gameState.history.rounds.length < gameState.history.rounds.length
-                ) {
-                    // The master is wrong - claim master and correct data
-                    sendGameState(message.clientKey);
-                    sendGameState(message.requestedClientKey);
-                    return;
-                }
-
-                // The master is right - accept the master
-                gameState.masterClientKey = message.gameState.masterClientKey;
-            }
-
-            // Use received state
-            const clientState = gameState.client;
-            Object.assign(gameState, message.gameState);
-            gameState.client = clientState;
-            gameState.players.forEach(x => { x.isUser = false; });
-            const p = gameState.players.find(x => x.clientKey === clientState.clientPlayer.clientKey);
-            if (p) { p.isUser = true; }
-        }
-    };
-
-
-    return {
-        handleMessage,
-    };
+    });
 };
-type MessageHandler = ReturnType<typeof createMessageHandler>;
+
+const reduceState = (previousState: MeshState, message: DoodlePartyMessage): MeshState => {
+
+    if (message.kind === `setHost`) {
+        previousState.hostClientKey = message.hostClientKey;
+        return previousState;
+    }
+
+    if (message.kind === `setPlayer`) {
+        let p = previousState.players.find(x => x.clientKey === message.clientPlayer.clientKey);
+        if (!p) {
+            p = { ...message.clientPlayer, isActive: true };
+            previousState.players.push(p);
+        }
+        p.name = message.clientPlayer.name;
+        p.emoji = message.clientPlayer.emoji;
+        p.isReady = message.clientPlayer.isReady;
+
+        return previousState;
+    }
+
+    // Assigments
+    if (message.kind === `assign`) {
+        previousState.players = message.players;
+        if (message.lastRound) {
+            previousState.history.rounds.push(message.lastRound);
+        }
+        return previousState;
+    }
+
+    if (message.kind === `completeAssignment`) {
+        // Add Doodle, Prompt
+        const assigment = previousState.players.find(x => x.clientKey === message.playerAssignment.clientKey)?.assignment;
+        if (!assigment) { return previousState; }
+
+        assigment.prompt = message.playerAssignment.prompt;
+        assigment.doodle = message.playerAssignment.doodle;
+
+        return previousState;
+    }
+
+    return previousState;
+};
+
+const reduceClientsState = (previousState: MeshState, clients: { key: string, lastActivityTimestamp: number }[]): MeshState => {
+
+    previousState.players.forEach(x => {
+        x.isActive = !!clients.find(c => c.key === x.clientKey);
+    });
+
+    return previousState;
+};
+
 
 export const useDoodlePartyController = () => {
-    const gameStateRef = useRef(createDefaultGameState());
-    const gameState = gameStateRef.current;
-    const { clientKey } = gameState.client.clientPlayer;
+    const clientStateRef = useRef(createClientState());
+    const clientState = clientStateRef.current;
 
     const [loading, setLoading] = useState(true);
     const [renderId, setRenderId] = useState(0);
@@ -426,109 +269,111 @@ export const useDoodlePartyController = () => {
         const { clientStorage } = createClientStorage();
         const s = clientStorage.load();
         if (s) {
-            gameState.client.clientPlayer = {
-                clientKey: s.clientPlayer.clientKey,
+            clientState.client.clientPlayer = {
+                clientKey: ``,
                 name: s.clientPlayer.name,
                 emoji: s.clientPlayer.emoji,
                 isReady: false,
-                isUser: true,
+                isActive: true,
             };
         }
         refresh();
     };
 
-    const [messages, setMessages] = useState([] as (DoodlePartyMessage & { receivedAtTimestamp: number })[]);
-    const [events, setEvents] = useState([] as WebsocketConnectionEvent[]);
+    const [meshState, setMeshState] = useState(null as null | MeshState);
     const send = useRef(null as null | ((message: DoodlePartyMessage) => void));
-    const messageHandler = useRef(null as null | MessageHandler);
 
     useEffect(() => {
+
+        // Setup Web Mesh
+        const webMeshClient = createWebMeshClient<MeshState, DoodlePartyMessage>({
+            channelKey: `doodle_${clientState.client.room}`,
+            initialState: {
+                hostClientKey: ``,
+                history: { rounds: [] },
+                players: [],
+            },
+            reduceState,
+            reduceClientsState,
+        });
+        const sub = webMeshClient.subscribe((m) => {
+            setMeshState(m);
+        });
+
+        send.current = webMeshClient.sendMessage;
+
+        // Setup Client State
         loadClientPlayerFromStorage();
+        clientState.client.clientPlayer.clientKey = webMeshClient.clientKey;
 
-        const connection = createWebsocketClient({ websocketsApiUrl: websocketsApiConfig.websocketsApiUrl })
-            .connect<DoodlePartyMessage>({ channelKey: gameState.client.room });
+        // Host
+        const hostIntervalId = setInterval(() => {
+            if (!meshState?.hostClientKey
+                || !meshState.players.find(x => x.clientKey === meshState.hostClientKey)?.isActive) {
+                webMeshClient.sendMessage({
+                    kind: `setHost`,
+                    hostClientKey: webMeshClient.clientKey,
+                });
+                return;
+            }
 
-        const unsubMessages = connection.subscribeMessages(message => {
-            if (!messageHandler.current) { messageHandler.current = createMessageHandler(gameState, refresh, (x) => send.current?.(x)); }
-            messageHandler.current.handleMessage(message);
-            setMessages(s => [...s, { ...message, receivedAtTimestamp: Date.now() }]);
-        });
-        const unsubEvents = connection.subscribeConnectionEvents(event => {
-            send.current = connection.isConnected() ? connection.send : null;
-            setEvents(s => [...s, event]);
-        });
+            if (meshState.hostClientKey !== webMeshClient.clientKey) { return; }
+
+            // Act as host
+            sendNewAssignmentsIfReady(meshState, webMeshClient.sendMessage);
+
+        }, 3000 + Math.floor(3000 * Math.random()));
+
 
         setLoading(false);
+
         return () => {
-            send.current = null;
-            unsubMessages.unsubscribe();
-            unsubEvents.unsubscribe();
+            sub.unsubscribe();
+            webMeshClient.close();
+            clearInterval(hostIntervalId);
         };
     }, []);
 
-    // const [messageText, setMessageText] = useState(``);
-    // const sendMessage = () => {
-    //     if (!send.current) { return; }
-    //     send.current?.({ text: messageText, timestamp: Date.now(), clientKey: clientKey });
-    //     setMessageText(``);
-    // };
+    // Send Messages
+    const sendClientPlayer = () => {
+        // Send to web socket on change
+        if (clientState.client.role !== `player`) { return; }
 
+        send.current?.({
+            kind: `setPlayer`,
+            clientPlayer: clientState.client.clientPlayer,
+        });
+    };
     const setClientPlayer = (value: { name: string, emoji: string, isReady: boolean }) => {
-        console.log(`useDoodlePartyController.setClientPlayer`, { value, send: send.current });
+        // console.log(`useDoodlePartyController.setClientPlayer`, { value, send: send.current });
         const { clientStorage } = createClientStorage();
-        gameState.client.clientPlayer = { ...gameState.client.clientPlayer, ...value };
+        clientState.client.clientPlayer = { ...clientState.client.clientPlayer, ...value };
         clientStorage.save({
-            clientPlayer: gameState.client.clientPlayer,
+            clientPlayer: clientState.client.clientPlayer,
         });
         sendClientPlayer();
         refresh();
     };
-    const sendClientPlayer = () => {
-        // Send to web socket on change
-        if (gameState.client.role !== `player`) { return; }
 
-        send.current?.({
-            kind: `setPlayer`,
-            clientPlayer: gameState.client.clientPlayer,
-            clientKey,
-            timestamp: Date.now(),
-        });
-    };
     const sendAssignment = (assignment: Assignment) => {
         // Send to web socket on change
-        if (gameState.client.role !== `player`) { return; }
+        if (clientState.client.role !== `player`) { return; }
 
         send.current?.({
             kind: `completeAssignment`,
-            playerAssignment: { ...assignment, clientKey },
-            clientKey,
-            timestamp: Date.now(),
+            playerAssignment: { ...assignment, clientKey: clientState.client.clientPlayer.clientKey },
         });
     };
-
-    // Sync game state (on connect)
-    useEffect(() => {
-        if (!send.current) { return; }
-
-        sendClientPlayer();
-
-        // Sync
-        send.current?.({
-            kind: `syncRequest`,
-            clientKey,
-            timestamp: Date.now(),
-        });
-
-    }, [send.current]);
 
     return {
         loading,
         renderId,
-        gameState,
+        clientState,
+        meshState,
         setClientPlayer,
         sendAssignment,
-        _messages: messages,
-        _events: events,
+        // _messages: messages,
+        // _events: events,
     };
 };
 export type DoodlePartyController = ReturnType<typeof useDoodlePartyController>;
