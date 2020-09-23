@@ -4,9 +4,9 @@ import { View, Text, TouchableOpacity } from 'react-native-lite';
 import { DoodlePartyController, PlayerState } from './doodle-party-state';
 
 export const DoodlePartyProfileView = (props: { controller: DoodlePartyController, onDone: () => void }) => {
-    const { clientPlayer } = props.controller.gameState.client;
+    const { clientPlayer } = props.controller.clientState.client;
     const [userProfile, setUserProfile] = useState({ ...clientPlayer } as UserProfileData);
-    const [usedEmojis, setUsedEmojis] = useState(props.controller.gameState.players.filter(x => !x.isUser).map(x => x.emoji));
+    const [usedEmojis, setUsedEmojis] = useState(props.controller.meshState?.players.filter(x => x.clientKey !== clientPlayer.clientKey).map(x => x.emoji) ?? []);
 
     const changeUserProfile = (value: UserProfileData) => {
         setUserProfile(value);
@@ -18,7 +18,7 @@ export const DoodlePartyProfileView = (props: { controller: DoodlePartyControlle
     };
 
     useEffect(() => {
-        setUsedEmojis(props.controller.gameState.players.filter(x => !x.isUser).map(x => x.emoji));
+        setUsedEmojis(props.controller.meshState?.players.filter(x => x.clientKey !== clientPlayer.clientKey).map(x => x.emoji) ?? []);
     }, [props.controller.renderId]);
 
     // console.log(`DoodlePartyProfileView`, { userProfile, usedEmojis });
@@ -52,7 +52,7 @@ export const DoodlePartyPlayerList = (props: { controller: DoodlePartyController
     return (
         <>
             <View>
-                {props.controller.gameState.players.map(x => (
+                {props.controller.meshState?.players.map(x => (
                     <View key={x.clientKey} style={{ flexDirection: `row`, alignItems: `center` }}>
                         <View>
                             <Text style={{ fontSize: 24 }} >{getPlayerIcon(x)}</Text>

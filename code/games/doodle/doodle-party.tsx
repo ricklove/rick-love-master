@@ -32,14 +32,14 @@ export const DoodlePartyView_Inner = ({ controller }: { controller: DoodlePartyC
     }
 
     // Debug
-    if (controller.gameState.client.role === `debug`) {
+    if (controller.clientState.client.role === `debug`) {
         return (
             <DebugView controller={controller} />
         );
     }
 
     // Viewer
-    if (controller.gameState.client.role === `viewer`) {
+    if (controller.clientState.client.role === `viewer`) {
         return (
             <PartyViewer controller={controller} />
         );
@@ -69,7 +69,7 @@ export const DoodlePartyView_Inner = ({ controller }: { controller: DoodlePartyC
 };
 
 const DebugView = (props: { controller: DoodlePartyController }) => {
-    const { gameState, _messages, _events } = props.controller;
+    const { clientState } = props.controller;
     return (
         <>
             <PartyViewer controller={props.controller} />
@@ -77,11 +77,11 @@ const DebugView = (props: { controller: DoodlePartyController }) => {
 
                 <Text style={{ fontSize: 20 }}>Debug</Text>
                 <View>
-                    <Text>{`Query: ${JSON.stringify(gameState.client._query)}`}</Text>
-                    <Text>{`Room: ${gameState.client.room}`}</Text>
-                    <Text>{`Role: ${gameState.client.role}`}</Text>
+                    <Text>{`Query: ${JSON.stringify(clientState.client._query)}`}</Text>
+                    <Text>{`Room: ${clientState.client.room}`}</Text>
+                    <Text>{`Role: ${clientState.client.role}`}</Text>
                 </View>
-                <Text style={{ fontSize: 20 }}>Web Sockets</Text>
+                {/* <Text style={{ fontSize: 20 }}>Web Sockets</Text>
                 <View>
                     <View style={{ padding: 4 }}>
                         <Text style={{ whiteSpace: `pre-wrap`, fontSize: 18 }}>Events</Text>
@@ -95,7 +95,7 @@ const DebugView = (props: { controller: DoodlePartyController }) => {
                             <Text key={i} style={{ whiteSpace: `pre-wrap`, fontSize: 14 }}>{`${x.timestamp} ${x.receivedAtTimestamp - x.timestamp}: ${JSON.stringify(x)}`}</Text>
                         ))}
                     </View>
-                </View>
+                </View> */}
             </View>
         </>
     );

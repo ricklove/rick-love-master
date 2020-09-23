@@ -11,8 +11,8 @@ import { encodeDoodleDrawing, decodeDoodleDrawing } from './doodle';
 import { DoodleDisplayView } from './doodle-view';
 
 export const DoodlePartyStatusBar = (props: { controller: DoodlePartyController }) => {
-    const { gameState } = props.controller;
-    const { clientPlayer, role } = gameState.client;
+    const { clientState, meshState } = props.controller;
+    const { clientPlayer, role } = clientState.client;
 
     return (
         <>
@@ -38,7 +38,7 @@ export const DoodlePartyStatusBar = (props: { controller: DoodlePartyController 
                     <Text style={{ fontSize: 16 }}>{gameState.client.clientPlayer.clientKey}</Text>
                 </View> */}
                 <View>
-                    <Text style={{ fontSize: 16 }}>{gameState.masterClientKey === gameState.client.clientPlayer.clientKey ? `🟢` : ``}</Text>
+                    <Text style={{ fontSize: 16 }}>{meshState?.hostClientKey === clientState.client.clientPlayer.clientKey ? `🟢` : ``}</Text>
                 </View>
             </View>
         </>
@@ -47,7 +47,7 @@ export const DoodlePartyStatusBar = (props: { controller: DoodlePartyController 
 
 export const PartyViewer = (props: { controller: DoodlePartyController }) => {
 
-    const allItems = props.controller.gameState.history.rounds.flatMap((x, iRound) => x.completed.map(y => ({ iRound, item: y, chainKey: y.assignment?.chainKey })));
+    const allItems = props.controller.meshState?.history.rounds.flatMap((x, iRound) => x.completed.map(y => ({ iRound, item: y, chainKey: y.assignment?.chainKey }))) ?? [];
     const chains = toKeyValueArray(groupItems(allItems, x => x.chainKey ?? ``)).map(x => ({ chain: x.key, items: x.value.sort((a, b) => a.iRound - b.iRound) }));
 
     return (
@@ -55,7 +55,7 @@ export const PartyViewer = (props: { controller: DoodlePartyController }) => {
             <Text>Players</Text>
             <DoodlePartyPlayerList controller={props.controller} />
             <Text>Rounds</Text>
-            <Text>{`${props.controller.gameState.history.rounds.length}`}</Text>
+            <Text>{`${props.controller.meshState?.history.rounds.length ?? 0}`}</Text>
             {/* {props.controller.gameState.history.rounds.map((x, i) => (
                 <View key={`${i}`} style={{ flexDirection: `row`, alignItems: `center` }}>
                     {x.completed.map(p => (
@@ -98,9 +98,9 @@ const AssignmentView = (props: { player: PlayerState }) => {
 };
 
 export const DoodlePartyPlayView = (props: { controller: DoodlePartyController }) => {
-    const { gameState } = props.controller;
-    const { clientKey } = gameState.client.clientPlayer;
-    const assigment = gameState.players.find(x => x.clientKey === clientKey)?.assignment;
+    const { clientState, meshState } = props.controller;
+    const { clientKey } = clientState.client.clientPlayer;
+    const assigment = meshState?.players.find(x => x.clientKey === clientKey)?.assignment;
     const [text, setText] = useState(``);
 
     useEffect(() => {
