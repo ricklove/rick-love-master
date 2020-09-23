@@ -122,10 +122,11 @@ type DoodlePartyMessage = {
     playerAssignment: Assignment & { clientKey: string };
 };
 
+const DEFAULT_PROMPT = `Choose Your Own Word`;
 const createNewAssigment = (): Assignment => {
     return {
         kind: `doodle`,
-        prompt: `Choose Your Own Word`,
+        prompt: DEFAULT_PROMPT,
         chainKey: `${Date.now()}-${Math.floor(Math.random() * 999999)}`,
     };
 };
@@ -171,7 +172,11 @@ const sendNewAssignmentsIfReady = (meshState: MeshState, send: (message: DoodleP
 
         const lastPlayerRound = meshState.history.rounds[meshState.history.rounds.length - 1].completed.find(x => x.clientKey === p.clientKey);
         // const playerChains = new Set(meshState.history.rounds.flatMap(x => x.completed).filter(x => x.clientKey === p.clientKey).map(x => x.assignment?.chainKey ?? ``));
-        const playerPrompts = new Set(meshState.history.rounds.flatMap(x => x.completed).filter(x => x.clientKey === p.clientKey).map(x => x.assignment?.prompt?.toLowerCase().trim() ?? ``));
+        const playerPrompts = new Set(meshState.history.rounds
+            .flatMap(x => x.completed)
+            .filter(x => x.clientKey === p.clientKey)
+            .map(x => x.assignment?.prompt?.toLowerCase().trim() ?? ``)
+            .filter(x => x !== DEFAULT_PROMPT));
         const iRemaining = remaining.findIndex(x =>
             // New prompt for player
             !playerPrompts.has(x.prompt?.toLowerCase().trim() ?? ``)
