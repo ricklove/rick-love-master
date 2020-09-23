@@ -19,6 +19,7 @@ export const WebMeshClientTestView = (props: {}) => {
 
     const [webSocketHistory, setWebSocketHistory] = useState(null as null | { history: { messages: unknown[], events: unknown[] } });
     const [meshState, setMeshState] = useState(null as null | TestState);
+    const [clientInfo, setClientInfo] = useState(null as null | { clientKey: string, clients: { key: string }[] });
     const send = useRef(null as null | ((message: TestMessage) => void));
 
     useEffect(() => {
@@ -29,6 +30,9 @@ export const WebMeshClientTestView = (props: {}) => {
         });
         const sub = webMeshClient.subscribe((m) => {
             setMeshState(m);
+        });
+        const subClients = webMeshClient.subscribeClientsChange((x) => {
+            setClientInfo(x);
         });
 
         send.current = webMeshClient.sendMessage;
@@ -44,6 +48,7 @@ export const WebMeshClientTestView = (props: {}) => {
 
         return () => {
             sub.unsubscribe();
+            subClients.unsubscribe();
             webMeshClient.close();
             clearInterval(refreshWebsocketHistory);
         };
@@ -76,6 +81,19 @@ export const WebMeshClientTestView = (props: {}) => {
                         <Text style={{ whiteSpace: `pre-wrap`, fontSize: 18 }}>Send</Text>
                     </TouchableOpacity>
                 </View>
+            </View>
+
+            <View style={{ padding: 4 }}>
+                <Text style={{ whiteSpace: `pre-wrap`, fontSize: 18 }}>Client Key</Text>
+                <View style={{ padding: 4 }}>
+                    <Text style={{ whiteSpace: `pre-wrap`, fontSize: 14 }}>{`${clientInfo?.clientKey}`}</Text>
+                </View>
+                <Text style={{ whiteSpace: `pre-wrap`, fontSize: 18 }}>Clients</Text>
+                {clientInfo?.clients.map((x, i) => (
+                    <View style={{ padding: 4 }}>
+                        <Text key={i} style={{ whiteSpace: `pre-wrap`, fontSize: 14 }}>{`${x.key}`}</Text>
+                    </View>
+                ))}
             </View>
 
             <View style={{ padding: 4 }}>

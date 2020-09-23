@@ -2,6 +2,7 @@ import { createWebsocketConnection_smart } from 'websockets-api/client/websocket
 import { createSubscribable } from 'utils/subscribable';
 import { AppError } from 'utils/error';
 import { websocketsApiConfig } from 'websockets-api/client/config';
+import { distinct_key } from 'utils/arrays';
 
 type Timestamp = number & { __type: 'Timestamp' }
 type ClientKey = string & { __type: 'ClientKey' }
@@ -19,6 +20,7 @@ const createWebMeshClient_websocketOnly = <TMeshState, TMeshMessage>({
     localStorage.setItem(WEB_MESH_CLIENT_KEY, clientKey);
 
     const stateSub = createSubscribable<TMeshState>();
+    const clientsSub = createSubscribable<{ clientKey: string, clients: { key: string }[] }>();
     const state = {
         meshState: initialMeshState,
         meshMetaData: {
@@ -41,9 +43,14 @@ const createWebMeshClient_websocketOnly = <TMeshState, TMeshMessage>({
     type WebSocketMessageWithSenderInfo = { t: Timestamp, c: ClientKey } & WebSocketMessage;
 
     const updateClients = (message: { c: ClientKey, t: Timestamp }) => {
+        const oldClients = [...state.meshMetaData.clients];
         state.meshMetaData.clients = state.meshMetaData.clients.filter(x => x.key !== message.c);
         state.meshMetaData.clients.push({ key: message.c, lastActivityTimestamp: message.t });
         state.meshMetaData.clients.sort((a, b) => -(a.lastActivityTimestamp - b.lastActivityTimestamp));
+
+        if (oldClients.map(x => x.key).join(`;`) !== state.meshMetaData.clients.map(x => x.key).join(`;`)) {
+            clientsSub.onStateChange({ clientKey, clients: state.meshMetaData.clients });
+        }
     };
 
     let sendSyncStateTimeoutId = setTimeout(() => { }, 0);
@@ -52,6 +59,7 @@ const createWebMeshClient_websocketOnly = <TMeshState, TMeshMessage>({
         if (message.kind === `close`) {
             clearTimeout(sendSyncStateTimeoutId);
             state.meshMetaData.clients = state.meshMetaData.clients.filter(x => x.key !== message.c);
+            clientsSub.onStateChange({ clientKey, clients: state.meshMetaData.clients });
             return;
         }
 
@@ -74,6 +82,7 @@ const createWebMeshClient_websocketOnly = <TMeshState, TMeshMessage>({
             clearTimeout(pingPongDropTimeoutId ?? 0);
             pingPongDropTimeoutId = null;
             state.meshMetaData.clients = state.meshMetaData.clients.filter(x => !message.clientKeys.some(c => c === x.key));
+            clientsSub.onStateChange({ clientKey, clients: state.meshMetaData.clients });
             return;
         }
 
@@ -102,7 +111,10 @@ const createWebMeshClient_websocketOnly = <TMeshState, TMeshMessage>({
 
             clearTimeout(sendSyncStateTimeoutId);
 
-            state.meshMetaData = message.state.meshMetaData;
+            state.meshMetaData.firstMessageTimestamp = message.state.meshMetaData.firstMessageTimestamp;
+            state.meshMetaData.lastMessageTimestamp = message.state.meshMetaData.lastMessageTimestamp;
+            // state.meshMetaData.clients = message.state.meshMetaData.clients;
+            state.meshMetaData.clients = distinct_key([...state.meshMetaData.clients, ...message.state.meshMetaData.clients], x => x.key);
             state.meshState = message.state.meshState;
 
             // TODO: What about out of order messages?
@@ -114,6 +126,7 @@ const createWebMeshClient_websocketOnly = <TMeshState, TMeshMessage>({
                 state.meshMetaData.lastMessageTimestamp = m.t;
             }
 
+            clientsSub.onStateChange({ clientKey, clients: state.meshMetaData.clients });
             stateSub.onStateChange(state.meshState);
             return;
         }
@@ -201,6 +214,7 @@ const createWebMeshClient_websocketOnly = <TMeshState, TMeshMessage>({
         clientKey,
         sendMessage,
         subscribe: stateSub.subscribe,
+        subscribeClientsChange: clientsSub.subscribe,
         close,
     };
 };
