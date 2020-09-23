@@ -39,7 +39,10 @@ export type PlayerState = {
     isReady: boolean;
     assignment?: Assignment;
 };
-type GameRound = { completed: PlayerState[] };
+type GameRound = {
+    roundKey: string;
+    completed: PlayerState[];
+};
 type GameHistory = { rounds: GameRound[] };
 type PlayerProfile = {
     name: string;
@@ -151,6 +154,7 @@ const sendNewAssignmentsIfReady = (meshState: MeshState, send: (message: DoodleP
         .filter(x => x.assignment && x.assignment.doodle && x.assignment.prompt && decodeDoodleDrawing(x.assignment.doodle).segments.length > 0)
         .map(x => ({ ...x, assignment: x.assignment ? { ...x.assignment } : undefined }))];
     const lastRound = {
+        roundKey: `${Date.now()}`,
         completed,
     };
     meshState.history.rounds.push(lastRound);
@@ -228,8 +232,10 @@ const reduceState = (previousState: MeshState, message: DoodlePartyMessage): Mes
     // Assigments
     if (message.kind === `assign`) {
         previousState.players = message.players;
-        if (message.lastRound) {
-            previousState.history.rounds.push(message.lastRound);
+        if (message.lastRound && message.lastRound.completed.length > 0) {
+            if (!previousState.history.rounds.find(x => x.roundKey === message.lastRound?.roundKey)) {
+                previousState.history.rounds.push(message.lastRound);
+            }
         }
         return previousState;
     }
