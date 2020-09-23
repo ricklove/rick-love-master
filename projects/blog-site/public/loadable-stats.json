@@ -2,7 +2,7 @@
   "errors": [],
   "warnings": [],
   "version": "4.44.1",
-  "hash": "83000851db09c084a356",
+  "hash": "867506bf0580101704db",
   "publicPath": "/",
   "outputPath": "D:\\\\Projects\\\\rick-love-master\\\\projects\\\\blog-site\\\\public",
   "assetsByChunkName": {
@@ -14,7 +14,7 @@
   "assets": [
     {
       "name": "render-page.js",
-      "size": 6762504,
+      "size": 170873,
       "chunks": [
         "main"
       ],
@@ -26,7 +26,7 @@
     },
     {
       "name": "render-page.js.map",
-      "size": 5719051,
+      "size": 143018,
       "chunks": [
         "main"
       ],
