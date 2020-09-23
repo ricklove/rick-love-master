@@ -15,24 +15,24 @@ export const WebMeshClientTestView = (props: {}) => {
     };
     type TestState = {
         history: TestMessage[];
+        clients: { key: string, lastActivityTimestamp: number }[];
     };
 
     const [webSocketHistory, setWebSocketHistory] = useState(null as null | { history: { messages: unknown[], events: unknown[] } });
     const [meshState, setMeshState] = useState(null as null | TestState);
-    const [clientInfo, setClientInfo] = useState(null as null | { clientKey: string, clients: { key: string }[] });
+    const [clientKey, setClientKey] = useState(null as null | string);
     const send = useRef(null as null | ((message: TestMessage) => void));
 
     useEffect(() => {
         const webMeshClient = createWebMeshClient<TestState, TestMessage>({
             channelKey: `test`,
-            initialState: { history: [] },
-            reduceState: (prev, m) => ({ history: [...prev.history, { ...m, receivedTimestamp: Date.now() }] }),
+            initialState: { history: [], clients: [] },
+            reduceState: (prev, m) => ({ ...prev, history: [...prev.history, { ...m, receivedTimestamp: Date.now() }] }),
+            reduceClientsState: (prev, clients) => ({ ...prev, clients }),
         });
+        setClientKey(webMeshClient.clientKey);
         const sub = webMeshClient.subscribe((m) => {
             setMeshState(m);
-        });
-        const subClients = webMeshClient.subscribeClientsChange((x) => {
-            setClientInfo(x);
         });
 
         send.current = webMeshClient.sendMessage;
@@ -48,7 +48,6 @@ export const WebMeshClientTestView = (props: {}) => {
 
         return () => {
             sub.unsubscribe();
-            subClients.unsubscribe();
             webMeshClient.close();
             clearInterval(refreshWebsocketHistory);
         };
@@ -86,12 +85,12 @@ export const WebMeshClientTestView = (props: {}) => {
             <View style={{ padding: 4 }}>
                 <Text style={{ whiteSpace: `pre-wrap`, fontSize: 18 }}>Client Key</Text>
                 <View style={{ padding: 4 }}>
-                    <Text style={{ whiteSpace: `pre-wrap`, fontSize: 14 }}>{`${clientInfo?.clientKey}`}</Text>
+                    <Text style={{ whiteSpace: `pre-wrap`, fontSize: 14 }}>{`${clientKey}`}</Text>
                 </View>
                 <Text style={{ whiteSpace: `pre-wrap`, fontSize: 18 }}>Clients</Text>
-                {clientInfo?.clients.map((x, i) => (
+                {meshState?.clients.map((x, i) => (
                     <View style={{ padding: 4 }}>
-                        <Text key={i} style={{ whiteSpace: `pre-wrap`, fontSize: 14 }}>{`${x.key}`}</Text>
+                        <Text key={i} style={{ whiteSpace: `pre-wrap`, fontSize: 14 }}>{`${x.key} @ ${x.lastActivityTimestamp}`}</Text>
                     </View>
                 ))}
             </View>
