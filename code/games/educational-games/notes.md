@@ -33,7 +33,7 @@
 
 - Slowly animate doodles (if single doodle on screen)
 
-### Mode: Multiplayer (2 persons)
+### [x] Mode: Multiplayer (2 persons)
 
 - Player 1: Draw
 - Player 2: Guess (Type / Multiple Choice)
@@ -43,16 +43,23 @@
 - Player from each team: Draw
 - Other Players from each team: Guess (Type / Multiple Choice)
 
-### Mode: Mutiplayer Party - Telephone
+### [x] Mode: Mutiplayer Party - Telephone
 
-(Similar to telestrations)
-
-- Each person gets a word and doodles it
-- The next person sees the doodle and types a guess
-- The next person sees the types guess and doodles
+- [x] Each person gets a word and doodles it
+- [x] The next person sees the doodle and types a guess
+- [x] The next person sees the types guess and doodles
 - In a full circle
-- At the end of the round, review the results
+    - [x] Tracking chains and non-repeat same word per user works
+- Misc
+    - At the end of the round, review the results
     - Vote on the best drawing?
-    - Get individual points for doodles that were recognized
-    - Get individual points for recognizing doodles correctly
-    - Handicaps to help spelling (multiple choice, spell check, etc.)
+    - Players get points for doodles that were recognized
+    - Players get points for recognizing doodles correctly
+    - Aides to help spelling (multiple choice, spell check, etc.)
+- Data
+    - Use spelling words as starting prompts (to generate doodles for single player spelling game)
+    - Process doodles and include in spelling data set
+        - High Score  (10) = Prompt -> Doodle -> Prompt
+        - Skip   = Prompt -> Doodle -> Different Prompt
+        - Medium Score (1) = Doodle -> Prompt
+        - Zero   Score (0) = Prompt -> Doodle
