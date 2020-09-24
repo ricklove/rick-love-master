@@ -10,7 +10,7 @@ import { ComponentTestsPage, ComponentTestsPageData } from '../pageTemplates/com
 import { ComponentGamesPage, ComponentGamesPageData } from '../pageTemplates/component-games';
 
 export type PageData = {
-    postPage?: PostPageData;
+    postPage?: PostPageData & { order?: number };
     postIndexPage?: PostIndexPageData;
     notFoundPage?: {};
     lazyComponentExamplePage?: {};

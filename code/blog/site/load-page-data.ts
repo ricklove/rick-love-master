@@ -39,7 +39,8 @@ export const loadStaticPageData = async (): Promise<SitePages<PageData>> => {
         const sitePath = `/${headerValues.find(x => x.key === `path`)?.value.replace(/^\//g, ``) ?? filename.replace(/\.md$/, ``)}`;
         const summary = `${contentWithoutHeader.split(`\`\`\``)[0].split(`\n`).slice(0, 16).join(`\n`).trim()}\n\n...`;
         const title = headerValues.find(x => x.key === `title`)?.value ?? sitePath;
-        const date = headerValues.find(x => x.key === `date`)?.value ?? new Date().toISOString().substr(0, 10);
+        const date = headerValues.find(x => x.key === `date`)?.value;
+        const timestamp = date ? new Date(date).getTime() : 0;
 
         console.log(`createPageData`, { sitePath });
         const page: SitePageInfo<PageData> = {
@@ -52,7 +53,7 @@ export const loadStaticPageData = async (): Promise<SitePages<PageData>> => {
                     headers: headerValues,
                     body: contentWithoutHeader,
                     summary,
-                    date,
+                    order: -timestamp,
                 },
             },
         };
@@ -60,12 +61,16 @@ export const loadStaticPageData = async (): Promise<SitePages<PageData>> => {
     };
 
     const pages = [] as SitePageInfo<PageData>[];
+    const posts = [] as SitePageInfo<PageData>[];
 
     const blogContentDir = getPathNormalized(__dirname, `../../blog-content`);
     // console.log(`loadStaticPageData blogContentDir`, { blogContentDir });
     // await processDirectoryFiles(`${blogContentDir}`, async x => { if (x.endsWith(`.md`)) { pages.push(await createPageData_fromMarkdownFile(x, `post`)); } });
-    await processDirectoryFiles(`${blogContentDir}/posts`, async x => { if (x.endsWith(`.md`)) { pages.push(await createPageData_fromMarkdownFile(x, `post`)); } });
+    await processDirectoryFiles(`${blogContentDir}/posts`, async x => { if (x.endsWith(`.md`)) { posts.push(await createPageData_fromMarkdownFile(x, `post`)); } });
     await processDirectoryFiles(`${blogContentDir}/pages`, async x => { if (x.endsWith(`.md`)) { pages.push(await createPageData_fromMarkdownFile(x, `page`)); } });
+
+    posts.sort((a, b) => (a.data.postPage?.order ?? 0) - (b.data.postPage?.order ?? 0));
+    pages.unshift(...posts);
 
     pages.push({
         sitePath: `/`,
@@ -75,7 +80,6 @@ export const loadStaticPageData = async (): Promise<SitePages<PageData>> => {
                     sitePath: x.sitePath,
                     title: x.data.postPage?.title ?? ``,
                     summary: x.data.postPage?.summary ?? ``,
-                    date: x.data.postPage?.date ?? ``,
                 })),
             },
         },
