@@ -33,7 +33,7 @@ We software developers: engineers, designers, architects, etc. - all need to ens
 
 ## Conclusion
 
-This is pretty short, but hopefully it is a seed. I could a write a book on this topic, but perhaps it will still be useful to think about the above questions and points.
+This is pretty short, but hopefully it is a seed. I could write a book on this topic, but perhaps it will still be useful to think about the above questions and points.
 
 If we are intentional about providing a benefit to each person who uses our software, it will have a powerful impact on how we invest our time and resources.
 
