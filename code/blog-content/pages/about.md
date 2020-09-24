@@ -17,7 +17,7 @@ export const getAboutAuthor = () => {
 
     const oldTypescriptRepoFile = 'https://github.com/ricklove/GreekBibleApp/blob/master/www/Scripts/ts/User/001_DisplayPassage.ts';
 
-    const funTypescriptRepoFile = 'https://github.com/ricklove/GreekBibleApp/blob/master/www/Scripts/ts/User/001_DisplayPassage.ts';
+    const funTypescriptRepoFile = 'https://github.com/ricklove/zork/blob/master/ts/src/convertToTypescript.ts';
     const funTypescriptPurpose = 'Transpile the Original 1977 Zork Source Code into Ideomatic Typescript';
 
     return `
@@ -27,7 +27,7 @@ Here is an old repo of some old Typescript before they figured out ES Modules: $
 
 But I don't write code like that anymore that was ${new Date().getFullYear() - yearOfTypescriptRelease} years ago after all. 
 
-So, here is some newer Typescript written for a fun little project where I was ${funTypescriptPurpose}: ${oldTypescriptRepoFile}.
+So, here is some newer Typescript written for a fun little project where I wanted to ${funTypescriptPurpose}: ${oldTypescriptRepoFile}.
     `;
 };
 ```
@@ -93,10 +93,11 @@ Anyway, enough of that.
         </p>
         <p>
             <span>Before Geocities and that junk. I had a custom website - with GIFs everywhere, a java applet, and the eternal "In Construction" GIF guy.</span>
-            <span>I even got a free MSDN subscription before that was worth anything.</span>
+            <span>I even got a free MSDN subscription because I had a java applet on my page - though I didn't really know what MSDN was and never used it.</span>
         </p>
         <p>
             <span>For a fun fact, I was even ranked #1 on yahoo when searching for my high school.</span>
+            <span>Yahoo was the search engine back then - you know - before google existed and we used Netscape Navigator.</span>
         </p>
     </div>
 
