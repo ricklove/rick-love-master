@@ -39,6 +39,7 @@ export const loadStaticPageData = async (): Promise<SitePages<PageData>> => {
         const sitePath = `/${headerValues.find(x => x.key === `path`)?.value.replace(/^\//g, ``) ?? filename.replace(/\.md$/, ``)}`;
         const summary = `${contentWithoutHeader.split(`\`\`\``)[0].split(`\n`).slice(0, 16).join(`\n`).trim()}\n\n...`;
         const title = headerValues.find(x => x.key === `title`)?.value ?? sitePath;
+        const date = headerValues.find(x => x.key === `date`)?.value ?? new Date().toISOString().substr(0, 10);
 
         console.log(`createPageData`, { sitePath });
         const page: SitePageInfo<PageData> = {
@@ -51,6 +52,7 @@ export const loadStaticPageData = async (): Promise<SitePages<PageData>> => {
                     headers: headerValues,
                     body: contentWithoutHeader,
                     summary,
+                    date,
                 },
             },
         };
@@ -73,6 +75,7 @@ export const loadStaticPageData = async (): Promise<SitePages<PageData>> => {
                     sitePath: x.sitePath,
                     title: x.data.postPage?.title ?? ``,
                     summary: x.data.postPage?.summary ?? ``,
+                    date: x.data.postPage?.date ?? ``,
                 })),
             },
         },

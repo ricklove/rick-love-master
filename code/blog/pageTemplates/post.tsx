@@ -12,6 +12,7 @@ export type PostPageData = {
     title: string;
     body: string;
     summary: string;
+    date: string;
 };
 
 export const PostPage = (props: { data: PostPageData }) => {

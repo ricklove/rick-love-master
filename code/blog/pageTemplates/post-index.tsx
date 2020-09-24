@@ -6,12 +6,14 @@ import { Layout } from './layout/layout';
 import { getNavigation } from '../site/store';
 
 export type PostIndexPageData = {
-    posts: { sitePath: string, title: string, summary: string }[];
+    posts: { sitePath: string, title: string, summary: string, date: string }[];
 }
 
 export const PostIndexPage = (props: { data: PostIndexPageData }) => {
     const { posts } = props.data;
     const Link = getNavigation().StaticPageLinkComponent;
+
+    posts.sort((a, b) => -a.date.localeCompare(b.date));
 
     return (
         <Layout>
