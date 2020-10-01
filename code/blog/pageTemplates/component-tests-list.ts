@@ -11,6 +11,7 @@ export const componentTestList = [
     { name: `websocket-client-test-view`, load: async () => (await import(`websockets-api/client/websocket-client-test-view`)).WebsocketClientTestView },
     { name: `web-mesh-client-test-view`, load: async () => (await import(`web-mesh/web-mesh-client-test`)).WebMeshClientTestView },
     { name: `doodle-view`, load: async () => (await import(`doodle/doodle-view`)).DoodleTestView },
+    { name: `hacker-news`, load: async () => (await import(`hacker-news/hacker-news-page`)).HackerNewsPage_TopNews },
 
     // { name: `theme`, load: async () => (await import(`themes/theme-example`)).ThemeExample },
 ];

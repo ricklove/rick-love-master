@@ -46,6 +46,9 @@
       "gatsby-lite/*": [
         "code/gatsby-lite/*"
       ],
+      "hacker-news/*": [
+        "code/hacker-news/*"
+      ],
       "json-rpc/*": [
         "code/json-rpc/*"
       ],

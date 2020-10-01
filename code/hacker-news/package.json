@@ -1,0 +1,12 @@
+{
+    "name": "hacker-news",
+    "version": "1.0.0",
+    "dependencies": {
+        "controls-react": "*",
+        "react-native-lite": "*",
+        "utils": "*",
+        "utils-react": "*",
+        "react": "^16.12.0"
+    },
+    "devDependencies": {}
+}
