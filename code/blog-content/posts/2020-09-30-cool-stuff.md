@@ -32,7 +32,9 @@ A text adventure (inside the header console simulator)
 
 I'm ofter adding to this. You could spend quite a while getting all the items in the first stage.
 
-![](2020-09-30-dork.png)
+![](2020-09-30-dork-intro.gif)
+
+Why yes, that is animated ascii 😀
 
 #### Doodle Party
 
