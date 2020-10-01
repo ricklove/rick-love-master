@@ -20,14 +20,23 @@ export const PostIndexPage = (props: { data: PostIndexPageData }) => {
                 <div>
                     {posts.map(x => (
                         <div key={x.title} className='post-item'>
-                            <div>
-                                <p>
-                                    <Link to={x.sitePath}>{x.title}</Link>
-                                </p>
-                            </div>
+                            <Link to={x.sitePath}>
+                                <div>
+                                    <p>
+                                        {x.title}
+                                    </p>
+                                </div>
+                            </Link>
                             <div>
                                 <Markdown markdown={x.summary} />
                             </div>
+                            <Link to={x.sitePath}>
+                                <div>
+                                    <p>
+                                        Read More...
+                                    </p>
+                                </div>
+                            </Link>
                         </div>
                     ))}
                 </div>

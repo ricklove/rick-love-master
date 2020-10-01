@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/camelcase */
 /* eslint-disable no-console */
 /* eslint-disable unicorn/consistent-function-scoping */
-import { processDirectoryFiles, getFileName, readFile, getPathNormalized } from 'utils/files';
+import { processDirectoryFiles, getFileName, readFile, getPathNormalized, getDirectoryPath, copyFile } from 'utils/files';
 import { PageData } from './create-page';
 import { componentTestList } from '../pageTemplates/component-tests-list';
 import { componentGamesList } from '../pageTemplates/component-games-list';
@@ -19,7 +19,36 @@ export const loadStaticPageData = async (): Promise<SitePages<PageData>> => {
 
     console.log(`loadStaticPages START`);
 
-    const createPageData_fromMarkdownFile = async (filePath: string, kind: 'post' | 'page'): Promise<SitePageInfo<PageData>> => {
+    const handleMediaFiles = async (sourceFilePath: string, text: string, onMediaFile: (sourceFilePath: string, mediaPath: string) => Promise<{ newPath: string }>) => {
+
+        console.log(`handleMediaFiles START`, { text: text.substr(0, 50) });
+
+        // From: https://stackoverflow.com/questions/44227270/regex-to-parse-image-link-in-markdown
+        const markdownMediaRegex = /!\[(?<mediaAltText>[^\]]*)]\((?<mediaPath>.*?)(?="|\))(?<mediaTitle>".*")?\)/g;
+
+        const matches = text.matchAll(markdownMediaRegex);
+        const replacements = [] as { find: string, replace: string }[];
+        for (const m of matches) {
+            const mIndex = m.index;
+            const mediaPath = m.groups?.mediaPath;
+            if (!m || mIndex == null || !mediaPath) { continue; }
+            const mText = text.substr(mIndex, m[0].length);
+
+            // eslint-disable-next-line no-await-in-loop
+            const { newPath: newMediaPath } = await onMediaFile(sourceFilePath, mediaPath);
+
+            const mFinal = mText.replace(mediaPath, newMediaPath);
+            replacements.push({ find: mText, replace: mFinal });
+        }
+
+        let text_corrected = text;
+        replacements.forEach(x => { text_corrected = text_corrected.replace(x.find, x.replace); });
+
+        console.log(`handleMediaFiles END`, { replacements });
+        return text_corrected;
+    };
+
+    const createPageData_fromMarkdownFile = async (filePath: string, kind: 'post' | 'page', onMediaFile: (sourceFilePath: string, mediaPath: string) => Promise<{ newPath: string }>): Promise<SitePageInfo<PageData>> => {
 
         const filename = getFileName(filePath);
         const content = await readFile(filePath);
@@ -36,8 +65,10 @@ export const loadStaticPageData = async (): Promise<SitePages<PageData>> => {
         }).filter(x => x.key && x.value) ?? [];
         const contentWithoutHeader = headerValues.length > 0 ? parts.slice(2).join(`---`) : content;
 
+        const contentCleaned = await handleMediaFiles(filePath, contentWithoutHeader, onMediaFile);
+
         const sitePath = `/${headerValues.find(x => x.key === `path`)?.value.replace(/^\//g, ``) ?? filename.replace(/\.md$/, ``)}`;
-        const summary = `${contentWithoutHeader.split(`\`\`\``)[0].split(`\n`).slice(0, 16).join(`\n`).trim()}\n\n...`;
+        const summary = `${contentCleaned.split(`\`\`\``)[0].split(`\n`).slice(0, 16).join(`\n`).trim()}\n\n...`;
         const title = headerValues.find(x => x.key === `title`)?.value ?? sitePath;
         const date = headerValues.find(x => x.key === `date`)?.value;
         const timestamp = date ? new Date(date).getTime() : 0;
@@ -51,7 +82,7 @@ export const loadStaticPageData = async (): Promise<SitePages<PageData>> => {
                     sourceFileContent: content,
                     title,
                     headers: headerValues,
-                    body: contentWithoutHeader,
+                    body: contentCleaned,
                     summary,
                     order: -timestamp,
                 },
@@ -64,10 +95,30 @@ export const loadStaticPageData = async (): Promise<SitePages<PageData>> => {
     const posts = [] as SitePageInfo<PageData>[];
 
     const blogContentDir = getPathNormalized(__dirname, `../../blog-content`);
+    const webBlogContentPath = `/blog-content`;
+    const publicDestDir = getPathNormalized(process.cwd(), `public${webBlogContentPath}`);
+
+    // Copy Files to public (this is just to get media files)
+    const onMediaFile = async (sourceFilePath: string, mediaPath: string): Promise<{ newPath: string }> => {
+        const sourceFileRelPath = sourceFilePath.replace(blogContentDir, ``);
+        const sourceFileRelDir = getDirectoryPath(sourceFileRelPath);
+        const oldPathFull = getPathNormalized(blogContentDir, sourceFileRelDir, mediaPath);
+        const newPathFull = getPathNormalized(publicDestDir, sourceFileRelDir, mediaPath);
+
+        // Website Path
+        const webPath = newPathFull.replace(publicDestDir, webBlogContentPath);
+        console.log(`onMediaFile`, { path: mediaPath, newPath: webPath, sourceFileRelPath, sourceFileRelDir, newPathFull, oldPathFull, blogContentDir, publicDestDir });
+
+        // Copy File
+        await copyFile(oldPathFull, newPathFull, { overwrite: true });
+
+        return { newPath: webPath };
+    };
+
     // console.log(`loadStaticPageData blogContentDir`, { blogContentDir });
     // await processDirectoryFiles(`${blogContentDir}`, async x => { if (x.endsWith(`.md`)) { pages.push(await createPageData_fromMarkdownFile(x, `post`)); } });
-    await processDirectoryFiles(`${blogContentDir}/posts`, async x => { if (x.endsWith(`.md`)) { posts.push(await createPageData_fromMarkdownFile(x, `post`)); } });
-    await processDirectoryFiles(`${blogContentDir}/pages`, async x => { if (x.endsWith(`.md`)) { pages.push(await createPageData_fromMarkdownFile(x, `page`)); } });
+    await processDirectoryFiles(`${blogContentDir}/posts`, async x => { if (x.endsWith(`.md`)) { posts.push(await createPageData_fromMarkdownFile(x, `post`, onMediaFile)); } });
+    await processDirectoryFiles(`${blogContentDir}/pages`, async x => { if (x.endsWith(`.md`)) { pages.push(await createPageData_fromMarkdownFile(x, `page`, onMediaFile)); } });
 
     posts.sort((a, b) => (a.data.postPage?.order ?? 0) - (b.data.postPage?.order ?? 0));
     pages.unshift(...posts);
