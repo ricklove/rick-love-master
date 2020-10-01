@@ -45,18 +45,27 @@ export const createConsoleCommands = (initialMachineName: string) => {
         }, {
             session: `user`, path: `/`, name: `passwords.txt`,
             content: `
+                123456
                 test1
+                chucknorris
                 password
-                12345678
-                asdf
+                buddy
+                hunter2
+                Z10N0101
                 qwerty
+                tiger
                 1234567890
+                CPE1704TKS
                 admin
                 friend
+                iaccepttherisk
                 test1234
-                1234567
-                Aa123456.
-                p@55w0rd`,
+                ncc1701
+                00000000
+                pennygetyourownwifi
+                p@55w0rd
+                xyzzy
+                correcthousebatterystaple`,
         }, {
             session: `user`, path: `/`, name: `admin.sh`,
             content: `ssh admin@192.168.0.1`,
