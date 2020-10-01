@@ -63,3 +63,23 @@
         - Skip   = Prompt -> Doodle -> Different Prompt
         - Medium Score (1) = Doodle -> Prompt
         - Zero   Score (0) = Prompt -> Doodle
+
+
+---
+
+## Subject Progress
+
+### Goals
+
+- Expertize in Each Subject
+    - Accuracy - Correct Answer is Definitely Known
+    - Speed - Quick Answers
+    - Completion
+        - Complete Problems in a Section
+        - Complete All Sections in a Subject
+- Measuring Expertize
+    - Accuracy
+        - Known    - Multiple Choice
+        - Mastered - Fill In Blank
+    - Speed
+        - 
