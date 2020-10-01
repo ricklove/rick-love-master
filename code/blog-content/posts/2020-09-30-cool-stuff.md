@@ -19,21 +19,13 @@ Basically, this is a website all built in react. It uses a simplified version of
 Some interesting things:
 
 - The Site Header
-
     - Really figure this out. It goes very deep. (try 'dir' or 'ls', also useful: 'open')
-
     - dork - A text adventure (inside the header console simulator)
-
         - I'm ofter adding to this. You could spend quite a while getting all the items in the first stage.
-
 - A doodle game for parties (using serverless websockets with AWS Api Gateway, Lambda, and DynamoDB): https://ricklove.me/games/doodle-party?room=visitors
-
 - A bunch of educational games I made for my kids (using AWS lambda and S3 for storage): https://ricklove.me/games
-
 - A code relationship visualizer: https://ricklove.me/tests/code-space
-
 - Components Testing (e.g. Stripe: https://ricklove.me/tests/stripe)
-
 - Hacker News - Front Page https://ricklove.me/tests/hacker-news
 
 
