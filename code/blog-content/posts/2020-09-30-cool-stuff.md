@@ -18,15 +18,99 @@ Basically, this is a website all built in react. It uses a simplified version of
 
 Some interesting things:
 
-- The Site Header
-    - Really figure this out. It goes very deep. (try 'dir' or 'ls', also useful: 'open')
-    - dork - A text adventure (inside the header console simulator)
-        - I'm ofter adding to this. You could spend quite a while getting all the items in the first stage.
-- A doodle game for parties (using serverless websockets with AWS Api Gateway, Lambda, and DynamoDB): https://ricklove.me/games/doodle-party?room=visitors
-- A bunch of educational games I made for my kids (using AWS lambda and S3 for storage): https://ricklove.me/games
-- A code relationship visualizer: https://ricklove.me/tests/code-space
-- Components Testing (e.g. Stripe: https://ricklove.me/tests/stripe)
-- Hacker News - Front Page https://ricklove.me/tests/hacker-news
+#### Site Header
+
+This is my favorite - it's a console/terminal simulator full of old school text-based/ascii games + a modern twist (interactive react components in some cases).
+
+(try 'dir' or 'ls', also useful: 'open')
+
+![](2020-09-30-console.png)
+
+#### Dork
+
+A text adventure (inside the header console simulator)
+
+I'm ofter adding to this. You could spend quite a while getting all the items in the first stage.
+
+![](2020-09-30-dork.png)
+
+#### Doodle Party
+
+A doodle game for parties (using serverless websockets with AWS Api Gateway, Lambda, and DynamoDB)
+
+https://ricklove.me/games/doodle-party?room=visitors
+
+![](2020-09-30-doodle-party.png)
+
+#### Educational Games (Math,Spelling, Spanish, etc.)
+
+A bunch of educational games I made for my kids (using AWS lambda and S3 for storage)
+
+All the games are designed to be mobile friendly and use passwordless accounts (share state with secret key).
+
+https://ricklove.me/games
+
+Some games:
+
+##### Space Blaster - Math
+
+Times Tables 
+
+- Progresses through times tables in order (not random)
+- Smart Reviews System to Repeat Mistakes
+- Increasing Speed to Improve Instant Recall
+
+![](2020-09-30-space-blast-math.png)
+
+##### Space Blaster - Spelling
+
+- Words group by common patterns
+- Text to Speech to help with readers
+
+![](2020-09-30-space-blaster-spelling.png)
+
+##### Space Blaster - Spanish
+
+- Text to Speech to help hearing and reinforce pronunciation
+- Reverse Direction
+
+![](2020-09-30-space-blast-spanish.png)
+
+##### Multiples Snake
+
+- Reinforce Understanding of Patterns in the Times Table
+
+![](2020-09-30-multiples-snake.png)
+
+##### Doodle Spelling
+
+- Doodle to Visualize Word Meaning
+- Text to Speech to Hear Word
+- Helper Keyboard (with highlighted multiple choice)
+
+![](2020-09-30-doodle-spelling.png)
+
+
+#### Emoji Idle Game
+
+This is a simple progress/idle game that lives at the header of all the educational games.
+
+By making progress in the educational games, the player can purchase items for their emoji until they graduate and start their career. Then they can continue and build a whole town full of emojis who can work together to build a space ship and go to mars.
+
+![](2020-09-30-emoji-idle.png)
+![](2020-09-30-emoji-idle-space-blast.png)
+
+
+#### Code Visualizer
+
+A code relationship visualizer
+
+https://ricklove.me/tests/code-space
+
+#### Component Tests
+
+- Stripe: https://ricklove.me/tests/stripe)
+- Hacker News - Front Page Demo: https://ricklove.me/tests/hacker-news
 
 
 ### Repo
