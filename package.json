@@ -93,6 +93,7 @@
     "code/games/dork",
     "code/games/educational-games",
     "code/gatsby-lite",
+    "code/hacker-news",
     "code/json-rpc",
     "code/networking/upload-api",
     "code/networking/user-data-service",
