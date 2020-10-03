@@ -5,8 +5,8 @@ import { getSiteProvider_Node } from './register-site-provider-node';
 
 
 // Integrating with custom system
-export const createPages = async ({ graphql, actions }: CreatePagesArgs) => {
-    const { createPage } = actions;
+export const createPagesStatefully = async ({ graphql, actions }: CreatePagesArgs) => {
+    const { createPage, deletePage } = actions;
 
     const { loadStaticPageData: loadPageData } = getSiteProvider_Node();
     const pageData = await loadPageData();
@@ -24,9 +24,12 @@ export const createPages = async ({ graphql, actions }: CreatePagesArgs) => {
         createPage({ path: p.sitePath, component: templatePath, context: p });
     });
 
-    // TODO: Handle custom watch - like blog content
-    // pageData.subscribePageChange?.((pages)=>{
-    // });
+    //  Handle custom watch - like blog content
+    pageData.subscribePageChange?.((p) => {
+        console.log(`createPagesStatefully on subscribePageChange`, { path: p.sitePath });
+        deletePage({ path: p.sitePath, component: templatePath });
+        createPage({ path: p.sitePath, component: templatePath, context: p });
+    });
 };
 
 export const onCreateWebpackConfig = ({ actions }: CreateWebpackConfigArgs) => {

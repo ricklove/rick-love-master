@@ -1,5 +1,8 @@
+import { Subscribe } from 'utils/subscribable';
+
 export type SitePageData<T> = {
     pages: SitePageInfo<T>[];
+    subscribePageChange?: Subscribe<SitePageInfo<T>>;
 };
 
 export type SitePageInfo<T> = {
