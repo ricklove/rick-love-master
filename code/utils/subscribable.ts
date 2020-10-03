@@ -1,5 +1,6 @@
 
 export type Subscription<T> = (state: T) => void;
+export type Subscribe<T> = (callback: (state: T) => void) => { unsubscribe: () => void };
 
 export const createSubscribable = <T>(initialState?: T) => {
     let lastState = initialState;

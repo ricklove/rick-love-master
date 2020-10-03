@@ -8,6 +8,7 @@ import { LazyComponentExamplePage } from '../pageTemplates/lazy-component-exampl
 import { SiteNavigation, setupNavigation } from './store';
 import { ComponentTestsPage, ComponentTestsPageData } from '../pageTemplates/component-tests';
 import { ComponentGamesPage, ComponentGamesPageData } from '../pageTemplates/component-games';
+import './_rebuild-trigger';
 
 export type PageData = {
     postPage?: PostPageData & { order?: number };

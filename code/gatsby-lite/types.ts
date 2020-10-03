@@ -1,5 +1,8 @@
-export type SitePages<T> = {
+import { Subscribe } from 'utils/subscribable';
+
+export type SitePageData<T> = {
     pages: SitePageInfo<T>[];
+    subscribePageChange?: Subscribe<SitePageInfo<T>>;
 };
 
 export type SitePageInfo<T> = {
@@ -12,7 +15,7 @@ export type SitePageComponent = {
 }
 
 export type SiteProvider_Node<T> = {
-    loadStaticPageData: () => Promise<SitePages<T>>;
+    loadStaticPageData: () => Promise<SitePageData<T>>;
 };
 
 export type SiteProvider_Browser<T> = {
