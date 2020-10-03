@@ -147,7 +147,7 @@ export const loadStaticPageData = async (): Promise<SitePageData<PageData>> => {
         setTimeout(async () => {
             const filename = getPathNormalized(__dirname, `./_rebuild-trigger.ts`);
             console.log(`Writing to Rebuild Trigger`, { filename });
-            await writeFile(filename, `export const __trigger = ${Date.now()};\n`, { overwrite: true });
+            await writeFile(filename, `export const __trigger = 0;\r\n`, { overwrite: true });
         }, 100);
     });
 

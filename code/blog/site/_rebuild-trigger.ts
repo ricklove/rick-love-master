@@ -1,1 +1,1 @@
-export const __trigger = 1601752505010;
+export const __trigger = 0;
