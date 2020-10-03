@@ -6,7 +6,7 @@ import { PageData } from './create-page';
 import { componentTestList } from '../pageTemplates/component-tests-list';
 import { componentGamesList } from '../pageTemplates/component-games-list';
 
-export type SitePages<T> = {
+export type SitePageData<T> = {
     pages: SitePageInfo<T>[];
 };
 export type SitePageInfo<T> = {
@@ -14,10 +14,11 @@ export type SitePageInfo<T> = {
     data: T;
 };
 
-export const loadStaticPageData = async (): Promise<SitePages<PageData>> => {
+export const loadStaticPageData = async (): Promise<SitePageData<PageData>> => {
     // Register Pages here (node api available => Load all data that is needed for all pages here)
 
     console.log(`loadStaticPages START`);
+    const startTime = Date.now();
 
     const handleMediaFiles = async (sourceFilePath: string, text: string, onMediaFile: (sourceFilePath: string, mediaPath: string) => Promise<{ newPath: string }>) => {
 
@@ -44,7 +45,7 @@ export const loadStaticPageData = async (): Promise<SitePages<PageData>> => {
         let text_corrected = text;
         replacements.forEach(x => { text_corrected = text_corrected.replace(x.find, x.replace); });
 
-        console.log(`handleMediaFiles END`, { replacements });
+        // console.log(`handleMediaFiles END`, { replacements });
         return text_corrected;
     };
 
@@ -73,7 +74,7 @@ export const loadStaticPageData = async (): Promise<SitePages<PageData>> => {
         const date = headerValues.find(x => x.key === `date`)?.value;
         const timestamp = date ? new Date(date).getTime() : 0;
 
-        console.log(`createPageData`, { sitePath });
+        // console.log(`createPageData`, { sitePath });
         const page: SitePageInfo<PageData> = {
             sitePath,
             data: {
@@ -107,7 +108,7 @@ export const loadStaticPageData = async (): Promise<SitePages<PageData>> => {
 
         // Website Path
         const webPath = newPathFull.replace(publicDestDir, webBlogContentPath);
-        console.log(`onMediaFile`, { path: mediaPath, newPath: webPath, sourceFileRelPath, sourceFileRelDir, newPathFull, oldPathFull, blogContentDir, publicDestDir });
+        // console.log(`onMediaFile`, { path: mediaPath, newPath: webPath, sourceFileRelPath, sourceFileRelDir, newPathFull, oldPathFull, blogContentDir, publicDestDir });
 
         // Copy File
         await copyFile(oldPathFull, newPathFull, { overwrite: true });
@@ -176,7 +177,7 @@ export const loadStaticPageData = async (): Promise<SitePages<PageData>> => {
         },
     });
 
-    console.log(`getStaticPages`, { pages });
+    console.log(`loadStaticPages END`, { time: `${(Date.now() - startTime) / 1000} secs`, pages });
     return {
         pages,
     };

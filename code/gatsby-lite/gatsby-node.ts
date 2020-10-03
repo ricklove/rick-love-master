@@ -9,10 +9,10 @@ export const createPages = async ({ graphql, actions }: CreatePagesArgs) => {
     const { createPage } = actions;
 
     const { loadStaticPageData: loadPageData } = getSiteProvider_Node();
-    const pages = await loadPageData();
+    const pageData = await loadPageData();
 
     // eslint-disable-next-line no-console
-    console.log(`createPages`, { pages });
+    console.log(`createPages`, { pages: pageData.pages.map(x => x.sitePath) });
 
     // This is relative to project root
     const templatePath = path.resolve(`./gatsby-lite-template.ts`);
@@ -20,9 +20,13 @@ export const createPages = async ({ graphql, actions }: CreatePagesArgs) => {
     // eslint-disable-next-line no-console
     console.log(`createPages using template at: ${templatePath}`);
 
-    pages.pages.forEach(p => {
+    pageData.pages.forEach(p => {
         createPage({ path: p.sitePath, component: templatePath, context: p });
     });
+
+    // TODO: Handle custom watch - like blog content
+    // pageData.subscribePageChange?.((pages)=>{
+    // });
 };
 
 export const onCreateWebpackConfig = ({ actions }: CreateWebpackConfigArgs) => {

@@ -1,4 +1,4 @@
-export type SitePages<T> = {
+export type SitePageData<T> = {
     pages: SitePageInfo<T>[];
 };
 
@@ -12,7 +12,7 @@ export type SitePageComponent = {
 }
 
 export type SiteProvider_Node<T> = {
-    loadStaticPageData: () => Promise<SitePages<T>>;
+    loadStaticPageData: () => Promise<SitePageData<T>>;
 };
 
 export type SiteProvider_Browser<T> = {
