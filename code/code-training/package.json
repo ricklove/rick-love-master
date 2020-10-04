@@ -1,0 +1,9 @@
+{
+  "name": "code-training",
+  "version": "1.0.0",
+  "dependencies": {
+    "utils": "*",
+    "react": "^16.12.0",
+    "react-icons": "^3.10.0"
+  }
+}

@@ -25,6 +25,9 @@
       "code-space-vscode/*": [
         "code/code-space/code-space-vscode/*"
       ],
+      "code-training/*": [
+        "code/code-training/*"
+      ],
       "console-simulator/*": [
         "code/games/console-simulator/*"
       ],
