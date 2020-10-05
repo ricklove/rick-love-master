@@ -8,6 +8,7 @@ import 'prismjs/components/prism-jsx';
 import 'prismjs/components/prism-tsx';
 import 'prism-themes/themes/prism-vsc-dark-plus.css';
 import { shuffle } from 'utils/arrays';
+import { StringSpan } from 'utils/string-span';
 import { LessonProjectFile, LessonProjectFileSelection } from '../lesson-types';
 import { CodeHtmlPair, splitCodeSpanTags } from './code-editor-helpers';
 
@@ -31,7 +32,9 @@ export const CodeEditor = ({ code, language, selection, mode }: { code: string, 
     const [html_focus, setHtml_focus] = useState(``);
     const [html_after, setHtml_after] = useState(``);
     const [code_focus, setCode_focus] = useState(``);
-    const [codeHtmlPairs, setCodeHtmlPairs] = useState([] as CodeHtmlPair[]);
+    const [codeParts, setCodeParts] = useState([] as StringSpan[]);
+
+    // const [codeHtmlPairs, setCodeHtmlPairs] = useState([] as CodeHtmlPair[]);
 
     useEffect(() => {
         // console.log(`highlight`, { code, language });
@@ -71,8 +74,11 @@ export const CodeEditor = ({ code, language, selection, mode }: { code: string, 
         const htmlFocus = htmlWithSelection.substr(iFocus, iFocusEnd - iFocus);
         const htmlAfter = htmlWithSelection.substr(iFocusEnd);
 
-        const pairs = splitCodeSpanTags(htmlFocus);
-        setCodeHtmlPairs(pairs);
+        // const pairs = splitCodeSpanTags(htmlFocus);
+        // setCodeHtmlPairs(pairs);
+        const cPartsRaw = new StringSpan(codeFocus, 0, codeFocus.length).splitOnRegExp(/\W/g);
+        const cParts = cPartsRaw.flatMap(x => x.length <= 1 ? [x] : [x.transform(0, -(x.length - 1)), x.transform(1, 0)]).filter(x => x.length > 0);
+        // const cParts = new StringSpan(codeFocus, 0, codeFocus.length).splitOnRegExp(/\W/g).flatMap(x => x.length === 1 ? [x] : [x.transform(0, -(x.length - 1)), x.transform(1, 0)]);
 
         console.log(`CodeEditor`, {
             // code_before,
@@ -83,14 +89,16 @@ export const CodeEditor = ({ code, language, selection, mode }: { code: string, 
             htmlBefore,
             htmlFocus,
             htmlAfter,
+            cParts,
         });
 
         // setHtml_full(`<span style='opacity:0.5'>${htmlBefore}</span><span style='opacity:1'>${htmlFocus}</span><span style='opacity:0.5'>${htmlAfter}</span>`);
         setHtml_before(htmlBefore);
         setHtml_focus(htmlFocus);
         setHtml_after(htmlAfter);
+        setCodeParts(cParts);
 
-        updateAutoComplete(codeFocus);
+        updateAutoComplete();
     }, [code]);
 
     const [inputHtml, setInputHtml] = useState(``);
@@ -100,30 +108,38 @@ export const CodeEditor = ({ code, language, selection, mode }: { code: string, 
     const [feedback, setFeedback] = useState({ message: ``, isCorrect: true, isDone: false });
     const [autoComplete, setAutoComplete] = useState([] as { textCompleted: string, text: string, isSelected: boolean, isWrong: boolean }[]);
 
-    const updateAutoComplete = (codeFocus: string, completed?: string) => {
-        if (completed == null) {
+    const updateAutoComplete = (completed?: string) => {
+        if (!code_focus || completed == null) {
             setAutoComplete([]);
             return;
         }
 
-        let iDone = 0;
-        const nextPair = codeHtmlPairs.find(x => {
-            if (iDone <= inputText.length) {
+        // const remaining = code_focus.substr(completed.length);
+
+        let iNext = 0;
+        const nextPartIndex = codeParts.findIndex(x => {
+            if (iNext > completed.length) {
                 return true;
             }
-            iDone += x.code.length;
+            iNext += x.length;
             return false;
         });
-        if (!nextPair) {
+        const activePart = codeParts[nextPartIndex - 1]?.toString();
+        const iDone = codeParts[nextPartIndex - 1]?.start;
+        console.log(`updateAutoComplete`, { iNext, iDone, activePart, codeParts, completed });
+
+        if (!activePart?.trim()) {
             setAutoComplete([]);
             return;
         }
 
-        const textCompleted = nextPair.code.substr(0, completed.length - iDone);
-        const allWords = code.split(/\W/g).filter(x => x);
-        const matchWords = allWords.filter(x => x.toLowerCase().startsWith(textCompleted.toLowerCase()));
+        const activePartTextCompleted = activePart.substr(0, completed.length - iDone);
+        const matchWords = codeParts.filter(x => x.startsWith(activePartTextCompleted)).map(x => x.toString());
 
-        const choices = [nextPair.code, ...shuffle(matchWords).slice(0, 3)].map(x => ({ textCompleted: x.substr(0, completed.length - iDone), text: x.substr(completed.length - iDone) }));
+        console.log(`updateAutoComplete`, { iNext, iDone, activePart, completed, codeParts, nextPartTextCompleted: activePartTextCompleted, matchWords });
+
+
+        const choices = [activePart, ...shuffle(matchWords).slice(0, 3)].map(x => ({ textCompleted: x.substr(0, completed.length - iDone), text: x.substr(completed.length - iDone) }));
         setAutoComplete(shuffle(choices).map((x, i) => ({ ...x, isSelected: i === 0, isWrong: false })));
     };
 
@@ -132,7 +148,7 @@ export const CodeEditor = ({ code, language, selection, mode }: { code: string, 
         const RETURNKEY = 13;
         const UPKEY = 38;
         const DOWNKEY = 40;
-        console.log(`CodeEditor onKeyPress`, { keyCode: e.keyCode });
+        // console.log(`CodeEditor onKeyPress`, { keyCode: e.keyCode });
 
         if (e.keyCode === TABKEY) {
             // console.log(`CodeEditor onKeyPress onTabKey`);
@@ -199,7 +215,7 @@ export const CodeEditor = ({ code, language, selection, mode }: { code: string, 
                 activeAutoComplete.isWrong = true;
             }
             if (!activeAutoComplete) {
-                updateAutoComplete(code_focus, ``);
+                updateAutoComplete(``);
             }
             setFeedback({ message: ``, isCorrect: false, isDone: false });
             return;
@@ -207,11 +223,18 @@ export const CodeEditor = ({ code, language, selection, mode }: { code: string, 
 
         const isDone = code_focus === value;
 
+        // console.log(`changeInputText`, {
+        //     value,
+        //     valueRaw,
+        // });
+
         setFeedback({ isCorrect: true, message: ``, isDone });
         setInputText(value);
-        setInputHtml(value);
+
+        const valueHtml = highlight(value, languages[language], language);
+        setInputHtml(valueHtml);
         setIsActive(true);
-        updateAutoComplete(code_focus, value);
+        updateAutoComplete(value);
     };
 
     useEffect(() => {

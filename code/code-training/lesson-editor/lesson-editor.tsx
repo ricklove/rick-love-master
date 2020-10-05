@@ -18,8 +18,8 @@ export const MinimalReactComponent = (props: {}) => {
         language: `tsx` as const,
     };
 
-    const focusIndex = file.content.indexOf(`Hello World!`);
-    const focusLength = `Hello World!`.length;
+    const focusIndex = file.content.indexOf(`<span>Hello World!</span>`);
+    const focusLength = `<span>Hello World!</span>`.length;
 
     const lesson: LessonData = {
         projectState: {
