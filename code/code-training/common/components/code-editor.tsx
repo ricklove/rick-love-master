@@ -83,6 +83,8 @@ export const CodeEditor = ({ code, language, selection, mode }: { code: string, 
         setHtml_before(htmlBefore);
         setHtml_focus(htmlFocus);
         setHtml_after(htmlAfter);
+
+        updateAutoComplete(codeFocus);
     }, [code]);
 
     const [inputHtml, setInputHtml] = useState(``);
@@ -90,7 +92,16 @@ export const CodeEditor = ({ code, language, selection, mode }: { code: string, 
     const [isActive, setIsActive] = useState(true);
     const [isBlink, setIsBlink] = useState(true);
     const [feedback, setFeedback] = useState({ message: ``, isCorrect: true, isDone: false });
-    // const [autoComplete, setAutoComplete] = useState({ message: ``, isCorrect: true, isDone: false });
+    const [autoComplete, setAutoComplete] = useState([] as { text: string, isSelected: boolean }[]);
+
+    const updateAutoComplete = (codeFocus: string) => {
+        setAutoComplete([
+            { text: codeFocus, isSelected: false },
+            { text: `WRONG ${codeFocus}`, isSelected: true },
+            { text: `WRONG2 ${codeFocus}`, isSelected: false },
+            { text: `WRONG3 ${codeFocus}`, isSelected: false },
+        ]);
+    };
 
     const changeInputText = (valueRaw: string) => {
         const wasBackspace = valueRaw.length < inputText.length;
@@ -139,13 +150,19 @@ export const CodeEditor = ({ code, language, selection, mode }: { code: string, 
                 : ``
     );
 
-    // const css_autoCompleteWrapper = `display: inline-block; position: relative; bottom: 40px; width:0px;`;
-    // const css_autoComplete = `display: block; padding: 4px; position: absolute; color:#88FF88; background:#000000; border-radius:4px`;
-    // const html_autoComplete = mode !== `type` ? `` :
-    //     `<span style='${css_autoCompleteWrapper}'><span style='${css_autoComplete}'>✔${autocomplete}</span></span>`
-    //     ;
+    const css_autoCompleteWrapper = `display: inline-block; position: relative; top: 4px; width:0px;`;
+    const css_autoCompleteInner = `display: block; position: absolute; background:#000000; border-radius:4px;`;
+    const css_autoCompleteItem = `display: block; padding: 4px; color:#FFFFFF;`;
+    const css_autoCompleteItem_selected = `display: block; padding: 4px; color:#CCCCFF; background:#111133;`;
+    const html_autoComplete = mode !== `type` ? `` :
+        `<span style='${css_autoCompleteWrapper}'><span style='${css_autoCompleteInner}'>${autoComplete.map(x => (
+            `<span style='${x.isSelected ? css_autoCompleteItem_selected : css_autoCompleteItem}'>${x.text}</span>`
+        )).join(``)}</span></span>`
+        ;
+    const autoCompletePadding = mode !== `type` ? 0 : 100;
+
     const html_cursor = `<span style='display: inline-block; width: 0px; margin: 0px; position: relative; left: -4px;'>${(isBlink ? `|` : ` `)}</span>`;
-    const html_full = `<span style='opacity:0.5'>${html_before}</span><span style='opacity:1'>${inputHtml}${mode === `type` && isActive ? html_cursor : ``}${html_feedback}</span><span style='opacity:0.5'>${html_after}</span>`;
+    const html_full = `<span style='opacity:0.5'>${html_before}</span><span style='opacity:1'>${inputHtml}${mode === `type` && isActive ? html_cursor : ``}${html_feedback}${html_autoComplete}</span><span style='opacity:0.5'>${html_after}</span>`;
 
     if (!html_full) {
         return <></>;
@@ -156,7 +173,7 @@ export const CodeEditor = ({ code, language, selection, mode }: { code: string, 
     return (
         <View style={{ position: `relative` }}>
             <View>
-                <pre style={{ margin: 0 }} className={`language-${language}`}>
+                <pre style={{ margin: 0, paddingBottom: autoCompletePadding }} className={`language-${language}`}>
                     <code className={`language-${language}`} dangerouslySetInnerHTML={{ __html: html_full }} />
                 </pre>
             </View>
