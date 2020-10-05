@@ -10,7 +10,7 @@ import 'prism-themes/themes/prism-vsc-dark-plus.css';
 import { shuffle } from 'utils/arrays';
 import { StringSpan } from 'utils/string-span';
 import { LessonProjectFile, LessonProjectFileSelection } from '../lesson-types';
-import { CodeHtmlPair, splitCodeSpanTags } from './code-editor-helpers';
+import { isSimilarCodeToken } from './code-editor-helpers';
 
 export const FileCodeEditor = ({ file, selection, mode }: { file: LessonProjectFile, selection?: LessonProjectFileSelection, mode: 'display' | 'type' }) => {
     return (
@@ -117,29 +117,34 @@ export const CodeEditor = ({ code, language, selection, mode }: { code: string, 
         // const remaining = code_focus.substr(completed.length);
 
         let iNext = 0;
-        const nextPartIndex = codeParts.findIndex(x => {
+        const nextPartIndexRaw = codeParts.findIndex(x => {
             if (iNext > completed.length) {
                 return true;
             }
             iNext += x.length;
             return false;
         });
-        const activePart = codeParts[nextPartIndex - 1]?.toString();
+        const nextPartIndex = nextPartIndexRaw < 0 ? codeParts.length : nextPartIndexRaw;
+        const activePartText = codeParts[nextPartIndex - 1]?.toString();
         const iDone = codeParts[nextPartIndex - 1]?.start;
-        console.log(`updateAutoComplete`, { iNext, iDone, activePart, codeParts, completed });
+        console.log(`updateAutoComplete`, { iNext, iDone, activePart: activePartText, codeParts, completed });
 
-        if (!activePart?.trim()) {
+        if (!activePartText?.trim()) {
             setAutoComplete([]);
             return;
         }
 
-        const activePartTextCompleted = activePart.substr(0, completed.length - iDone);
-        const matchWords = codeParts.filter(x => x.startsWith(activePartTextCompleted)).map(x => x.toString());
+        const activePartTextCompleted = activePartText.substr(0, completed.length - iDone);
+        const matchWords = codeParts
+            .filter(x =>
+                (!!activePartTextCompleted && x.startsWith(activePartTextCompleted))
+                || (!activePartTextCompleted && isSimilarCodeToken(x.toString(), activePartText)))
+            .filter(x => x.toString() !== activePartText)
+            .map(x => x.toString());
 
-        console.log(`updateAutoComplete`, { iNext, iDone, activePart, completed, codeParts, nextPartTextCompleted: activePartTextCompleted, matchWords });
+        console.log(`updateAutoComplete`, { iNext, iDone, activePart: activePartText, completed, codeParts, activePartTextCompleted, matchWords });
 
-
-        const choices = [activePart, ...shuffle(matchWords).slice(0, 3)].map(x => ({ textCompleted: x.substr(0, completed.length - iDone), text: x.substr(completed.length - iDone) }));
+        const choices = [activePartText, ...shuffle(matchWords).slice(0, 3)].map(x => ({ textCompleted: x.substr(0, completed.length - iDone), text: x.substr(completed.length - iDone) }));
         setAutoComplete(shuffle(choices).map((x, i) => ({ ...x, isSelected: i === 0, isWrong: false })));
     };
 
