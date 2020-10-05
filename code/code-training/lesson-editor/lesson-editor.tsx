@@ -1,6 +1,6 @@
 import React from 'react';
 import { View, Text } from 'react-native-lite';
-import { LessonStepViewer_ConstructCode_Debug } from '../common/components/lesson-step-viewer-construct-code';
+import { FileCodeEditor } from '../common/components/code-editor';
 import { LessonData, LessonStep_ConstructCode } from '../common/lesson-types';
 
 const createLesson = (): LessonData => {
@@ -40,13 +40,53 @@ export const MinimalReactComponent = (props: {}) => {
     return lesson;
 };
 
+const debugStyles = {
+    codeView: {
+        padding: 8,
+        display: `block`,
+        backgroundColor: `#000000`,
+    },
+    codeText: {
+        fontSize: 12,
+    },
+    codeFocusText: {
+        fontSize: 12,
+        backgroundColor: `#222222`,
+    },
+    infoView: {
+    },
+    infoText: {
+        margin: 8,
+        fontSize: 12,
+        wrap: `wrap`,
+    },
+} as const;
+
 export const LessonEditor = (props: {}) => {
 
     const lessonStep: LessonStep_ConstructCode = {
         lessonData: createLesson(),
     };
+    const {
+        projectState,
+        focus,
+        title,
+        objective,
+        explanation,
+        task,
+    } = lessonStep.lessonData;
 
     return (
-        <LessonStepViewer_ConstructCode_Debug lessonStep={lessonStep} />
+        <>
+            {projectState.files.map(x => (
+                <FileCodeEditor key={x.path} file={x} selection={focus.file.path === x.path ? focus : undefined} mode={focus.file.path === x.path ? `type` : `display`} />
+            ))}
+            <View style={debugStyles.infoView}>
+                <Text style={debugStyles.infoText}>{`title: ${title}`}</Text>
+                <Text style={debugStyles.infoText}>{`objective: ${objective}`}</Text>
+                <Text style={debugStyles.infoText}>{`explanation: ${explanation}`}</Text>
+                <Text style={debugStyles.infoText}>{`task: ${task}`}</Text>
+            </View>
+        </>
     );
 };

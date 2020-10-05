@@ -32,3 +32,16 @@
 - Fill in the Blank Descriptions (should contain code tokens)
 - Experiments
     - Find/Replace Pairs
+
+
+# Tasks
+
+- [ ] Construct Code Step - Preview in Lesson Editor
+    - [ ] Display Instructions
+        - Title
+        - Objective
+        - Explanation
+        - Task
+    - [ ] Type code
+        - [ ] Autocomplete Popdown
+    - [ ] Feedback Balloon
