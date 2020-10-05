@@ -7,8 +7,9 @@ import 'prismjs/components/prism-typescript';
 import 'prismjs/components/prism-jsx';
 import 'prismjs/components/prism-tsx';
 import 'prism-themes/themes/prism-vsc-dark-plus.css';
-import { active, keys } from 'd3';
+import { shuffle } from 'utils/arrays';
 import { LessonProjectFile, LessonProjectFileSelection } from '../lesson-types';
+import { CodeHtmlPair, splitCodeSpanTags } from './code-editor-helpers';
 
 export const FileCodeEditor = ({ file, selection, mode }: { file: LessonProjectFile, selection?: LessonProjectFileSelection, mode: 'display' | 'type' }) => {
     return (
@@ -30,6 +31,7 @@ export const CodeEditor = ({ code, language, selection, mode }: { code: string, 
     const [html_focus, setHtml_focus] = useState(``);
     const [html_after, setHtml_after] = useState(``);
     const [code_focus, setCode_focus] = useState(``);
+    const [codeHtmlPairs, setCodeHtmlPairs] = useState([] as CodeHtmlPair[]);
 
     useEffect(() => {
         // console.log(`highlight`, { code, language });
@@ -69,6 +71,9 @@ export const CodeEditor = ({ code, language, selection, mode }: { code: string, 
         const htmlFocus = htmlWithSelection.substr(iFocus, iFocusEnd - iFocus);
         const htmlAfter = htmlWithSelection.substr(iFocusEnd);
 
+        const pairs = splitCodeSpanTags(htmlFocus);
+        setCodeHtmlPairs(pairs);
+
         console.log(`CodeEditor`, {
             // code_before,
             // code_focus,
@@ -101,19 +106,30 @@ export const CodeEditor = ({ code, language, selection, mode }: { code: string, 
             return;
         }
 
+        let iDone = 0;
+        const nextPair = codeHtmlPairs.find(x => {
+            if (iDone <= inputText.length) {
+                return true;
+            }
+            iDone += x.code.length;
+            return false;
+        });
+        if (!nextPair) {
+            setAutoComplete([]);
+            return;
+        }
 
-        const textNext = codeFocus.substr(completed.length);
+        const textCompleted = nextPair.code.substr(0, completed.length - iDone);
+        const allWords = code.split(/\W/g).filter(x => x);
+        const matchWords = allWords.filter(x => x.toLowerCase().startsWith(textCompleted.toLowerCase()));
 
-        setAutoComplete([
-            { textCompleted: completed, text: textNext, isSelected: true, isWrong: false },
-            { textCompleted: completed, text: `WRONG`, isSelected: false, isWrong: false },
-            { textCompleted: completed, text: `WRONG2`, isSelected: false, isWrong: false },
-            { textCompleted: completed, text: `WRONG3`, isSelected: false, isWrong: false },
-        ]);
+        const choices = [nextPair.code, ...shuffle(matchWords).slice(0, 3)].map(x => ({ textCompleted: x.substr(0, completed.length - iDone), text: x.substr(completed.length - iDone) }));
+        setAutoComplete(shuffle(choices).map((x, i) => ({ ...x, isSelected: i === 0, isWrong: false })));
     };
 
     const onKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
         const TABKEY = 9;
+        const RETURNKEY = 13;
         const UPKEY = 38;
         const DOWNKEY = 40;
         console.log(`CodeEditor onKeyPress`, { keyCode: e.keyCode });
@@ -124,6 +140,14 @@ export const CodeEditor = ({ code, language, selection, mode }: { code: string, 
             e.stopPropagation();
 
             changeInputText(`${inputText}\t`);
+            return false;
+        }
+        if (e.keyCode === RETURNKEY) {
+            // console.log(`CodeEditor onKeyPress onTabKey`);
+            e.preventDefault();
+            e.stopPropagation();
+
+            changeInputText(`${inputText}\n`);
             return false;
         }
         if (e.keyCode === UPKEY) {
@@ -146,8 +170,18 @@ export const CodeEditor = ({ code, language, selection, mode }: { code: string, 
     const changeInputText = (valueRaw: string) => {
         const wasBackspace = valueRaw.length < inputText.length;
         const wasTab = valueRaw.endsWith(`\t`);
+        const wasReturn = valueRaw.endsWith(`\n`);
+        const wasPeriod = valueRaw.endsWith(`.`);
+        const wasSpace = valueRaw.endsWith(` `);
+
+        const wasCorrectRaw = code_focus.startsWith(valueRaw);
+        const wasAutoComplete = !wasCorrectRaw && (wasTab || wasReturn || wasPeriod || wasSpace);
         const activeAutoComplete = autoComplete.find(x => x.isSelected);
-        const value = !wasTab ? valueRaw : inputText + activeAutoComplete?.text ?? ``;
+
+        const value = wasCorrectRaw ? valueRaw
+            : wasAutoComplete ? inputText + activeAutoComplete?.text ?? ``
+                : valueRaw
+            ;
 
         const wasCorrect = code_focus.startsWith(value);
         const wasCorrect_ignoreCase = code_focus.toLowerCase().startsWith(value.toLowerCase());
@@ -161,10 +195,12 @@ export const CodeEditor = ({ code, language, selection, mode }: { code: string, 
             return;
         }
         if (!wasCorrect) {
-            if (wasTab && activeAutoComplete) {
+            if (wasAutoComplete && activeAutoComplete) {
                 activeAutoComplete.isWrong = true;
             }
-            updateAutoComplete(code_focus, ``);
+            if (!activeAutoComplete) {
+                updateAutoComplete(code_focus, ``);
+            }
             setFeedback({ message: ``, isCorrect: false, isDone: false });
             return;
         }
