@@ -7,6 +7,7 @@ import 'prismjs/components/prism-typescript';
 import 'prismjs/components/prism-jsx';
 import 'prismjs/components/prism-tsx';
 import 'prism-themes/themes/prism-vsc-dark-plus.css';
+import { active, keys } from 'd3';
 import { LessonProjectFile, LessonProjectFileSelection } from '../lesson-types';
 
 export const FileCodeEditor = ({ file, selection, mode }: { file: LessonProjectFile, selection?: LessonProjectFileSelection, mode: 'display' | 'type' }) => {
@@ -92,21 +93,64 @@ export const CodeEditor = ({ code, language, selection, mode }: { code: string, 
     const [isActive, setIsActive] = useState(true);
     const [isBlink, setIsBlink] = useState(true);
     const [feedback, setFeedback] = useState({ message: ``, isCorrect: true, isDone: false });
-    const [autoComplete, setAutoComplete] = useState([] as { text: string, isSelected: boolean }[]);
+    const [autoComplete, setAutoComplete] = useState([] as { textCompleted: string, text: string, isSelected: boolean, isWrong: boolean }[]);
 
-    const updateAutoComplete = (codeFocus: string) => {
+    const updateAutoComplete = (codeFocus: string, completed?: string) => {
+        if (completed == null) {
+            setAutoComplete([]);
+            return;
+        }
+
+
+        const textNext = codeFocus.substr(completed.length);
+
         setAutoComplete([
-            { text: codeFocus, isSelected: false },
-            { text: `WRONG ${codeFocus}`, isSelected: true },
-            { text: `WRONG2 ${codeFocus}`, isSelected: false },
-            { text: `WRONG3 ${codeFocus}`, isSelected: false },
+            { textCompleted: completed, text: textNext, isSelected: true, isWrong: false },
+            { textCompleted: completed, text: `WRONG`, isSelected: false, isWrong: false },
+            { textCompleted: completed, text: `WRONG2`, isSelected: false, isWrong: false },
+            { textCompleted: completed, text: `WRONG3`, isSelected: false, isWrong: false },
         ]);
+    };
+
+    const onKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+        const TABKEY = 9;
+        const UPKEY = 38;
+        const DOWNKEY = 40;
+        console.log(`CodeEditor onKeyPress`, { keyCode: e.keyCode });
+
+        if (e.keyCode === TABKEY) {
+            // console.log(`CodeEditor onKeyPress onTabKey`);
+            e.preventDefault();
+            e.stopPropagation();
+
+            changeInputText(`${inputText}\t`);
+            return false;
+        }
+        if (e.keyCode === UPKEY) {
+            setAutoComplete(s => {
+                const iSelected = s.findIndex(x => x.isSelected);
+                const iSelectedNew = Math.max(0, iSelected - 1);
+                return [...s.map((x, i) => ({ ...x, isSelected: iSelectedNew === i }))];
+            });
+        }
+        if (e.keyCode === DOWNKEY) {
+            setAutoComplete(s => {
+                const iSelected = s.findIndex(x => x.isSelected);
+                const iSelectedNew = Math.min(autoComplete.length - 1, iSelected + 1);
+                return [...s.map((x, i) => ({ ...x, isSelected: iSelectedNew === i }))];
+            });
+        }
+        return true;
     };
 
     const changeInputText = (valueRaw: string) => {
         const wasBackspace = valueRaw.length < inputText.length;
-        const wasCorrect = code_focus.startsWith(valueRaw);
-        const wasCorrect_ignoreCase = code_focus.toLowerCase().startsWith(valueRaw.toLowerCase());
+        const wasTab = valueRaw.endsWith(`\t`);
+        const activeAutoComplete = autoComplete.find(x => x.isSelected);
+        const value = !wasTab ? valueRaw : inputText + activeAutoComplete?.text ?? ``;
+
+        const wasCorrect = code_focus.startsWith(value);
+        const wasCorrect_ignoreCase = code_focus.toLowerCase().startsWith(value.toLowerCase());
 
         if (code_focus === inputText) {
             setFeedback({ message: `You're already done.`, isCorrect: false, isDone: true });
@@ -117,17 +161,21 @@ export const CodeEditor = ({ code, language, selection, mode }: { code: string, 
             return;
         }
         if (!wasCorrect) {
+            if (wasTab && activeAutoComplete) {
+                activeAutoComplete.isWrong = true;
+            }
+            updateAutoComplete(code_focus, ``);
             setFeedback({ message: ``, isCorrect: false, isDone: false });
             return;
         }
 
-        const isDone = code_focus === valueRaw;
-        const value = valueRaw;
+        const isDone = code_focus === value;
 
         setFeedback({ isCorrect: true, message: ``, isDone });
         setInputText(value);
         setInputHtml(value);
         setIsActive(true);
+        updateAutoComplete(code_focus, value);
     };
 
     useEffect(() => {
@@ -146,7 +194,7 @@ export const CodeEditor = ({ code, language, selection, mode }: { code: string, 
     const css_feedback_incorrect = `display: inline-block; padding: 4px; position: absolute; color:#FF8888; background:#000000; border-radius:4px`;
     const html_feedback = mode !== `type` ? `` : (
         feedback.isDone ? `<span style='${css_feedbackWrapper}'><span style='${css_feedback_correct}'>✔${feedback.message}</span></span>`
-            : !feedback.isCorrect ? `<span style='${css_feedbackWrapper}'><span style='${css_feedback_incorrect}'>❌${feedback.message}</span></span>`
+            : !feedback.isCorrect ? `<span style='${css_feedbackWrapper}'><span style='${css_feedback_incorrect}'>❌ ${feedback.message}</span></span>`
                 : ``
     );
 
@@ -154,9 +202,14 @@ export const CodeEditor = ({ code, language, selection, mode }: { code: string, 
     const css_autoCompleteInner = `display: block; position: absolute; background:#000000; border-radius:4px;`;
     const css_autoCompleteItem = `display: block; padding: 4px; color:#FFFFFF;`;
     const css_autoCompleteItem_selected = `display: block; padding: 4px; color:#CCCCFF; background:#111133;`;
+    const css_autoCompleteItem_textCompleted = `color:#CCCCFF;`;
+    const css_autoCompleteItem_textNew = ``;
     const html_autoComplete = mode !== `type` ? `` :
         `<span style='${css_autoCompleteWrapper}'><span style='${css_autoCompleteInner}'>${autoComplete.map(x => (
-            `<span style='${x.isSelected ? css_autoCompleteItem_selected : css_autoCompleteItem}'>${x.text}</span>`
+            `<span style='${x.isSelected ? css_autoCompleteItem_selected : css_autoCompleteItem}'>${true
+            && `<span style='${css_autoCompleteItem_textCompleted}'>${x.isWrong ? `❌ ` : ``}${x.textCompleted}</span><span style='${css_autoCompleteItem_textNew}'>${x.text}</span>`
+            }</span>`
+
         )).join(``)}</span></span>`
         ;
     const autoCompletePadding = mode !== `type` ? 0 : 100;
@@ -184,6 +237,7 @@ export const CodeEditor = ({ code, language, selection, mode }: { code: string, 
                         onChange={(e) => changeInputText(e.target.value)}
                         onFocus={() => setIsActive(true)}
                         onBlur={() => setIsActive(false)}
+                        onKeyDown={(e) => onKeyDown(e)}
                     />
                 </View>
             )}
