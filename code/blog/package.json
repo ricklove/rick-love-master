@@ -4,6 +4,7 @@
   "dependencies": {
     "auth": "*",
     "code-space-views": "*",
+    "code-training": "*",
     "console-simulator": "*",
     "doodle": "*",
     "educational-games": "*",

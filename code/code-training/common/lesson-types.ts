@@ -47,10 +47,17 @@ export type LessonProjectState = {
 export type LessonProjectFile = {
     path: string;
     content: string;
+    language: 'tsx';
 };
 
 export type LessonProjectFileSelection = {
     file: LessonProjectFile;
     index: number;
     length: number;
+};
+
+
+// Lesson Steps
+export type LessonStep_ConstructCode = {
+    lessonData: LessonData;
 };

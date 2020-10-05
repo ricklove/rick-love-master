@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 export type ThemeViewStyle = {
-    display?: 'flex';
+    display?: 'flex' | 'block';
     flexDirection?: 'row' | 'column' | 'row-reverse' | 'column-reverse';
     flexWrap?: 'wrap' | 'nowrap';
     flex?: number;
