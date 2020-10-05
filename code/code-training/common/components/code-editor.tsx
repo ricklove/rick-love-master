@@ -258,22 +258,22 @@ export const CodeEditor = ({ code, language, selection, mode }: { code: string, 
         };
     }, []);
 
-    const css_feedbackWrapper = `display: inline-block; position: relative; bottom: 40px; width:0px;`;
-    const css_feedback_correct = `display: inline-block; padding: 4px; position: absolute; color:#88FF88; background:#000000; border-radius:4px`;
+    const css_feedbackWrapper = `display: inline-block; position: relative; bottom: 40px; width:0px; `;
+    const css_feedback_correct = `  display: inline-block; padding: 4px; position: absolute; color:#88FF88; background:#000000; border-radius:4px`;
     const css_feedback_incorrect = `display: inline-block; padding: 4px; position: absolute; color:#FF8888; background:#000000; border-radius:4px`;
     const html_feedback = mode !== `type` ? `` : (
-        feedback.isDone ? `<span style='${css_feedbackWrapper}'><span style='${css_feedback_correct}'>✔${feedback.message}</span></span>`
+        feedback.isDone ? `<span style='${css_feedbackWrapper}'><span style='${css_feedback_correct}'>${`✔ ${feedback.message}`.trim()}</span></span>`
             : !feedback.isCorrect ? `<span style='${css_feedbackWrapper}'><span style='${css_feedback_incorrect}'>❌ ${feedback.message}</span></span>`
                 : ``
     );
 
     const css_autoCompleteWrapper = `display: inline-block; position: relative; top: 4px; width:0px;`;
-    const css_autoCompleteInner = `display: block; position: absolute; background:#000000; border-radius:4px;`;
+    const css_autoCompleteInner = `display: block; position: absolute; background:#000000; border: solid 1px #CCCCFF;`;
     const css_autoCompleteItem = `display: block; padding: 4px; color:#FFFFFF;`;
-    const css_autoCompleteItem_selected = `display: block; padding: 4px; color:#CCCCFF; background:#111133;`;
+    const css_autoCompleteItem_selected = `display: block; padding: 4px; color:#CCCCFF; background:#111133; min-width: 60px;`;
     const css_autoCompleteItem_textCompleted = `color:#CCCCFF;`;
     const css_autoCompleteItem_textNew = ``;
-    const html_autoComplete = mode !== `type` ? `` :
+    const html_autoComplete = mode !== `type` || autoComplete.length <= 0 ? `` :
         `<span style='${css_autoCompleteWrapper}'><span style='${css_autoCompleteInner}'>${autoComplete.map(x => (
             `<span style='${x.isSelected ? css_autoCompleteItem_selected : css_autoCompleteItem}'>${true
             && `<span style='${css_autoCompleteItem_textCompleted}'>${x.isWrong ? `❌ ` : ``}${x.textCompleted}</span><span style='${css_autoCompleteItem_textNew}'>${x.text}</span>`

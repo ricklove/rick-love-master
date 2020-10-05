@@ -42,6 +42,6 @@
         - Objective
         - Explanation
         - Task
-    - [ ] Type code
-        - [ ] Autocomplete Popdown
-    - [ ] Feedback Balloon
+    - [x] Type code
+        - [x] Autocomplete Popdown
+        - [x] Feedback Popup
