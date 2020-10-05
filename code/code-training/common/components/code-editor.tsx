@@ -89,23 +89,31 @@ export const CodeEditor = ({ code, language, selection, mode }: { code: string, 
     const [inputText, setInputText] = useState(``);
     const [isActive, setIsActive] = useState(true);
     const [isBlink, setIsBlink] = useState(true);
-    const [feedback, setFeedback] = useState(``);
+    const [feedback, setFeedback] = useState({ message: ``, isCorrect: true, isDone: false });
+    // const [autoComplete, setAutoComplete] = useState({ message: ``, isCorrect: true, isDone: false });
 
     const changeInputText = (valueRaw: string) => {
         const wasBackspace = valueRaw.length < inputText.length;
         const wasCorrect = code_focus.startsWith(valueRaw);
         const wasCorrect_ignoreCase = code_focus.toLowerCase().startsWith(valueRaw.toLowerCase());
+
+        if (code_focus === inputText) {
+            setFeedback({ message: `You're already done.`, isCorrect: false, isDone: true });
+            return;
+        }
         if (wasBackspace) {
-            setFeedback(`You're right so far, no need to backspace.`);
+            setFeedback({ message: `You're right so far, no need to backspace.`, isCorrect: false, isDone: false });
             return;
         }
         if (!wasCorrect) {
-            setFeedback(`No`);
+            setFeedback({ message: ``, isCorrect: false, isDone: false });
             return;
         }
+
+        const isDone = code_focus === valueRaw;
         const value = valueRaw;
 
-        setFeedback(``);
+        setFeedback({ isCorrect: true, message: ``, isDone });
         setInputText(value);
         setInputHtml(value);
         setIsActive(true);
@@ -123,10 +131,21 @@ export const CodeEditor = ({ code, language, selection, mode }: { code: string, 
     }, []);
 
     const css_feedbackWrapper = `display: inline-block; position: relative; bottom: 40px; width:0px;`;
-    const css_feedback = `display: inline-block; padding: 4px; position: absolute; color:#FF8888; background:#000000; border-radius:4px`;
-    const html_feedback = feedback ? `<span style='${css_feedbackWrapper}'><span style='${css_feedback}'>${feedback}</span></span>` : ``;
+    const css_feedback_correct = `display: inline-block; padding: 4px; position: absolute; color:#88FF88; background:#000000; border-radius:4px`;
+    const css_feedback_incorrect = `display: inline-block; padding: 4px; position: absolute; color:#FF8888; background:#000000; border-radius:4px`;
+    const html_feedback = mode !== `type` ? `` : (
+        feedback.isDone ? `<span style='${css_feedbackWrapper}'><span style='${css_feedback_correct}'>✔${feedback.message}</span></span>`
+            : !feedback.isCorrect ? `<span style='${css_feedbackWrapper}'><span style='${css_feedback_incorrect}'>❌${feedback.message}</span></span>`
+                : ``
+    );
+
+    // const css_autoCompleteWrapper = `display: inline-block; position: relative; bottom: 40px; width:0px;`;
+    // const css_autoComplete = `display: block; padding: 4px; position: absolute; color:#88FF88; background:#000000; border-radius:4px`;
+    // const html_autoComplete = mode !== `type` ? `` :
+    //     `<span style='${css_autoCompleteWrapper}'><span style='${css_autoComplete}'>✔${autocomplete}</span></span>`
+    //     ;
     const html_cursor = `<span style='display: inline-block; width: 0px; margin: 0px; position: relative; left: -4px;'>${(isBlink ? `|` : ` `)}</span>`;
-    const html_full = `<span style='opacity:0.5'>${html_before}</span><span style='opacity:1'>${html_feedback}${inputHtml}${mode === `type` && isActive ? html_cursor : ``}</span><span style='opacity:0.5'>${html_after}</span>`;
+    const html_full = `<span style='opacity:0.5'>${html_before}</span><span style='opacity:1'>${inputHtml}${mode === `type` && isActive ? html_cursor : ``}${html_feedback}</span><span style='opacity:0.5'>${html_after}</span>`;
 
     if (!html_full) {
         return <></>;

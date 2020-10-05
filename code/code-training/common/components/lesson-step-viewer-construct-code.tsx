@@ -44,7 +44,7 @@ export const LessonStepViewer_ConstructCode_Debug = (props: { lessonStep: Lesson
     return (
         <>
             {projectState.files.map(x => (
-                <CodeEditor key={x.path} code={x.content} language={x.language} selection={focus.file.path === x.path ? focus : undefined} />
+                <CodeEditor key={x.path} code={x.content} language={x.language} selection={focus.file.path === x.path ? focus : undefined} mode='display' />
             ))}
             <View style={debugStyles.infoView}>
                 <Text style={debugStyles.infoText}>{`title: ${title}`}</Text>
