@@ -7,7 +7,7 @@ import 'prismjs/components/prism-typescript';
 import 'prismjs/components/prism-jsx';
 import 'prismjs/components/prism-tsx';
 import 'prism-themes/themes/prism-vsc-dark-plus.css';
-import { shuffle } from 'utils/arrays';
+import { distinct, shuffle } from 'utils/arrays';
 import { StringSpan } from 'utils/string-span';
 import { LessonProjectFile, LessonProjectFileSelection } from '../lesson-types';
 import { isSimilarCodeToken } from './code-editor-helpers';
@@ -109,10 +109,13 @@ export const CodeEditor = ({ code, language, selection, mode }: { code: string, 
     const [autoComplete, setAutoComplete] = useState([] as { textCompleted: string, text: string, isSelected: boolean, isWrong: boolean }[]);
 
     const updateAutoComplete = (completed?: string) => {
-        if (!code_focus || completed == null) {
+        if (!code_focus || completed == null
+            || code_focus === completed
+        ) {
             setAutoComplete([]);
             return;
         }
+
 
         // const remaining = code_focus.substr(completed.length);
 
@@ -135,12 +138,14 @@ export const CodeEditor = ({ code, language, selection, mode }: { code: string, 
         }
 
         const activePartTextCompleted = activePartText.substr(0, completed.length - iDone);
-        const matchWords = codeParts
+        const matchWords = distinct(codeParts
             .filter(x =>
                 (!!activePartTextCompleted && x.startsWith(activePartTextCompleted))
                 || (!activePartTextCompleted && isSimilarCodeToken(x.toString(), activePartText)))
+            .map(x => x.toString())
             .filter(x => x.toString() !== activePartText)
-            .map(x => x.toString());
+            .filter(x => !!x.trim()),
+        );
 
         console.log(`updateAutoComplete`, { iNext, iDone, activePart: activePartText, completed, codeParts, activePartTextCompleted, matchWords });
 
