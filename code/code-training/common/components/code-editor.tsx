@@ -9,6 +9,7 @@ import 'prismjs/components/prism-tsx';
 import 'prism-themes/themes/prism-vsc-dark-plus.css';
 import { distinct, shuffle } from 'utils/arrays';
 import { StringSpan } from 'utils/string-span';
+import { randomItem } from 'utils/random';
 import { LessonProjectFile, LessonProjectFileSelection } from '../lesson-types';
 import { isSimilarCodeToken } from './code-editor-helpers';
 
@@ -213,10 +214,12 @@ export const CodeEditor = ({ code, language, selection, mode }: { code: string, 
         const wasCorrect_ignoreCase = code_focus.toLowerCase().startsWith(value.toLowerCase());
 
         if (code_focus === inputText) {
+            setFeedbackOpacity(1);
             setFeedback({ message: `You're already done.`, isCorrect: false, isDone: true });
             return;
         }
         if (wasBackspace) {
+            setFeedbackOpacity(1);
             setFeedback({ message: `You're right so far, no need to backspace.`, isCorrect: false, isDone: false });
             return;
         }
@@ -227,7 +230,8 @@ export const CodeEditor = ({ code, language, selection, mode }: { code: string, 
             if (!activeAutoComplete) {
                 updateAutoComplete(``);
             }
-            setFeedback({ message: ``, isCorrect: false, isDone: false });
+            setFeedbackOpacity(1);
+            setFeedback({ message: randomItem([`Wrong`, `Incorrect`, `No`, `Try Again`]), isCorrect: false, isDone: false });
             return;
         }
 
@@ -238,6 +242,7 @@ export const CodeEditor = ({ code, language, selection, mode }: { code: string, 
         //     valueRaw,
         // });
 
+        setFeedbackOpacity(1);
         setFeedback({ isCorrect: true, message: ``, isDone });
         setInputText(value);
 
@@ -247,18 +252,20 @@ export const CodeEditor = ({ code, language, selection, mode }: { code: string, 
         updateAutoComplete(value);
     };
 
+    const [feedbackOpacity, setFeedbackOpacity] = useState(0);
     useEffect(() => {
         if (mode !== `type`) { return () => { }; }
 
         const intervalId = setInterval(() => {
             setIsBlink(s => !s);
+            setFeedbackOpacity(s => s - 0.1);
         }, 500);
         return () => {
             clearInterval(intervalId);
         };
     }, []);
 
-    const css_feedbackWrapper = `display: inline-block; position: relative; bottom: 40px; width:0px; `;
+    const css_feedbackWrapper = `display: inline-block; position: relative; bottom: 40px; width:0px; opacity:${feedbackOpacity > 0.7 ? 1 : 0}`;
     const css_feedback_correct = `  display: inline-block; padding: 4px; position: absolute; color:#88FF88; background:#000000; border-radius:4px`;
     const css_feedback_incorrect = `display: inline-block; padding: 4px; position: absolute; color:#FF8888; background:#000000; border-radius:4px`;
     const html_feedback = mode !== `type` ? `` : (
