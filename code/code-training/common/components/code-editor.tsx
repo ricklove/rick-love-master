@@ -131,7 +131,7 @@ export const CodeEditor = ({ code, language, selection, mode }: { code: string, 
         const nextPartIndex = nextPartIndexRaw < 0 ? codeParts.length : nextPartIndexRaw;
         const activePartText = codeParts[nextPartIndex - 1]?.toString();
         const iDone = codeParts[nextPartIndex - 1]?.start;
-        console.log(`updateAutoComplete`, { iNext, iDone, activePart: activePartText, codeParts, completed });
+        // console.log(`updateAutoComplete`, { iNext, iDone, activePart: activePartText, codeParts, completed });
 
         if (!activePartText?.trim()) {
             setAutoComplete([]);
@@ -148,7 +148,7 @@ export const CodeEditor = ({ code, language, selection, mode }: { code: string, 
             .filter(x => !!x.trim()),
         );
 
-        console.log(`updateAutoComplete`, { iNext, iDone, activePart: activePartText, completed, codeParts, activePartTextCompleted, matchWords });
+        // console.log(`updateAutoComplete`, { iNext, iDone, activePart: activePartText, completed, codeParts, activePartTextCompleted, matchWords });
 
         const choices = [activePartText, ...shuffle(matchWords).slice(0, 3)].map(x => ({ textCompleted: x.substr(0, completed.length - iDone), text: x.substr(completed.length - iDone) }));
         setAutoComplete(shuffle(choices).map((x, i) => ({ ...x, isSelected: i === 0, isWrong: false })));
