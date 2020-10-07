@@ -62,6 +62,8 @@ export const TextInput = (props: {
     onSubmitEditing?: () => void;
     onFocus?: () => void;
     onBlur?: () => void;
+    multiline?: boolean;
+    numberOfLines?: number;
 }) => {
     const type = props.keyboardType === `numeric` ? `number`
         : (props.secureTextEntry ? `password`
@@ -71,12 +73,27 @@ export const TextInput = (props: {
         : (props.autoCompleteType === `password` ? `password`
             : undefined);
 
-    const onKeyPress = props.onSubmitEditing && ((e: React.KeyboardEvent<HTMLInputElement>) => {
+    const onKeyPress = props.onSubmitEditing && ((e: React.KeyboardEvent<HTMLInputElement | HTMLTextAreaElement>) => {
         if (e.key === `Enter` && !e.shiftKey) {
             e.preventDefault();
             props.onSubmitEditing?.();
         }
     }) || undefined;
+
+    if (props.multiline) {
+        return (<textarea
+            name={name} id={name}
+            style={mergeStyles([textStyleDefaults, props.style])}
+            placeholder={props.placeholder}
+            disabled={!(props.editable ?? true)}
+            value={props.value}
+            onFocus={props.onFocus}
+            onChange={(e) => props.onChange(e.target.value)}
+            onKeyPress={onKeyPress}
+            onBlur={props.onBlur}
+            rows={props.numberOfLines}
+        />);
+    }
 
     return (<input type={type}
         name={name} id={name}

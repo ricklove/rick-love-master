@@ -36,7 +36,23 @@
 
 # Tasks
 
-- [ ] Construct Code Step - Preview in Lesson Editor
+- [ ] Lesson Editor
+    - [ ] Save/Load Single Document Format
+        - [x] JSON
+        - [ ] Storage
+            - [x] TextArea
+            - [ ] Upload
+    - [ ] LessonData
+        - [ ] File Contents
+        - [ ] Lesson Parts
+    - [ ] Display Lesson Preview
+        - [ ] Steps
+            - [x] Construct Code
+            - [ ] Understand Code
+            - [ ] Identify Mistakes
+            - [ ] Preview Results
+
+- [ ] Construct Code Step
     - [ ] Display Instructions
         - Title
         - Objective

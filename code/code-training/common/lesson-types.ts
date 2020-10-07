@@ -51,7 +51,7 @@ export type LessonProjectFile = {
 };
 
 export type LessonProjectFileSelection = {
-    file: LessonProjectFile;
+    filePath: string;
     index: number;
     length: number;
 };

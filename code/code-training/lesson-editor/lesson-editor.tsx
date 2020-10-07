@@ -1,9 +1,9 @@
-import React from 'react';
-import { View, Text } from 'react-native-lite';
+import React, { useState } from 'react';
+import { View, Text, TextInput } from 'react-native-lite';
 import { FileCodeEditor } from '../common/components/code-editor';
 import { LessonData, LessonStep_ConstructCode } from '../common/lesson-types';
 
-const createLesson = (): LessonData => {
+const createDefaultLesson = (): LessonData => {
     const file = {
         path: `test.tsx`,
         content: `
@@ -26,7 +26,7 @@ export const MinimalReactComponent = (props: {}) => {
             files: [file],
         },
         focus: {
-            file,
+            filePath: file.path,
             index: focusIndex,
             length: focusLength,
         },
@@ -41,17 +41,10 @@ export const MinimalReactComponent = (props: {}) => {
 };
 
 const debugStyles = {
-    codeView: {
-        padding: 8,
-        display: `block`,
-        backgroundColor: `#000000`,
-    },
-    codeText: {
-        fontSize: 12,
-    },
-    codeFocusText: {
-        fontSize: 12,
-        backgroundColor: `#222222`,
+    sectionHeaderText: {
+        margin: 8,
+        fontSize: 18,
+        color: `#FFFF88`,
     },
     infoView: {
     },
@@ -60,13 +53,39 @@ const debugStyles = {
         fontSize: 12,
         wrap: `wrap`,
     },
+    jsonText: {
+        margin: 8,
+        fontSize: 12,
+        color: `#FFFFFF`,
+        background: `#000000`,
+    },
 } as const;
+
+const createLessonState = (lesson: LessonData, lessonJson?: string) => {
+    type LessonSteps = {
+        constructCode: LessonStep_ConstructCode;
+    };
+    const lessonSteps: LessonSteps = {
+        constructCode: {
+            lessonData: lesson,
+        },
+    };
+
+    return {
+        lesson,
+        lessonJson: lessonJson ?? JSON.stringify(lesson, null, 2),
+        lessonSteps,
+    };
+};
 
 export const LessonEditor = (props: {}) => {
 
-    const lessonStep: LessonStep_ConstructCode = {
-        lessonData: createLesson(),
+    const [data, setData] = useState(createLessonState(createDefaultLesson()));
+
+    const changeLessonJson = (json: string) => {
+        setData(createLessonState(JSON.parse(json), json));
     };
+
     const {
         projectState,
         focus,
@@ -74,18 +93,32 @@ export const LessonEditor = (props: {}) => {
         objective,
         explanation,
         task,
-    } = lessonStep.lessonData;
+    } = data.lesson;
 
     return (
         <>
+            <Text style={debugStyles.sectionHeaderText}>Project Files</Text>
             {projectState.files.map(x => (
-                <FileCodeEditor key={x.path} file={x} selection={focus.file.path === x.path ? focus : undefined} mode={focus.file.path === x.path ? `type` : `display`} />
+                <FileCodeEditor key={x.path} file={x} selection={focus.filePath === x.path ? focus : undefined} mode={focus.filePath === x.path ? `type` : `display`} />
             ))}
+            <Text style={debugStyles.sectionHeaderText}>Lesson</Text>
             <View style={debugStyles.infoView}>
                 <Text style={debugStyles.infoText}>{`title: ${title}`}</Text>
                 <Text style={debugStyles.infoText}>{`objective: ${objective}`}</Text>
                 <Text style={debugStyles.infoText}>{`explanation: ${explanation}`}</Text>
                 <Text style={debugStyles.infoText}>{`task: ${task}`}</Text>
+            </View>
+            <Text style={debugStyles.sectionHeaderText}>Lesson Data</Text>
+            <View>
+                <TextInput
+                    style={debugStyles.jsonText}
+                    value={data.lessonJson}
+                    onChange={changeLessonJson}
+                    autoCompleteType='off'
+                    keyboardType='default'
+                    multiline
+                    numberOfLines={20}
+                />
             </View>
         </>
     );

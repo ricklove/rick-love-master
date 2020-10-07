@@ -69,6 +69,7 @@ export type ThemeTextStyle = {
     paddingBottom?: number;
 
     color?: string;
+    background?: string;
 
     fontFamily?: string;
     fontSize?: number;
