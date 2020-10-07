@@ -1,7 +1,7 @@
 /* eslint-disable unicorn/no-for-loop */
 /* eslint-disable react/no-danger */
 import React, { useEffect, useState } from 'react';
-import { View, Text } from 'react-native-lite';
+import { View, Text, TextInput } from 'react-native-lite';
 import { highlight, languages } from 'prismjs';
 import 'prismjs/components/prism-typescript';
 import 'prismjs/components/prism-jsx';
@@ -13,20 +13,81 @@ import { randomItem } from 'utils/random';
 import { LessonProjectFile, LessonProjectFileSelection } from '../lesson-types';
 import { isSimilarCodeToken } from './code-editor-helpers';
 
-export const FileCodeEditor = ({ file, selection, mode }: { file: LessonProjectFile, selection?: LessonProjectFileSelection, mode: 'display' | 'type' }) => {
+export type FileEditorMode = 'display' | 'edit' | 'type-selection';
+export const FileCodeEditor = ({ file, selection, mode }: { file: LessonProjectFile, selection?: LessonProjectFileSelection, mode: FileEditorMode }) => {
     return (
         <View style={{}}>
             <View style={{ background: `#1e1e1e`, alignSelf: `flex-start`, padding: 4 }}>
                 <Text>{`📝 ${file.path}`}</Text>
             </View>
             <View style={{ padding: 0 }}>
-                <CodeEditor code={file.content} language={file.language} selection={selection} mode={mode} />
+                {mode === `display` && (
+                    <CodeEditor_Display code={file.content} language={file.language} selection={selection} />
+                )}
+                {mode === `edit` && (
+                    <CodeEditor_Edit code={file.content} language={file.language} selection={selection} />
+                )}
+                {mode === `type-selection` && (
+                    <CodeEditor_TypeSelection code={file.content} language={file.language} selection={selection} />
+                )}
             </View>
         </View >
     );
 };
 
-export const CodeEditor = ({ code, language, selection, mode }: { code: string, language: 'tsx', selection?: LessonProjectFileSelection, mode: 'display' | 'type' }) => {
+const CodeEditor_Display = ({ code, language }: { code: string, language: 'tsx', selection?: LessonProjectFileSelection }) => {
+    const htmlWithSelection = highlight(code, languages[language], language);
+
+    return (
+        <View >
+            <View>
+                <pre style={{ margin: 0 }} className={`language-${language}`}>
+                    <code className={`language-${language}`} dangerouslySetInnerHTML={{ __html: htmlWithSelection }} />
+                </pre>
+            </View>
+        </View>
+    );
+};
+
+const CodeEditor_Edit = ({ code, language }: { code: string, language: 'tsx', selection?: LessonProjectFileSelection }) => {
+    const [inputText, setInputText] = useState(code);
+    const [inputHtml, setInputHtml] = useState(``);
+    const changeInputText = (value: string) => {
+        setInputText(value);
+        setInputHtml(highlight(value, languages[language], language));
+    };
+    const onBlur = () => {
+        setInputText(inputText);
+        setInputHtml(highlight(inputText, languages[language], language));
+    };
+    useEffect(() => {
+        setInputHtml(highlight(inputText, languages[language], language));
+    }, [code]);
+
+    return (
+        <View >
+            <View style={{}}>
+                <TextInput
+                    value={inputText}
+                    onChange={changeInputText}
+                    onBlur={onBlur}
+                    autoCompleteType='off'
+                    keyboardType='default'
+                    multiline
+                    numberOfLines={16}
+                />
+            </View>
+            <View>
+                <pre style={{ margin: 0 }} className={`language-${language}`}>
+                    <code className={`language-${language}`} dangerouslySetInnerHTML={{ __html: inputHtml }} />
+                </pre>
+            </View>
+
+        </View>
+    );
+};
+
+const CodeEditor_TypeSelection = ({ code, language, selection }: { code: string, language: 'tsx', selection?: LessonProjectFileSelection }) => {
 
     // const [html_full, setHtml_full] = useState(``);
     const [html_before, setHtml_before] = useState(``);
@@ -254,8 +315,6 @@ export const CodeEditor = ({ code, language, selection, mode }: { code: string, 
 
     const [feedbackOpacity, setFeedbackOpacity] = useState(0);
     useEffect(() => {
-        if (mode !== `type`) { return () => { }; }
-
         const intervalId = setInterval(() => {
             setIsBlink(s => !s);
             setFeedbackOpacity(s => s - 0.1);
@@ -268,7 +327,7 @@ export const CodeEditor = ({ code, language, selection, mode }: { code: string, 
     const css_feedbackWrapper = `display: inline-block; position: relative; bottom: 40px; width:0px; opacity:${feedbackOpacity > 0.7 ? 1 : 0}`;
     const css_feedback_correct = `  display: inline-block; padding: 4px; position: absolute; color:#88FF88; background:#000000; border-radius:4px`;
     const css_feedback_incorrect = `display: inline-block; padding: 4px; position: absolute; color:#FF8888; background:#000000; border-radius:4px`;
-    const html_feedback = mode !== `type` ? `` : (
+    const html_feedback = (
         feedback.isDone ? `<span style='${css_feedbackWrapper}'><span style='${css_feedback_correct}'>${`✔ ${feedback.message}`.trim()}</span></span>`
             : !feedback.isCorrect ? `<span style='${css_feedbackWrapper}'><span style='${css_feedback_incorrect}'>❌ ${feedback.message}</span></span>`
                 : ``
@@ -280,7 +339,7 @@ export const CodeEditor = ({ code, language, selection, mode }: { code: string, 
     const css_autoCompleteItem_selected = `display: block; padding: 4px; color:#CCCCFF; background:#111133; min-width: 60px;`;
     const css_autoCompleteItem_textCompleted = `color:#CCCCFF;`;
     const css_autoCompleteItem_textNew = ``;
-    const html_autoComplete = mode !== `type` || autoComplete.length <= 0 ? `` :
+    const html_autoComplete = autoComplete.length <= 0 ? `` :
         `<span style='${css_autoCompleteWrapper}'><span style='${css_autoCompleteInner}'>${autoComplete.map(x => (
             `<span style='${x.isSelected ? css_autoCompleteItem_selected : css_autoCompleteItem}'>${true
             && `<span style='${css_autoCompleteItem_textCompleted}'>${x.isWrong ? `❌ ` : ``}${x.textCompleted}</span><span style='${css_autoCompleteItem_textNew}'>${x.text}</span>`
@@ -288,10 +347,10 @@ export const CodeEditor = ({ code, language, selection, mode }: { code: string, 
 
         )).join(``)}</span></span>`
         ;
-    const autoCompletePadding = mode !== `type` ? 0 : 100;
+    const autoCompletePadding = 100;
 
     const html_cursor = `<span style='display: inline-block; width: 0px; margin: 0px; position: relative; left: -4px;'>${(isBlink ? `|` : ` `)}</span>`;
-    const html_full = `<span style='opacity:0.5'>${html_before}</span><span style='opacity:1'>${inputHtml}${mode === `type` && isActive ? html_cursor : ``}${html_feedback}${html_autoComplete}</span><span style='opacity:0.5'>${html_after}</span>`;
+    const html_full = `<span style='opacity:0.5'>${html_before}</span><span style='opacity:1'>${inputHtml}${isActive ? html_cursor : ``}${html_feedback}${html_autoComplete}</span><span style='opacity:0.5'>${html_after}</span>`;
 
     if (!html_full) {
         return <></>;
@@ -306,28 +365,15 @@ export const CodeEditor = ({ code, language, selection, mode }: { code: string, 
                     <code className={`language-${language}`} dangerouslySetInnerHTML={{ __html: html_full }} />
                 </pre>
             </View>
-            {mode === `type` && (
-                <View style={{ position: `absolute`, top: 0, left: 0, right: 0, bottom: 0, opacity: 0 }}>
-                    <input type='text' style={{ width: `100%`, height: `100%`, background: `#FF0000` }}
-                        value={inputText}
-                        onChange={(e) => changeInputText(e.target.value)}
-                        onFocus={() => setIsActive(true)}
-                        onBlur={() => setIsActive(false)}
-                        onKeyDown={(e) => onKeyDown(e)}
-                    />
-                </View>
-            )}
+            <View style={{ position: `absolute`, top: 0, left: 0, right: 0, bottom: 0, opacity: 0 }}>
+                <input type='text' style={{ width: `100%`, height: `100%`, background: `#FF0000` }}
+                    value={inputText}
+                    onChange={(e) => changeInputText(e.target.value)}
+                    onFocus={() => setIsActive(true)}
+                    onBlur={() => setIsActive(false)}
+                    onKeyDown={(e) => onKeyDown(e)}
+                />
+            </View>
         </View>
     );
 };
-
-// export const EditArea = ({
-//     html,
-// }: {
-//     html: string;
-// }) => {
-
-//     return (
-//         <span style={{ opacity: 1 }} dangerouslySetInnerHTML={{ __html: html_selection }} />
-//     );
-// };

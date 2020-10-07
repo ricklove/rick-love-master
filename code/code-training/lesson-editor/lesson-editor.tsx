@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
-import { View, Text, TextInput } from 'react-native-lite';
-import { FileCodeEditor } from '../common/components/code-editor';
+import { View, Text, TextInput, TouchableOpacity } from 'react-native-lite';
+import { FileCodeEditor, FileEditorMode } from '../common/components/code-editor';
 import { LessonData, LessonStep_ConstructCode } from '../common/lesson-types';
 
 const createDefaultLesson = (): LessonData => {
@@ -40,7 +40,37 @@ export const MinimalReactComponent = (props: {}) => {
     return lesson;
 };
 
-const debugStyles = {
+const styles = {
+    container: {
+        background: `#111111`,
+    },
+    containerPanel: {
+        background: `#292a2d`,
+    },
+    editorModeTabRowView: {
+        flexDirection: `row`,
+        paddingLeft: 16,
+    },
+    editorModeTabView: {
+        background: `#1e1e1e`,
+        alignSelf: `flex-start`,
+        padding: 8,
+        marginRight: 1,
+    },
+    editorModeTabView_selected: {
+        background: `#292a2d`,
+        alignSelf: `flex-start`,
+        padding: 8,
+        marginRight: 1,
+    },
+    editorModeTabText: {
+        fontSize: 14,
+        color: `#FFFFFFF`,
+    },
+    editorModeTabText_selected: {
+        fontSize: 14,
+        color: `#FFFF88`,
+    },
     sectionHeaderText: {
         margin: 8,
         fontSize: 18,
@@ -81,6 +111,20 @@ const createLessonState = (lesson: LessonData, lessonJson?: string) => {
 export const LessonEditor = (props: {}) => {
 
     const [data, setData] = useState(createLessonState(createDefaultLesson()));
+    type EditorMode = 'edit' | 'constructCode';
+    const [editorMode, setEditorMode] = useState(`edit` as EditorMode);
+    const editorModes = [
+        { value: `edit`, label: `Edit` },
+        { value: `constructCode`, label: `Construct Code` },
+    ] as { value: EditorMode, label: string }[];
+    const fileEditorMode_focus: FileEditorMode =
+        editorMode === `edit` ? `edit`
+            : editorMode === `constructCode` ? `type-selection`
+                : `display`;
+    const fileEditorMode_noFocus: FileEditorMode =
+        editorMode === `edit` ? `edit`
+            : editorMode === `constructCode` ? `display`
+                : `display`;
 
     const changeLessonJson = (json: string) => {
         setData(createLessonState(JSON.parse(json), json));
@@ -97,28 +141,41 @@ export const LessonEditor = (props: {}) => {
 
     return (
         <>
-            <Text style={debugStyles.sectionHeaderText}>Project Files</Text>
-            {projectState.files.map(x => (
-                <FileCodeEditor key={x.path} file={x} selection={focus.filePath === x.path ? focus : undefined} mode={focus.filePath === x.path ? `type` : `display`} />
-            ))}
-            <Text style={debugStyles.sectionHeaderText}>Lesson</Text>
-            <View style={debugStyles.infoView}>
-                <Text style={debugStyles.infoText}>{`title: ${title}`}</Text>
-                <Text style={debugStyles.infoText}>{`objective: ${objective}`}</Text>
-                <Text style={debugStyles.infoText}>{`explanation: ${explanation}`}</Text>
-                <Text style={debugStyles.infoText}>{`task: ${task}`}</Text>
-            </View>
-            <Text style={debugStyles.sectionHeaderText}>Lesson Data</Text>
-            <View>
-                <TextInput
-                    style={debugStyles.jsonText}
-                    value={data.lessonJson}
-                    onChange={changeLessonJson}
-                    autoCompleteType='off'
-                    keyboardType='default'
-                    multiline
-                    numberOfLines={20}
-                />
+            <View style={styles.container}>
+                <View style={styles.editorModeTabRowView}>
+                    {editorModes.map(x => (
+                        <TouchableOpacity key={x.value + editorMode} onPress={() => setEditorMode(x.value)}>
+                            <View style={x.value === editorMode ? styles.editorModeTabView_selected : styles.editorModeTabView}>
+                                <Text style={x.value === editorMode ? styles.editorModeTabText_selected : styles.editorModeTabText}>{x.label}</Text>
+                            </View>
+                        </TouchableOpacity>
+                    ))}
+                </View>
+                <View style={styles.containerPanel}>
+                    <Text style={styles.sectionHeaderText}>Project Files</Text>
+                    {projectState.files.map(x => (
+                        <FileCodeEditor key={x.path} file={x} selection={focus.filePath === x.path ? focus : undefined} mode={focus.filePath === x.path ? fileEditorMode_focus : fileEditorMode_noFocus} />
+                    ))}
+                    <Text style={styles.sectionHeaderText}>Lesson</Text>
+                    <View style={styles.infoView}>
+                        <Text style={styles.infoText}>{`title: ${title}`}</Text>
+                        <Text style={styles.infoText}>{`objective: ${objective}`}</Text>
+                        <Text style={styles.infoText}>{`explanation: ${explanation}`}</Text>
+                        <Text style={styles.infoText}>{`task: ${task}`}</Text>
+                    </View>
+                    <Text style={styles.sectionHeaderText}>Lesson Data</Text>
+                    <View>
+                        <TextInput
+                            style={styles.jsonText}
+                            value={data.lessonJson}
+                            onChange={changeLessonJson}
+                            autoCompleteType='off'
+                            keyboardType='default'
+                            multiline
+                            numberOfLines={20}
+                        />
+                    </View>
+                </View>
             </View>
         </>
     );
