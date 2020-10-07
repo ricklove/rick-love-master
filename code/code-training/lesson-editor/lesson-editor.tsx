@@ -161,6 +161,7 @@ export const LessonEditor = (props: {}) => {
     };
 
     const onProjectDataChange = (projectData: { projectState?: LessonProjectState, focus?: LessonProjectFileSelection }) => {
+
         setData(createLessonState({
             ...data.lesson,
             ...projectData,

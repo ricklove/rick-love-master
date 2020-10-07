@@ -64,6 +64,11 @@ export const TextInput = (props: {
     onBlur?: () => void;
     multiline?: boolean;
     numberOfLines?: number;
+    onSelectionChange?: (value: {
+        start: number;
+        /** Exclusive (iNext actually) */
+        end: number;
+    }) => void;
 }) => {
     const type = props.keyboardType === `numeric` ? `number`
         : (props.secureTextEntry ? `password`
@@ -92,6 +97,16 @@ export const TextInput = (props: {
             onKeyPress={onKeyPress}
             onBlur={props.onBlur}
             rows={props.numberOfLines}
+            onSelect={e => {
+                const eTarget = e.target as unknown as {
+                    selectionStart?: number;
+                    selectionEnd?: number;
+                };
+                const selectionRange = { start: eTarget.selectionStart ?? 0, end: eTarget.selectionEnd ?? 0 };
+                // console.log(`textare onSelect`, { selectionRange, eTarget });
+                if (!eTarget.selectionStart && !eTarget.selectionEnd) { return; }
+                props.onSelectionChange?.(selectionRange);
+            }}
         />);
     }
 

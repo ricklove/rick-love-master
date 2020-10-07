@@ -42,10 +42,7 @@ const styles = {
 
 export type ProjectEditorMode = 'display' | 'edit';
 export const ProjectCodeEditor = ({
-    projectData: {
-        projectState,
-        focus,
-    },
+    projectData,
     projectEditorMode,
     fileEditorMode_focus,
     fileEditorMode_noFocus,
@@ -63,13 +60,20 @@ export const ProjectCodeEditor = ({
         focus?: LessonProjectFileSelection;
     }) => void;
 }) => {
+    const {
+        projectState,
+        focus,
+    } = projectData;
     const [activeFilePath, setActiveFilePath] = useState(focus.filePath);
     const [filePathEdit, setFilePathEdit] = useState(focus.filePath);
 
     useEffect(() => {
         const focusFile = projectState.files.find(x => x.path === focus.filePath);
-        if (!focusFile && projectState.files.length > 0) {
-            const f = projectState.files[0];
+        if (projectState.files.length > 0
+            && (!focusFile
+                || focus.length <= 0
+                || focus.index >= (focusFile?.content.length ?? 0))) {
+            const f = projectState.files.find(x => x.path === focus.filePath) ?? projectState.files[0];
             onProjectDataChange({
                 focus: {
                     filePath: f.path,
@@ -77,13 +81,14 @@ export const ProjectCodeEditor = ({
                     length: f.content.length,
                 },
             });
+            return;
         }
 
         const p = focusFile?.path ?? projectState.files[0].path;
 
         setActiveFilePath(p);
         setFilePathEdit(p);
-    }, [focus, projectState]);
+    }, [projectState, focus]);
 
     const selectFileTab = (filePath: string) => {
         setActiveFilePath(filePath);
@@ -141,7 +146,21 @@ export const ProjectCodeEditor = ({
         file.content = code;
         onProjectDataChange({ projectState: { files: projectState.files } });
     };
+    const changeSelection = (value: { index: number, length: number }) => {
+        const file = projectState.files.find(x => x.path === activeFilePath);
+        if (!file) { return; }
 
+        console.log(`changeSelection`, { ...value });
+        const f = file;
+        onProjectDataChange({
+            focus: {
+                filePath: f.path,
+                ...value,
+            },
+        });
+    };
+
+    console.log(`ProjectCodeEditor`, { activeFilePath, focus, projectState });
     const activeFile = projectState.files.find(x => x.path === activeFilePath) ?? projectState.files[0];
     return (
         <>
@@ -189,14 +208,29 @@ export const ProjectCodeEditor = ({
                 </>
             )}
             {[activeFile].map(x => (
-                <FileCodeEditor key={x.path} file={x} selection={focus.filePath === x.path ? focus : undefined} mode={focus.filePath === x.path ? fileEditorMode_focus : fileEditorMode_noFocus} onCodeChange={changeCode} />
+                <FileCodeEditor key={x.path}
+                    file={x} selection={focus.filePath === x.path ? focus : undefined}
+                    mode={focus.filePath === x.path ? fileEditorMode_focus : fileEditorMode_noFocus}
+                    onCodeChange={changeCode} onSelectionChange={changeSelection} />
             ))}
         </>
     );
 };
 
 export type FileEditorMode = 'display' | 'edit' | 'type-selection';
-export const FileCodeEditor = ({ file, selection, mode, onCodeChange }: { file: LessonProjectFile, selection?: LessonProjectFileSelection, mode: FileEditorMode, onCodeChange: (code: string) => void }) => {
+export const FileCodeEditor = ({
+    file,
+    selection,
+    mode,
+    onCodeChange,
+    onSelectionChange,
+}: {
+    file: LessonProjectFile;
+    selection?: LessonProjectFileSelection;
+    mode: FileEditorMode;
+    onCodeChange: (code: string) => void;
+    onSelectionChange: (value: { index: number, length: number }) => void;
+}) => {
     return (
         <View style={{}}>
             {/* <View style={{ background: `#1e1e1e`, alignSelf: `flex-start`, padding: 4 }}>
@@ -207,7 +241,7 @@ export const FileCodeEditor = ({ file, selection, mode, onCodeChange }: { file: 
                     <CodeEditor_Display code={file.content} language={file.language} selection={selection} />
                 )}
                 {mode === `edit` && (
-                    <CodeEditor_Edit code={file.content} language={file.language} selection={selection} onCodeChange={onCodeChange} />
+                    <CodeEditor_Edit code={file.content} language={file.language} selection={selection} onCodeChange={onCodeChange} onSelectionChange={onSelectionChange} />
                 )}
                 {mode === `type-selection` && (
                     <CodeEditor_TypeSelection code={file.content} language={file.language} selection={selection} />
@@ -230,7 +264,15 @@ const CodeEditor_Display = ({ code, language, selection }: { code: string, langu
     );
 };
 
-const CodeEditor_Edit = ({ code, language, selection, onCodeChange }: { code: string, language: 'tsx', selection?: LessonProjectFileSelection, onCodeChange: (code: string) => void }) => {
+const CodeEditor_Edit = ({ code, language, selection, onCodeChange, onSelectionChange,
+}: {
+    code: string;
+    language: 'tsx';
+    selection?: LessonProjectFileSelection;
+    onCodeChange: (code: string) => void;
+    onSelectionChange: (value: { index: number, length: number }) => void;
+}) => {
+
     const [inputText, setInputText] = useState(code);
     const [inputHtml, setInputHtml] = useState(``);
     const changeInputText = (value: string) => {
@@ -244,7 +286,7 @@ const CodeEditor_Edit = ({ code, language, selection, onCodeChange }: { code: st
     };
     useEffect(() => {
         setInputHtml(getCodeHtmlFormatted(getCodeHtmlParts(code, language, selection)).htmlFull);
-    }, [code]);
+    }, [code, selection]);
 
     return (
         <View >
@@ -263,6 +305,7 @@ const CodeEditor_Edit = ({ code, language, selection, onCodeChange }: { code: st
                     keyboardType='default'
                     multiline
                     numberOfLines={16}
+                    onSelectionChange={x => onSelectionChange({ index: x.start, length: x.end - x.start })}
                 />
             </View>
             <View>
