@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { View, Text, TextInput, TouchableOpacity } from 'react-native-lite';
 import { FileCodeEditor, FileEditorMode, ProjectCodeEditor, ProjectEditorMode } from '../common/components/code-editor';
-import { LessonData, LessonStep_ConstructCode } from '../common/lesson-types';
+import { LessonData, LessonProjectFileSelection, LessonProjectState, LessonStep_ConstructCode } from '../common/lesson-types';
 
 const createDefaultLesson = (): LessonData => {
     const file = {
@@ -144,7 +144,9 @@ export const LessonEditor = (props: {}) => {
         { value: `json`, label: `Json` },
         { value: `constructCode`, label: `Construct Code` },
     ] as { value: EditorMode, label: string }[];
-    const projectEditorMode: ProjectEditorMode = `tabs`;
+    const projectEditorMode: ProjectEditorMode =
+        editorMode === `edit` ? `edit`
+            : `display`;
     const fileEditorMode_focus: FileEditorMode =
         editorMode === `edit` ? `edit`
             : editorMode === `constructCode` ? `type-selection`
@@ -156,6 +158,13 @@ export const LessonEditor = (props: {}) => {
 
     const changeLessonJson = (json: string) => {
         setData(createLessonState(JSON.parse(json), json));
+    };
+
+    const onProjectDataChange = (projectData: { projectState?: LessonProjectState, focus?: LessonProjectFileSelection }) => {
+        setData(createLessonState({
+            ...data.lesson,
+            ...projectData,
+        }));
     };
 
     const {
@@ -183,7 +192,16 @@ export const LessonEditor = (props: {}) => {
                     {editorMode !== `json` && (
                         <>
                             <Text style={styles.sectionHeaderText}>Project Files</Text>
-                            <ProjectCodeEditor projectState={projectState} focus={focus} fileEditorMode_focus={fileEditorMode_focus} fileEditorMode_noFocus={fileEditorMode_noFocus} projectEditorMode={projectEditorMode} />
+                            <ProjectCodeEditor
+                                projectData={{
+                                    projectState,
+                                    focus,
+                                }}
+                                fileEditorMode_focus={fileEditorMode_focus}
+                                fileEditorMode_noFocus={fileEditorMode_noFocus}
+                                projectEditorMode={projectEditorMode}
+                                onProjectDataChange={onProjectDataChange}
+                            />
 
                             <Text style={styles.sectionHeaderText}>Lesson</Text>
                             <View style={styles.infoView}>
