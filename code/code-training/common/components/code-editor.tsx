@@ -217,13 +217,13 @@ export const FileCodeEditor = ({ file, selection, mode, onCodeChange }: { file: 
     );
 };
 
-const CodeEditor_Display = ({ code, language }: { code: string, language: 'tsx', selection?: LessonProjectFileSelection }) => {
-    const htmlWithSelection = highlight(code, languages[language], language);
+const CodeEditor_Display = ({ code, language, selection }: { code: string, language: 'tsx', selection?: LessonProjectFileSelection }) => {
+    const { htmlFull } = getCodeHtmlFormatted(getCodeHtmlParts(code, language, selection));
     return (
         <View >
             <View>
                 <pre style={{ margin: 0 }} className={`language-${language}`}>
-                    <code className={`language-${language}`} dangerouslySetInnerHTML={{ __html: htmlWithSelection }} />
+                    <code className={`language-${language}`} dangerouslySetInnerHTML={{ __html: htmlFull }} />
                 </pre>
             </View>
         </View>
@@ -235,15 +235,15 @@ const CodeEditor_Edit = ({ code, language, selection, onCodeChange }: { code: st
     const [inputHtml, setInputHtml] = useState(``);
     const changeInputText = (value: string) => {
         setInputText(value);
-        setInputHtml(highlight(value, languages[language], language));
+        setInputHtml(getCodeHtmlFormatted(getCodeHtmlParts(code, language, selection)).htmlFull);
     };
     const onBlur = () => {
         setInputText(inputText);
-        setInputHtml(highlight(inputText, languages[language], language));
+        setInputHtml(getCodeHtmlFormatted(getCodeHtmlParts(code, language, selection)).htmlFull);
         onCodeChange(inputText);
     };
     useEffect(() => {
-        setInputHtml(highlight(inputText, languages[language], language));
+        setInputHtml(getCodeHtmlFormatted(getCodeHtmlParts(code, language, selection)).htmlFull);
     }, [code]);
 
     return (
@@ -285,16 +285,30 @@ type CodeHtmlParts = {
     codeParts: StringSpan[];
 };
 const getCodeHtmlParts = (code: string, language: 'tsx', selection?: LessonProjectFileSelection): CodeHtmlParts => {
-    let codeBefore = code;
-    let codeFocus = ``;
-    let codeAfter = ``;
-
-    if (selection) {
-        codeBefore = code.substr(0, selection.index);
-        codeFocus = code.substr(selection.index, selection.length);
-        codeAfter = code.substr(selection.index + selection.length);
+    if (!selection) {
+        // return {
+        //     codeBefore: ``,
+        //     codeFocus: code,
+        //     codeAfter: ``,
+        //     codeParts: [],
+        //     htmlBefore: ``,
+        //     htmlFocus: highlight(code, languages[language], language),
+        //     htmlAfter: ``,
+        // };
+        return {
+            codeBefore: code,
+            codeFocus: ``,
+            codeAfter: ``,
+            codeParts: [],
+            htmlBefore: highlight(code, languages[language], language),
+            htmlFocus: ``,
+            htmlAfter: ``,
+        };
     }
 
+    const codeBefore = code.substr(0, selection.index);
+    const codeFocus = code.substr(selection.index, selection.length);
+    const codeAfter = code.substr(selection.index + selection.length);
 
     const htmlWithSelection = highlight(code, languages[language], language);
     const htmlWithoutSelection = highlight(codeBefore + codeAfter, languages[language], language);
@@ -322,7 +336,7 @@ const getCodeHtmlParts = (code: string, language: 'tsx', selection?: LessonProje
     // const pairs = splitCodeSpanTags(htmlFocus);
     // setCodeHtmlPairs(pairs);
     const cPartsRaw = new StringSpan(codeFocus, 0, codeFocus.length).splitOnRegExp(/\W/g);
-    const cParts = cPartsRaw.flatMap(x => x.length <= 1 ? [x] : [x.transform(0, -(x.length - 1)), x.transform(1, 0)]).filter(x => x.length > 0);
+    const codeParts = cPartsRaw.flatMap(x => x.length <= 1 ? [x] : [x.transform(0, -(x.length - 1)), x.transform(1, 0)]).filter(x => x.length > 0);
     // const cParts = new StringSpan(codeFocus, 0, codeFocus.length).splitOnRegExp(/\W/g).flatMap(x => x.length === 1 ? [x] : [x.transform(0, -(x.length - 1)), x.transform(1, 0)]);
 
     // console.log(`CodeEditor`, {
@@ -344,35 +358,43 @@ const getCodeHtmlParts = (code: string, language: 'tsx', selection?: LessonProje
         htmlBefore,
         htmlFocus,
         htmlAfter,
-        codeParts: cParts,
+        codeParts,
     };
 };
 
-const getCodeHtmlFormatted = ({
-    codeHtmlParts: {
-        codeBefore,
-        codeFocus,
-        codeAfter,
+const getCodeHtmlFormatted = (
+    codeHtmlParts: CodeHtmlParts,
+    inputOptions?: {
+        inputHtml: string;
+        feedbackOpacity: number;
+        feedback: { isDone: boolean, message: string, isCorrect: boolean };
+        autoComplete: { textCompleted: string, text: string, isSelected: boolean, isWrong: boolean }[];
+        isBlink: boolean;
+        isActive: boolean;
+    },
+) => {
+    const {
         htmlBefore,
         htmlFocus,
         htmlAfter,
-        codeParts: cParts,
-    },
-    inputHtml,
-    feedbackOpacity,
-    feedback,
-    autoComplete,
-    isBlink,
-    isActive,
-}: {
-    codeHtmlParts: CodeHtmlParts;
-    inputHtml: string;
-    feedbackOpacity: number;
-    feedback: { isDone: boolean, message: string, isCorrect: boolean };
-    autoComplete: { textCompleted: string, text: string, isSelected: boolean, isWrong: boolean }[];
-    isBlink: boolean;
-    isActive: boolean;
-}) => {
+    } = codeHtmlParts;
+
+    if (!inputOptions) {
+        const html_full = `<span style='opacity:0.5'>${htmlBefore}</span><span style='opacity:1'>${htmlFocus}</span><span style='opacity:0.5'>${htmlAfter}</span>`;
+        return {
+            htmlFull: html_full,
+        };
+    }
+
+    const {
+        inputHtml,
+        feedbackOpacity,
+        feedback,
+        autoComplete,
+        isBlink,
+        isActive,
+    } = inputOptions;
+
     const css_feedbackWrapper = `display: inline-block; position: relative; bottom: 40px; width:0px; opacity:${feedbackOpacity > 0.7 ? 1 : 0}`;
     const css_feedback_correct = `  display: inline-block; padding: 4px; position: absolute; color:#88FF88; background:#000000; border-radius:4px`;
     const css_feedback_incorrect = `display: inline-block; padding: 4px; position: absolute; color:#FF8888; background:#000000; border-radius:4px`;
@@ -583,7 +605,7 @@ const CodeEditor_TypeSelection = ({ code, language, selection }: { code: string,
         return <></>;
     }
 
-    const { htmlFull } = getCodeHtmlFormatted({ codeHtmlParts, autoComplete, feedback, feedbackOpacity, inputHtml, isActive, isBlink });
+    const { htmlFull } = getCodeHtmlFormatted(codeHtmlParts, { autoComplete, feedback, feedbackOpacity, inputHtml, isActive, isBlink });
     const autoCompletePadding = 100;
     // console.log(`CodeEditor`, { mode });
 
