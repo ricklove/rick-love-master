@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { View, Text, TextInput, TouchableOpacity } from 'react-native-lite';
-import { FileCodeEditor, FileEditorMode } from '../common/components/code-editor';
+import { FileCodeEditor, FileEditorMode, ProjectCodeEditor, ProjectEditorMode } from '../common/components/code-editor';
 import { LessonData, LessonStep_ConstructCode } from '../common/lesson-types';
 
 const createDefaultLesson = (): LessonData => {
@@ -17,13 +17,39 @@ export const MinimalReactComponent = (props: {}) => {
         `.trim(),
         language: `tsx` as const,
     };
+    const file0 = {
+        path: `test0.tsx`,
+        content: `
+import React from 'react';
+
+export const MinimalReactComponent0 = (props: {}) => {
+    return (
+        <span>Hello World 0!</span>
+    );
+};
+        `.trim(),
+        language: `tsx` as const,
+    };
+    const file2 = {
+        path: `test2.tsx`,
+        content: `
+import React from 'react';
+
+export const MinimalReactComponent2 = (props: {}) => {
+    return (
+        <span>Hello World 2!</span>
+    );
+};
+        `.trim(),
+        language: `tsx` as const,
+    };
 
     const focusIndex = file.content.indexOf(`<span>Hello World!</span>`);
     const focusLength = `<span>Hello World!</span>`.length;
 
     const lesson: LessonData = {
         projectState: {
-            files: [file],
+            files: [file0, file, file2],
         },
         focus: {
             filePath: file.path,
@@ -84,7 +110,7 @@ const styles = {
         wrap: `wrap`,
     },
     jsonText: {
-        margin: 8,
+        padding: 4,
         fontSize: 12,
         color: `#FFFFFF`,
         background: `#000000`,
@@ -111,12 +137,14 @@ const createLessonState = (lesson: LessonData, lessonJson?: string) => {
 export const LessonEditor = (props: {}) => {
 
     const [data, setData] = useState(createLessonState(createDefaultLesson()));
-    type EditorMode = 'edit' | 'constructCode';
+    type EditorMode = 'edit' | 'json' | 'constructCode';
     const [editorMode, setEditorMode] = useState(`edit` as EditorMode);
     const editorModes = [
         { value: `edit`, label: `Edit` },
+        { value: `json`, label: `Json` },
         { value: `constructCode`, label: `Construct Code` },
     ] as { value: EditorMode, label: string }[];
+    const projectEditorMode: ProjectEditorMode = `tabs`;
     const fileEditorMode_focus: FileEditorMode =
         editorMode === `edit` ? `edit`
             : editorMode === `constructCode` ? `type-selection`
@@ -152,29 +180,36 @@ export const LessonEditor = (props: {}) => {
                     ))}
                 </View>
                 <View style={styles.containerPanel}>
-                    <Text style={styles.sectionHeaderText}>Project Files</Text>
-                    {projectState.files.map(x => (
-                        <FileCodeEditor key={x.path} file={x} selection={focus.filePath === x.path ? focus : undefined} mode={focus.filePath === x.path ? fileEditorMode_focus : fileEditorMode_noFocus} />
-                    ))}
-                    <Text style={styles.sectionHeaderText}>Lesson</Text>
-                    <View style={styles.infoView}>
-                        <Text style={styles.infoText}>{`title: ${title}`}</Text>
-                        <Text style={styles.infoText}>{`objective: ${objective}`}</Text>
-                        <Text style={styles.infoText}>{`explanation: ${explanation}`}</Text>
-                        <Text style={styles.infoText}>{`task: ${task}`}</Text>
-                    </View>
-                    <Text style={styles.sectionHeaderText}>Lesson Data</Text>
-                    <View>
-                        <TextInput
-                            style={styles.jsonText}
-                            value={data.lessonJson}
-                            onChange={changeLessonJson}
-                            autoCompleteType='off'
-                            keyboardType='default'
-                            multiline
-                            numberOfLines={20}
-                        />
-                    </View>
+                    {editorMode !== `json` && (
+                        <>
+                            <Text style={styles.sectionHeaderText}>Project Files</Text>
+                            <ProjectCodeEditor projectState={projectState} focus={focus} fileEditorMode_focus={fileEditorMode_focus} fileEditorMode_noFocus={fileEditorMode_noFocus} projectEditorMode={projectEditorMode} />
+
+                            <Text style={styles.sectionHeaderText}>Lesson</Text>
+                            <View style={styles.infoView}>
+                                <Text style={styles.infoText}>{`title: ${title}`}</Text>
+                                <Text style={styles.infoText}>{`objective: ${objective}`}</Text>
+                                <Text style={styles.infoText}>{`explanation: ${explanation}`}</Text>
+                                <Text style={styles.infoText}>{`task: ${task}`}</Text>
+                            </View>
+                        </>
+                    )}
+                    {editorMode === `json` && (
+                        <>
+                            <Text style={styles.sectionHeaderText}>Lesson Data</Text>
+                            <View>
+                                <TextInput
+                                    style={styles.jsonText}
+                                    value={data.lessonJson}
+                                    onChange={changeLessonJson}
+                                    autoCompleteType='off'
+                                    keyboardType='default'
+                                    multiline
+                                    numberOfLines={20}
+                                />
+                            </View>
+                        </>
+                    )}
                 </View>
             </View>
         </>

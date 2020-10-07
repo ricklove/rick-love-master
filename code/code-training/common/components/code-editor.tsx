@@ -1,7 +1,7 @@
 /* eslint-disable unicorn/no-for-loop */
 /* eslint-disable react/no-danger */
 import React, { useEffect, useState } from 'react';
-import { View, Text, TextInput } from 'react-native-lite';
+import { View, Text, TextInput, TouchableOpacity } from 'react-native-lite';
 import { highlight, languages } from 'prismjs';
 import 'prismjs/components/prism-typescript';
 import 'prismjs/components/prism-jsx';
@@ -10,16 +10,78 @@ import 'prism-themes/themes/prism-vsc-dark-plus.css';
 import { distinct, shuffle } from 'utils/arrays';
 import { StringSpan } from 'utils/string-span';
 import { randomItem } from 'utils/random';
-import { LessonProjectFile, LessonProjectFileSelection } from '../lesson-types';
+import { LessonProjectFile, LessonProjectFileSelection, LessonProjectState } from '../lesson-types';
 import { isSimilarCodeToken } from './code-editor-helpers';
+
+const styles = {
+    editorModeTabRowView: {
+        flexDirection: `row`,
+        paddingLeft: 16,
+    },
+    editorModeTabView: {
+        background: `#1e1e1e`,
+        alignSelf: `flex-start`,
+        padding: 4,
+        marginRight: 1,
+    },
+    editorModeTabView_selected: {
+        background: `#292a2d`,
+        alignSelf: `flex-start`,
+        padding: 4,
+        marginRight: 1,
+    },
+    editorModeTabText: {
+        fontSize: 14,
+        color: `#FFFFFFF`,
+    },
+    editorModeTabText_selected: {
+        fontSize: 14,
+        color: `#FFFF88`,
+    },
+} as const;
+
+export type ProjectEditorMode = 'tabs';
+export const ProjectCodeEditor = ({
+    projectState,
+    focus,
+    projectEditorMode,
+    fileEditorMode_focus,
+    fileEditorMode_noFocus,
+}: {
+    projectState: LessonProjectState;
+    focus: LessonProjectFileSelection;
+    projectEditorMode: ProjectEditorMode;
+    fileEditorMode_focus: FileEditorMode;
+    fileEditorMode_noFocus: FileEditorMode;
+}) => {
+    const [activeFilePath, setActiveFilePath] = useState(focus.filePath);
+    const activeFile = projectState.files.find(x => x.path === activeFilePath) ?? projectState.files[0];
+
+    return (
+        <>
+            <View style={styles.editorModeTabRowView}>
+                {projectState.files.map(x => (
+                    <TouchableOpacity key={x.path + activeFilePath} onPress={() => setActiveFilePath(x.path)}>
+                        <View style={x.path === activeFilePath ? styles.editorModeTabView_selected : styles.editorModeTabView}>
+                            <Text style={x.path === activeFilePath ? styles.editorModeTabText_selected : styles.editorModeTabText}>{`${focus.filePath === x.path ? `📝 ` : ``} ${x.path}`}</Text>
+                        </View>
+                    </TouchableOpacity>
+                ))}
+            </View>
+            {[activeFile].map(x => (
+                <FileCodeEditor key={x.path} file={x} selection={focus.filePath === x.path ? focus : undefined} mode={focus.filePath === x.path ? fileEditorMode_focus : fileEditorMode_noFocus} />
+            ))}
+        </>
+    );
+};
 
 export type FileEditorMode = 'display' | 'edit' | 'type-selection';
 export const FileCodeEditor = ({ file, selection, mode }: { file: LessonProjectFile, selection?: LessonProjectFileSelection, mode: FileEditorMode }) => {
     return (
         <View style={{}}>
-            <View style={{ background: `#1e1e1e`, alignSelf: `flex-start`, padding: 4 }}>
+            {/* <View style={{ background: `#1e1e1e`, alignSelf: `flex-start`, padding: 4 }}>
                 <Text>{`📝 ${file.path}`}</Text>
-            </View>
+            </View> */}
             <View style={{ padding: 0 }}>
                 {mode === `display` && (
                     <CodeEditor_Display code={file.content} language={file.language} selection={selection} />
@@ -68,6 +130,12 @@ const CodeEditor_Edit = ({ code, language }: { code: string, language: 'tsx', se
         <View >
             <View style={{}}>
                 <TextInput
+                    style={{
+                        padding: 4,
+                        fontSize: 12,
+                        color: `#FFFFFF`,
+                        background: `#000000`,
+                    }}
                     value={inputText}
                     onChange={changeInputText}
                     onBlur={onBlur}
