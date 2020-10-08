@@ -275,17 +275,24 @@ const CodeEditor_Edit = ({ code, language, selection, onCodeChange, onSelectionC
 
     const [inputText, setInputText] = useState(code);
     const [inputHtml, setInputHtml] = useState(``);
+    const [codeHtmlParts, setCodeHtmlParts] = useState(null as null | CodeHtmlParts);
     const changeInputText = (value: string) => {
         setInputText(value);
-        setInputHtml(getCodeHtmlFormatted(getCodeHtmlParts(code, language, selection)).htmlFull);
+        const parts = getCodeHtmlParts(code, language, selection);
+        setCodeHtmlParts(parts);
+        setInputHtml(getCodeHtmlFormatted(parts).htmlFull);
     };
     const onBlur = () => {
         setInputText(inputText);
-        setInputHtml(getCodeHtmlFormatted(getCodeHtmlParts(code, language, selection)).htmlFull);
+        const parts = getCodeHtmlParts(code, language, selection);
+        setCodeHtmlParts(parts);
+        setInputHtml(getCodeHtmlFormatted(parts).htmlFull);
         onCodeChange(inputText);
     };
     useEffect(() => {
-        setInputHtml(getCodeHtmlFormatted(getCodeHtmlParts(code, language, selection)).htmlFull);
+        const parts = getCodeHtmlParts(code, language, selection);
+        setCodeHtmlParts(parts);
+        setInputHtml(getCodeHtmlFormatted(parts).htmlFull);
     }, [code, selection]);
 
     return (
@@ -313,9 +320,92 @@ const CodeEditor_Edit = ({ code, language, selection, onCodeChange, onSelectionC
                     <code className={`language-${language}`} dangerouslySetInnerHTML={{ __html: inputHtml }} />
                 </pre>
             </View>
+            <View>
+                <Text>Before:</Text>
+                <div><span style={{ background: `#111100`, whiteSpace: `pre` }} >{codeHtmlParts?.codeBefore}</span></div>
+                <div><span style={{ background: `#001111`, whiteSpace: `pre` }} dangerouslySetInnerHTML={{ __html: `${codeHtmlParts?.htmlBefore}` }} /></div>
+                <Text>Focus:</Text>
+                <div><span style={{ background: `#111100`, whiteSpace: `pre` }} >{codeHtmlParts?.codeFocus}</span></div>
+                <div><span style={{ background: `#001111`, whiteSpace: `pre` }} dangerouslySetInnerHTML={{ __html: `${codeHtmlParts?.htmlFocus}` }} /></div>
+                <Text>After:</Text>
+                <div><span style={{ background: `#111100`, whiteSpace: `pre` }} >{codeHtmlParts?.codeAfter}</span></div>
+                <div><span style={{ background: `#001111`, whiteSpace: `pre` }} dangerouslySetInnerHTML={{ __html: `${codeHtmlParts?.htmlAfter}` }} /></div>
+            </View>
 
         </View>
     );
+};
+
+const parseHighlightedSpans = (html: string) => {
+    const h = new StringSpan(html, 0, html.length);
+    const tagsWithCode = h.splitOnRegExp(/<[^>]*>/g).filter(x => x.length > 0).map(t => {
+
+        const iTagLast = t.indexOf(`>`);
+        if (iTagLast < 0) {
+            return {
+                raw: t,
+                tag: t,
+                code: t,
+            };
+        }
+
+        const iTagLength = iTagLast - t.start + 1;
+        return {
+            raw: t,
+            tag: t.newRange(t.start, iTagLength),
+            code: t.newRange(iTagLast + 1, t.length - iTagLength),
+        };
+    });
+
+    const tagContext = [] as StringSpan[];
+    const tagsWithContext = tagsWithCode.map(t => {
+        if (t.tag.startsWith(`</`)) {
+            tagContext.pop();
+        } else if (t.tag.startsWith(`<`)) {
+            tagContext.push(t.tag);
+        }
+        return {
+            ...t,
+            context: [...tagContext],
+        };
+    });
+    const tagsWithClasses = tagsWithContext.map(t => {
+        const classInfos = t.context.map(c => {
+            const cParts = c.splitOnRegExp(/class=('|")/g);
+            if (cParts.length <= 1) { return { raw: c, cParts }; }
+            // return cParts.map(x => x.toString());
+
+            const classPart = cParts[1];
+            const classContentParts = classPart.splitOnRegExp(/('|")/g);
+            // return classContentParts.map(x => x.toString());
+
+            const classContent = classContentParts[1].trimStart([`"`, `'`]);
+            if (!classContent) { return { raw: c, cParts, classContentParts }; }
+
+            return {
+                raw: c,
+                cParts,
+                classContentParts,
+                classContent: classContent.toString(),
+                classes: classContent.toString().split(` `).filter(x => x).map(x => x as string),
+            };
+        });
+        return {
+            ...t,
+            classInfos,
+            classes: distinct(classInfos.flatMap(x => x.classes ?? [])),
+        };
+    });
+
+    const codeWithClasses = tagsWithClasses.map(x => ({
+        code: x.code,
+        classes: x.classes,
+    }))
+        .filter(x => x.code);
+
+    // console.log(`parseHighlightedSpans`, { codeWithClasses, tagsWithClasses, summary: codeWithClasses.map(x => `<span class='${x.classes.join(` `)}'>${x.code}</span>`).join(``) });
+    // const iFocus = h.lastIndexOf(`<span`, lengthSameStart);
+    return codeWithClasses;
 };
 
 type CodeHtmlParts = {
@@ -354,6 +444,7 @@ const getCodeHtmlParts = (code: string, language: 'tsx', selection?: LessonProje
     const codeAfter = code.substr(selection.index + selection.length);
 
     const htmlWithSelection = highlight(code, languages[language], language);
+    const codeWithClasses = parseHighlightedSpans(htmlWithSelection);
     const htmlWithoutSelection = highlight(codeBefore + codeAfter, languages[language], language);
 
     let lengthSameStart = 0;

@@ -12,10 +12,10 @@ export class StringSpan {
 
     public readonly length: number;
 
-    constructor(source: string, start: number, length: number) {
+    constructor(source: string, start?: number, length?: number) {
         this.source = source;
-        this.start = start;
-        this.length = length;
+        this.start = start ?? 0;
+        this.length = length ?? source.length;
 
         if (DEBUG) {
             this.debug = this.toString();
@@ -86,7 +86,9 @@ export class StringSpan {
         let iLast = iMin;
         let i = this.indexOf(d);
 
-        while (i >= 0 && (!maxCount || spans.length < maxCount - 1)) {
+        while (i >= 0
+            && i <= iEnd
+            && (!maxCount || spans.length < maxCount - 1)) {
             spans.push(new StringSpan(s, iLast, i - iLast));
 
             iLast = i;
@@ -96,7 +98,11 @@ export class StringSpan {
         i = iEnd;
         spans.push(new StringSpan(s, iLast, i - iLast));
 
-        return spans;
+        const spans_inRange = spans.filter(x => x.length > 0
+            && x.start >= this.start
+            && x.start + x.length <= this.start + this.length);
+
+        return spans_inRange;
     };
 
     splitOnRegExp = (d: RegExp, maxCount: number | null = null) => {
@@ -112,7 +118,9 @@ export class StringSpan {
         d.lastIndex = this.start;
         let m = d.exec(s);
 
-        while (m && (!maxCount || spans.length < maxCount - 1)) {
+        while (m
+            && m.index <= iEnd
+            && (!maxCount || spans.length < maxCount - 1)) {
             spans.push(new StringSpan(s, iLast, m.index - iLast));
 
             iLast = m.index;
@@ -122,7 +130,11 @@ export class StringSpan {
         const i = iEnd;
         spans.push(new StringSpan(s, iLast, i - iLast));
 
-        return spans;
+        const spans_inRange = spans.filter(x => x.length > 0
+            && x.start >= this.start
+            && x.start + x.length <= this.start + this.length);
+
+        return spans_inRange;
     };
 
     // private static regex_spaces = new RegExp('\\s', 'g');
@@ -215,7 +227,7 @@ export class StringSpan {
 };
 
 
-const runsStringSpanTests = () => {
+const runStringSpanTests = () => {
     const text = ` This is a new test! `;
     const s = new StringSpan(text, 0, text.length);
 
@@ -237,9 +249,17 @@ const runsStringSpanTests = () => {
     test(`lastIndexOf(i)`, s.lastIndexOf(`i`), text.lastIndexOf(`i`));
     test(`lastIndexOf( )`, s.lastIndexOf(` `), text.lastIndexOf(` `));
 
-    test(`split`, s.splitOn(` `).join(``), text.split(` `).join(` `));
+    test(`splitOn`, s.splitOn(` `).join(``), text.split(` `).join(` `));
     test(`splitOnRegExp`, s.splitOnRegExp(/\W/g).join(``), text.split(` `).join(` `));
-    test(`splitOnRegExp`, s.splitOnRegExp(/\W/g).join(`,`), `, This, is, a, new, test,!, `);
+    test(`splitOnRegExp`, s.splitOnRegExp(/\W/g).join(`,`), ` This, is, a, new, test,!, `);
+    test(`splitOnRegExp`, s.splitOnRegExp(/is/g).join(`,`), ` Th,is ,is a new test! `);
+    test(`splitOnRegExp`, new StringSpan(`<span class="ca cb cc">test</span>`).splitOnRegExp(/('|")/g).join(`,`), `<span class=,"ca cb cc,">test</span>`);
+
+    const s2 = new StringSpan(`<span class="ca cb cc">test</span>`).splitOn(`</span>`)[0].splitOn(`class`)[1];
+    test(`splitOn       - s2`, s2.toString(), `class="ca cb cc">test`);
+    test(`splitOnRegExp - s2`, s2.splitOnRegExp(/</g).join(`,`), `class="ca cb cc">test`);
+    test(`splitOnRegExp - s2`, s2.splitOnRegExp(/>/g).join(`,`), `class="ca cb cc",>test`);
+    test(`splitOnRegExp - s2`, s2.splitOnRegExp(/('|")/g).join(`,`), `class=,"ca cb cc,">test`);
 
     test(`trimStart`, s.trimStart().toString(), text.trimStart());
     test(`trimEnd`, s.trimEnd().toString(), text.trimEnd());
@@ -248,8 +268,6 @@ const runsStringSpanTests = () => {
     test(`trim Multiple`, s.trim([` `, `!`]).toString(), `This is a new test`);
     test(`trim Words`, s.trim([` `, `!`, `This`]).toString(), `is a new test`);
     test(`trim Complex`, s.trim().trim([`This`, `test!`]).trim().toString(), `is a new`);
-
-
 };
 
-// runsStringSpanTests();
+// runStringSpanTests();
