@@ -1,4 +1,4 @@
-import { distinct } from 'utils/arrays';
+import { distinct, shuffle } from 'utils/arrays';
 import { StringSpan } from 'utils/string-span';
 import { highlight, languages } from 'prismjs';
 import { LessonProjectFileSelection } from '../lesson-types';
@@ -57,11 +57,9 @@ const parseHighlightedSpans = (html: string): CodeWithClasses[] => {
         const classInfos = t.context.map(c => {
             const cParts = c.splitOnRegExp(/class=('|")/g);
             if (cParts.length <= 1) { return { raw: c, cParts }; }
-            // return cParts.map(x => x.toString());
 
             const classPart = cParts[1];
             const classContentParts = classPart.splitOnRegExp(/('|")/g);
-            // return classContentParts.map(x => x.toString());
 
             const classContent = classContentParts[1].trimStart([`"`, `'`]);
             if (!classContent) { return { raw: c, cParts, classContentParts }; }
@@ -70,8 +68,8 @@ const parseHighlightedSpans = (html: string): CodeWithClasses[] => {
                 raw: c,
                 cParts,
                 classContentParts,
-                classContent: classContent.toString(),
-                classes: classContent.toString().split(` `).filter(x => x).map(x => x as string),
+                classContent: classContent.toText(),
+                classes: classContent.toText().split(` `).filter(x => x).map(x => x as string),
             };
         });
         return {
@@ -82,7 +80,7 @@ const parseHighlightedSpans = (html: string): CodeWithClasses[] => {
     });
 
     const codeWithClasses = tagsWithClasses.map(x => ({
-        code: x.code.toString()
+        code: x.code.toText()
             .replace(/&lt;/g, `<`)
             .replace(/&gt;/g, `>`)
             .replace(/&amp;/g, `&`)
@@ -101,16 +99,18 @@ export type CodePart = {
     classes: string[];
     index: number;
     length: number;
+    indexAfterEnd: number;
     isInSelection: boolean;
 };
 export type CodePartsData = {
     // codeBefore: string;
-    // codeFocus: string;
+    codeFocus: string;
     // codeAfter: string;
     codeParts: CodePart[];
     selection?: LessonProjectFileSelection;
 };
 export const getCodeParts = (code: string, language: 'tsx', selection?: LessonProjectFileSelection): CodePartsData => {
+
     const html = highlight(code, languages[language], language);
     const codeWithClasses = parseHighlightedSpans(html);
     let index = 0;
@@ -131,30 +131,51 @@ export const getCodeParts = (code: string, language: 'tsx', selection?: LessonPr
         console.error(`getCodeParts FAILED`, { codeParts: codeWithClasses, codePartsFailed: codeParts.filter(x => x.code !== x._rawCode) });
     }
 
-    const s0 = selection ?? {
+    const s = selection ?? {
         index: 0,
         length: code.length,
     };
+
+    const codePartsAll = modifyCodeParts(codeParts.map(x => ({ ...x, isInSelection: true, indexAfterEnd: x.index + x.length })), s, (x, inRange) => ({ ...x, isInSelection: inRange }));
+
+    console.log(`getCodeParts`, {
+        codePartsAll,
+        code,
+        selection,
+    });
+
+    if (codePartsAll.some(x => x.code !== code.substr(x.index, x.length))) {
+        console.error(`getCodeParts FAILED`, { codeParts: codeWithClasses, codePartsFailed: codeParts.filter(x => x.code !== x._rawCode) });
+    }
+
+    const codeFocus = code.substr(s.index, s.length);
+    return {
+        codeFocus,
+        codeParts: codePartsAll,
+        selection,
+    };
+};
+const modifyCodeParts = <T extends CodePart>(codeParts: CodePart[], range: { index: number, length: number }, getCodePart: (codePart: CodePart, inRange: boolean) => T): T[] => {
     const s = {
-        ...s0,
-        indexAfterEnd: s0.index + s0.length,
+        ...range,
+        indexAfterEnd: range.index + range.length,
     };
 
-    const codePartsAll: CodePart[] = [];
+    const codePartsAll: T[] = [];
     for (const c of codeParts) {
         // Before
         if (c.indexAfterEnd < s.index) {
-            codePartsAll.push({ ...c, isInSelection: false });
+            codePartsAll.push(getCodePart(c, false));
             continue;
         }
         // After
         if (c.index > s.indexAfterEnd) {
-            codePartsAll.push({ ...c, isInSelection: false });
+            codePartsAll.push(getCodePart(c, false));
             continue;
         }
         // Within
         if (c.index >= s.index && c.indexAfterEnd <= s.indexAfterEnd) {
-            codePartsAll.push({ ...c, isInSelection: true });
+            codePartsAll.push(getCodePart(c, true));
             continue;
         }
 
@@ -167,52 +188,55 @@ export const getCodeParts = (code: string, language: 'tsx', selection?: LessonPr
         const within = c.code.substr(iCodeStart, iCodeAfterEnd - iCodeStart);
         const after = c.code.substr(iCodeAfterEnd, c.length - iCodeAfterEnd);
         codePartsAll.push(...[
-            { ...c, code: before, index: c.index, length: iCodeStart, isInSelection: false },
-            { ...c, code: within, index: c.index + iCodeStart, length: iCodeAfterEnd - iCodeStart, isInSelection: true },
-            { ...c, code: after, index: c.index + iCodeAfterEnd, length: c.length - iCodeAfterEnd, isInSelection: false },
+            getCodePart({ ...c, code: before, index: c.index, length: iCodeStart }, false),
+            getCodePart({ ...c, code: within, index: c.index + iCodeStart, length: iCodeAfterEnd - iCodeStart }, true),
+            getCodePart({ ...c, code: after, index: c.index + iCodeAfterEnd, length: c.length - iCodeAfterEnd }, false),
         ].filter(x => x.length > 0));
     }
-    console.log(`getCodeParts`, {
-        codePartsAll,
-        code,
-        selection,
-    });
 
-    if (codePartsAll.some(x => x.code !== code.substr(x.index, x.length))) {
-        console.error(`getCodeParts FAILED`, { codeParts: codeWithClasses, codePartsFailed: codeParts.filter(x => x.code !== x._rawCode) });
+    return codePartsAll;
+};
+
+export const getCodePartsCompleted = (codeParts: CodePart[], incomplete: { index: number, length: number }, options?: { showBlank?: boolean }): CodePart[] => {
+    const codePartsCompleted = modifyCodeParts(codeParts, incomplete, (x, inRange) => ({ ...x, isIncomplete: inRange }));
+    if (options?.showBlank) {
+        return codePartsCompleted.map(x => ({ ...x, code: x.isIncomplete ? x.code.replace(/./g, ` `) : x.code }));
+    }
+    return codePartsCompleted.filter(x => !x.isIncomplete);
+};
+
+export const getAutoComplete = ({ codeParts, selection }: { codeParts: CodePart[], selection?: { index: number, length: number } }, codeFocusCompleted?: string) => {
+    if (!selection
+        || codeFocusCompleted == null
+        || selection.length === codeFocusCompleted.length
+    ) {
+        return [];
     }
 
-    // const before = codeParts.filter(x => x.indexAfterEnd <= s.index);
-    // const beforeToSplit = codeParts.filter(x => x.index < s.index && x.indexAfterEnd > s.index);
-    // const within = codeParts.filter(x => x.index >= s.index && x.indexAfterEnd <= s.indexAfterEnd);
-    // const afterToSplit = codeParts.filter(x => x.index < s.indexAfterEnd && x.indexAfterEnd > s.indexAfterEnd);
-    // const after = codeParts.filter(x => x.index >= s.indexAfterEnd);
+    // const remaining = code_focus.substr(completed.length);
 
-    // const codePartsAll = [
-    //     ...before.map(x => ({ ...x, isInSelection: false })),
-    //     ...beforeToSplit.map(x => ({ ...x, isInSelection: false })),
-    //     ...within.map(x => ({ ...x, isInSelection: true })),
-    //     ...afterToSplit.map(x => ({ ...x, isInSelection: false })),
-    //     ...after.map(x => ({ ...x, isInSelection: false })),
-    // ];
+    const nextPartIndexRaw = codeParts.findIndex(x => x.index > selection.index + codeFocusCompleted.length);
+    const nextPartIndex = nextPartIndexRaw < 0 ? codeParts.length : nextPartIndexRaw;
+    const activePartText = codeParts[nextPartIndex - 1]?.code;
+    const iDone = codeParts[nextPartIndex - 1]?.index;
+    // console.log(`updateAutoComplete`, { iNext, iDone, activePart: activePartText, codeParts, codeFocusCompleted });
 
-    // console.log(`getCodeParts`, {
-    //     codePartsAll, sections: {
-    //         before,
-    //         beforeToSplit,
-    //         within,
-    //         afterToSplit,
-    //         after,
-    //     },
-    //     code, selection,
-    // });
+    if (!activePartText?.trim()) {
+        return [];
+    }
 
+    const activePartTextCompleted = activePartText.substr(0, codeFocusCompleted.length + selection.index - iDone);
+    const matchWords = distinct(codeParts
+        .filter(x =>
+            (!!activePartTextCompleted && x.code.startsWith(activePartTextCompleted))
+            || (!activePartTextCompleted && isSimilarCodeToken(x.code, activePartText)))
+        .map(x => x.code)
+        .filter(x => x !== activePartText)
+        .filter(x => !!x.trim()),
+    );
+    const choices = [activePartText, ...shuffle(matchWords).slice(0, 3)].map(x => ({ textCompleted: x.substr(0, codeFocusCompleted.length - iDone), text: x.substr(codeFocusCompleted.length - iDone) }));
 
-    // const codePartsWithSelection = {};
+    console.log(`updateAutoComplete`, { iDone, activePartText, codeFocusCompleted, codeParts, activePartTextCompleted, matchWords, choices });
 
-
-    return {
-        codeParts: codePartsAll,
-        selection,
-    };
+    return shuffle(choices).map((x, i) => ({ ...x, isSelected: i === 0, isWrong: false }));
 };

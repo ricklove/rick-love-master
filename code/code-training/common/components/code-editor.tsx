@@ -2,16 +2,12 @@
 /* eslint-disable react/no-danger */
 import React, { useEffect, useState } from 'react';
 import { View, Text, TextInput, TouchableOpacity } from 'react-native-lite';
-import { highlight, languages } from 'prismjs';
-import 'prismjs/components/prism-typescript';
-import 'prismjs/components/prism-jsx';
-import 'prismjs/components/prism-tsx';
-import 'prism-themes/themes/prism-vsc-dark-plus.css';
 import { distinct, shuffle } from 'utils/arrays';
 import { StringSpan } from 'utils/string-span';
 import { randomItem } from 'utils/random';
 import { LessonProjectFile, LessonProjectFileSelection, LessonProjectState } from '../lesson-types';
-import { isSimilarCodeToken } from './code-editor-helpers';
+import { CodePartsData, getAutoComplete, getCodeParts, getCodePartsCompleted, isSimilarCodeToken } from './code-editor-helpers';
+import { CodeDisplay } from './code-display';
 
 const styles = {
     editorModeTabRowView: {
@@ -252,15 +248,9 @@ export const FileCodeEditor = ({
 };
 
 const CodeEditor_Display = ({ code, language, selection }: { code: string, language: 'tsx', selection?: LessonProjectFileSelection }) => {
-    const { htmlFull } = getCodeHtmlFormatted(getCodeHtmlParts(code, language, selection));
+    const codeParts = getCodeParts(code, language, selection);
     return (
-        <View >
-            <View>
-                <pre style={{ margin: 0 }} className={`language-${language}`}>
-                    <code className={`language-${language}`} dangerouslySetInnerHTML={{ __html: htmlFull }} />
-                </pre>
-            </View>
-        </View>
+        <CodeDisplay codeParts={codeParts.codeParts} language={language} />
     );
 };
 
@@ -274,25 +264,21 @@ const CodeEditor_Edit = ({ code, language, selection, onCodeChange, onSelectionC
 }) => {
 
     const [inputText, setInputText] = useState(code);
-    const [inputHtml, setInputHtml] = useState(``);
-    const [codeHtmlParts, setCodeHtmlParts] = useState(null as null | CodeHtmlParts);
+    const [codeParts, setCodeParts] = useState(null as null | CodePartsData);
     const changeInputText = (value: string) => {
         setInputText(value);
-        const parts = getCodeHtmlParts(code, language, selection);
-        setCodeHtmlParts(parts);
-        setInputHtml(getCodeHtmlFormatted(parts).htmlFull);
+        const parts = getCodeParts(code, language, selection);
+        setCodeParts(parts);
     };
     const onBlur = () => {
         setInputText(inputText);
-        const parts = getCodeHtmlParts(code, language, selection);
-        setCodeHtmlParts(parts);
-        setInputHtml(getCodeHtmlFormatted(parts).htmlFull);
+        const parts = getCodeParts(code, language, selection);
+        setCodeParts(parts);
         onCodeChange(inputText);
     };
     useEffect(() => {
-        const parts = getCodeHtmlParts(code, language, selection);
-        setCodeHtmlParts(parts);
-        setInputHtml(getCodeHtmlFormatted(parts).htmlFull);
+        const parts = getCodeParts(code, language, selection);
+        setCodeParts(parts);
     }, [code, selection]);
 
     return (
@@ -316,320 +302,26 @@ const CodeEditor_Edit = ({ code, language, selection, onCodeChange, onSelectionC
                 />
             </View>
             <View>
-                <pre style={{ margin: 0 }} className={`language-${language}`}>
-                    <code className={`language-${language}`} dangerouslySetInnerHTML={{ __html: inputHtml }} />
-                </pre>
+                {codeParts && (<CodeDisplay codeParts={codeParts.codeParts} language={language} />)}
             </View>
-            <View>
-                <Text>Before:</Text>
-                <div><span style={{ background: `#111100`, whiteSpace: `pre` }} >{codeHtmlParts?.codeBefore}</span></div>
-                <div><span style={{ background: `#001111`, whiteSpace: `pre` }} dangerouslySetInnerHTML={{ __html: `${codeHtmlParts?.htmlBefore}` }} /></div>
-                <Text>Focus:</Text>
-                <div><span style={{ background: `#111100`, whiteSpace: `pre` }} >{codeHtmlParts?.codeFocus}</span></div>
-                <div><span style={{ background: `#001111`, whiteSpace: `pre` }} dangerouslySetInnerHTML={{ __html: `${codeHtmlParts?.htmlFocus}` }} /></div>
-                <Text>After:</Text>
-                <div><span style={{ background: `#111100`, whiteSpace: `pre` }} >{codeHtmlParts?.codeAfter}</span></div>
-                <div><span style={{ background: `#001111`, whiteSpace: `pre` }} dangerouslySetInnerHTML={{ __html: `${codeHtmlParts?.htmlAfter}` }} /></div>
-            </View>
-
         </View>
     );
 };
 
-const parseHighlightedSpans = (html: string) => {
-    const h = new StringSpan(html, 0, html.length);
-    const tagsWithCode = h.splitOnRegExp(/<[^>]*>/g).filter(x => x.length > 0).map(t => {
-
-        const iTagLast = t.indexOf(`>`);
-        if (iTagLast < 0) {
-            return {
-                raw: t,
-                tag: t,
-                code: t,
-            };
-        }
-
-        const iTagLength = iTagLast - t.start + 1;
-        return {
-            raw: t,
-            tag: t.newRange(t.start, iTagLength),
-            code: t.newRange(iTagLast + 1, t.length - iTagLength),
-        };
-    });
-
-    const tagContext = [] as StringSpan[];
-    const tagsWithContext = tagsWithCode.map(t => {
-        if (t.tag.startsWith(`</`)) {
-            tagContext.pop();
-        } else if (t.tag.startsWith(`<`)) {
-            tagContext.push(t.tag);
-        }
-        return {
-            ...t,
-            context: [...tagContext],
-        };
-    });
-    const tagsWithClasses = tagsWithContext.map(t => {
-        const classInfos = t.context.map(c => {
-            const cParts = c.splitOnRegExp(/class=('|")/g);
-            if (cParts.length <= 1) { return { raw: c, cParts }; }
-            // return cParts.map(x => x.toString());
-
-            const classPart = cParts[1];
-            const classContentParts = classPart.splitOnRegExp(/('|")/g);
-            // return classContentParts.map(x => x.toString());
-
-            const classContent = classContentParts[1].trimStart([`"`, `'`]);
-            if (!classContent) { return { raw: c, cParts, classContentParts }; }
-
-            return {
-                raw: c,
-                cParts,
-                classContentParts,
-                classContent: classContent.toString(),
-                classes: classContent.toString().split(` `).filter(x => x).map(x => x as string),
-            };
-        });
-        return {
-            ...t,
-            classInfos,
-            classes: distinct(classInfos.flatMap(x => x.classes ?? [])),
-        };
-    });
-
-    const codeWithClasses = tagsWithClasses.map(x => ({
-        code: x.code,
-        classes: x.classes,
-    }))
-        .filter(x => x.code);
-
-    // console.log(`parseHighlightedSpans`, { codeWithClasses, tagsWithClasses, summary: codeWithClasses.map(x => `<span class='${x.classes.join(` `)}'>${x.code}</span>`).join(``) });
-    // const iFocus = h.lastIndexOf(`<span`, lengthSameStart);
-    return codeWithClasses;
-};
-
-type CodeHtmlParts = {
-    codeBefore: string;
-    codeFocus: string;
-    codeAfter: string;
-    htmlBefore: string;
-    htmlFocus: string;
-    htmlAfter: string;
-    codeParts: StringSpan[];
-};
-const getCodeHtmlParts = (code: string, language: 'tsx', selection?: LessonProjectFileSelection): CodeHtmlParts => {
-    if (!selection) {
-        // return {
-        //     codeBefore: ``,
-        //     codeFocus: code,
-        //     codeAfter: ``,
-        //     codeParts: [],
-        //     htmlBefore: ``,
-        //     htmlFocus: highlight(code, languages[language], language),
-        //     htmlAfter: ``,
-        // };
-        return {
-            codeBefore: code,
-            codeFocus: ``,
-            codeAfter: ``,
-            codeParts: [],
-            htmlBefore: highlight(code, languages[language], language),
-            htmlFocus: ``,
-            htmlAfter: ``,
-        };
-    }
-
-    const codeBefore = code.substr(0, selection.index);
-    const codeFocus = code.substr(selection.index, selection.length);
-    const codeAfter = code.substr(selection.index + selection.length);
-
-    const htmlWithSelection = highlight(code, languages[language], language);
-    const codeWithClasses = parseHighlightedSpans(htmlWithSelection);
-    const htmlWithoutSelection = highlight(codeBefore + codeAfter, languages[language], language);
-
-    let lengthSameStart = 0;
-    let lengthSameEnd = 0;
-    for (let i = 0; i < htmlWithSelection.length && i < htmlWithoutSelection.length; i++) {
-        if (htmlWithSelection.charAt(i) !== htmlWithoutSelection.charAt(i)) { break; }
-        lengthSameStart++;
-    }
-    for (let i = 0; i < htmlWithSelection.length && i < htmlWithoutSelection.length; i++) {
-        if (htmlWithSelection.charAt(htmlWithSelection.length - i) !== htmlWithoutSelection.charAt(htmlWithoutSelection.length - i)) { break; }
-        lengthSameEnd++;
-    }
-
-    // Move back to start of <span
-    const iFocus = htmlWithSelection.lastIndexOf(`<span`, lengthSameStart);
-    // Move forward to end of </span>
-    const iFocusEnd = htmlWithSelection.indexOf(`</span>`, htmlWithSelection.length - lengthSameEnd - 1 - `</span>`.length) + `</span>`.length;
-
-    const htmlBefore = htmlWithSelection.substr(0, iFocus);
-    const htmlFocus = htmlWithSelection.substr(iFocus, iFocusEnd - iFocus);
-    const htmlAfter = htmlWithSelection.substr(iFocusEnd);
-
-    // const pairs = splitCodeSpanTags(htmlFocus);
-    // setCodeHtmlPairs(pairs);
-    const cPartsRaw = new StringSpan(codeFocus, 0, codeFocus.length).splitOnRegExp(/\W/g);
-    const codeParts = cPartsRaw.flatMap(x => x.length <= 1 ? [x] : [x.transform(0, -(x.length - 1)), x.transform(1, 0)]).filter(x => x.length > 0);
-    // const cParts = new StringSpan(codeFocus, 0, codeFocus.length).splitOnRegExp(/\W/g).flatMap(x => x.length === 1 ? [x] : [x.transform(0, -(x.length - 1)), x.transform(1, 0)]);
-
-    // console.log(`CodeEditor`, {
-    //     // code_before,
-    //     // code_focus,
-    //     // code_after,
-    //     // htmlWithSelection,
-    //     // htmlWithoutSelection,
-    //     htmlBefore,
-    //     htmlFocus,
-    //     htmlAfter,
-    //     cParts,
-    // });
-
-    return {
-        codeBefore,
-        codeFocus,
-        codeAfter,
-        htmlBefore,
-        htmlFocus,
-        htmlAfter,
-        codeParts,
-    };
-};
-
-const getCodeHtmlFormatted = (
-    codeHtmlParts: CodeHtmlParts,
-    inputOptions?: {
-        inputHtml: string;
-        feedbackOpacity: number;
-        feedback: { isDone: boolean, message: string, isCorrect: boolean };
-        autoComplete: { textCompleted: string, text: string, isSelected: boolean, isWrong: boolean }[];
-        isBlink: boolean;
-        isActive: boolean;
-    },
-) => {
-    const {
-        htmlBefore,
-        htmlFocus,
-        htmlAfter,
-    } = codeHtmlParts;
-
-    if (!inputOptions) {
-        const html_full = `<span style='opacity:0.5'>${htmlBefore}</span><span style='opacity:1'>${htmlFocus}</span><span style='opacity:0.5'>${htmlAfter}</span>`;
-        return {
-            htmlFull: html_full,
-        };
-    }
-
-    const {
-        inputHtml,
-        feedbackOpacity,
-        feedback,
-        autoComplete,
-        isBlink,
-        isActive,
-    } = inputOptions;
-
-    const css_feedbackWrapper = `display: inline-block; position: relative; bottom: 40px; width:0px; opacity:${feedbackOpacity > 0.7 ? 1 : 0}`;
-    const css_feedback_correct = `  display: inline-block; padding: 4px; position: absolute; color:#88FF88; background:#000000; border-radius:4px`;
-    const css_feedback_incorrect = `display: inline-block; padding: 4px; position: absolute; color:#FF8888; background:#000000; border-radius:4px`;
-    const html_feedback = (
-        feedback.isDone ? `<span style='${css_feedbackWrapper}'><span style='${css_feedback_correct}'>${`✔ ${feedback.message}`.trim()}</span></span>`
-            : !feedback.isCorrect ? `<span style='${css_feedbackWrapper}'><span style='${css_feedback_incorrect}'>❌ ${feedback.message}</span></span>`
-                : ``
-    );
-
-    const css_autoCompleteWrapper = `display: inline-block; position: relative; top: 4px; width:0px;`;
-    const css_autoCompleteInner = `display: block; position: absolute; background:#000000; border: solid 1px #CCCCFF;`;
-    const css_autoCompleteItem = `display: block; padding: 4px; color:#FFFFFF;`;
-    const css_autoCompleteItem_selected = `display: block; padding: 4px; color:#CCCCFF; background:#111133; min-width: 60px;`;
-    const css_autoCompleteItem_textCompleted = `color:#CCCCFF;`;
-    const css_autoCompleteItem_textNew = ``;
-    const html_autoComplete = autoComplete.length <= 0 ? `` :
-        `<span style='${css_autoCompleteWrapper}'><span style='${css_autoCompleteInner}'>${autoComplete.map(x => (
-            `<span style='${x.isSelected ? css_autoCompleteItem_selected : css_autoCompleteItem}'>${true
-            && `<span style='${css_autoCompleteItem_textCompleted}'>${x.isWrong ? `❌ ` : ``}${x.textCompleted}</span><span style='${css_autoCompleteItem_textNew}'>${x.text}</span>`
-            }</span>`
-
-        )).join(``)}</span></span>`
-        ;
-
-    const html_cursor = `<span style='display: inline-block; width: 0px; margin: 0px; position: relative; left: -4px;'>${(isBlink ? `|` : ` `)}</span>`;
-    const html_full = `<span style='opacity:0.5'>${htmlBefore}</span><span style='opacity:1'>${inputHtml}${isActive ? html_cursor : ``}${html_feedback}${html_autoComplete}</span><span style='opacity:0.5'>${htmlAfter}</span>`;
-
-    return {
-        htmlFull: html_full,
-    };
-};
-
-const getAutoComplete = ({ codeFocus, codeParts }: { codeFocus: string, codeParts: StringSpan[] }, completed?: string) => {
-    if (!codeFocus
-        || completed == null
-        || codeFocus === completed
-    ) {
-        return [];
-    }
-
-    // const remaining = code_focus.substr(completed.length);
-
-    let iNext = 0;
-    const nextPartIndexRaw = codeParts.findIndex(x => {
-        if (iNext > completed.length) {
-            return true;
-        }
-        iNext += x.length;
-        return false;
-    });
-    const nextPartIndex = nextPartIndexRaw < 0 ? codeParts.length : nextPartIndexRaw;
-    const activePartText = codeParts[nextPartIndex - 1]?.toString();
-    const iDone = codeParts[nextPartIndex - 1]?.start;
-    // console.log(`updateAutoComplete`, { iNext, iDone, activePart: activePartText, codeParts, completed });
-
-    if (!activePartText?.trim()) {
-        return [];
-    }
-
-    const activePartTextCompleted = activePartText.substr(0, completed.length - iDone);
-    const matchWords = distinct(codeParts
-        .filter(x =>
-            (!!activePartTextCompleted && x.startsWith(activePartTextCompleted))
-            || (!activePartTextCompleted && isSimilarCodeToken(x.toString(), activePartText)))
-        .map(x => x.toString())
-        .filter(x => x.toString() !== activePartText)
-        .filter(x => !!x.trim()),
-    );
-
-    // console.log(`updateAutoComplete`, { iNext, iDone, activePart: activePartText, completed, codeParts, activePartTextCompleted, matchWords });
-
-    const choices = [activePartText, ...shuffle(matchWords).slice(0, 3)].map(x => ({ textCompleted: x.substr(0, completed.length - iDone), text: x.substr(completed.length - iDone) }));
-    return shuffle(choices).map((x, i) => ({ ...x, isSelected: i === 0, isWrong: false }));
-};
-
 const CodeEditor_TypeSelection = ({ code, language, selection }: { code: string, language: 'tsx', selection?: LessonProjectFileSelection }) => {
 
-    const [codeHtmlParts, setCodeHtmlParts] = useState(null as null | CodeHtmlParts);
+    const [codeParts, setCodeParts] = useState(null as null | CodePartsData);
 
     useEffect(() => {
-        const parts = getCodeHtmlParts(code, language, selection);
-        setCodeHtmlParts(parts);
+        const parts = getCodeParts(code, language, selection);
+        setCodeParts(parts);
         setAutoComplete([]);
     }, [code]);
 
-    const [inputHtml, setInputHtml] = useState(``);
     const [inputText, setInputText] = useState(``);
-    const [isActive, setIsActive] = useState(true);
-    const [isBlink, setIsBlink] = useState(true);
-    const [feedback, setFeedback] = useState({ message: ``, isCorrect: true, isDone: false });
+    const [isActive, setIsActive] = useState(false);
+    const [feedback, setFeedback] = useState({ message: ``, isCorrect: true, isDone: false, timestamp: 0 });
     const [autoComplete, setAutoComplete] = useState([] as { textCompleted: string, text: string, isSelected: boolean, isWrong: boolean }[]);
-    const [feedbackOpacity, setFeedbackOpacity] = useState(0);
-    useEffect(() => {
-        const intervalId = setInterval(() => {
-            setIsBlink(s => !s);
-            setFeedbackOpacity(s => s - 0.1);
-        }, 500);
-        return () => {
-            clearInterval(intervalId);
-        };
-    }, []);
 
     const onKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
         const TABKEY = 9;
@@ -672,10 +364,10 @@ const CodeEditor_TypeSelection = ({ code, language, selection }: { code: string,
     };
 
     const changeInputText = (valueRaw: string) => {
-        if (!codeHtmlParts) { return; }
+        if (!codeParts) { return; }
         const {
             codeFocus,
-        } = codeHtmlParts;
+        } = codeParts;
 
         const wasBackspace = valueRaw.length < inputText.length;
         const wasTab = valueRaw.endsWith(`\t`);
@@ -696,13 +388,11 @@ const CodeEditor_TypeSelection = ({ code, language, selection }: { code: string,
         const wasCorrect_ignoreCase = codeFocus.toLowerCase().startsWith(value.toLowerCase());
 
         if (codeFocus === inputText) {
-            setFeedbackOpacity(1);
-            setFeedback({ message: `You're already done.`, isCorrect: false, isDone: true });
+            setFeedback({ message: `You're already done.`, isCorrect: false, isDone: true, timestamp: Date.now() });
             return;
         }
         if (wasBackspace) {
-            setFeedbackOpacity(1);
-            setFeedback({ message: `You're right so far, no need to backspace.`, isCorrect: false, isDone: false });
+            setFeedback({ message: `You're right so far, no need to backspace.`, isCorrect: false, isDone: false, timestamp: Date.now() });
             return;
         }
         if (!wasCorrect) {
@@ -712,43 +402,31 @@ const CodeEditor_TypeSelection = ({ code, language, selection }: { code: string,
             if (!activeAutoComplete) {
                 setAutoComplete([]);
             }
-            setFeedbackOpacity(1);
-            setFeedback({ message: randomItem([`Wrong`, `Incorrect`, `No`, `Try Again`]), isCorrect: false, isDone: false });
+            setFeedback({ message: randomItem([`Wrong`, `Incorrect`, `No`, `Try Again`]), isCorrect: false, isDone: false, timestamp: Date.now() });
             return;
         }
 
         const isDone = codeFocus === value;
 
-        // console.log(`changeInputText`, {
-        //     value,
-        //     valueRaw,
-        // });
-
-        setFeedbackOpacity(1);
-        setFeedback({ isCorrect: true, message: ``, isDone });
-        setInputText(value);
-
-        const valueHtml = highlight(value, languages[language], language);
-        setInputHtml(valueHtml);
         setIsActive(true);
-        setAutoComplete(getAutoComplete(codeHtmlParts, value));
+        setInputText(value);
+        setFeedback({ isCorrect: true, message: ``, isDone, timestamp: Date.now() });
+        setAutoComplete(getAutoComplete(codeParts, value));
     };
 
 
-    if (!codeHtmlParts) {
+    if (!codeParts) {
         return <></>;
     }
 
-    const { htmlFull } = getCodeHtmlFormatted(codeHtmlParts, { autoComplete, feedback, feedbackOpacity, inputHtml, isActive, isBlink });
-    const autoCompletePadding = 100;
-    // console.log(`CodeEditor`, { mode });
+    const s = selection ?? { index: 0, length: code.length };
+    const cursorIndex = s.index + inputText.length;
+    const activeCodeParts = getCodePartsCompleted(codeParts.codeParts, { index: cursorIndex, length: codeParts.codeFocus.length - inputText.length }, { showBlank: true });
 
     return (
         <View style={{ position: `relative` }}>
             <View>
-                <pre style={{ margin: 0, paddingBottom: autoCompletePadding }} className={`language-${language}`}>
-                    <code className={`language-${language}`} dangerouslySetInnerHTML={{ __html: htmlFull }} />
-                </pre>
+                <CodeDisplay codeParts={activeCodeParts} language={language} inputOptions={{ isActive, cursorIndex, feedback, autoComplete }} />
             </View>
             <View style={{ position: `absolute`, top: 0, left: 0, right: 0, bottom: 0, opacity: 0 }}>
                 <input type='text' style={{ width: `100%`, height: `100%`, background: `#FF0000` }}

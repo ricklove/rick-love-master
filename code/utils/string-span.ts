@@ -18,11 +18,11 @@ export class StringSpan {
         this.length = length ?? source.length;
 
         if (DEBUG) {
-            this.debug = this.toString();
+            this.debug = this.toText();
         }
     }
 
-    toString() { return this.source.substr(this.start, this.length); }
+    toText() { return this.source.substr(this.start, this.length); }
 
     getChar(index: number) {
         if (index < this.start || index >= this.start + this.length) { throw new AppError(`StringSpan.getChar(): Out of range`, { index, s: this }); }
@@ -236,7 +236,7 @@ const runStringSpanTests = () => {
         else { console.log(`PASS - ${name}`); }
     };
 
-    test(`new`, s.toString(), text);
+    test(`new`, s.toText(), text);
 
     test(`startsWith`, s.startsWith(` `), true);
     test(`startsWith`, s.startsWith(`T`), false);
@@ -256,18 +256,18 @@ const runStringSpanTests = () => {
     test(`splitOnRegExp`, new StringSpan(`<span class="ca cb cc">test</span>`).splitOnRegExp(/('|")/g).join(`,`), `<span class=,"ca cb cc,">test</span>`);
 
     const s2 = new StringSpan(`<span class="ca cb cc">test</span>`).splitOn(`</span>`)[0].splitOn(`class`)[1];
-    test(`splitOn       - s2`, s2.toString(), `class="ca cb cc">test`);
+    test(`splitOn       - s2`, s2.toText(), `class="ca cb cc">test`);
     test(`splitOnRegExp - s2`, s2.splitOnRegExp(/</g).join(`,`), `class="ca cb cc">test`);
     test(`splitOnRegExp - s2`, s2.splitOnRegExp(/>/g).join(`,`), `class="ca cb cc",>test`);
     test(`splitOnRegExp - s2`, s2.splitOnRegExp(/('|")/g).join(`,`), `class=,"ca cb cc,">test`);
 
-    test(`trimStart`, s.trimStart().toString(), text.trimStart());
-    test(`trimEnd`, s.trimEnd().toString(), text.trimEnd());
-    test(`trim`, s.trim().toString(), text.trim());
-    test(`trim Single`, s.trim(` `).toString(), `This is a new test!`);
-    test(`trim Multiple`, s.trim([` `, `!`]).toString(), `This is a new test`);
-    test(`trim Words`, s.trim([` `, `!`, `This`]).toString(), `is a new test`);
-    test(`trim Complex`, s.trim().trim([`This`, `test!`]).trim().toString(), `is a new`);
+    test(`trimStart`, s.trimStart().toText(), text.trimStart());
+    test(`trimEnd`, s.trimEnd().toText(), text.trimEnd());
+    test(`trim`, s.trim().toText(), text.trim());
+    test(`trim Single`, s.trim(` `).toText(), `This is a new test!`);
+    test(`trim Multiple`, s.trim([` `, `!`]).toText(), `This is a new test`);
+    test(`trim Words`, s.trim([` `, `!`, `This`]).toText(), `is a new test`);
+    test(`trim Complex`, s.trim().trim([`This`, `test!`]).trim().toText(), `is a new`);
 };
 
 // runStringSpanTests();
