@@ -107,6 +107,7 @@ const feedbackStyles = {
     wrapper: { display: `inline-block`, position: `relative`, bottom: 40, width: 0 },
     correct: { display: `inline-block`, padding: 4, position: `absolute`, color: `#88FF88`, background: `#000000`, borderRadius: 4 },
     incorrect: { display: `inline-block`, padding: 4, position: `absolute`, color: `#FF8888`, background: `#000000`, borderRadius: 4 },
+    emoji: { display: `block`, position: `absolute`, fontSize: 20, bottom: -16, right: -8 },
 } as const;
 
 const FeedbackComponent = ({ inputOptions }: { inputOptions: CodeDisplayInputOptions }) => {
@@ -119,11 +120,13 @@ const FeedbackComponent = ({ inputOptions }: { inputOptions: CodeDisplayInputOpt
             {feedback.isDone && (
                 <span style={s.wrapper}>
                     <span style={s.correct}>{`✔ ${feedback.message}`.trim()}</span>
+                    <span style={s.emoji}>{`😎`.trim()}</span>
                 </span>
             )}
-            {!feedback.isDone && !feedback.isCorrect && (
+            {!feedback.isCorrect && !feedback.isDone && (
                 <span style={s.wrapper}>
                     <span style={s.incorrect}>{`❌ ${feedback.message}`}</span>
+                    <span style={s.emoji}>{`😾`.trim()}</span>
                 </span>
             )}
         </>
