@@ -315,13 +315,13 @@ const CodeEditor_TypeSelection = ({ code, language, selection }: { code: string,
     useEffect(() => {
         const parts = getCodeParts(code, language, selection);
         setCodeParts(parts);
-        setAutoComplete([]);
+        setAutoComplete(null);
     }, [code]);
 
     const [inputText, setInputText] = useState(``);
     const [isActive, setIsActive] = useState(false);
     const [feedback, setFeedback] = useState({ message: ``, isCorrect: true, isDone: false, timestamp: 0 });
-    const [autoComplete, setAutoComplete] = useState([] as { textCompleted: string, text: string, isSelected: boolean, isWrong: boolean }[]);
+    const [autoComplete, setAutoComplete] = useState(null as null | { choices: { textCompleted: string, text: string, isSelected: boolean, isWrong: boolean }[], activeIndex: number });
 
     const onKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
         const TABKEY = 9;
@@ -348,16 +348,18 @@ const CodeEditor_TypeSelection = ({ code, language, selection }: { code: string,
         }
         if (e.keyCode === UPKEY) {
             setAutoComplete(s => {
-                const iSelected = s.findIndex(x => x.isSelected);
+                if (!s) { return null; }
+                const iSelected = s.choices.findIndex(x => x.isSelected);
                 const iSelectedNew = Math.max(0, iSelected - 1);
-                return [...s.map((x, i) => ({ ...x, isSelected: iSelectedNew === i }))];
+                return { ...s, choices: [...s.choices.map((x, i) => ({ ...x, isSelected: iSelectedNew === i }))] };
             });
         }
         if (e.keyCode === DOWNKEY) {
             setAutoComplete(s => {
-                const iSelected = s.findIndex(x => x.isSelected);
-                const iSelectedNew = Math.min(autoComplete.length - 1, iSelected + 1);
-                return [...s.map((x, i) => ({ ...x, isSelected: iSelectedNew === i }))];
+                if (!s) { return null; }
+                const iSelected = s.choices.findIndex(x => x.isSelected);
+                const iSelectedNew = Math.min(s.choices.length - 1, iSelected + 1);
+                return { ...s, choices: [...s.choices.map((x, i) => ({ ...x, isSelected: iSelectedNew === i }))] };
             });
         }
         return true;
@@ -377,7 +379,7 @@ const CodeEditor_TypeSelection = ({ code, language, selection }: { code: string,
 
         const wasCorrectRaw = codeFocus.startsWith(valueRaw);
         const wasAutoComplete = !wasCorrectRaw && (wasTab || wasReturn || wasPeriod || wasSpace);
-        const activeAutoComplete = autoComplete.find(x => x.isSelected);
+        const activeAutoComplete = autoComplete?.choices.find(x => x.isSelected);
 
         const value = wasCorrectRaw ? valueRaw
             : wasAutoComplete ? inputText + activeAutoComplete?.text ?? ``
@@ -400,7 +402,7 @@ const CodeEditor_TypeSelection = ({ code, language, selection }: { code: string,
                 activeAutoComplete.isWrong = true;
             }
             if (!activeAutoComplete) {
-                setAutoComplete([]);
+                setAutoComplete(null);
             }
             setFeedback({ message: randomItem([`Wrong`, `Incorrect`, `No`, `Try Again`]), isCorrect: false, isDone: false, timestamp: Date.now() });
             return;
@@ -411,7 +413,8 @@ const CodeEditor_TypeSelection = ({ code, language, selection }: { code: string,
         setIsActive(true);
         setInputText(value);
         setFeedback({ isCorrect: true, message: ``, isDone, timestamp: Date.now() });
-        setAutoComplete(getAutoComplete(codeParts, value));
+        const a = getAutoComplete(codeParts, value);
+        setAutoComplete(a);
     };
 
 
@@ -421,12 +424,13 @@ const CodeEditor_TypeSelection = ({ code, language, selection }: { code: string,
 
     const s = selection ?? { index: 0, length: code.length };
     const cursorIndex = s.index + inputText.length;
+    const activeIndex = autoComplete?.activeIndex;
     const activeCodeParts = getCodePartsCompleted(codeParts.codeParts, { index: cursorIndex, length: codeParts.codeFocus.length - inputText.length }, { showBlank: true });
 
     return (
         <View style={{ position: `relative` }}>
             <View>
-                <CodeDisplay codeParts={activeCodeParts} language={language} inputOptions={{ isActive, cursorIndex, feedback, autoComplete }} />
+                <CodeDisplay codeParts={activeCodeParts} language={language} inputOptions={{ isActive, cursorIndex, activeIndex, feedback, autoComplete: autoComplete?.choices }} />
             </View>
             <View style={{ position: `absolute`, top: 0, left: 0, right: 0, bottom: 0, opacity: 0 }}>
                 <input type='text' style={{ width: `100%`, height: `100%`, background: `#FF0000` }}

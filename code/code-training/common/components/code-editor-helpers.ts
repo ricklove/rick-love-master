@@ -210,7 +210,7 @@ export const getAutoComplete = ({ codeParts, selection }: { codeParts: CodePart[
         || codeFocusCompleted == null
         || selection.length === codeFocusCompleted.length
     ) {
-        return [];
+        return null;
     }
 
     // const remaining = code_focus.substr(completed.length);
@@ -222,10 +222,11 @@ export const getAutoComplete = ({ codeParts, selection }: { codeParts: CodePart[
     // console.log(`updateAutoComplete`, { iNext, iDone, activePart: activePartText, codeParts, codeFocusCompleted });
 
     if (!activePartText?.trim()) {
-        return [];
+        return null;
     }
 
-    const activePartTextCompleted = activePartText.substr(0, codeFocusCompleted.length + selection.index - iDone);
+    const lengthCompleted = codeFocusCompleted.length + selection.index - iDone;
+    const activePartTextCompleted = activePartText.substr(0, lengthCompleted);
     const matchWords = distinct(codeParts
         .filter(x =>
             (!!activePartTextCompleted && x.code.startsWith(activePartTextCompleted))
@@ -234,9 +235,15 @@ export const getAutoComplete = ({ codeParts, selection }: { codeParts: CodePart[
         .filter(x => x !== activePartText)
         .filter(x => !!x.trim()),
     );
-    const choices = [activePartText, ...shuffle(matchWords).slice(0, 3)].map(x => ({ textCompleted: x.substr(0, codeFocusCompleted.length - iDone), text: x.substr(codeFocusCompleted.length - iDone) }));
+    const choices = [activePartText, ...shuffle(matchWords).slice(0, 3)].map(x => ({
+        textCompleted: x.substr(0, lengthCompleted),
+        text: x.substr(lengthCompleted),
+    }));
 
     console.log(`updateAutoComplete`, { iDone, activePartText, codeFocusCompleted, codeParts, activePartTextCompleted, matchWords, choices });
 
-    return shuffle(choices).map((x, i) => ({ ...x, isSelected: i === 0, isWrong: false }));
+    return {
+        choices: shuffle(choices).map((x, i) => ({ ...x, isSelected: i === 0, isWrong: false })),
+        activeIndex: iDone,
+    };
 };

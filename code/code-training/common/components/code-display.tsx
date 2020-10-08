@@ -6,6 +6,7 @@ export type CodeDisplayPart = CodePart;
 export type CodeDisplayInputOptions = {
     isActive?: boolean;
     cursorIndex?: number;
+    activeIndex?: number;
     feedback?: { isDone: boolean, message: string, isCorrect: boolean };
     autoComplete?: { textCompleted: string, text: string, isSelected: boolean, isWrong: boolean }[];
 };
@@ -22,7 +23,7 @@ export const CodeDisplay = ({ codeParts, language, inputOptions }: {
             <pre style={{ margin: 0, paddingBottom: inputOptions ? 100 : 0 }} className={`language-${language}`}>
                 <code className={`language-${language}`}>
                     {codeParts.map(x => (
-                        <CodeSpan key={`${x.code}:${x.index}:${x.code.length}`} code={x} cursorIndex={inputOptions?.cursorIndex} Cursor={Cursor} inputOptions={inputOptions ?? {}} />
+                        <CodeSpan key={`${x.code}:${x.index}:${x.code.length}`} code={x} Cursor={Cursor} inputOptions={inputOptions ?? {}} />
                     ))}
                 </code>
             </pre>
@@ -30,25 +31,26 @@ export const CodeDisplay = ({ codeParts, language, inputOptions }: {
     );
 };
 
-const CodeSpan = ({ code, cursorIndex, Cursor, inputOptions }: { code: CodeDisplayPart, cursorIndex?: number, Cursor: JSX.Element, inputOptions: CodeDisplayInputOptions }) => {
-    if (cursorIndex
+const CodeSpan = ({ code, Cursor, inputOptions }: { code: CodeDisplayPart, Cursor: JSX.Element, inputOptions: CodeDisplayInputOptions }) => {
+    const { cursorIndex, activeIndex = inputOptions.cursorIndex } = inputOptions;
+
+    const hasCursor = (cursorIndex
         && cursorIndex >= code.index
         && cursorIndex < code.index + code.code.length
-    ) {
-        return <CodeSpanWithCursor code={code} cursorIndex={cursorIndex} Cursor={Cursor} inputOptions={inputOptions} />;
-    }
-    return (
-        <span className={code.classes.join(` `)} style={!code.isInSelection ? { opacity: 0.5 } : {}}>{code.code.toString()}</span>
     );
-};
-
-const CodeSpanWithCursor = ({ code, cursorIndex, Cursor, inputOptions }: { code: CodeDisplayPart, cursorIndex: number, Cursor: JSX.Element, inputOptions: CodeDisplayInputOptions }) => {
-    // TODO: Support cursor in middle
+    const hasActive = (activeIndex
+        && activeIndex >= code.index
+        && activeIndex < code.index + code.code.length
+    );
     return (
         <>
-            {Cursor}
-            <AutoCompleteComponent inputOptions={inputOptions} />
-            <FeedbackComponent inputOptions={inputOptions} />
+            {hasCursor && Cursor}
+            {hasActive && (
+                <>
+                    <AutoCompleteComponent inputOptions={inputOptions} />
+                    <FeedbackComponent inputOptions={inputOptions} />
+                </>
+            )}
             <span className={code.classes.join(` `)} style={!code.isInSelection ? { opacity: 0.5 } : {}} >{code.code.toString()}</span>
         </>
     );
@@ -75,8 +77,8 @@ const autoCompleteStyles = {
     inner: { display: `block`, position: `absolute`, background: `#000000`, border: `solid 1 #CCCCFF` },
     item: { display: `block`, padding: 4, color: `#FFFFFF` },
     item_selected: { display: `block`, padding: 4, color: `#CCCCFF`, background: `#111133`, minWidth: 60 },
-    textCompleted: { color: `#CCCCFF` },
-    textNew: {},
+    textCompleted: { color: `#CCCCFF`, opacity: 0.5 },
+    textNew: { color: `#CCCCFF` },
 } as const;
 
 const AutoCompleteComponent = ({ inputOptions }: { inputOptions: CodeDisplayInputOptions }) => {
