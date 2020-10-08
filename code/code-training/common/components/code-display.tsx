@@ -112,7 +112,19 @@ const feedbackStyles = {
 
 const FeedbackComponent = ({ inputOptions }: { inputOptions: CodeDisplayInputOptions }) => {
     const { feedback } = inputOptions;
-    if (!feedback) { return <></>; }
+
+    const [hide, setHide] = useState(true);
+
+    useEffect(() => {
+        setHide(false);
+
+        setTimeout(() => {
+            setHide(true);
+        }, 3000);
+
+    }, [feedback]);
+
+    if (!feedback || hide) { return <></>; }
 
     const s = feedbackStyles;
     return (
