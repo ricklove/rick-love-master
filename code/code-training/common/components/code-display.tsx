@@ -118,10 +118,13 @@ const FeedbackComponent = ({ inputOptions }: { inputOptions: CodeDisplayInputOpt
     useEffect(() => {
         setHide(false);
 
-        setTimeout(() => {
+        const id = setTimeout(() => {
             setHide(true);
         }, 3000);
 
+        return () => {
+            clearTimeout(id);
+        };
     }, [feedback]);
 
     if (!feedback || hide) { return <></>; }
