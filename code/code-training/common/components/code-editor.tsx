@@ -323,7 +323,7 @@ const CodeEditor_TypeSelection = ({ code, language, selection }: { code: string,
     const [feedback, setFeedback] = useState({ message: ``, isCorrect: true, isDone: false, timestamp: 0 });
     const [autoComplete, setAutoComplete] = useState(null as null | { choices: { textCompleted: string, text: string, isSelected: boolean, isWrong: boolean }[], activeIndex: number });
 
-    const onKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    const onKeyDown = (e: React.KeyboardEvent<HTMLInputElement | HTMLTextAreaElement>) => {
         const TABKEY = 9;
         const RETURNKEY = 13;
         const UPKEY = 38;
@@ -371,23 +371,48 @@ const CodeEditor_TypeSelection = ({ code, language, selection }: { code: string,
             codeFocus,
         } = codeParts;
 
+        const newInput = valueRaw.substr(inputText.length);
         const wasBackspace = valueRaw.length < inputText.length;
         const wasTab = valueRaw.endsWith(`\t`);
         const wasReturn = valueRaw.endsWith(`\n`);
         const wasPeriod = valueRaw.endsWith(`.`);
         const wasSpace = valueRaw.endsWith(` `);
 
+        const remaining = codeFocus.substr(inputText.length);
+        const isWhitespace = remaining.trimStart() !== remaining;
         const wasCorrectRaw = codeFocus.startsWith(valueRaw);
-        const wasAutoComplete = !wasCorrectRaw && (wasTab || wasReturn || wasPeriod || wasSpace);
+        const wasAutoComplete = autoComplete && !wasCorrectRaw && (wasTab || wasReturn || wasPeriod || wasSpace);
         const activeAutoComplete = autoComplete?.choices.find(x => x.isSelected);
 
-        const value = wasCorrectRaw ? valueRaw
-            : wasAutoComplete ? inputText + activeAutoComplete?.text ?? ``
-                : valueRaw
+        const value2 = wasCorrectRaw ? valueRaw
+            : wasAutoComplete ? inputText + (activeAutoComplete?.text ?? ``)
+                : (wasReturn || wasTab || wasSpace) && isWhitespace ? codeFocus.substr(0, codeFocus.length - remaining.trimStart().length)
+                    : valueRaw
             ;
 
+        const wasCorrect_ignoreWhitespace = remaining.trimStart().startsWith(newInput);
+        const value = wasCorrect_ignoreWhitespace ? codeFocus.substr(0, codeFocus.length - remaining.trimStart().length + 1) : value2;
+
         const wasCorrect = codeFocus.startsWith(value);
-        const wasCorrect_ignoreCase = codeFocus.toLowerCase().startsWith(value.toLowerCase());
+
+        console.log(`changeInputText`, {
+            wasBackspace,
+            wasTab,
+            wasReturn,
+            wasPeriod,
+            wasSpace,
+            wasCorrectRaw,
+            wasAutoComplete,
+            activeAutoComplete,
+            value,
+            value2,
+            valueRaw,
+            codeFocus,
+            remaining,
+            isWhitespace,
+            wasCorrect,
+            wasCorrect_ignoreWhitespace,
+        });
 
         if (codeFocus === inputText) {
             setFeedback({ message: `You're already done.`, isCorrect: false, isDone: true, timestamp: Date.now() });
@@ -402,7 +427,8 @@ const CodeEditor_TypeSelection = ({ code, language, selection }: { code: string,
                 activeAutoComplete.isWrong = true;
             }
             if (!activeAutoComplete) {
-                setAutoComplete(null);
+                const a = getAutoComplete(codeParts, inputText);
+                setAutoComplete(a);
             }
             setFeedback({ message: randomItem([`Wrong`, `Incorrect`, `No`, `Try Again`]), isCorrect: false, isDone: false, timestamp: Date.now() });
             return;
@@ -424,23 +450,28 @@ const CodeEditor_TypeSelection = ({ code, language, selection }: { code: string,
 
     const s = selection ?? { index: 0, length: code.length };
     const cursorIndex = s.index + inputText.length;
-    const activeIndex = autoComplete?.activeIndex;
+    const activeIndex = autoComplete?.activeIndex ?? cursorIndex;
     const activeCodeParts = getCodePartsCompleted(codeParts.codeParts, { index: cursorIndex, length: codeParts.codeFocus.length - inputText.length }, { showBlank: true });
+    const nextChar = code.substr(cursorIndex, 1);
+    console.log(`CodeEditor_TypeSelection`, { nextChar, inputText, codeParts, activeCodeParts, isActive, cursorIndex, activeIndex, feedback, autoComplete: autoComplete?.choices });
 
     return (
-        <View style={{ position: `relative` }}>
-            <View>
-                <CodeDisplay codeParts={activeCodeParts} language={language} inputOptions={{ isActive, cursorIndex, activeIndex, feedback, autoComplete: autoComplete?.choices }} />
+        <>
+            <View style={{ position: `relative` }}>
+                <View>
+                    <CodeDisplay codeParts={activeCodeParts} language={language} inputOptions={{ isActive, cursorIndex, activeIndex, feedback, autoComplete: autoComplete?.choices }} />
+                </View>
+                <View style={{ position: `absolute`, top: 0, left: 0, right: 0, bottom: 0, opacity: 0 }}>
+                    <textarea style={{ width: `100%`, height: `100%`, background: `#FF0000` }}
+                        value={inputText}
+                        onChange={(e) => changeInputText(e.target.value)}
+                        onFocus={() => setIsActive(true)}
+                        onBlur={() => setIsActive(false)}
+                        onKeyDown={(e) => onKeyDown(e)}
+                    />
+                </View>
             </View>
-            <View style={{ position: `absolute`, top: 0, left: 0, right: 0, bottom: 0, opacity: 0 }}>
-                <input type='text' style={{ width: `100%`, height: `100%`, background: `#FF0000` }}
-                    value={inputText}
-                    onChange={(e) => changeInputText(e.target.value)}
-                    onFocus={() => setIsActive(true)}
-                    onBlur={() => setIsActive(false)}
-                    onKeyDown={(e) => onKeyDown(e)}
-                />
-            </View>
-        </View>
+            <Text>{inputText}</Text>
+        </>
     );
 };
