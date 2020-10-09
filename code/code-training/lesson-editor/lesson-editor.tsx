@@ -332,6 +332,7 @@ const LessonField_Experiment = ({
 }) => {
     const [projectState, setProjectState] = useState(originalProjectState);
     const [lastFocus, setLastFocus] = useState({ filePath: projectState.files[0].path, index: 0, length: projectState.files[0].content.length });
+    const [commentText, setCommentText] = useState(value.comment ?? ``);
 
     useEffect(() => {
         setProjectState(lessonExperiments_createReplacementProjectState(originalProjectState, value.replacements));
@@ -349,6 +350,36 @@ const LessonField_Experiment = ({
 
     return (
         <View style={{}}>
+            <View style={{ flexDirection: `row` }}>
+                <Text style={styles.lessonFieldLabelText}>{label}</Text>
+                <View style={{ flex: 1 }} />
+                <TouchableOpacity onPress={onDelete}>
+                    <View style={styles.buttonView}>
+                        <Text style={styles.buttonText}>{`${`❌`} Delete Experiment`}</Text>
+                    </View>
+                </TouchableOpacity>
+            </View>
+            <View style={styles.lessonFieldView}>
+                <Text style={styles.lessonFieldLabelText}>Comment</Text>
+                <TextInput
+                    style={styles.lessonFieldText}
+                    value={commentText}
+                    onChange={setCommentText}
+                    onBlur={() => onChange({ ...value, comment: commentText })}
+                    autoCompleteType='off'
+                    keyboardType='default'
+                />
+            </View>
+            <ProjectCodeEditor
+                projectData={{
+                    projectState,
+                    focus: lastFocus,
+                }}
+                fileEditorMode_focus='edit'
+                fileEditorMode_noFocus='edit'
+                projectEditorMode='display'
+                onProjectDataChange={changeProjectData}
+            />
             {value.replacements.map(x => (
                 <View key={x.selection.filePath + x.selection.index} >
                     <View style={{ flexDirection: `row` }}>
@@ -365,25 +396,6 @@ const LessonField_Experiment = ({
                     </View>
                 </View>
             ))}
-            <View style={{ flexDirection: `row` }}>
-                <Text style={styles.lessonFieldLabelText}>{label}</Text>
-                <View style={{ flex: 1 }} />
-                <TouchableOpacity onPress={onDelete}>
-                    <View style={styles.buttonView}>
-                        <Text style={styles.buttonText}>{`${`❌`} Delete Experiment`}</Text>
-                    </View>
-                </TouchableOpacity>
-            </View>
-            <ProjectCodeEditor
-                projectData={{
-                    projectState,
-                    focus: lastFocus,
-                }}
-                fileEditorMode_focus='edit'
-                fileEditorMode_noFocus='edit'
-                projectEditorMode='display'
-                onProjectDataChange={changeProjectData}
-            />
         </View>
     );
 };
