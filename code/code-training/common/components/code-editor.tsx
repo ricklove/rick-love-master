@@ -1,6 +1,6 @@
 /* eslint-disable unicorn/no-for-loop */
 /* eslint-disable react/no-danger */
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { View, Text, TextInput, TouchableOpacity } from 'react-native-lite';
 import { distinct, shuffle } from 'utils/arrays';
 import { StringSpan } from 'utils/string-span';
@@ -62,20 +62,26 @@ export const ProjectCodeEditor = ({
     } = projectData;
     const [activeFilePath, setActiveFilePath] = useState(focus.filePath);
     const [filePathEdit, setFilePathEdit] = useState(focus.filePath);
+    const lastFocusSet = useRef(null as null | LessonProjectFileSelection);
 
     useEffect(() => {
         const focusFile = projectState.files.find(x => x.path === focus.filePath);
         if (projectState.files.length > 0
             && (!focusFile
                 || focus.length <= 0
-                || focus.index >= (focusFile?.content.length ?? 0))) {
+                || focus.index >= (focusFile?.content.length ?? 0))
+            && lastFocusSet.current !== focus
+        ) {
             const f = projectState.files.find(x => x.path === focus.filePath) ?? projectState.files[0];
+            const newFocus = {
+                filePath: f.path,
+                index: 0,
+                length: f.content.length,
+            };
+            lastFocusSet.current = newFocus;
+
             onProjectDataChange({
-                focus: {
-                    filePath: f.path,
-                    index: 0,
-                    length: f.content.length,
-                },
+                focus: newFocus,
             });
             return;
         }
