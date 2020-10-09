@@ -471,7 +471,7 @@ const CodeEditor_TypeSelection = ({ code, language, selection }: { code: string,
                     />
                 </View>
             </View>
-            <Text>{inputText}</Text>
+            {/* <Text>{inputText}</Text> */}
         </>
     );
 };
