@@ -43,7 +43,8 @@
             - [x] TextArea
             - [ ] Upload
     - [ ] LessonData
-        - [ ] File Contents
+        - [x] File Contents
+        - [x] Lesson Focus
         - [ ] Lesson Parts
     - [ ] Display Lesson Preview
         - [ ] Steps
