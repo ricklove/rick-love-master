@@ -38,7 +38,7 @@ export type LessonExperiment = {
     comment?: string;
 }
 export type LessonExperimentReplacement = {
-    filePath: string;
+    selection: LessonProjectFileSelection;
     content: string;
 };
 

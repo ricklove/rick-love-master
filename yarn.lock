@@ -16244,6 +16244,11 @@ vm-browserify@^1.0.1:
   resolved "https://registry.yarnpkg.com/vm-browserify/-/vm-browserify-1.1.2.tgz#78641c488b8e6ca91a75f511e7a3b32a86e5dda0"
   integrity sha512-2ham8XPWTONajOR0ohOKOHXkm3+gaBmGut3SRuu75xLd/RRaY6vqgh8NBYYk7+RW3u5AtzPQZG8F10LHkl0lAQ==
 
+vscode-diff@^2.0.0:
+  version "2.0.0"
+  resolved "https://registry.yarnpkg.com/vscode-diff/-/vscode-diff-2.0.0.tgz#bfc2268507a51149f3f9b6c132ea1000f2898d33"
+  integrity sha512-UN/mzNQam12Nn9tsJJTF0gZyTHfNcPVKYwxQrUI4Q6c4cpzmHE6eC17yTC64qq+ZU0gWs1ttzMZN/QyH5EY6LA==
+
 vscode-test@^0.4.1:
   version "0.4.3"
   resolved "https://registry.yarnpkg.com/vscode-test/-/vscode-test-0.4.3.tgz#461ebf25fc4bc93d77d982aed556658a2e2b90b8"

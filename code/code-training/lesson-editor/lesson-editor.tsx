@@ -349,6 +349,22 @@ const LessonField_Experiment = ({
 
     return (
         <View style={{}}>
+            {value.replacements.map(x => (
+                <View key={x.selection.filePath + x.selection.index} >
+                    <View style={{ flexDirection: `row` }}>
+                        <Text style={{ minWidth: 80 }}>File</Text>
+                        <Text style={{ marginLeft: 4, background: `#111111` }}>{`${x.selection.filePath}`}</Text>
+                    </View>
+                    <View style={{ flexDirection: `row` }}>
+                        <Text style={{ minWidth: 80 }}>Match</Text>
+                        <Text style={{ marginLeft: 4, background: `#111111`, color: `#FF8888`, textDecoration: `line-through` }}>{`${originalProjectState.files.find(f => f.path === x.selection.filePath)?.content.substr(x.selection.index, x.selection.length)}`}</Text>
+                    </View>
+                    <View style={{ flexDirection: `row` }}>
+                        <Text style={{ minWidth: 80 }}>Replace</Text>
+                        <Text style={{ marginLeft: 4, background: `#111111`, color: `#8888FF` }}>{`${x.content}`}</Text>
+                    </View>
+                </View>
+            ))}
             <View style={{ flexDirection: `row` }}>
                 <Text style={styles.lessonFieldLabelText}>{label}</Text>
                 <View style={{ flex: 1 }} />

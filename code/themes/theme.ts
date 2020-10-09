@@ -78,6 +78,8 @@ export type ThemeTextStyle = {
     whiteSpace?: 'normal' | 'nowrap' | 'pre' | 'pre-wrap';
     minWidth?: number;
 
+    textDecoration?: `line-through`;
+
     outlineColor?: string;
     userSelect?: `none`;
 };
