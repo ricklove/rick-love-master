@@ -112,6 +112,7 @@ export const ProjectCodeEditor = ({
         projectState.files.push(newFile);
         setActiveFilePath(newFile.path);
         setFilePathEdit(newFile.path);
+        onProjectDataChange({ projectState });
     };
     const changeFileName = () => {
         const file = projectState.files.find(x => x.path === activeFilePath);
@@ -210,7 +211,7 @@ export const ProjectCodeEditor = ({
                 </>
             )}
             {[activeFile].map(x => (
-                <FileCodeEditor key={x.path}
+                <FileCodeEditor key={x.path + x.content}
                     file={x} selection={focus.filePath === x.path ? focus : undefined}
                     mode={focus.filePath === x.path ? fileEditorMode_focus : fileEditorMode_noFocus}
                     onCodeChange={changeCode} onSelectionChange={changeSelection} />

@@ -1,7 +1,9 @@
-import React, { useState } from 'react';
+/* eslint-disable react/no-array-index-key */
+import React, { useEffect, useState } from 'react';
 import { View, Text, TextInput, TouchableOpacity } from 'react-native-lite';
-import { FileCodeEditor, FileEditorMode, ProjectCodeEditor, ProjectEditorMode } from '../common/components/code-editor';
-import { LessonData, LessonProjectFileSelection, LessonProjectState, LessonStep_ConstructCode } from '../common/lesson-types';
+import { FileEditorMode, ProjectCodeEditor, ProjectEditorMode } from '../common/components/code-editor';
+import { LessonData, LessonExperiment, LessonProjectFileSelection, LessonProjectState, LessonStep_ConstructCode } from '../common/lesson-types';
+import { lessonExperiments_createReplacementProjectState, lessonExperiments_calculateProjectStateReplacements } from '../common/replacements';
 
 const createDefaultLesson = (): LessonData => {
     const file = {
@@ -93,6 +95,16 @@ const styles = {
         fontSize: 14,
         color: `#FFFFFFF`,
     },
+    buttonView: {
+        background: `#1e1e1e`,
+        alignSelf: `flex-start`,
+        padding: 8,
+        margin: 1,
+    },
+    buttonText: {
+        fontSize: 14,
+        color: `#FFFFFFF`,
+    },
     editorModeTabText_selected: {
         fontSize: 14,
         color: `#FFFF88`,
@@ -106,6 +118,20 @@ const styles = {
     },
     infoText: {
         margin: 8,
+        fontSize: 12,
+        wrap: `wrap`,
+    },
+    lessonFieldView: {
+        flexDirection: `row`,
+    },
+    lessonFieldLabelText: {
+        minWidth: 80,
+        padding: 4,
+        fontSize: 12,
+    },
+    lessonFieldText: {
+        flex: 1,
+        padding: 4,
         fontSize: 12,
         wrap: `wrap`,
     },
@@ -167,14 +193,16 @@ export const LessonEditor = (props: {}) => {
             ...projectData,
         }));
     };
+    const onLessonChange = (lesson: Partial<LessonData>) => {
+        setData(createLessonState({
+            ...data.lesson,
+            ...lesson,
+        }));
+    };
 
     const {
         projectState,
         focus,
-        title,
-        objective,
-        explanation,
-        task,
     } = data.lesson;
 
     return (
@@ -206,10 +234,12 @@ export const LessonEditor = (props: {}) => {
 
                             <Text style={styles.sectionHeaderText}>Lesson</Text>
                             <View style={styles.infoView}>
-                                <Text style={styles.infoText}>{`title: ${title}`}</Text>
-                                <Text style={styles.infoText}>{`objective: ${objective}`}</Text>
-                                <Text style={styles.infoText}>{`explanation: ${explanation}`}</Text>
-                                <Text style={styles.infoText}>{`task: ${task}`}</Text>
+                                <LessonField label='Title' value={data.lesson.title} onChange={x => onLessonChange({ title: x })} />
+                                <LessonField label='Objective' value={data.lesson.objective} onChange={x => onLessonChange({ objective: x })} />
+                                <LessonField label='Explanation' value={data.lesson.explanation} onChange={x => onLessonChange({ explanation: x })} />
+                                <LessonField label='Task' value={data.lesson.task} onChange={x => onLessonChange({ task: x })} />
+                                <LessonField_Descriptions label='Descriptions' value={data.lesson.descriptions} onChange={x => onLessonChange({ descriptions: x })} />
+                                <LessonField_Experiments label='Experiments' value={data.lesson.experiments} onChange={x => onLessonChange({ experiments: x })} projectState={data.lesson.projectState} />
                             </View>
                         </>
                     )}
@@ -232,5 +262,112 @@ export const LessonEditor = (props: {}) => {
                 </View>
             </View>
         </>
+    );
+};
+
+const LessonField = ({ label, value, onChange }: { label: string, value: string, onChange: (value: string) => void }) => {
+    return (
+        <View style={styles.lessonFieldView}>
+            <Text style={styles.lessonFieldLabelText}>{label}</Text>
+            <TextInput
+                style={styles.lessonFieldText}
+                value={value}
+                onChange={onChange}
+                autoCompleteType='off'
+                keyboardType='default'
+            />
+        </View>
+    );
+};
+
+const LessonField_Descriptions = ({ label, value, onChange }: { label: string, value: string[], onChange: (value: string[]) => void }) => {
+    return (
+        <View style={styles.lessonFieldView}>
+            <Text style={styles.lessonFieldLabelText}>{label}</Text>
+            <TextInput
+                style={styles.lessonFieldText}
+                value={value.join(`\n`)}
+                onChange={x => onChange(x.replace(/\r\n/, `\n`).split(`\n`))}
+                autoCompleteType='off'
+                keyboardType='default'
+                multiline
+                numberOfLines={5}
+            />
+        </View>
+    );
+};
+
+
+const LessonField_Experiments = ({ label, value, onChange, projectState }: { label: string, value: LessonExperiment[], onChange: (value: LessonExperiment[]) => void, projectState: LessonProjectState }) => {
+    return (
+        <View style={{}}>
+            <Text style={styles.lessonFieldLabelText}>{label}</Text>
+            {value.map((x, i) => (
+                <LessonField_Experiment key={`${i}`} label={`Experiment ${i}`} value={x}
+                    onChange={v => onChange(value.map((y, j) => i === j ? v : y))} projectState={projectState}
+                    onDelete={() => { value.splice(i, 1); onChange(value); }} />
+            ))}
+            <TouchableOpacity onPress={() => { value.push({ replacements: [], comment: `` }); onChange(value); }}>
+                <View style={styles.buttonView}>
+                    <Text style={styles.buttonText}>{`${`➕`} Add Experiment`}</Text>
+                </View>
+            </TouchableOpacity>
+        </View>
+    );
+};
+
+
+const LessonField_Experiment = ({
+    label,
+    value,
+    onChange,
+    projectState: originalProjectState,
+    onDelete,
+}: {
+    label: string;
+    value: LessonExperiment;
+    onChange: (value: LessonExperiment) => void;
+    projectState: LessonProjectState;
+    onDelete: () => void;
+}) => {
+    const [projectState, setProjectState] = useState(originalProjectState);
+    const [lastFocus, setLastFocus] = useState({ filePath: projectState.files[0].path, index: 0, length: projectState.files[0].content.length });
+
+    useEffect(() => {
+        setProjectState(lessonExperiments_createReplacementProjectState(originalProjectState, value.replacements));
+    }, [originalProjectState.files.length]);
+
+    const changeProjectData = (data: { projectState?: LessonProjectState, focus?: LessonProjectFileSelection }) => {
+        if (data.focus) {
+            setLastFocus(data.focus);
+        }
+
+        if (!data.projectState) { return; }
+        setProjectState(data.projectState);
+        onChange(lessonExperiments_calculateProjectStateReplacements(originalProjectState, data.projectState));
+    };
+
+    return (
+        <View style={{}}>
+            <View style={{ flexDirection: `row` }}>
+                <Text style={styles.lessonFieldLabelText}>{label}</Text>
+                <View style={{ flex: 1 }} />
+                <TouchableOpacity onPress={onDelete}>
+                    <View style={styles.buttonView}>
+                        <Text style={styles.buttonText}>{`${`❌`} Delete Experiment`}</Text>
+                    </View>
+                </TouchableOpacity>
+            </View>
+            <ProjectCodeEditor
+                projectData={{
+                    projectState,
+                    focus: lastFocus,
+                }}
+                fileEditorMode_focus='edit'
+                fileEditorMode_noFocus='edit'
+                projectEditorMode='display'
+                onProjectDataChange={changeProjectData}
+            />
+        </View>
     );
 };

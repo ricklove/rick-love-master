@@ -30,14 +30,16 @@ export type LessonData = {
     */
     descriptions: string[];
     /** Allow swapping part of the code */
-    experiments: {
-        /** Multiple replacements may be required to implement an experiment. */
-        replacements: {
-            selection: LessonProjectFileSelection;
-            replace: string;
-        }[];
-        comment?: string;
-    }[];
+    experiments: LessonExperiment[];
+};
+export type LessonExperiment = {
+    /** Multiple replacements may be required to implement an experiment. */
+    replacements: LessonExperimentReplacement[];
+    comment?: string;
+}
+export type LessonExperimentReplacement = {
+    filePath: string;
+    content: string;
 };
 
 export type LessonProjectState = {
