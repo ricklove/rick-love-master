@@ -6,22 +6,22 @@ const styles = {
     mainView: {
         flexDirection: `row`,
         flexWrap: `wrap`,
-        alignItems: 'center',
+        alignItems: `center`,
     },
     mainView_column: {
         flexDirection: `column`,
     },
     tabView: {
-        flexDirection: 'row',
-        alignItems: 'center',
+        flexDirection: `row`,
+        alignItems: `center`,
         background: `#1e1e1e`,
         // alignSelf: `flex-start`,
         padding: 4,
         marginRight: 1,
     },
     tabView_selected: {
-        flexDirection: 'row',
-        alignItems: 'center',
+        flexDirection: `row`,
+        alignItems: `center`,
         background: `#292a2d`,
         // alignSelf: `flex-start`,
         padding: 4,
@@ -35,8 +35,8 @@ const styles = {
         color: `#FFFF88`,
     },
     headerTabView: {
-        flexDirection: 'row',
-        alignItems: 'center',
+        flexDirection: `row`,
+        alignItems: `center`,
         // background: `#1e1e1e`,
         // alignSelf: `flex-start`,
         padding: 4,
@@ -47,8 +47,8 @@ const styles = {
     },
     moveButtonView: {
         minWidth: 24,
-        justifyContents: 'center',
-        alignItems: 'center',
+        justifyContents: `center`,
+        alignItems: `center`,
     },
 } as const;
 
@@ -64,7 +64,7 @@ export const TabsListEditorComponent = <T extends {}>({
     style,
 }: {
     items: T[];
-    onChange: (items: T[]) => void;
+    onChange?: (items: T[]) => void;
     getLabel: (item: T) => string;
     getKey: (item: T, index: number) => string;
     selected?: T;
@@ -76,6 +76,20 @@ export const TabsListEditorComponent = <T extends {}>({
     };
 }) => {
 
+    if (!onChange) {
+        return (
+            <TabsComponent
+                items={items}
+                getLabel={getLabel}
+                getKey={getKey}
+                selected={selected}
+                onChange={onSelect}
+                header={header}
+                style={style}
+            />
+        );
+    }
+
     const onAdd = () => {
         const newItem = onCreateNewItem();
         onChange([...items, newItem]);
@@ -84,7 +98,9 @@ export const TabsListEditorComponent = <T extends {}>({
     const onDelete = () => {
         const newItems = [...items.filter(x => x !== selected)];
         onChange(newItems);
-        onSelect(newItems[0]);
+        if (newItems.length > 0) {
+            onSelect(newItems[0]);
+        }
     };
     const onMove = (item: T, oldIndex: number, newIndex: number) => {
         if (newIndex < 0 || newIndex > items.length - 1) { return; }
@@ -136,15 +152,15 @@ export const TabsComponent = <T extends {}>({
         selectedTabText?: { color?: string };
     };
 }) => {
-    const [mode, setMode] = useState('row' as 'row' | 'column');
+    const [mode, setMode] = useState(`row` as 'row' | 'column');
 
     return (
-        <View style={mode === 'row' ? styles.mainView : styles.mainView_column}>
+        <View style={mode === `row` ? styles.mainView : styles.mainView_column}>
 
             {!!header && (
-                <TouchableOpacity onPress={() => setMode(s => s === 'row' ? 'column' : 'row')}>
+                <TouchableOpacity onPress={() => setMode(s => s === `row` ? `column` : `row`)}>
                     <View style={styles.headerTabView}>
-                        <Text style={styles.tabText}>{`${mode === 'row' ? `↔ ` : `↕ `}`}</Text>
+                        <Text style={styles.tabText}>{`${mode === `row` ? `↔ ` : `↕ `}`}</Text>
                         <Text style={styles.headerTabText}>{`${header}`}</Text>
                     </View>
                 </TouchableOpacity>
@@ -152,16 +168,16 @@ export const TabsComponent = <T extends {}>({
 
             {items.map((x, i) => (
                 <View key={getKey(x, i)} style={x === selected ? styles.tabView_selected : styles.tabView}>
-                    {mode === 'column' && onMove && (
+                    {mode === `column` && onMove && (
                         <>
                             <TouchableOpacity onPress={() => onMove(x, i, i - 1)}>
                                 <View style={styles.moveButtonView}>
-                                    <Text style={styles.tabText}>{`${i <= 0 ? ' ' : `⬆`}`}</Text>
+                                    <Text style={styles.tabText}>{`${i <= 0 ? ` ` : `⬆`}`}</Text>
                                 </View>
                             </TouchableOpacity>
                             <TouchableOpacity onPress={() => onMove(x, i, i + 1)}>
                                 <View style={styles.moveButtonView}>
-                                    <Text style={styles.tabText}>{`${i >= items.length - 1 ? ' ' : `⬇`}`}</Text>
+                                    <Text style={styles.tabText}>{`${i >= items.length - 1 ? ` ` : `⬇`}`}</Text>
                                 </View>
                             </TouchableOpacity>
                         </>

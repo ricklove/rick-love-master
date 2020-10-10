@@ -39,7 +39,7 @@ export const LessonModuleEditor = (props: {}) => {
             <View style={styles.container}>
                 <TabsListEditorComponent
                     style={{ selectedTabText: { color: `#88FF88` } }}
-                    header={'Lessons'}
+                    header='Lessons'
                     items={module.lessons}
                     onChange={x => setModule(s => ({ ...s, lessons: x }))}
                     getKey={x => x.key}

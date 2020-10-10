@@ -1,40 +1,12 @@
 /* eslint-disable unicorn/no-for-loop */
 /* eslint-disable react/no-danger */
 import React, { useEffect, useRef, useState } from 'react';
-import { View, Text, TextInput, TouchableOpacity } from 'react-native-lite';
-import { distinct, shuffle } from 'utils/arrays';
-import { StringSpan } from 'utils/string-span';
+import { View, Text, TextInput } from 'react-native-lite';
 import { randomItem } from 'utils/random';
 import { LessonProjectFile, LessonProjectFileSelection, LessonProjectState } from '../lesson-types';
-import { CodePartsData, getAutoComplete, getCodeParts, getCodePartsCompleted, isSimilarCodeToken } from './code-editor-helpers';
+import { CodePartsData, getAutoComplete, getCodeParts, getCodePartsCompleted } from './code-editor-helpers';
 import { CodeDisplay } from './code-display';
-
-const styles = {
-    editorModeTabRowView: {
-        flexDirection: `row`,
-        paddingLeft: 16,
-    },
-    editorModeTabView: {
-        background: `#1e1e1e`,
-        alignSelf: `flex-start`,
-        padding: 4,
-        marginRight: 1,
-    },
-    editorModeTabView_selected: {
-        background: `#292a2d`,
-        alignSelf: `flex-start`,
-        padding: 4,
-        marginRight: 1,
-    },
-    editorModeTabText: {
-        fontSize: 14,
-        color: `#FFFFFFF`,
-    },
-    editorModeTabText_selected: {
-        fontSize: 14,
-        color: `#FFFF88`,
-    },
-} as const;
+import { TabsListEditorComponent } from './tabs';
 
 export type ProjectEditorMode = 'display' | 'edit';
 export const ProjectCodeEditor = ({
@@ -61,7 +33,6 @@ export const ProjectCodeEditor = ({
         focus,
     } = projectData;
     const [activeFilePath, setActiveFilePath] = useState(focus.filePath);
-    const [filePathEdit, setFilePathEdit] = useState(focus.filePath);
     const lastFocusSet = useRef(null as null | LessonProjectFileSelection);
 
     useEffect(() => {
@@ -86,17 +57,12 @@ export const ProjectCodeEditor = ({
             return;
         }
 
-        const p = focusFile?.path ?? projectState.files[0].path;
+        const p = focusFile?.path ?? projectState.files[0]?.path ?? undefined;
 
         setActiveFilePath(p);
-        setFilePathEdit(p);
     }, [projectState, focus]);
 
-    const selectFileTab = (filePath: string) => {
-        setActiveFilePath(filePath);
-        setFilePathEdit(filePath);
-    };
-    const selectNewFileTab = () => {
+    const createNewFile = () => {
         let path = `new.ts`;
         let attempt = 1;
         // eslint-disable-next-line no-loop-func
@@ -109,44 +75,10 @@ export const ProjectCodeEditor = ({
             content: ``,
             language: `tsx`,
         };
-        projectState.files.push(newFile);
-        setActiveFilePath(newFile.path);
-        setFilePathEdit(newFile.path);
-        onProjectDataChange({ projectState });
+        return newFile;
     };
-    const changeFileName = () => {
-        const file = projectState.files.find(x => x.path === activeFilePath);
-        if (!file) { return; }
 
-        file.path = filePathEdit;
-        setActiveFilePath(filePathEdit);
-        onProjectDataChange({ projectState });
-    };
-    const deleteFile = () => {
-        if (projectState.files.length <= 1) { return; }
-        const file = projectState.files.find(x => x.path === activeFilePath);
-        if (!file) { return; }
-
-        const files = projectState.files.filter(x => x.path !== activeFilePath);
-        if (file.path === activeFilePath) {
-            const f = files[0];
-            onProjectDataChange({
-                focus: {
-                    filePath: f.path,
-                    index: 0,
-                    length: f.content.length,
-                },
-                projectState: { files },
-            });
-            return;
-        }
-        onProjectDataChange({ projectState: { files } });
-    };
-    const changeCode = (code: string) => {
-        const file = projectState.files.find(x => x.path === activeFilePath);
-        if (!file) { return; }
-
-        file.content = code;
+    const changeFile = (file: LessonProjectFile) => {
         onProjectDataChange({ projectState: { files: projectState.files } });
     };
     const changeSelection = (value: { index: number, length: number }) => {
@@ -164,58 +96,79 @@ export const ProjectCodeEditor = ({
     };
 
     console.log(`ProjectCodeEditor`, { activeFilePath, focus, projectState });
-    const activeFile = projectState.files.find(x => x.path === activeFilePath) ?? projectState.files[0];
+    const activeFile = projectState.files.find(x => x.path === activeFilePath) ?? projectState.files[0] ?? undefined;
     return (
         <>
-            <View style={styles.editorModeTabRowView}>
-                {projectState.files.map(x => (
-                    <TouchableOpacity key={x.path + activeFilePath + focus.filePath} onPress={() => selectFileTab(x.path)}>
-                        <View style={x.path === activeFilePath ? styles.editorModeTabView_selected : styles.editorModeTabView}>
-                            <Text style={x.path === activeFilePath ? styles.editorModeTabText_selected : styles.editorModeTabText}>{`${focus.filePath === x.path ? `📝 ` : ``} ${x.path}`}</Text>
-                        </View>
-                    </TouchableOpacity>
-                ))}
-                {projectEditorMode === `edit` && (
-                    <>
-                        <TouchableOpacity onPress={() => selectNewFileTab()}>
-                            <View style={styles.editorModeTabView}>
-                                <Text style={styles.editorModeTabText}>{`${`➕`} Add File`}</Text>
-                            </View>
-                        </TouchableOpacity>
-                    </>
-                )}
-            </View>
-            {projectEditorMode === `edit` && (
-                <>
-                    <View style={{ flexDirection: `row` }}>
-                        <TextInput
-                            style={{
-                                padding: 4,
-                                fontSize: 12,
-                                color: `#FFFFFF`,
-                                background: `#000000`,
-                            }}
-                            value={filePathEdit}
-                            onChange={setFilePathEdit}
-                            onBlur={changeFileName}
-                            autoCompleteType='off'
-                            keyboardType='default'
-                        />
-                        <View style={{ flex: 1 }} />
-                        <TouchableOpacity onPress={() => deleteFile()}>
-                            <View style={styles.editorModeTabView}>
-                                <Text style={styles.editorModeTabText}>{`${`❌`} Delete File`}</Text>
-                            </View>
-                        </TouchableOpacity>
-                    </View>
-                </>
+            <TabsListEditorComponent
+                header='Files'
+                items={projectState.files}
+                onChange={projectEditorMode !== `edit` ? undefined : (x => onProjectDataChange({ projectState: { files: x } }))}
+                getKey={x => x.path}
+                getLabel={x => x.path}
+                selected={activeFile}
+                onSelect={x => setActiveFilePath(x.path)}
+                onCreateNewItem={createNewFile}
+            />
+            {activeFile && (
+                <FileEditor
+                    key={activeFile.path}
+                    projectEditorMode={projectEditorMode}
+                    file={activeFile} selection={focus.filePath === activeFile.path ? focus : undefined}
+                    fileEditorMode={focus.filePath === activeFile.path ? fileEditorMode_focus : fileEditorMode_noFocus}
+                    onChange={changeFile} onSelectionChange={changeSelection} />
             )}
-            {[activeFile].map(x => (
-                <FileCodeEditor key={x.path + x.content}
-                    file={x} selection={focus.filePath === x.path ? focus : undefined}
-                    mode={focus.filePath === x.path ? fileEditorMode_focus : fileEditorMode_noFocus}
-                    onCodeChange={changeCode} onSelectionChange={changeSelection} />
-            ))}
+        </>
+    );
+};
+
+export const FileEditor = ({
+    projectEditorMode,
+    fileEditorMode,
+    file,
+    onChange,
+    selection,
+    onSelectionChange,
+}: {
+    projectEditorMode: ProjectEditorMode;
+    fileEditorMode: FileEditorMode;
+    file: LessonProjectFile;
+    onChange: (value: LessonProjectFile) => void;
+    selection?: LessonProjectFileSelection;
+    onSelectionChange: (value: { index: number, length: number }) => void;
+}) => {
+
+    const [filePathEdit, setFilePathEdit] = useState(file.path);
+    const changeFileName = () => {
+        file.path = filePathEdit;
+        onChange({ ...file, path: filePathEdit });
+    };
+
+    return (
+        <>
+            {projectEditorMode === `edit` && (
+                <View style={{ flexDirection: `row` }}>
+                    <TextInput
+                        style={{
+                            padding: 4,
+                            fontSize: 12,
+                            color: `#FFFFFF`,
+                            background: `#000000`,
+                        }}
+                        value={filePathEdit}
+                        onChange={setFilePathEdit}
+                        onBlur={changeFileName}
+                        autoCompleteType='off'
+                        keyboardType='default'
+                    />
+                </View>
+            )}
+            <FileCodeEditor
+                file={file}
+                onCodeChange={x => onChange({ ...file, content: x })}
+                mode={fileEditorMode}
+                selection={selection}
+                onSelectionChange={onSelectionChange}
+            />
         </>
     );
 };
