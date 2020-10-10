@@ -5,69 +5,6 @@ import { FileEditorMode, ProjectCodeEditor, ProjectEditorMode } from '../common/
 import { LessonData, LessonExperiment, LessonProjectFileSelection, LessonProjectState, LessonStep_ConstructCode } from '../common/lesson-types';
 import { lessonExperiments_createReplacementProjectState, lessonExperiments_calculateProjectStateReplacements } from '../common/replacements';
 
-const createDefaultLesson = (): LessonData => {
-    const file = {
-        path: `test.tsx`,
-        content: `
-import React from 'react';
-
-export const MinimalReactComponent = (props: {}) => {
-    return (
-        <span>Hello World!</span>
-    );
-};
-        `.trim(),
-        language: `tsx` as const,
-    };
-    const file0 = {
-        path: `test0.tsx`,
-        content: `
-import React from 'react';
-
-export const MinimalReactComponent0 = (props: {}) => {
-    return (
-        <span>Hello World 0!</span>
-    );
-};
-        `.trim(),
-        language: `tsx` as const,
-    };
-    const file2 = {
-        path: `test2.tsx`,
-        content: `
-import React from 'react';
-
-export const MinimalReactComponent2 = (props: {}) => {
-    return (
-        <span>Hello World 2!</span>
-    );
-};
-        `.trim(),
-        language: `tsx` as const,
-    };
-
-    const focusIndex = file.content.indexOf(`<span>Hello World!</span>`);
-    const focusLength = `<span>Hello World!</span>`.length;
-
-    const lesson: LessonData = {
-        projectState: {
-            files: [file0, file, file2],
-        },
-        focus: {
-            filePath: file.path,
-            index: focusIndex,
-            length: focusLength,
-        },
-        title: `Test Lesson`,
-        objective: `Test the Editor`,
-        explanation: `Learn some stuff`,
-        task: `Make a test variable true`,
-        descriptions: [],
-        experiments: [],
-    };
-    return lesson;
-};
-
 const styles = {
     container: {
         background: `#111111`,
@@ -95,6 +32,10 @@ const styles = {
         fontSize: 14,
         color: `#FFFFFFF`,
     },
+    editorModeTabText_selected: {
+        fontSize: 14,
+        color: `#FFFF88`,
+    },
     buttonView: {
         background: `#1e1e1e`,
         alignSelf: `flex-start`,
@@ -104,10 +45,6 @@ const styles = {
     buttonText: {
         fontSize: 14,
         color: `#FFFFFFF`,
-    },
-    editorModeTabText_selected: {
-        fontSize: 14,
-        color: `#FFFF88`,
     },
     sectionHeaderText: {
         margin: 8,
@@ -160,9 +97,9 @@ const createLessonState = (lesson: LessonData, lessonJson?: string) => {
     };
 };
 
-export const LessonEditor = (props: {}) => {
+export const LessonEditor = (props: { value: LessonData, onChange: (value: LessonData) => void }) => {
 
-    const [data, setData] = useState(createLessonState(createDefaultLesson()));
+    const [data, setData] = useState(createLessonState(props.value));
     type EditorMode = 'edit' | 'json' | 'constructCode';
     const [editorMode, setEditorMode] = useState(`edit` as EditorMode);
     const editorModes = [
@@ -182,19 +119,22 @@ export const LessonEditor = (props: {}) => {
             : editorMode === `constructCode` ? `display`
                 : `display`;
 
+    const changeLessonState = (value: typeof data) => {
+        setData(value);
+        props.onChange(value.lesson);
+    };
     const changeLessonJson = (json: string) => {
-        setData(createLessonState(JSON.parse(json), json));
+        changeLessonState(createLessonState(JSON.parse(json), json));
     };
 
     const onProjectDataChange = (projectData: { projectState?: LessonProjectState, focus?: LessonProjectFileSelection }) => {
-
-        setData(createLessonState({
+        changeLessonState(createLessonState({
             ...data.lesson,
             ...projectData,
         }));
     };
     const onLessonChange = (lesson: Partial<LessonData>) => {
-        setData(createLessonState({
+        changeLessonState(createLessonState({
             ...data.lesson,
             ...lesson,
         }));

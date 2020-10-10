@@ -1,4 +1,15 @@
 
+## Code Training
+
+### Vocab
+
+- LessonModule: The build package for a sequence of lessons
+    - LessonData - All Data for each lesson
+    - LessonRenders - The react build output for each lesson state 
+- Lesson: Reaching a point in the project state (similar to a git commit with all the teaching material)
+- LessonStep: A learning task executed by the student. A lesson
+
+---
 
 - Codey's Lab: https://www.youtube.com/watch?v=hKq1gmimBMY
 
@@ -62,3 +73,17 @@
     - [x] Type code
         - [x] Autocomplete Popdown
         - [x] Feedback Popup
+
+
+
+---
+
+# Build System (for State Renders)
+
+node cli that runs a local express server to handle build operations
+
+- load/save lessons
+- build lesson
+    - use a create react app template
+    - replace src files
+    - 

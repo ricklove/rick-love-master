@@ -1,0 +1,72 @@
+import { LessonData, LessonModule } from '../common/lesson-types';
+
+export const createDefaultLesson = (): LessonData => {
+    const file = {
+        path: `test.tsx`,
+        content: `
+import React from 'react';
+
+export const MinimalReactComponent = (props: {}) => {
+    return (
+        <span>Hello World!</span>
+    );
+};
+        `.trim(),
+        language: `tsx` as const,
+    };
+    const file0 = {
+        path: `test0.tsx`,
+        content: `
+import React from 'react';
+
+export const MinimalReactComponent0 = (props: {}) => {
+    return (
+        <span>Hello World 0!</span>
+    );
+};
+        `.trim(),
+        language: `tsx` as const,
+    };
+    const file2 = {
+        path: `test2.tsx`,
+        content: `
+import React from 'react';
+
+export const MinimalReactComponent2 = (props: {}) => {
+    return (
+        <span>Hello World 2!</span>
+    );
+};
+        `.trim(),
+        language: `tsx` as const,
+    };
+
+    const focusIndex = file.content.indexOf(`<span>Hello World!</span>`);
+    const focusLength = `<span>Hello World!</span>`.length;
+
+    const lesson: LessonData = {
+        projectState: {
+            files: [file0, file, file2],
+        },
+        focus: {
+            filePath: file.path,
+            index: focusIndex,
+            length: focusLength,
+        },
+        title: `Test Lesson`,
+        objective: `Test the Editor`,
+        explanation: `Learn some stuff`,
+        task: `Make a test variable true`,
+        descriptions: [],
+        experiments: [],
+    };
+    return lesson;
+};
+
+export const createDefaultLessonModule = (): LessonModule => {
+    return {
+        name: `module`,
+        title: `Module`,
+        lessons: [createDefaultLesson()],
+    };
+};

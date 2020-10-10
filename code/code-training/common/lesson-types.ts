@@ -1,8 +1,9 @@
 // Note: These types are optimized for runtime (shared immutable objects - not for json serialization)
 
-export type LessonSeries = {
+export type LessonModule = {
+    name: string;
+    title: string;
     lessons: LessonData[];
-    seriesTitle: string;
 };
 
 export type LessonData = {
