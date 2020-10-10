@@ -14,72 +14,6 @@ const styles = {
     containerPanel: {
         background: `#292a2d`,
     },
-    // lessonTabRowView: {
-    //     flexDirection: `row`,
-    //     paddingLeft: 16,
-    // },
-    // lessonTabView: {
-    //     background: `#1e1e1e`,
-    //     alignSelf: `flex-start`,
-    //     padding: 8,
-    //     marginRight: 1,
-    // },
-    // lessonTabView_selected: {
-    //     background: `#292a2d`,
-    //     alignSelf: `flex-start`,
-    //     padding: 8,
-    //     marginRight: 1,
-    // },
-    // lessonTabText: {
-    //     fontSize: 14,
-    //     color: `#FFFFFFF`,
-    // },
-    // lessonTabText_selected: {
-    //     fontSize: 14,
-    //     color: `#88FF88`,
-    // },
-    // buttonView: {
-    //     background: `#1e1e1e`,
-    //     alignSelf: `flex-start`,
-    //     padding: 8,
-    //     margin: 1,
-    // },
-    // buttonText: {
-    //     fontSize: 14,
-    //     color: `#FFFFFFF`,
-    // },
-    // sectionHeaderText: {
-    //     margin: 8,
-    //     fontSize: 18,
-    //     color: `#FFFF88`,
-    // },
-    // infoView: {
-    // },
-    // infoText: {
-    //     margin: 8,
-    //     fontSize: 12,
-    //     wrap: `wrap`,
-    // },
-    // lessonFieldView: {
-    //     flexDirection: `row`,
-    // },
-    // lessonFieldLabelText: {
-    //     minWidth: 80,
-    //     padding: 4,
-    //     fontSize: 12,
-    // },
-    // lessonFieldText: {
-    //     flex: 1,
-    //     padding: 4,
-    //     fontSize: 12,
-    //     wrap: `wrap`,
-    // },
-    // jsonText: {
-    //     padding: 4,
-    //     fontSize: 12,
-    //     color: `#FFFFFF`,
-    //     background: `#000000`,
-    // },
 } as const;
 
 
@@ -114,6 +48,19 @@ export const LessonModuleEditor = (props: {}) => {
         }));
         setActiveLesson(module.lessons.filter(x => x !== activeLesson)[0]);
     };
+    const moveLesson = (item: LessonData, oldIndex: number, newIndex: number) => {
+        if (newIndex < 0 || newIndex > module.lessons.length - 1) { return; }
+        setModule(s => {
+            const newLessons = [...s.lessons];
+            newLessons.splice(oldIndex, 1);
+            newLessons.splice(newIndex, 0, item);
+
+            return ({
+                ...s,
+                lessons: newLessons,
+            })
+        });
+    };
 
     return (
         <>
@@ -128,10 +75,11 @@ export const LessonModuleEditor = (props: {}) => {
                     onChange={x => setActiveLesson(x)}
                     onAdd={addLesson}
                     onDelete={deleteActiveLesson}
+                    onMove={moveLesson}
                 />
                 {activeLesson && (
                     <>
-                        <LessonEditor value={activeLesson} onChange={changeActiveLesson} />
+                        <LessonEditor key={activeLesson.key} value={activeLesson} onChange={changeActiveLesson} />
                     </>
                 )}
             </View>

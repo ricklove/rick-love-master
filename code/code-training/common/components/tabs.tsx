@@ -11,12 +11,16 @@ const styles = {
         flexDirection: `column`,
     },
     tabView: {
+        flexDirection: 'row',
+        alignItems: 'center',
         background: `#1e1e1e`,
         // alignSelf: `flex-start`,
         padding: 4,
         marginRight: 1,
     },
     tabView_selected: {
+        flexDirection: 'row',
+        alignItems: 'center',
         background: `#292a2d`,
         // alignSelf: `flex-start`,
         padding: 4,
@@ -40,6 +44,9 @@ const styles = {
     headerTabText: {
         fontSize: 14,
     },
+    moveButtonView: {
+        padding: 4,
+    },
 } as const;
 
 export const TabsComponent = <T extends {}>({
@@ -48,6 +55,7 @@ export const TabsComponent = <T extends {}>({
     getKey,
     selected,
     onChange,
+    onMove,
     onAdd,
     onDelete,
     header,
@@ -58,6 +66,7 @@ export const TabsComponent = <T extends {}>({
     getKey: (item: T, index: number) => string;
     selected?: T;
     onChange: (selected: T) => void;
+    onMove?: (item: T, fromIndex: number, toIndex: number) => void;
     onAdd?: () => void;
     onDelete?: () => void;
     header?: string;
@@ -80,11 +89,27 @@ export const TabsComponent = <T extends {}>({
             )}
 
             {items.map((x, i) => (
-                <TouchableOpacity key={getKey(x, i)} onPress={() => onChange(x)}>
-                    <View style={x === selected ? styles.tabView_selected : styles.tabView}>
-                        <Text style={x === selected ? { ...styles.tabText_selected, ...style?.selectedTabText } : { ...styles.tabText }}>{`${getLabel(x)}`}</Text>
-                    </View>
-                </TouchableOpacity>
+                <View key={getKey(x, i)} style={x === selected ? styles.tabView_selected : styles.tabView}>
+                    {mode === 'column' && onMove && (
+                        <>
+                            <TouchableOpacity onPress={() => onMove(x, i, i - 1)}>
+                                <View style={styles.moveButtonView}>
+                                    <Text style={styles.tabText}>{`${`⬆`}`}</Text>
+                                </View>
+                            </TouchableOpacity>
+                            <TouchableOpacity onPress={() => onMove(x, i, i + 1)}>
+                                <View style={styles.moveButtonView}>
+                                    <Text style={styles.tabText}>{`${`⬇`}`}</Text>
+                                </View>
+                            </TouchableOpacity>
+                        </>
+                    )}
+                    <TouchableOpacity style={{ flex: 1 }} onPress={() => onChange(x)}>
+                        <View>
+                            <Text style={x === selected ? { ...styles.tabText_selected, ...style?.selectedTabText } : { ...styles.tabText }}>{`${getLabel(x)}`}</Text>
+                        </View>
+                    </TouchableOpacity>
+                </View>
             ))}
             <View style={{ flex: 1, flexDirection: `row` }}>
                 {onAdd && (
