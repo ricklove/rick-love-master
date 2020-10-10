@@ -83,7 +83,7 @@ export const TabsListEditorComponent = <T extends {}>({
                 getLabel={getLabel}
                 getKey={getKey}
                 selected={selected}
-                onChange={onSelect}
+                onSelect={onSelect}
                 header={header}
                 style={style}
             />
@@ -117,7 +117,7 @@ export const TabsListEditorComponent = <T extends {}>({
             getLabel={getLabel}
             getKey={getKey}
             selected={selected}
-            onChange={onSelect}
+            onSelect={onSelect}
             onMove={onMove}
             onAdd={onAdd}
             onDelete={onDelete}
@@ -132,7 +132,7 @@ export const TabsComponent = <T extends {}>({
     getLabel,
     getKey,
     selected,
-    onChange,
+    onSelect,
     onMove,
     onAdd,
     onDelete,
@@ -143,7 +143,7 @@ export const TabsComponent = <T extends {}>({
     getLabel: (item: T) => string;
     getKey: (item: T, index: number) => string;
     selected?: T;
-    onChange: (selected: T) => void;
+    onSelect: (selected: T) => void;
     onMove?: (item: T, fromIndex: number, toIndex: number) => void;
     onAdd?: () => void;
     onDelete?: () => void;
@@ -182,7 +182,7 @@ export const TabsComponent = <T extends {}>({
                             </TouchableOpacity>
                         </>
                     )}
-                    <TouchableOpacity style={{ flex: 1 }} onPress={() => onChange(x)}>
+                    <TouchableOpacity style={{ flex: 1 }} onPress={() => onSelect(x)}>
                         <View>
                             <Text style={x === selected ? { ...styles.tabText_selected, ...style?.selectedTabText } : { ...styles.tabText }}>{`${getLabel(x)}`}</Text>
                         </View>
