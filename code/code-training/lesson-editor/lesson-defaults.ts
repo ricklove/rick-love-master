@@ -45,6 +45,7 @@ export const MinimalReactComponent2 = (props: {}) => {
     const focusLength = `<span>Hello World!</span>`.length;
 
     const lesson: LessonData = {
+        key: `Lesson-${Date.now()}-${(Math.random() + '').substr(2)}`,
         projectState: {
             files: [file0, file, file2],
         },
@@ -65,7 +66,7 @@ export const MinimalReactComponent2 = (props: {}) => {
 
 export const createDefaultLessonModule = (): LessonModule => {
     return {
-        name: `module`,
+        key: `Module-${Date.now()}-${(Math.random() + '').substr(2)}`,
         title: `Module`,
         lessons: [createDefaultLesson()],
     };

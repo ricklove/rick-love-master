@@ -120,11 +120,12 @@ export const LessonModuleEditor = (props: {}) => {
             <View style={styles.container}>
                 <TabsComponent
                     style={{ selectedTabText: { color: `#88FF88` } }}
+                    header={'Lessons'}
                     items={module.lessons}
-                    getKey={(x, i) => x.title + i}
+                    getKey={x => x.key}
                     getLabel={x => x.title}
                     selected={activeLesson}
-                    onChange={setActiveLesson}
+                    onChange={x => setActiveLesson(x)}
                     onAdd={addLesson}
                     onDelete={deleteActiveLesson}
                 />

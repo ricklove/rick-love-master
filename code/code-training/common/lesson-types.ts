@@ -1,12 +1,14 @@
 // Note: These types are optimized for runtime (shared immutable objects - not for json serialization)
 
 export type LessonModule = {
-    name: string;
+    key: string;
     title: string;
     lessons: LessonData[];
 };
 
 export type LessonData = {
+    key: string;
+
     /** State of all code files in the project */
     projectState: LessonProjectState;
     // projectState_previous?: LessonProjectState;
