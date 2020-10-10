@@ -1,3 +1,4 @@
+import { ifError } from 'assert';
 import React, { useState } from 'react';
 import { View, Text, TouchableOpacity } from 'react-native-lite';
 
@@ -45,9 +46,70 @@ const styles = {
         fontSize: 14,
     },
     moveButtonView: {
-        padding: 4,
+        minWidth: 24,
+        justifyContents: 'center',
+        alignItems: 'center',
     },
 } as const;
+
+export const TabsListEditorComponent = <T extends {}>({
+    items,
+    onChange,
+    getLabel,
+    getKey,
+    selected,
+    onSelect,
+    onCreateNewItem,
+    header,
+    style,
+}: {
+    items: T[];
+    onChange: (items: T[]) => void;
+    getLabel: (item: T) => string;
+    getKey: (item: T, index: number) => string;
+    selected?: T;
+    onSelect: (selected: T) => void;
+    onCreateNewItem: () => T;
+    header?: string;
+    style?: {
+        selectedTabText?: { color?: string };
+    };
+}) => {
+
+    const onAdd = () => {
+        const newItem = onCreateNewItem();
+        onChange([...items, newItem]);
+        onSelect(newItem);
+    };
+    const onDelete = () => {
+        const newItems = [...items.filter(x => x !== selected)];
+        onChange(newItems);
+        onSelect(newItems[0]);
+    };
+    const onMove = (item: T, oldIndex: number, newIndex: number) => {
+        if (newIndex < 0 || newIndex > items.length - 1) { return; }
+        const newItems = [...items];
+        newItems.splice(oldIndex, 1);
+        newItems.splice(newIndex, 0, item);
+
+        onChange(newItems);
+    };
+
+    return (
+        <TabsComponent
+            items={items}
+            getLabel={getLabel}
+            getKey={getKey}
+            selected={selected}
+            onChange={onSelect}
+            onMove={onMove}
+            onAdd={onAdd}
+            onDelete={onDelete}
+            header={header}
+            style={style}
+        />
+    );
+};
 
 export const TabsComponent = <T extends {}>({
     items,
@@ -94,12 +156,12 @@ export const TabsComponent = <T extends {}>({
                         <>
                             <TouchableOpacity onPress={() => onMove(x, i, i - 1)}>
                                 <View style={styles.moveButtonView}>
-                                    <Text style={styles.tabText}>{`${`⬆`}`}</Text>
+                                    <Text style={styles.tabText}>{`${i <= 0 ? ' ' : `⬆`}`}</Text>
                                 </View>
                             </TouchableOpacity>
                             <TouchableOpacity onPress={() => onMove(x, i, i + 1)}>
                                 <View style={styles.moveButtonView}>
-                                    <Text style={styles.tabText}>{`${`⬇`}`}</Text>
+                                    <Text style={styles.tabText}>{`${i >= items.length - 1 ? ' ' : `⬇`}`}</Text>
                                 </View>
                             </TouchableOpacity>
                         </>
