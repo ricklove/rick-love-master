@@ -4,6 +4,7 @@ import { View, Text, TextInput, TouchableOpacity } from 'react-native-lite';
 import { LessonProjectFilesEditor, LessonProjectEditorMode, LessonFileEditorMode } from '../common/components/lesson-file-editor';
 import { LessonData, LessonExperiment, LessonProjectFileSelection, LessonProjectState, LessonStep_ConstructCode } from '../common/lesson-types';
 import { lessonExperiments_createReplacementProjectState, lessonExperiments_calculateProjectStateReplacements } from '../common/replacements';
+import { LessonView_ConstructCode } from '../common/components/lesson-view';
 
 const styles = {
     container: {
@@ -112,7 +113,7 @@ export const LessonEditor = (props: { value: LessonData, onChange: (value: Lesso
             : `display`;
     const fileEditorMode_focus: LessonFileEditorMode =
         editorMode === `edit` ? `edit`
-            : editorMode === `constructCode` ? `type-selection`
+            : editorMode === `constructCode` ? `construct-code`
                 : `display`;
     const fileEditorMode_noFocus: LessonFileEditorMode =
         editorMode === `edit` ? `edit`
@@ -158,31 +159,6 @@ export const LessonEditor = (props: { value: LessonData, onChange: (value: Lesso
                     ))}
                 </View>
                 <View style={styles.containerPanel}>
-                    {editorMode !== `json` && (
-                        <>
-                            <Text style={styles.sectionHeaderText}>Project Files</Text>
-                            <LessonProjectFilesEditor
-                                projectData={{
-                                    projectState,
-                                    focus,
-                                }}
-                                fileEditorMode_focus={fileEditorMode_focus}
-                                fileEditorMode_noFocus={fileEditorMode_noFocus}
-                                projectEditorMode={projectEditorMode}
-                                onProjectDataChange={onProjectDataChange}
-                            />
-
-                            <Text style={styles.sectionHeaderText}>Lesson</Text>
-                            <View style={styles.infoView}>
-                                <LessonField label='Title' value={data.lesson.title} onChange={x => onLessonChange({ title: x })} />
-                                <LessonField label='Objective' value={data.lesson.objective} onChange={x => onLessonChange({ objective: x })} />
-                                <LessonField label='Explanation' value={data.lesson.explanation} onChange={x => onLessonChange({ explanation: x })} />
-                                <LessonField label='Task' value={data.lesson.task} onChange={x => onLessonChange({ task: x })} />
-                                <LessonField_Descriptions label='Descriptions' value={data.lesson.descriptions} onChange={x => onLessonChange({ descriptions: x })} />
-                                <LessonField_Experiments label='Experiments' value={data.lesson.experiments} onChange={x => onLessonChange({ experiments: x })} projectState={data.lesson.projectState} />
-                            </View>
-                        </>
-                    )}
                     {editorMode === `json` && (
                         <>
                             <Text style={styles.sectionHeaderText}>Lesson Data</Text>
@@ -198,6 +174,33 @@ export const LessonEditor = (props: { value: LessonData, onChange: (value: Lesso
                                 />
                             </View>
                         </>
+                    )}
+                    {editorMode === `edit` && (
+                        <>
+                            <Text style={styles.sectionHeaderText}>Project Files</Text>
+                            <LessonProjectFilesEditor
+                                projectData={{
+                                    projectState,
+                                    focus,
+                                }}
+                                fileEditorMode_focus={fileEditorMode_focus}
+                                fileEditorMode_noFocus={fileEditorMode_noFocus}
+                                projectEditorMode={projectEditorMode}
+                                onProjectDataChange={onProjectDataChange}
+                            />
+                            <Text style={styles.sectionHeaderText}>Lesson</Text>
+                            <View style={styles.infoView}>
+                                <LessonField label='Title' value={data.lesson.title} onChange={x => onLessonChange({ title: x })} />
+                                <LessonField label='Objective' value={data.lesson.objective} onChange={x => onLessonChange({ objective: x })} />
+                                <LessonField label='Explanation' value={data.lesson.explanation} onChange={x => onLessonChange({ explanation: x })} />
+                                <LessonField label='Task' value={data.lesson.task} onChange={x => onLessonChange({ task: x })} />
+                                <LessonField_Descriptions label='Descriptions' value={data.lesson.descriptions} onChange={x => onLessonChange({ descriptions: x })} />
+                                <LessonField_Experiments label='Experiments' value={data.lesson.experiments} onChange={x => onLessonChange({ experiments: x })} projectState={data.lesson.projectState} />
+                            </View>
+                        </>
+                    )}
+                    {editorMode === `constructCode` && (
+                        <LessonView_ConstructCode data={data.lesson} />
                     )}
                 </View>
             </View>

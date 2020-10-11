@@ -7,7 +7,7 @@ export type CodeDisplayInputOptions = {
     isActive?: boolean;
     cursorIndex?: number;
     activeIndex?: number;
-    feedback?: { isDone: boolean, message: string, isCorrect: boolean };
+    feedback?: CodeDisplayFeedback;
     autoComplete?: { textCompleted: string, text: string, isSelected: boolean, isWrong: boolean }[];
 };
 export const CodeDisplay = ({ codeParts, language, inputOptions }: {
@@ -110,6 +110,13 @@ const feedbackStyles = {
     emoji: { display: `block`, position: `absolute`, fontSize: 20, bottom: -16, right: -8 },
 } as const;
 
+export type CodeDisplayFeedback = {
+    message: string;
+    emoji: string;
+    timestamp: number;
+    isNegative?: boolean;
+    timeout?: number;
+};
 const FeedbackComponent = ({ inputOptions }: { inputOptions: CodeDisplayInputOptions }) => {
     const { feedback } = inputOptions;
 
@@ -120,7 +127,7 @@ const FeedbackComponent = ({ inputOptions }: { inputOptions: CodeDisplayInputOpt
 
         const id = setTimeout(() => {
             setHide(true);
-        }, 3000);
+        }, feedback?.timeout ?? 3000);
 
         return () => {
             clearTimeout(id);
@@ -132,18 +139,10 @@ const FeedbackComponent = ({ inputOptions }: { inputOptions: CodeDisplayInputOpt
     const s = feedbackStyles;
     return (
         <>
-            {feedback.isDone && (
-                <span style={s.wrapper}>
-                    <span style={s.correct}>{`✔ ${feedback.message}`.trim()}</span>
-                    <span style={s.emoji}>{`😎`.trim()}</span>
-                </span>
-            )}
-            {!feedback.isCorrect && !feedback.isDone && (
-                <span style={s.wrapper}>
-                    <span style={s.incorrect}>{`❌ ${feedback.message}`}</span>
-                    <span style={s.emoji}>{`😾`.trim()}</span>
-                </span>
-            )}
+            <span style={s.wrapper}>
+                <span style={feedback.isNegative ? s.incorrect : s.correct}>{feedback.message}</span>
+                <span style={s.emoji}>{feedback.emoji}</span>
+            </span>
         </>
     );
 };

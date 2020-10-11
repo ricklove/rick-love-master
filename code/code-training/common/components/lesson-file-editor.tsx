@@ -7,6 +7,7 @@ import { LessonProjectFile, LessonProjectFileSelection, LessonProjectState } fro
 import { CodePartsData, getAutoComplete, getCodeParts, getCodePartsCompleted } from './code-editor-helpers';
 import { CodeDisplay } from './code-display';
 import { TabsListEditorComponent } from './tabs';
+import { LessonFileContentEditor_ConstructCode } from './lesson-file-editor-construct-code';
 
 export type LessonProjectEditorMode = 'display' | 'edit';
 export const LessonProjectFilesEditor = ({
@@ -14,7 +15,8 @@ export const LessonProjectFilesEditor = ({
     projectEditorMode,
     fileEditorMode_focus,
     fileEditorMode_noFocus,
-    onProjectDataChange,
+    onProjectDataChange = () => { },
+    onTaskDone = () => { },
 }: {
     projectData: {
         projectState: LessonProjectState;
@@ -23,10 +25,11 @@ export const LessonProjectFilesEditor = ({
     projectEditorMode: LessonProjectEditorMode;
     fileEditorMode_focus: LessonFileEditorMode;
     fileEditorMode_noFocus: LessonFileEditorMode;
-    onProjectDataChange: (value: {
+    onProjectDataChange?: (value: {
         projectState?: LessonProjectState;
         focus?: LessonProjectFileSelection;
     }) => void;
+    onTaskDone?: () => void;
 }) => {
     const {
         projectState,
@@ -122,7 +125,9 @@ export const LessonProjectFilesEditor = ({
                     projectEditorMode={projectEditorMode}
                     file={activeFile} selection={focus.filePath === activeFile.path ? focus : undefined}
                     fileEditorMode={focus.filePath === activeFile.path ? fileEditorMode_focus : fileEditorMode_noFocus}
-                    onChange={changeFile} onSelectionChange={changeSelection} />
+                    onChange={changeFile} onSelectionChange={changeSelection}
+                    onTaskDone={onTaskDone}
+                />
             )}
         </>
     );
@@ -135,6 +140,7 @@ export const LessonFileEditor = ({
     onChange,
     selection,
     onSelectionChange,
+    onTaskDone,
 }: {
     projectEditorMode: LessonProjectEditorMode;
     fileEditorMode: LessonFileEditorMode;
@@ -142,6 +148,7 @@ export const LessonFileEditor = ({
     onChange: (value: LessonProjectFile) => void;
     selection?: LessonProjectFileSelection;
     onSelectionChange: (value: { index: number, length: number }) => void;
+    onTaskDone: () => void;
 }) => {
 
     const [filePathEdit, setFilePathEdit] = useState(file.path);
@@ -175,24 +182,27 @@ export const LessonFileEditor = ({
                 mode={fileEditorMode}
                 selection={selection}
                 onSelectionChange={onSelectionChange}
+                onTaskDone={onTaskDone}
             />
         </>
     );
 };
 
-export type LessonFileEditorMode = 'display' | 'edit' | 'type-selection';
+export type LessonFileEditorMode = 'display' | 'edit' | 'construct-code';
 export const LessonFileContentEditor = ({
     file,
     selection,
     mode,
     onCodeChange,
     onSelectionChange,
+    onTaskDone,
 }: {
     file: LessonProjectFile;
     selection?: LessonProjectFileSelection;
     mode: LessonFileEditorMode;
     onCodeChange: (code: string) => void;
     onSelectionChange: (value: { index: number, length: number }) => void;
+    onTaskDone: () => void;
 }) => {
     return (
         <View style={{}}>
@@ -206,8 +216,8 @@ export const LessonFileContentEditor = ({
                 {mode === `edit` && (
                     <LessonFileContentEditor_Edit code={file.content} language={file.language} selection={selection} onCodeChange={onCodeChange} onSelectionChange={onSelectionChange} />
                 )}
-                {mode === `type-selection` && (
-                    <LessonFileContentEditor_TypeSelection code={file.content} language={file.language} selection={selection} />
+                {mode === `construct-code` && (
+                    <LessonFileContentEditor_ConstructCode code={file.content} language={file.language} selection={selection} onTaskDone={onTaskDone} />
                 )}
             </View>
         </View >
@@ -272,173 +282,5 @@ const LessonFileContentEditor_Edit = ({ code, language, selection, onCodeChange,
                 {codeParts && (<CodeDisplay codeParts={codeParts.codeParts} language={language} />)}
             </View>
         </View>
-    );
-};
-
-const LessonFileContentEditor_TypeSelection = ({ code, language, selection }: { code: string, language: 'tsx', selection?: LessonProjectFileSelection }) => {
-
-    const [codeParts, setCodeParts] = useState(null as null | CodePartsData);
-
-    useEffect(() => {
-        const parts = getCodeParts(code, language, selection);
-        setCodeParts(parts);
-        setAutoComplete(null);
-    }, [code]);
-
-    const [inputText, setInputText] = useState(``);
-    const [isActive, setIsActive] = useState(false);
-    const [feedback, setFeedback] = useState({ message: ``, isCorrect: true, isDone: false, timestamp: 0 });
-    const [autoComplete, setAutoComplete] = useState(null as null | { choices: { textCompleted: string, text: string, isSelected: boolean, isWrong: boolean }[], activeIndex: number });
-
-    const onKeyDown = (e: React.KeyboardEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-        const TABKEY = 9;
-        const RETURNKEY = 13;
-        const UPKEY = 38;
-        const DOWNKEY = 40;
-        // console.log(`CodeEditor onKeyPress`, { keyCode: e.keyCode });
-
-        if (e.keyCode === TABKEY) {
-            // console.log(`CodeEditor onKeyPress onTabKey`);
-            e.preventDefault();
-            e.stopPropagation();
-
-            changeInputText(`${inputText}\t`);
-            return false;
-        }
-        if (e.keyCode === RETURNKEY) {
-            // console.log(`CodeEditor onKeyPress onTabKey`);
-            e.preventDefault();
-            e.stopPropagation();
-
-            changeInputText(`${inputText}\n`);
-            return false;
-        }
-        if (e.keyCode === UPKEY) {
-            setAutoComplete(s => {
-                if (!s) { return null; }
-                const iSelected = s.choices.findIndex(x => x.isSelected);
-                const iSelectedNew = Math.max(0, iSelected - 1);
-                return { ...s, choices: [...s.choices.map((x, i) => ({ ...x, isSelected: iSelectedNew === i }))] };
-            });
-        }
-        if (e.keyCode === DOWNKEY) {
-            setAutoComplete(s => {
-                if (!s) { return null; }
-                const iSelected = s.choices.findIndex(x => x.isSelected);
-                const iSelectedNew = Math.min(s.choices.length - 1, iSelected + 1);
-                return { ...s, choices: [...s.choices.map((x, i) => ({ ...x, isSelected: iSelectedNew === i }))] };
-            });
-        }
-        return true;
-    };
-
-    const changeInputText = (valueRaw: string) => {
-        if (!codeParts) { return; }
-        const {
-            codeFocus,
-        } = codeParts;
-
-        const newInput = valueRaw.substr(inputText.length);
-        const wasBackspace = valueRaw.length < inputText.length;
-        const wasTab = valueRaw.endsWith(`\t`);
-        const wasReturn = valueRaw.endsWith(`\n`);
-        const wasPeriod = valueRaw.endsWith(`.`);
-        const wasSpace = valueRaw.endsWith(` `);
-
-        const remaining = codeFocus.substr(inputText.length);
-        const isWhitespace = remaining.trimStart() !== remaining;
-        const wasCorrectRaw = codeFocus.startsWith(valueRaw);
-        const wasAutoComplete = autoComplete && !wasCorrectRaw && (wasTab || wasReturn || wasPeriod || wasSpace);
-        const activeAutoComplete = autoComplete?.choices.find(x => x.isSelected);
-
-        const value2 = wasCorrectRaw ? valueRaw
-            : wasAutoComplete ? inputText + (activeAutoComplete?.text ?? ``)
-                : (wasReturn || wasTab || wasSpace) && isWhitespace ? codeFocus.substr(0, codeFocus.length - remaining.trimStart().length)
-                    : valueRaw
-            ;
-
-        const wasCorrect_ignoreWhitespace = remaining.trimStart().startsWith(newInput);
-        const value = wasCorrect_ignoreWhitespace ? codeFocus.substr(0, codeFocus.length - remaining.trimStart().length + 1) : value2;
-
-        const wasCorrect = codeFocus.startsWith(value);
-
-        console.log(`changeInputText`, {
-            wasBackspace,
-            wasTab,
-            wasReturn,
-            wasPeriod,
-            wasSpace,
-            wasCorrectRaw,
-            wasAutoComplete,
-            activeAutoComplete,
-            value,
-            value2,
-            valueRaw,
-            codeFocus,
-            remaining,
-            isWhitespace,
-            wasCorrect,
-            wasCorrect_ignoreWhitespace,
-        });
-
-        if (codeFocus === inputText) {
-            setFeedback({ message: `You're already done.`, isCorrect: false, isDone: true, timestamp: Date.now() });
-            return;
-        }
-        if (wasBackspace) {
-            setFeedback({ message: `You're right so far, no need to backspace.`, isCorrect: false, isDone: false, timestamp: Date.now() });
-            return;
-        }
-        if (!wasCorrect) {
-            if (wasAutoComplete && activeAutoComplete) {
-                activeAutoComplete.isWrong = true;
-            }
-            if (!activeAutoComplete) {
-                const a = getAutoComplete(codeParts, inputText);
-                setAutoComplete(a);
-            }
-            setFeedback({ message: randomItem([`Wrong`, `Incorrect`, `No`, `Try Again`]), isCorrect: false, isDone: false, timestamp: Date.now() });
-            return;
-        }
-
-        const isDone = codeFocus === value;
-
-        setIsActive(true);
-        setInputText(value);
-        setFeedback({ isCorrect: true, message: ``, isDone, timestamp: Date.now() });
-        const a = getAutoComplete(codeParts, value);
-        setAutoComplete(a);
-    };
-
-
-    if (!codeParts || !code) {
-        return <></>;
-    }
-
-    const s = selection ?? { index: 0, length: code.length };
-    const cursorIndex = s.index + inputText.length;
-    const activeIndex = autoComplete?.activeIndex ?? cursorIndex;
-    const activeCodeParts = getCodePartsCompleted(codeParts.codeParts, { index: cursorIndex, length: codeParts.codeFocus.length - inputText.length }, { showBlank: true });
-    const nextChar = code.substr(cursorIndex, 1);
-    console.log(`CodeEditor_TypeSelection`, { nextChar, inputText, codeParts, activeCodeParts, isActive, cursorIndex, activeIndex, feedback, autoComplete: autoComplete?.choices });
-
-    return (
-        <>
-            <View style={{ position: `relative` }}>
-                <View>
-                    <CodeDisplay codeParts={activeCodeParts} language={language} inputOptions={{ isActive, cursorIndex, activeIndex, feedback, autoComplete: autoComplete?.choices }} />
-                </View>
-                <View style={{ position: `absolute`, top: 0, left: 0, right: 0, bottom: 0, opacity: 0 }}>
-                    <textarea style={{ width: `100%`, height: `100%`, background: `#FF0000` }}
-                        value={inputText}
-                        onChange={(e) => changeInputText(e.target.value)}
-                        onFocus={() => setIsActive(true)}
-                        onBlur={() => setIsActive(false)}
-                        onKeyDown={(e) => onKeyDown(e)}
-                    />
-                </View>
-            </View>
-            {/* <Text>{inputText}</Text> */}
-        </>
     );
 };

@@ -53,27 +53,31 @@
         - [ ] Storage
             - [x] TextArea
             - [ ] Upload
-    - [ ] LessonData
+            - [x] Local Server / Local Files
+    - [x] LessonData
         - [x] File Contents
         - [x] Lesson Focus
-        - [ ] Lesson Parts
-    - [ ] Display Lesson Preview
-        - [ ] Steps
-            - [x] Construct Code
-            - [ ] Understand Code
-            - [ ] Identify Mistakes
-            - [ ] Preview Results
-
-- [ ] Construct Code Step
-    - [ ] Display Instructions
-        - Title
-        - Objective
-        - Explanation
-        - Task
-    - [x] Type code
-        - [x] Autocomplete Popdown
-        - [x] Feedback Popup
-
+        - [x] Lesson Parts
+    - [x] Display Lesson Preview
+- [ ] Lesson Steps
+    - [x] Construct Code
+        - Type Code with auto complete (multiple-choice)
+            - [ ] Display Instructions
+                - Title
+                - Objective
+                - Explanation
+                - Task
+            - [x] Type code
+                - [x] Autocomplete Popdown
+                - [x] Feedback Popup
+    - [ ] Understand Code
+        - Fill in the blank prompts (press correct code word to answer)
+    - [ ] Identify Mistakes
+        - Correct re-arranged code (press mistake & type with autocomplete)
+    - [ ] Preview Results
+        - View Rendered Result
+        - Change Experimental Code Alternatives and View Rendered Result
+        - [ ] Render React with Create-React-App Template and App Component Switch
 
 
 ---
