@@ -35,6 +35,11 @@ export const LessonView_ConstructCode = ({ data }: { data: LessonData }) => {
                 fileEditorMode_noFocus='display'
                 projectEditorMode='display'
                 onTaskDone={() => setIsDone(true)}
+                prompt={{
+                    emoji: `👨‍💻`,
+                    message: data.task,
+                    timestamp: Date.now(),
+                }}
             />
         </>
     );

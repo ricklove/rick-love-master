@@ -3,9 +3,14 @@ import { View } from 'react-native-lite';
 import { randomItem } from 'utils/random';
 import { LessonProjectFileSelection } from '../lesson-types';
 import { CodePartsData, getAutoComplete, getCodeParts, getCodePartsCompleted } from './code-editor-helpers';
-import { CodeDisplay, CodeDisplayFeedback } from './code-display';
+import { CodeDisplay, CodeDisplayFeedback, CodeDisplayPrompt } from './code-display';
 
-export const LessonFileContentEditor_ConstructCode = ({ code, language, selection, onDone }: { code: string, language: 'tsx', selection?: LessonProjectFileSelection, onDone: () => void }) => {
+export const LessonFileContentEditor_ConstructCode = ({ code, language, selection, onDone, prompt }: {
+    code: string; language: 'tsx';
+    selection?: LessonProjectFileSelection;
+    onDone: () => void;
+    prompt?: CodeDisplayPrompt;
+}) => {
     const [codeParts, setCodeParts] = useState(null as null | CodePartsData);
     const inputRef = useRef(null as null | HTMLTextAreaElement);
 
@@ -184,6 +189,7 @@ export const LessonFileContentEditor_ConstructCode = ({ code, language, selectio
     const s = selection ?? { index: 0, length: code.length };
     const cursorIndex = s.index + inputText.length;
     const activeIndex = autoComplete?.activeIndex ?? cursorIndex;
+    const promptIndex = code.lastIndexOf(`\n`, code.lastIndexOf(`\n`, s.index) - 1);
     const activeCodeParts = getCodePartsCompleted(codeParts.codeParts, { index: cursorIndex, length: codeParts.codeFocus.length - inputText.length }, { showBlank: true });
     const nextChar = code.substr(cursorIndex, 1);
     console.log(`CodeEditor_TypeSelection`, { nextChar, inputText, codeParts, activeCodeParts, isActive, cursorIndex, activeIndex, feedback, autoComplete: autoComplete?.choices });
@@ -193,8 +199,9 @@ export const LessonFileContentEditor_ConstructCode = ({ code, language, selectio
             <View style={{ position: `relative` }}>
                 <View>
                     <CodeDisplay codeParts={activeCodeParts} language={language} inputOptions={{
-                        isActive, cursorIndex, activeIndex,
+                        isActive, cursorIndex, activeIndex, promptIndex,
                         feedback: feedback ?? undefined,
+                        prompt: prompt ?? undefined,
                         autoComplete: autoComplete?.choices,
                         onAutocomplete,
                     }} />

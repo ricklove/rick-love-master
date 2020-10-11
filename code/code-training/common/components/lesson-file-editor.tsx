@@ -5,7 +5,7 @@ import { View, Text, TextInput } from 'react-native-lite';
 import { randomItem } from 'utils/random';
 import { LessonProjectFile, LessonProjectFileSelection, LessonProjectState } from '../lesson-types';
 import { CodePartsData, getAutoComplete, getCodeParts, getCodePartsCompleted } from './code-editor-helpers';
-import { CodeDisplay } from './code-display';
+import { CodeDisplay, CodeDisplayPrompt } from './code-display';
 import { TabsListEditorComponent } from './tabs';
 import { LessonFileContentEditor_ConstructCode } from './lesson-file-editor-construct-code';
 
@@ -17,6 +17,7 @@ export const LessonProjectFilesEditor = ({
     fileEditorMode_noFocus,
     onProjectDataChange = () => { },
     onTaskDone = () => { },
+    prompt,
 }: {
     projectData: {
         projectState: LessonProjectState;
@@ -30,6 +31,7 @@ export const LessonProjectFilesEditor = ({
         focus?: LessonProjectFileSelection;
     }) => void;
     onTaskDone?: () => void;
+    prompt?: CodeDisplayPrompt;
 }) => {
     const {
         projectState,
@@ -127,6 +129,7 @@ export const LessonProjectFilesEditor = ({
                     fileEditorMode={focus.filePath === activeFile.path ? fileEditorMode_focus : fileEditorMode_noFocus}
                     onChange={changeFile} onSelectionChange={changeSelection}
                     onTaskDone={onTaskDone}
+                    prompt={prompt}
                 />
             )}
         </>
@@ -141,6 +144,7 @@ export const LessonFileEditor = ({
     selection,
     onSelectionChange,
     onTaskDone,
+    prompt,
 }: {
     projectEditorMode: LessonProjectEditorMode;
     fileEditorMode: LessonFileEditorMode;
@@ -149,6 +153,7 @@ export const LessonFileEditor = ({
     selection?: LessonProjectFileSelection;
     onSelectionChange: (value: { index: number, length: number }) => void;
     onTaskDone: () => void;
+    prompt?: CodeDisplayPrompt;
 }) => {
 
     const [filePathEdit, setFilePathEdit] = useState(file.path);
@@ -183,6 +188,7 @@ export const LessonFileEditor = ({
                 selection={selection}
                 onSelectionChange={onSelectionChange}
                 onTaskDone={onTaskDone}
+                prompt={prompt}
             />
         </>
     );
@@ -196,6 +202,7 @@ export const LessonFileContentEditor = ({
     onCodeChange,
     onSelectionChange,
     onTaskDone,
+    prompt,
 }: {
     file: LessonProjectFile;
     selection?: LessonProjectFileSelection;
@@ -203,6 +210,7 @@ export const LessonFileContentEditor = ({
     onCodeChange: (code: string) => void;
     onSelectionChange: (value: { index: number, length: number }) => void;
     onTaskDone: () => void;
+    prompt?: CodeDisplayPrompt;
 }) => {
     return (
         <View style={{}}>
@@ -217,7 +225,7 @@ export const LessonFileContentEditor = ({
                     <LessonFileContentEditor_Edit code={file.content} language={file.language} selection={selection} onCodeChange={onCodeChange} onSelectionChange={onSelectionChange} />
                 )}
                 {mode === `construct-code` && (
-                    <LessonFileContentEditor_ConstructCode code={file.content} language={file.language} selection={selection} onDone={onTaskDone} />
+                    <LessonFileContentEditor_ConstructCode code={file.content} language={file.language} selection={selection} onDone={onTaskDone} prompt={prompt} />
                 )}
             </View>
         </View >

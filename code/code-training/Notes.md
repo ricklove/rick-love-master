@@ -62,7 +62,7 @@
 - [ ] Lesson Steps
     - [x] Construct Code
         - Type Code with auto complete (multiple-choice)
-            - [ ] Display Instructions
+            - [x] Display Instructions
                 - Title
                 - Objective
                 - Explanation

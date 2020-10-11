@@ -1,3 +1,4 @@
+import { isAbsolute } from 'path';
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { TouchableOpacity, View } from 'react-native-lite';
 import { CodePart } from './code-editor-helpers';
@@ -7,6 +8,8 @@ export type CodeDisplayInputOptions = {
     isActive?: boolean;
     cursorIndex?: number;
     activeIndex?: number;
+    promptIndex?: number;
+    prompt?: CodeDisplayPrompt;
     feedback?: CodeDisplayFeedback;
     autoComplete?: { textCompleted: string, text: string, isSelected: boolean, isWrong: boolean }[];
     onAutocomplete?: (value: string) => void;
@@ -33,7 +36,7 @@ export const CodeDisplay = ({ codeParts, language, inputOptions }: {
 };
 
 const CodeSpan = ({ code, Cursor, inputOptions }: { code: CodeDisplayPart, Cursor: JSX.Element, inputOptions: CodeDisplayInputOptions }) => {
-    const { cursorIndex, activeIndex = inputOptions.cursorIndex } = inputOptions;
+    const { cursorIndex, activeIndex = inputOptions.cursorIndex, promptIndex } = inputOptions;
 
     const hasCursor = !!(cursorIndex
         && cursorIndex >= code.index
@@ -43,6 +46,10 @@ const CodeSpan = ({ code, Cursor, inputOptions }: { code: CodeDisplayPart, Curso
         && activeIndex >= code.index
         && activeIndex < code.index + code.code.length
     );
+    const hasPrompt = !!(promptIndex
+        && promptIndex >= code.index
+        && promptIndex < code.index + code.code.length
+    );
     return (
         <>
             {hasCursor && Cursor}
@@ -50,6 +57,11 @@ const CodeSpan = ({ code, Cursor, inputOptions }: { code: CodeDisplayPart, Curso
                 <>
                     <AutoCompleteComponent inputOptions={inputOptions} />
                     <FeedbackComponent inputOptions={inputOptions} />
+                </>
+            )}
+            {hasPrompt && (
+                <>
+                    <PromptComponent inputOptions={inputOptions} />
                 </>
             )}
             <span className={code.classes.join(` `)} style={!code.isInSelection ? { opacity: 0.5 } : {}} >{`${code.code}`}</span>
@@ -121,15 +133,71 @@ export type CodeDisplayFeedback = {
     timeout?: number;
 };
 const FeedbackComponent = ({ inputOptions }: { inputOptions: CodeDisplayInputOptions }) => {
-    const { feedback } = inputOptions;
+    // const { feedback } = inputOptions;
 
-    const [hide, setHide] = useState(true);
+    // const [hide, setHide] = useState(true);
 
+    // useEffect(() => {
+    //     setHide(false);
+
+    //     const id = setTimeout(() => {
+    //         setHide(true);
+    //     }, feedback?.timeout ?? 3000);
+
+    //     return () => {
+    //         clearTimeout(id);
+    //     };
+    // }, [feedback]);
+
+    // if (!feedback || hide) { return <></>; }
+
+    // const s = feedbackStyles;
+    // return (
+    //     <>
+    //         <span style={s.wrapper}>
+    //             <span style={feedback.isNegative ? s.incorrect : s.correct}>{feedback.message}</span>
+    //             <span style={s.emoji}>{feedback.emoji}</span>
+    //         </span>
+    //     </>
+    // );
+    return <></>;
+};
+
+
+const promptStyles = {
+    wrapper: {
+        position: `relative`,
+        background: `#111111`,
+        margin: 4,
+        padding: 4,
+        marginLeft: 20,
+        borderRadius: 4,
+        border: `1px solid #555555`,
+        // Remove extra line
+        marginBottom: -16,
+    },
+    text: { whiteSpace: `pre-wrap` },
+    text_positive: { whiteSpace: `pre-wrap`, color: `#88FF88` },
+    text_negative: { whiteSpace: `pre-wrap`, color: `#FF8888` },
+    emoji: { position: `absolute`, fontSize: 20, left: -24, top: 0 },
+} as const;
+
+export type CodeDisplayPrompt = {
+    message: string;
+    emoji: string;
+    timestamp: number;
+    timeout?: number;
+};
+const PromptComponent = ({ inputOptions }: { inputOptions: CodeDisplayInputOptions }) => {
+    const { prompt: promptRaw, feedback } = inputOptions;
+
+    // Feedback
+    const [hideFeedback, setHideFeedback] = useState(true);
     useEffect(() => {
-        setHide(false);
+        setHideFeedback(false);
 
         const id = setTimeout(() => {
-            setHide(true);
+            setHideFeedback(true);
         }, feedback?.timeout ?? 3000);
 
         return () => {
@@ -137,15 +205,16 @@ const FeedbackComponent = ({ inputOptions }: { inputOptions: CodeDisplayInputOpt
         };
     }, [feedback]);
 
-    if (!feedback || hide) { return <></>; }
-
-    const s = feedbackStyles;
+    const s = promptStyles;
+    const textStyle = feedback && !hideFeedback ? (feedback.isNegative ? s.text_negative : s.text_positive) : s.text;
+    const prompt = feedback && !hideFeedback ? feedback : promptRaw;
+    if (!prompt) { return <></>; }
     return (
         <>
-            <span style={s.wrapper}>
-                <span style={feedback.isNegative ? s.incorrect : s.correct}>{feedback.message}</span>
-                <span style={s.emoji}>{feedback.emoji}</span>
-            </span>
+            <div style={s.wrapper} >
+                <div style={s.emoji}>{prompt.emoji}</div>
+                <span style={textStyle}>{prompt.message}</span>
+            </div>
         </>
     );
 };
