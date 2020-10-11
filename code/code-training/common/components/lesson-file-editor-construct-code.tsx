@@ -102,7 +102,7 @@ export const LessonFileContentEditor_ConstructCode = ({ code, language, selectio
             ;
 
         const wasCorrect_ignoreWhitespace = remaining.trimStart().startsWith(newInput);
-        const value = wasCorrect_ignoreWhitespace ? codeFocus.substr(0, codeFocus.length - remaining.trimStart().length + 1) : value2;
+        const value = wasCorrect_ignoreWhitespace ? codeFocus.substr(0, codeFocus.length - remaining.trimStart().length + newInput.length) : value2;
 
         const wasCorrect = codeFocus.startsWith(value);
 
@@ -171,7 +171,12 @@ export const LessonFileContentEditor_ConstructCode = ({ code, language, selectio
         <>
             <View style={{ position: `relative` }}>
                 <View>
-                    <CodeDisplay codeParts={activeCodeParts} language={language} inputOptions={{ isActive, cursorIndex, activeIndex, feedback: feedback ?? undefined, autoComplete: autoComplete?.choices }} />
+                    <CodeDisplay codeParts={activeCodeParts} language={language} inputOptions={{
+                        isActive, cursorIndex, activeIndex,
+                        feedback: feedback ?? undefined,
+                        autoComplete: autoComplete?.choices,
+                        onAutocomplete: (x) => { changeInputText(inputText + x); },
+                    }} />
                 </View>
                 <View style={{ position: `absolute`, top: 0, left: 0, right: 0, bottom: 0, opacity: 0 }}>
                     <textarea style={{ width: `100%`, height: `100%`, background: `#FF0000` }}

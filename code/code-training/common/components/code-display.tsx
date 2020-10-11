@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
-import { View } from 'react-native-lite';
+import { TouchableOpacity, View } from 'react-native-lite';
 import { CodePart } from './code-editor-helpers';
 
 export type CodeDisplayPart = CodePart;
@@ -9,6 +9,7 @@ export type CodeDisplayInputOptions = {
     activeIndex?: number;
     feedback?: CodeDisplayFeedback;
     autoComplete?: { textCompleted: string, text: string, isSelected: boolean, isWrong: boolean }[];
+    onAutocomplete?: (value: string) => void;
 };
 export const CodeDisplay = ({ codeParts, language, inputOptions }: {
     codeParts: CodeDisplayPart[];
@@ -92,10 +93,12 @@ const AutoCompleteComponent = ({ inputOptions }: { inputOptions: CodeDisplayInpu
             <span style={s.wrapper}>
                 <span style={s.inner}>
                     {autoComplete.map(x => (
-                        <span key={x.text} style={x.isSelected ? s.item_selected : s.item}>
-                            <span style={s.textCompleted}>{x.isWrong ? `❌ ` : ``}{x.textCompleted}</span>
-                            <span style={s.textNew}>{x.text}</span>
-                        </span>
+                        <TouchableOpacity key={x.text} onPress={() => { inputOptions.onAutocomplete?.(x.text); }}>
+                            <span style={x.isSelected ? s.item_selected : s.item}>
+                                <span style={s.textCompleted}>{x.isWrong ? `❌ ` : ``}{x.textCompleted}</span>
+                                <span style={s.textNew}>{x.text}</span>
+                            </span>
+                        </TouchableOpacity>
                     ))}
                 </span>
             </span>

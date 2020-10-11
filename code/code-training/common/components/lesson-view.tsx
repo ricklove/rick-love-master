@@ -12,7 +12,7 @@ const styles = {
     infoText: {
         margin: 8,
         fontSize: 12,
-        wrap: `wrap`,
+        whiteSpace: `pre-wrap`,
     },
 } as const;
 
