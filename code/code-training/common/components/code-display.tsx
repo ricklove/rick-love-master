@@ -34,11 +34,11 @@ export const CodeDisplay = ({ codeParts, language, inputOptions }: {
 const CodeSpan = ({ code, Cursor, inputOptions }: { code: CodeDisplayPart, Cursor: JSX.Element, inputOptions: CodeDisplayInputOptions }) => {
     const { cursorIndex, activeIndex = inputOptions.cursorIndex } = inputOptions;
 
-    const hasCursor = (cursorIndex
+    const hasCursor = !!(cursorIndex
         && cursorIndex >= code.index
         && cursorIndex < code.index + code.code.length
     );
-    const hasActive = (activeIndex
+    const hasActive = !!(activeIndex
         && activeIndex >= code.index
         && activeIndex < code.index + code.code.length
     );
@@ -51,7 +51,7 @@ const CodeSpan = ({ code, Cursor, inputOptions }: { code: CodeDisplayPart, Curso
                     <FeedbackComponent inputOptions={inputOptions} />
                 </>
             )}
-            <span className={code.classes.join(` `)} style={!code.isInSelection ? { opacity: 0.5 } : {}} >{code.code.toString()}</span>
+            <span className={code.classes.join(` `)} style={!code.isInSelection ? { opacity: 0.5 } : {}} >{`${code.code}`}</span>
         </>
     );
 };

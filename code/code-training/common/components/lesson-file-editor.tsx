@@ -411,7 +411,7 @@ const LessonFileContentEditor_TypeSelection = ({ code, language, selection }: { 
     };
 
 
-    if (!codeParts) {
+    if (!codeParts || !code) {
         return <></>;
     }
 
