@@ -70,7 +70,7 @@
             - [x] Type code
                 - [x] Autocomplete Popdown
                 - [x] Feedback Popup
-    - [ ] Understand Code
+    - [x] Understand Code
         - Fill in the blank prompts (press correct code word to answer)
     - [ ] Identify Mistakes
         - Correct re-arranged code (press mistake & type with autocomplete)

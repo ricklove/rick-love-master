@@ -4,6 +4,7 @@ import { randomItem } from 'utils/random';
 import { LessonData, LessonProjectFileSelection } from '../lesson-types';
 import { CodePartsData, getAutoComplete, getCodeParts, getCodePartsCompleted } from './code-editor-helpers';
 import { CodeDisplay, CodeDisplayFeedback, CodeDisplayPrompt } from './code-display';
+import { badEmojis, goodEmojis } from './emojis';
 
 export const LessonFileContentEditor_ConstructCode = ({ code, language, selection, onDone, lessonData }: {
     code: string; language: 'tsx';
@@ -139,11 +140,11 @@ export const LessonFileContentEditor_ConstructCode = ({ code, language, selectio
         });
 
         if (codeFocus === inputText) {
-            setFeedback({ emoji: randomItem(`😎 😁 😆`.split(` `)), message: `✔ You're already done.`, timestamp: Date.now() });
+            setFeedback({ emoji: randomItem(goodEmojis), message: `✔ You're already done.`, timestamp: Date.now() });
             return;
         }
         if (wasBackspace) {
-            setFeedback({ isNegative: true, emoji: randomItem(`😥 😪 😫 😝 😲 🙀 😾 😿`.split(` `)), message: `❌ You're right so far, no need to backspace.`, timestamp: Date.now() });
+            setFeedback({ isNegative: true, emoji: randomItem(badEmojis), message: `❌ You're right so far, no need to backspace.`, timestamp: Date.now() });
             return;
         }
         if (!wasCorrect) {
@@ -154,7 +155,7 @@ export const LessonFileContentEditor_ConstructCode = ({ code, language, selectio
                 const a = getAutoComplete(codeParts, inputText);
                 setAutoComplete(a);
             }
-            setFeedback({ isNegative: true, emoji: randomItem(`😥 😪 😫 😝 😲 🙀 😾 😿`.split(` `)), message: `❌ ${randomItem([`Wrong`, `Incorrect`, `No`, `Try Again`])}`, timestamp: Date.now() });
+            setFeedback({ isNegative: true, emoji: randomItem(badEmojis), message: `❌ ${randomItem([`Wrong`, `Incorrect`, `No`, `Try Again`])}`, timestamp: Date.now() });
             return;
         }
 
@@ -163,7 +164,7 @@ export const LessonFileContentEditor_ConstructCode = ({ code, language, selectio
 
         setIsActive(true);
         setInputText(value);
-        setFeedback(!isDone ? null : { emoji: randomItem(`😎 😁 😆`.split(` `)), message: `✔`, timestamp: Date.now() });
+        setFeedback(!isDone ? null : { emoji: randomItem(goodEmojis), message: `✔`, timestamp: Date.now() });
         const a = getAutoComplete(codeParts, value);
         setAutoComplete(a);
 

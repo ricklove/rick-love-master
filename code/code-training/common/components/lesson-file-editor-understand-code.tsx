@@ -4,6 +4,7 @@ import { randomItem } from 'utils/random';
 import { LessonData, LessonProjectFileSelection } from '../lesson-types';
 import { CodePart, CodePartsData, getCodeParts } from './code-editor-helpers';
 import { CodeDisplay, CodeDisplayFeedback, CodeDisplayPrompt } from './code-display';
+import { badEmojis, goodEmojis } from './emojis';
 
 export const LessonFileContentEditor_UnderstandCode = ({ code, language, selection, onDone, lessonData }: {
     code: string;
@@ -48,11 +49,11 @@ export const LessonFileContentEditor_UnderstandCode = ({ code, language, selecti
         console.log(`onPressCodePart`, { part, iBlank, withoutBlank, isCorrect, fillInBlank });
 
         if (!isCorrect) {
-            setFeedback({ isNegative: true, emoji: randomItem(`😥 😪 😫 😝 😲 🙀 😾 😿`.split(` `)), message: `❌ ${randomItem([`Wrong`, `Incorrect`, `No`, `Try Again`])}`, timestamp: Date.now() });
+            setFeedback({ isNegative: true, emoji: randomItem(badEmojis), message: `❌ ${randomItem([`Wrong`, `Incorrect`, `No`, `Try Again`])}`, timestamp: Date.now() });
             return;
         }
 
-        setFeedback(null);
+        setFeedback({ emoji: randomItem(goodEmojis), message: `✔`, timestamp: Date.now() });
 
         if (!withoutBlank.includes(`___`)) {
             // Done
@@ -61,7 +62,6 @@ export const LessonFileContentEditor_UnderstandCode = ({ code, language, selecti
             setFillInBlank(remaining[0] ?? null);
 
             if (remaining.length <= 0) {
-                setFeedback({ emoji: randomItem(`😎 😁 😆`.split(` `)), message: `✔`, timestamp: Date.now() });
                 onDone();
             }
 
@@ -80,8 +80,8 @@ export const LessonFileContentEditor_UnderstandCode = ({ code, language, selecti
     const promptIndex = code.lastIndexOf(`\n`, code.lastIndexOf(`\n`, s.index) - 1);
     const activeCodeParts = codeParts.codeParts.map(x => ({ ...x, onPress: onPressCodePart }));
     const activePrompt: CodeDisplayPrompt = {
-        emoji: `🤔`,
-        message: fillInBlank?.textWithBlanks ?? lessonData.descriptions.join(`\r\n`),
+        emoji: fillInBlank ? `🤔` : randomItem(goodEmojis),
+        message: fillInBlank ? `${fillInBlank.textWithBlanks}\r\n\r\n🔎 Select the correct word below` : `${lessonData.descriptions.map(x => `✅ ${x}`).join(`\r\n`)}`,
         timestamp: Date.now(),
     };
     return (
