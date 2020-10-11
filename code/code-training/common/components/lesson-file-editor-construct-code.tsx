@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { View } from 'react-native-lite';
+import { TouchableOpacity, View } from 'react-native-lite';
 import { randomItem } from 'utils/random';
 import { LessonProjectFileSelection } from '../lesson-types';
 import { CodePartsData, getAutoComplete, getCodeParts, getCodePartsCompleted } from './code-editor-helpers';
@@ -196,28 +196,30 @@ export const LessonFileContentEditor_ConstructCode = ({ code, language, selectio
 
     return (
         <>
-            <View style={{ position: `relative` }}>
-                <View>
-                    <CodeDisplay codeParts={activeCodeParts} language={language} inputOptions={{
-                        isActive, cursorIndex, activeIndex, promptIndex,
-                        feedback: feedback ?? undefined,
-                        prompt: prompt ?? undefined,
-                        autoComplete: autoComplete?.choices,
-                        onAutocomplete,
-                    }} />
+            <TouchableOpacity onPress={() => inputRef.current?.focus()}>
+                <View style={{ position: `relative` }}>
+                    <View>
+                        <CodeDisplay codeParts={activeCodeParts} language={language} inputOptions={{
+                            isActive, cursorIndex, activeIndex, promptIndex,
+                            feedback: feedback ?? undefined,
+                            prompt: prompt ?? undefined,
+                            autoComplete: autoComplete?.choices,
+                            onAutocomplete,
+                        }} />
+                    </View>
+                    <View style={{ position: `absolute`, top: 0, left: 0, right: 0, bottom: 0, opacity: 0 }}>
+                        <textarea style={{ width: `100%`, height: `100%`, background: `#FF0000` }}
+                            value={inputText}
+                            onChange={(e) => changeInputText(e.target.value)}
+                            onFocus={() => setIsActive(true)}
+                            onBlur={() => setIsActive(false)}
+                            onKeyDown={(e) => onKeyDown(e)}
+                            ref={inputRef}
+                        />
+                    </View>
                 </View>
-                <View style={{ position: `absolute`, top: 0, left: 0, right: 0, bottom: 0, opacity: 0 }}>
-                    <textarea style={{ width: `100%`, height: `100%`, background: `#FF0000` }}
-                        value={inputText}
-                        onChange={(e) => changeInputText(e.target.value)}
-                        onFocus={() => setIsActive(true)}
-                        onBlur={() => setIsActive(false)}
-                        onKeyDown={(e) => onKeyDown(e)}
-                        ref={inputRef}
-                    />
-                </View>
-            </View>
-            {/* <Text>{inputText}</Text> */}
+                {/* <Text>{inputText}</Text> */}
+            </TouchableOpacity>
         </>
     );
 };
