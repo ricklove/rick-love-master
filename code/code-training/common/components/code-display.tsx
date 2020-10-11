@@ -56,7 +56,6 @@ const CodeSpan = ({ code, Cursor, inputOptions }: { code: CodeDisplayPart, Curso
             {hasActive && (
                 <>
                     <AutoCompleteComponent inputOptions={inputOptions} />
-                    <FeedbackComponent inputOptions={inputOptions} />
                 </>
             )}
             {hasPrompt && (
@@ -118,52 +117,6 @@ const AutoCompleteComponent = ({ inputOptions }: { inputOptions: CodeDisplayInpu
     );
 };
 
-const feedbackStyles = {
-    wrapper: { display: `inline-block`, position: `relative`, bottom: 40, width: 0 },
-    correct: { display: `inline-block`, padding: 4, position: `absolute`, color: `#88FF88`, background: `#000000`, borderRadius: 4 },
-    incorrect: { display: `inline-block`, padding: 4, position: `absolute`, color: `#FF8888`, background: `#000000`, borderRadius: 4 },
-    emoji: { display: `block`, position: `absolute`, fontSize: 20, bottom: -16, right: -8 },
-} as const;
-
-export type CodeDisplayFeedback = {
-    message: string;
-    emoji: string;
-    timestamp: number;
-    isNegative?: boolean;
-    timeout?: number;
-};
-const FeedbackComponent = ({ inputOptions }: { inputOptions: CodeDisplayInputOptions }) => {
-    // const { feedback } = inputOptions;
-
-    // const [hide, setHide] = useState(true);
-
-    // useEffect(() => {
-    //     setHide(false);
-
-    //     const id = setTimeout(() => {
-    //         setHide(true);
-    //     }, feedback?.timeout ?? 3000);
-
-    //     return () => {
-    //         clearTimeout(id);
-    //     };
-    // }, [feedback]);
-
-    // if (!feedback || hide) { return <></>; }
-
-    // const s = feedbackStyles;
-    // return (
-    //     <>
-    //         <span style={s.wrapper}>
-    //             <span style={feedback.isNegative ? s.incorrect : s.correct}>{feedback.message}</span>
-    //             <span style={s.emoji}>{feedback.emoji}</span>
-    //         </span>
-    //     </>
-    // );
-    return <></>;
-};
-
-
 const promptStyles = {
     wrapper: {
         position: `relative`,
@@ -182,6 +135,13 @@ const promptStyles = {
     emoji: { position: `absolute`, fontSize: 20, left: -24, top: 0 },
 } as const;
 
+export type CodeDisplayFeedback = {
+    message: string;
+    emoji: string;
+    timestamp: number;
+    isNegative?: boolean;
+    timeout?: number;
+};
 export type CodeDisplayPrompt = {
     message: string;
     emoji: string;
