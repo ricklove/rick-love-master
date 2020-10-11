@@ -13,6 +13,7 @@ export const componentTestList = [
     { name: `doodle-view`, load: async () => (await import(`doodle/doodle-view`)).DoodleTestView },
     { name: `hacker-news`, load: async () => (await import(`hacker-news/hacker-news-page`)).HackerNewsPage_TopNews },
     { name: `code-lesson-viewer`, load: async () => (await import(`code-training/lesson-editor/lesson-module-editor`)).LessonModuleEditor },
+    { name: `code-lesson-module-viewer`, load: async () => (await import(`code-training/lesson-editor/lesson-modules-client-editor`)).LessonModulesClientEditor },
 
     // { name: `theme`, load: async () => (await import(`themes/theme-example`)).ThemeExample },
 ];

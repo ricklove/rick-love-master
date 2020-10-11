@@ -8,8 +8,8 @@ import { CodePartsData, getAutoComplete, getCodeParts, getCodePartsCompleted } f
 import { CodeDisplay } from './code-display';
 import { TabsListEditorComponent } from './tabs';
 
-export type ProjectEditorMode = 'display' | 'edit';
-export const ProjectCodeEditor = ({
+export type LessonProjectEditorMode = 'display' | 'edit';
+export const LessonProjectFilesEditor = ({
     projectData,
     projectEditorMode,
     fileEditorMode_focus,
@@ -20,9 +20,9 @@ export const ProjectCodeEditor = ({
         projectState: LessonProjectState;
         focus: LessonProjectFileSelection;
     };
-    projectEditorMode: ProjectEditorMode;
-    fileEditorMode_focus: FileEditorMode;
-    fileEditorMode_noFocus: FileEditorMode;
+    projectEditorMode: LessonProjectEditorMode;
+    fileEditorMode_focus: LessonFileEditorMode;
+    fileEditorMode_noFocus: LessonFileEditorMode;
     onProjectDataChange: (value: {
         projectState?: LessonProjectState;
         focus?: LessonProjectFileSelection;
@@ -79,7 +79,14 @@ export const ProjectCodeEditor = ({
     };
 
     const changeFile = (file: LessonProjectFile) => {
-        onProjectDataChange({ projectState: { files: projectState.files } });
+        onProjectDataChange({
+            projectState: {
+                files: projectState.files.map(x => {
+                    if (x.path === file.path) { return file; }
+                    return x;
+                }),
+            },
+        });
     };
     const changeSelection = (value: { index: number, length: number }) => {
         const file = projectState.files.find(x => x.path === activeFilePath);
@@ -104,13 +111,13 @@ export const ProjectCodeEditor = ({
                 items={projectState.files}
                 onChange={projectEditorMode !== `edit` ? undefined : (x => onProjectDataChange({ projectState: { files: x } }))}
                 getKey={x => x.path}
-                getLabel={x => x.path}
+                getLabel={x => focus.filePath === x.path ? `📝 ${x.path}` : x.path}
                 selected={activeFile}
                 onSelect={x => setActiveFilePath(x.path)}
                 onCreateNewItem={createNewFile}
             />
             {activeFile && (
-                <FileEditor
+                <LessonFileEditor
                     key={activeFile.path}
                     projectEditorMode={projectEditorMode}
                     file={activeFile} selection={focus.filePath === activeFile.path ? focus : undefined}
@@ -121,7 +128,7 @@ export const ProjectCodeEditor = ({
     );
 };
 
-export const FileEditor = ({
+export const LessonFileEditor = ({
     projectEditorMode,
     fileEditorMode,
     file,
@@ -129,8 +136,8 @@ export const FileEditor = ({
     selection,
     onSelectionChange,
 }: {
-    projectEditorMode: ProjectEditorMode;
-    fileEditorMode: FileEditorMode;
+    projectEditorMode: LessonProjectEditorMode;
+    fileEditorMode: LessonFileEditorMode;
     file: LessonProjectFile;
     onChange: (value: LessonProjectFile) => void;
     selection?: LessonProjectFileSelection;
@@ -162,7 +169,7 @@ export const FileEditor = ({
                     />
                 </View>
             )}
-            <FileCodeEditor
+            <LessonFileContentEditor
                 file={file}
                 onCodeChange={x => onChange({ ...file, content: x })}
                 mode={fileEditorMode}
@@ -173,8 +180,8 @@ export const FileEditor = ({
     );
 };
 
-export type FileEditorMode = 'display' | 'edit' | 'type-selection';
-export const FileCodeEditor = ({
+export type LessonFileEditorMode = 'display' | 'edit' | 'type-selection';
+export const LessonFileContentEditor = ({
     file,
     selection,
     mode,
@@ -183,7 +190,7 @@ export const FileCodeEditor = ({
 }: {
     file: LessonProjectFile;
     selection?: LessonProjectFileSelection;
-    mode: FileEditorMode;
+    mode: LessonFileEditorMode;
     onCodeChange: (code: string) => void;
     onSelectionChange: (value: { index: number, length: number }) => void;
 }) => {
@@ -194,27 +201,27 @@ export const FileCodeEditor = ({
             </View> */}
             <View style={{ padding: 0 }}>
                 {mode === `display` && (
-                    <CodeEditor_Display code={file.content} language={file.language} selection={selection} />
+                    <LessonFileContentEditor_Display code={file.content} language={file.language} selection={selection} />
                 )}
                 {mode === `edit` && (
-                    <CodeEditor_Edit code={file.content} language={file.language} selection={selection} onCodeChange={onCodeChange} onSelectionChange={onSelectionChange} />
+                    <LessonFileContentEditor_Edit code={file.content} language={file.language} selection={selection} onCodeChange={onCodeChange} onSelectionChange={onSelectionChange} />
                 )}
                 {mode === `type-selection` && (
-                    <CodeEditor_TypeSelection code={file.content} language={file.language} selection={selection} />
+                    <LessonFileContentEditor_TypeSelection code={file.content} language={file.language} selection={selection} />
                 )}
             </View>
         </View >
     );
 };
 
-const CodeEditor_Display = ({ code, language, selection }: { code: string, language: 'tsx', selection?: LessonProjectFileSelection }) => {
+const LessonFileContentEditor_Display = ({ code, language, selection }: { code: string, language: 'tsx', selection?: LessonProjectFileSelection }) => {
     const codeParts = getCodeParts(code, language, selection);
     return (
         <CodeDisplay codeParts={codeParts.codeParts} language={language} />
     );
 };
 
-const CodeEditor_Edit = ({ code, language, selection, onCodeChange, onSelectionChange,
+const LessonFileContentEditor_Edit = ({ code, language, selection, onCodeChange, onSelectionChange,
 }: {
     code: string;
     language: 'tsx';
@@ -268,7 +275,7 @@ const CodeEditor_Edit = ({ code, language, selection, onCodeChange, onSelectionC
     );
 };
 
-const CodeEditor_TypeSelection = ({ code, language, selection }: { code: string, language: 'tsx', selection?: LessonProjectFileSelection }) => {
+const LessonFileContentEditor_TypeSelection = ({ code, language, selection }: { code: string, language: 'tsx', selection?: LessonProjectFileSelection }) => {
 
     const [codeParts, setCodeParts] = useState(null as null | CodePartsData);
 

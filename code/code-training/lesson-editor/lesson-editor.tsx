@@ -1,7 +1,7 @@
 /* eslint-disable react/no-array-index-key */
 import React, { useEffect, useState } from 'react';
 import { View, Text, TextInput, TouchableOpacity } from 'react-native-lite';
-import { FileEditorMode, ProjectCodeEditor, ProjectEditorMode } from '../common/components/code-editor';
+import { LessonProjectFilesEditor, LessonProjectEditorMode, LessonFileEditorMode } from '../common/components/lesson-file-editor';
 import { LessonData, LessonExperiment, LessonProjectFileSelection, LessonProjectState, LessonStep_ConstructCode } from '../common/lesson-types';
 import { lessonExperiments_createReplacementProjectState, lessonExperiments_calculateProjectStateReplacements } from '../common/replacements';
 
@@ -107,14 +107,14 @@ export const LessonEditor = (props: { value: LessonData, onChange: (value: Lesso
         { value: `json`, label: `Json` },
         { value: `constructCode`, label: `Construct Code` },
     ] as { value: EditorMode, label: string }[];
-    const projectEditorMode: ProjectEditorMode =
+    const projectEditorMode: LessonProjectEditorMode =
         editorMode === `edit` ? `edit`
             : `display`;
-    const fileEditorMode_focus: FileEditorMode =
+    const fileEditorMode_focus: LessonFileEditorMode =
         editorMode === `edit` ? `edit`
             : editorMode === `constructCode` ? `type-selection`
                 : `display`;
-    const fileEditorMode_noFocus: FileEditorMode =
+    const fileEditorMode_noFocus: LessonFileEditorMode =
         editorMode === `edit` ? `edit`
             : editorMode === `constructCode` ? `display`
                 : `display`;
@@ -161,7 +161,7 @@ export const LessonEditor = (props: { value: LessonData, onChange: (value: Lesso
                     {editorMode !== `json` && (
                         <>
                             <Text style={styles.sectionHeaderText}>Project Files</Text>
-                            <ProjectCodeEditor
+                            <LessonProjectFilesEditor
                                 projectData={{
                                     projectState,
                                     focus,
@@ -310,7 +310,7 @@ const LessonField_Experiment = ({
                     keyboardType='default'
                 />
             </View>
-            <ProjectCodeEditor
+            <LessonProjectFilesEditor
                 projectData={{
                     projectState,
                     focus: lastFocus,
