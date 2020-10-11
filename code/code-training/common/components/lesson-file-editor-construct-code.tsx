@@ -1,17 +1,25 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { View } from 'react-native-lite';
 import { randomItem } from 'utils/random';
 import { LessonProjectFileSelection } from '../lesson-types';
 import { CodePartsData, getAutoComplete, getCodeParts, getCodePartsCompleted } from './code-editor-helpers';
 import { CodeDisplay, CodeDisplayFeedback } from './code-display';
 
-export const LessonFileContentEditor_ConstructCode = ({ code, language, selection, onTaskDone }: { code: string, language: 'tsx', selection?: LessonProjectFileSelection, onTaskDone: () => void }) => {
+export const LessonFileContentEditor_ConstructCode = ({ code, language, selection, onDone }: { code: string, language: 'tsx', selection?: LessonProjectFileSelection, onDone: () => void }) => {
     const [codeParts, setCodeParts] = useState(null as null | CodePartsData);
+    const inputRef = useRef(null as null | HTMLTextAreaElement);
 
     useEffect(() => {
         const parts = getCodeParts(code, language, selection);
         setCodeParts(parts);
         setAutoComplete(null);
+
+        const timeoutId = setTimeout(() => {
+            inputRef.current?.focus();
+        }, 250);
+        return () => {
+            clearTimeout(timeoutId);
+        };
     }, [code]);
 
     const [inputText, setInputText] = useState(``);
@@ -146,13 +154,26 @@ export const LessonFileContentEditor_ConstructCode = ({ code, language, selectio
         }
 
         const isDone = codeFocus === value;
-        onTaskDone();
+        onDone();
 
         setIsActive(true);
         setInputText(value);
         setFeedback(!isDone ? null : { emoji: randomItem(`😎 😁 😆`.split(` `)), message: `✔`, timestamp: Date.now() });
         const a = getAutoComplete(codeParts, value);
         setAutoComplete(a);
+
+        inputRef.current?.focus();
+    };
+
+    const onAutocomplete = (text: string) => {
+        if (!autoComplete) { return; }
+
+        autoComplete.choices.forEach(x => { x.isSelected = false; });
+        const choice = autoComplete.choices.find(x => x.text === text);
+        if (!choice) { return; }
+
+        choice.isSelected = true;
+        changeInputText(inputText + text);
     };
 
 
@@ -175,7 +196,7 @@ export const LessonFileContentEditor_ConstructCode = ({ code, language, selectio
                         isActive, cursorIndex, activeIndex,
                         feedback: feedback ?? undefined,
                         autoComplete: autoComplete?.choices,
-                        onAutocomplete: (x) => { changeInputText(inputText + x); },
+                        onAutocomplete,
                     }} />
                 </View>
                 <View style={{ position: `absolute`, top: 0, left: 0, right: 0, bottom: 0, opacity: 0 }}>
@@ -185,6 +206,7 @@ export const LessonFileContentEditor_ConstructCode = ({ code, language, selectio
                         onFocus={() => setIsActive(true)}
                         onBlur={() => setIsActive(false)}
                         onKeyDown={(e) => onKeyDown(e)}
+                        ref={inputRef}
                     />
                 </View>
             </View>

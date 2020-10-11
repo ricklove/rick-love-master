@@ -217,7 +217,7 @@ export const LessonFileContentEditor = ({
                     <LessonFileContentEditor_Edit code={file.content} language={file.language} selection={selection} onCodeChange={onCodeChange} onSelectionChange={onSelectionChange} />
                 )}
                 {mode === `construct-code` && (
-                    <LessonFileContentEditor_ConstructCode code={file.content} language={file.language} selection={selection} onTaskDone={onTaskDone} />
+                    <LessonFileContentEditor_ConstructCode code={file.content} language={file.language} selection={selection} onDone={onTaskDone} />
                 )}
             </View>
         </View >
