@@ -101,6 +101,7 @@ export type CodePart = {
     length: number;
     indexAfterEnd: number;
     isInSelection: boolean;
+    onPress?: (value: CodePart) => void;
 };
 export type CodePartsData = {
     // codeBefore: string;

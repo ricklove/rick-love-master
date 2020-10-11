@@ -63,7 +63,15 @@ const CodeSpan = ({ code, Cursor, inputOptions }: { code: CodeDisplayPart, Curso
                     <PromptComponent inputOptions={inputOptions} />
                 </>
             )}
-            <span className={code.classes.join(` `)} style={!code.isInSelection ? { opacity: 0.5 } : {}} >{`${code.code}`}</span>
+            {!code.onPress && (
+                <span className={code.classes.join(` `)} style={!code.isInSelection ? { opacity: 0.5 } : {}} >{`${code.code}`}</span>
+            )}
+            {code.onPress && (
+                <TouchableOpacity style={{ display: `inline` }} onPress={() => code.onPress?.(code)}>
+                    <span className={code.classes.join(` `)} style={!code.isInSelection ? { opacity: 0.5 } : {}} >{`${code.code}`}</span>
+                </TouchableOpacity>
+            )}
+
         </>
     );
 };

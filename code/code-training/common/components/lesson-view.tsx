@@ -22,7 +22,7 @@ export const LessonView_ConstructCode = ({ data }: { data: LessonData }) => {
 
     return (
         <>
-            <Text style={styles.sectionHeaderText}>{`${data.title} ${isDone ? `✅` : `🔳`}`}</Text>
+            <Text style={styles.sectionHeaderText}>{`${data.title} - Construct Code ${isDone ? `✅` : `🔳`}`}</Text>
             <Text style={styles.infoText}>{`🎯 ${data.objective}`}</Text>
             <Text style={styles.infoText}>{`💡 ${data.explanation}`}</Text>
             <Text style={styles.infoText}>{`${isDone ? `✅` : `🔳`} ${data.task}`}</Text>
@@ -35,11 +35,29 @@ export const LessonView_ConstructCode = ({ data }: { data: LessonData }) => {
                 fileEditorMode_noFocus='display'
                 projectEditorMode='display'
                 onTaskDone={() => setIsDone(true)}
-                prompt={{
-                    emoji: `👨‍💻`,
-                    message: data.task,
-                    timestamp: Date.now(),
+                lessonData={data}
+            />
+        </>
+    );
+};
+
+export const LessonView_UnderstandCode = ({ data }: { data: LessonData }) => {
+
+    const [isDone, setIsDone] = useState(false);
+
+    return (
+        <>
+            <Text style={styles.sectionHeaderText}>{`${data.title} - Understand Code ${isDone ? `✅` : `🔳`}`}</Text>
+            <LessonProjectFilesEditor
+                projectData={{
+                    projectState: data.projectState,
+                    focus: data.focus,
                 }}
+                fileEditorMode_focus='understand-code'
+                fileEditorMode_noFocus='display'
+                projectEditorMode='display'
+                onTaskDone={() => setIsDone(true)}
+                lessonData={data}
             />
         </>
     );

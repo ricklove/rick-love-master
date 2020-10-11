@@ -66,3 +66,6 @@ export type LessonProjectFileSelection = {
 export type LessonStep_ConstructCode = {
     lessonData: LessonData;
 };
+export type LessonStep_UnderstandCode = {
+    lessonData: LessonData;
+};

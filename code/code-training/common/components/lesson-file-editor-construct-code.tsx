@@ -1,15 +1,15 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { TouchableOpacity, View } from 'react-native-lite';
 import { randomItem } from 'utils/random';
-import { LessonProjectFileSelection } from '../lesson-types';
+import { LessonData, LessonProjectFileSelection } from '../lesson-types';
 import { CodePartsData, getAutoComplete, getCodeParts, getCodePartsCompleted } from './code-editor-helpers';
 import { CodeDisplay, CodeDisplayFeedback, CodeDisplayPrompt } from './code-display';
 
-export const LessonFileContentEditor_ConstructCode = ({ code, language, selection, onDone, prompt }: {
+export const LessonFileContentEditor_ConstructCode = ({ code, language, selection, onDone, lessonData }: {
     code: string; language: 'tsx';
     selection?: LessonProjectFileSelection;
     onDone: () => void;
-    prompt?: CodeDisplayPrompt;
+    lessonData: LessonData;
 }) => {
     const [codeParts, setCodeParts] = useState(null as null | CodePartsData);
     const inputRef = useRef(null as null | HTMLTextAreaElement);
@@ -192,6 +192,11 @@ export const LessonFileContentEditor_ConstructCode = ({ code, language, selectio
     const promptIndex = code.lastIndexOf(`\n`, code.lastIndexOf(`\n`, s.index) - 1);
     const activeCodeParts = getCodePartsCompleted(codeParts.codeParts, { index: cursorIndex, length: codeParts.codeFocus.length - inputText.length }, { showBlank: true });
     const nextChar = code.substr(cursorIndex, 1);
+    const prompt: CodeDisplayPrompt = {
+        emoji: `👨‍💻`,
+        message: lessonData.task,
+        timestamp: Date.now(),
+    };
     console.log(`CodeEditor_TypeSelection`, { nextChar, inputText, codeParts, activeCodeParts, isActive, cursorIndex, activeIndex, feedback, autoComplete: autoComplete?.choices });
 
     return (

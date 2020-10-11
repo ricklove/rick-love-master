@@ -2,9 +2,9 @@
 import React, { useEffect, useState } from 'react';
 import { View, Text, TextInput, TouchableOpacity } from 'react-native-lite';
 import { LessonProjectFilesEditor, LessonProjectEditorMode, LessonFileEditorMode } from '../common/components/lesson-file-editor';
-import { LessonData, LessonExperiment, LessonProjectFileSelection, LessonProjectState, LessonStep_ConstructCode } from '../common/lesson-types';
+import { LessonData, LessonExperiment, LessonProjectFileSelection, LessonProjectState, LessonStep_ConstructCode, LessonStep_UnderstandCode } from '../common/lesson-types';
 import { lessonExperiments_createReplacementProjectState, lessonExperiments_calculateProjectStateReplacements } from '../common/replacements';
-import { LessonView_ConstructCode } from '../common/components/lesson-view';
+import { LessonView_ConstructCode, LessonView_UnderstandCode } from '../common/components/lesson-view';
 
 const styles = {
     container: {
@@ -84,9 +84,13 @@ const styles = {
 const createLessonState = (lesson: LessonData, lessonJson?: string) => {
     type LessonSteps = {
         constructCode: LessonStep_ConstructCode;
+        understandCode: LessonStep_UnderstandCode;
     };
     const lessonSteps: LessonSteps = {
         constructCode: {
+            lessonData: lesson,
+        },
+        understandCode: {
             lessonData: lesson,
         },
     };
@@ -101,23 +105,24 @@ const createLessonState = (lesson: LessonData, lessonJson?: string) => {
 export const LessonEditor = (props: { value: LessonData, onChange: (value: LessonData) => void }) => {
 
     const [data, setData] = useState(createLessonState(props.value));
-    type EditorMode = 'edit' | 'json' | 'constructCode';
+    type EditorMode = 'edit' | 'json' | 'construct-code' | 'understand-code';
     const [editorMode, setEditorMode] = useState(`edit` as EditorMode);
     const editorModes = [
         { value: `edit`, label: `Edit` },
         { value: `json`, label: `Json` },
-        { value: `constructCode`, label: `Construct Code` },
+        { value: `construct-code`, label: `Construct Code` },
+        { value: `understand-code`, label: `Understand Code` },
     ] as { value: EditorMode, label: string }[];
     const projectEditorMode: LessonProjectEditorMode =
         editorMode === `edit` ? `edit`
             : `display`;
     const fileEditorMode_focus: LessonFileEditorMode =
         editorMode === `edit` ? `edit`
-            : editorMode === `constructCode` ? `construct-code`
+            : editorMode === `construct-code` ? `construct-code`
                 : `display`;
     const fileEditorMode_noFocus: LessonFileEditorMode =
         editorMode === `edit` ? `edit`
-            : editorMode === `constructCode` ? `display`
+            : editorMode === `construct-code` ? `display`
                 : `display`;
 
     const changeLessonState = (value: typeof data) => {
@@ -187,6 +192,7 @@ export const LessonEditor = (props: { value: LessonData, onChange: (value: Lesso
                                 fileEditorMode_noFocus={fileEditorMode_noFocus}
                                 projectEditorMode={projectEditorMode}
                                 onProjectDataChange={onProjectDataChange}
+                                lessonData={data.lesson}
                             />
                             <Text style={styles.sectionHeaderText}>Lesson</Text>
                             <View style={styles.infoView}>
@@ -195,12 +201,15 @@ export const LessonEditor = (props: { value: LessonData, onChange: (value: Lesso
                                 <LessonField label='Explanation' value={data.lesson.explanation} onChange={x => onLessonChange({ explanation: x })} />
                                 <LessonField label='Task' value={data.lesson.task} onChange={x => onLessonChange({ task: x })} />
                                 <LessonField_Descriptions label='Descriptions' value={data.lesson.descriptions} onChange={x => onLessonChange({ descriptions: x })} />
-                                <LessonField_Experiments label='Experiments' value={data.lesson.experiments} onChange={x => onLessonChange({ experiments: x })} projectState={data.lesson.projectState} />
+                                <LessonField_Experiments label='Experiments' value={data.lesson.experiments} onChange={x => onLessonChange({ experiments: x })} lessonData={data.lesson} />
                             </View>
                         </>
                     )}
-                    {editorMode === `constructCode` && (
+                    {editorMode === `construct-code` && (
                         <LessonView_ConstructCode data={data.lesson} />
+                    )}
+                    {editorMode === `understand-code` && (
+                        <LessonView_UnderstandCode data={data.lesson} />
                     )}
                 </View>
             </View>
@@ -241,14 +250,17 @@ const LessonField_Descriptions = ({ label, value, onChange }: { label: string, v
 };
 
 
-const LessonField_Experiments = ({ label, value, onChange, projectState }: { label: string, value: LessonExperiment[], onChange: (value: LessonExperiment[]) => void, projectState: LessonProjectState }) => {
+const LessonField_Experiments = ({ label, value, onChange, lessonData }: {
+    label: string; value: LessonExperiment[]; onChange: (value: LessonExperiment[]) => void;
+    lessonData: LessonData;
+}) => {
     return (
         <View style={{}}>
             <Text style={styles.lessonFieldLabelText}>{label}</Text>
             {value.map((x, i) => (
                 <LessonField_Experiment key={`${i}`} label={`Experiment ${i}`} value={x}
-                    onChange={v => onChange(value.map((y, j) => i === j ? v : y))} projectState={projectState}
-                    onDelete={() => { value.splice(i, 1); onChange(value); }} />
+                    onChange={v => onChange(value.map((y, j) => i === j ? v : y))}
+                    onDelete={() => { value.splice(i, 1); onChange(value); }} lessonData={lessonData} />
             ))}
             <TouchableOpacity onPress={() => { value.push({ replacements: [], comment: `` }); onChange(value); }}>
                 <View style={styles.buttonView}>
@@ -264,22 +276,22 @@ const LessonField_Experiment = ({
     label,
     value,
     onChange,
-    projectState: originalProjectState,
     onDelete,
+    lessonData,
 }: {
     label: string;
     value: LessonExperiment;
     onChange: (value: LessonExperiment) => void;
-    projectState: LessonProjectState;
     onDelete: () => void;
+    lessonData: LessonData;
 }) => {
-    const [projectState, setProjectState] = useState(originalProjectState);
-    const [lastFocus, setLastFocus] = useState({ filePath: projectState.files[0].path, index: 0, length: projectState.files[0].content.length });
+    const [modifiedProjectState, setModifiedProjectState] = useState({ ...lessonData.projectState, key: 0 });
+    const [lastFocus, setLastFocus] = useState({ filePath: modifiedProjectState.files[0].path, index: 0, length: modifiedProjectState.files[0].content.length });
     const [commentText, setCommentText] = useState(value.comment ?? ``);
 
     useEffect(() => {
-        setProjectState(lessonExperiments_createReplacementProjectState(originalProjectState, value.replacements));
-    }, [originalProjectState.files.length]);
+        setModifiedProjectState(s => ({ ...lessonExperiments_createReplacementProjectState(lessonData.projectState, value.replacements), key: s.key + 1 }));
+    }, [lessonData.projectState]);
 
     const changeProjectData = (data: { projectState?: LessonProjectState, focus?: LessonProjectFileSelection }) => {
         if (data.focus) {
@@ -287,8 +299,9 @@ const LessonField_Experiment = ({
         }
 
         if (!data.projectState) { return; }
-        setProjectState(data.projectState);
-        onChange(lessonExperiments_calculateProjectStateReplacements(originalProjectState, data.projectState));
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+        setModifiedProjectState(s => ({ ...data.projectState!, key: s.key + 1 }));
+        onChange(lessonExperiments_calculateProjectStateReplacements(lessonData.projectState, data.projectState));
     };
 
     return (
@@ -314,14 +327,16 @@ const LessonField_Experiment = ({
                 />
             </View>
             <LessonProjectFilesEditor
+                key={modifiedProjectState.key}
                 projectData={{
-                    projectState,
+                    projectState: modifiedProjectState,
                     focus: lastFocus,
                 }}
                 fileEditorMode_focus='edit'
                 fileEditorMode_noFocus='edit'
                 projectEditorMode='display'
                 onProjectDataChange={changeProjectData}
+                lessonData={lessonData}
             />
             {value.replacements.map(x => (
                 <View key={x.selection.filePath + x.selection.index} >
@@ -331,7 +346,7 @@ const LessonField_Experiment = ({
                     </View>
                     <View style={{ flexDirection: `row` }}>
                         <Text style={{ minWidth: 80 }}>Match</Text>
-                        <Text style={{ marginLeft: 4, background: `#111111`, color: `#FF8888`, textDecoration: `line-through` }}>{`${originalProjectState.files.find(f => f.path === x.selection.filePath)?.content.substr(x.selection.index, x.selection.length)}`}</Text>
+                        <Text style={{ marginLeft: 4, background: `#111111`, color: `#FF8888`, textDecoration: `line-through` }}>{`${lessonData.projectState.files.find(f => f.path === x.selection.filePath)?.content.substr(x.selection.index, x.selection.length)}`}</Text>
                     </View>
                     <View style={{ flexDirection: `row` }}>
                         <Text style={{ minWidth: 80 }}>Replace</Text>
