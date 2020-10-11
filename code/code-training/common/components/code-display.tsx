@@ -205,9 +205,10 @@ const PromptComponent = ({ inputOptions }: { inputOptions: CodeDisplayInputOptio
         };
     }, [feedback]);
 
+    const showFeedback = feedback && !hideFeedback;
     const s = promptStyles;
-    const textStyle = feedback && !hideFeedback ? (feedback.isNegative ? s.text_negative : s.text_positive) : s.text;
-    const prompt = feedback && !hideFeedback ? feedback : promptRaw;
+    const textStyle = showFeedback && feedback ? (feedback.isNegative ? s.text_negative : s.text_positive) : s.text;
+    const prompt = showFeedback ? feedback : promptRaw;
     if (!prompt) { return <></>; }
     return (
         <>
