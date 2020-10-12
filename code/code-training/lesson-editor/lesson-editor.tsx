@@ -5,7 +5,7 @@ import { LessonProjectFilesEditor, LessonProjectEditorMode, LessonFileEditorMode
 import { LessonData, LessonExperiment, LessonProjectFileSelection, LessonProjectState, LessonStep_ConstructCode, LessonStep_UnderstandCode } from '../common/lesson-types';
 import { lessonExperiments_createReplacementProjectState, lessonExperiments_calculateProjectStateReplacements } from '../common/replacements';
 import { LessonView_ConstructCode, LessonView_UnderstandCode } from '../common/components/lesson-view';
-import { LessonRenderView } from '../common/components/lesson-render-view';
+import { LessonProjectStatePreview, LessonRenderView } from '../common/components/lesson-render-view';
 
 const styles = {
     container: {
@@ -103,7 +103,7 @@ const createLessonState = (lesson: LessonData, lessonJson?: string) => {
     };
 };
 
-export const LessonEditor = (props: { value: LessonData, onChange: (value: LessonData) => void }) => {
+export const LessonEditor = (props: { value: LessonData, onChange: (value: LessonData) => void, setProjectState: (projectState: LessonProjectState) => Promise<void> }) => {
 
     const [data, setData] = useState(createLessonState(props.value));
     type EditorMode = 'edit' | 'json' | 'construct-code' | 'understand-code' | 'preview';
@@ -214,7 +214,7 @@ export const LessonEditor = (props: { value: LessonData, onChange: (value: Lesso
                         <LessonView_UnderstandCode data={data.lesson} />
                     )}
                     {editorMode === `preview` && (
-                        <LessonRenderView data={data.lesson} />
+                        <LessonProjectStatePreview projectState={data.lesson.projectState} setProjectState={props.setProjectState} />
                     )}
                 </View>
             </View>

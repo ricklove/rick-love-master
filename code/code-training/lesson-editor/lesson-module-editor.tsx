@@ -2,7 +2,7 @@
 import React, { useState } from 'react';
 import { TouchableOpacity, View, Text, TextInput } from 'react-native-lite';
 import { TabsComponent, TabsListEditorComponent } from '../common/components/tabs';
-import { LessonData, LessonModule } from '../common/lesson-types';
+import { LessonData, LessonModule, LessonProjectState } from '../common/lesson-types';
 import { createDefaultLesson, createDefaultLessonModule } from './lesson-defaults';
 import { LessonEditor } from './lesson-editor';
 
@@ -28,7 +28,7 @@ const styles = {
 } as const;
 
 
-export const LessonModuleEditor = (props: { value?: LessonModule, onChange?: (value: LessonModule) => void }) => {
+export const LessonModuleEditor = (props: { value?: LessonModule, onChange?: (value: LessonModule) => void, setProjectState: (projectState: LessonProjectState) => Promise<void> }) => {
     const [module, setModule] = useState(props.value ?? createDefaultLessonModule());
     const [activeLesson, setActiveLesson] = useState(module.lessons[0]);
     const [mode, setMode] = useState(`lesson` as 'lesson' | 'json');
@@ -98,7 +98,7 @@ export const LessonModuleEditor = (props: { value?: LessonModule, onChange?: (va
                         />
                         {activeLesson && (
                             <>
-                                <LessonEditor key={activeLesson.key} value={activeLesson} onChange={changeActiveLesson} />
+                                <LessonEditor key={activeLesson.key} value={activeLesson} onChange={changeActiveLesson} setProjectState={props.setProjectState} />
                             </>
                         )}
                     </>

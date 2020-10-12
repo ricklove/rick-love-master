@@ -1,5 +1,4 @@
-import { ApiError } from 'utils/error';
-import { LessonModule } from '../common/lesson-types';
+import { LessonModule, LessonProjectState } from '../common/lesson-types';
 
 export type LessonModuleMeta = {
     key: string;
@@ -10,4 +9,6 @@ export type LessonServerApi = {
     getLessonModule: (data: { key: string }) => Promise<{ data: LessonModule }>;
     setLessonModule: (data: { value: LessonModule }) => Promise<{ data: LessonModuleMeta }>;
     deleteLessonModule: (data: { key: string }) => Promise<{ data: {} }>;
+
+    setProjectState: (data: { projectState: LessonProjectState }) => Promise<{ data: {} }>;
 };

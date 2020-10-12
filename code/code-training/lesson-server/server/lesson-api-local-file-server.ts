@@ -11,8 +11,10 @@ export type LessonModuleMetaFile = LessonModuleMeta;
 
 export const createLessonApiServer_localFileServer = ({
     lessonModuleFileRootPath,
+    projectStateRootPath,
 }: {
     lessonModuleFileRootPath: string;
+    projectStateRootPath: string;
 }): LessonServerApi => {
 
     const server: LessonServerApi = {
@@ -53,6 +55,21 @@ export const createLessonApiServer_localFileServer = ({
 
             await deleteFile(filePath);
             await deleteFile(metaPath);
+            return { data: {} };
+        },
+        setProjectState: async (data) => {
+            if (!projectStateRootPath) {
+                throw new ApiError(`projectStateRootPath not setup`, { requestData: data });
+            }
+            // TODO: Delete existing files
+            // const files = await getFiles(projectStateRootPath, x=>true);
+            // await deleteFile(filePath);
+            // await deleteFile(metaPath);
+
+            await Promise.all(data.projectState.files.map(async x => {
+                await writeFile(getPathNormalized(projectStateRootPath, `${x.path}`), x.content, { overwrite: true });
+            }));
+
             return { data: {} };
         },
     };

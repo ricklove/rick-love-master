@@ -115,6 +115,14 @@
     - [ ] Instructons to merge the PR into master (Github)
         - Once approved, merge the PR
 
+--- 
+
+# Render Options
+
+- [ ] Live Render User Runs CRA
+    - Requires Lesson Server Cli Running (Node, etc.)
+    - User Runs 'yarn start' in CRA folder
+    - Lesson Server Cli updates files and they are automatically re-rendered with create react app
 
 ---
 

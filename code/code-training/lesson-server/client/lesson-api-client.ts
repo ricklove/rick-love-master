@@ -16,6 +16,7 @@ export const createLessonApiClient = ({
         getLessonModule: async (data) => await request(`getLessonModule`, data),
         setLessonModule: async (data) => await request(`setLessonModule`, data),
         deleteLessonModule: async (data) => await request(`deleteLessonModule`, data),
+        setProjectState: async (data) => await request(`setProjectState`, data),
     };
     return client;
 };
