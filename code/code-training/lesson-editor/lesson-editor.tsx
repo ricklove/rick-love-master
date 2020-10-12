@@ -5,6 +5,7 @@ import { LessonProjectFilesEditor, LessonProjectEditorMode, LessonFileEditorMode
 import { LessonData, LessonExperiment, LessonProjectFileSelection, LessonProjectState, LessonStep_ConstructCode, LessonStep_UnderstandCode } from '../common/lesson-types';
 import { lessonExperiments_createReplacementProjectState, lessonExperiments_calculateProjectStateReplacements } from '../common/replacements';
 import { LessonView_ConstructCode, LessonView_UnderstandCode } from '../common/components/lesson-view';
+import { LessonRenderView } from '../common/components/lesson-render-view';
 
 const styles = {
     container: {
@@ -105,13 +106,14 @@ const createLessonState = (lesson: LessonData, lessonJson?: string) => {
 export const LessonEditor = (props: { value: LessonData, onChange: (value: LessonData) => void }) => {
 
     const [data, setData] = useState(createLessonState(props.value));
-    type EditorMode = 'edit' | 'json' | 'construct-code' | 'understand-code';
+    type EditorMode = 'edit' | 'json' | 'construct-code' | 'understand-code' | 'preview';
     const [editorMode, setEditorMode] = useState(`edit` as EditorMode);
     const editorModes = [
         { value: `edit`, label: `Edit` },
         { value: `json`, label: `Json` },
         { value: `construct-code`, label: `Construct Code` },
         { value: `understand-code`, label: `Understand Code` },
+        { value: `preview`, label: `Preview` },
     ] as { value: EditorMode, label: string }[];
     const projectEditorMode: LessonProjectEditorMode =
         editorMode === `edit` ? `edit`
@@ -210,6 +212,9 @@ export const LessonEditor = (props: { value: LessonData, onChange: (value: Lesso
                     )}
                     {editorMode === `understand-code` && (
                         <LessonView_UnderstandCode data={data.lesson} />
+                    )}
+                    {editorMode === `preview` && (
+                        <LessonRenderView data={data.lesson} />
                     )}
                 </View>
             </View>
