@@ -48,17 +48,20 @@
 # Tasks
 
 - [ ] Lesson Editor
-    - [ ] Save/Load Single Document Format
+    - [x] Save/Load Single Document Format
         - [x] JSON
-        - [ ] Storage
+        - [x] Storage
             - [x] TextArea
-            - [ ] Upload
             - [x] Local Server / Local Files
     - [x] LessonData
         - [x] File Contents
         - [x] Lesson Focus
         - [x] Lesson Parts
     - [x] Display Lesson Preview
+- [ ] Lessson Player
+    - [ ] Lesson Navigator / Progress Display
+    - [ ] Progress Storage
+    - [ ] Display Lesson Steps
 - [ ] Lesson Steps
     - [x] Construct Code
         - Type Code with auto complete (multiple-choice)
@@ -78,6 +81,39 @@
         - View Rendered Result
         - Change Experimental Code Alternatives and View Rendered Result
         - [ ] Render React with Create-React-App Template and App Component Switch
+
+- [ ] Implement Code (local git)
+    - [ ] Instructions to create a local git repo project
+        - Create folder
+        - Init git
+        - Add Project Start (auto-commit & verify)
+    - [ ] Instructions to commit code for a step
+        - Commit
+    - [ ] Review State
+        - Verify all files are committed
+            - `git status --short`
+        - Show the lesson step (allow manually changing to another step)
+        - Show a diff view between actual and lesson step
+- [ ] Implement Code (GitHub Pull Requests)
+    - [ ] Instructions to setup a real project
+        - Create Git project (on Github)
+        - Clone Git Repo
+        - Add Project Start
+        - Commit to master
+        - Push
+        - Grant System access to GitHub Repo
+        - Verify Setup is complete (master is at the correct project state)
+    - [ ] Instructions to make a Github Pull Request with completed code for a step
+        - Create a feature branch
+        - Commit
+        - Push
+        - Open Pull Request into master (Github)
+    - [ ] Auto-Review Pull Request
+        - Approve - if code is correct
+        - Request Changes - if code is incorrect
+            - Indicate Differences
+    - [ ] Instructons to merge the PR into master (Github)
+        - Once approved, merge the PR
 
 
 ---

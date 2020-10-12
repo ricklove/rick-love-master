@@ -22,7 +22,7 @@ export const LessonView_ConstructCode = ({ data }: { data: LessonData }) => {
 
     return (
         <>
-            <Text style={styles.sectionHeaderText}>{`${data.title} - Construct Code ${isDone ? `✅` : `🔳`}`}</Text>
+            <Text style={styles.sectionHeaderText}>{`${data.title} - Construct the Code ${isDone ? `✅` : `🔳`}`}</Text>
             <Text style={styles.infoText}>{`🎯 ${data.objective}`}</Text>
             <Text style={styles.infoText}>{`💡 ${data.explanation}`}</Text>
             <Text style={styles.infoText}>{`${isDone ? `✅` : `🔳`} ${data.task}`}</Text>
@@ -47,7 +47,7 @@ export const LessonView_UnderstandCode = ({ data }: { data: LessonData }) => {
 
     return (
         <>
-            <Text style={styles.sectionHeaderText}>{`${data.title} - Understand Code ${isDone ? `✅` : `🔳`}`}</Text>
+            <Text style={styles.sectionHeaderText}>{`${data.title} - Understand the Code ${isDone ? `✅` : `🔳`}`}</Text>
             <LessonProjectFilesEditor
                 projectData={{
                     projectState: data.projectState,
