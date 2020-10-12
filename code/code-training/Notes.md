@@ -77,7 +77,7 @@
         - Fill in the blank prompts (press correct code word to answer)
     - [ ] Identify Mistakes
         - Correct re-arranged code (press mistake & type with autocomplete)
-    - [ ] Preview Results
+    - [x] Preview Results
         - View Rendered Result
         - Change Experimental Code Alternatives and View Rendered Result
         - [ ] Render React with Create-React-App Template and App Component Switch
@@ -119,7 +119,7 @@
 
 # Render Options
 
-- [ ] Live Render User Runs CRA
+- [x] Live Render User Runs CRA
     - Requires Lesson Server Cli Running (Node, etc.)
     - User Runs 'yarn start' in CRA folder
     - Lesson Server Cli updates files and they are automatically re-rendered with create react app

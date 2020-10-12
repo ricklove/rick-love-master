@@ -4,7 +4,7 @@ import { View, Text, TextInput, TouchableOpacity } from 'react-native-lite';
 import { LessonProjectFilesEditor, LessonProjectEditorMode, LessonFileEditorMode } from '../common/components/lesson-file-editor';
 import { LessonData, LessonExperiment, LessonProjectFileSelection, LessonProjectState, LessonStep_ConstructCode, LessonStep_UnderstandCode } from '../common/lesson-types';
 import { lessonExperiments_createReplacementProjectState, lessonExperiments_calculateProjectStateReplacements } from '../common/replacements';
-import { LessonView_ConstructCode, LessonView_UnderstandCode } from '../common/components/lesson-view';
+import { LessonView_ConstructCode, LessonView_ExperimentCode, LessonView_UnderstandCode } from '../common/components/lesson-view';
 import { LessonProjectStatePreview, LessonRenderView } from '../common/components/lesson-render-view';
 
 const styles = {
@@ -106,13 +106,14 @@ const createLessonState = (lesson: LessonData, lessonJson?: string) => {
 export const LessonEditor = (props: { value: LessonData, onChange: (value: LessonData) => void, setProjectState: (projectState: LessonProjectState) => Promise<void> }) => {
 
     const [data, setData] = useState(createLessonState(props.value));
-    type EditorMode = 'edit' | 'json' | 'construct-code' | 'understand-code' | 'preview';
+    type EditorMode = 'edit' | 'json' | 'construct-code' | 'understand-code' | 'experiment-code' | 'preview';
     const [editorMode, setEditorMode] = useState(`edit` as EditorMode);
     const editorModes = [
         { value: `edit`, label: `Edit` },
         { value: `json`, label: `Json` },
         { value: `construct-code`, label: `Construct Code` },
         { value: `understand-code`, label: `Understand Code` },
+        { value: `experiment-code`, label: `Experiment Code` },
         { value: `preview`, label: `Preview` },
     ] as { value: EditorMode, label: string }[];
     const projectEditorMode: LessonProjectEditorMode =
@@ -212,6 +213,9 @@ export const LessonEditor = (props: { value: LessonData, onChange: (value: Lesso
                     )}
                     {editorMode === `understand-code` && (
                         <LessonView_UnderstandCode data={data.lesson} />
+                    )}
+                    {editorMode === `experiment-code` && (
+                        <LessonView_ExperimentCode data={data.lesson} setProjectState={props.setProjectState} />
                     )}
                     {editorMode === `preview` && (
                         <LessonProjectStatePreview projectState={data.lesson.projectState} setProjectState={props.setProjectState} />
