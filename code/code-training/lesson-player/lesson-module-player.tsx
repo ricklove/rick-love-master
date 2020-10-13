@@ -104,13 +104,22 @@ export const LessonModulePlayer = (props: { module: LessonModule, setProjectStat
         nextStep();
     }, [props.module]);
 
+    useEffect(() => {
+        if (activeItem?.kind === `lesson`) {
+            nextStep();
+        }
+    }, [activeItem]);
+
     const nextStep = () => {
         console.log(`LessonModulePlayer nextStep`, { activeItem });
         if (!items) { return; }
 
         const itemSteps = items.filter(x => x.kind !== `lesson`);
-        const activeItemIndex = itemSteps.findIndex(x => x.key === activeItem?.key);
-        const nextItem = !activeItemIndex ? itemSteps[0] : itemSteps[activeItemIndex + 1] ?? itemSteps[0];
+        const activeItemStepIndex = itemSteps.findIndex(x => x.key === activeItem?.key);
+        const activeItemIndex = items.findIndex(x => x.key === activeItem?.key);
+        const nextItem = (activeItemStepIndex >= 0 ? itemSteps[activeItemStepIndex + 1] : null)
+            ?? (activeItemIndex >= 0 ? items[activeItemIndex + 1] : null)
+            ?? items[0];
         setTimeout(() => {
             setActiveItem(nextItem);
         }, 1000);
