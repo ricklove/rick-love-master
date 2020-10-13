@@ -19,7 +19,7 @@ const styles = {
     },
 } as const;
 
-export const LessonView_ConstructCode = ({ data }: { data: LessonData }) => {
+export const LessonView_ConstructCode = ({ data, onDone }: { data: LessonData, onDone?: () => void }) => {
 
     const [isDone, setIsDone] = useState(false);
 
@@ -37,14 +37,14 @@ export const LessonView_ConstructCode = ({ data }: { data: LessonData }) => {
                 fileEditorMode_focus='construct-code'
                 fileEditorMode_noFocus='display'
                 projectEditorMode='display'
-                onTaskDone={() => setIsDone(true)}
+                onTaskDone={() => { setIsDone(true); onDone?.(); }}
                 lessonData={data}
             />
         </>
     );
 };
 
-export const LessonView_UnderstandCode = ({ data }: { data: LessonData }) => {
+export const LessonView_UnderstandCode = ({ data, onDone }: { data: LessonData, onDone?: () => void }) => {
 
     const [isDone, setIsDone] = useState(false);
 
@@ -59,7 +59,7 @@ export const LessonView_UnderstandCode = ({ data }: { data: LessonData }) => {
                 fileEditorMode_focus='understand-code'
                 fileEditorMode_noFocus='display'
                 projectEditorMode='display'
-                onTaskDone={() => setIsDone(true)}
+                onTaskDone={() => { setIsDone(true); onDone?.(); }}
                 lessonData={data}
             />
         </>
@@ -67,6 +67,11 @@ export const LessonView_UnderstandCode = ({ data }: { data: LessonData }) => {
 };
 
 const experimentStyles = {
+    instructionsText: {
+        marginLeft: 16,
+        fontSize: 16,
+        color: `#88FF88`,
+    },
     experimentView: {
         padding: 16,
     },
@@ -84,7 +89,7 @@ const experimentStyles = {
         color: `#FFFF88`,
     },
 } as const;
-export const LessonView_ExperimentCode = ({ data, setProjectState }: { data: LessonData, setProjectState: (projectState: LessonProjectState) => Promise<void> }) => {
+export const LessonView_ExperimentCode = ({ data, onDone, setProjectState }: { data: LessonData, onDone?: () => void, setProjectState: (projectState: LessonProjectState) => Promise<void> }) => {
 
     const [modifiedProjectState, setModifiedProjectState] = useState({ ...data.projectState, key: 0 });
     const [activeExperiment, setActiveExperiment] = useState(null as null | LessonExperiment);
@@ -117,6 +122,7 @@ export const LessonView_ExperimentCode = ({ data, setProjectState }: { data: Les
     return (
         <>
             <Text style={styles.sectionHeaderText}>{`${data.title} - Experiment with the Code`}</Text>
+            <Text style={experimentStyles.instructionsText}>Select an experiment below and view the result</Text>
             <View style={experimentStyles.experimentView}>
                 <TouchableOpacity onPress={() => changeExperiment(null)}>
                     <View style={activeExperiment === null ? experimentStyles.experimentItemView_active : experimentStyles.experimentItemView}>
@@ -130,6 +136,13 @@ export const LessonView_ExperimentCode = ({ data, setProjectState }: { data: Les
                         </View>
                     </TouchableOpacity>
                 ))}
+                {onDone && (
+                    <TouchableOpacity onPress={() => onDone?.()}>
+                        <View style={experimentStyles.experimentItemView}>
+                            <Text style={experimentStyles.experimentItemText}>Done</Text>
+                        </View>
+                    </TouchableOpacity>
+                )}
             </View>
             <LessonProjectFilesEditor
                 key={modifiedProjectState.key}

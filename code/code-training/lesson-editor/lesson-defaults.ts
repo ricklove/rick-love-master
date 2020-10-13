@@ -64,6 +64,14 @@ export const MinimalReactComponent2 = (props: {}) => {
     return lesson;
 };
 
+export const cloneLesson = (lesson: LessonData): LessonData => {
+    const newLesson = JSON.parse(JSON.stringify(lesson));
+    return {
+        ...newLesson,
+        key: `Lesson-${Date.now()}-${(`${Math.random()}`).substr(2)}`,
+    };
+};
+
 export const createDefaultLessonModule = (): LessonModule => {
     return {
         key: `Module-${Date.now()}-${(`${Math.random()}`).substr(2)}`,

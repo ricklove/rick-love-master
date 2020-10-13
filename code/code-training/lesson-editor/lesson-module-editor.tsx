@@ -3,7 +3,7 @@ import React, { useState } from 'react';
 import { TouchableOpacity, View, Text, TextInput } from 'react-native-lite';
 import { TabsComponent, TabsListEditorComponent } from '../common/components/tabs';
 import { LessonData, LessonModule, LessonProjectState } from '../common/lesson-types';
-import { createDefaultLesson, createDefaultLessonModule } from './lesson-defaults';
+import { cloneLesson, createDefaultLesson, createDefaultLessonModule } from './lesson-defaults';
 import { LessonEditor } from './lesson-editor';
 
 
@@ -94,7 +94,7 @@ export const LessonModuleEditor = (props: { value?: LessonModule, onChange?: (va
                             getLabel={x => x.title}
                             selected={activeLesson}
                             onSelect={x => setActiveLesson(x)}
-                            onCreateNewItem={createDefaultLesson}
+                            onCreateNewItem={() => cloneLesson(activeLesson) ?? createDefaultLesson()}
                         />
                         {activeLesson && (
                             <>

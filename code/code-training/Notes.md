@@ -47,6 +47,8 @@
 
 # Tasks
 
+## Lesson Editor
+
 - [ ] Lesson Editor
     - [x] Save/Load Single Document Format
         - [x] JSON
@@ -59,9 +61,10 @@
         - [x] Lesson Parts
     - [x] Display Lesson Preview
 - [ ] Lessson Player
-    - [ ] Lesson Navigator / Progress Display
+    - [x] Lesson Navigator
+    - [x] Display Lesson Steps
     - [ ] Progress Storage
-    - [ ] Display Lesson Steps
+    - [ ] Progress Display
 - [ ] Lesson Steps
     - [x] Construct Code
         - Type Code with auto complete (multiple-choice)
@@ -80,8 +83,21 @@
     - [x] Preview Results
         - View Rendered Result
         - Change Experimental Code Alternatives and View Rendered Result
-        - [ ] Render React with Create-React-App Template and App Component Switch
+        - [x] Render React with Create-React-App Template
 
+## Build System (for State Renders)
+
+node cli that runs a local express server to handle build operations
+
+- [x] load/save lessons
+- [x] build lesson
+    - [x] use a create react app template
+    - [x] replace src files
+
+- [x] Live Render User Runs CRA
+    - Requires Lesson Server Cli Running (Node, etc.)
+    - User Runs 'yarn start' in CRA folder
+    - Lesson Server Cli updates files and they are automatically re-rendered with create react app
 - [ ] Implement Code (local git)
     - [ ] Instructions to create a local git repo project
         - Create folder
@@ -115,23 +131,4 @@
     - [ ] Instructons to merge the PR into master (Github)
         - Once approved, merge the PR
 
---- 
-
-# Render Options
-
-- [x] Live Render User Runs CRA
-    - Requires Lesson Server Cli Running (Node, etc.)
-    - User Runs 'yarn start' in CRA folder
-    - Lesson Server Cli updates files and they are automatically re-rendered with create react app
-
 ---
-
-# Build System (for State Renders)
-
-node cli that runs a local express server to handle build operations
-
-- load/save lessons
-- build lesson
-    - use a create react app template
-    - replace src files
-    - 

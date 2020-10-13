@@ -4,6 +4,7 @@ import { TouchableOpacity, View, Text, TextInput } from 'react-native-lite';
 import { useAutoLoadingError } from 'utils-react/hooks';
 import { ErrorBox } from 'controls-react/error-box';
 import { Loading } from 'controls-react/loading';
+import { LessonModulePlayer } from '../lesson-player/lesson-module-player';
 import { LessonModuleMeta } from '../lesson-server/lesson-api-types';
 import { createLessonApiClient } from '../lesson-server/client/lesson-api-client';
 import { TabsComponent, TabsListEditorComponent } from '../common/components/tabs';
@@ -34,6 +35,12 @@ const styles = {
 
 const apiClient = createLessonApiClient({});
 export const LessonModulesClientEditor = (props: {}) => {
+    const [mode, setMode] = useState(`edit` as 'edit' | 'play');
+    const modes = [
+        { value: `edit` as const, label: `Edit` },
+        { value: `play` as const, label: `Play` },
+    ];
+
     const [modules, setModules] = useState(null as null | LessonModuleMeta[]);
     const [activeModule, setActiveModule] = useState(null as null | LessonModule);
     // const [mode, setMode] = useState(`lesson` as 'lesson' | 'json');
@@ -102,6 +109,15 @@ export const LessonModulesClientEditor = (props: {}) => {
             <Loading loading={loading} />
             <ErrorBox error={error} />
             <View style={styles.container}>
+                <TabsComponent
+                    style={{ selectedTabText: { color: `#8888FF` } }}
+                    header='Mode'
+                    items={modes}
+                    getKey={x => x.value}
+                    getLabel={x => x.label}
+                    selected={modes.find(x => x.value === mode)}
+                    onSelect={x => setMode(x.value)}
+                />
                 {modules && (
                     <TabsComponent
                         style={{ selectedTabText: { color: `#88FF88` } }}
@@ -111,10 +127,10 @@ export const LessonModulesClientEditor = (props: {}) => {
                         getLabel={x => x.title}
                         selected={modules?.find(x => x.key === activeModule?.key)}
                         onSelect={x => loadModule(x.key)}
-                        onAdd={onAddModule}
+                        onAdd={mode === `edit` ? onAddModule : undefined}
                     />
                 )}
-                {activeModule && (
+                {activeModule && mode === `edit` && (
                     <>
                         <View style={{ flexDirection: `row`, justifyContent: `flex-end` }}>
                             <TouchableOpacity onPress={onSaveModule}>
@@ -129,6 +145,11 @@ export const LessonModulesClientEditor = (props: {}) => {
                             </TouchableOpacity>
                         </View>
                         <LessonModuleEditor key={activeModule.key} value={activeModule} onChange={onChangeModule} setProjectState={setProjectState} />
+                    </>
+                )}
+                {activeModule && mode === `play` && (
+                    <>
+                        <LessonModulePlayer key={activeModule.key} module={activeModule} setProjectState={setProjectState} />
                     </>
                 )}
             </View>

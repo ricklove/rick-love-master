@@ -160,7 +160,9 @@ export const LessonFileContentEditor_ConstructCode = ({ code, language, selectio
         }
 
         const isDone = codeFocus === value;
-        onDone();
+        if (isDone) {
+            onDone();
+        }
 
         setIsActive(true);
         setInputText(value);
