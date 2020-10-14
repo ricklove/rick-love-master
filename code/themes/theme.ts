@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 export type ThemeViewStyle = {
-    display?: 'flex';
+    display?: 'flex' | 'block' | 'inline';
     flexDirection?: 'row' | 'column' | 'row-reverse' | 'column-reverse';
     flexWrap?: 'wrap' | 'nowrap';
     flex?: number;
@@ -69,6 +69,7 @@ export type ThemeTextStyle = {
     paddingBottom?: number;
 
     color?: string;
+    background?: string;
 
     fontFamily?: string;
     fontSize?: number;
@@ -76,6 +77,8 @@ export type ThemeTextStyle = {
     lineHeight?: string;
     whiteSpace?: 'normal' | 'nowrap' | 'pre' | 'pre-wrap';
     minWidth?: number;
+
+    textDecoration?: `line-through`;
 
     outlineColor?: string;
     userSelect?: `none`;

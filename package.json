@@ -86,6 +86,7 @@
     "code/code-space/code-space-node",
     "code/code-space/code-space-views",
     "code/code-space/code-space-vscode",
+    "code/code-training",
     "code/controls-react",
     "code/eslint-plugin-custom-rules",
     "code/games/console-simulator",
