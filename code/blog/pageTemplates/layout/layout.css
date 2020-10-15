@@ -159,6 +159,10 @@ blockquote {
     border-left: 3px solid #01ff70;
 }
 
+code {
+    color: #01ff70;
+}
+
 /* Make it movey */
 
 /*
