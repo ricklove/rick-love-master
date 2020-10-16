@@ -34,7 +34,7 @@ It is.
 ### What is the right way
 
 - Use the minimal type (the part of the type you actually care about) - Duck Typing.
-- Use an Partial type of what you think it is.
+- Use a partial type.
 - Use union types when it could be multiple types. Discriminated unions are great in typescript.
 - Use `unknown` if you really have to. Then cast it to one of the above before you access it.
 
@@ -72,32 +72,39 @@ In the case where an object should have a specific type, but it cannot be guaran
 
 Also in most cases, when the object fails to have the correct type, you can simply return `undefined` or `null`.
 
-Here are a few patterns to do that depending on whether you prefer `undefined` over `null`:
+Below are a few patterns to do that depending on how you want to handle `null` and whether you want to support the whole parameter being optional.
+
+I default to the first. If I discover that many callers would need to convert null to undefined, then I add `| null`.
 
 ```ts
 
-// Return type: string | undefined
+// Basic optional field
 export const getKeyWithOptionalId = (item: { id?: string }) => {
+    // Return type: string | undefined
     return item.id;
 };
 
-// Return type: string | null | undefined
-export const getKeyWithNullableId = (item: { id?: null | string }) => {
+// Same as above using Partial Generic Type
+export const getKeyWithPartialType = (item: Partial<{ id: string }>) => {
+    // Return type: string | undefined
     return item.id;
 };
 
-// Return type: string | undefined
+// Support null or undefined field, but return undefined instead of null
 export const getKeyWithNullableId2 = (item: { id?: null | string }) => {
+    // Return type: string | undefined
     return item.id ?? undefined;
 };
 
-// Return type: string | undefined
+// Support null or undefined object, but require the caller to provide something
 export const getKeyWithNullableObject = (item: null | undefined | { id?: null | string }) => {
+    // Return type: string | undefined
     return item?.id ?? undefined;
 };
 
-// Return type: string | undefined
+// Support optional parameter
 export const getKeyWithOptionalArgument = (item?: null | { id?: null | string }) => {
+    // Return type: string | undefined
     return item?.id ?? undefined;
 };
 
@@ -127,20 +134,29 @@ export const getKeyFromObject = (
 
 ##### Side Note: null vs undefined
 
-On the difference between `undefined` and `null`. They should be treated the same logically in your code, but I do sometimes use them to distinguish intent in the code:
+On the difference between `undefined` and `null`. They should be treated the same logically in your code.
 
-- `null` to indicate an empty value (especially when setting a non-optional value to default)
-- `undefined` to indicate a missing optional value
+However, I do sometimes use them to distinguish intent in the code:
 
-The only place I have seen a logical difference between them is when updating an object in a storage system: `undefined` could mean ignore the field and `null` could mean reset that field.
+- `undefined` to indicate an empty optional field - i.e. it doesn't exist and that's normal
+- `null` to indicate the default value - i.e. an object that normally should have value, but is not initialized yet
+
+However, those differences are subtle and it may be better to just use undefined for everything. Logically they should be treated the same in most cases.
+
+In fact, the only place I have seen a logical difference between them is when updating an object in a storage system: 
+
+- `undefined` could mean ignore the field (no change) 
+- `null` could mean reset that field (remove the value)
+
+However, that pattern is likely to introduce bugs so be careful. Thankfully, typescript keeps track of each and allows you to specify if one or the other is required.
 
 #### Union Types
 
-Now we are starting to actually use Typescript's power.
+With union types, we are starting to use Typescript's real power.
 
-A union type is essentially the or `|` operator for types: i.e. it's a type that could has multiple posibilities.
+A union type is essentially the or operator (`|`) for types: i.e. it's a type that could be any of multiple types.
 
-Typescript handles union types like a pro. It understands all the runtime operations that could limit the type. For example, an `if` statement can be used to constrain the type to a specific possibility.
+Typescript handles union types like a pro. It understands all the runtime operations that could constrain a type and protects you from mistakes. For example, an `if` statement can be used to constrain the type to a specific possibility.
 
 In the below example, `keyOrObject` could be a `string`, `number`, `null`/`undefined`, or an object with one of many possible id fields.
 
