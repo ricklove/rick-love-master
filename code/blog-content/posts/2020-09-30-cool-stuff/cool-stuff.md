@@ -24,7 +24,7 @@ This is my favorite - it's a console/terminal simulator full of old school text-
 
 (try 'dir' or 'ls', also useful: 'open')
 
-![](2020-09-30-console.png)
+![](console.png)
 
 #### Dork
 
@@ -32,7 +32,7 @@ A text adventure (inside the header console simulator)
 
 I'm ofter adding to this. You could spend quite a while getting all the items in the first stage.
 
-![](2020-09-30-dork-intro.gif)
+![](dork-intro.gif)
 
 Why yes, that is animated ascii 😀
 
@@ -42,7 +42,7 @@ A doodle game for parties (using serverless websockets with AWS Api Gateway, Lam
 
 https://ricklove.me/games/doodle-party?room=visitors
 
-![](2020-09-30-doodle-party.png)
+![](doodle-party.png)
 
 #### Educational Games (Math,Spelling, Spanish, etc.)
 
@@ -62,27 +62,27 @@ Times Tables
 - Smart Reviews System to Repeat Mistakes
 - Increasing Speed to Improve Instant Recall
 
-![](2020-09-30-space-blast-math.png)
+![](space-blast-math.png)
 
 ##### Space Blaster - Spelling
 
 - Words group by common patterns
 - Text to Speech to help with readers
 
-![](2020-09-30-space-blaster-spelling.png)
+![](space-blaster-spelling.png)
 
 ##### Space Blaster - Spanish
 
 - Text to Speech to help hearing and reinforce pronunciation
 - Reverse Direction
 
-![](2020-09-30-space-blast-spanish.png)
+![](space-blast-spanish.png)
 
 ##### Multiples Snake
 
 - Reinforce Understanding of Patterns in the Times Table
 
-![](2020-09-30-multiples-snake.png)
+![](multiples-snake.png)
 
 ##### Doodle Spelling
 
@@ -90,7 +90,7 @@ Times Tables
 - Text to Speech to Hear Word
 - Helper Keyboard (with highlighted multiple choice)
 
-![](2020-09-30-doodle-spelling.png)
+![](doodle-spelling.png)
 
 
 #### Emoji Idle Game
@@ -99,8 +99,8 @@ This is a simple progress/idle game that lives at the header of all the educatio
 
 By making progress in the educational games, the player can purchase items for their emoji until they graduate and start their career. Then they can continue and build a whole town full of emojis who can work together to build a space ship and go to mars.
 
-![](2020-09-30-emoji-idle.png)
-![](2020-09-30-emoji-idle-space-blast.png)
+![](emoji-idle.png)
+![](emoji-idle-space-blast.png)
 
 
 #### Code Visualizer
