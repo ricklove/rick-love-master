@@ -94,6 +94,7 @@ html, body, div, pre, code, p, span {
 
 h1, h2, h3, h4, h5, h6, p, ul, ol {
     padding-left: 8px;
+    padding-right: 8px;
 }
 
 a {
