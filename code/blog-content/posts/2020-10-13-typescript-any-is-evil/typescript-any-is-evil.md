@@ -6,16 +6,16 @@ author: "Rick Love"
 excerpt: "In Typescript any is evil"
 ---
 
-tl;dr: In Typescript, the `any` keyword is evil - never use `any`
+tl;dr: In Typescript, never use `any`
 
 
-### `any`
+### `any` is evil
 
 `any` is typescript's rebelious 19 year old who was doing 80 on an icy mountain road, drove off a cliff, bounced down the side of the mountain in a giant fireball, was thrown from the fireball car, landed in a frozen river, and was finally swept out to sea and eaten by sharks.
 
 `any` is the implementation in typescript of the 'this is fine' meme. This gif is perfect:
 
-![](2020-10-13-nothing-to-see-here.gif)
+![](nothing-to-see-here.gif)
 
 * from: https://thoughtbot.com/blog/typescript-stop-using-any-there-s-a-type-for-that
 
@@ -27,7 +27,9 @@ The type flow checker in typescript is your first line of defense against bugs. 
 
 `any` disables all type checking of any code that touches that variable.
 
-That should sound bad. It is.
+That should sound bad. 
+
+It is.
 
 ### What is the right way
 
@@ -101,6 +103,28 @@ export const getKeyWithOptionalArgument = (item?: null | { id?: null | string })
 
 ```
 
+Here is a more complex example:
+
+```ts
+
+export const getKeyFromObject = (
+    obj?: {
+        id?: string;
+        uid?: string;
+        guid?: string;
+        uuid?: string;
+        key?: string;
+    }
+) => {
+    return obj?.id
+        ?? obj?.uid
+        ?? obj?.guid
+        ?? obj?.uuid
+        ?? obj?.key;
+};
+
+```
+
 ##### Side Note: null vs undefined
 
 On the difference between `undefined` and `null`. They should be treated the same logically in your code, but I do sometimes use them to distinguish intent in the code:
@@ -114,11 +138,11 @@ The only place I have seen a logical difference between them is when updating an
 
 Now we are starting to actually use Typescript's power.
 
-A union type is essentially the or `|` operator for types. It's a type that could has multiple posibilities.
+A union type is essentially the or `|` operator for types: i.e. it's a type that could has multiple posibilities.
 
-Typescript handles union types like an expert. It understands all the runtime operations that could limit the type. For example, an if statement can be used to constrain the type to a specific one of the possibilities.
+Typescript handles union types like a pro. It understands all the runtime operations that could limit the type. For example, an `if` statement can be used to constrain the type to a specific possibility.
 
-In the below example, keyOrObject could be a string, number, nullable, or an object with one of many possible id fields.
+In the below example, `keyOrObject` could be a `string`, `number`, `null`/`undefined`, or an object with one of many possible id fields.
 
 ```ts
 
@@ -128,7 +152,7 @@ export const getStringKey = (
         | { uid?: null | string | number }
         | { guid?: null | string | number }
         | { uuid?: null | string | number }
-        | { key?: null | string | number },
+        | { key?: null | string | number }
 ): undefined | string => {
     if (typeof keyOrObject === `string`) { return keyOrObject; }
     if (typeof keyOrObject === `number`) { return `${keyOrObject}`; }
@@ -143,15 +167,16 @@ export const getStringKey = (
     return undefined;
 };
 
-
 ```
 
 And here is the type when you hover over the object after being constrained by one of the if statements:
 
-![](2020-10-13-typescript-union-type-constrained.png)
+![](typescript-union-type-constrained.png)
+
+As you can see, inside the `if` body, the compiler know which specific type the `keyOrObject` must be.
 
 
-Also, often it can be cleaner to combine the object into a single partial object:
+Also, you can combine the union objects into a single partial object which can reduce the branching:
 
 ```ts
 
@@ -164,7 +189,7 @@ export const getStringKey = (
             guid?: null | string | number;
             uuid?: null | string | number;
             key?: null | string | number;
-        },
+        }
 ): undefined | string => {
     if (typeof keyOrObject === `string`) { return keyOrObject; }
     if (typeof keyOrObject === `number`) { return `${keyOrObject}`; }
@@ -174,31 +199,8 @@ export const getStringKey = (
         ?? keyOrObject?.uid
         ?? keyOrObject?.guid
         ?? keyOrObject?.uuid
-        ?? keyOrObject?.key,
+        ?? keyOrObject?.key
     );
-};
-
-// Objects only (more common)
-export const getStringKeyFromObject = (
-    obj?: {
-        id?: null | string | number;
-        uid?: null | string | number;
-        guid?: null | string | number;
-        uuid?: null | string | number;
-        key?: null | string | number;
-    },
-): undefined | string => {
-
-    const value =
-        obj?.id
-        ?? obj?.uid
-        ?? obj?.guid
-        ?? obj?.uuid
-        ?? obj?.key;
-
-    if (typeof value === `string`) { return value; }
-    if (typeof value === `number`) { return `${value}`; }
-    return undefined;
 };
 
 ```
@@ -210,55 +212,32 @@ export const getStringKeyFromObject = (
 `unknown` is safe. If you ask him to hold a baby, he won't drop kick it through a field goal or throw it into a lake.
 
 
-![](2020-10-13-throw-baby.jpg)
+![](throw-baby.jpg)
 
 (Bonus points if you have played Peasant's Quest - Note: the baby turns out ok.)
 
-So when should you use `unknown`? Basically very rarely - in fact it is difficult to come up with a good example where one of the above won't work much better.
+So when should you use `unknown`? Rarely - in fact it is difficult to come up with a good example where one of the above won't work much better.
 
-Probably the best use case is when you are using some untyped external library:
+Here is an example where it just doesn't matter what the type is because it is immedietely converted to json:
 
-
-##### ExternalCarelesslyTypedLibrary.js
 
 ```ts
 
+export async function webRequest(url: string, data: unknown, options?: { method: 'POST' | 'PUT' }) {
 
-export const iDontCare = (callback: any) => {
-    // ...
-};
+    const body = JSON.stringify(data);
+    const reqData = {
+        method: options?.method ?? `POST`,
+        headers: {
+            'Accept': `application/json`,
+            'Content-Type': `application/json`,
+            'Content-Length': `${body.length}`,
+        },
+        body,
+    };
 
-```
-
-##### YourExcellentCode.ts
-
-```ts
-
-// Protect yourself from that which is outside your control
-export const butYouShould = () => {
-
-    // This will show up as an error:
-    // (with 'noImplicitAny' correctly defined in tsconfig - make it so)
-    iDontCare((whatever) => {
-
-    });
-
-    // But, you can mark this as unknown to be protected from the any defined externally
-    iDontCare((whatever: unknown) => {
-
-        if (typeof whatever === `object`) {
-            // Cast it to a partial type to try to extract the desired value
-            const probably = whatever as { value?: string };
-            const { value } = probably;
-
-            // Returns string | undefined
-            return value;
-        }
-
-        return undefined;
-    });
-};
-
+    throw new Error(`Not Implmented`);
+}
 
 ```
 
@@ -274,7 +253,7 @@ Typescript is the most precisely typed languange that exists and it gets more po
 
 Some people have taken that to the level of insane:
 
-![](2020-10-13-sql-typed-string.png)
+![](sql-typed-string.png)
 
 Let me explain what is happening in that screen shot:
 
