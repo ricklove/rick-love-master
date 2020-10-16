@@ -49,12 +49,11 @@ export const ZoomWrapper = (props: { children: ReactNode }) => {
         fontSize: 16,
     } as const;
 
-    const overflow = `auto`;
     return (
         <div className='zoom-wrapper' >
-            <div ref={element} style={{ overflowX: overflow }}>
+            <div ref={element} style={{}}>
                 <div style={{ transform: `scale(${scale})`, transformOrigin: `top left`, width: `calc(100%/${scale})` }} >
-                    <div style={{ marginRight: 10, minHeight: `100vh` }}>
+                    <div style={{ minHeight: `100vh` }}>
                         {props.children}
                     </div>
                 </div>
