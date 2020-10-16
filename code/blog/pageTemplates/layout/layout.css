@@ -94,6 +94,7 @@ html, body, div, pre, code, p, span {
 
 h1, h2, h3, h4, h5, h6, p, ul, ol {
     padding-left: 8px;
+    padding-right: 8px;
 }
 
 a {
@@ -157,6 +158,10 @@ img, canvas, iframe, video, svg, select, textarea {
 
 blockquote {
     border-left: 3px solid #01ff70;
+}
+
+code {
+    color: #01ff70;
 }
 
 /* Make it movey */

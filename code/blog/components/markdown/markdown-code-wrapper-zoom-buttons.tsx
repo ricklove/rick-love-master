@@ -46,7 +46,7 @@ export const CodeWrapper_ZoomButtons = (props: { children: ReactNode, adjustWidt
 
     const overflow = `scroll`;
     return (
-        <div className='code-wrapper' >
+        <div className='code-wrapper' style={{ position: `relative` }} >
             <div style={{ height: 16 }} />
             <div ref={element} style={{ overflowX: overflow }}>
                 <div style={{ transform: `scale(${scale})`, transformOrigin: `top left` }} >
@@ -55,8 +55,8 @@ export const CodeWrapper_ZoomButtons = (props: { children: ReactNode, adjustWidt
                     </div>
                 </div>
             </div>
-            <div style={{ position: `absolute`, top: 4, right: 64, height: 16, width: 16, backgroundColor: `#FF0000` }} onClick={() => zoomScale(`out`)} />
-            <div style={{ position: `absolute`, top: 4, right: 32, height: 16, width: 16, backgroundColor: `#00FF00` }} onClick={() => zoomScale(`in`)} />
+            <div style={{ position: `absolute`, top: 4, right: 64, height: 16, width: 16 }} onClick={() => zoomScale(`out`)} ><span>{`${`➖`}`}</span></div>
+            <div style={{ position: `absolute`, top: 4, right: 32, height: 16, width: 16 }} onClick={() => zoomScale(`in`)} ><span>{`${`➕`}`}</span></div>
         </div >
     );
 };
