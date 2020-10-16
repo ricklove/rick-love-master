@@ -46,21 +46,22 @@ For example, when you define a function, use a minimal definition for the argume
 
 ```ts
 
+// I only care about the id field
 export const getKey = (item: { id: string }) => {
     return item.id;
 };
 
+// Got some junk here
 const complexObject = {
     id: `ABC-012345`,
-    got: () => { },
-    to: `go`,
-    much: true,
-    // Don't ever do this for real
-    stuff: [1, 2, 3, 4, `42`, `false`, `0`, 0, ``, undefined, null, { undefined: true }],
+    got: () => `you`,
+    too: `2` == 2 && 2 == true && `2` !== 2 && 2 !== true,
+    much: () => { while (true) { complexObject.much(); } },
+    stuff: [1, `42`, `false`, null, { undefined: true }],
     here: { latitude: 42, longitude: 42 },
-    // Don't ever do this either
-    maybe: null || undefined && null || 0 && true && `` && undefined == null && 42,
 };
+
+// The complexity of the object doesn't matter
 const key = getKey(complexObject);
 console.log(`Here is the key`, { key, complexObject });
 
@@ -79,34 +80,47 @@ I default to the first. If I discover that many callers would need to convert nu
 ```ts
 
 // Basic optional field
-export const getKeyWithOptionalId = (item: { id?: string }) => {
+export const getKeyWithOptionalId = (
+    item: { id?: string },
+) => {
     // Return type: string | undefined
     return item.id;
 };
 
 // Same as above using Partial Generic Type
-export const getKeyWithPartialType = (item: Partial<{ id: string }>) => {
+export const getKeyWithPartialType = (
+    item: Partial<{ id: string }>,
+) => {
     // Return type: string | undefined
     return item.id;
 };
 
-// Support null or undefined field, but return undefined instead of null
-export const getKeyWithNullableId2 = (item: { id?: null | string }) => {
+// Support null or undefined field
+// but return undefined instead of null
+export const getKeyWithNullableId2 = (
+    item: { id?: null | string },
+) => {
     // Return type: string | undefined
     return item.id ?? undefined;
 };
 
-// Support null or undefined object, but require the caller to provide something
-export const getKeyWithNullableObject = (item: null | undefined | { id?: null | string }) => {
+// Support null or undefined object
+// but require the caller to provide something
+export const getKeyWithNullableObject = (
+    item: null | undefined | { id?: null | string },
+) => {
     // Return type: string | undefined
     return item?.id ?? undefined;
 };
 
 // Support optional parameter
-export const getKeyWithOptionalArgument = (item?: null | { id?: null | string }) => {
+export const getKeyWithOptionalArgument = (
+    item?: null | { id?: null | string },
+) => {
     // Return type: string | undefined
     return item?.id ?? undefined;
 };
+
 
 ```
 
@@ -239,7 +253,11 @@ Here is an example where it just doesn't matter what the type is because it is i
 
 ```ts
 
-export async function webRequest(url: string, data: unknown, options?: { method: 'POST' | 'PUT' }) {
+export async function webRequest(
+    url: string,
+    data: unknown,
+    options?: { method: 'POST' | 'PUT' },
+) {
 
     const body = JSON.stringify(data);
     const reqData = {
