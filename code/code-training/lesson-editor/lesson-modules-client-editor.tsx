@@ -149,6 +149,7 @@ export const LessonModulesClientEditor = (props: {}) => {
                 )}
                 {activeModule && mode === `play` && (
                     <>
+                        <View style={{ borderStyle: `solid`, borderBottomWidth: 4, borderBottomColor: `#FFFFFF` }} />
                         <LessonModulePlayer key={activeModule.key} module={activeModule} setProjectState={setProjectState} />
                     </>
                 )}

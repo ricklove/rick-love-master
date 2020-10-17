@@ -11,13 +11,63 @@ const styles = {
         margin: 8,
         fontSize: 18,
         color: `#FFFF88`,
+        whiteSpace: `pre-wrap`,
+    },
+    sectionHeader2Text: {
+        margin: 8,
+        fontSize: 16,
+        color: `#FFFF88`,
+        whiteSpace: `pre-wrap`,
     },
     infoText: {
         margin: 8,
         fontSize: 12,
         whiteSpace: `pre-wrap`,
     },
+    buttonView: {
+        margin: 8,
+        padding: 4,
+        border: `solid 1px #888888`,
+    },
+    buttonText: {
+        color: `#88FF88`,
+    },
 } as const;
+export const LessonView_PreviewResult = ({ data, onDone, setProjectState }: { data: LessonData, onDone?: () => void, setProjectState: (projectState: LessonProjectState) => Promise<void> }) => {
+
+    const [isDone, setIsDone] = useState(false);
+
+    return (
+        <>
+            <Text style={styles.sectionHeaderText}>{`${data.title} - Preview the Result ${isDone ? `✅` : `🔳`}`}</Text>
+            <View style={{ flexDirection: `row`, alignItems: `center` }}>
+                <Text style={styles.infoText}>{`${`🔎`} Preview the result below`}</Text>
+                <View style={{ flex: 1 }} />
+                {onDone && (
+                    <TouchableOpacity onPress={() => onDone?.()}>
+                        <View style={styles.buttonView}>
+                            <Text style={styles.buttonText}>Done</Text>
+                        </View>
+                    </TouchableOpacity>
+                )}
+            </View>
+            <Text style={styles.sectionHeader2Text}>Preview</Text>
+            <LessonProjectStatePreview projectState={data.projectState} setProjectState={setProjectState} />
+            <Text style={styles.sectionHeader2Text}>Code</Text>
+            <LessonProjectFilesEditor
+                projectData={{
+                    projectState: data.projectState,
+                    focus: data.focus,
+                }}
+                fileEditorMode_focus='display'
+                fileEditorMode_noFocus='display'
+                projectEditorMode='display'
+                onTaskDone={() => { setIsDone(true); onDone?.(); }}
+                lessonData={data}
+            />
+        </>
+    );
+};
 
 export const LessonView_ConstructCode = ({ data, onDone }: { data: LessonData, onDone?: () => void }) => {
 
@@ -74,10 +124,15 @@ const experimentStyles = {
     },
     experimentView: {
         padding: 16,
+        justifyContent: `flex-start`,
+    },
+    experimentItemRow: {
+        flexDirection: `row`,
+        alignItems: `center`,
     },
     experimentItemView: {
         padding: 4,
-        border: `solid 1px #888888`,
+        // border: `solid 1px #888888`,
         // borderLeft: `solid 4px #EEEEEE`,
     },
     experimentItemView_active: {
@@ -87,6 +142,7 @@ const experimentStyles = {
     },
     experimentItemText: {
         color: `#FFFF88`,
+        whiteSpace: `pre-wrap`,
     },
 } as const;
 export const LessonView_ExperimentCode = ({ data, onDone, setProjectState }: { data: LessonData, onDone?: () => void, setProjectState: (projectState: LessonProjectState) => Promise<void> }) => {
@@ -125,21 +181,36 @@ export const LessonView_ExperimentCode = ({ data, onDone, setProjectState }: { d
             <Text style={experimentStyles.instructionsText}>Select an experiment below and view the result</Text>
             <View style={experimentStyles.experimentView}>
                 <TouchableOpacity onPress={() => changeExperiment(null)}>
-                    <View style={activeExperiment === null ? experimentStyles.experimentItemView_active : experimentStyles.experimentItemView}>
-                        <Text style={experimentStyles.experimentItemText}>Reset</Text>
+                    <View style={experimentStyles.experimentItemRow}>
+                        <View style={styles.buttonView}>
+                            <Text style={styles.buttonText}>View</Text>
+                        </View>
+                        <View style={activeExperiment === null ? experimentStyles.experimentItemView_active : experimentStyles.experimentItemView}>
+                            <Text style={experimentStyles.experimentItemText}>Completed Code</Text>
+                        </View>
                     </View>
                 </TouchableOpacity>
                 {data.experiments.map((x, i) => (
                     <TouchableOpacity key={`${i}`} onPress={() => changeExperiment(x)}>
-                        <View style={x === activeExperiment ? experimentStyles.experimentItemView_active : experimentStyles.experimentItemView}>
-                            <Text style={experimentStyles.experimentItemText}>{`🔬 ${x.comment ?? `Experiment ${i}`}`}</Text>
+                        <View style={experimentStyles.experimentItemRow}>
+                            <View style={styles.buttonView}>
+                                <Text style={styles.buttonText}>View</Text>
+                            </View>
+                            <View style={x === activeExperiment ? experimentStyles.experimentItemView_active : experimentStyles.experimentItemView}>
+                                <Text style={experimentStyles.experimentItemText}>{`🔬 ${x.comment ?? `Experiment ${i}`}`}</Text>
+                            </View>
                         </View>
                     </TouchableOpacity>
                 ))}
                 {onDone && (
                     <TouchableOpacity onPress={() => onDone?.()}>
-                        <View style={experimentStyles.experimentItemView}>
-                            <Text style={experimentStyles.experimentItemText}>Done</Text>
+                        <View style={experimentStyles.experimentItemRow}>
+                            <View style={styles.buttonView}>
+                                <Text style={styles.buttonText}>Done</Text>
+                            </View>
+                            <View style={experimentStyles.experimentItemView}>
+                                <Text style={experimentStyles.experimentItemText}>▶ Go to next step</Text>
+                            </View>
                         </View>
                     </TouchableOpacity>
                 )}
