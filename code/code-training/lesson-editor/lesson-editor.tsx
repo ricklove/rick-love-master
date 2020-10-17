@@ -310,7 +310,7 @@ const LessonField_Experiment = ({
         if (!data.projectState) { return; }
         // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
         setModifiedProjectState(s => ({ ...data.projectState!, key: s.key + 1 }));
-        onChange(lessonExperiments_calculateProjectStateReplacements(lessonData.projectState, data.projectState));
+        onChange({ ...lessonExperiments_calculateProjectStateReplacements(lessonData.projectState, data.projectState), comment: commentText });
     };
 
     return (

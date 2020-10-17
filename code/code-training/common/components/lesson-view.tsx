@@ -227,7 +227,7 @@ export const LessonView_ExperimentCode = ({ data, onDone, setProjectState }: { d
                 onTaskDone={() => { }}
                 lessonData={data}
             />
-            {activeExperiment && activeExperiment.replacements.map(x => (
+            {/* {activeExperiment && activeExperiment.replacements.map(x => (
                 <View key={x.selection.filePath + x.selection.index} >
                     <View style={{ flexDirection: `row` }}>
                         <Text style={{ minWidth: 80 }}>File</Text>
@@ -242,7 +242,7 @@ export const LessonView_ExperimentCode = ({ data, onDone, setProjectState }: { d
                         <Text style={{ marginLeft: 4, background: `#111111`, color: `#8888FF` }}>{`${x.content}`}</Text>
                     </View>
                 </View>
-            ))}
+            ))} */}
             <LessonProjectStatePreview projectState={modifiedProjectState} setProjectState={setProjectState} />
         </>
     );

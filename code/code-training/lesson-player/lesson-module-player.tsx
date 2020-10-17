@@ -209,7 +209,7 @@ export const LessonModuleNavigator = (props: { items: NavigatorItem[], activeIte
             <>
                 <TouchableOpacity onPress={() => setIsExpanded(() => true)}>
                     <View style={navigatorStyles.itemView_selected}>
-                        <Text style={navigatorStyles.itemText_selected}>{activeItem.label}</Text>
+                        <Text style={navigatorStyles.itemText_selected}>{`${`➡ `}${activeItem.label}`}</Text>
                     </View>
                 </TouchableOpacity>
             </>
@@ -222,7 +222,7 @@ export const LessonModuleNavigator = (props: { items: NavigatorItem[], activeIte
                 {items.map(x => (
                     <TouchableOpacity key={x.key} onPress={() => { setIsExpanded(false); if (x.key === activeItem?.key) { return; } changeItem(x); }}>
                         <View style={x.key === activeItem?.key ? navigatorStyles.itemView_selected : navigatorStyles.itemView}>
-                            <Text style={x.key === activeItem?.key ? navigatorStyles.itemText_selected : navigatorStyles.itemText}>{x.label}</Text>
+                            <Text style={x.key === activeItem?.key ? navigatorStyles.itemText_selected : navigatorStyles.itemText}>{`${x.key === activeItem?.key ? `➡ ` : ``}${x.label}`}</Text>
                         </View>
                     </TouchableOpacity>
                 ))}

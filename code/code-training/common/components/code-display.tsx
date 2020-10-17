@@ -22,10 +22,12 @@ export const CodeDisplay = ({ codeParts, language, inputOptions }: {
 
     const Cursor = useMemo(() => <CursorComponent isActive={inputOptions?.isActive ?? false} />, [inputOptions?.isActive]);
 
+    console.log(`CodeDisplay`, { inputOptions, codeParts });
     return (
         <View>
             <pre style={{ margin: 0, paddingBottom: inputOptions ? 100 : 0 }} className={`language-${language}`}>
                 <code className={`language-${language}`}>
+                    <CodeSpan key='-1' code={{ code: `\n`, index: -1, indexAfterEnd: 0, length: 1, classes: [], isInSelection: false }} Cursor={Cursor} inputOptions={inputOptions ?? {}} />
                     {codeParts.map(x => (
                         <CodeSpan key={`${x.code}:${x.index}:${x.code.length}`} code={x} Cursor={Cursor} inputOptions={inputOptions ?? {}} />
                     ))}
@@ -38,15 +40,15 @@ export const CodeDisplay = ({ codeParts, language, inputOptions }: {
 const CodeSpan = ({ code, Cursor, inputOptions }: { code: CodeDisplayPart, Cursor: JSX.Element, inputOptions: CodeDisplayInputOptions }) => {
     const { cursorIndex, activeIndex = inputOptions.cursorIndex, promptIndex } = inputOptions;
 
-    const hasCursor = !!(cursorIndex
+    const hasCursor = !!(cursorIndex != null
         && cursorIndex >= code.index
         && cursorIndex < code.index + code.code.length
     );
-    const hasActive = !!(activeIndex
+    const hasActive = !!(activeIndex != null
         && activeIndex >= code.index
         && activeIndex < code.index + code.code.length
     );
-    const hasPrompt = !!(promptIndex
+    const hasPrompt = !!(promptIndex != null
         && promptIndex >= code.index
         && promptIndex < code.index + code.code.length
     );
@@ -94,7 +96,7 @@ const CursorComponent = ({ isActive }: { isActive: boolean }) => {
 
 const autoCompleteStyles = {
     wrapper: { display: `inline-block`, position: `relative`, top: 4, width: 0 },
-    inner: { display: `block`, position: `absolute`, background: `#000000`, border: `solid 1 #CCCCFF` },
+    inner: { display: `block`, position: `absolute`, zIndex: 100, background: `#000000`, border: `solid 1 #CCCCFF` },
     item: { display: `block`, padding: 4, color: `#FFFFFF` },
     item_selected: { display: `block`, padding: 4, color: `#CCCCFF`, background: `#111133`, minWidth: 60 },
     textCompleted: { color: `#CCCCFF`, opacity: 0.5 },
