@@ -33,7 +33,7 @@ export const lessonExperiments_calculateProjectStateReplacements = (projectState
             change: c,
         })))
         .map(x => ({
-            _change: x.change,
+            // _change: x.change,
             selection: { filePath: x.filePath, index: x.change.a.change.start, length: x.change.a.change.length },
             content: (x.change.b?.change.length ?? 0) === 0 ? `` : x.change.b?.change.toText() ?? ``,
         }));

@@ -1,3 +1,4 @@
+import { distinct_key } from 'utils/arrays';
 import { StringSpan } from 'utils/string-span';
 import { IDiffComputerOpts, DiffComputer, ILineChange } from 'vscode-diff';
 
@@ -127,63 +128,65 @@ export const diff = (a: string, b: string) => {
 
     console.log(`diff`, { charChanges, lineChanges, aSpan, bSpan });
 
-    return {
-        changes: charChanges
-            .map(x => {
-                if (x.originalStartColumn === 0 && x.originalEndColumn === 0
-                    || x.modifiedStartColumn === 0 && x.modifiedEndColumn === 0) {
-                    // Whole Line
-                    return {
-                        ...x,
-                        a: getSpanRange({
-                            span: aSpan,
-                            lineSpans: aLineSpans,
-                            startLine: x.line.originalStartLineNumber,
-                            endLine: x.line.originalEndLineNumber,
-                            startColumn: undefined,
-                            endColumn: undefined,
-                            otherAtStart: x.modifiedStartLineNumber <= 1 && (x.modifiedStartColumn ?? 1) === 1,
-                            otherAtEnd: x.modifiedStartLineNumber >= bLineSpans.length,
-                        }),
-                        b: getSpanRange({
-                            span: bSpan,
-                            lineSpans: bLineSpans,
-                            startLine: x.line.modifiedStartLineNumber,
-                            endLine: x.line.modifiedEndLineNumber,
-                            startColumn: undefined,
-                            endColumn: undefined,
-                            otherAtStart: x.originalStartLineNumber <= 1 && (x.originalStartColumn ?? 1) === 1,
-                            otherAtEnd: x.originalStartLineNumber >= aLineSpans.length,
-                        }),
-                    };
-                }
-
-                const aSpanRange = getSpanRange({
-                    span: aSpan,
-                    lineSpans: aLineSpans,
-                    startLine: x.originalStartLineNumber,
-                    endLine: x.originalEndLineNumber,
-                    startColumn: x.originalStartColumn,
-                    endColumn: x.originalEndColumn,
-                    otherAtStart: x.modifiedStartLineNumber <= 1 && (x.modifiedStartColumn ?? 1) === 1,
-                    otherAtEnd: x.modifiedStartLineNumber >= bLineSpans.length,
-                });
-                const bSpanRange = getSpanRange({
-                    span: bSpan,
-                    lineSpans: bLineSpans,
-                    startLine: x.modifiedStartLineNumber,
-                    endLine: x.modifiedEndLineNumber,
-                    startColumn: x.modifiedStartColumn,
-                    endColumn: x.modifiedEndColumn,
-                    otherAtStart: x.originalStartLineNumber <= 1 && (x.originalStartColumn ?? 1) === 1,
-                    otherAtEnd: x.originalStartLineNumber >= aLineSpans.length,
-                });
-
+    const changes = charChanges
+        .map(x => {
+            if (x.originalStartColumn === 0 && x.originalEndColumn === 0
+                || x.modifiedStartColumn === 0 && x.modifiedEndColumn === 0) {
+                // Whole Line
                 return {
                     ...x,
-                    a: aSpanRange,
-                    b: bSpanRange,
+                    a: getSpanRange({
+                        span: aSpan,
+                        lineSpans: aLineSpans,
+                        startLine: x.line.originalStartLineNumber,
+                        endLine: x.line.originalEndLineNumber,
+                        startColumn: undefined,
+                        endColumn: undefined,
+                        otherAtStart: x.modifiedStartLineNumber <= 1 && (x.modifiedStartColumn ?? 1) === 1,
+                        otherAtEnd: x.modifiedStartLineNumber >= bLineSpans.length,
+                    }),
+                    b: getSpanRange({
+                        span: bSpan,
+                        lineSpans: bLineSpans,
+                        startLine: x.line.modifiedStartLineNumber,
+                        endLine: x.line.modifiedEndLineNumber,
+                        startColumn: undefined,
+                        endColumn: undefined,
+                        otherAtStart: x.originalStartLineNumber <= 1 && (x.originalStartColumn ?? 1) === 1,
+                        otherAtEnd: x.originalStartLineNumber >= aLineSpans.length,
+                    }),
                 };
-            }),
+            }
+
+            const aSpanRange = getSpanRange({
+                span: aSpan,
+                lineSpans: aLineSpans,
+                startLine: x.originalStartLineNumber,
+                endLine: x.originalEndLineNumber,
+                startColumn: x.originalStartColumn,
+                endColumn: x.originalEndColumn,
+                otherAtStart: x.modifiedStartLineNumber <= 1 && (x.modifiedStartColumn ?? 1) === 1,
+                otherAtEnd: x.modifiedStartLineNumber >= bLineSpans.length,
+            });
+            const bSpanRange = getSpanRange({
+                span: bSpan,
+                lineSpans: bLineSpans,
+                startLine: x.modifiedStartLineNumber,
+                endLine: x.modifiedEndLineNumber,
+                startColumn: x.modifiedStartColumn,
+                endColumn: x.modifiedEndColumn,
+                otherAtStart: x.originalStartLineNumber <= 1 && (x.originalStartColumn ?? 1) === 1,
+                otherAtEnd: x.originalStartLineNumber >= aLineSpans.length,
+            });
+
+            return {
+                ...x,
+                a: aSpanRange,
+                b: bSpanRange,
+            };
+        });
+
+    return {
+        changes: distinct_key(changes, x => `${x.a.change.start}:${x.a.change.length}=>${x.b.change.start}:${x.b.change.length}`),
     };
 };
