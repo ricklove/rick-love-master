@@ -148,7 +148,7 @@ export type CodeDisplayFeedback = {
     emoji: string;
     timestamp: number;
     isNegative?: boolean;
-    timeout?: number;
+    timeoutMs?: number;
 };
 export type CodeDisplayPrompt = {
     message: string;
@@ -166,7 +166,7 @@ const PromptComponent = ({ inputOptions }: { inputOptions: CodeDisplayInputOptio
 
         const id = setTimeout(() => {
             setHideFeedback(true);
-        }, feedback?.timeout ?? 3000);
+        }, feedback?.timeoutMs ?? 3000);
 
         return () => {
             clearTimeout(id);

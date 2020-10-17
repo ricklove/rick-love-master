@@ -35,18 +35,21 @@ export const LessonFileContentEditor_ConstructCode = ({ code, language, selectio
 
     useEffect(() => {
         const timeoutId = setTimeout(() => {
+            const nextLetter = codeParts?.codeFocus.substr(inputText.length).trim()[0];
+            if (!nextLetter) { return; }
+
             setFeedback(s => ({
-                message: `⬇ Type Here`,
+                message: `⬇ Type: ${nextLetter}`,
                 emoji: `😀`,
                 timestamp: Date.now(),
-                timeout: 15 * 1000,
+                timeoutMs: 5 * 1000,
             }));
-        }, 3000);
+        }, 5000);
 
         return () => {
             clearTimeout(timeoutId);
         };
-    }, [code]);
+    }, [codeParts, inputText]);
 
     const onKeyDown = (e: React.KeyboardEvent<HTMLInputElement | HTMLTextAreaElement>) => {
         const TABKEY = 9;
