@@ -147,18 +147,18 @@ const experimentStyles = {
 } as const;
 export const LessonView_ExperimentCode = ({ data, onDone, setProjectState }: { data: LessonData, onDone?: () => void, setProjectState: (projectState: LessonProjectState) => Promise<void> }) => {
 
-    const [modifiedProjectState, setModifiedProjectState] = useState({ ...data.projectState, key: 0 });
+    const [modifiedProjectState, setModifiedProjectState] = useState(data.projectState);
     const [activeExperiment, setActiveExperiment] = useState(null as null | LessonExperiment);
     const [activeFocus, setActiveFocus] = useState(data.focus);
 
     const changeExperiment = (value: null | LessonExperiment) => {
         setActiveExperiment(value);
         if (!value) {
-            setModifiedProjectState({ ...data.projectState, key: 0 });
+            setModifiedProjectState(data.projectState);
             setActiveFocus(data.focus);
             return;
         }
-        setModifiedProjectState(s => ({ ...lessonExperiments_createReplacementProjectState(data.projectState, value.replacements), key: s.key + 1 }));
+        setModifiedProjectState(s => (lessonExperiments_createReplacementProjectState(data.projectState, value.replacements)));
 
         // Focus on change area:
         const focusReplacements = value.replacements.filter(x => x.selection.filePath === data.focus.filePath);

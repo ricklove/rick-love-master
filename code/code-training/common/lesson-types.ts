@@ -39,6 +39,7 @@ export type LessonExperiment = {
     /** Multiple replacements may be required to implement an experiment. */
     replacements: LessonExperimentReplacement[];
     comment?: string;
+    filesHashCode: string;
 }
 export type LessonExperimentReplacement = {
     selection: LessonProjectFileSelection;

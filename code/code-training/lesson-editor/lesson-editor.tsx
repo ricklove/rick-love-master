@@ -6,6 +6,7 @@ import { LessonData, LessonExperiment, LessonProjectFileSelection, LessonProject
 import { lessonExperiments_createReplacementProjectState, lessonExperiments_calculateProjectStateReplacements } from '../common/replacements';
 import { LessonView_ConstructCode, LessonView_ExperimentCode, LessonView_UnderstandCode } from '../common/components/lesson-view';
 import { LessonProjectStatePreview, LessonRenderView } from '../common/components/lesson-render-view';
+import { calculateFilesHash } from '../common/lesson-hash';
 
 const styles = {
     container: {
@@ -271,7 +272,7 @@ const LessonField_Experiments = ({ label, value, onChange, lessonData }: {
                     onChange={v => onChange(value.map((y, j) => i === j ? v : y))}
                     onDelete={() => { value.splice(i, 1); onChange(value); }} lessonData={lessonData} />
             ))}
-            <TouchableOpacity onPress={() => { value.push({ replacements: [], comment: `` }); onChange(value); }}>
+            <TouchableOpacity onPress={() => { value.push({ replacements: [], comment: ``, filesHashCode: `` }); onChange(value); }}>
                 <View style={styles.buttonView}>
                     <Text style={styles.buttonText}>{`${`➕`} Add Experiment`}</Text>
                 </View>
@@ -310,7 +311,7 @@ const LessonField_Experiment = ({
         if (!data.projectState) { return; }
         // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
         setModifiedProjectState(data.projectState!);
-        onChange({ ...lessonExperiments_calculateProjectStateReplacements(lessonData.projectState, data.projectState), comment: commentText });
+        onChange({ ...lessonExperiments_calculateProjectStateReplacements(lessonData.projectState, data.projectState), comment: commentText, filesHashCode: calculateFilesHash(lessonData.projectState.files) });
     };
 
     return (

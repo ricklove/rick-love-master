@@ -2,6 +2,8 @@ import { ApiError } from 'utils/error';
 import { deleteFile, getFileInfo, getFiles, getPathNormalized, readFileAsJson, writeFile } from 'utils/files';
 import { LessonModule } from '../../common/lesson-types';
 import { LessonModuleMeta, LessonServerApi } from '../lesson-api-types';
+import { lessonExperiments_createReplacementProjectState } from '../../common/replacements';
+import { calculateFilesHash } from '../../common/lesson-hash';
 
 
 // File Formats
@@ -17,6 +19,17 @@ export const createLessonApiServer_localFileServer = ({
     projectStateRootPath: string;
 }): LessonServerApi => {
 
+    const normalizeFileHashes = (lesson: LessonModule) => {
+        // Normalize projectState hashes
+        lesson.lessons.forEach(l => { l.projectState.key = calculateFilesHash(l.projectState.files); });
+        lesson.lessons.forEach(l => {
+            l.experiments.forEach(e => {
+                const pState = lessonExperiments_createReplacementProjectState(l.projectState, e.replacements);
+                e.filesHashCode = pState.key;
+            });
+        });
+    };
+
     const server: LessonServerApi = {
         getLessonModules: async (data) => {
             const files = await getFiles(lessonModuleFileRootPath, x => x.endsWith(`.code-lesson.meta.json`));
@@ -31,17 +44,22 @@ export const createLessonApiServer_localFileServer = ({
             }
 
             const lesson = await readFileAsJson<LessonModuleFile>(filePath);
+            normalizeFileHashes(lesson);
+
             return { data: lesson };
         },
         setLessonModule: async (data) => {
-            const fileHistoryPath = getPathNormalized(lessonModuleFileRootPath, `history/${data.value.key}/${Date.now()}.code-lesson.history.json`);
-            const filePath = getPathNormalized(lessonModuleFileRootPath, `${data.value.key}.code-lesson.json`);
-            const metaPath = getPathNormalized(lessonModuleFileRootPath, `${data.value.key}.code-lesson.meta.json`);
+            const lesson = data.value;
+            normalizeFileHashes(lesson);
 
-            const fileContents: LessonModuleFile = data.value;
+            const fileHistoryPath = getPathNormalized(lessonModuleFileRootPath, `history/${lesson.key}/${Date.now()}.code-lesson.history.json`);
+            const filePath = getPathNormalized(lessonModuleFileRootPath, `${lesson.key}.code-lesson.json`);
+            const metaPath = getPathNormalized(lessonModuleFileRootPath, `${lesson.key}.code-lesson.meta.json`);
+
+            const fileContents: LessonModuleFile = lesson;
             const metaContents: LessonModuleMetaFile = {
-                key: data.value.key,
-                title: data.value.title,
+                key: lesson.key,
+                title: lesson.title,
             };
 
             await writeFile(fileHistoryPath, JSON.stringify(fileContents), { overwrite: true });
