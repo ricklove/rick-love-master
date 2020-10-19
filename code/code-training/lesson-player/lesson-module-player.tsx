@@ -2,7 +2,7 @@
 import React, { useEffect, useState } from 'react';
 import { View, Text, TextInput, TouchableOpacity } from 'react-native-lite';
 import { LessonProjectFilesEditor, LessonProjectEditorMode, LessonFileEditorMode } from '../common/components/lesson-file-editor';
-import { LessonData, LessonExperiment, LessonModule, LessonProjectFileSelection, LessonProjectState, LessonStep_ConstructCode, LessonStep_UnderstandCode } from '../common/lesson-types';
+import { LessonData, LessonExperiment, LessonModule, LessonProjectFileSelection, LessonProjectState, LessonStep_ConstructCode, LessonStep_UnderstandCode, SetProjectState } from '../common/lesson-types';
 import { lessonExperiments_createReplacementProjectState, lessonExperiments_calculateProjectStateReplacements } from '../common/replacements';
 import { LessonView_ConstructCode, LessonView_ExperimentCode, LessonView_PreviewResult, LessonView_UnderstandCode } from '../common/components/lesson-view';
 import { LessonProjectStatePreview, LessonRenderView } from '../common/components/lesson-render-view';
@@ -95,7 +95,7 @@ const getLessonNavigatorItems = (module: LessonModule) => {
 };
 type NavigatorItem = ReturnType<typeof getLessonNavigatorItems>[0];
 
-export const LessonModulePlayer = (props: { module: LessonModule, setProjectState: (projectState: LessonProjectState) => Promise<void> }) => {
+export const LessonModulePlayer = (props: { module: LessonModule, setProjectState: SetProjectState }) => {
     const [items, setItems] = useState(getLessonNavigatorItems(props.module));
     const [activeItem, setActiveItem] = useState(null as null | NavigatorItem);
 

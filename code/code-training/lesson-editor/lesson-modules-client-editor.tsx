@@ -8,7 +8,7 @@ import { LessonModulePlayer } from '../lesson-player/lesson-module-player';
 import { LessonModuleMeta } from '../lesson-server/lesson-api-types';
 import { createLessonApiClient } from '../lesson-server/client/lesson-api-client';
 import { TabsComponent, TabsListEditorComponent } from '../common/components/tabs';
-import { LessonData, LessonModule, LessonProjectState } from '../common/lesson-types';
+import { LessonData, LessonModule, LessonProjectState, SetProjectState } from '../common/lesson-types';
 import { createDefaultLesson, createDefaultLessonModule } from './lesson-defaults';
 import { LessonEditor } from './lesson-editor';
 import { LessonModuleEditor } from './lesson-module-editor';
@@ -100,8 +100,9 @@ export const LessonModulesClientEditor = (props: {}) => {
             await reloadModules(stopIfObsolete);
         });
     };
-    const setProjectState = async (projectState: LessonProjectState) => {
+    const setProjectState: SetProjectState = async (projectState: LessonProjectState) => {
         await apiClient.setProjectState({ projectState });
+        return { iFrameUrl: `http://localhost:3043/?filesHashCode=${projectState.filesHashCode}` };
     };
 
     return (

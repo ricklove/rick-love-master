@@ -72,3 +72,5 @@ export type LessonStep_ConstructCode = {
 export type LessonStep_UnderstandCode = {
     lessonData: LessonData;
 };
+
+export type SetProjectState = (projectState: LessonProjectState) => Promise<{ iFrameUrl: string }>;

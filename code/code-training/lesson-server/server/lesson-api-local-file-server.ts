@@ -21,9 +21,13 @@ export const createLessonApiServer_localFileServer = ({
 
     const normalizeFileHashes = (lesson: LessonModule) => {
         // Normalize projectState hashes
-        lesson.lessons.forEach(l => { l.projectState.filesHashCode = calculateFilesHashCode(l.projectState.files); });
+        lesson.lessons.forEach(l => {
+            if (l.projectState.filesHashCode) { return; }
+            l.projectState.filesHashCode = calculateFilesHashCode(l.projectState.files);
+        });
         lesson.lessons.forEach(l => {
             l.experiments.forEach(e => {
+                if (e.filesHashCode) { return; }
                 const pState = lessonExperiments_createReplacementProjectState(l.projectState, e.replacements);
                 e.filesHashCode = pState.filesHashCode;
             });
@@ -84,8 +88,10 @@ export const createLessonApiServer_localFileServer = ({
             // await deleteFile(filePath);
             // await deleteFile(metaPath);
 
+            const projectStatePath = getPathNormalized(projectStateRootPath, data.projectState.filesHashCode);
+
             await Promise.all(data.projectState.files.map(async x => {
-                await writeFile(getPathNormalized(projectStateRootPath, `${x.path}`), x.content, { overwrite: true });
+                await writeFile(getPathNormalized(projectStatePath, `${x.path}`), x.content, { overwrite: true });
             }));
 
             return { data: {} };

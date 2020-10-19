@@ -1,7 +1,7 @@
 /* eslint-disable react/no-array-index-key */
 import React, { useEffect, useState } from 'react';
 import { Text, TouchableOpacity, View } from 'react-native-lite';
-import { LessonData, LessonExperiment, LessonProjectState } from '../lesson-types';
+import { LessonData, LessonExperiment, LessonProjectState, SetProjectState } from '../lesson-types';
 import { lessonExperiments_createReplacementProjectState } from '../replacements';
 import { LessonProjectFilesEditor } from './lesson-file-editor';
 import { LessonProjectStatePreview } from './lesson-render-view';
@@ -33,7 +33,7 @@ const styles = {
         color: `#88FF88`,
     },
 } as const;
-export const LessonView_PreviewResult = ({ data, onDone, setProjectState }: { data: LessonData, onDone?: () => void, setProjectState: (projectState: LessonProjectState) => Promise<void> }) => {
+export const LessonView_PreviewResult = ({ data, onDone, setProjectState }: { data: LessonData, onDone?: () => void, setProjectState: SetProjectState }) => {
 
     const [isDone, setIsDone] = useState(false);
 
@@ -145,7 +145,7 @@ const experimentStyles = {
         whiteSpace: `pre-wrap`,
     },
 } as const;
-export const LessonView_ExperimentCode = ({ data, onDone, setProjectState }: { data: LessonData, onDone?: () => void, setProjectState: (projectState: LessonProjectState) => Promise<void> }) => {
+export const LessonView_ExperimentCode = ({ data, onDone, setProjectState }: { data: LessonData, onDone?: () => void, setProjectState: SetProjectState }) => {
 
     const [modifiedProjectState, setModifiedProjectState] = useState(data.projectState);
     const [activeExperiment, setActiveExperiment] = useState(null as null | LessonExperiment);

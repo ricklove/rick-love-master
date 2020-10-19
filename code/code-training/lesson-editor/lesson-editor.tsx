@@ -2,7 +2,7 @@
 import React, { useEffect, useState } from 'react';
 import { View, Text, TextInput, TouchableOpacity } from 'react-native-lite';
 import { LessonProjectFilesEditor, LessonProjectEditorMode, LessonFileEditorMode } from '../common/components/lesson-file-editor';
-import { LessonData, LessonExperiment, LessonProjectFileSelection, LessonProjectState, LessonStep_ConstructCode, LessonStep_UnderstandCode } from '../common/lesson-types';
+import { LessonData, LessonExperiment, LessonProjectFileSelection, LessonProjectState, LessonStep_ConstructCode, LessonStep_UnderstandCode, SetProjectState } from '../common/lesson-types';
 import { lessonExperiments_createReplacementProjectState, lessonExperiments_calculateProjectStateReplacements } from '../common/replacements';
 import { LessonView_ConstructCode, LessonView_ExperimentCode, LessonView_UnderstandCode } from '../common/components/lesson-view';
 import { LessonProjectStatePreview, LessonRenderView } from '../common/components/lesson-render-view';
@@ -104,7 +104,7 @@ const createLessonState = (lesson: LessonData, lessonJson?: string) => {
     };
 };
 
-export const LessonEditor = (props: { value: LessonData, onChange: (value: LessonData) => void, setProjectState: (projectState: LessonProjectState) => Promise<void> }) => {
+export const LessonEditor = (props: { value: LessonData, onChange: (value: LessonData) => void, setProjectState: SetProjectState }) => {
 
     const [data, setData] = useState(createLessonState(props.value));
     type EditorMode = 'edit' | 'json' | 'construct-code' | 'understand-code' | 'experiment-code' | 'preview';
@@ -272,7 +272,7 @@ const LessonField_Experiments = ({ label, value, onChange, lessonData }: {
                     onChange={v => onChange(value.map((y, j) => i === j ? v : y))}
                     onDelete={() => { value.splice(i, 1); onChange(value); }} lessonData={lessonData} />
             ))}
-            <TouchableOpacity onPress={() => { value.push({ replacements: [], comment: ``, filesHashCode: `` }); onChange(value); }}>
+            <TouchableOpacity onPress={() => { value.push({ replacements: [], comment: ``, filesHashCode: calculateFilesHashCode([]) }); onChange(value); }}>
                 <View style={styles.buttonView}>
                     <Text style={styles.buttonText}>{`${`➕`} Add Experiment`}</Text>
                 </View>

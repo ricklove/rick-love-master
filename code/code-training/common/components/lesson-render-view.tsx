@@ -1,7 +1,7 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Loading } from 'controls-react/loading';
 import { useAutoLoadingError } from 'utils-react/hooks';
-import { LessonProjectState } from '../lesson-types';
+import { LessonProjectState, SetProjectState } from '../lesson-types';
 
 const styles = {
     container: {
@@ -10,22 +10,24 @@ const styles = {
     },
 } as const;
 
-export const LessonRenderView = (props: {}) => {
+export const LessonRenderView = (props: { iFrameUrl: string }) => {
 
     return (
         <>
             <div style={styles.container}>
-                <iframe src='http://localhost:3043/' title='Preview' />
+                <iframe src={props.iFrameUrl} title='Preview' />
             </div>
         </>
     );
 };
 
-export const LessonProjectStatePreview = ({ projectState, setProjectState }: { projectState: LessonProjectState, setProjectState: (projectState: LessonProjectState) => Promise<void> }) => {
+export const LessonProjectStatePreview = ({ projectState, setProjectState }: { projectState: LessonProjectState, setProjectState: SetProjectState }) => {
     const { loading, error, doWork } = useAutoLoadingError();
+    const [iFrameUrl, setIFrameUrl] = useState(null as null | string);
     useEffect(() => {
         doWork(async (stopIfObsolete) => {
-            await setProjectState(projectState);
+            const r = await setProjectState(projectState);
+            setIFrameUrl(r.iFrameUrl);
         });
     }, [
         projectState,
@@ -33,8 +35,8 @@ export const LessonProjectStatePreview = ({ projectState, setProjectState }: { p
     return (
         <>
             <Loading loading={loading} />
-            {!loading && (
-                <LessonRenderView />
+            {!loading && iFrameUrl && (
+                <LessonRenderView iFrameUrl={iFrameUrl} />
             )}
         </>
     );

@@ -1,10 +1,10 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import { App } from './project/app';
+import { AppLoader } from './app-loader';
 
 ReactDOM.render(
   <React.StrictMode>
-    <App />
+    <AppLoader />
   </React.StrictMode>,
   document.getElementById('app')
 );

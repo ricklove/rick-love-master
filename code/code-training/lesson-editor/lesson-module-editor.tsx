@@ -2,7 +2,7 @@
 import React, { useState } from 'react';
 import { TouchableOpacity, View, Text, TextInput } from 'react-native-lite';
 import { TabsComponent, TabsListEditorComponent } from '../common/components/tabs';
-import { LessonData, LessonModule, LessonProjectState } from '../common/lesson-types';
+import { LessonData, LessonModule, LessonProjectState, SetProjectState } from '../common/lesson-types';
 import { cloneLesson, createDefaultLesson, createDefaultLessonModule } from './lesson-defaults';
 import { LessonEditor } from './lesson-editor';
 
@@ -28,7 +28,7 @@ const styles = {
 } as const;
 
 
-export const LessonModuleEditor = (props: { value?: LessonModule, onChange?: (value: LessonModule) => void, setProjectState: (projectState: LessonProjectState) => Promise<void> }) => {
+export const LessonModuleEditor = (props: { value?: LessonModule, onChange?: (value: LessonModule) => void, setProjectState: SetProjectState }) => {
     const [module, setModule] = useState(props.value ?? createDefaultLessonModule());
     const [activeLesson, setActiveLesson] = useState(module.lessons[0]);
     const [mode, setMode] = useState(`lesson` as 'lesson' | 'json');
