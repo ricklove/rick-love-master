@@ -1,5 +1,5 @@
 import { LessonData, LessonModule } from '../common/lesson-types';
-import { calculateFilesHash } from '../common/lesson-hash';
+import { calculateFilesHashCode } from '../common/lesson-hash';
 
 export const createDefaultLesson = (): LessonData => {
     const file = {
@@ -49,7 +49,7 @@ export const MinimalReactComponent2 = (props: {}) => {
         key: `Lesson-${Date.now()}-${(`${Math.random()}`).substr(2)}`,
         projectState: {
             files,
-            key: calculateFilesHash(files),
+            filesHashCode: calculateFilesHashCode(files),
         },
         focus: {
             filePath: file.path,

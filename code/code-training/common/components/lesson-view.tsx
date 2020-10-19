@@ -216,7 +216,7 @@ export const LessonView_ExperimentCode = ({ data, onDone, setProjectState }: { d
                 )}
             </View>
             <LessonProjectFilesEditor
-                key={modifiedProjectState.key}
+                key={modifiedProjectState.filesHashCode}
                 projectData={{
                     projectState: modifiedProjectState,
                     focus: activeFocus,

@@ -3,7 +3,7 @@ import { deleteFile, getFileInfo, getFiles, getPathNormalized, readFileAsJson, w
 import { LessonModule } from '../../common/lesson-types';
 import { LessonModuleMeta, LessonServerApi } from '../lesson-api-types';
 import { lessonExperiments_createReplacementProjectState } from '../../common/replacements';
-import { calculateFilesHash } from '../../common/lesson-hash';
+import { calculateFilesHashCode } from '../../common/lesson-hash';
 
 
 // File Formats
@@ -21,11 +21,11 @@ export const createLessonApiServer_localFileServer = ({
 
     const normalizeFileHashes = (lesson: LessonModule) => {
         // Normalize projectState hashes
-        lesson.lessons.forEach(l => { l.projectState.key = calculateFilesHash(l.projectState.files); });
+        lesson.lessons.forEach(l => { l.projectState.filesHashCode = calculateFilesHashCode(l.projectState.files); });
         lesson.lessons.forEach(l => {
             l.experiments.forEach(e => {
                 const pState = lessonExperiments_createReplacementProjectState(l.projectState, e.replacements);
-                e.filesHashCode = pState.key;
+                e.filesHashCode = pState.filesHashCode;
             });
         });
     };

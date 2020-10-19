@@ -1,5 +1,5 @@
 import { diff } from './diff';
-import { calculateFilesHash } from './lesson-hash';
+import { calculateFilesHashCode } from './lesson-hash';
 import { LessonProjectState, LessonExperimentReplacement } from './lesson-types';
 
 export const lessonExperiments_createReplacementProjectState = (projectState: LessonProjectState, replacements: LessonExperimentReplacement[]): LessonProjectState => {
@@ -13,9 +13,9 @@ export const lessonExperiments_createReplacementProjectState = (projectState: Le
         return file;
     });
 
-    const finalProjectState = {
+    const finalProjectState: LessonProjectState = {
         files,
-        key: calculateFilesHash(files),
+        filesHashCode: calculateFilesHashCode(files),
     };
 
     console.log(`lessonExperiments_createReplacementProjectState`, finalProjectState, projectState, replacements);

@@ -6,7 +6,7 @@ import { LessonData, LessonExperiment, LessonProjectFileSelection, LessonProject
 import { lessonExperiments_createReplacementProjectState, lessonExperiments_calculateProjectStateReplacements } from '../common/replacements';
 import { LessonView_ConstructCode, LessonView_ExperimentCode, LessonView_UnderstandCode } from '../common/components/lesson-view';
 import { LessonProjectStatePreview, LessonRenderView } from '../common/components/lesson-render-view';
-import { calculateFilesHash } from '../common/lesson-hash';
+import { calculateFilesHashCode } from '../common/lesson-hash';
 
 const styles = {
     container: {
@@ -311,7 +311,7 @@ const LessonField_Experiment = ({
         if (!data.projectState) { return; }
         // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
         setModifiedProjectState(data.projectState!);
-        onChange({ ...lessonExperiments_calculateProjectStateReplacements(lessonData.projectState, data.projectState), comment: commentText, filesHashCode: calculateFilesHash(lessonData.projectState.files) });
+        onChange({ ...lessonExperiments_calculateProjectStateReplacements(lessonData.projectState, data.projectState), comment: commentText, filesHashCode: calculateFilesHashCode(lessonData.projectState.files) });
     };
 
     return (
@@ -337,7 +337,7 @@ const LessonField_Experiment = ({
                 />
             </View>
             <LessonProjectFilesEditor
-                key={modifiedProjectState.key}
+                key={modifiedProjectState.filesHashCode}
                 projectData={{
                     projectState: modifiedProjectState,
                     focus: lastFocus,

@@ -39,15 +39,16 @@ export type LessonExperiment = {
     /** Multiple replacements may be required to implement an experiment. */
     replacements: LessonExperimentReplacement[];
     comment?: string;
-    filesHashCode: string;
+    filesHashCode: LessonProjectStateFilesHashCode;
 }
 export type LessonExperimentReplacement = {
     selection: LessonProjectFileSelection;
     content: string;
 };
 
+export type LessonProjectStateFilesHashCode = string & { _type: 'LessonProjectStateFilesHashCode' };
 export type LessonProjectState = {
-    key: string;
+    filesHashCode: LessonProjectStateFilesHashCode;
     files: LessonProjectFile[];
 };
 
