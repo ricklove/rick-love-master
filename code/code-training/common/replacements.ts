@@ -1,17 +1,21 @@
 import { diff } from './diff';
+import { caclulateFilesHash } from './lesson-hash';
 import { LessonProjectState, LessonExperimentReplacement } from './lesson-types';
 
 export const lessonExperiments_createReplacementProjectState = (projectState: LessonProjectState, replacements: LessonExperimentReplacement[]): LessonProjectState => {
+    const files = projectState.files.map(x => {
+        const file = { ...x };
+        replacements
+            .filter(r => r.selection.filePath === x.path)
+            // Apply replacements from end so the index will be valid
+            .sort((a, b) => - (a.selection.index - b.selection.index))
+            .forEach(r => { file.content = `${file.content.substr(0, r.selection.index)}${r.content}${file.content.substr(r.selection.index + r.selection.length)}`; });
+        return file;
+    });
+
     const finalProjectState = {
-        files: projectState.files.map(x => {
-            const file = { ...x };
-            replacements
-                .filter(r => r.selection.filePath === x.path)
-                // Apply replacements from end so the index will be valid
-                .sort((a, b) => - (a.selection.index - b.selection.index))
-                .forEach(r => { file.content = `${file.content.substr(0, r.selection.index)}${r.content}${file.content.substr(r.selection.index + r.selection.length)}`; });
-            return file;
-        }),
+        files,
+        key: caclulateFilesHash(files),
     };
 
     console.log(`lessonExperiments_createReplacementProjectState`, finalProjectState, projectState, replacements);

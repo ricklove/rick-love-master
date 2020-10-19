@@ -294,12 +294,12 @@ const LessonField_Experiment = ({
     onDelete: () => void;
     lessonData: LessonData;
 }) => {
-    const [modifiedProjectState, setModifiedProjectState] = useState({ ...lessonData.projectState, key: 0 });
+    const [modifiedProjectState, setModifiedProjectState] = useState(lessonData.projectState);
     const [lastFocus, setLastFocus] = useState({ filePath: modifiedProjectState.files[0].path, index: 0, length: modifiedProjectState.files[0].content.length });
     const [commentText, setCommentText] = useState(value.comment ?? ``);
 
     useEffect(() => {
-        setModifiedProjectState(s => ({ ...lessonExperiments_createReplacementProjectState(lessonData.projectState, value.replacements), key: s.key + 1 }));
+        setModifiedProjectState(s => (lessonExperiments_createReplacementProjectState(lessonData.projectState, value.replacements)));
     }, [lessonData.projectState]);
 
     const changeProjectData = (data: { projectState?: LessonProjectState, focus?: LessonProjectFileSelection }) => {
@@ -309,7 +309,7 @@ const LessonField_Experiment = ({
 
         if (!data.projectState) { return; }
         // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-        setModifiedProjectState(s => ({ ...data.projectState!, key: s.key + 1 }));
+        setModifiedProjectState(data.projectState!);
         onChange({ ...lessonExperiments_calculateProjectStateReplacements(lessonData.projectState, data.projectState), comment: commentText });
     };
 

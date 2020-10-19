@@ -46,6 +46,7 @@ export type LessonExperimentReplacement = {
 };
 
 export type LessonProjectState = {
+    key: string;
     files: LessonProjectFile[];
 };
 

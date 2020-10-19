@@ -1,4 +1,5 @@
 import { LessonData, LessonModule } from '../common/lesson-types';
+import { caclulateFilesHash } from '../common/lesson-hash';
 
 export const createDefaultLesson = (): LessonData => {
     const file = {
@@ -43,11 +44,12 @@ export const MinimalReactComponent2 = (props: {}) => {
 
     const focusIndex = file.content.indexOf(`<span>Hello World!</span>`);
     const focusLength = `<span>Hello World!</span>`.length;
-
+    const files = [file0, file, file2];
     const lesson: LessonData = {
         key: `Lesson-${Date.now()}-${(`${Math.random()}`).substr(2)}`,
         projectState: {
-            files: [file0, file, file2],
+            files,
+            key: caclulateFilesHash(files),
         },
         focus: {
             filePath: file.path,
