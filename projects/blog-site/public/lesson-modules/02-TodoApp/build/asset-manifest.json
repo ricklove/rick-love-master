@@ -1,0 +1,39 @@
+{
+  "files": {
+    "main.js": "/lesson-modules/02-TodoApp/build/static/js/main.a8ced4d9.chunk.js",
+    "main.js.map": "/lesson-modules/02-TodoApp/build/static/js/main.a8ced4d9.chunk.js.map",
+    "runtime-main.js": "/lesson-modules/02-TodoApp/build/static/js/runtime-main.dd60fe77.js",
+    "runtime-main.js.map": "/lesson-modules/02-TodoApp/build/static/js/runtime-main.dd60fe77.js.map",
+    "static/js/2.f7363562.chunk.js": "/lesson-modules/02-TodoApp/build/static/js/2.f7363562.chunk.js",
+    "static/js/2.f7363562.chunk.js.map": "/lesson-modules/02-TodoApp/build/static/js/2.f7363562.chunk.js.map",
+    "static/js/3.08abdeeb.chunk.js": "/lesson-modules/02-TodoApp/build/static/js/3.08abdeeb.chunk.js",
+    "static/js/3.08abdeeb.chunk.js.map": "/lesson-modules/02-TodoApp/build/static/js/3.08abdeeb.chunk.js.map",
+    "static/js/4.dd9c5c71.chunk.js": "/lesson-modules/02-TodoApp/build/static/js/4.dd9c5c71.chunk.js",
+    "static/js/4.dd9c5c71.chunk.js.map": "/lesson-modules/02-TodoApp/build/static/js/4.dd9c5c71.chunk.js.map",
+    "static/js/5.bf4a1e4f.chunk.js": "/lesson-modules/02-TodoApp/build/static/js/5.bf4a1e4f.chunk.js",
+    "static/js/5.bf4a1e4f.chunk.js.map": "/lesson-modules/02-TodoApp/build/static/js/5.bf4a1e4f.chunk.js.map",
+    "static/js/6.c4ee7931.chunk.js": "/lesson-modules/02-TodoApp/build/static/js/6.c4ee7931.chunk.js",
+    "static/js/6.c4ee7931.chunk.js.map": "/lesson-modules/02-TodoApp/build/static/js/6.c4ee7931.chunk.js.map",
+    "static/js/7.90b55d17.chunk.js": "/lesson-modules/02-TodoApp/build/static/js/7.90b55d17.chunk.js",
+    "static/js/7.90b55d17.chunk.js.map": "/lesson-modules/02-TodoApp/build/static/js/7.90b55d17.chunk.js.map",
+    "static/js/8.f5889bd9.chunk.js": "/lesson-modules/02-TodoApp/build/static/js/8.f5889bd9.chunk.js",
+    "static/js/8.f5889bd9.chunk.js.map": "/lesson-modules/02-TodoApp/build/static/js/8.f5889bd9.chunk.js.map",
+    "static/js/9.bc8688b7.chunk.js": "/lesson-modules/02-TodoApp/build/static/js/9.bc8688b7.chunk.js",
+    "static/js/9.bc8688b7.chunk.js.map": "/lesson-modules/02-TodoApp/build/static/js/9.bc8688b7.chunk.js.map",
+    "static/js/10.cd38cd00.chunk.js": "/lesson-modules/02-TodoApp/build/static/js/10.cd38cd00.chunk.js",
+    "static/js/10.cd38cd00.chunk.js.map": "/lesson-modules/02-TodoApp/build/static/js/10.cd38cd00.chunk.js.map",
+    "static/js/11.98a90630.chunk.js": "/lesson-modules/02-TodoApp/build/static/js/11.98a90630.chunk.js",
+    "static/js/11.98a90630.chunk.js.map": "/lesson-modules/02-TodoApp/build/static/js/11.98a90630.chunk.js.map",
+    "static/js/12.5610d1f1.chunk.js": "/lesson-modules/02-TodoApp/build/static/js/12.5610d1f1.chunk.js",
+    "static/js/12.5610d1f1.chunk.js.map": "/lesson-modules/02-TodoApp/build/static/js/12.5610d1f1.chunk.js.map",
+    "index.html": "/lesson-modules/02-TodoApp/build/index.html",
+    "precache-manifest.54751f24fbbe320c49ad55753e779199.js": "/lesson-modules/02-TodoApp/build/precache-manifest.54751f24fbbe320c49ad55753e779199.js",
+    "service-worker.js": "/lesson-modules/02-TodoApp/build/service-worker.js",
+    "static/js/2.f7363562.chunk.js.LICENSE.txt": "/lesson-modules/02-TodoApp/build/static/js/2.f7363562.chunk.js.LICENSE.txt"
+  },
+  "entrypoints": [
+    "static/js/runtime-main.dd60fe77.js",
+    "static/js/2.f7363562.chunk.js",
+    "static/js/main.a8ced4d9.chunk.js"
+  ]
+}
