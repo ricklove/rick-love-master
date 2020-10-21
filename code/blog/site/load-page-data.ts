@@ -1,8 +1,9 @@
 /* eslint-disable @typescript-eslint/camelcase */
 /* eslint-disable no-console */
 /* eslint-disable unicorn/consistent-function-scoping */
-import { processDirectoryFiles, getFileName, readFile, getPathNormalized, getDirectoryPath, copyFile, watchFileChanges, writeFile, deleteFile } from 'utils/files';
+import { processDirectoryFiles, getFileName, readFile, getPathNormalized, getDirectoryPath, copyFile, watchFileChanges, writeFile, deleteFile, copyDirectory } from 'utils/files';
 import { createSubscribable, Subscribe } from 'utils/subscribable';
+import { createLessonApiServer_localFileServer } from 'code-training/lesson-server/server/lesson-api-local-file-server';
 import { PageData } from './create-page';
 import { componentTestList } from '../pageTemplates/component-tests-list';
 import { componentGamesList } from '../pageTemplates/component-games-list';
@@ -200,6 +201,9 @@ export const loadStaticPageData = async (): Promise<SitePageData<PageData>> => {
         });
     });
 
+    // Lesson Modules
+    await createLessonModules(pages);
+
     pages.push({
         sitePath: `/404.html`,
         data: {
@@ -212,4 +216,31 @@ export const loadStaticPageData = async (): Promise<SitePageData<PageData>> => {
         pages,
         subscribePageChange: sub.subscribe,
     };
+};
+
+
+const createLessonModules = async (pages: SitePageInfo<PageData>[]) => {
+    const lessonModulesDir = getPathNormalized(__dirname, `../../code-training/data/lesson-module-files`);
+    const lessonModulesContentPath = `/lesson-modules`;
+    const publicDestDir = getPathNormalized(process.cwd(), `public${lessonModulesContentPath}`);
+
+    await copyDirectory(lessonModulesDir, publicDestDir);
+
+    const server = createLessonApiServer_localFileServer({
+        lessonModuleFileRootPath: lessonModulesDir,
+        // Not used:
+        projectStateRootPath: getPathNormalized(__dirname, `../../code-training/lesson-server/server/templates/cra-template/src/project/`),
+        renderProjectRootPath: getPathNormalized(__dirname, `../../code-training/lesson-server/server/templates/cra-template`),
+    });
+    const lessonModules = await server.getLessonModules({});
+
+    const lessonModuleList = lessonModules.data;
+    lessonModuleList.forEach(x => {
+        pages.push({
+            sitePath: `/lesson/${x.key}`,
+            data: {
+                componentLessonModulePage: { lessonModuleKey: x.key, lessonModuleTitle: x.title },
+            },
+        });
+    });
 };
