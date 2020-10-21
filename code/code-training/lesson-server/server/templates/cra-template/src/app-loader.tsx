@@ -26,9 +26,9 @@ export const AppLoader = (props: {}) => {
             )}
             {app && !app.App && (<span style={{ color: '#FF0000' }}>App not found!</span>)}
             {!app && (<span>Loading...</span>)}
-            <div>
+            {/* <div>
                 <span>{filesHashCode}</span>
-            </div>
+            </div> */}
         </>
     );
 };
