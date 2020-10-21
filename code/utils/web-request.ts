@@ -1,15 +1,15 @@
 import { ApiError } from './error';
 
-export function fetchWithTimeout(url: string, options: RequestInit, timeout = 10000): Promise<Response> {
+export function fetchWithTimeout(url: string, options: RequestInit, timeoutMs = 10000): Promise<Response> {
     return Promise.race([
         fetch(url, options),
         new Promise((resolve, reject) =>
-            setTimeout(() => reject(new ApiError(`Fetch Timeout`)), timeout),
+            setTimeout(() => reject(new ApiError(`Fetch Timeout`)), timeoutMs),
         ) as Promise<Response>,
     ]);
 }
 
-export async function webRequest(url: string, data: unknown, options?: { method: 'POST' | 'PUT' }) {
+export async function webRequest(url: string, data: unknown, options?: { method?: 'POST' | 'PUT', timeoutMs?: number }) {
 
     const body = JSON.stringify(data);
     const reqData: RequestInit = {
@@ -21,7 +21,7 @@ export async function webRequest(url: string, data: unknown, options?: { method:
         },
         body,
     };
-    const result = await fetchWithTimeout(url, reqData).catch((error) => { throw new ApiError(`Request Failure`, { url, data, error }); });
+    const result = await fetchWithTimeout(url, reqData, options?.timeoutMs).catch((error) => { throw new ApiError(`Request Failure`, { url, data, error }); });
     if (!result.ok) {
         throw new ApiError(`Api Error`, { data: (await result.json().catch(error => {/* Ignore Parse Error */ })) ?? {}, responseStatus: result.status, request: { url, data } });
     }

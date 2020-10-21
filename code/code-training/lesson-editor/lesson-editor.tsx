@@ -2,10 +2,11 @@
 import React, { useEffect, useState } from 'react';
 import { View, Text, TextInput, TouchableOpacity } from 'react-native-lite';
 import { LessonProjectFilesEditor, LessonProjectEditorMode, LessonFileEditorMode } from '../common/components/lesson-file-editor';
-import { LessonData, LessonExperiment, LessonProjectFileSelection, LessonProjectState, LessonStep_ConstructCode, LessonStep_UnderstandCode } from '../common/lesson-types';
+import { LessonData, LessonExperiment, LessonProjectFileSelection, LessonProjectState, LessonStep_ConstructCode, LessonStep_UnderstandCode, SetProjectState } from '../common/lesson-types';
 import { lessonExperiments_createReplacementProjectState, lessonExperiments_calculateProjectStateReplacements } from '../common/replacements';
 import { LessonView_ConstructCode, LessonView_ExperimentCode, LessonView_UnderstandCode } from '../common/components/lesson-view';
 import { LessonProjectStatePreview, LessonRenderView } from '../common/components/lesson-render-view';
+import { calculateFilesHashCode } from '../common/lesson-hash';
 
 const styles = {
     container: {
@@ -103,7 +104,7 @@ const createLessonState = (lesson: LessonData, lessonJson?: string) => {
     };
 };
 
-export const LessonEditor = (props: { value: LessonData, onChange: (value: LessonData) => void, setProjectState: (projectState: LessonProjectState) => Promise<void> }) => {
+export const LessonEditor = (props: { value: LessonData, onChange: (value: LessonData) => void, setProjectState: SetProjectState }) => {
 
     const [data, setData] = useState(createLessonState(props.value));
     type EditorMode = 'edit' | 'json' | 'construct-code' | 'understand-code' | 'experiment-code' | 'preview';
@@ -271,7 +272,7 @@ const LessonField_Experiments = ({ label, value, onChange, lessonData }: {
                     onChange={v => onChange(value.map((y, j) => i === j ? v : y))}
                     onDelete={() => { value.splice(i, 1); onChange(value); }} lessonData={lessonData} />
             ))}
-            <TouchableOpacity onPress={() => { value.push({ replacements: [], comment: `` }); onChange(value); }}>
+            <TouchableOpacity onPress={() => { value.push({ replacements: [], comment: ``, filesHashCode: calculateFilesHashCode([]) }); onChange(value); }}>
                 <View style={styles.buttonView}>
                     <Text style={styles.buttonText}>{`${`➕`} Add Experiment`}</Text>
                 </View>
@@ -294,12 +295,12 @@ const LessonField_Experiment = ({
     onDelete: () => void;
     lessonData: LessonData;
 }) => {
-    const [modifiedProjectState, setModifiedProjectState] = useState({ ...lessonData.projectState, key: 0 });
+    const [modifiedProjectState, setModifiedProjectState] = useState(lessonData.projectState);
     const [lastFocus, setLastFocus] = useState({ filePath: modifiedProjectState.files[0].path, index: 0, length: modifiedProjectState.files[0].content.length });
     const [commentText, setCommentText] = useState(value.comment ?? ``);
 
     useEffect(() => {
-        setModifiedProjectState(s => ({ ...lessonExperiments_createReplacementProjectState(lessonData.projectState, value.replacements), key: s.key + 1 }));
+        setModifiedProjectState(s => (lessonExperiments_createReplacementProjectState(lessonData.projectState, value.replacements)));
     }, [lessonData.projectState]);
 
     const changeProjectData = (data: { projectState?: LessonProjectState, focus?: LessonProjectFileSelection }) => {
@@ -309,8 +310,8 @@ const LessonField_Experiment = ({
 
         if (!data.projectState) { return; }
         // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-        setModifiedProjectState(s => ({ ...data.projectState!, key: s.key + 1 }));
-        onChange(lessonExperiments_calculateProjectStateReplacements(lessonData.projectState, data.projectState));
+        setModifiedProjectState(data.projectState!);
+        onChange({ ...lessonExperiments_calculateProjectStateReplacements(lessonData.projectState, data.projectState), comment: commentText, filesHashCode: calculateFilesHashCode(lessonData.projectState.files) });
     };
 
     return (
@@ -336,7 +337,7 @@ const LessonField_Experiment = ({
                 />
             </View>
             <LessonProjectFilesEditor
-                key={modifiedProjectState.key}
+                key={modifiedProjectState.filesHashCode}
                 projectData={{
                     projectState: modifiedProjectState,
                     focus: lastFocus,

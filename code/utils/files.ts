@@ -23,7 +23,7 @@ export const getFileInfo = async (fullPath: string) => {
     try {
         const info = await fs.stat(fullPath);
         return info;
-    } catch{
+    } catch {
         return null;
     }
 };
@@ -51,12 +51,12 @@ export const getProjectRootDirectoryPath = async (dirStart: string, options: { s
 export const deleteFile = async (filePath: string) => {
     try { await fs.unlink(filePath); }
     // eslint-disable-next-line no-empty
-    catch{ }
+    catch { }
 };
 export const deleteDirectory = async (filePath: string) => {
     try { await fs.rmdir(filePath); }
     // eslint-disable-next-line no-empty
-    catch{ }
+    catch { }
 };;
 
 export const readFile = async (filePath: string) => await fs.readFile(filePath, { encoding: `utf-8` });
@@ -139,6 +139,46 @@ export async function processDirectoryItems(dir: string, options: {
 export async function processDirectoryFiles(dir: string, onFile: (filePath: string) => Promise<void>) {
     await processDirectoryItems(dir, { onFile });
 }
+
+export async function copyDirectory(fromDir: string, toDir: string, options?: { removeExtraFiles: boolean }) {
+    const fromFullDir = getPathNormalized(fromDir);
+    const toFullDir = getPathNormalized(toDir);
+
+    const copiedFiles = new Set<string>();
+    await processDirectoryFiles(fromFullDir, async (x) => {
+        const destFullPath = x.replace(fromFullDir, toFullDir);
+        await copyFile(x, destFullPath, { overwrite: true, readonly: true });
+
+        copiedFiles.add(destFullPath);
+    });
+
+    if (options?.removeExtraFiles) {
+        await processDirectoryItems(toFullDir, {
+            onFile: async (x) => {
+                try {
+                    if (copiedFiles.has(x)) { return; }
+                    await deleteFile(x);
+                } catch (error) {
+                    // eslint-disable-next-line no-console
+                    console.error(`Could not delete file`, { path: x, err: error });
+                }
+            },
+        });
+
+        // Remove unused directories
+        await processDirectoryItems(toFullDir, {
+            onDirectory: async (x) => {
+                try {
+                    if ((await getDirectoryContents(x)).length > 0) { return; }
+                    await deleteDirectory(x);
+                } catch (error) {
+                    // eslint-disable-next-line no-console
+                    console.error(`Could not delete directory`, { path: x, err: error });
+                }
+            },
+        });
+    }
+};
 
 export const watchFileChanges = async (options: { pathRoot: string, runOnStart: boolean }, onFilesChanged: (changedFiles: string[]) => Promise<void>) => {
 

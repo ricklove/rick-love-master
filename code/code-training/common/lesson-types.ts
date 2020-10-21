@@ -39,13 +39,16 @@ export type LessonExperiment = {
     /** Multiple replacements may be required to implement an experiment. */
     replacements: LessonExperimentReplacement[];
     comment?: string;
+    filesHashCode: LessonProjectStateFilesHashCode;
 }
 export type LessonExperimentReplacement = {
     selection: LessonProjectFileSelection;
     content: string;
 };
 
+export type LessonProjectStateFilesHashCode = string & { _type: 'LessonProjectStateFilesHashCode' };
 export type LessonProjectState = {
+    filesHashCode: LessonProjectStateFilesHashCode;
     files: LessonProjectFile[];
 };
 
@@ -69,3 +72,5 @@ export type LessonStep_ConstructCode = {
 export type LessonStep_UnderstandCode = {
     lessonData: LessonData;
 };
+
+export type SetProjectState = (projectState: LessonProjectState) => Promise<{ iFrameUrl: string }>;

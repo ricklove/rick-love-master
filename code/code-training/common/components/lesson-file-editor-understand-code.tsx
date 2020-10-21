@@ -27,8 +27,10 @@ export const LessonFileContentEditor_UnderstandCode = ({ code, language, selecti
         const descriptionsWithBlanks = lessonData.descriptions.map(x => {
             let d = x;
             parts.codeParts
-                .filter(c => c.code.trim().length >= 3)
+                .filter(c => !!c.code.trim())
                 .forEach(c => { d = d.replace(c.code, `___`); });
+
+            console.log(`LessonFileContentEditor_UnderstandCode - create fill in blank`, { parts, d, x });
             return {
                 textWithBlanks: d,
                 textWithoutBlanks: x,
@@ -43,19 +45,19 @@ export const LessonFileContentEditor_UnderstandCode = ({ code, language, selecti
         if (!fillInBlank || !fillInBlanks) { return; }
 
         const iBlank = fillInBlank.textWithBlanks.indexOf(`___`);
-        const withoutBlank = fillInBlank.textWithBlanks.replace(`___`, part.code);
-        const isCorrect = withoutBlank.startsWith(fillInBlank.textWithoutBlanks.substr(0, iBlank + part.length));
+        const nextWithBlanks = fillInBlank.textWithBlanks.replace(`___`, part.code);
+        const isCorrect = nextWithBlanks.startsWith(fillInBlank.textWithoutBlanks.substr(0, iBlank + part.length));
 
-        console.log(`onPressCodePart`, { part, iBlank, withoutBlank, isCorrect, fillInBlank });
+        console.log(`onPressCodePart`, { part, iBlank, withoutBlank: nextWithBlanks, isCorrect, fillInBlank });
 
         if (!isCorrect) {
             setFeedback({ isNegative: true, emoji: randomItem(badEmojis), message: `❌ ${randomItem([`Wrong`, `Incorrect`, `No`, `Try Again`])}`, timestamp: Date.now() });
             return;
         }
 
-        setFeedback({ emoji: randomItem(goodEmojis), message: `✔`, timestamp: Date.now() });
+        setFeedback({ emoji: randomItem(goodEmojis), message: `✔`, timestamp: Date.now(), timeoutMs: 1000 });
 
-        if (!withoutBlank.includes(`___`)) {
+        if (!nextWithBlanks.includes(`___`)) {
             // Done
             const remaining = fillInBlanks.filter(x => x.textWithoutBlanks !== fillInBlank.textWithoutBlanks);
             setFillInBlanks(remaining);
@@ -69,8 +71,8 @@ export const LessonFileContentEditor_UnderstandCode = ({ code, language, selecti
         }
 
         setFillInBlank({
-            textWithoutBlanks: withoutBlank,
-            textWithBlanks: fillInBlank.textWithBlanks,
+            textWithoutBlanks: fillInBlank.textWithoutBlanks,
+            textWithBlanks: nextWithBlanks,
         });
     };
 
@@ -84,6 +86,7 @@ export const LessonFileContentEditor_UnderstandCode = ({ code, language, selecti
         message: fillInBlank ? `${fillInBlank.textWithBlanks}\r\n\r\n🔎 Select the correct word below` : `${lessonData.descriptions.map(x => `✅ ${x}`).join(`\r\n`)}`,
         timestamp: Date.now(),
     };
+    console.log(`LessonFileContentEditor_UnderstandCode render`, { fillInBlank, activePrompt });
     return (
         <>
             <View style={{ position: `relative` }}>

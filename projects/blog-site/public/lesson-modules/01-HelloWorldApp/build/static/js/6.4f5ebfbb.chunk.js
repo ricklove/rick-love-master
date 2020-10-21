@@ -1,0 +1,2 @@
+(this["webpackJsonpcra-template"]=this["webpackJsonpcra-template"]||[]).push([[6],{17:function(e,t,n){"use strict";n.r(t),n.d(t,"App",(function(){return l}));var a=n(3),c=n(0),r=n.n(c),l=function(e){var t=Object(c.useState)((new Date).toTimeString()),n=Object(a.a)(t,2),l=n[0];n[1];return r.a.createElement("div",null,r.a.createElement("span",null,"Hello World!"),r.a.createElement("span",null,"It's ".concat(l)))}}}]);
+//# sourceMappingURL=6.4f5ebfbb.chunk.js.map

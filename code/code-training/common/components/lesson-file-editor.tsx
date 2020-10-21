@@ -9,6 +9,7 @@ import { CodeDisplay, CodeDisplayPrompt } from './code-display';
 import { TabsListEditorComponent } from './tabs';
 import { LessonFileContentEditor_ConstructCode } from './lesson-file-editor-construct-code';
 import { LessonFileContentEditor_UnderstandCode } from './lesson-file-editor-understand-code';
+import { calculateFilesHashCode } from '../lesson-hash';
 
 export type LessonProjectEditorMode = 'display' | 'edit';
 export const LessonProjectFilesEditor = ({
@@ -85,12 +86,14 @@ export const LessonProjectFilesEditor = ({
     };
 
     const changeFile = (file: LessonProjectFile) => {
+        const files = projectState.files.map(x => {
+            if (x.path === file.path) { return file; }
+            return x;
+        });
         onProjectDataChange({
             projectState: {
-                files: projectState.files.map(x => {
-                    if (x.path === file.path) { return file; }
-                    return x;
-                }),
+                files,
+                filesHashCode: calculateFilesHashCode(files),
             },
         });
     };
@@ -115,7 +118,7 @@ export const LessonProjectFilesEditor = ({
             <TabsListEditorComponent
                 header='Files'
                 items={projectState.files}
-                onChange={projectEditorMode !== `edit` ? undefined : (x => onProjectDataChange({ projectState: { files: x } }))}
+                onChange={projectEditorMode !== `edit` ? undefined : (x => onProjectDataChange({ projectState: { files: x, filesHashCode: calculateFilesHashCode(x) } }))}
                 getKey={x => x.path}
                 getLabel={x => focus.filePath === x.path ? `📝 ${x.path}` : x.path}
                 selected={activeFile}
