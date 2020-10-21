@@ -115,9 +115,16 @@ export const createLessonApiServer_localFileServer = ({
             await writeFile(metaPath, JSON.stringify(metaContents), { overwrite: true });
 
             // Build Lesson Render Output
-            await buildLessonRender(data.value);
+            // await buildLessonRender(data.value);
 
             return { data: metaContents };
+        },
+        buildLessonModule: async (data) => {
+            const filePath = getPathNormalized(lessonModuleFileRootPath, `${data.key}/${data.key}.code-lesson.json`);
+            const fileContents = await readFileAsJson<LessonModuleFile>(filePath);
+            const lesson: LessonModule = fileContents;
+            await buildLessonRender(lesson);
+            return { data: {} };
         },
         deleteLessonModule: async (data) => {
             const filePath = getPathNormalized(lessonModuleFileRootPath, `${data.key}/${data.key}.code-lesson.json`);

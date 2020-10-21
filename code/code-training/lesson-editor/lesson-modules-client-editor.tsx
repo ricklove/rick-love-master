@@ -88,6 +88,17 @@ export const LessonModulesClientEditor = (props: {}) => {
             await reloadModules(stopIfObsolete);
         });
     };
+    const onBuildModule = () => {
+        const key = activeModule?.key;
+        if (!key) { return; }
+
+        setActiveModule(null);
+        doWork(async (stopIfObsolete) => {
+            const r2 = await apiClient.buildLessonModule({ key });
+            stopIfObsolete();
+            await reloadModules(stopIfObsolete);
+        });
+    };
     const onDeleteModule = () => {
         const key = activeModule?.key;
         if (!key) { return; }
@@ -100,6 +111,7 @@ export const LessonModulesClientEditor = (props: {}) => {
             await reloadModules(stopIfObsolete);
         });
     };
+
     const setProjectState: SetProjectState = async (projectState: LessonProjectState) => {
         await apiClient.setProjectState({ projectState });
         return { iFrameUrl: `http://localhost:3043/?filesHashCode=${projectState.filesHashCode}` };
@@ -137,6 +149,11 @@ export const LessonModulesClientEditor = (props: {}) => {
                             <TouchableOpacity onPress={onSaveModule}>
                                 <View style={styles.buttonView}>
                                     <Text style={styles.buttonText}>{`${`💾`} Save Module`}</Text>
+                                </View>
+                            </TouchableOpacity>
+                            <TouchableOpacity onPress={onBuildModule}>
+                                <View style={styles.buttonView}>
+                                    <Text style={styles.buttonText}>{`${`🔨`} Build Module`}</Text>
                                 </View>
                             </TouchableOpacity>
                             <TouchableOpacity onPress={onDeleteModule}>
