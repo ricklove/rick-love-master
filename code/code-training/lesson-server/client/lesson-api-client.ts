@@ -8,7 +8,7 @@ export const createLessonApiClient = ({
 }): LessonServerApi => {
 
     const request = async <T, TResponse>(endpoint: string, data: T): Promise<TResponse> => {
-        return await webRequest(serverUrl, { endpoint, data });
+        return await webRequest(serverUrl, { endpoint, data }, { timeoutMs: 30000 });
     };
 
     const client: LessonServerApi = {
