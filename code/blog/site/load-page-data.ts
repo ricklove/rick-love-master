@@ -220,7 +220,7 @@ export const loadStaticPageData = async (): Promise<SitePageData<PageData>> => {
 
 
 const createLessonModules = async (pages: SitePageInfo<PageData>[]) => {
-    const lessonModulesDir = getPathNormalized(__dirname, `../../code-training/data/lesson-module-files`);
+    const lessonModulesDir = getPathNormalized(__dirname, `../../code-training/data/lesson-modules`);
     const lessonModulesContentPath = `/lesson-modules`;
     const publicDestDir = getPathNormalized(process.cwd(), `public${lessonModulesContentPath}`);
 

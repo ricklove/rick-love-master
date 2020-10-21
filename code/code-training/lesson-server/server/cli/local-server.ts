@@ -9,7 +9,7 @@ export const runLocalServer = ({
 }) => {
     const app = express();
     const server = createLessonApiServer_localFileServer({
-        lessonModuleFileRootPath: getPathNormalized(__dirname, `../../../data/lesson-module-files/`),
+        lessonModuleFileRootPath: getPathNormalized(__dirname, `../../../data/lesson-modules/`),
         projectStateRootPath: getPathNormalized(__dirname, `../templates/cra-template/src/project/`),
         renderProjectRootPath: getPathNormalized(__dirname, `../templates/cra-template`),
     });

@@ -100,7 +100,7 @@ export const createLessonApiServer_localFileServer = ({
             const lesson = data.value;
             normalizeFileHashes(lesson);
 
-            const fileHistoryPath = getPathNormalized(lessonModuleFileRootPath, `history/${lesson.key}/${Date.now()}/code-lesson.history.json`);
+            const fileHistoryPath = getPathNormalized(lessonModuleFileRootPath, `../history/${lesson.key}/${Date.now()}/code-lesson.history.json`);
             const filePath = getPathNormalized(lessonModuleFileRootPath, `${lesson.key}/${lesson.key}.code-lesson.json`);
             const metaPath = getPathNormalized(lessonModuleFileRootPath, `${lesson.key}/${lesson.key}.code-lesson.meta.json`);
 
