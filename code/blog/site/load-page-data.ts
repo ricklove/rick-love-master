@@ -220,9 +220,12 @@ export const loadStaticPageData = async (): Promise<SitePageData<PageData>> => {
 
 
 const createLessonModules = async (pages: SitePageInfo<PageData>[]) => {
+    console.log(`createLessonModules`);
+
     const lessonModulesDir = getPathNormalized(__dirname, `../../code-training/data/lesson-modules`);
-    const lessonModulesContentPath = `/lesson-modules`;
-    const publicDestDir = getPathNormalized(process.cwd(), `public${lessonModulesContentPath}`);
+    const lessonModulesContentPath = `lesson-modules`;
+    const publicRootDir = getPathNormalized(process.cwd(), `public`);
+    const publicDestDir = getPathNormalized(publicRootDir, `${lessonModulesContentPath}`);
 
     await copyDirectory(lessonModulesDir, publicDestDir);
 
@@ -233,6 +236,20 @@ const createLessonModules = async (pages: SitePageInfo<PageData>[]) => {
         renderProjectRootPath: getPathNormalized(__dirname, `../../code-training/lesson-server/server/templates/cra-template`),
     });
     const lessonModules = await server.getLessonModules({});
+
+    // FIX /APP_ROOT_PATH
+    for (const l of lessonModules.data) {
+        const webPath = `${lessonModulesContentPath}/${l.key}/build`;
+        const lessonBuildDir = getPathNormalized(publicRootDir, webPath);
+
+        console.log(`createLessonModules - Fix APP_ROOT_PATH`, { webPath, lessonBuildDir, l });
+        // eslint-disable-next-line no-await-in-loop
+        await processDirectoryFiles(lessonBuildDir, async f => {
+            const fileContent = await readFile(f);
+            const corrected = fileContent.replace(/APP_ROOT_PATH/g, webPath);
+            await writeFile(f, corrected, { overwrite: true });
+        });
+    }
 
     const lessonModuleList = lessonModules.data;
     lessonModuleList.forEach(x => {

@@ -27,8 +27,11 @@ export const LessonFileContentEditor_UnderstandCode = ({ code, language, selecti
         const descriptionsWithBlanks = lessonData.descriptions.map(x => {
             let d = x;
             parts.codeParts
-                .filter(c => !!c.code.trim())
-                .forEach(c => { d = d.replace(c.code, `___`); });
+                .filter(c => c.isInSelection)
+                .map(c => c.code.trim())
+                .filter(c => !!c)
+                // Require a space around it
+                .forEach(c => { d = d.replace(` ${c} `, ` ___ `); });
 
             console.log(`LessonFileContentEditor_UnderstandCode - create fill in blank`, { parts, d, x });
             return {
@@ -45,7 +48,7 @@ export const LessonFileContentEditor_UnderstandCode = ({ code, language, selecti
         if (!fillInBlank || !fillInBlanks) { return; }
 
         const iBlank = fillInBlank.textWithBlanks.indexOf(`___`);
-        const nextWithBlanks = fillInBlank.textWithBlanks.replace(`___`, part.code);
+        const nextWithBlanks = fillInBlank.textWithBlanks.replace(`___`, part.code.trim());
         const isCorrect = nextWithBlanks.startsWith(fillInBlank.textWithoutBlanks.substr(0, iBlank + part.length));
 
         console.log(`onPressCodePart`, { part, iBlank, withoutBlank: nextWithBlanks, isCorrect, fillInBlank });
