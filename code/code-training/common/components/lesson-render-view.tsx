@@ -8,6 +8,10 @@ const styles = {
         margin: 16,
         background: `#FFFFFF`,
     },
+    iFrame: {
+        width: `100%`,
+        minHeight: 1000,
+    },
 } as const;
 
 export const LessonRenderView = (props: { iFrameUrl: string }) => {
@@ -15,7 +19,7 @@ export const LessonRenderView = (props: { iFrameUrl: string }) => {
     return (
         <>
             <div style={styles.container}>
-                <iframe src={props.iFrameUrl} title='Preview' />
+                <iframe style={styles.iFrame} src={props.iFrameUrl} title='Preview' />
             </div>
         </>
     );

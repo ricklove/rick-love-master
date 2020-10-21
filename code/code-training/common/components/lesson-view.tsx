@@ -101,6 +101,17 @@ export const LessonView_UnderstandCode = ({ data, onDone }: { data: LessonData, 
     return (
         <>
             <Text style={styles.sectionHeaderText}>{`${data.title} - Understand the Code ${isDone ? `✅` : `🔳`}`}</Text>
+            <View style={{ flexDirection: `row`, alignItems: `center` }}>
+                <Text style={styles.infoText}>{`${`🔎`} Preview the result below`}</Text>
+                <View style={{ flex: 1 }} />
+                {isDone && (
+                    <TouchableOpacity onPress={() => onDone?.()}>
+                        <View style={styles.buttonView}>
+                            <Text style={styles.buttonText}>Done</Text>
+                        </View>
+                    </TouchableOpacity>
+                )}
+            </View>
             <LessonProjectFilesEditor
                 projectData={{
                     projectState: data.projectState,
@@ -109,7 +120,7 @@ export const LessonView_UnderstandCode = ({ data, onDone }: { data: LessonData, 
                 fileEditorMode_focus='understand-code'
                 fileEditorMode_noFocus='display'
                 projectEditorMode='display'
-                onTaskDone={() => { setIsDone(true); onDone?.(); }}
+                onTaskDone={() => setIsDone(true)}
                 lessonData={data}
             />
         </>
