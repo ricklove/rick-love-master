@@ -28,7 +28,7 @@ export const LessonModuleComponentAuto = (props: { data: ComponentLessonModulePa
             {LessonModulePlayerLoader && (
                 <LessonModulePlayerLoader lesson={{
                     lessonJsonUrl: `/lesson-modules/${lessonModuleKey}/${lessonModuleKey}.code-lesson.json`,
-                    lessonBuildRootUrl: `/lesson-modules/${lessonModuleKey}/${lessonModuleKey}/build`,
+                    lessonBuildRootUrl: `/lesson-modules/${lessonModuleKey}/build`,
                 }} />
             )}
             {!LessonModulePlayerLoader && (

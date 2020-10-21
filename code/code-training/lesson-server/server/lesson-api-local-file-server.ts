@@ -76,6 +76,7 @@ export const createLessonApiServer_localFileServer = ({
         const renderDestDirPath = getPathNormalized(lessonModuleFileRootPath, `${lessonModule.key}/build`);
         console.log(`buildLessonRender - Copy Files`, { dest: renderDestDirPath, source: outputSourceDirPath });
         await copyDirectory(outputSourceDirPath, renderDestDirPath, { removeExtraFiles: true });
+
     };
 
     const server: LessonServerApi = {

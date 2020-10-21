@@ -1,5 +1,6 @@
 {
   "name": "cra-template",
+  "homepage": "APP_ROOT_PATH",
   "version": "0.1.0",
   "private": true,
   "dependencies": {
