@@ -67,15 +67,6 @@ type InventoryContainer<TInventory> = {
 type AddInventoryItem<TGS, TNewInventoryItem> = TGS extends InventoryContainer<infer TOldInventory> ? Omit<TGS, 'inventory'> & InventoryContainer<TOldInventory & TNewInventoryItem> : never;
 type RemoveInventoryItem<TGS, TInventoryItemToRemove extends string> = TGS extends InventoryContainer<infer TOldInventory> ? Omit<TGS, 'inventory'> & InventoryContainer<Omit<TOldInventory, TInventoryItemToRemove>> : never;
 
-type YouAreDead<TReason extends string> = {
-    /** ### You Are Dead
-     * 
-     * Do not pass go, do not collect $200
-     * 
-     * You did not win.
-     */
-    youAreDead: TReason;
-};
 // type r01 = { inventory: { letter: true } };
 // const c01: r01 = null as unknown as r01;
 // type r02 = RemoveInventoryItem<r01, 'letter'>;
@@ -196,10 +187,20 @@ type OutsideOldHouse = {
      * 
      * However, you quickly regret your decision.
      * 
-     * ![](https://ricklove.me/blog-content/posts/2020-10-24-typescript-type-system-adventure/broken-window-eye.gif)
-     * 
      */
-    breakWindow: <T>(this: T) => YouAreDead<'I guess people really do defend their property'>;
+    breakWindow: <T>(this: T) => {
+        /** You Are Dead
+         * 
+         * Breaking that window may have been a little aggressive.
+         * 
+         * At least it seems that whatever was inside the house didn't appreciate it.
+         * 
+         * You don't know exactly what happened, but you are dead.
+         * 
+         * ![](https://ricklove.me/blog-content/posts/2020-10-24-typescript-type-system-adventure/broken-window-eye.gif)
+         */
+        youAreDead: true;
+    };
 
     knockOnDoor: <T>(this: T) => T;
     ringDoorBell: <T>(this: T) => T;
@@ -208,7 +209,7 @@ type OutsideOldHouse = {
 };
 
 // Play Game (Test)
-const play = (): GameWon => {
+const play = () => {
     const result = gameStart
         .begin()
         .look()
@@ -218,8 +219,10 @@ const play = (): GameWon => {
         .look()
         .approachHouse()
         .look()
-        .breakWindow()
+        .breakWindow().youAreDead
+        // .knockOnDoor()
         ;
 
-    return result;
+    // const _hasWon: GameWon = result;
+    // const _hasLost: { youAreDead: true } | true = result;
 };
