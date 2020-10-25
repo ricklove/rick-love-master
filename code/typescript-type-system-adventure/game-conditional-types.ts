@@ -65,7 +65,7 @@ type GameState_Environment<T extends GameStateCommon> =
           * 
           * Have fun!
           */
-        begin: (this: T) => GameState<Omit<T, '_hasStarted' | '_location'> & { _location: 'InFrontOfHouse', _inventory: {}, _environment: {} }>;
+        begin: () => GameState<Omit<T, '_hasStarted' | '_location'> & { _location: 'InFrontOfHouse', _inventory: {}, _environment: {} }>;
     }
     // In Front of House ---
     : T extends GameStateCommon<'InFrontOfHouse', {}, { isMailboxOpen?: false }> ? T & {
@@ -75,7 +75,7 @@ type GameState_Environment<T extends GameStateCommon> =
          * 
          * There is a mailbox nearby.
          */
-        look: (this: T) => GameState<T>;
+        look: () => GameState<T>;
 
         /** ### Open Mailbox 
          * 
@@ -85,7 +85,7 @@ type GameState_Environment<T extends GameStateCommon> =
          * 
          * 'To: The Finder of This Letter'
          */
-        openMailbox: (this: T) => GameState<SetInventory<SetEnvironment<T, { isMailboxOpen: true }>, { envelop: true }>>;
+        openMailbox: () => GameState<SetInventory<SetEnvironment<T, { isMailboxOpen: true }>, { envelop: true }>>;
     } : T extends GameStateCommon<'InFrontOfHouse', { letter?: false }, { isMailboxOpen: true }> ? T & {
         /** ### In Front of House
          * 
@@ -93,7 +93,7 @@ type GameState_Environment<T extends GameStateCommon> =
          * 
          * There is an open mailbox nearby.
          */
-        look: (this: T) => GameState<T>;
+        look: () => GameState<T>;
 
     } : T extends GameStateCommon<'InFrontOfHouse', { letter: true }, {}> ? T & {
         /** ### In Front of House
@@ -104,7 +104,7 @@ type GameState_Environment<T extends GameStateCommon> =
          * 
          * You notice a light flickering in the house.
          */
-        look: (this: T) => GameState<T>;
+        look: () => GameState<T>;
 
         /** ### Approach House
          * 
@@ -114,7 +114,7 @@ type GameState_Environment<T extends GameStateCommon> =
          * 
          * As you get near, the flickering light buzzes and finally goes out.
          */
-        approachHouse: (this: T) => GameState<SetLocation<T, 'OutsideOldHouse'>>;
+        approachHouse: () => GameState<SetLocation<T, 'OutsideOldHouse'>>;
     }
     // OutsideOldHouse ---
     : T extends GameStateCommon<'OutsideOldHouse', {}, {}> ? T & {
@@ -130,7 +130,7 @@ type GameState_Environment<T extends GameStateCommon> =
          * "May all those who enter as guests, leave ~~as friends~~ *without giving us Cornavirus*"
          * 
          */
-        look: (this: T) => GameState<T>;
+        look: () => GameState<T>;
 
         /** ### Break the Window
          * 
@@ -139,7 +139,7 @@ type GameState_Environment<T extends GameStateCommon> =
          * However, you quickly regret your decision...
          * 
          */
-        breakWindow: (this: T) => {
+        breakWindow: () => {
             /** ### You Are Dead
              * 
              * Breaking that window may have been a little aggressive.
@@ -159,7 +159,7 @@ type GameState_Environment<T extends GameStateCommon> =
          * 
          * Or maybe not...
          */
-        openDoor: (this: T) => {
+        openDoor: () => {
             /** ### You Are Dead
              * 
              * The owners didn't appreciate your rude entrance and neither did their shotgun.
@@ -177,39 +177,45 @@ type GameState_Environment<T extends GameStateCommon> =
         * After waiting a moment, nothing seems to have happened.
         * 
         */
-        ringDoorBell: <T>(this: T) => T;
+        ringDoorBell: <T>() => T;
 
         /** ### Knock on the Door
          * 
          * You knock on the door.
          * 
-         * After waiting a moment, a nice old lady appears:
-         * 
-         * > Welcome!
-         * >
-         * > I always like it when children visit.
-         * > 
-         * > I just got done baking some chocolate chip cookies.
+         * It appears someone is home, you hear footsteps inside...
          */
-        knockOnDoor: (this: T) => {
-            /** ### Eat the Cookie
+        knockOnDoor: () => {
+            /** * ### Wait at Door
              * 
-             * You take a cookie from the plate the lady is pushing towards you.
+             * After waiting a moment, a nice old lady appears:
              * 
-             * You aren't sure about it, but decide that it's better not to be rude.
+             * > Welcome!
+             * >
+             * > I always like it when children visit.
+             * > 
+             * > I just got done baking some chocolate chip cookies.
              */
-            eatCookie: () => {
-                /** ### You are Now Being Tracked
+            wait: () => {
+                /** ### Eat the Cookie
                  * 
-                 * You accepted the cookies and now everywhere you go you see ads about the last thing you mentioned to your friend in private conversation.
+                 * You take a cookie from the plate the lady is pushing towards you.
                  * 
-                 * Oh well, worse things could have happened.
-                 * 
+                 * You aren't sure about it, but decide that it's better not to be rude.
                  */
-                youAreNowBeingTracked: () => GameWon;
+                eatCookie: () => {
+                    /** ### You are Now Being Tracked
+                     * 
+                     * You accepted the cookies and now everywhere you go you see ads about the last thing you mentioned to your friend in private conversation.
+                     * 
+                     * Oh well, worse things could have happened.
+                     * 
+                     */
+                    youAreNowBeingTracked: () => GameWon;
+                };
             };
         };
-        // knockOnDoor: <T>(this: T) => T;
+        // knockOnDoor: <T>() => T;
     }
     // This is needed when forcing an inventory action
     : {};
@@ -336,17 +342,20 @@ type HideType<T> = T extends T ? {
 // Play Game (Test)
 const play = () => {
 
-    gameStart
-        .begin()
-        .openMailbox()
-        .openEnvelop()
-        .readLetter()
-        .approachHouse()
-        .look()
-        // .breakWindow().youAreDead.gameOver
-        // .openDoor().youAreDead.gameOver
-        // .ringDoorBell()
-        .knockOnDoor().eatCookie().youAreNowBeingTracked().winner();
+    // gameStart.begin().openMailbox().openEnvelop().readLetter().approachHouse().
+
+    // gameStart.begin().openMailbox().
+    // gameStart
+    //     .begin()
+    //     .openMailbox()
+    //     .openEnvelop()
+    //     .readLetter()
+    //     .approachHouse()
+    //     .look()
+    //     // .breakWindow().youAreDead.gameOver
+    //     // .openDoor().youAreDead.gameOver
+    //     // .ringDoorBell()
+    //     .knockOnDoor().wait().eatCookie().youAreNowBeingTracked().winner();
     // .knockOnDoor().eatCookie().youAreNowBeingTracked().winner();
 
 
