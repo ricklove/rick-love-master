@@ -76,6 +76,9 @@
       "user-data-service/*": [
         "code/networking/user-data-service/*"
       ],
+      "typescript-type-system-adventure/*": [
+        "code/typescript-type-system-adventure/*"
+      ],
       "utils-react/*": [
         "code/utils-react/*"
       ],
