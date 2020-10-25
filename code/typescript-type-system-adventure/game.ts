@@ -28,6 +28,16 @@
  */
 export const gameStart: GameStart = null as unknown as GameStart;
 
+type GameStart = {
+    /** ### Begin Your Adventure
+     * 
+     * You have begun an amazing adventure!
+     * 
+     * Have fun!
+     */
+    begin: <T> () => Omit<T, 'begin'> & InFrontOfHouse & InventoryContainer<{}>;
+}
+
 /** ### Winner!
  * 
  * You have won! 
@@ -42,8 +52,11 @@ export const gameStart: GameStart = null as unknown as GameStart;
  * */
 type GameWon = { winner: true };
 
+// Helpers ---
 type InventoryContainer<TInventory> = {
-    /** This is all the stuff you found in the game.
+    /** ### Inventory 
+     * 
+     * This is all the stuff you found in the game.
      * 
      * Of course it is an infinite inventory. What kind of game do you think this is?
      * 
@@ -60,8 +73,7 @@ type RemoveInventoryItem<TGS, TInventoryItemToRemove extends string> = TGS exten
 // const c02: r02 = c01;
 // const c03 = c02.inventory;
 
-// type At<T, TLocation> = T & { _at: TLocation };
-
+// Chapter 01 ---
 type InFrontOfHouse = {
 
     /** ### In Front of House
@@ -160,23 +172,15 @@ type OutsideOldHouse = {
      * 
      * You are standing outside an old house.
      * 
+     * The wind is getting very strong now and you need to find shelter.
+     * 
+     * In the window beside the door, you see a sign that says:
+     * 
+     * "May all those who enter as guests, leave ~~as friends~~ *without giving us Cornavirus*"
+     * 
      */
     look: <T>(this: T) => T;
 };
-
-
-// type OpenMailbox = At<{}, InFrontOfHouse>;
-
-type GameStart = {
-    /** ### Begin Your Adventure
-     * 
-     * You have begun an amazing adventure!
-     * 
-     * Have fun!
-     */
-    begin: <T> () => Omit<T, 'begin'> & InFrontOfHouse & InventoryContainer<{}>;
-}
-
 
 // Play Game (Test)
 const play = (): GameWon => {
