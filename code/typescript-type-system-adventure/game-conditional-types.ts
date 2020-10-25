@@ -65,7 +65,7 @@ type GameState_Environment<T extends GameStateCommon> =
           * 
           * Have fun!
           */
-        begin: () => GameState<Omit<T, '_hasStarted' | '_location'> & { _location: 'InFrontOfHouse', _inventory: {}, _environment: {} }>;
+        begin: GameState<Omit<T, '_hasStarted' | '_location'> & { _location: 'InFrontOfHouse', _inventory: {}, _environment: {} }>;
     }
     // In Front of House ---
     : T extends GameStateCommon<'InFrontOfHouse', {}, { isMailboxOpen?: false }> ? T & {
@@ -75,7 +75,7 @@ type GameState_Environment<T extends GameStateCommon> =
          * 
          * There is a mailbox nearby.
          */
-        look: () => GameState<T>;
+        look: GameState<T>;
 
         /** ### Open Mailbox 
          * 
@@ -85,7 +85,7 @@ type GameState_Environment<T extends GameStateCommon> =
          * 
          * 'To: The Finder of This Letter'
          */
-        openMailbox: () => GameState<SetInventory<SetEnvironment<T, { isMailboxOpen: true }>, { envelop: true }>>;
+        openMailbox: GameState<SetInventory<SetEnvironment<T, { isMailboxOpen: true }>, { envelop: true }>>;
     } : T extends GameStateCommon<'InFrontOfHouse', { letter?: false }, { isMailboxOpen: true }> ? T & {
         /** ### In Front of House
          * 
@@ -93,7 +93,7 @@ type GameState_Environment<T extends GameStateCommon> =
          * 
          * There is an open mailbox nearby.
          */
-        look: () => GameState<T>;
+        look: GameState<T>;
 
     } : T extends GameStateCommon<'InFrontOfHouse', { letter: true }, {}> ? T & {
         /** ### In Front of House
@@ -104,7 +104,7 @@ type GameState_Environment<T extends GameStateCommon> =
          * 
          * You notice a light flickering in the house.
          */
-        look: () => GameState<T>;
+        look: GameState<T>;
 
         /** ### Approach House
          * 
@@ -114,7 +114,7 @@ type GameState_Environment<T extends GameStateCommon> =
          * 
          * As you get near, the flickering light buzzes and finally goes out.
          */
-        approachHouse: () => GameState<SetLocation<T, 'OutsideOldHouse'>>;
+        approachHouse: GameState<SetLocation<T, 'OutsideOldHouse'>>;
     }
     // OutsideOldHouse ---
     : T extends GameStateCommon<'OutsideOldHouse', {}, {}> ? T & {
@@ -130,7 +130,7 @@ type GameState_Environment<T extends GameStateCommon> =
          * "May all those who enter as guests, leave ~~as friends~~ *without giving us Cornavirus*"
          * 
          */
-        look: () => GameState<T>;
+        look: GameState<T>;
 
         /** ### Break the Window
          * 
@@ -139,7 +139,7 @@ type GameState_Environment<T extends GameStateCommon> =
          * However, you quickly regret your decision...
          * 
          */
-        breakWindow: () => {
+        breakWindow: {
             /** ### You Are Dead
              * 
              * Breaking that window may have been a little aggressive.
@@ -159,7 +159,7 @@ type GameState_Environment<T extends GameStateCommon> =
          * 
          * Or maybe not...
          */
-        openDoor: () => {
+        openDoor: {
             /** ### You Are Dead
              * 
              * The owners didn't appreciate your rude entrance and neither did their shotgun.
@@ -177,7 +177,7 @@ type GameState_Environment<T extends GameStateCommon> =
         * After waiting a moment, nothing seems to have happened.
         * 
         */
-        ringDoorBell: <T>() => T;
+        ringDoorBell: T;
 
         /** ### Knock on the Door
          * 
@@ -185,7 +185,7 @@ type GameState_Environment<T extends GameStateCommon> =
          * 
          * It appears someone is home, you hear footsteps inside...
          */
-        knockOnDoor: () => {
+        knockOnDoor: {
             /** * ### Wait at Door
              * 
              * After waiting a moment, a nice old lady appears:
@@ -196,14 +196,14 @@ type GameState_Environment<T extends GameStateCommon> =
              * > 
              * > I just got done baking some chocolate chip cookies.
              */
-            wait: () => {
+            wait: {
                 /** ### Eat the Cookie
                  * 
                  * You take a cookie from the plate the lady is pushing towards you.
                  * 
                  * You aren't sure about it, but decide that it's better not to be rude.
                  */
-                eatCookie: () => {
+                eatCookie: {
                     /** ### You are Now Being Tracked
                      * 
                      * You accepted the cookies and now everywhere you go you see ads about the last thing you mentioned to your friend in private conversation.
@@ -211,11 +211,10 @@ type GameState_Environment<T extends GameStateCommon> =
                      * Oh well, worse things could have happened.
                      * 
                      */
-                    youAreNowBeingTracked: () => GameWon;
+                    youAreNowBeingTracked: GameWon;
                 };
             };
         };
-        // knockOnDoor: <T>() => T;
     }
     // This is needed when forcing an inventory action
     : {};
@@ -243,7 +242,7 @@ type GameState_Inventory<T extends GameStateCommon> =
          * 
          * The paper is very brittle, it must be very old. You've never touched parchment before, but this is probably it. 
          */
-        openEnvelop: () => GameState<SetInventory<T, { envelop: false, letter: true }>>;
+        openEnvelop: GameState<SetInventory<T, { envelop: false, letter: true }>>;
     } : {}
     & T extends { _inventory: { letter: true } } ? {
         /** ### Read Letter
@@ -258,7 +257,7 @@ type GameState_Inventory<T extends GameStateCommon> =
          * >
          * > Beware the any!
          */
-        readLetter: () => GameState<T>;
+        readLetter: GameState<T>;
     } : {}
     & {};
 
@@ -342,6 +341,7 @@ type HideType<T> = T extends T ? {
 // Play Game (Test)
 const play = () => {
 
+    gameStart.begin.look.openMailbox.openEnvelop.readLetter.look.approachHouse.knockOnDoor.wait.eatCookie.youAreNowBeingTracked.winner();
     // gameStart.begin().openMailbox().openEnvelop().readLetter().approachHouse().
 
     // gameStart.begin().openMailbox().
