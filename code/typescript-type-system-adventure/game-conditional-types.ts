@@ -26,7 +26,7 @@
  * 
  * https://ricklove.me/typescript-type-system-adventure
  */
-const gameStart = null as unknown as GameState<HideType<{ hasStarted: false, _location: '', _inventory: {}, _environment: {} }>>;
+const gameStart = null as unknown as GameState<HideType<{ _hasStarted: false, _location: '', _inventory: {}, _environment: {} }>>;
 
 /** ### Winner!
  * 
@@ -55,14 +55,14 @@ type SetEnvironment<T extends GameStateCommon, TNew> = Omit<T, '_environment'> &
 type GameStateCommon<TLocation extends string = string, TInventory extends {} = {}, TEnvironment extends {} = {}> = { _location: TLocation, _inventory: TInventory, _environment: TEnvironment };
 type GameState_Environment<T extends GameStateCommon> =
     // Game Start
-    T extends { hasStarted: false } ? T & {
+    T extends { _hasStarted: false } ? T & {
         /** ### Begin Your Adventure
           * 
           * You have begun an amazing adventure!
           * 
           * Have fun!
           */
-        begin: (this: T) => GameState<Omit<T, 'hasStarted' | '_location'> & { _location: 'InFrontOfHouse', _inventory: {}, _environment: {} }>;
+        begin: (this: T) => GameState<Omit<T, '_hasStarted' | '_location'> & { _location: 'InFrontOfHouse', _inventory: {}, _environment: {} }>;
     }
     // In Front of House ---
     : T extends GameStateCommon<'InFrontOfHouse', {}, { isMailboxOpen?: false }> ? T & {
@@ -153,19 +153,22 @@ type GameState_Environment<T extends GameStateCommon> =
         //     knockOnDoor: <T>(this: T) => T;
         //     ringDoorBell: <T>(this: T) => T;
     }
-    // The Unknown ---
-    : {
-        /** ### The Unknown
-         * 
-         * You have broken the game, or rather you have found an unhandled state.
-         * 
-         * It's a feature! Not a bug!
-         * 
-         * The good news is that you didn't succumb to the 'any', so you are still safe.
-         * 
-         */
-        unknown: unknown;
-    };
+    // This is needed when forcing an inventory action
+    : {};
+
+// // The Unknown ---
+// : {
+//     /** ### The Unknown
+//      * 
+//      * You have broken the game, or rather you have found an unhandled state.
+//      * 
+//      * It's a feature! Not a bug!
+//      * 
+//      * The good news is that you didn't succumb to the 'any', so you are still safe.
+//      * 
+//      */
+//     unknown: unknown;
+// };
 
 
 // type InFrontOfHouse_ReadLetter = {
@@ -279,6 +282,8 @@ type GameState<T extends GameStateCommon> =
     T extends { youAreDead: true } ? GameOver
     : HideType<GameState_Environment<T> & GameState_Inventory<T>>;
 
+// type HideType<T> = T extends T ? { __: unknown } & T : never;
+// type HideType<T> = T extends T ? { __: { '                                                                                                                                                                                                                                  ': {} } } & T : never;
 type HideType<T> = T extends T ? {
     __: {
         _00: `  Typescript Type System Adventure                                   `;
@@ -310,14 +315,19 @@ const play = () => {
 
     gameStart
         .begin()
-        .look()
-        .openMailbox()
-        .openEnvelop()
-        .readLetter()
-        .look()
-        .approachHouse()
-        .readLetter()
-        .look()
-        // .breakWindow().youAreDead.gameOver
-        ;
+        .
+    // gameStart.begin().look().openMailbox().openEnvelop().readLetter().approachHouse().breakWindow().youAreDead.gameOver;
+
+    // gameStart
+    //     .begin()
+    //     .look()
+    //     .openMailbox()
+    //     .openEnvelop()
+    //     .readLetter()
+    //     .look()
+    //     .approachHouse()
+    //     .readLetter()
+    //     .look()
+    //     // .breakWindow().youAreDead.gameOver
+    //     ;
 };
