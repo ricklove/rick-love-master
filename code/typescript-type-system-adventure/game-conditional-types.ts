@@ -282,40 +282,69 @@ type GameState<T extends GameStateCommon> =
     T extends { youAreDead: true } ? GameOver
     : HideType<GameState_Environment<T> & GameState_Inventory<T>>;
 
-// type HideType<T> = T extends T ? { __: unknown } & T : never;
+// type HideType<T> = T extends T ? {
+//     __: [
+//         '⬇ READ BELOW ⬇ READ BELOW ⬇ READ BELOW ⬇ READ BELOW ⬇ READ BELOW ⬇ READ BELOW ⬇ READ BELOW ⬇ READ BELOW ⬇ READ BELOW ⬇',
+//         '⬇ READ BELOW ⬇ READ BELOW ⬇ READ BELOW ⬇ READ BELOW ⬇ READ BELOW ⬇ READ BELOW ⬇ READ BELOW ⬇ READ BELOW ⬇ READ BELOW ⬇',
+//         '⬇ READ BELOW ⬇ READ BELOW ⬇ READ BELOW ⬇ READ BELOW ⬇ READ BELOW ⬇ READ BELOW ⬇ READ BELOW ⬇ READ BELOW ⬇ READ BELOW ⬇',
+//         '⬇ READ BELOW ⬇ READ BELOW ⬇ READ BELOW ⬇ READ BELOW ⬇ READ BELOW ⬇ READ BELOW ⬇ READ BELOW ⬇ READ BELOW ⬇ READ BELOW ⬇',
+//         '⬇ READ BELOW ⬇ READ BELOW ⬇ READ BELOW ⬇ READ BELOW ⬇ READ BELOW ⬇ READ BELOW ⬇ READ BELOW ⬇ READ BELOW ⬇ READ BELOW ⬇',
+//         '⬇ READ BELOW ⬇ READ BELOW ⬇ READ BELOW ⬇ READ BELOW ⬇ READ BELOW ⬇ READ BELOW ⬇ READ BELOW ⬇ READ BELOW ⬇ READ BELOW ⬇',
+//         '⬇ READ BELOW ⬇ READ BELOW ⬇ READ BELOW ⬇ READ BELOW ⬇ READ BELOW ⬇ READ BELOW ⬇ READ BELOW ⬇ READ BELOW ⬇ READ BELOW ⬇',
+//         '⬇ READ BELOW ⬇ READ BELOW ⬇ READ BELOW ⬇ READ BELOW ⬇ READ BELOW ⬇ READ BELOW ⬇ READ BELOW ⬇ READ BELOW ⬇ READ BELOW ⬇',
+//         '⬇ READ BELOW ⬇ READ BELOW ⬇ READ BELOW ⬇ READ BELOW ⬇ READ BELOW ⬇ READ BELOW ⬇ READ BELOW ⬇ READ BELOW ⬇ READ BELOW ⬇',
+//         '⬇ READ BELOW ⬇ READ BELOW ⬇ READ BELOW ⬇ READ BELOW ⬇ READ BELOW ⬇ READ BELOW ⬇ READ BELOW ⬇ READ BELOW ⬇ READ BELOW ⬇',
+//         '⬇ READ BELOW ⬇ READ BELOW ⬇ READ BELOW ⬇ READ BELOW ⬇ READ BELOW ⬇ READ BELOW ⬇ READ BELOW ⬇ READ BELOW ⬇ READ BELOW ⬇',
+//         '⬇ READ BELOW ⬇ READ BELOW ⬇ READ BELOW ⬇ READ BELOW ⬇ READ BELOW ⬇ READ BELOW ⬇ READ BELOW ⬇ READ BELOW ⬇ READ BELOW ⬇',
+//         '⬇ READ BELOW ⬇ READ BELOW ⬇ READ BELOW ⬇ READ BELOW ⬇ READ BELOW ⬇ READ BELOW ⬇ READ BELOW ⬇ READ BELOW ⬇ READ BELOW ⬇',
+//         '⬇ READ BELOW ⬇ READ BELOW ⬇ READ BELOW ⬇ READ BELOW ⬇ READ BELOW ⬇ READ BELOW ⬇ READ BELOW ⬇ READ BELOW ⬇ READ BELOW ⬇',
+//         '⬇ READ BELOW ⬇ READ BELOW ⬇ READ BELOW ⬇ READ BELOW ⬇ READ BELOW ⬇ READ BELOW ⬇ READ BELOW ⬇ READ BELOW ⬇ READ BELOW ⬇',
+//         '⬇ READ BELOW ⬇ READ BELOW ⬇ READ BELOW ⬇ READ BELOW ⬇ READ BELOW ⬇ READ BELOW ⬇ READ BELOW ⬇ READ BELOW ⬇ READ BELOW ⬇',
+//         '⬇ READ BELOW ⬇ READ BELOW ⬇ READ BELOW ⬇ READ BELOW ⬇ READ BELOW ⬇ READ BELOW ⬇ READ BELOW ⬇ READ BELOW ⬇ READ BELOW ⬇',
+//         '⬇ READ BELOW ⬇ READ BELOW ⬇ READ BELOW ⬇ READ BELOW ⬇ READ BELOW ⬇ READ BELOW ⬇ READ BELOW ⬇ READ BELOW ⬇ READ BELOW ⬇',
+//         '⬇ READ BELOW ⬇ READ BELOW ⬇ READ BELOW ⬇ READ BELOW ⬇ READ BELOW ⬇ READ BELOW ⬇ READ BELOW ⬇ READ BELOW ⬇ READ BELOW ⬇',
+//         '⬇ READ BELOW ⬇ READ BELOW ⬇ READ BELOW ⬇ READ BELOW ⬇ READ BELOW ⬇ READ BELOW ⬇ READ BELOW ⬇ READ BELOW ⬇ READ BELOW ⬇',
+//         '⬇ READ BELOW ⬇ READ BELOW ⬇ READ BELOW ⬇ READ BELOW ⬇ READ BELOW ⬇ READ BELOW ⬇ READ BELOW ⬇ READ BELOW ⬇ READ BELOW ⬇',
+//         '⬇ READ BELOW ⬇ READ BELOW ⬇ READ BELOW ⬇ READ BELOW ⬇ READ BELOW ⬇ READ BELOW ⬇ READ BELOW ⬇ READ BELOW ⬇ READ BELOW ⬇',
+//         '⬇ READ BELOW ⬇ READ BELOW ⬇ READ BELOW ⬇ READ BELOW ⬇ READ BELOW ⬇ READ BELOW ⬇ READ BELOW ⬇ READ BELOW ⬇ READ BELOW ⬇',
+//     ];
+// } & T : never;
 // type HideType<T> = T extends T ? { __: { '                                                                                                                                                                                                                                  ': {} } } & T : never;
 type HideType<T> = T extends T ? {
-    __: {
-        _00: `  Typescript Type System Adventure                                   `;
-        _01: `  by: Rick Love                                                      `;
-        _02: `                                            _____                    `;
-        _03: `  _________________________________        |     |                   `;
-        _04: `  |----|  Typescript        |-----|        |     |                   `;
-        _05: `  |----|   Type             |-----|        |     |                   `;
-        _06: `  |----|    System          |-----|        |     |                   `;
-        _07: `  |----|     Adventure      |-----|        |     |                   `;
-        _08: `  |----|______by: Rick Love_|-----|        |     |                   `;
-        _09: `  |-------------------------------|        |     |                   `;
-        _10: `  |-------------------------------|        |     |                   `;
-        _11: `  |-------_________________-------|        |     |                   `;
-        _12: `  |------|            |    |------|      __|     |__                 `;
-        _13: `  |------|  --        |    |------|       *       *                  `;
-        _14: `  |------| |  |       |    |------|        *     *                   `;
-        _15: `  |------| |__|       |    |------|         *   *                    `;
-        _16: `   *_____|____________|____|______|          * *                     `;
-        _17: `                                              *                      `;
-        _18: `                                                                     `;
-        _19: `                                                                     `;
-        _20: `                                                                     `;
-    };
+    __: [
+        '  Typescript Type System Adventure                                   ',
+        '  by: Rick Love                                                      ',
+        '                                            _____                    ',
+        '  _________________________________        |     |                   ',
+        '  |----|  Typescript        |-----|        |     |                   ',
+        '  |----|   Type             |-----|        |     |                   ',
+        '  |----|    System          |-----|        |     |                   ',
+        '  |----|     Adventure      |-----|        |     |                   ',
+        '  |----|______by: Rick Love_|-----|        |     |                   ',
+        '  |-------------------------------|        |     |                   ',
+        '  |-------------------------------|        |     |                   ',
+        '  |-------_________________-------|        |     |                   ',
+        '  |------|            |    |------|      __|     |__                 ',
+        '  |------|  --        |    |------|       *       *                  ',
+        '  |------| |  |       |    |------|        *     *                   ',
+        '  |------| |__|       |    |------|         *   *                    ',
+        '   *_____|____________|____|______|          * *                     ',
+        '                                              *                      ',
+        '                                                                     ',
+        '                                                                     ',
+        '                                                                     ',
+    ];
 } & T : never;
 
 // Play Game (Test)
 const play = () => {
 
-    gameStart
-        .begin()
-        .
+    // gameStart
+    // .begin()
+
+
+    // gameStart
+    //     .begin();
     // gameStart.begin().look().openMailbox().openEnvelop().readLetter().approachHouse().breakWindow().youAreDead.gameOver;
 
     // gameStart
