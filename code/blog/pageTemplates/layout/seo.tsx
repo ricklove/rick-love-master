@@ -15,9 +15,9 @@ export const SEO = ({ title, description = ``, lang = `en`, imageUrl, meta = [] 
   const metaDescription = description || site.siteMetadata.description;
 
   const imageMeta = imageUrl ? [
-    { property: `og:image`, content: imageUrl },
+    { property: `og:image`, content: site.siteMetadata.siteRoot + imageUrl },
     { property: `twitter:card`, content: `summary_large_image` },
-    { property: `twitter:image`, content: imageUrl },
+    { property: `twitter:image`, content: site.siteMetadata.siteRoot + imageUrl },
   ] : [];
 
   return (
