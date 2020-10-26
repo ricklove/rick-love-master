@@ -4,6 +4,7 @@ date: "2020-10-24"
 path: "/typescript-type-system-adventure"
 author: "Rick Love"
 excerpt: "Text Adventure implemented in the Typescript Type System and Vscode JsDoc Viewer"
+image: game-screenshot-04-type-only.png
 ---
 
 tl;dr: Play a text adventure in vscode with the typescript type system.
