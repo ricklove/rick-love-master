@@ -1,7 +1,8 @@
 {
-  "name": "typescript-type-system-adventure",
-  "version": "1.0.0",
-  "dependencies": {
-    "utils": "*"
-  }
+  "name": "@ricklove/typescript-type-system-adventure",
+  "version": "1.0.2",
+  "author": "Rick Love",
+  "homepage": "https://ricklove.me/typescript-type-system-adventure",
+  "license": "CC BY-NC-ND 4.0",
+  "private": false
 }

@@ -13,6 +13,40 @@ type Hider = _<'Typescript Type System Adventure - by Rick Love 🤓​​​​
  * @date   2020-10-24
  * @license This work is licensed under a Creative Commons Attribution-NonCommercial-NoDerivatives 4.0 International License.
  * 
+ * ### Summary
+ * 
+ * This is a text adventure entirely implemented in the typescript type system.
+ * 
+ * - Play in vscode using autocomplete and tooltips
+ * - Game output displayed in tooltips using jsdoc3 with markdown
+ * - Implemented using conditional types, string literals, and a minimal state machine
+ * 
+ * ### Getting Started
+ * 
+ * ```ts
+ * import { gameStart } from '@ricklove/typescript-type-system-adventure';
+ * 
+ * const play = () => {
+ * 
+ *     return gameStart
+ *         .command(`look`).execute
+ *         ;
+ * };
+ * 
+ * ```
+ * 
+ * ### Help
+ * 
+ * Commands to try:
+ * 
+ * - look
+ * - inventory
+ * - open mailbox
+ * - open envelope
+ * - read letter
+ * - move house
+ * 
+ * 
  * ### Ascii Art
  * 
  * ```text
@@ -36,10 +70,6 @@ type Hider = _<'Typescript Type System Adventure - by Rick Love 🤓​​​​
  *  :.....................................................:
  * ```
  * 
- * ### Summary
- * 
- * So this was written for fun!
- * 
  * ### Note: 
  * 
  * This is a work of fiction. It's not code that you can run or anything. It's a fun toy playing with the typescript type system.
@@ -58,7 +88,7 @@ type Hider = _<'Typescript Type System Adventure - by Rick Love 🤓​​​​
  * 
  * https://ricklove.me/typescript-type-system-adventure
  */
-const gameStart = null as unknown as GameStart;
+export const gameStart = (null as unknown as GameStart).command(`begin`).execute;
 export type GameStart = Hider & GameStateCommon<Location_Start>;
 
 type GameStateCommon<TLocation extends string = string, TInventory extends {} = {}, TEnvironment extends {} = {}> = {
@@ -105,10 +135,10 @@ export type Command<TState extends GameStateCommon, TCommand> =
          * 
          */
         execute: TState;
-    } :
+    }
 
     // Game Start
-    [TCommand, TState] extends ['begin', { location: Location_Start }] ?
+    : [TCommand, TState] extends ['begin', { location: Location_Start }] ?
     {
         /** ### Begin Your Adventure
          * 
@@ -410,41 +440,23 @@ type GameOver = {
      * https://ricklove.me/typescript-type-system-adventure
      * 
      * ```text
-     * MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM
-     * MMMMMMMMMMMM        MMMMMMMMMMMM
-     * MMMMMMMMMM            MMMMMMMMMM
-     * MMMMMMMMM              MMMMMMMMM
-     * MMMMMMMM                MMMMMMMM
-     * MMMMMMM                 MMMMMMMM
-     * MMMMMMM                  MMMMMMM
-     * MMMMMMM                  MMMMMMM
-     * MMMMMMM    MMM    MMM    MMMMMMM
-     * MMMMMMM   MMMMM   MMMM   MMMMMMM
-     * MMMMMMM   MMMMM   MMMM   MMMMMMM
-     * MMMMMMMM   MMMM M MMMM  MMMMMMMM
-     * MMVKMMMM        M        MMMMMMM
-     * MMMMMMMM       MMM      MMMMMMMM
-     * MMMMMMMMMMMM   MMM  MMMMMMMMMMMM
-     * MMMMMMMMMM MM       M  MMMMMMMMM
-     * MMMMMMMMMM  M M M M M MMMMMMMMMM
-     * MMMM  MMMMM MMMMMMMMM MMMMM   MM
-     * MMM    MMMM M MMMMM M MMMM    MM
-     * MMM    MMMM   M M M  MMMMM   MMM
-     * MMMM    MMMM         MMM      MM
-     * MMM       MMMM     MMMM       MM
-     * MMM         MMMMMMMM      M  MMM
-     * MMMM  MMM      MMM      MMMMMMMM
-     * MMMMMMMMMMM  MM       MMMMMMM  M
-     * MMM  MMMMMMM       MMMMMMMMM   M
-     * MM    MMM        MM            M
-     * MM            MMMM            MM
-     * MMM        MMMMMMMMMMMMM       M
-     * MM      MMMMMMMMMMMMMMMMMMM    M
-     * MMM   MMMMMMMMMMMMMMMMMMMMMM   M
-     * MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM
+     * |     💀💀💀💀💀     
+     * |   💀💀💀💀💀💀💀   
+     * |  💀💀   💀   💀💀  
+     * | 💀💀    💀    💀💀 
+     * | 💀💀    💀    💀💀 
+     * |  💀💀💀💀💀💀💀💀  
+     * |   💀💀💀  💀💀💀   
+     * |      💀💀💀💀      
+     * |   💀   💀💀   💀   
+     * |    💀💀    💀💀    
+     * |      💀💀💀💀      
+     * |   🦴          🦴   
+     * |  🦴🦴🦴  🦴🦴🦴🦴    
+     * |      🦴🦴🦴🦴      
+     * |  🦴🦴🦴🦴  🦴🦴🦴    
+     * |   🦴           🦴    
      * ```
-     * Ascii Art From: https://asciiart.website/index.php?art=people/skeletons
-     * 
      * */
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     gameOver: GameOver;
