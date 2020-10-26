@@ -13,6 +13,8 @@ export type PostPageData = {
     title: string;
     body: string;
     summary: string;
+    excerpt?: string;
+    imageUrl?: string;
 };
 
 export const PostPage = (props: { data: PostPageData }) => {
@@ -21,7 +23,7 @@ export const PostPage = (props: { data: PostPageData }) => {
 
     return (
         <Layout>
-            <SEO title={title} />
+            <SEO title={title} description={props.data.excerpt} imageUrl={props.data.imageUrl} />
             <div style={{ display: `block`, minWidth: `100%` }} >
                 <div className='post-item'>
                     <p>{title}</p>
