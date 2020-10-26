@@ -2,6 +2,11 @@ import React from 'react';
 import { Helmet } from 'react-helmet';
 import * as Store from '../../site/store';
 
+// Fav Icons
+import favicon16 from '../../assets/favicon16.png';
+import favicon32 from '../../assets/favicon32.png';
+import favicon64 from '../../assets/favicon64.png';
+
 export const SEO = ({ title, description = ``, lang = `en`, imageUrl, meta = [] }: {
   title: string;
   description?: string;
@@ -61,6 +66,11 @@ export const SEO = ({ title, description = ``, lang = `en`, imageUrl, meta = [] 
           content: metaDescription,
         },
       ].concat(imageMeta).concat(meta)}
+      link={[
+        { rel: `icon`, type: `image/png`, sizes: `16x16`, href: `${favicon16}` },
+        { rel: `icon`, type: `image/png`, sizes: `32x32`, href: `${favicon32}` },
+        { rel: `shortcut icon`, type: `image/png`, href: `${favicon64}` },
+      ]}
     />
   );
 };
