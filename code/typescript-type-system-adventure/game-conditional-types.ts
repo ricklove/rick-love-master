@@ -42,7 +42,7 @@ type GameWon = {
      * https://ricklove.me/typescript-type-system-adventure
      * 
      * */
-    winner: () => void;
+    win: () => void;
 };
 
 
@@ -342,7 +342,19 @@ type HideType<T> = T extends T ? {
 // Play Game (Test)
 const play = () => {
 
-    // gameStart.begin().openMailbox().openEnvelop().readLetter().approachHouse().
+    gameStart
+        .begin()
+        .look()
+        .openMailbox()
+        .openEnvelop()
+        .readLetter()
+        .look()
+        .approachHouse()
+        .knockOnDoor()
+        .wait()
+        .eatCookie()
+        .youAreNowBeingTracked()
+        .win();
 
     // gameStart.begin().openMailbox().
     // gameStart
