@@ -1,4 +1,6 @@
 /* eslint-disable import/no-default-export */
 export default {
-    plugins: [],
+    plugins: [
+        `gatsby-plugin-react-helmet`,
+    ],
 };
