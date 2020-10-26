@@ -4,7 +4,7 @@ date: "2020-10-24"
 path: "/typescript-type-system-adventure"
 author: "Rick Love"
 excerpt: "Text Adventure implemented in the Typescript Type System and Vscode JsDoc Viewer"
-image: game-screenshot-04-type-only.png
+image: game-screenshot-06-large.png.png
 ---
 
 tl;dr: Play a text adventure in vscode with the typescript type system.
@@ -109,6 +109,8 @@ const playEasyMode = () => {
 ![](game-screenshot-04-type-only.png)
 
 ![](game-screenshot-05-easy.png)
+
+![](game-screenshot-06-large.png)
 
 ### Source Code
 
