@@ -2,36 +2,1045 @@
   "errors": [],
   "warnings": [],
   "version": "4.44.1",
-  "hash": "9ceaaf30808cd05a70e7",
+  "hash": "7e7e44e51974f3323a23",
   "publicPath": "/",
   "outputPath": "D:\\\\Projects\\\\rick-love-master\\\\projects\\\\blog-site\\\\public",
   "assetsByChunkName": {
-    "main": [
-      "render-page.js",
-      "render-page.js.map"
+    "commons": [
+      "commons-ef10e8b81c536e21b969.js",
+      "commons-ef10e8b81c536e21b969.js.map"
+    ],
+    "styles": [
+      "styles.b2cbefb609ace0d9372f.css",
+      "styles-1f9520ddb0a369677e59.js",
+      "styles-1f9520ddb0a369677e59.js.map"
+    ],
+    "4c744e84": [
+      "4c744e84-1912d3cbe87b1957dba3.js",
+      "4c744e84-1912d3cbe87b1957dba3.js.map"
+    ],
+    "69bd6bf3": [
+      "69bd6bf3-20dca97451e2f38acdc4.js",
+      "69bd6bf3-20dca97451e2f38acdc4.js.map"
+    ],
+    "a981ec11": [
+      "a981ec11-25f481f21ff5ac7b86e1.js",
+      "a981ec11-25f481f21ff5ac7b86e1.js.map"
+    ],
+    "a3dca1a5": [
+      "a3dca1a5-0adfe45758ce0039c872.js",
+      "a3dca1a5-0adfe45758ce0039c872.js.map"
+    ],
+    "webpack-runtime": [
+      "webpack-runtime-7b9faf27c9d539a37544.js",
+      "webpack-runtime-7b9faf27c9d539a37544.js.map"
+    ],
+    "app": [
+      "app-b7ff442e3e1914fb5f41.js",
+      "app-b7ff442e3e1914fb5f41.js.map"
+    ],
+    "component---gatsby-lite-template-ts": [
+      "component---gatsby-lite-template-ts-5e109a2a58a51f012f11.js",
+      "component---gatsby-lite-template-ts-5e109a2a58a51f012f11.js.map"
+    ],
+    "framework": [
+      "framework-e0220234193f43412b0b.js",
+      "framework-e0220234193f43412b0b.js.map"
+    ],
+    "polyfill": [
+      "polyfill-b1bbaa28dc79cc93875a.js",
+      "polyfill-b1bbaa28dc79cc93875a.js.map"
     ]
   },
   "assets": [
     {
-      "name": "render-page.js",
-      "size": 7087538,
+      "name": "13-3793e04a971b53aee9f7.js",
+      "size": 348,
       "chunks": [
-        "main"
+        13
       ],
-      "chunkNames": [
-        "main"
-      ],
-      "info": {},
+      "chunkNames": [],
+      "info": {
+        "immutable": true
+      },
       "emitted": false
     },
     {
-      "name": "render-page.js.map",
-      "size": 6143575,
+      "name": "13-3793e04a971b53aee9f7.js.map",
+      "size": 418,
       "chunks": [
-        "main"
+        13
+      ],
+      "chunkNames": [],
+      "info": {
+        "development": true
+      },
+      "emitted": false
+    },
+    {
+      "name": "14-e3502cfdabfb2d8a5e15.js",
+      "size": 39176,
+      "chunks": [
+        14
+      ],
+      "chunkNames": [],
+      "info": {
+        "immutable": true
+      },
+      "emitted": false
+    },
+    {
+      "name": "14-e3502cfdabfb2d8a5e15.js.map",
+      "size": 80216,
+      "chunks": [
+        14
+      ],
+      "chunkNames": [],
+      "info": {
+        "development": true
+      },
+      "emitted": false
+    },
+    {
+      "name": "15-10c6b7a98b647f039ca7.js",
+      "size": 594584,
+      "chunks": [
+        15
+      ],
+      "chunkNames": [],
+      "info": {
+        "immutable": true
+      },
+      "emitted": false
+    },
+    {
+      "name": "15-10c6b7a98b647f039ca7.js.map",
+      "size": 103,
+      "chunks": [
+        15
+      ],
+      "chunkNames": [],
+      "info": {
+        "development": true
+      },
+      "emitted": false
+    },
+    {
+      "name": "16-641849736c51cebbeaf9.js",
+      "size": 2810,
+      "chunks": [
+        16
+      ],
+      "chunkNames": [],
+      "info": {
+        "immutable": true
+      },
+      "emitted": false
+    },
+    {
+      "name": "16-641849736c51cebbeaf9.js.map",
+      "size": 5437,
+      "chunks": [
+        16
+      ],
+      "chunkNames": [],
+      "info": {
+        "development": true
+      },
+      "emitted": false
+    },
+    {
+      "name": "17-d00d7ae25a3ef0006541.js",
+      "size": 21415,
+      "chunks": [
+        17
+      ],
+      "chunkNames": [],
+      "info": {
+        "immutable": true
+      },
+      "emitted": false
+    },
+    {
+      "name": "17-d00d7ae25a3ef0006541.js.map",
+      "size": 51659,
+      "chunks": [
+        17
+      ],
+      "chunkNames": [],
+      "info": {
+        "development": true
+      },
+      "emitted": false
+    },
+    {
+      "name": "18-2e65b25df6516d52c2b0.js",
+      "size": 225364,
+      "chunks": [
+        18
+      ],
+      "chunkNames": [],
+      "info": {
+        "immutable": true
+      },
+      "emitted": false
+    },
+    {
+      "name": "18-2e65b25df6516d52c2b0.js.map",
+      "size": 227991,
+      "chunks": [
+        18
+      ],
+      "chunkNames": [],
+      "info": {
+        "development": true
+      },
+      "emitted": false
+    },
+    {
+      "name": "19-87e463cc68b2e2e142a2.js",
+      "size": 85113,
+      "chunks": [
+        19
+      ],
+      "chunkNames": [],
+      "info": {
+        "immutable": true
+      },
+      "emitted": false
+    },
+    {
+      "name": "19-87e463cc68b2e2e142a2.js.map",
+      "size": 419602,
+      "chunks": [
+        19
+      ],
+      "chunkNames": [],
+      "info": {
+        "development": true
+      },
+      "emitted": false
+    },
+    {
+      "name": "20-529573c9806705a5c4dc.js",
+      "size": 7196,
+      "chunks": [
+        20
+      ],
+      "chunkNames": [],
+      "info": {
+        "immutable": true
+      },
+      "emitted": false
+    },
+    {
+      "name": "20-529573c9806705a5c4dc.js.map",
+      "size": 13307,
+      "chunks": [
+        20
+      ],
+      "chunkNames": [],
+      "info": {
+        "development": true
+      },
+      "emitted": false
+    },
+    {
+      "name": "21-c68df74d6825fe75a52e.js",
+      "size": 1577,
+      "chunks": [
+        21
+      ],
+      "chunkNames": [],
+      "info": {
+        "immutable": true
+      },
+      "emitted": false
+    },
+    {
+      "name": "21-c68df74d6825fe75a52e.js.map",
+      "size": 3472,
+      "chunks": [
+        21
+      ],
+      "chunkNames": [],
+      "info": {
+        "development": true
+      },
+      "emitted": false
+    },
+    {
+      "name": "22-7d64f999723420370a7a.js",
+      "size": 2812,
+      "chunks": [
+        22
+      ],
+      "chunkNames": [],
+      "info": {
+        "immutable": true
+      },
+      "emitted": false
+    },
+    {
+      "name": "22-7d64f999723420370a7a.js.map",
+      "size": 7730,
+      "chunks": [
+        22
+      ],
+      "chunkNames": [],
+      "info": {
+        "development": true
+      },
+      "emitted": false
+    },
+    {
+      "name": "23-4c156f98c885c4dfa8b6.js",
+      "size": 19196,
+      "chunks": [
+        23
+      ],
+      "chunkNames": [],
+      "info": {
+        "immutable": true
+      },
+      "emitted": false
+    },
+    {
+      "name": "23-4c156f98c885c4dfa8b6.js.map",
+      "size": 54557,
+      "chunks": [
+        23
+      ],
+      "chunkNames": [],
+      "info": {
+        "development": true
+      },
+      "emitted": false
+    },
+    {
+      "name": "24-ac4453537dadb936e500.js",
+      "size": 5185,
+      "chunks": [
+        24
+      ],
+      "chunkNames": [],
+      "info": {
+        "immutable": true
+      },
+      "emitted": false
+    },
+    {
+      "name": "24-ac4453537dadb936e500.js.map",
+      "size": 14965,
+      "chunks": [
+        24
+      ],
+      "chunkNames": [],
+      "info": {
+        "development": true
+      },
+      "emitted": false
+    },
+    {
+      "name": "25-f6285e70a8b5b4ec07cc.js",
+      "size": 8921,
+      "chunks": [
+        25
+      ],
+      "chunkNames": [],
+      "info": {
+        "immutable": true
+      },
+      "emitted": false
+    },
+    {
+      "name": "25-f6285e70a8b5b4ec07cc.js.map",
+      "size": 28670,
+      "chunks": [
+        25
+      ],
+      "chunkNames": [],
+      "info": {
+        "development": true
+      },
+      "emitted": false
+    },
+    {
+      "name": "26-099743ebda40f9114a38.js",
+      "size": 6299,
+      "chunks": [
+        26
+      ],
+      "chunkNames": [],
+      "info": {
+        "immutable": true
+      },
+      "emitted": false
+    },
+    {
+      "name": "26-099743ebda40f9114a38.js.map",
+      "size": 20748,
+      "chunks": [
+        26
+      ],
+      "chunkNames": [],
+      "info": {
+        "development": true
+      },
+      "emitted": false
+    },
+    {
+      "name": "27-00788dab52acf8aa348f.js",
+      "size": 8795,
+      "chunks": [
+        27
+      ],
+      "chunkNames": [],
+      "info": {
+        "immutable": true
+      },
+      "emitted": false
+    },
+    {
+      "name": "27-00788dab52acf8aa348f.js.map",
+      "size": 27921,
+      "chunks": [
+        27
+      ],
+      "chunkNames": [],
+      "info": {
+        "development": true
+      },
+      "emitted": false
+    },
+    {
+      "name": "28-a03e2af9bd7a7b3e2eb0.js",
+      "size": 9349,
+      "chunks": [
+        28
+      ],
+      "chunkNames": [],
+      "info": {
+        "immutable": true
+      },
+      "emitted": false
+    },
+    {
+      "name": "28-a03e2af9bd7a7b3e2eb0.js.map",
+      "size": 31595,
+      "chunks": [
+        28
+      ],
+      "chunkNames": [],
+      "info": {
+        "development": true
+      },
+      "emitted": false
+    },
+    {
+      "name": "29-8d8e2b37ecba916fb8e6.js",
+      "size": 21117,
+      "chunks": [
+        29
+      ],
+      "chunkNames": [],
+      "info": {
+        "immutable": true
+      },
+      "emitted": false
+    },
+    {
+      "name": "29-8d8e2b37ecba916fb8e6.js.map",
+      "size": 31034,
+      "chunks": [
+        29
+      ],
+      "chunkNames": [],
+      "info": {
+        "development": true
+      },
+      "emitted": false
+    },
+    {
+      "name": "30-862a2d64ec0ff0924299.js",
+      "size": 1789,
+      "chunks": [
+        30
+      ],
+      "chunkNames": [],
+      "info": {
+        "immutable": true
+      },
+      "emitted": false
+    },
+    {
+      "name": "30-862a2d64ec0ff0924299.js.map",
+      "size": 6130,
+      "chunks": [
+        30
+      ],
+      "chunkNames": [],
+      "info": {
+        "development": true
+      },
+      "emitted": false
+    },
+    {
+      "name": "31-5719f58d2cbcb26195ba.js",
+      "size": 3980,
+      "chunks": [
+        31
+      ],
+      "chunkNames": [],
+      "info": {
+        "immutable": true
+      },
+      "emitted": false
+    },
+    {
+      "name": "31-5719f58d2cbcb26195ba.js.map",
+      "size": 9721,
+      "chunks": [
+        31
+      ],
+      "chunkNames": [],
+      "info": {
+        "development": true
+      },
+      "emitted": false
+    },
+    {
+      "name": "32-f54cb8e29e317bb548a2.js",
+      "size": 5487,
+      "chunks": [
+        32
+      ],
+      "chunkNames": [],
+      "info": {
+        "immutable": true
+      },
+      "emitted": false
+    },
+    {
+      "name": "32-f54cb8e29e317bb548a2.js.map",
+      "size": 9540,
+      "chunks": [
+        32
+      ],
+      "chunkNames": [],
+      "info": {
+        "development": true
+      },
+      "emitted": false
+    },
+    {
+      "name": "33-583acbfcd2b31243674b.js",
+      "size": 3472,
+      "chunks": [
+        33
+      ],
+      "chunkNames": [],
+      "info": {
+        "immutable": true
+      },
+      "emitted": false
+    },
+    {
+      "name": "33-583acbfcd2b31243674b.js.map",
+      "size": 9261,
+      "chunks": [
+        33
+      ],
+      "chunkNames": [],
+      "info": {
+        "development": true
+      },
+      "emitted": false
+    },
+    {
+      "name": "34-ea035e2021ad93647f99.js",
+      "size": 2218,
+      "chunks": [
+        34
+      ],
+      "chunkNames": [],
+      "info": {
+        "immutable": true
+      },
+      "emitted": false
+    },
+    {
+      "name": "34-ea035e2021ad93647f99.js.map",
+      "size": 6071,
+      "chunks": [
+        34
+      ],
+      "chunkNames": [],
+      "info": {
+        "development": true
+      },
+      "emitted": false
+    },
+    {
+      "name": "35-9ec0bf0a62ca70e7253a.js",
+      "size": 2490,
+      "chunks": [
+        35
+      ],
+      "chunkNames": [],
+      "info": {
+        "immutable": true
+      },
+      "emitted": false
+    },
+    {
+      "name": "35-9ec0bf0a62ca70e7253a.js.map",
+      "size": 5731,
+      "chunks": [
+        35
+      ],
+      "chunkNames": [],
+      "info": {
+        "development": true
+      },
+      "emitted": false
+    },
+    {
+      "name": "36-2e7b3a3d4fea670c6445.js",
+      "size": 16367,
+      "chunks": [
+        36
+      ],
+      "chunkNames": [],
+      "info": {
+        "immutable": true
+      },
+      "emitted": false
+    },
+    {
+      "name": "36-2e7b3a3d4fea670c6445.js.map",
+      "size": 41520,
+      "chunks": [
+        36
+      ],
+      "chunkNames": [],
+      "info": {
+        "development": true
+      },
+      "emitted": false
+    },
+    {
+      "name": "37-cdf41b59ec46fe09cdec.js",
+      "size": 294,
+      "chunks": [
+        37
+      ],
+      "chunkNames": [],
+      "info": {
+        "immutable": true
+      },
+      "emitted": false
+    },
+    {
+      "name": "37-cdf41b59ec46fe09cdec.js.map",
+      "size": 612,
+      "chunks": [
+        37
+      ],
+      "chunkNames": [],
+      "info": {
+        "development": true
+      },
+      "emitted": false
+    },
+    {
+      "name": "38-6ed7eedf82d41c8e7118.js",
+      "size": 1491,
+      "chunks": [
+        38
+      ],
+      "chunkNames": [],
+      "info": {
+        "immutable": true
+      },
+      "emitted": false
+    },
+    {
+      "name": "38-6ed7eedf82d41c8e7118.js.map",
+      "size": 3580,
+      "chunks": [
+        38
+      ],
+      "chunkNames": [],
+      "info": {
+        "development": true
+      },
+      "emitted": false
+    },
+    {
+      "name": "4c744e84-1912d3cbe87b1957dba3.js",
+      "size": 3663,
+      "chunks": [
+        2
       ],
       "chunkNames": [
-        "main"
+        "4c744e84"
+      ],
+      "info": {
+        "immutable": true
+      },
+      "emitted": false
+    },
+    {
+      "name": "4c744e84-1912d3cbe87b1957dba3.js.map",
+      "size": 1557543,
+      "chunks": [
+        2
+      ],
+      "chunkNames": [
+        "4c744e84"
+      ],
+      "info": {
+        "development": true
+      },
+      "emitted": false
+    },
+    {
+      "name": "69bd6bf3-20dca97451e2f38acdc4.js",
+      "size": 1810,
+      "chunks": [
+        3
+      ],
+      "chunkNames": [
+        "69bd6bf3"
+      ],
+      "info": {
+        "immutable": true
+      },
+      "emitted": false
+    },
+    {
+      "name": "69bd6bf3-20dca97451e2f38acdc4.js.map",
+      "size": 526181,
+      "chunks": [
+        3
+      ],
+      "chunkNames": [
+        "69bd6bf3"
+      ],
+      "info": {
+        "development": true
+      },
+      "emitted": false
+    },
+    {
+      "name": "7-0a0a1936c0b1de1c57a4.js",
+      "size": 312,
+      "chunks": [
+        7
+      ],
+      "chunkNames": [],
+      "info": {
+        "immutable": true
+      },
+      "emitted": false
+    },
+    {
+      "name": "7-0a0a1936c0b1de1c57a4.js.map",
+      "size": 381,
+      "chunks": [
+        7
+      ],
+      "chunkNames": [],
+      "info": {
+        "development": true
+      },
+      "emitted": false
+    },
+    {
+      "name": "8-7518d7ed4b9792732def.js",
+      "size": 8095,
+      "chunks": [
+        8
+      ],
+      "chunkNames": [],
+      "info": {
+        "immutable": true
+      },
+      "emitted": false
+    },
+    {
+      "name": "8-7518d7ed4b9792732def.js.map",
+      "size": 25163,
+      "chunks": [
+        8
+      ],
+      "chunkNames": [],
+      "info": {
+        "development": true
+      },
+      "emitted": false
+    },
+    {
+      "name": "a3dca1a5-0adfe45758ce0039c872.js",
+      "size": 420217,
+      "chunks": [
+        5
+      ],
+      "chunkNames": [
+        "a3dca1a5"
+      ],
+      "info": {
+        "immutable": true
+      },
+      "emitted": false
+    },
+    {
+      "name": "a3dca1a5-0adfe45758ce0039c872.js.map",
+      "size": 432310,
+      "chunks": [
+        5
+      ],
+      "chunkNames": [
+        "a3dca1a5"
+      ],
+      "info": {
+        "development": true
+      },
+      "emitted": false
+    },
+    {
+      "name": "a981ec11-25f481f21ff5ac7b86e1.js",
+      "size": 788,
+      "chunks": [
+        4
+      ],
+      "chunkNames": [
+        "a981ec11"
+      ],
+      "info": {
+        "immutable": true
+      },
+      "emitted": false
+    },
+    {
+      "name": "a981ec11-25f481f21ff5ac7b86e1.js.map",
+      "size": 229395,
+      "chunks": [
+        4
+      ],
+      "chunkNames": [
+        "a981ec11"
+      ],
+      "info": {
+        "development": true
+      },
+      "emitted": false
+    },
+    {
+      "name": "app-b7ff442e3e1914fb5f41.js",
+      "size": 95242,
+      "chunks": [
+        9
+      ],
+      "chunkNames": [
+        "app"
+      ],
+      "info": {
+        "immutable": true
+      },
+      "emitted": false
+    },
+    {
+      "name": "app-b7ff442e3e1914fb5f41.js.map",
+      "size": 415534,
+      "chunks": [
+        9
+      ],
+      "chunkNames": [
+        "app"
+      ],
+      "info": {
+        "development": true
+      },
+      "emitted": false
+    },
+    {
+      "name": "commons-ef10e8b81c536e21b969.js",
+      "size": 251560,
+      "chunks": [
+        0
+      ],
+      "chunkNames": [
+        "commons"
+      ],
+      "info": {
+        "immutable": true
+      },
+      "emitted": false
+    },
+    {
+      "name": "commons-ef10e8b81c536e21b969.js.map",
+      "size": 850035,
+      "chunks": [
+        0
+      ],
+      "chunkNames": [
+        "commons"
+      ],
+      "info": {
+        "development": true
+      },
+      "emitted": false
+    },
+    {
+      "name": "component---gatsby-lite-template-ts-5e109a2a58a51f012f11.js",
+      "size": 154689,
+      "chunks": [
+        10
+      ],
+      "chunkNames": [
+        "component---gatsby-lite-template-ts"
+      ],
+      "info": {
+        "immutable": true
+      },
+      "emitted": false
+    },
+    {
+      "name": "component---gatsby-lite-template-ts-5e109a2a58a51f012f11.js.map",
+      "size": 619129,
+      "chunks": [
+        10
+      ],
+      "chunkNames": [
+        "component---gatsby-lite-template-ts"
+      ],
+      "info": {
+        "development": true
+      },
+      "emitted": false
+    },
+    {
+      "name": "framework-e0220234193f43412b0b.js",
+      "size": 128816,
+      "chunks": [
+        11
+      ],
+      "chunkNames": [
+        "framework"
+      ],
+      "info": {
+        "immutable": true
+      },
+      "emitted": false
+    },
+    {
+      "name": "framework-e0220234193f43412b0b.js.map",
+      "size": 313504,
+      "chunks": [
+        11
+      ],
+      "chunkNames": [
+        "framework"
+      ],
+      "info": {
+        "development": true
+      },
+      "emitted": false
+    },
+    {
+      "name": "polyfill-b1bbaa28dc79cc93875a.js",
+      "size": 81697,
+      "chunks": [
+        12
+      ],
+      "chunkNames": [
+        "polyfill"
+      ],
+      "info": {
+        "immutable": true
+      },
+      "emitted": false
+    },
+    {
+      "name": "polyfill-b1bbaa28dc79cc93875a.js.map",
+      "size": 196501,
+      "chunks": [
+        12
+      ],
+      "chunkNames": [
+        "polyfill"
+      ],
+      "info": {
+        "development": true
+      },
+      "emitted": false
+    },
+    {
+      "name": "styles-1f9520ddb0a369677e59.js",
+      "size": 145,
+      "chunks": [
+        1
+      ],
+      "chunkNames": [
+        "styles"
+      ],
+      "info": {
+        "immutable": true
+      },
+      "emitted": false
+    },
+    {
+      "name": "styles-1f9520ddb0a369677e59.js.map",
+      "size": 107,
+      "chunks": [
+        1
+      ],
+      "chunkNames": [
+        "styles"
+      ],
+      "info": {
+        "development": true
+      },
+      "emitted": false
+    },
+    {
+      "name": "styles.b2cbefb609ace0d9372f.css",
+      "size": 6501,
+      "chunks": [
+        1
+      ],
+      "chunkNames": [
+        "styles"
+      ],
+      "info": {
+        "immutable": true
+      },
+      "emitted": false
+    },
+    {
+      "name": "webpack-runtime-7b9faf27c9d539a37544.js",
+      "size": 5150,
+      "chunks": [
+        6
+      ],
+      "chunkNames": [
+        "webpack-runtime"
+      ],
+      "info": {
+        "immutable": true
+      },
+      "emitted": false
+    },
+    {
+      "name": "webpack-runtime-7b9faf27c9d539a37544.js.map",
+      "size": 19198,
+      "chunks": [
+        6
+      ],
+      "chunkNames": [
+        "webpack-runtime"
       ],
       "info": {
         "development": true
@@ -41,26 +1050,93 @@
   ],
   "filteredAssets": 0,
   "entrypoints": {
-    "main": {
+    "polyfill": {
       "chunks": [
-        "main"
+        6,
+        0,
+        12
       ],
       "assets": [
-        "render-page.js",
-        "render-page.js.map"
+        "webpack-runtime-7b9faf27c9d539a37544.js",
+        "webpack-runtime-7b9faf27c9d539a37544.js.map",
+        "commons-ef10e8b81c536e21b969.js",
+        "commons-ef10e8b81c536e21b969.js.map",
+        "polyfill-b1bbaa28dc79cc93875a.js",
+        "polyfill-b1bbaa28dc79cc93875a.js.map"
+      ],
+      "children": {},
+      "childAssets": {}
+    },
+    "app": {
+      "chunks": [
+        6,
+        11,
+        0,
+        9
+      ],
+      "assets": [
+        "webpack-runtime-7b9faf27c9d539a37544.js",
+        "webpack-runtime-7b9faf27c9d539a37544.js.map",
+        "framework-e0220234193f43412b0b.js",
+        "framework-e0220234193f43412b0b.js.map",
+        "commons-ef10e8b81c536e21b969.js",
+        "commons-ef10e8b81c536e21b969.js.map",
+        "app-b7ff442e3e1914fb5f41.js",
+        "app-b7ff442e3e1914fb5f41.js.map"
       ],
       "children": {},
       "childAssets": {}
     }
   },
   "namedChunkGroups": {
-    "main": {
+    "polyfill": {
       "chunks": [
-        "main"
+        6,
+        0,
+        12
       ],
       "assets": [
-        "render-page.js",
-        "render-page.js.map"
+        "webpack-runtime-7b9faf27c9d539a37544.js",
+        "webpack-runtime-7b9faf27c9d539a37544.js.map",
+        "commons-ef10e8b81c536e21b969.js",
+        "commons-ef10e8b81c536e21b969.js.map",
+        "polyfill-b1bbaa28dc79cc93875a.js",
+        "polyfill-b1bbaa28dc79cc93875a.js.map"
+      ],
+      "children": {},
+      "childAssets": {}
+    },
+    "app": {
+      "chunks": [
+        6,
+        11,
+        0,
+        9
+      ],
+      "assets": [
+        "webpack-runtime-7b9faf27c9d539a37544.js",
+        "webpack-runtime-7b9faf27c9d539a37544.js.map",
+        "framework-e0220234193f43412b0b.js",
+        "framework-e0220234193f43412b0b.js.map",
+        "commons-ef10e8b81c536e21b969.js",
+        "commons-ef10e8b81c536e21b969.js.map",
+        "app-b7ff442e3e1914fb5f41.js",
+        "app-b7ff442e3e1914fb5f41.js.map"
+      ],
+      "children": {},
+      "childAssets": {}
+    },
+    "component---gatsby-lite-template-ts": {
+      "chunks": [
+        1,
+        10
+      ],
+      "assets": [
+        "styles.b2cbefb609ace0d9372f.css",
+        "styles-1f9520ddb0a369677e59.js",
+        "styles-1f9520ddb0a369677e59.js.map",
+        "component---gatsby-lite-template-ts-5e109a2a58a51f012f11.js",
+        "component---gatsby-lite-template-ts-5e109a2a58a51f012f11.js.map"
       ],
       "children": {},
       "childAssets": {}
@@ -69,9 +1145,388 @@
   "logging": {
     "webpack.buildChunkGraph.visitModules": {
       "entries": [],
-      "filteredEntries": 2,
+      "filteredEntries": 11,
       "debug": false
     }
   },
-  "children": []
+  "children": [
+    {
+      "errors": [],
+      "warnings": [],
+      "publicPath": "/",
+      "outputPath": "D:\\\\Projects\\\\rick-love-master\\\\projects\\\\blog-site\\\\public",
+      "assetsByChunkName": {},
+      "assets": [],
+      "filteredAssets": 0,
+      "entrypoints": {
+        "mini-css-extract-plugin": {
+          "chunks": [
+            0
+          ],
+          "assets": [
+            "*"
+          ],
+          "children": {},
+          "childAssets": {}
+        }
+      },
+      "namedChunkGroups": {
+        "mini-css-extract-plugin": {
+          "chunks": [
+            0
+          ],
+          "assets": [
+            "*"
+          ],
+          "children": {},
+          "childAssets": {}
+        }
+      },
+      "logging": {
+        "webpack.buildChunkGraph.visitModules": {
+          "entries": [],
+          "filteredEntries": 2,
+          "debug": false
+        }
+      },
+      "children": [],
+      "name": "mini-css-extract-plugin ../../node_modules/css-loader/index.js??ref--12-oneOf-1-1!../../node_modules/postcss-loader/src/index.js??postcss-2!../../code/blog/pageTemplates/layout/code.css"
+    },
+    {
+      "errors": [],
+      "warnings": [],
+      "publicPath": "/",
+      "outputPath": "D:\\\\Projects\\\\rick-love-master\\\\projects\\\\blog-site\\\\public",
+      "assetsByChunkName": {},
+      "assets": [],
+      "filteredAssets": 0,
+      "entrypoints": {
+        "mini-css-extract-plugin": {
+          "chunks": [
+            0
+          ],
+          "assets": [
+            "*"
+          ],
+          "children": {},
+          "childAssets": {}
+        }
+      },
+      "namedChunkGroups": {
+        "mini-css-extract-plugin": {
+          "chunks": [
+            0
+          ],
+          "assets": [
+            "*"
+          ],
+          "children": {},
+          "childAssets": {}
+        }
+      },
+      "logging": {
+        "webpack.buildChunkGraph.visitModules": {
+          "entries": [],
+          "filteredEntries": 2,
+          "debug": false
+        }
+      },
+      "children": [],
+      "name": "mini-css-extract-plugin ../../node_modules/css-loader/index.js??ref--12-oneOf-1-1!../../node_modules/postcss-loader/src/index.js??postcss-2!../../code/blog/pageTemplates/layout/header.css"
+    },
+    {
+      "errors": [],
+      "warnings": [],
+      "publicPath": "/",
+      "outputPath": "D:\\\\Projects\\\\rick-love-master\\\\projects\\\\blog-site\\\\public",
+      "assetsByChunkName": {},
+      "assets": [],
+      "filteredAssets": 0,
+      "entrypoints": {
+        "mini-css-extract-plugin": {
+          "chunks": [
+            0
+          ],
+          "assets": [
+            "*"
+          ],
+          "children": {},
+          "childAssets": {}
+        }
+      },
+      "namedChunkGroups": {
+        "mini-css-extract-plugin": {
+          "chunks": [
+            0
+          ],
+          "assets": [
+            "*"
+          ],
+          "children": {},
+          "childAssets": {}
+        }
+      },
+      "logging": {
+        "webpack.buildChunkGraph.visitModules": {
+          "entries": [],
+          "filteredEntries": 2,
+          "debug": false
+        }
+      },
+      "children": [],
+      "name": "mini-css-extract-plugin ../../node_modules/css-loader/index.js??ref--12-oneOf-1-1!../../node_modules/postcss-loader/src/index.js??postcss-2!../../code/blog/pageTemplates/layout/layout-game.css"
+    },
+    {
+      "errors": [],
+      "warnings": [],
+      "publicPath": "/",
+      "outputPath": "D:\\\\Projects\\\\rick-love-master\\\\projects\\\\blog-site\\\\public",
+      "assetsByChunkName": {},
+      "assets": [],
+      "filteredAssets": 0,
+      "entrypoints": {
+        "mini-css-extract-plugin": {
+          "chunks": [
+            0
+          ],
+          "assets": [
+            "*"
+          ],
+          "children": {},
+          "childAssets": {}
+        }
+      },
+      "namedChunkGroups": {
+        "mini-css-extract-plugin": {
+          "chunks": [
+            0
+          ],
+          "assets": [
+            "*"
+          ],
+          "children": {},
+          "childAssets": {}
+        }
+      },
+      "logging": {
+        "webpack.buildChunkGraph.visitModules": {
+          "entries": [],
+          "filteredEntries": 2,
+          "debug": false
+        }
+      },
+      "children": [],
+      "name": "mini-css-extract-plugin ../../node_modules/css-loader/index.js??ref--12-oneOf-1-1!../../node_modules/postcss-loader/src/index.js??postcss-2!../../code/blog/pageTemplates/layout/layout.css"
+    },
+    {
+      "errors": [],
+      "warnings": [],
+      "publicPath": "/",
+      "outputPath": "D:\\\\Projects\\\\rick-love-master\\\\projects\\\\blog-site\\\\public",
+      "assetsByChunkName": {},
+      "assets": [],
+      "filteredAssets": 0,
+      "entrypoints": {
+        "mini-css-extract-plugin": {
+          "chunks": [
+            0
+          ],
+          "assets": [
+            "*"
+          ],
+          "children": {},
+          "childAssets": {}
+        }
+      },
+      "namedChunkGroups": {
+        "mini-css-extract-plugin": {
+          "chunks": [
+            0
+          ],
+          "assets": [
+            "*"
+          ],
+          "children": {},
+          "childAssets": {}
+        }
+      },
+      "logging": {
+        "webpack.buildChunkGraph.visitModules": {
+          "entries": [],
+          "filteredEntries": 2,
+          "debug": false
+        }
+      },
+      "children": [],
+      "name": "mini-css-extract-plugin ../../node_modules/css-loader/index.js??ref--12-oneOf-1-1!../../node_modules/postcss-loader/src/index.js??postcss-2!../../code/blog/pageTemplates/post.css"
+    },
+    {
+      "errors": [],
+      "warnings": [],
+      "publicPath": "/",
+      "outputPath": "D:\\\\Projects\\\\rick-love-master\\\\projects\\\\blog-site\\\\public",
+      "assetsByChunkName": {},
+      "assets": [],
+      "filteredAssets": 0,
+      "entrypoints": {
+        "mini-css-extract-plugin": {
+          "chunks": [
+            0
+          ],
+          "assets": [
+            "*"
+          ],
+          "children": {},
+          "childAssets": {}
+        }
+      },
+      "namedChunkGroups": {
+        "mini-css-extract-plugin": {
+          "chunks": [
+            0
+          ],
+          "assets": [
+            "*"
+          ],
+          "children": {},
+          "childAssets": {}
+        }
+      },
+      "logging": {
+        "webpack.buildChunkGraph.visitModules": {
+          "entries": [],
+          "filteredEntries": 2,
+          "debug": false
+        }
+      },
+      "children": [],
+      "name": "mini-css-extract-plugin ../../node_modules/css-loader/index.js??ref--12-oneOf-1-1!../../node_modules/postcss-loader/src/index.js??postcss-2!../../code/games/console-simulator/console-simulator.css"
+    },
+    {
+      "errors": [],
+      "warnings": [],
+      "publicPath": "/",
+      "outputPath": "D:\\\\Projects\\\\rick-love-master\\\\projects\\\\blog-site\\\\public",
+      "assetsByChunkName": {},
+      "assets": [],
+      "filteredAssets": 0,
+      "entrypoints": {
+        "mini-css-extract-plugin": {
+          "chunks": [
+            0
+          ],
+          "assets": [
+            "*"
+          ],
+          "children": {},
+          "childAssets": {}
+        }
+      },
+      "namedChunkGroups": {
+        "mini-css-extract-plugin": {
+          "chunks": [
+            0
+          ],
+          "assets": [
+            "*"
+          ],
+          "children": {},
+          "childAssets": {}
+        }
+      },
+      "logging": {
+        "webpack.buildChunkGraph.visitModules": {
+          "entries": [],
+          "filteredEntries": 2,
+          "debug": false
+        }
+      },
+      "children": [],
+      "name": "mini-css-extract-plugin ../../node_modules/css-loader/index.js??ref--12-oneOf-1-1!../../node_modules/postcss-loader/src/index.js??postcss-2!../../code/games/dork/components/achievement.css"
+    },
+    {
+      "errors": [],
+      "warnings": [],
+      "publicPath": "/",
+      "outputPath": "D:\\\\Projects\\\\rick-love-master\\\\projects\\\\blog-site\\\\public",
+      "assetsByChunkName": {},
+      "assets": [],
+      "filteredAssets": 0,
+      "entrypoints": {
+        "mini-css-extract-plugin": {
+          "chunks": [
+            0
+          ],
+          "assets": [
+            "*"
+          ],
+          "children": {},
+          "childAssets": {}
+        }
+      },
+      "namedChunkGroups": {
+        "mini-css-extract-plugin": {
+          "chunks": [
+            0
+          ],
+          "assets": [
+            "*"
+          ],
+          "children": {},
+          "childAssets": {}
+        }
+      },
+      "logging": {
+        "webpack.buildChunkGraph.visitModules": {
+          "entries": [],
+          "filteredEntries": 2,
+          "debug": false
+        }
+      },
+      "children": [],
+      "name": "mini-css-extract-plugin ../../node_modules/css-loader/index.js??ref--12-oneOf-1-1!../../node_modules/postcss-loader/src/index.js??postcss-2!../../code/react-native-lite/index.css"
+    },
+    {
+      "errors": [],
+      "warnings": [],
+      "publicPath": "/",
+      "outputPath": "D:\\\\Projects\\\\rick-love-master\\\\projects\\\\blog-site\\\\public",
+      "assetsByChunkName": {},
+      "assets": [],
+      "filteredAssets": 0,
+      "entrypoints": {
+        "mini-css-extract-plugin": {
+          "chunks": [
+            0
+          ],
+          "assets": [
+            "*"
+          ],
+          "children": {},
+          "childAssets": {}
+        }
+      },
+      "namedChunkGroups": {
+        "mini-css-extract-plugin": {
+          "chunks": [
+            0
+          ],
+          "assets": [
+            "*"
+          ],
+          "children": {},
+          "childAssets": {}
+        }
+      },
+      "logging": {
+        "webpack.buildChunkGraph.visitModules": {
+          "entries": [],
+          "filteredEntries": 2,
+          "debug": false
+        }
+      },
+      "children": [],
+      "name": "mini-css-extract-plugin ../../node_modules/css-loader/index.js??ref--12-oneOf-1-1!../../node_modules/postcss-loader/src/index.js??postcss-2!../../node_modules/prism-themes/themes/prism-vsc-dark-plus.css"
+    }
+  ]
 }
