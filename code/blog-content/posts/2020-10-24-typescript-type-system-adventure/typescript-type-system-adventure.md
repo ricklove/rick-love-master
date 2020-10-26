@@ -57,3 +57,6 @@ const play = () => {
 
 ![](game-screenshot-05-easy.png)
 
+### Source Code
+
+https://github.com/ricklove/rick-love-master/tree/master/code/typescript-type-system-adventure
