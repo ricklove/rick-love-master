@@ -61,7 +61,12 @@ type Hider = `Typescript Type System Adventure - by Rick Love 🤓​​​​�
  */
 export type GameStart = Hider & GameStateCommon & { hasGameStarted: false };
 
-type GameStateCommon<TLocation extends string = string, TInventory extends {} = {}, TEnvironment extends {} = {}> = { location: TLocation, inventory: TInventory, environment: TEnvironment };
+type GameStateCommon<TLocation extends string = string, TInventory extends {} = {}, TEnvironment extends {} = {}> = {
+    // command: <T extends GameStateCommon, TCommand>(this: T, command: TCommand) => Command<T, TCommand>;
+    location: TLocation;
+    inventory: TInventory;
+    environment: TEnvironment;
+};
 type SetLocation<T extends GameStateCommon, TNew extends string> = { location: TNew } & Omit<T, 'location'>;
 type SetInventory<T extends GameStateCommon, TNew> = { inventory: TNew & Omit<T['inventory'], keyof TNew> } & Omit<T, 'inventory'>;
 type SetEnvironment<T extends GameStateCommon, TNew> = { environment: TNew & Omit<T['environment'], keyof TNew> } & Omit<T, 'environment'>;
@@ -76,6 +81,7 @@ type UnknownCommand<T> = {
 };
 
 type Location_InFrontOfHouse = 'In Front of House';
+type Location_OutsideOldHouse = 'Outside Old House';
 
 export type Command<TState extends GameStateCommon, TCommand> =
     TCommand extends 'inv' | 'inventory' ? {
@@ -90,6 +96,7 @@ export type Command<TState extends GameStateCommon, TCommand> =
         execute: { inventory: TState['inventory'] } & TState;
     }
     : Hider &
+
     // Game Start
     [TCommand, TState] extends ['begin', { hasGameStarted: false }] ?
     {
@@ -98,8 +105,17 @@ export type Command<TState extends GameStateCommon, TCommand> =
          * You have begun an amazing adventure!
          * 
          * Have fun!
+         * 
+         * Commands to try:
+         * 
+         * - look
+         * - inventory
+         * - open ...
+         * - read ...
+         * - break ...
+         * 
          */
-        execute: Hider & { hasGameStarted: true, location: Location_InFrontOfHouse, inventory: {}, environment: {} };
+        execute: Hider & GameStateCommon<Location_InFrontOfHouse> & { hasGameStarted: true };
     }
 
     // In Front of House
@@ -109,7 +125,7 @@ export type Command<TState extends GameStateCommon, TCommand> =
          * 
          * You are in front of an old house.
          * 
-         * There is a mailbox nearby.
+         * There is a ***mailbox*** nearby.
          */
         execute: TState;
     }
@@ -117,25 +133,69 @@ export type Command<TState extends GameStateCommon, TCommand> =
     {
         /** ### Open Mailbox 
          * 
-         * You open the mainbox and find a letter inside 
+         * You open the mainbox and find an envelope inside.
          * 
-         * The front of the envelope reads: 
+         * The front of the ***envelope*** reads: 
          * 
          * 'To: The Finder of This Letter'
          */
         execute: Hider & SetInventory<SetEnvironment<TState, { mailbox: 'open' }>, { envelope: true }>;
     }
-    : [TCommand, TState] extends ['look', { location: Location_InFrontOfHouse, environment: { mailbox: 'open' }, inventory: { envelope: true } }] ?
+
+    // Envelope
+    : [TCommand, TState] extends ['look', { location: Location_InFrontOfHouse, inventory: { envelope: true } }] ?
     {
         /** ### In Front of House
          * 
          * You are standing in front of an old house.
          * 
-         * You have an envelope in your hand.
+         * You have an ***envelope*** in your hand.
          */
         execute: TState;
     }
-    : [TCommand, TState] extends ['look', { location: Location_InFrontOfHouse, environment: { mailbox: 'open' }, inventory: { letter: 'read' } }] ?
+    : [TCommand, TState] extends ['open envelope', { inventory: { envelope: true } }] ?
+    {
+        /** ### Open Envelope 
+         * 
+         * You open the envelope and find an single sheet of paper inside.
+         * 
+         * The paper is very brittle, it must be very old. You've never touched parchment before, but this is probably it. 
+         * 
+         * You wonder how such an old ***letter*** could have been in this mailbox.
+         */
+        execute: Hider & SetInventory<TState, { letter: true, envelope: false }>;
+    }
+
+    // Letter
+    : [TCommand, TState] extends ['look', { location: Location_InFrontOfHouse, inventory: { letter: true } }] ?
+    {
+        /** ### In Front of House
+         * 
+         * You are standing in front of an old house with an old ***letter*** in your hand.
+         * 
+         * You feel strangely drawn to the ***letter***.
+         */
+        execute: TState;
+    }
+    : [TCommand, TState] extends ['read letter', { inventory: { letter: true | 'read' } }] ?
+    {
+        /** ### Read Letter
+         * 
+         * You read the old ***letter***:
+         * 
+         * > You are beginning to enter a dangerous realm. 
+         * > What you thought you knew previously will soon be a shadow in your dreams.
+         * > Find the best way forward and do not listen to the foolish.
+         * >
+         * > It is not the ***unknown*** which you should fear. 
+         * >
+         * > Beware the ***any***!
+         */
+        execute: Hider & SetInventory<TState, { letter: 'read' }>;
+    }
+
+    // Approach House
+    : [TCommand, TState] extends ['look', { location: Location_InFrontOfHouse, inventory: { letter: 'read' } }] ?
     {
         /** ### In Front of House
          * 
@@ -147,34 +207,113 @@ export type Command<TState extends GameStateCommon, TCommand> =
          */
         execute: TState;
     }
-
-    // Envelope
-    : [TCommand, TState] extends ['open envelope', { inventory: { envelope: true } }] ?
+    : [TCommand, TState] extends ['approach house' | 'move house' | 'walk house', { location: Location_InFrontOfHouse, inventory: { letter: 'read' } }] ?
     {
-        /** ### Open Envelope 
+        /** ### Approach House
          * 
-         * You open the envelope and find an single sheet of paper inside.
+         * You walk towards the old house.
          * 
-         * The paper is very brittle, it must be very old. You've never touched parchment before, but this is probably it. 
+         * You hear the wind rustling through the trees, and a branch scratching against a window in the back of the house.
+         * 
+         * As you get near, the flickering light buzzes and finally goes out.
          */
-        execute: Hider & SetInventory<TState, { letter: true, envelope: false }>;
+        execute: SetLocation<TState, Location_OutsideOldHouse>;
     }
-    // Letter
-    : [TCommand, TState] extends ['read letter', { inventory: { letter: true | 'read' } }] ?
+
+    // House Door
+    : [TCommand, TState] extends ['look', { location: Location_OutsideOldHouse, inventory: { letter: 'read' } }] ?
     {
-        /** ### Read Letter
+        /** ### Outside Old House
          * 
-         * You read the old letter:
+         * You are standing outside an old house.
          * 
-         * > You are beginning to enter a dangerous realm. 
-         * > What you thought you knew previously will soon be a shadow in your dreams.
-         * > Find the best way forward and do not listen to the foolish.
-         * >
-         * > It is not the unknown which you should fear. 
-         * >
-         * > Beware the any!
+         * The wind is getting very strong now and you need to find shelter.
+         * 
+         * In the ***window*** beside the ***door***, you see a sign that says:
+         * 
+         * "May all those who enter as guests, leave ~~as friends~~ *without giving us Cornavirus*"
+         * 
          */
-        execute: Hider & SetInventory<TState, { letter: 'read' }>;
+        execute: TState;
+    }
+    : [TCommand, TState] extends ['approach house' | 'move house' | 'walk house', { location: Location_InFrontOfHouse, inventory: { letter: 'read' } }] ?
+    {
+        /** ### Approach House
+         * 
+         * You walk towards the old house.
+         * 
+         * You hear the wind rustling through the trees, and a branch scratching against a window in the back of the house.
+         * 
+         * As you get near, the flickering light buzzes and finally goes out.
+         */
+        execute: SetLocation<TState, Location_OutsideOldHouse>;
+    }
+
+    // The Unknown
+    : [TCommand, TState] extends ['unknown', {}] ? {
+        /** ### `unknown` is Safe
+         * 
+         * You have begun to wonder into an unknown type space.
+         * 
+         * The good news is that you didn't succumb to the 'any', so you are still safe.
+         * 
+         */
+        execute: TState;
+    }
+
+    // The Any
+    : [TCommand, TState] extends ['any', {}] ? {
+        /** ### `any` is Evil
+         * 
+         * You have entered an endless space devoid of meaning.
+         * 
+         * GAME OVER!
+         * 
+         * Beware the `any`!
+         * 
+         * To learn how to avoid `any`, read more on my blog:
+         * 
+         * https://ricklove.me/typescript-any-is-evil
+         * 
+         * ```text
+         * MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM
+         * MMMMMMMMMMMM        MMMMMMMMMMMM
+         * MMMMMMMMMM            MMMMMMMMMM
+         * MMMMMMMMM              MMMMMMMMM
+         * MMMMMMMM                MMMMMMMM
+         * MMMMMMM                 MMMMMMMM
+         * MMMMMMM                  MMMMMMM
+         * MMMMMMM                  MMMMMMM
+         * MMMMMMM    MMM    MMM    MMMMMMM
+         * MMMMMMM   MMMMM   MMMM   MMMMMMM
+         * MMMMMMM   MMMMM   MMMM   MMMMMMM
+         * MMMMMMMM   MMMM M MMMM  MMMMMMMM
+         * MMVKMMMM        M        MMMMMMM
+         * MMMMMMMM       MMM      MMMMMMMM
+         * MMMMMMMMMMMM   MMM  MMMMMMMMMMMM
+         * MMMMMMMMMM MM       M  MMMMMMMMM
+         * MMMMMMMMMM  M M M M M MMMMMMMMMM
+         * MMMM  MMMMM MMMMMMMMM MMMMM   MM
+         * MMM    MMMM M MMMMM M MMMM    MM
+         * MMM    MMMM   M M M  MMMMM   MMM
+         * MMMM    MMMM         MMM      MM
+         * MMM       MMMM     MMMM       MM
+         * MMM         MMMMMMMM      M  MMM
+         * MMMM  MMM      MMM      MMMMMMMM
+         * MMMMMMMMMMM  MM       MMMMMMM  M
+         * MMM  MMMMMMM       MMMMMMMMM   M
+         * MM    MMM        MM            M
+         * MM            MMMM            MM
+         * MMM        MMMMMMMMMMMMM       M
+         * MM      MMMMMMMMMMMMMMMMMMM    M
+         * MMM   MMMMMMMMMMMMMMMMMMMMMM   M
+         * MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM
+         * ```
+         * Ascii Art From: https://asciiart.website/index.php?art=people/skeletons
+         * 
+         * */
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        execute: any;
     }
     // Unknown
     : UnknownCommand<TState>;
@@ -190,11 +329,16 @@ type Step05 = Command<Step04b, 'open envelope'>['execute'];
 type Step06 = Command<Step05, 'inventory'>['execute'];
 type Step07 = Command<Step06, 'read letter'>['execute'];
 type Step07b = Command<Step07, 'look'>['execute'];
+type Step07c = Command<Step07, 'unknown'>['execute'];
+type Step07d = Command<Step07, 'any'>['execute'];
+type Step08 = Command<Step07b, 'walk house'>['execute'];
+type Step08b = Command<Step08, 'look'>['execute'];
 
 // const play = () => {
-//     const step00 = null as unknown as GameStart;
-//     const step01 = null as unknown as Do<typeof step00, 'look'>['_summary'];
-//     const step02 = null as unknown as Do<typeof step01, 'look'>;
+//     const gameStart = null as unknown as GameStart;
+//     gameStart.command(`begin`).execute
+//         .command(`look`).execute
+//         ;
 // };
 
 // // Play Game (Test)
