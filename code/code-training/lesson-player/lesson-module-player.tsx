@@ -84,8 +84,8 @@ const styles = {
 
 
 const getLessonNavigatorItems = (module: LessonModule) => {
-    const items = module.lessons.flatMap(x => [
-        { kind: `lesson` as const, lesson: x, label: x.title },
+    const items = module.lessons.flatMap((x, i) => [
+        { kind: `lesson` as const, lesson: x, label: `${i + 1}. ${x.title}` },
         { kind: `preview` as const, lesson: x, label: `  🔎 Preview the Result` },
         { kind: `construct` as const, lesson: x, label: `  📝 Construct the Code` },
         { kind: `understand` as const, lesson: x, label: `  💡 Understand the Code` },
@@ -154,6 +154,18 @@ const navigatorStyles = {
     container: {
         flexDirection: `column`,
     },
+    itemsContainer: {
+        paddingLeft: 24,
+        background: `#111111`,
+    },
+    itemView_header: {
+        flexDirection: `row`,
+        alignItems: `center`,
+        background: `#111111`,
+        // alignSelf: `flex-start`,
+        padding: 4,
+        marginRight: 1,
+    },
     itemView: {
         flexDirection: `row`,
         alignItems: `center`,
@@ -198,7 +210,7 @@ const navigatorStyles = {
 export const LessonModuleNavigator = (props: { items: NavigatorItem[], activeItem?: NavigatorItem, onChange: (value: NavigatorItem) => void }) => {
     const { items, activeItem } = props;
 
-    const [isExpanded, setIsExpanded] = useState(false);
+    const [isExpanded, setIsExpanded] = useState(true);
 
     const changeItem = (item: typeof items[0]) => {
         props.onChange(item);
@@ -208,8 +220,13 @@ export const LessonModuleNavigator = (props: { items: NavigatorItem[], activeIte
         return (
             <>
                 <TouchableOpacity onPress={() => setIsExpanded(() => true)}>
-                    <View style={navigatorStyles.itemView_selected}>
-                        <Text style={navigatorStyles.itemText_selected}>{`${`➡ `}${activeItem.label}`}</Text>
+                    <View style={navigatorStyles.itemView_header}>
+                        <Text style={navigatorStyles.itemText_selected}>{`${`🧭 `}Navigate`}</Text>
+                    </View>
+                    <View style={navigatorStyles.itemsContainer}>
+                        <View style={navigatorStyles.itemView_selected}>
+                            <Text style={navigatorStyles.itemText_selected}>{`${`➡ `}${activeItem.label}`}</Text>
+                        </View>
                     </View>
                 </TouchableOpacity>
             </>
@@ -219,13 +236,20 @@ export const LessonModuleNavigator = (props: { items: NavigatorItem[], activeIte
     return (
         <>
             <View style={navigatorStyles.container}>
-                {items.map(x => (
-                    <TouchableOpacity key={x.key} onPress={() => { setIsExpanded(false); if (x.key === activeItem?.key) { return; } changeItem(x); }}>
-                        <View style={x.key === activeItem?.key ? navigatorStyles.itemView_selected : navigatorStyles.itemView}>
-                            <Text style={x.key === activeItem?.key ? navigatorStyles.itemText_selected : navigatorStyles.itemText}>{`${x.key === activeItem?.key ? `➡ ` : ``}${x.label}`}</Text>
-                        </View>
-                    </TouchableOpacity>
-                ))}
+                <TouchableOpacity onPress={() => setIsExpanded(() => false)}>
+                    <View style={navigatorStyles.itemView_header}>
+                        <Text style={navigatorStyles.itemText_selected}>{`${`🧭 `}Navigate`}</Text>
+                    </View>
+                </TouchableOpacity>
+                <View style={navigatorStyles.itemsContainer}>
+                    {items.map(x => (
+                        <TouchableOpacity key={x.key} onPress={() => { setIsExpanded(false); if (x.key === activeItem?.key) { return; } changeItem(x); }}>
+                            <View style={x.key === activeItem?.key ? navigatorStyles.itemView_selected : navigatorStyles.itemView}>
+                                <Text style={x.key === activeItem?.key ? navigatorStyles.itemText_selected : navigatorStyles.itemText}>{`${x.key === activeItem?.key ? `➡ ` : ``}${x.label}`}</Text>
+                            </View>
+                        </TouchableOpacity>
+                    ))}
+                </View>
             </View>
         </>
     );
