@@ -1,3 +1,4 @@
+/* eslint-disable react/no-danger */
 import './post.css';
 import React from 'react';
 import { Markdown } from '../components/markdown/markdown';
@@ -38,6 +39,17 @@ export const PostPage = (props: { data: PostPageData }) => {
                     <div>
                         <Markdown markdown={body} />
                     </div>
+                    <div dangerouslySetInnerHTML={{
+                        __html: `
+                        <script src="https://utteranc.es/client.js"
+                                repo="https://github.com/ricklove/ricklove-blog-comments"
+                                issue-term="pathname"
+                                label="Comment"
+                                theme="github-dark"
+                                crossorigin="anonymous"
+                                async>
+                        </script>
+                    `}} />
                 </div>
             </div>
             <Link to='/'>
@@ -45,6 +57,8 @@ export const PostPage = (props: { data: PostPageData }) => {
                     <p>Root</p>
                 </div>
             </Link>
+
+
         </Layout>
     );
 };
