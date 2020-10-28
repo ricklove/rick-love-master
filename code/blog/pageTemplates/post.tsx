@@ -42,7 +42,7 @@ export const PostPage = (props: { data: PostPageData }) => {
                     <div dangerouslySetInnerHTML={{
                         __html: `
                         <script src="https://utteranc.es/client.js"
-                                repo="https://github.com/ricklove/ricklove-blog-comments"
+                                repo="ricklove/ricklove-blog-comments"
                                 issue-term="pathname"
                                 label="Comment"
                                 theme="github-dark"
