@@ -1,6 +1,6 @@
 /* eslint-disable react/no-danger */
 import './post.css';
-import React from 'react';
+import React, { useEffect, useRef } from 'react';
 import { Markdown } from '../components/markdown/markdown';
 import { SEO } from './layout/seo';
 import { Layout } from './layout/layout';
@@ -39,17 +39,7 @@ export const PostPage = (props: { data: PostPageData }) => {
                     <div>
                         <Markdown markdown={body} />
                     </div>
-                    <div dangerouslySetInnerHTML={{
-                        __html: `
-                        <script src="https://utteranc.es/client.js"
-                                repo="ricklove/ricklove-blog-comments"
-                                issue-term="pathname"
-                                label="Comment"
-                                theme="github-dark"
-                                crossorigin="anonymous"
-                                async>
-                        </script>
-                    `}} />
+                    <Utterances />
                 </div>
             </div>
             <Link to='/'>
@@ -60,5 +50,38 @@ export const PostPage = (props: { data: PostPageData }) => {
 
 
         </Layout>
+    );
+};
+
+const Utterances = () => {
+
+    const divRef = useRef(null as null | HTMLDivElement);
+    useEffect(() => {
+        if (!divRef.current) { return; }
+
+        const div = divRef.current;
+        const s = document.createElement(`script`);
+        s.src = `https://utteranc.es/client.js`;
+        const sCustom = s as unknown as {
+            repo: string;
+            'issue-term': string;
+            label: string;
+            theme: string;
+            crossorigin: string;
+        };
+        sCustom.repo = `ricklove/ricklove-blog-comments`;
+        sCustom[`issue-term`] = `pathname`;
+        sCustom.label = `Comment`;
+        sCustom.theme = `github-dark`;
+        sCustom.crossorigin = `anonymous`;
+        s.async = true;
+        div.append(s);
+
+    }, []);
+
+    return (
+        <>
+            <div ref={divRef} />
+        </>
     );
 };
