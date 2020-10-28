@@ -83,8 +83,8 @@ const getSpanRange = (v: { span: StringSpan, lineSpans: StringSpan[], startLine:
 export const diff = (a: string, b: string) => {
     const aSpan = new StringSpan(a);
     const bSpan = new StringSpan(b);
-    const aLineSpans = aSpan.splitOnRegExp(/(?<=\n)./g);
-    const bLineSpans = bSpan.splitOnRegExp(/(?<=\n)./g);
+    const aLineSpans = aSpan.splitOnRegExp(/\n/g).map((x, i) => i === 0 ? x.transform(0, 1) : x.transform(1, 1));
+    const bLineSpans = bSpan.splitOnRegExp(/\n/g).map((x, i) => i === 0 ? x.transform(0, 1) : x.transform(1, 1));
     const options: IDiffComputerOpts = {
         shouldPostProcessCharChanges: true,
         shouldIgnoreTrimWhitespace: false,
