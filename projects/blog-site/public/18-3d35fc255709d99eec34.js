@@ -1,0 +1,2 @@
+(window.__LOADABLE_LOADED_CHUNKS__=window.__LOADABLE_LOADED_CHUNKS__||[]).push([[18],{epJf:function(n,_,t){"use strict";t.r(_),t.d(_,"LayoutGameCss",(function(){return u}));var e=t("ERkP"),r=t.n(e),u=function(n){return r.a.createElement(r.a.Fragment,null)}}}]);
+//# sourceMappingURL=18-3d35fc255709d99eec34.js.map

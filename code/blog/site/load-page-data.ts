@@ -66,12 +66,16 @@ export const loadStaticPageData = async (): Promise<SitePageData<PageData>> => {
             const vParts = x.trim().split(`:`);
             const key = vParts[0];
             const value = vParts.slice(1).join(`:`);
-            const valueNoQuotes = value.replace(/^\s*"/g, ``).replace(/"\s*$/g, ``);
+            const valueNoQuotes = value.replace(/^\s*"/g, ``).replace(/"\s*$/g, ``).trim();
             return { key, value: valueNoQuotes };
         }).filter(x => x.key && x.value) ?? [];
         const contentWithoutHeader = headerValues.length > 0 ? parts.slice(2).join(`---`) : content;
 
         const contentCleaned = await handleMediaFiles(filePath, contentWithoutHeader, onMediaFile);
+
+        const excerpt = headerValues.find(x => x.key === `excerpt`)?.value;
+        const imageUrlRaw = headerValues.find(x => x.key === `image`)?.value;
+        const imageUrl = !imageUrlRaw ? undefined : calculateWebPath(filePath, imageUrlRaw).webPath;
 
         const sitePath = `/${headerValues.find(x => x.key === `path`)?.value.replace(/^\//g, ``) ?? filename.replace(/\.md$/, ``)}`;
         const summary = `${contentCleaned.split(`\`\`\``)[0].split(`\n`).slice(0, 16).join(`\n`).trim()}\n\n...`;
@@ -90,6 +94,8 @@ export const loadStaticPageData = async (): Promise<SitePageData<PageData>> => {
                     headers: headerValues,
                     body: contentCleaned,
                     summary,
+                    excerpt,
+                    imageUrl,
                     order: -timestamp,
                 },
             },
@@ -104,8 +110,7 @@ export const loadStaticPageData = async (): Promise<SitePageData<PageData>> => {
     const webBlogContentPath = `/blog-content`;
     const publicDestDir = getPathNormalized(process.cwd(), `public${webBlogContentPath}`);
 
-    // Copy Files to public (this is just to get media files)
-    const onMediaFile = async (sourceFilePath: string, mediaPath: string): Promise<{ newPath: string }> => {
+    const calculateWebPath = (sourceFilePath: string, mediaPath: string) => {
         const sourceFileRelPath = sourceFilePath.replace(blogContentDir, ``);
         const sourceFileRelDir = getDirectoryPath(sourceFileRelPath);
         const oldPathFull = getPathNormalized(blogContentDir, sourceFileRelDir, mediaPath);
@@ -113,8 +118,14 @@ export const loadStaticPageData = async (): Promise<SitePageData<PageData>> => {
 
         // Website Path
         const webPath = newPathFull.replace(publicDestDir, webBlogContentPath);
-        // console.log(`onMediaFile`, { path: mediaPath, newPath: webPath, sourceFileRelPath, sourceFileRelDir, newPathFull, oldPathFull, blogContentDir, publicDestDir });
 
+        return { webPath, oldPathFull, newPathFull };
+    };
+
+    // Copy Files to public (this is just to get media files)
+    const onMediaFile = async (sourceFilePath: string, mediaPath: string): Promise<{ newPath: string }> => {
+        // console.log(`onMediaFile`, { path: mediaPath, newPath: webPath, sourceFileRelPath, sourceFileRelDir, newPathFull, oldPathFull, blogContentDir, publicDestDir });
+        const { webPath, oldPathFull, newPathFull } = calculateWebPath(sourceFilePath, mediaPath);
         // Copy File
         await copyFile(oldPathFull, newPathFull, { overwrite: true });
 
