@@ -1,6 +1,6 @@
 /* eslint-disable react/no-array-index-key */
-import React, { ReactNode, useEffect, useState } from 'react';
-import { View, Text, TextInput, TouchableOpacity } from 'react-native-lite';
+import React, { ReactNode, useEffect, useRef, useState } from 'react';
+import { View, Text, TextInput, TouchableOpacity, Platform } from 'react-native-lite';
 import { LessonProjectFilesEditor, LessonProjectEditorMode, LessonFileEditorMode } from '../common/components/lesson-file-editor';
 import { LessonData, LessonExperiment, LessonModule, LessonProjectFileSelection, LessonProjectState, LessonStep_ConstructCode, LessonStep_UnderstandCode, SetProjectState } from '../common/lesson-types';
 import { lessonExperiments_createReplacementProjectState, lessonExperiments_calculateProjectStateReplacements } from '../common/replacements';
@@ -219,6 +219,18 @@ export const LessonModuleNavigator = (props: { children: ReactNode, items: Navig
     const { items, activeItem } = props;
 
     const [isExpanded, setIsExpanded] = useState(true);
+    const [isNarrowScreen, setIsNarrowScreen] = useState(false);
+
+    const onLoad = (width: number) => {
+        const isNarrow = width < 600;
+        setIsNarrowScreen(isNarrow);
+    };
+
+    useEffect(() => {
+        if (isNarrowScreen) {
+            setIsExpanded(false);
+        }
+    }, [isNarrowScreen]);
 
     const changeItem = (item: typeof items[0]) => {
         props.onChange(item);
@@ -242,29 +254,32 @@ export const LessonModuleNavigator = (props: { children: ReactNode, items: Navig
         );
     }
 
+
     return (
         <>
-            <View style={navigatorStyles.outerContainer}>
-                <View style={navigatorStyles.container}>
-                    <TouchableOpacity onPress={() => setIsExpanded(() => false)}>
-                        <View style={navigatorStyles.itemView_header}>
-                            <Text style={navigatorStyles.itemText_selected}>{`${`🧭 `}Lesson Navigation`}</Text>
+            <div onLoad={(e) => { onLoad((e.target as HTMLDivElement).clientWidth); }}>
+                <View style={navigatorStyles.outerContainer}>
+                    <View style={navigatorStyles.container}>
+                        <TouchableOpacity onPress={() => setIsExpanded(() => false)}>
+                            <View style={navigatorStyles.itemView_header}>
+                                <Text style={navigatorStyles.itemText_selected}>{`${`🧭 `}Lesson Navigation`}</Text>
+                            </View>
+                        </TouchableOpacity>
+                        <View style={navigatorStyles.itemsContainer}>
+                            {items.map(x => (
+                                <TouchableOpacity key={x.key} onPress={() => { if (isNarrowScreen) { setIsExpanded(() => false); } if (x.key === activeItem?.key) { return; } changeItem(x); }}>
+                                    <View style={x.key === activeItem?.key ? navigatorStyles.itemView_selected : navigatorStyles.itemView}>
+                                        <Text style={x.key === activeItem?.key ? navigatorStyles.itemText_selected : navigatorStyles.itemText}>{`${x.key === activeItem?.key ? `➡ ` : ``}${x.label}`}</Text>
+                                    </View>
+                                </TouchableOpacity>
+                            ))}
                         </View>
-                    </TouchableOpacity>
-                    <View style={navigatorStyles.itemsContainer}>
-                        {items.map(x => (
-                            <TouchableOpacity key={x.key} onPress={() => { if (x.key === activeItem?.key) { return; } changeItem(x); }}>
-                                <View style={x.key === activeItem?.key ? navigatorStyles.itemView_selected : navigatorStyles.itemView}>
-                                    <Text style={x.key === activeItem?.key ? navigatorStyles.itemText_selected : navigatorStyles.itemText}>{`${x.key === activeItem?.key ? `➡ ` : ``}${x.label}`}</Text>
-                                </View>
-                            </TouchableOpacity>
-                        ))}
+                    </View>
+                    <View style={navigatorStyles.contentContainer}>
+                        {props.children}
                     </View>
                 </View>
-                <View style={navigatorStyles.contentContainer}>
-                    {props.children}
-                </View>
-            </View>
+            </div>
         </>
     );
 };
