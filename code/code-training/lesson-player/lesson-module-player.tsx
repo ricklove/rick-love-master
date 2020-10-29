@@ -1,5 +1,5 @@
 /* eslint-disable react/no-array-index-key */
-import React, { useEffect, useState } from 'react';
+import React, { ReactNode, useEffect, useState } from 'react';
 import { View, Text, TextInput, TouchableOpacity } from 'react-native-lite';
 import { LessonProjectFilesEditor, LessonProjectEditorMode, LessonFileEditorMode } from '../common/components/lesson-file-editor';
 import { LessonData, LessonExperiment, LessonModule, LessonProjectFileSelection, LessonProjectState, LessonStep_ConstructCode, LessonStep_UnderstandCode, SetProjectState } from '../common/lesson-types';
@@ -129,21 +129,22 @@ export const LessonModulePlayer = (props: { module: LessonModule, setProjectStat
     return (
         <>
             <View style={styles.container}>
-                <LessonModuleNavigator items={items} activeItem={activeItem ?? undefined} onChange={x => setActiveItem(x)} />
-                <View key={activeItem?.key}>
-                    {activeItem?.kind === `preview` && (
-                        <LessonView_PreviewResult data={activeItem.lesson} setProjectState={props.setProjectState} onDone={nextStep} />
-                    )}
-                    {activeItem?.kind === `construct` && (
-                        <LessonView_ConstructCode data={activeItem.lesson} onDone={nextStep} />
-                    )}
-                    {activeItem?.kind === `understand` && (
-                        <LessonView_UnderstandCode data={activeItem.lesson} onDone={nextStep} />
-                    )}
-                    {activeItem?.kind === `experiment` && (
-                        <LessonView_ExperimentCode data={activeItem.lesson} setProjectState={props.setProjectState} onDone={nextStep} />
-                    )}
-                </View>
+                <LessonModuleNavigator items={items} activeItem={activeItem ?? undefined} onChange={x => setActiveItem(x)}>
+                    <View key={activeItem?.key}>
+                        {activeItem?.kind === `preview` && (
+                            <LessonView_PreviewResult data={activeItem.lesson} setProjectState={props.setProjectState} onDone={nextStep} />
+                        )}
+                        {activeItem?.kind === `construct` && (
+                            <LessonView_ConstructCode data={activeItem.lesson} onDone={nextStep} />
+                        )}
+                        {activeItem?.kind === `understand` && (
+                            <LessonView_UnderstandCode data={activeItem.lesson} onDone={nextStep} />
+                        )}
+                        {activeItem?.kind === `experiment` && (
+                            <LessonView_ExperimentCode data={activeItem.lesson} setProjectState={props.setProjectState} onDone={nextStep} />
+                        )}
+                    </View>
+                </LessonModuleNavigator>
             </View>
         </>
     );
@@ -151,17 +152,23 @@ export const LessonModulePlayer = (props: { module: LessonModule, setProjectStat
 
 
 const navigatorStyles = {
+    outerContainer: {
+        flexDirection: `row`,
+    },
+    contentContainer: {
+        flex: 1,
+    },
     container: {
         flexDirection: `column`,
     },
     itemsContainer: {
-        paddingLeft: 24,
-        background: `#111111`,
+        // paddingLeft: 24,
+        background: `#333333`,
     },
     itemView_header: {
         flexDirection: `row`,
         alignItems: `center`,
-        background: `#111111`,
+        background: `#333333`,
         // alignSelf: `flex-start`,
         padding: 4,
         marginRight: 1,
@@ -207,7 +214,7 @@ const navigatorStyles = {
     // },
 } as const;
 
-export const LessonModuleNavigator = (props: { items: NavigatorItem[], activeItem?: NavigatorItem, onChange: (value: NavigatorItem) => void }) => {
+export const LessonModuleNavigator = (props: { children: ReactNode, items: NavigatorItem[], activeItem?: NavigatorItem, onChange: (value: NavigatorItem) => void }) => {
     const { items, activeItem } = props;
 
     const [isExpanded, setIsExpanded] = useState(true);
@@ -221,7 +228,7 @@ export const LessonModuleNavigator = (props: { items: NavigatorItem[], activeIte
             <>
                 <TouchableOpacity onPress={() => setIsExpanded(() => true)}>
                     <View style={navigatorStyles.itemView_header}>
-                        <Text style={navigatorStyles.itemText_selected}>{`${`🧭 `}Navigate`}</Text>
+                        <Text style={navigatorStyles.itemText_selected}>{`${`🧭 `}Lesson Navigation`}</Text>
                     </View>
                     <View style={navigatorStyles.itemsContainer}>
                         <View style={navigatorStyles.itemView_selected}>
@@ -229,26 +236,32 @@ export const LessonModuleNavigator = (props: { items: NavigatorItem[], activeIte
                         </View>
                     </View>
                 </TouchableOpacity>
+                {props.children}
             </>
         );
     }
 
     return (
         <>
-            <View style={navigatorStyles.container}>
-                <TouchableOpacity onPress={() => setIsExpanded(() => false)}>
-                    <View style={navigatorStyles.itemView_header}>
-                        <Text style={navigatorStyles.itemText_selected}>{`${`🧭 `}Navigate`}</Text>
+            <View style={navigatorStyles.outerContainer}>
+                <View style={navigatorStyles.container}>
+                    <TouchableOpacity onPress={() => setIsExpanded(() => false)}>
+                        <View style={navigatorStyles.itemView_header}>
+                            <Text style={navigatorStyles.itemText_selected}>{`${`🧭 `}Lesson Navigation`}</Text>
+                        </View>
+                    </TouchableOpacity>
+                    <View style={navigatorStyles.itemsContainer}>
+                        {items.map(x => (
+                            <TouchableOpacity key={x.key} onPress={() => { if (x.key === activeItem?.key) { return; } changeItem(x); }}>
+                                <View style={x.key === activeItem?.key ? navigatorStyles.itemView_selected : navigatorStyles.itemView}>
+                                    <Text style={x.key === activeItem?.key ? navigatorStyles.itemText_selected : navigatorStyles.itemText}>{`${x.key === activeItem?.key ? `➡ ` : ``}${x.label}`}</Text>
+                                </View>
+                            </TouchableOpacity>
+                        ))}
                     </View>
-                </TouchableOpacity>
-                <View style={navigatorStyles.itemsContainer}>
-                    {items.map(x => (
-                        <TouchableOpacity key={x.key} onPress={() => { setIsExpanded(false); if (x.key === activeItem?.key) { return; } changeItem(x); }}>
-                            <View style={x.key === activeItem?.key ? navigatorStyles.itemView_selected : navigatorStyles.itemView}>
-                                <Text style={x.key === activeItem?.key ? navigatorStyles.itemText_selected : navigatorStyles.itemText}>{`${x.key === activeItem?.key ? `➡ ` : ``}${x.label}`}</Text>
-                            </View>
-                        </TouchableOpacity>
-                    ))}
+                </View>
+                <View style={navigatorStyles.contentContainer}>
+                    {props.children}
                 </View>
             </View>
         </>
