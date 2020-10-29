@@ -157,6 +157,7 @@ const navigatorStyles = {
     },
     contentContainer: {
         flex: 1,
+        overflow: `auto`,
     },
     container: {
         flexDirection: `column`,

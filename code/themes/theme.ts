@@ -7,7 +7,7 @@ export type ThemeViewStyle = {
     justifyContent?: 'flex-start' | 'center' | 'flex-end' | 'space-around' | 'space-between';
     alignItems?: 'flex-start' | 'center' | 'flex-end';
     alignSelf?: 'center' | 'stretch' | 'flex-start' | 'flex-end';
-    overflow?: 'visible' | 'hidden';
+    overflow?: 'visible' | 'hidden' | 'auto';
 
     background?: string;
 
