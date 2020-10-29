@@ -1,6 +1,7 @@
 /* eslint-disable react/no-array-index-key */
 import React, { ReactNode, useEffect, useRef, useState } from 'react';
 import { View, Text, TextInput, TouchableOpacity, Platform } from 'react-native-lite';
+import { Utterances } from 'comments/utterances';
 import { LessonProjectFilesEditor, LessonProjectEditorMode, LessonFileEditorMode } from '../common/components/lesson-file-editor';
 import { LessonData, LessonExperiment, LessonModule, LessonProjectFileSelection, LessonProjectState, LessonStep_ConstructCode, LessonStep_UnderstandCode, SetProjectState } from '../common/lesson-types';
 import { lessonExperiments_createReplacementProjectState, lessonExperiments_calculateProjectStateReplacements } from '../common/replacements';
@@ -144,6 +145,8 @@ export const LessonModulePlayer = (props: { module: LessonModule, setProjectStat
                             <LessonView_ExperimentCode data={activeItem.lesson} setProjectState={props.setProjectState} onDone={nextStep} />
                         )}
                     </View>
+
+                    <Utterances repo='ricklove/ricklove-code-lesson-comments' />
                 </LessonModuleNavigator>
             </View>
         </>
