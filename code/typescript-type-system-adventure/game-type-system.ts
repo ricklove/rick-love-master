@@ -531,7 +531,7 @@ const play = () => {
         .command(`open mailbox`).execute
         .command(`look`).execute
         .command(`look at the house`).execute
-        .command(`walk to the house`).execute
+        .command(`WALK TO THE HOUSE`).execute
         .command(`look`).execute
         // .command(`break the window`).execute.youAreDead.gameOver
         // .command(`open door`).execute.youAreDead.gameOver

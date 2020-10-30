@@ -9,6 +9,10 @@ image: game-screenshot-06-large.png
 
 tl;dr: Play a text adventure in vscode with the typescript type system.
 
+### Update - Added Typescript 4.1 Template String Literals
+
+![](typescript-4-1-features.png)
+
 ### Summary
 
 I've always been a fan of text adventures since I first played Space Quest 1 when I was about 6 (though it was a graphical text adventure technically).
