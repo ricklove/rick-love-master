@@ -108,18 +108,6 @@ type Location_Start = 'Start Game';
 type Location_InFrontOfHouse = 'In Front of House';
 type Location_OutsideOldHouse = 'Outside Old House';
 
-type StringTrim<T> =
-    T extends ` ${infer Rest}` ? StringTrim<Rest>
-    : T extends `${infer Rest} ` ? StringTrim<Rest>
-    : T;
-
-// Too slow:
-// type Spacer = '' | '-' | ' ' | '  ';
-// type Letter = 'a' | 'b' | 'c' | 'd' | 'e' | 'f' | 'g' | 'h' | 'i' | 'j' | 'k' | 'l' | 'm' | 'n' | 'o' | 'p' | 'q' | 'r' | 's' | 't' | 'u' | 'v' | 'w' | 'x' | 'y' | 'z';
-// type Number = '0' | '1' | '2' | '3' | '4' | '5' | '6' | '7' | '8' | '9';
-// type Wildcard = Spacer | Letter | Number;
-// type OpenMailbox = `${'open' | 'get'}${Spacer}${'mailbox' | 'mail'}`;
-
 type CommonWords = 'the' | 'a' | 'an' | 'in' | 'at' | 'to' | 'on';
 type SpacedCommonWords = CommonWords | ` ${CommonWords} ` | ` ${CommonWords}` | `${CommonWords} `;
 type Wildcard = '' | ' ' | SpacedCommonWords;
