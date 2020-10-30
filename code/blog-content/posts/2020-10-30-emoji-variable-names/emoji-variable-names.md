@@ -13,6 +13,8 @@ tl;dr: A quick update on the state of support for using emojis in the worst plac
 
 It looks like the options are limited to within string contexts. Furtunately for those who want the most unreadable code ever, it is possible to at least name all your object fields with emojis.
 
+![](emoji-variable-names.png)
+
 ```ts
 
 /** ❌ variable declarations */
@@ -86,6 +88,4 @@ const criticalSwitch = (value: '😇' | '​😇' | '😇​' | '​') => {
 ### Conclusion
 
 You're welcome!
-
-![](emoji-variable-names.png)
 
