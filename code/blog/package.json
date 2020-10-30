@@ -5,6 +5,7 @@
     "auth": "*",
     "code-space-views": "*",
     "code-training": "*",
+    "comments": "*",
     "console-simulator": "*",
     "doodle": "*",
     "educational-games": "*",

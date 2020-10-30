@@ -53,6 +53,9 @@
             "code-training/*": [
                 "code/code-training/*"
             ],
+            "comments/*": [
+                "code/comments/*"
+            ],
             "console-simulator/*": [
                 "code/games/console-simulator/*"
             ],
@@ -134,7 +137,9 @@
         "code/themes/**/*",
         "code/react-native-lite/**/*",
         "code/controls-react/**/*",
+        "code/comments/**/*",
         "code/code-training/**/*",
+        "code/blog/**/*",
         // "code",
         // "scripts",
         // "projects",

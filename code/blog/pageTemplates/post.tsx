@@ -1,6 +1,6 @@
-/* eslint-disable react/no-danger */
+import React, { } from 'react';
 import './post.css';
-import React, { useEffect, useRef } from 'react';
+import { Utterances } from 'comments/utterances';
 import { Markdown } from '../components/markdown/markdown';
 import { SEO } from './layout/seo';
 import { Layout } from './layout/layout';
@@ -39,7 +39,7 @@ export const PostPage = (props: { data: PostPageData }) => {
                     <div>
                         <Markdown markdown={body} />
                     </div>
-                    <Utterances />
+                    <Utterances repo='ricklove/ricklove-blog-comments' />
                 </div>
             </div>
             <Link to='/'>
@@ -50,31 +50,5 @@ export const PostPage = (props: { data: PostPageData }) => {
 
 
         </Layout>
-    );
-};
-
-const Utterances = () => {
-
-    const divRef = useRef(null as null | HTMLDivElement);
-    useEffect(() => {
-        if (!divRef.current) { return; }
-
-        const div = divRef.current;
-        const s = document.createElement(`script`);
-        s.async = true;
-        s.src = `https://utteranc.es/client.js`;
-        s.setAttribute(`repo`, `ricklove/ricklove-blog-comments`);
-        s.setAttribute(`issue-term`, `pathname`);
-        s.setAttribute(`label`, `Comment`);
-        s.setAttribute(`theme`, `github-dark`);
-        s.setAttribute(`crossorigin`, `anonymous`);
-        div.append(s);
-
-    }, []);
-
-    return (
-        <>
-            <div ref={divRef} />
-        </>
     );
 };
