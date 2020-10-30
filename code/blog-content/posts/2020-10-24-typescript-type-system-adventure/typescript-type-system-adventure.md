@@ -13,7 +13,7 @@ tl;dr: Play a text adventure in vscode with the typescript type system.
 
 ![](typescript-4-1-features.png)
 
-- https://github.com/ricklove/rick-love-master/blob/70644a0f6cebf48132fc029e484e6f8db9e3fc19/code/typescript-type-system-adventure/game-type-system.ts#L123
+- [Source on Github](https://github.com/ricklove/rick-love-master/blob/70644a0f6cebf48132fc029e484e6f8db9e3fc19/code/typescript-type-system-adventure/game-type-system.ts#L123)
 
 ### Summary
 
