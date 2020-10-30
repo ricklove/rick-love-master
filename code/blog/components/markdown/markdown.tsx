@@ -11,7 +11,7 @@ export const Markdown = (props: { markdown: string }) => {
                 renderers={{
                     // text: ((p: { children: ReactNode }) => <p className='markdown-text-container'>{p.children}</p>),
                     // eslint-disable-next-line jsx-a11y/alt-text
-                    image: ((p: unknown) => <p className='markdown-image-container'><img {...(p as never)} /></p>),
+                    image: ((p: unknown) => <span className='markdown-image-container'><img {...(p as never)} /></span>),
                     code: ((p: unknown) => <CodeWrapper_ZoomButtons><MarkdownCode {...p} /></CodeWrapper_ZoomButtons>),
                 }} />
         </div>
