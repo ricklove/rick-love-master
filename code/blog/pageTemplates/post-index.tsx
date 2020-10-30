@@ -16,21 +16,17 @@ export const PostIndexPage = (props: { data: PostIndexPageData }) => {
     return (
         <Layout>
             <SEO title='Posts' />
-            <div style={{ display: `block`, minWidth: `100%` }}>
-                <div>
+            <div className='post-item-container' >
+                <>
                     {posts.map(x => (
                         <div key={x.title} className='post-item'>
                             <Link to={x.sitePath}>
+                                <h2 className='post-item-title'>{x.title}</h2>
+                                {/* </Link> */}
                                 <div>
-                                    <p>
-                                        {x.title}
-                                    </p>
+                                    <Markdown markdown={x.summary} />
                                 </div>
-                            </Link>
-                            <div>
-                                <Markdown markdown={x.summary} />
-                            </div>
-                            <Link to={x.sitePath}>
+                                {/* <Link to={x.sitePath}> */}
                                 <div>
                                     <p>
                                         Read More...
@@ -39,7 +35,7 @@ export const PostIndexPage = (props: { data: PostIndexPageData }) => {
                             </Link>
                         </div>
                     ))}
-                </div>
+                </>
             </div>
         </Layout>
     );

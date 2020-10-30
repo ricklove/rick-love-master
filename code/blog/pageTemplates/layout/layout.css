@@ -109,6 +109,10 @@ a:hover, a:focus, a:active {
     color: #2ecc40;
 }
 
+.markdown-body {
+    color: #a9a9b3;
+}
+
 pre, code {
     font-family: Menlo, Monaco, "Courier New", monospace;
 }

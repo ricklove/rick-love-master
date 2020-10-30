@@ -25,10 +25,10 @@ export const PostPage = (props: { data: PostPageData }) => {
     return (
         <Layout>
             <SEO title={title} description={props.data.excerpt} imageUrl={props.data.imageUrl} />
-            <div style={{ display: `block`, minWidth: `100%` }} >
+            <div className='post-item-container' >
                 <div className='post-item'>
-                    <p>{title}</p>
-                    <p>
+                    <h2 className='post-item-title'>{title}</h2>
+                    <p className='post-item-meta'>
                         {headers.map(x => (
                             <span key={x.key} style={{ display: `flex`, flexDirection: `row` }}>
                                 <span style={{ minWidth: `100px` }}>{x.key}</span>
@@ -36,7 +36,7 @@ export const PostPage = (props: { data: PostPageData }) => {
                             </span>
                         ))}
                     </p>
-                    <div>
+                    <div className='post-item-markdown'>
                         <Markdown markdown={body} />
                     </div>
                     <Utterances repo='ricklove/ricklove-blog-comments' />
