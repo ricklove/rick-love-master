@@ -83,6 +83,9 @@ type Hider = _<'Typescript Type System Adventure - by Rick Love 🤓​​​​
  * https://github.com/codemix/ts-sql
  * 
  * ### Sharing
+ *
+ * [![Everything Is AWESOME](https://img.youtube.com/vi/StTqXEQ2l-Y/0.jpg)](https://www.youtube.com/watch?v=StTqXEQ2l-Y "Everything Is AWESOME")
+ *
  * 
  * **Please share it with all your nerd friends!**
  * 
@@ -447,6 +450,7 @@ export type Command<TState extends GameStateCommon, TCommand extends string> =
          * 
          * I don't know what you mean. Try Again.
          * 
+         * [![Ain't Nobody Got Time for That](https://img.youtube.com/vi/syhlPzqEpkE/0.jpg)](https://youtu.be/syhlPzqEpkE?t=32 "Ain't Nobody Got Time for That")
          */
         execute: TState;
     };
@@ -523,6 +527,7 @@ const play = () => {
         // .command(`open mailbox`).execute
         // .command(`get mail`).execute
         // .command(`open the mailbox`).execute
+        .command('sdoad adas').execute
         .command(`get the mail`).execute
         .command(`look`).execute
         .command(`inv`).execute
