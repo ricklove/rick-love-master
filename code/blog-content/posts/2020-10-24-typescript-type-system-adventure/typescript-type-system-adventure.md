@@ -13,6 +13,8 @@ tl;dr: Play a text adventure in vscode with the typescript type system.
 
 ![](typescript-4-1-features.png)
 
+- https://github.com/ricklove/rick-love-master/blob/70644a0f6cebf48132fc029e484e6f8db9e3fc19/code/typescript-type-system-adventure/game-type-system.ts#L123
+
 ### Summary
 
 I've always been a fan of text adventures since I first played Space Quest 1 when I was about 6 (though it was a graphical text adventure technically).
