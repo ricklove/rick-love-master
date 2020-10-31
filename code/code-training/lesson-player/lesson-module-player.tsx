@@ -88,8 +88,24 @@ const getLessonNavigatorItems = (module: LessonModule) => {
         { kind: `construct` as const, lesson: x, label: `  📝 Construct the Code` },
         { kind: `understand` as const, lesson: x, label: `  💡 Understand the Code` },
         { kind: `experiment` as const, lesson: x, label: `  🔬 Experiment with the Code` },
-    ]).map(x => ({ ...x, key: x.lesson.key + x.kind }));
-    return items;
+    ]);
+
+    // Add Intro Preview
+    const lastLesson = module.lessons[module.lessons.length - 1];
+    if (lastLesson) {
+        const lastLessonMainFile = lastLesson.projectState.files.find(x => x.path === lastLesson.focus.filePath);
+        items.unshift({
+            kind: `preview` as const,
+            lesson: {
+                ...lastLesson,
+                key: `lesson-`,
+                focus: { ...lastLesson.focus, index: 0, length: lastLessonMainFile?.content.length ?? 0 },
+            },
+            label: `🎯 Lesson Objective`,
+        });
+    }
+
+    return items.map(x => ({ ...x, key: x.lesson.key + x.kind }));
 };
 type NavigatorItem = ReturnType<typeof getLessonNavigatorItems>[0];
 
@@ -154,7 +170,10 @@ export const LessonModulePlayer = (props: { module: LessonModule, setProjectStat
                             )}
                         </View>
 
-                        <Utterances repo='ricklove/ricklove-code-lesson-comments' />
+                        <div>
+                            <h3 style={{ borderTop: `solid 1px #3ca4ff`, padding: 8, margin: 0, marginTop: 16, textAlign: `center` }}>Community Comments - {props.module.title}</h3>
+                            <Utterances repo='ricklove/ricklove-code-lesson-comments' />
+                        </div>
                     </LessonModuleNavigator>
                 )}
             </View>
