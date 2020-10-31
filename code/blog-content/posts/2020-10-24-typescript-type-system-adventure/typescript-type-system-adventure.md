@@ -5,9 +5,16 @@ path: "/typescript-type-system-adventure"
 author: "Rick Love"
 excerpt: "Text Adventure implemented in the Typescript Type System and Vscode JsDoc Viewer"
 image: game-screenshot-06-large.png
+tags: typescript, type-system, vscode, jsdoc, markdown, hacks, demo, games, text-adventure
 ---
 
 tl;dr: Play a text adventure in vscode with the typescript type system.
+
+### Update - Added Typescript 4.1 Template String Literals
+
+![](typescript-4-1-features.png)
+
+- [Source on Github](https://github.com/ricklove/rick-love-master/blob/70644a0f6cebf48132fc029e484e6f8db9e3fc19/code/typescript-type-system-adventure/game-type-system.ts#L123)
 
 ### Summary
 

@@ -4,6 +4,8 @@
 import { processDirectoryFiles, getFileName, readFile, getPathNormalized, getDirectoryPath, copyFile, watchFileChanges, writeFile, deleteFile, copyDirectory } from 'utils/files';
 import { createSubscribable, Subscribe } from 'utils/subscribable';
 import { createLessonApiServer_localFileServer } from 'code-training/lesson-server/server/lesson-api-local-file-server';
+import { distinct_key, groupItems } from 'utils/arrays';
+import { time } from 'console';
 import { PageData } from './create-page';
 import { componentTestList } from '../pageTemplates/component-tests-list';
 import { componentGamesList } from '../pageTemplates/component-games-list';
@@ -54,7 +56,8 @@ export const loadStaticPageData = async (): Promise<SitePageData<PageData>> => {
         return text_corrected;
     };
 
-    const createPageData_fromMarkdownFile = async (filePath: string, kind: 'post' | 'page', onMediaFile: (sourceFilePath: string, mediaPath: string) => Promise<{ newPath: string }>): Promise<SitePageInfo<PageData>> => {
+    type PostPage = SitePageInfo<Required<{ postPage: NonNullable<PageData['postPage']> }>>;
+    const createPageData_fromMarkdownFile = async (filePath: string, kind: 'post' | 'page', onMediaFile: (sourceFilePath: string, mediaPath: string) => Promise<{ newPath: string }>): Promise<PostPage> => {
 
         const filename = getFileName(filePath);
         const content = await readFile(filePath);
@@ -82,9 +85,10 @@ export const loadStaticPageData = async (): Promise<SitePageData<PageData>> => {
         const title = headerValues.find(x => x.key === `title`)?.value ?? sitePath;
         const date = headerValues.find(x => x.key === `date`)?.value;
         const timestamp = date ? new Date(date).getTime() : 0;
+        const tags = headerValues.find(x => x.key === `tags`)?.value.split(`,`).map(x => x.trim()).filter(x => x) ?? [];
 
         // console.log(`createPageData`, { sitePath });
-        const page: SitePageInfo<PageData> = {
+        const page: PostPage = {
             sitePath,
             data: {
                 postPage: {
@@ -96,15 +100,17 @@ export const loadStaticPageData = async (): Promise<SitePageData<PageData>> => {
                     summary,
                     excerpt,
                     imageUrl,
+                    tags,
                     order: -timestamp,
+                    dateLabel: date,
                 },
             },
         };
         return page;
     };
 
-    const pages = [] as SitePageInfo<PageData>[];
-    const posts = [] as SitePageInfo<PageData>[];
+    const pagePosts = [] as PostPage[];
+    const posts = [] as PostPage[];
 
     const blogContentDir = getPathNormalized(__dirname, `../../blog-content`);
     const webBlogContentPath = `/blog-content`;
@@ -135,7 +141,7 @@ export const loadStaticPageData = async (): Promise<SitePageData<PageData>> => {
     // console.log(`loadStaticPageData blogContentDir`, { blogContentDir });
     // await processDirectoryFiles(`${blogContentDir}`, async x => { if (x.endsWith(`.md`)) { pages.push(await createPageData_fromMarkdownFile(x, `post`)); } });
     await processDirectoryFiles(`${blogContentDir}/posts`, async x => { if (x.endsWith(`.md`)) { posts.push(await createPageData_fromMarkdownFile(x, `post`, onMediaFile)); } });
-    await processDirectoryFiles(`${blogContentDir}/pages`, async x => { if (x.endsWith(`.md`)) { pages.push(await createPageData_fromMarkdownFile(x, `page`, onMediaFile)); } });
+    await processDirectoryFiles(`${blogContentDir}/pages`, async x => { if (x.endsWith(`.md`)) { pagePosts.push(await createPageData_fromMarkdownFile(x, `page`, onMediaFile)); } });
 
     // Subscribe to dirs
     await watchFileChanges({ pathRoot: blogContentDir, runOnStart: false }, async (files) => {
@@ -163,14 +169,29 @@ export const loadStaticPageData = async (): Promise<SitePageData<PageData>> => {
         }, 100);
     });
 
-    posts.sort((a, b) => (a.data.postPage?.order ?? 0) - (b.data.postPage?.order ?? 0));
-    pages.unshift(...posts);
+    posts.sort((a, b) => a.data.postPage.order - b.data.postPage.order);
+    pagePosts.unshift(...posts);
 
+    // Add related posts
+    const tagPostPairs = pagePosts.flatMap(x => x.data.postPage.tags.map(t => ({ item: x, postSitePath: x.sitePath, title: x.data.postPage.title, tag: t, dateLabel: x.data.postPage.dateLabel })));
+    const tagPostSitePaths = groupItems(tagPostPairs, x => x.tag);
+    pagePosts.forEach(x => {
+        const r = x.data.postPage.tags.flatMap(t => tagPostSitePaths[t]);
+        const r2 = distinct_key(r, y => y.postSitePath);
+        x.data.postPage.relatedPages = r2.map(p => ({
+            postSitePath: p.postSitePath,
+            title: p.title,
+            tags: p.item.data.postPage.tags.filter(t => x.data.postPage.tags.includes(t)),
+            dateLabel: p.dateLabel,
+        }));
+    });
+
+    const pages: SitePageInfo<PageData>[] = pagePosts;
     pages.push({
         sitePath: `/`,
         data: {
             postIndexPage: {
-                posts: pages.map(x => ({
+                posts: pagePosts.map(x => ({
                     sitePath: x.sitePath,
                     title: x.data.postPage?.title ?? ``,
                     summary: x.data.postPage?.summary ?? ``,
@@ -196,7 +217,7 @@ export const loadStaticPageData = async (): Promise<SitePageData<PageData>> => {
         });
     });
 
-    // pages.push({
+    // allPages.push({
     //     sitePath: `/tests/stripe`,
     //     data: {
     //         componentTestsPage: { testName: `stripe` },
@@ -222,7 +243,7 @@ export const loadStaticPageData = async (): Promise<SitePageData<PageData>> => {
         },
     });
 
-    console.log(`loadStaticPages END`, { time: `${(Date.now() - startTime) / 1000} secs`, pages });
+    console.log(`loadStaticPages END`, { time: `${(Date.now() - startTime) / 1000} secs`, pages: pagePosts });
     return {
         pages,
         subscribePageChange: sub.subscribe,

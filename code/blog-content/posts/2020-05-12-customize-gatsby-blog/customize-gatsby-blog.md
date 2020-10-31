@@ -4,6 +4,7 @@ date: "2020-05-12"
 path: "/customize-gatsby-blog"
 author: "Rick Love"
 excerpt: "Remove all the placeholder content and fill your blog with you..."
+tags: tutorial, gatsby
 ---
 
 Remove all the placeholder content and fill your blog with you.

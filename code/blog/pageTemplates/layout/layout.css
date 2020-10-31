@@ -105,8 +105,16 @@ a, a:visited {
     color: #01ff70;
 }
 
+a:visited {
+    color: #01bb70;
+}
+
 a:hover, a:focus, a:active {
     color: #2ecc40;
+}
+
+.markdown-body {
+    color: #a9a9b3;
 }
 
 pre, code {

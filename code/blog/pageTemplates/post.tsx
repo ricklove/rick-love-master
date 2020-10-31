@@ -1,6 +1,6 @@
-/* eslint-disable react/no-danger */
+import React, { } from 'react';
 import './post.css';
-import React, { useEffect, useRef } from 'react';
+import { Utterances } from 'comments/utterances';
 import { Markdown } from '../components/markdown/markdown';
 import { SEO } from './layout/seo';
 import { Layout } from './layout/layout';
@@ -14,21 +14,25 @@ export type PostPageData = {
     title: string;
     body: string;
     summary: string;
+    order: number;
+    dateLabel?: string;
     excerpt?: string;
     imageUrl?: string;
+    tags: string[];
+    relatedPages?: { postSitePath: string, title: string, dateLabel?: string, tags: string[] }[];
 };
 
 export const PostPage = (props: { data: PostPageData }) => {
-    const { body, headers, title } = props.data;
+    const { body, headers, title, relatedPages } = props.data;
     const Link = getNavigation().StaticPageLinkComponent;
 
     return (
         <Layout>
             <SEO title={title} description={props.data.excerpt} imageUrl={props.data.imageUrl} />
-            <div style={{ display: `block`, minWidth: `100%` }} >
+            <div className='post-item-container' >
                 <div className='post-item'>
-                    <p>{title}</p>
-                    <p>
+                    <h2 className='post-item-title'>{title}</h2>
+                    <p className='post-item-meta'>
                         {headers.map(x => (
                             <span key={x.key} style={{ display: `flex`, flexDirection: `row` }}>
                                 <span style={{ minWidth: `100px` }}>{x.key}</span>
@@ -36,10 +40,31 @@ export const PostPage = (props: { data: PostPageData }) => {
                             </span>
                         ))}
                     </p>
-                    <div>
+
+                    <div className='post-item-markdown'>
                         <Markdown markdown={body} />
                     </div>
-                    <Utterances />
+
+                    <div className='post-item-related'>
+                        <h3>Related Articles</h3>
+                        <p>
+                            <span style={{ display: `flex`, flexDirection: `column` }}>
+                                {relatedPages?.map(p => (
+                                    <Link key={p.postSitePath} to={p.postSitePath}>
+                                        <span style={{ display: `flex`, flexDirection: `row`, ...(p.title === title ? { color: `#bbbbbb` } : {}) }}>
+                                            <span style={{ display: `inline-block`, minWidth: 100 }}>{p.dateLabel}</span>
+                                            <span style={{ display: `flex`, flex: 3 }}>{p.title}</span>
+                                            <span style={{ display: `flex`, flex: 2, fontSize: 12 }}>{p.tags.join(`, `)}</span>
+                                        </span>
+                                    </Link>
+                                ))}
+                            </span>
+                        </p>
+                    </div>
+                    <div className='post-item-comments'>
+                        <h3>Comments</h3>
+                        <Utterances repo='ricklove/ricklove-blog-comments' />
+                    </div>
                 </div>
             </div>
             <Link to='/'>
@@ -50,31 +75,5 @@ export const PostPage = (props: { data: PostPageData }) => {
 
 
         </Layout>
-    );
-};
-
-const Utterances = () => {
-
-    const divRef = useRef(null as null | HTMLDivElement);
-    useEffect(() => {
-        if (!divRef.current) { return; }
-
-        const div = divRef.current;
-        const s = document.createElement(`script`);
-        s.async = true;
-        s.src = `https://utteranc.es/client.js`;
-        s.setAttribute(`repo`, `ricklove/ricklove-blog-comments`);
-        s.setAttribute(`issue-term`, `pathname`);
-        s.setAttribute(`label`, `Comment`);
-        s.setAttribute(`theme`, `github-dark`);
-        s.setAttribute(`crossorigin`, `anonymous`);
-        div.append(s);
-
-    }, []);
-
-    return (
-        <>
-            <div ref={divRef} />
-        </>
     );
 };

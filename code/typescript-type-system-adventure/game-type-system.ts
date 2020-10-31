@@ -83,6 +83,9 @@ type Hider = _<'Typescript Type System Adventure - by Rick Love 🤓​​​​
  * https://github.com/codemix/ts-sql
  * 
  * ### Sharing
+ *
+ * [![Everything Is AWESOME](https://img.youtube.com/vi/StTqXEQ2l-Y/0.jpg)](https://www.youtube.com/watch?v=StTqXEQ2l-Y "Everything Is AWESOME")
+ *
  * 
  * **Please share it with all your nerd friends!**
  * 
@@ -105,7 +108,16 @@ type Location_Start = 'Start Game';
 type Location_InFrontOfHouse = 'In Front of House';
 type Location_OutsideOldHouse = 'Outside Old House';
 
-export type Command<TState extends GameStateCommon, TCommand> =
+type CommonWords = 'the' | 'a' | 'an' | 'in' | 'at' | 'to' | 'on';
+type SpacedCommonWords = CommonWords | ` ${CommonWords} ` | ` ${CommonWords}` | `${CommonWords} `;
+type Wildcard = '' | ' ' | SpacedCommonWords;
+type CommandText<TCommand extends string, TVerb extends string, TNoun extends string> = `${lowercase TCommand}` extends `${TVerb}${Wildcard}${Wildcard}${TNoun}` ? TCommand : never;
+// type OpenMainbox_01 = CommandText<'get mail', 'open' | 'get', 'mailbox' | 'mail'>;
+// type OpenMainbox_02 = CommandText<'open mailbox', 'open' | 'get', 'mailbox' | 'mail'>;
+// type OpenMainbox_03 = CommandText<'OPEN MAILBOX', 'open' | 'get', 'mailbox' | 'mail'>;
+// type OpenMainbox_04 = CommandText<'open the mail box', 'open' | 'get', 'mailbox' | 'mail' | 'mail box'>;
+
+export type Command<TState extends GameStateCommon, TCommand extends string> =
     TCommand extends 'inv' | 'inventory' ? {
         /** ### Inventory
          * 
@@ -120,7 +132,7 @@ export type Command<TState extends GameStateCommon, TCommand> =
     : Hider &
 
     // Game Start
-    [TCommand, TState] extends ['help', {}] ?
+    [TCommand, TState] extends ['help' | '?', {}] ?
     {
         /** ### Help
          * 
@@ -138,7 +150,7 @@ export type Command<TState extends GameStateCommon, TCommand> =
     }
 
     // Game Start
-    : [TCommand, TState] extends ['begin', { location: Location_Start }] ?
+    : [TCommand, TState] extends [string, { location: Location_Start }] ?
     {
         /** ### Begin Your Adventure
          * 
@@ -169,7 +181,7 @@ export type Command<TState extends GameStateCommon, TCommand> =
          */
         execute: TState;
     }
-    : [TCommand, TState] extends ['open mailbox', { location: Location_InFrontOfHouse, environment: { mailbox?: 'closed' } }] ?
+    : [TCommand, TState] extends [CommandText<TCommand, 'open' | 'get', 'mailbox' | 'mail'>, { location: Location_InFrontOfHouse, environment: { mailbox?: 'closed' } }] ?
     {
         /** ### Open Mailbox 
          * 
@@ -181,7 +193,7 @@ export type Command<TState extends GameStateCommon, TCommand> =
          */
         execute: Hider & SetInventory<SetEnvironment<TState, { mailbox: 'open' }>, { envelope: true }>;
     }
-    : [TCommand, TState] extends ['open mailbox', { location: Location_InFrontOfHouse, environment: { mailbox: 'open' } }] ?
+    : [TCommand, TState] extends [CommandText<TCommand, 'open' | 'get', 'mailbox' | 'mail'>, { location: Location_InFrontOfHouse, environment: { mailbox: 'open' } }] ?
     {
         /** ### Mailbox Already Open
          * 
@@ -203,7 +215,7 @@ export type Command<TState extends GameStateCommon, TCommand> =
          */
         execute: TState;
     }
-    : [TCommand, TState] extends ['open envelope', { inventory: { envelope: true } }] ?
+    : [TCommand, TState] extends [CommandText<TCommand, 'open' | 'look', 'envelope' | 'letter'>, { inventory: { envelope: true } }] ?
     {
         /** ### Open Envelope 
          * 
@@ -227,7 +239,7 @@ export type Command<TState extends GameStateCommon, TCommand> =
          */
         execute: TState;
     }
-    : [TCommand, TState] extends ['read letter', { inventory: { letter: true | 'read' } }] ?
+    : [TCommand, TState] extends [CommandText<TCommand, 'open' | 'look' | 'read', 'paper' | 'letter'>, { inventory: { letter: true | 'read' } }] ?
     {
         /** ### Read Letter
          * 
@@ -257,7 +269,7 @@ export type Command<TState extends GameStateCommon, TCommand> =
          */
         execute: TState;
     }
-    : [TCommand, TState] extends ['look house', { location: Location_InFrontOfHouse, inventory: { letter: 'read' } }] ?
+    : [TCommand, TState] extends [CommandText<TCommand, 'look', 'house'>, { location: Location_InFrontOfHouse, inventory: { letter: 'read' } }] ?
     {
         /** ### Look at Old House
          * 
@@ -267,7 +279,7 @@ export type Command<TState extends GameStateCommon, TCommand> =
          */
         execute: TState;
     }
-    : [TCommand, TState] extends ['approach house' | 'move house' | 'walk house', { location: Location_InFrontOfHouse, inventory: { letter: 'read' } }] ?
+    : [TCommand, TState] extends [CommandText<TCommand, 'approach' | 'walk' | 'move' | 'run', 'house'>, { location: Location_InFrontOfHouse, inventory: { letter: 'read' } }] ?
     {
         /** ### Approach House
          * 
@@ -296,7 +308,7 @@ export type Command<TState extends GameStateCommon, TCommand> =
          */
         execute: TState;
     }
-    : [TCommand, TState] extends ['break window', { location: Location_OutsideOldHouse }] ?
+    : [TCommand, TState] extends [CommandText<TCommand, 'break' | 'force' | 'open', 'window'>, { location: Location_OutsideOldHouse }] ?
     {
         /** ### Break the Window
          * 
@@ -319,7 +331,7 @@ export type Command<TState extends GameStateCommon, TCommand> =
             youAreDead: GameOver;
         };
     }
-    : [TCommand, TState] extends ['open door', { location: Location_OutsideOldHouse }] ?
+    : [TCommand, TState] extends [CommandText<TCommand, 'open' | 'push' | 'force' | 'pick', 'door' | 'lock'>, { location: Location_OutsideOldHouse }] ?
     {
         /** ### Open the Door
          * 
@@ -338,7 +350,7 @@ export type Command<TState extends GameStateCommon, TCommand> =
             youAreDead: GameOver;
         };
     }
-    : [TCommand, TState] extends ['ring doorbell', { location: Location_OutsideOldHouse }] ?
+    : [TCommand, TState] extends [CommandText<TCommand, 'ring' | 'push', 'doorbell' | 'door bell' | 'bell'>, { location: Location_OutsideOldHouse }] ?
     {
         /** ### Ring the Doorbell
          * 
@@ -349,7 +361,7 @@ export type Command<TState extends GameStateCommon, TCommand> =
          */
         execute: TState;
     }
-    : [TCommand, TState] extends ['knock door', { location: Location_OutsideOldHouse }] ?
+    : [TCommand, TState] extends [CommandText<TCommand, 'knock', 'door'>, { location: Location_OutsideOldHouse }] ?
     {
         /** ### Knock on the Door
          * 
@@ -426,6 +438,7 @@ export type Command<TState extends GameStateCommon, TCommand> =
          * 
          * I don't know what you mean. Try Again.
          * 
+         * [![Ain't Nobody Got Time for That](https://img.youtube.com/vi/syhlPzqEpkE/0.jpg)](https://youtu.be/syhlPzqEpkE?t=32 "Ain't Nobody Got Time for That")
          */
         execute: TState;
     };
@@ -499,20 +512,24 @@ const play = () => {
     const result = gameStart
         .command(`begin`).execute
         .command(`look`).execute
-        .command(`open mailbox`).execute
+        // .command(`open mailbox`).execute
+        // .command(`get mail`).execute
+        // .command(`open the mailbox`).execute
+        .command('sdoad adas').execute
+        .command(`get the mail`).execute
         .command(`look`).execute
         .command(`inv`).execute
-        .command(`open envelope`).execute
-        .command(`read letter`).execute
+        .command(`open the envelope`).execute
+        .command(`read the letter`).execute
         .command(`open mailbox`).execute
         .command(`look`).execute
-        .command(`look house`).execute
-        .command(`walk house`).execute
+        .command(`look at the house`).execute
+        .command(`WALK TO THE HOUSE`).execute
         .command(`look`).execute
-        // .command(`break window`).execute.youAreDead.gameOver
+        // .command(`break the window`).execute.youAreDead.gameOver
         // .command(`open door`).execute.youAreDead.gameOver
-        .command(`ring doorbell`).execute
-        .command(`knock door`).execute.wait.eatCookie.youAreNowBeingTracked.winner
+        .command(`ring the door bell`).execute
+        .command(`knock on the door`).execute.wait.eatCookie.youAreNowBeingTracked.winner
         ;
 };
 

@@ -1,8 +1,9 @@
 {
-    "extends": "../../tsconfig-common",
+    "extends": "../../tsconfig",
     "compilerOptions": {
         "composite": true,
     },
+    "references": [],
     "exclude": [
         "node_modules",
     ],

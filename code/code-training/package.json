@@ -3,6 +3,7 @@
   "version": "1.0.0",
   "dependencies": {
     "controls-react": "*",
+    "comments": "*",
     "utils": "*",
     "utils-react": "*",
     "prism-themes": "^1.4.0",

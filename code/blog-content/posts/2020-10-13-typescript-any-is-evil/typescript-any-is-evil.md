@@ -4,6 +4,7 @@ date: "2020-10-13"
 path: "/typescript-any-is-evil"
 author: "Rick Love"
 excerpt: "In Typescript any is evil"
+tags: typescript, type-system, code-wisdom, tutorial
 ---
 
 tl;dr: In Typescript, never use `any`

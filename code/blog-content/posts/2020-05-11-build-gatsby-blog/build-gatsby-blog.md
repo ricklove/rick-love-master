@@ -4,6 +4,7 @@ date: "2020-05-11"
 path: "/build-gatsby-blog"
 author: "Rick Love"
 excerpt: "Build your own React based Blog with Gatsby"
+tags: tutorial, gatsby, vscode, github
 ---
 
 Gatsby is a static site generator based on React.

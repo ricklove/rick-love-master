@@ -1,11 +1,9 @@
 /* eslint-disable react/no-array-index-key */
 import React, { ReactNode, useEffect, useRef, useState } from 'react';
-import { View, Text, TextInput, TouchableOpacity, Platform } from 'react-native-lite';
-import { LessonProjectFilesEditor, LessonProjectEditorMode, LessonFileEditorMode } from '../common/components/lesson-file-editor';
-import { LessonData, LessonExperiment, LessonModule, LessonProjectFileSelection, LessonProjectState, LessonStep_ConstructCode, LessonStep_UnderstandCode, SetProjectState } from '../common/lesson-types';
-import { lessonExperiments_createReplacementProjectState, lessonExperiments_calculateProjectStateReplacements } from '../common/replacements';
+import { View, Text, TouchableOpacity } from 'react-native-lite';
+import { Utterances } from 'comments/utterances';
+import { LessonModule, SetProjectState } from '../common/lesson-types';
 import { LessonView_ConstructCode, LessonView_ExperimentCode, LessonView_PreviewResult, LessonView_UnderstandCode } from '../common/components/lesson-view';
-import { LessonProjectStatePreview, LessonRenderView } from '../common/components/lesson-render-view';
 
 const styles = {
     container: {
@@ -102,49 +100,63 @@ export const LessonModulePlayer = (props: { module: LessonModule, setProjectStat
     useEffect(() => {
         const newItems = getLessonNavigatorItems(props.module);
         setItems(newItems);
-        nextStep();
+        nextStep({ items: newItems, useTimeout: false });
     }, [props.module]);
 
-    useEffect(() => {
-        if (activeItem?.kind === `lesson`) {
-            nextStep();
+    const navigate = (targetItem: NavigatorItem) => {
+        if (targetItem.kind !== `lesson`) {
+            setActiveItem(targetItem);
+            return;
         }
-    }, [activeItem]);
 
-    const nextStep = () => {
-        console.log(`LessonModulePlayer nextStep`, { activeItem });
-        if (!items) { return; }
+        nextStep({ items, activeItem: targetItem, useTimeout: false });
+    };
 
-        const itemSteps = items.filter(x => x.kind !== `lesson`);
-        const activeItemStepIndex = itemSteps.findIndex(x => x.key === activeItem?.key);
-        const activeItemIndex = items.findIndex(x => x.key === activeItem?.key);
+    const nextStep = (options?: { items?: NavigatorItem[], activeItem?: NavigatorItem, useTimeout: boolean }) => {
+        // console.log(`LessonModulePlayer nextStep`, { activeItem, options });
+        const itemsToUse = options?.items ?? items;
+        const activeItemToUse = options?.activeItem ?? activeItem;
+        if (!itemsToUse) { return; }
+
+        const itemSteps = itemsToUse.filter(x => x.kind !== `lesson`);
+        const activeItemStepIndex = itemSteps.findIndex(x => x.key === activeItemToUse?.key);
+        const activeItemIndex = itemsToUse.findIndex(x => x.key === activeItemToUse?.key);
         const nextItem = (activeItemStepIndex >= 0 ? itemSteps[activeItemStepIndex + 1] : null)
-            ?? (activeItemIndex >= 0 ? items[activeItemIndex + 1] : null)
-            ?? items[0];
-        setTimeout(() => {
+            ?? (activeItemIndex >= 0 ? itemsToUse[activeItemIndex + 1] : null)
+            ?? itemsToUse[0];
+
+        if (options?.useTimeout) {
+            setTimeout(() => {
+                setActiveItem(nextItem);
+            }, 1000);
+        } else {
             setActiveItem(nextItem);
-        }, 1000);
+        }
     };
 
     return (
         <>
             <View style={styles.container}>
-                <LessonModuleNavigator items={items} activeItem={activeItem ?? undefined} onChange={x => setActiveItem(x)}>
-                    <View key={activeItem?.key}>
-                        {activeItem?.kind === `preview` && (
-                            <LessonView_PreviewResult data={activeItem.lesson} setProjectState={props.setProjectState} onDone={nextStep} />
-                        )}
-                        {activeItem?.kind === `construct` && (
-                            <LessonView_ConstructCode data={activeItem.lesson} onDone={nextStep} />
-                        )}
-                        {activeItem?.kind === `understand` && (
-                            <LessonView_UnderstandCode data={activeItem.lesson} onDone={nextStep} />
-                        )}
-                        {activeItem?.kind === `experiment` && (
-                            <LessonView_ExperimentCode data={activeItem.lesson} setProjectState={props.setProjectState} onDone={nextStep} />
-                        )}
-                    </View>
-                </LessonModuleNavigator>
+                {items && (
+                    <LessonModuleNavigator items={items} activeItem={activeItem ?? undefined} onChange={navigate}>
+                        <View key={activeItem?.key}>
+                            {activeItem?.kind === `preview` && (
+                                <LessonView_PreviewResult data={activeItem.lesson} setProjectState={props.setProjectState} onDone={nextStep} />
+                            )}
+                            {activeItem?.kind === `construct` && (
+                                <LessonView_ConstructCode data={activeItem.lesson} onDone={nextStep} />
+                            )}
+                            {activeItem?.kind === `understand` && (
+                                <LessonView_UnderstandCode data={activeItem.lesson} onDone={nextStep} />
+                            )}
+                            {activeItem?.kind === `experiment` && (
+                                <LessonView_ExperimentCode data={activeItem.lesson} setProjectState={props.setProjectState} onDone={nextStep} />
+                            )}
+                        </View>
+
+                        <Utterances repo='ricklove/ricklove-code-lesson-comments' />
+                    </LessonModuleNavigator>
+                )}
             </View>
         </>
     );
@@ -218,6 +230,7 @@ const navigatorStyles = {
 export const LessonModuleNavigator = (props: { children: ReactNode, items: NavigatorItem[], activeItem?: NavigatorItem, onChange: (value: NavigatorItem) => void }) => {
     const { items, activeItem } = props;
 
+    const hasLoadedHash = useRef(false);
     const [isExpanded, setIsExpanded] = useState(true);
     const [isNarrowScreen, setIsNarrowScreen] = useState(false);
 
@@ -231,6 +244,25 @@ export const LessonModuleNavigator = (props: { children: ReactNode, items: Navig
             setIsExpanded(false);
         }
     }, [isNarrowScreen]);
+
+    useEffect(() => {
+        if (!activeItem?.key) { return; }
+
+        if (!hasLoadedHash.current) {
+            hasLoadedHash.current = true;
+            // First Load
+            const hash = window.location.hash.substr(1);
+            const matchItem = props.items.find(x => x.key === hash);
+
+            console.log(`LessonModuleNavigator load`, { hash, matchItem });
+            if (matchItem) {
+                props.onChange(matchItem);
+                return;
+            }
+        }
+
+        window.history.replaceState(null, activeItem?.label ?? ``, `#${activeItem?.key ?? ``}`);
+    }, [activeItem]);
 
     const changeItem = (item: typeof items[0]) => {
         props.onChange(item);
