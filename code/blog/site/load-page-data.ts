@@ -173,7 +173,7 @@ export const loadStaticPageData = async (): Promise<SitePageData<PageData>> => {
     pagePosts.unshift(...posts);
 
     // Add related posts
-    const tagPostPairs = pagePosts.flatMap(x => x.data.postPage.tags.map(t => ({ item: x, postSitePath: x.sitePath, title: x.data.postPage.title, tag: t, dateLabel: x.data.postPage.dateLabel })));
+    const tagPostPairs = pagePosts.flatMap(x => x.data.postPage.tags.map(t => ({ item: x, postSitePath: x.sitePath, title: x.data.postPage.title, tag: t, dateLabel: x.data.postPage.dateLabel, order: x.data.postPage.order })));
     const tagPostSitePaths = groupItems(tagPostPairs, x => x.tag);
     pagePosts.forEach(x => {
         const r = x.data.postPage.tags.flatMap(t => tagPostSitePaths[t]);
@@ -183,7 +183,8 @@ export const loadStaticPageData = async (): Promise<SitePageData<PageData>> => {
             title: p.title,
             tags: p.item.data.postPage.tags.filter(t => x.data.postPage.tags.includes(t)),
             dateLabel: p.dateLabel,
-        }));
+            order: p.order,
+        })).sort((a, b) => a.order - b.order);
     });
 
     const pages: SitePageInfo<PageData>[] = pagePosts;
