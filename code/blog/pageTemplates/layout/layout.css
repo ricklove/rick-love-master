@@ -164,11 +164,6 @@ img, canvas, iframe, video, svg, select, textarea {
     max-width: 100%;
 }
 
-img {
-    height: auto;
-    object-fit: scale-down;
-}
-
 blockquote {
     border-left: 3px solid #01ff70;
 }

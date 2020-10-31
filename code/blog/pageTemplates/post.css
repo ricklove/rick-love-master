@@ -63,12 +63,14 @@ div.post-item div.code-wrapper {
 }
 
 span.markdown-image-container {
-    display: flex;
-    justify-content: center;
+    display: block;
+    margin: auto;
     max-width: 100%;
 }
 
 span.markdown-image-container img {
+    display: block;
+    margin: auto;
     border: 1px solid #3ca4ff;
 }
 
