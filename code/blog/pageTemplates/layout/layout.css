@@ -166,6 +166,7 @@ img, canvas, iframe, video, svg, select, textarea {
 
 img {
     height: auto;
+    object-fit: scale-down;
 }
 
 blockquote {
