@@ -12,7 +12,7 @@ import { ComponentLessonModulePage, ComponentLessonModulePageData } from '../pag
 import './_rebuild-trigger';
 
 export type PageData = {
-    postPage?: PostPageData & { order?: number };
+    postPage?: PostPageData;
     postIndexPage?: PostIndexPageData;
     notFoundPage?: {};
     lazyComponentExamplePage?: {};

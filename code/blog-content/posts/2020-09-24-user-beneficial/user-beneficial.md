@@ -4,6 +4,7 @@ date: "2020-09-24"
 path: "/user-beneficial"
 author: "Rick Love"
 excerpt: "Benefit Your Users"
+tags: code-wisdom
 ---
 
 tl;dr: Ensure that your software provides a beneficial impact on the life of each person who uses it.

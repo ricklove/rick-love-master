@@ -4,6 +4,7 @@ date: "2020-09-30"
 path: "/cool-stuff"
 author: "Rick Love"
 excerpt: "Here is a list of some cool stuff on the site"
+tags: demo, educational-games, games, text-adventure
 ---
 
 So, almost all my content is hidden, so this post will highlight some things to play with.

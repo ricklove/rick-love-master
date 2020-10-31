@@ -5,6 +5,7 @@ path: "/emoji-variable-names"
 author: "Rick Love"
 excerpt: "Emoji Support for Variable Names in Typescript"
 image: emoji-variable-names.png
+tags: typescript, evil-code
 ---
 
 tl;dr: A quick update on the state of support for using emojis in the worst places: variable names
