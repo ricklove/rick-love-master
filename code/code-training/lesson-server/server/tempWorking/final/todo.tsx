@@ -2,7 +2,9 @@
 /* eslint-disable react/jsx-curly-brace-presence */
 /* eslint-disable jsx-a11y/click-events-have-key-events */
 /* eslint-disable jsx-a11y/no-static-element-interactions */
-import React, { useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
+import { apiService } from './service';
+import { TodoItemData } from './types';
 
 const styles = {
     container: {
@@ -36,22 +38,86 @@ const styles = {
 const getUniqueKey = () => {
     return `${Date.now()}:${Math.random()}`;
 };
+const createNewTodoItem = () => {
+    return { key: getUniqueKey(), text: `New Task`, isDone: false };
+};
 
 export const TodoList = (props: {}) => {
 
     const [items, setItems] = useState([] as TodoItemData[]);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState(null as null | { message: string });
+
+    const isMounted = useRef(true);
+
+    useEffect(() => {
+        (async () => await loadData())();
+
+        return () => {
+            isMounted.current = false;
+        };
+    }, []);
+
+    const loadData = async () => {
+        setLoading(true);
+        try {
+            const result = await apiService.loadData();
+            if (!isMounted.current) { return; }
+            setItems(result?.items ?? [createNewTodoItem()]);
+            setLoading(false);
+        } catch {
+            setError({ message: `Failed to load data` });
+        }
+    };
+
+    const saveData = async () => {
+        if (!items) { return; }
+        setLoading(true);
+        try {
+            await apiService.saveData({ items });
+            if (!isMounted.current) { return; }
+            setLoading(false);
+        } catch {
+            setError({ message: `Failed to load data` });
+        }
+    };
+
     const changeItem = (value: TodoItemData) => {
         setItems(s => s.map(x => x.key === value.key ? value : x));
     };
     const addItem = () => {
-        setItems(s => [...s, { key: getUniqueKey(), text: `New Task`, isDone: false }]);
+        setItems(s => [...s, createNewTodoItem()]);
     };
     const deleteItem = (value: TodoItemData) => {
         setItems(s => s.filter(x => x.key !== value.key));
     };
 
+    if (error) {
+        return (
+            <div style={styles.container}>
+                <div style={styles.row}>
+                    <span>{`❗ ${error.message}`}</span>
+                </div>
+            </div>
+        );
+    }
+
     return (
         <div style={styles.container}>
+            {loading && (
+                <div style={styles.row}>
+                    <span>{`🕒 Loading`}</span>
+                </div>
+            )}
+            <div style={styles.row}>
+                <div style={styles.flex1} />
+                <div style={styles.button} onClick={loadData} >
+                    <span>{`💽 Reload`}</span>
+                </div>
+                <div style={styles.button} onClick={saveData} >
+                    <span>{`💾 Save`}</span>
+                </div>
+            </div>
             {items.map(x => (
                 <TodoItem key={x.key} item={x} onChange={changeItem} onDelete={deleteItem} />
             ))}
@@ -65,11 +131,6 @@ export const TodoList = (props: {}) => {
 };
 
 
-type TodoItemData = {
-    key: string;
-    text: string;
-    isDone: boolean;
-};
 const TodoItem = (props: { item: TodoItemData, onChange: (value: TodoItemData) => void, onDelete: (value: TodoItemData) => void }) => {
 
     const [isEditing, setIsEditing] = useState(false);
