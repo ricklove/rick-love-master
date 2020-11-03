@@ -5,7 +5,6 @@ import { processDirectoryFiles, getFileName, readFile, getPathNormalized, getDir
 import { createSubscribable, Subscribe } from 'utils/subscribable';
 import { createLessonApiServer_localFileServer } from 'code-training/lesson-server/server/lesson-api-local-file-server';
 import { distinct_key, groupItems } from 'utils/arrays';
-import { time } from 'console';
 import { PageData } from './create-page';
 import { componentTestList } from '../pageTemplates/component-tests-list';
 import { componentGamesList } from '../pageTemplates/component-games-list';
@@ -287,9 +286,19 @@ const createLessonModules = async (pages: SitePageInfo<PageData>[]) => {
     const lessonModuleList = lessonModules.data;
     lessonModuleList.forEach(x => {
         pages.push({
-            sitePath: `/lesson/${x.key}`,
+            sitePath: `/lessons/${x.key}`,
             data: {
                 componentLessonModulePage: { lessonModuleKey: x.key, lessonModuleTitle: x.title },
+            },
+        });
+    });
+
+    // Add index
+    lessonModuleList.forEach(x => {
+        pages.push({
+            sitePath: `/lessons`,
+            data: {
+                componentLessonListPage: { lessons: lessonModuleList.map(p => ({ sitePath: `/lessons/${p.key}`, lessonModuleKey: p.key, lessonModuleTitle: p.title })) },
             },
         });
     });
