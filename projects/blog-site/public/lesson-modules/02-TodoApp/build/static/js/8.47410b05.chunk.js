@@ -1,0 +1,2 @@
+(this["webpackJsonpcra-template"]=this["webpackJsonpcra-template"]||[]).push([[8],{21:function(e,t,n){"use strict";n.r(t),n.d(t,"App",(function(){return u}));var a=n(0),r=n.n(a),c=function(e){return r.a.createElement("div",null,r.a.createElement(l,{text:"Feed the cats"}),r.a.createElement(l,{text:"Feed the kids"}),r.a.createElement(l,{text:"Feed the bots"}))},l=function(e){return r.a.createElement("div",null,e.text)},u=function(e){return r.a.createElement(c,null)}}}]);
+//# sourceMappingURL=8.47410b05.chunk.js.map
