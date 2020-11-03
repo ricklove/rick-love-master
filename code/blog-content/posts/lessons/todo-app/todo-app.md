@@ -1,5 +1,5 @@
 ---
-title: "Course: Todo App"
+title: "Course: Todo App (Unfinished)"
 date: "2020-11-03"
 path: "/course/todo-app"
 author: "Rick Love"
