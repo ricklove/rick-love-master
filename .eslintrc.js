@@ -144,5 +144,8 @@ module.exports = {
 
         // Sometimes just want it there as a placeholder - stop getting rid of it!
         "no-useless-return": ['off'],
+
+        // Conflicts with error variable
+        "unicorn/catch-error-name": ['off']
     },
 }

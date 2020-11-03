@@ -2,7 +2,8 @@
 /* eslint-disable react/jsx-curly-brace-presence */
 /* eslint-disable jsx-a11y/click-events-have-key-events */
 /* eslint-disable jsx-a11y/no-static-element-interactions */
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useState } from 'react';
+import { useAsyncWorker } from './hooks';
 import { apiService } from './service';
 import { TodoItemData } from './types';
 
@@ -45,41 +46,25 @@ const createNewTodoItem = () => {
 export const TodoList = (props: {}) => {
 
     const [items, setItems] = useState([] as TodoItemData[]);
-    const [loading, setLoading] = useState(true);
-    const [error, setError] = useState(null as null | { message: string });
-
-    const isMounted = useRef(true);
+    const { loading, error, doWork } = useAsyncWorker();
 
     useEffect(() => {
-        (async () => await loadData())();
-
-        return () => {
-            isMounted.current = false;
-        };
+        loadData();
     }, []);
 
-    const loadData = async () => {
-        setLoading(true);
-        try {
+    const loadData = () => {
+        doWork(async (checkMounted) => {
             const result = await apiService.loadData();
-            if (!isMounted.current) { return; }
+            if (!checkMounted()) { return; }
+
             setItems(result?.items ?? [createNewTodoItem()]);
-            setLoading(false);
-        } catch {
-            setError({ message: `Failed to load data` });
-        }
+        }, { messageIfError: `Failed to Load Data` });
     };
 
-    const saveData = async () => {
-        if (!items) { return; }
-        setLoading(true);
-        try {
+    const saveData = () => {
+        doWork(async () => {
             await apiService.saveData({ items });
-            if (!isMounted.current) { return; }
-            setLoading(false);
-        } catch {
-            setError({ message: `Failed to load data` });
-        }
+        }, { messageIfError: `Failed to Save Data` });
     };
 
     const changeItem = (value: TodoItemData) => {
