@@ -37,11 +37,11 @@ Be thankful and love others.
 
 Note: This course is not finished. However a preview is availabe here:
 
-- [Preview: User Interface with Mock Service and Custom React Hook](/lessons/02-Todo-App)
+- [Preview: User Interface with Mock Service and Custom React Hook](/lessons/02-TodoApp)
 
 ### Lessons
 
-- [Frontend: User Interface](/lessons/02-Todo-App)
+- [Frontend: User Interface](/lessons/02-TodoApp)
 - Frontend: Todo Mock Service
 - Frontend: Custom useAsyncWorker react hook
 - Backend: AWS Lambda with Serverless Framework
