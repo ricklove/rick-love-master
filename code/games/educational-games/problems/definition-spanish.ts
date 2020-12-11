@@ -635,5 +635,269 @@ Dar (doy)	to give
 Ir (voy)	to go	
 Ver (veo)	to see	
 Saber (sé)	to know	
+
+
+
+Verbs	
+Estar (estoy)	to be (temporary, location)
+Ser (soy) 	to be (permanant, trait)
+Dar (doy)	to give
+Ir (voy)	to go
+Ver (veo)	to see
+Saber (sé)	to know
 	
+Chapter 20	
+LOS PASATIEMPOS	PASTIMES
+descansar (Descanso) en el sofa 	To rest on the sofa 
+leer (leo) las noticias	To read the news
+tener (tengo) visitas	To have company
+dar (doy) una fiesta	 To give a party
+jugar (juego) una partida	To play a game
+mirar (miro) la television	To watch television
+escuchar (escucho) la radio	To listen to the radio 
+ hablar (hablo) por teléfono	To talk on the phone
+tocar (toco) un disco 	To play a record
+tocar (toco) un instrumento	To play an instrument
+EL TIEMPO	TIME
+PASADO	PAST
+ayer por la mañana	Yesterday morning
+ayer por la tarde	Yesterday afternoon
+anoche	Last night
+PRESENTE	PRESENT
+esta mañana	This morning
+esta tarde	This afternoon
+esta noche	Tonight
+FUTURO	FUTURE
+mañana por la mañana	Tomorrow morning
+mañana por la tarde	Tomorrow afternoon
+mañana por la noche	Tomorrow night
+	
+Chapter 21	
+LOS QUEHACERES DOMESTICOS	HOUSEWORK
+Tardo en..	delay in.
+Comienzo a..	I begin to...
+continuo a...	I continue to...
+Ceso de... (dejo de..)	I cease from...
+Acabo de...	I just (did)...
+trabajar (trabajo) en el jardín	Work (in the yard)
+cortar (corto) el césped (el pasto)	Cut (the grass)
+cultivar (cultivo) la tierra	Cultivate (the ground)
+plantar (planto) las flores	Plant (the flowers)
+regar (riego) el césped (el pasto)	Water (the lawn)
+ayudar (ayudo) en la cocina	To help (in the kitchen)
+cocinar (cocino)	To cook (the meal)
+poner (pongo) la mesa	To set (the table)
+levantar (levanto) la mesa	To clear (the table)
+lavar (lavo) los platos	To wash (the dishes)
+secar (seco) los platos	To dry (the dishes)
+limpiar (limpio) el baño	To clean (the bathroom)
+hacer (hago) las camas	To make( the beds)
+abrir (abro) el agua	To turn on (the water)
+cerrar (cierro) el agua	To turn off (the water)
+prender (prendo) la luz, la radio	To turn on (the light, radio)
+apagar (apago) la luz, la radio	To turn off (the light, radio)
+	
+Chapter 22	
+LA CASA: LAS CARACTERISTICAS	THE HOUSE: CHARACTERISTICS
+moderno (a)	Modern
+antiguo (a)	Old-fashioned
+ordinario (a) (sencillo (a))	Plain (of simple design)
+elegante, (lujoso (a))	Elegant (fancy)
+cómodo (a)	Comfortable
+incómodo (a)	Uncomfortable
+blando (a)	Soft
+duro (a)	Hard
+ancho (a)	Wide
+estrecho (a)	Narrow
+Redondo (a)	Round
+cuadrado (a)	Square
+LA CASA: LAS CONDICIONES	THE HOUSE: CONDITIONS
+abierto (a)	Open
+cerrado (av	Closed
+cubierto (o)	Covered
+descubierto (a)	Uncovered
+lleno (a)	Full
+vacío (a)	Empty
+limpio (a)	Clean
+sucio (a)	Dirty
+roto (a)	Broken (torn)
+en buenas condiciones	In good condition
+	
+Chapter 23	
+LA COMIDA: LA VAJILLA	THE MEAL: TABLE SERVICE
+el vaso	Glass
+la taza	Cup
+el plato	Plate
+el plato hondo	Bowl
+la jarra	Pitcher
+la botella	Bottle
+el cuchillo	Knife
+el tenedor	Fork
+la cuchara	Spoon
+la servilleta	Napkin
+la sal	Salt
+la pimiento	Pepper
+LA COMIDA: LAS BEBIDAS	THE MEAL: BEVERAGES
+el agua	Water
+la leche	Milk
+el café	Coffee
+el te	Tea
+el chocolate instantáneo	Cocoa
+el jugo de naranja	Orange juice
+la limonada	Lemonade
+la sidra	Cider
+el ponche	Punch (fruit)
+el refresco	Soft drink
+	
+Chapter 24	
+LA CARNE	MEAT
+la carne de res	Beef
+el Puerco	Pork
+el pollo	Chicken
+el pescado	Fish
+el cordero	Lamb
+LOS VEGETALES	VEGETABLES
+las papas	Potato
+el arroz	Rice
+el maíz (el elote)	Corn
+los frijoles	Beans
+las calabazas	Squash
+los chícharos	Peas
+las zanahorias	Carrots
+los ejotes	Green beans
+las cebollas	Onions
+el apio	Celery
+LA FRUTA	FRUIT
+la manzana	Apple
+la naranja	Orange
+el plátano	Banana
+la pera	Pear
+el Durazno	Peach
+el limón	Lemon
+CONDIMENTOS	CONDIMENTS
+la salsa de tomate	Catsup
+la salsa picante	Hot sauce
+la mostaza	Mustard
+la mayonesa	Mayonnaise
+el azúcar	Sugar
+la harina	Flour
+	
+Chapter 25	
+EL DESAYUNO	BREAKFAST
+el tocino	Bacon
+los huevos	Eggs
+el pan tostado	Toast
+la mantequilla	Butter
+la mermelada	Jam
+EL ALMUERZO	LUNCH
+el sandwich	Sandwich
+el queso	Cheese
+las carnes frías	Cold cuts
+la lechuga	Lettuce
+los tomates	Tomatoes
+LA CENA	DINNER
+el pan	Bread
+las galletas saladas	Crackers
+la sopa	Soup
+la ensalada	Salad
+la salsa para ensalada	Salad dressing
+EL POSTRE	DESSERT
+el pastel	Cake
+el pastel (la tárta)	Pie
+el helado	Ice cream
+las galletas dulces	Cookies
+los dulces	Candy
+	
+Chapter 26	
+ESTA (DEMASIADO)	IT'S TOO....
+caliente	Hot (temperature)
+frío	Cold
+picante	Hot (spicy)
+no picante	Mild
+salado (a)	Salty
+sin sal	Saltless
+dulce	Sweet
+amargo (a)	Bitter
+sabroso (a), delicioso (a)	Delicious
+sin sabor	Tasteless
+	
+Prepositions before Infinitives	
+antes de	before
+después de	after
+en vez de	instead of
+hasta	until
+para	for, in order to
+sin	without
+al	on, upon
+	
+Vamos a Restaurante	
+El plato	plate
+El tenedor	fork
+El vaso	glass
+La cuchara	spoon
+El cuchillo	knife
+La servilleta	napkin
+El mesero	waitress
+La cuenta	the bill
+Por favor	please
+Gracias	thank you
+	
+Chapter 27	
+LA CREACION: EL UNIVERSO	CREATION: THE UNIVERSE
+la tierra (planeta)	The earth
+el sol	The sun
+las estrellas	The stars
+la luna	The moon 
+el cielo	The sky
+el aire	The air
+las nubes	The clouds
+la luz del sol	The sunlight
+la sombra	The shade (shadow)
+la obscuridad	The darkness
+EL MUNDO	THE WORLD
+la tierra (terreno)	Land
+la roca	Rock
+la tierra	Dirt
+la arena	Sand
+el polvo	Dust
+la niebla	Mist (fog)
+la lluvia	Rain
+la nieve	Snow
+el hielo	Ice
+el fuego	Fire
+LOS ANIMALES	THE ANIMALS
+el gato	Cat
+el perro	Dog
+el pájaro	Bird
+el pez	Fish
+el caballo	Horse
+la vaca	Cow
+el Puerco (el cerdo)	Pig
+	
+Chapter 28	
+El hombre: la cabeza	Man: The Head
+El pelo	Hair
+La cara	Face
+Los ojos	Eyes
+Las orejas	Ears
+La nariz	Nose
+La boca	Mouth
+Los labios	Lips
+La lengua	Tongue
+Los dientes	Teeth
+La barba	Chin
+El hombre: El cuerpo	Man: The Body
+la piel	Skin
+el cuello	Neck
+los hombros	Shoulders
+la espalda	Back
+el pecho	Chest
+el estómago	Stomach
+los brazos	Arms
+las manos	Hands
+los dedos	Fingers
+las piernas	Legs
+los pies	Feet
+los dedos del pie	Toes
+
 `;
