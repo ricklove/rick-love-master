@@ -1,6 +1,9 @@
 {
     "compilerOptions": {
         "paths": {
+            "art/*": [
+                "code/art/*"
+            ],
             "audio/*": [
                 "code/audio/*"
             ],
