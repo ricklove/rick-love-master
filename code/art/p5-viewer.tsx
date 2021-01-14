@@ -1,14 +1,20 @@
 import React, { useEffect, useRef } from 'react';
 
-export const P5Viewer = (props: { art: { renderArt: (hostElement: HTMLDivElement) => void } }) => {
+export const P5Viewer = (props: {
+    renderArt: (hostElement: HTMLDivElement) => { remove: () => void };
+}) => {
 
     const hostElementRef = useRef(null as null | HTMLDivElement);
 
     useEffect(() => {
-        if (!hostElementRef.current) { return; }
+        if (!hostElementRef.current) { return () => { }; }
 
-        props.art.renderArt(hostElementRef.current);
-    }, [hostElementRef.current]);
+        hostElementRef.current.innerHTML = ``;
+        const { remove } = props.renderArt(hostElementRef.current);
+        return () => {
+            remove();
+        };
+    }, [hostElementRef.current, props.renderArt]);
 
     return (
         <>

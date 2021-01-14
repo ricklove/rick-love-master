@@ -18,6 +18,22 @@ export function useMounted() {
     return { mounted };
 }
 
+export function useDebounce(timeMs = 250) {
+    const { mounted } = useMounted();
+    const debouncer = useRef({
+        timeoutId: setTimeout(() => { }),
+        debounce: (action: () => void) => {
+            clearTimeout(debouncer.current.timeoutId);
+            debouncer.current.timeoutId = setTimeout(() => {
+                if (!mounted.current) { return; }
+                action();
+            }, timeMs);
+        },
+    });
+
+    return debouncer.current;
+}
+
 /** Automatically handle loading and error objects with asyncronous calls
  * @return The { loading, error, doWork } values
  * @example
