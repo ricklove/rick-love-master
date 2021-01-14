@@ -10,6 +10,7 @@ import { ComponentTestsPage, ComponentTestsPageData } from '../pageTemplates/com
 import { ComponentGamesPage, ComponentGamesPageData } from '../pageTemplates/component-games';
 import { ComponentLessonListPage, ComponentLessonListPageData, ComponentLessonModulePage, ComponentLessonModulePageData } from '../pageTemplates/component-lesson-module';
 import './_rebuild-trigger';
+import { ComponentArtGalleryPage, ComponentArtGalleryPageData } from 'blog/pageTemplates/component-art-gallery';
 
 export type PageData = {
     postPage?: PostPageData;
@@ -20,6 +21,7 @@ export type PageData = {
     componentGamesPage?: ComponentGamesPageData;
     componentLessonModulePage?: ComponentLessonModulePageData;
     componentLessonListPage?: ComponentLessonListPageData;
+    componentArtGalleryPage?: ComponentArtGalleryPageData;
 };
 
 export const createStaticPage = (sitePath: string, data: PageData, navigation: SiteNavigation): { Component: () => JSX.Element } => {
@@ -32,7 +34,7 @@ export const createStaticPage = (sitePath: string, data: PageData, navigation: S
     // Set Navigation
     setupNavigation(navigation);
 
-    const { postPage, postIndexPage, notFoundPage, lazyComponentExamplePage, componentTestsPage, componentGamesPage, componentLessonModulePage, componentLessonListPage } = data;
+    const { postPage, postIndexPage, notFoundPage, lazyComponentExamplePage, componentTestsPage, componentGamesPage, componentLessonModulePage, componentLessonListPage, componentArtGalleryPage } = data;
 
     if (postPage) {
         return {
@@ -67,6 +69,11 @@ export const createStaticPage = (sitePath: string, data: PageData, navigation: S
     if (componentLessonListPage) {
         return {
             Component: () => <ComponentLessonListPage data={componentLessonListPage} />,
+        };
+    }
+    if (componentArtGalleryPage) {
+        return {
+            Component: () => <ComponentArtGalleryPage data={componentArtGalleryPage} />,
         };
     }
 

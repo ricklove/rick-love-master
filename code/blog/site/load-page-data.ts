@@ -200,6 +200,12 @@ export const loadStaticPageData = async (): Promise<SitePageData<PageData>> => {
         },
     });
 
+    pages.push({
+        sitePath: `/art`,
+        data: {
+            componentArtGalleryPage: {},
+        },
+    });
 
     pages.push({
         sitePath: `/games`,

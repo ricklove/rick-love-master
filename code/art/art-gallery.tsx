@@ -6,20 +6,16 @@ import { P5Viewer } from './p5-viewer';
 
 export const ArtGallery = (props: {}) => {
     const artItems = [
-        { title: `Layers of the Onion's Soul`, renderArt: renderArt_layersOfTheOnionsSoul },
         { title: `Circles`, renderArt: renderArt_circles },
+        { title: `Layers of the Onion's Soul`, renderArt: renderArt_layersOfTheOnionsSoul },
     ];
 
     const [art, setArt] = useState(artItems[0]);
-    const [hash, setHash] = useState(`This is my hash!`);
+    const [hash, setHash] = useState(`hash`);
 
     return (
         <C.View_Panel>
             <C.View_Form>
-                <C.View_FieldRow>
-                    <C.Text_FormTitle>Enter a hash:</C.Text_FormTitle>
-                    <C.Input_Text value={hash} onChange={setHash} />
-                </C.View_FieldRow>
                 {artItems.map(x => (
                     <React.Fragment key={x.title}>
                         <div style={{ paddingBottom: 4 }}>
@@ -27,6 +23,10 @@ export const ArtGallery = (props: {}) => {
                         </div>
                     </React.Fragment>
                 ))}
+                <C.View_FieldRow>
+                    <C.Text_FormTitle>Enter a hash:</C.Text_FormTitle>
+                    <C.Input_Text value={hash} onChange={setHash} />
+                </C.View_FieldRow>
             </C.View_Form>
 
             <P5Viewer key={art.title + hash} art={{ renderArt: (hostElement) => art.renderArt(hostElement, hash) }} />
