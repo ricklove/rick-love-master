@@ -46,6 +46,7 @@
         "code/comments/**/*",
         "code/code-training/**/*",
         "code/blog/**/*",
+        "code/art/**/*",
         // "code",
         // "scripts",
         // "projects",
