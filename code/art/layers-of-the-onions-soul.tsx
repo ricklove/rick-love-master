@@ -11,7 +11,9 @@ export const renderArt_layersOfTheOnionsSoul = (hostElement: HTMLElement, hash =
     // const { a, b, c } = { a: 3, b: 7, c: 15 };
 
     const { random } = createRandomGenerator(hash);
-    const { a, b, c } = { a: 1 + Math.floor(17 * random()), b: 1 + Math.floor(17 * random()), c: 1 + Math.floor(35 * random()) };
+    const { a, b, c, d, e } = { a: 1 + Math.floor(17 * random()), b: 1 + Math.floor(57 * random()), c: 1 + Math.floor(35 * random()), d: 0 + Math.floor(5 * random()), e: 20 + Math.floor(255 * random()) };
+    // const { cr, cg, cb } = { cr: 207, cg: 175, cb: 65 };
+    const { cr, cg, cb } = { cr: Math.floor(25 + 230 * random()), cg: Math.floor(25 + 230 * random()), cb: Math.floor(25 + 230 * random()) };
 
 
     new p5((s: p5) => {
@@ -21,9 +23,10 @@ export const renderArt_layersOfTheOnionsSoul = (hostElement: HTMLElement, hash =
         s.draw = () => {
             s.background(0);
             for (let i = 0; i < 35; i++) {
-                const color = s.color(207, 175 * (1 + i * a) % 255, 65 + i);
+                const color = s.color(cr, cg * (1 + i * a) % 255, cb + i);
                 s.fill(color);
-                s.circle(150 + i % b, 250 + i + c, 270 - i);
+                s.circle(150 + (i * 7) % b - a, 250 + i - c % 35 + b, (270 - i) % e);
+                s.rotate(d);
             }
         };
     }, hostElement);

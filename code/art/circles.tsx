@@ -11,7 +11,8 @@ export const renderArt_circles = (hostElement: HTMLElement, hash = `This is my h
     // const { a, b, c } = { a: 57, b: 23, c: 15 };
 
     const { random } = createRandomGenerator(hash);
-    const { a, b, c } = { a: 1 + Math.floor(57 * random()), b: 1 + Math.floor(23 * random()), c: 1 + Math.floor(15 * random()) };
+    const { a, b, c } = { a: 1 + Math.floor(57 * random()), b: 1 + Math.floor(213 * random()), c: 1 + Math.floor(115 * random()) };
+    const { cr, cg, cb, ca } = { cr: Math.floor(25 + 230 * random()), cg: Math.floor(25 + 230 * random()), cb: Math.floor(25 + 230 * random()), ca: Math.floor(25 + 25 * random()) };
 
     new p5((s: p5) => {
         s.setup = () => {
@@ -20,7 +21,7 @@ export const renderArt_circles = (hostElement: HTMLElement, hash = `This is my h
         s.draw = () => {
             s.background(0);
             for (let i = 0; i < 10; i++) {
-                const color = s.color(255, 255, 255, 20);
+                const color = s.color((cr * i) % 255, (cg * i) % 255, (cb * i) % 255, ca);
                 s.noFill();
                 s.stroke(color);
                 for (let j = 0; j < 36; j++) {

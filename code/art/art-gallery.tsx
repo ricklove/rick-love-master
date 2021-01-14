@@ -17,7 +17,7 @@ export const ArtGallery = (props: {}) => {
         <C.View_Panel>
             <C.View_Form>
                 <C.View_FieldRow>
-                    <C.Text_FormTitle>{`Hello${`'`}w`}</C.Text_FormTitle>
+                    <C.Text_FormTitle>Enter a hash:</C.Text_FormTitle>
                     <C.Input_Text value={hash} onChange={setHash} />
                 </C.View_FieldRow>
                 {artItems.map(x => (
