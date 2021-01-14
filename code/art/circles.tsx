@@ -27,6 +27,9 @@ export const renderArt_circles = (hostElement: HTMLElement, hash = `This is my h
                 for (let j = 0; j < 36; j++) {
                     s.circle(200 - a / 2 + j % a, 200 - b / 2 + j % b, 270 - (i * 5) % c);
                 }
+                s.translate(200, 200);
+                s.rotate((a + b + c) % 2);
+                s.translate(-200, -200);
             }
         };
     }, hostElement);
