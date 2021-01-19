@@ -32,15 +32,14 @@ export const art_121 = {
                         const y = clockRadius * Math.sin(Math.PI * 2 * (angleOffset - i * perUnit));
 
                         const colorKey = index + 1;
-                        const alpha = error === 0 ? 255 : 50;
-                        const color = s.color((cr * colorKey) % 255, (cg * colorKey) % 255, (cb * colorKey) % 255, alpha);
 
                         s.noFill();
-                        s.stroke(color);
+                        s.stroke(s.color((cr * colorKey) % 255, (cg * colorKey) % 255, (cb * colorKey) % 255, error === 0 || i === 0 ? 255 : 50));
                         s.strokeWeight(2);
                         s.line(x * 0.95, y * 0.95, x, y);
 
                         if (i === 0) {
+                            s.stroke(s.color((cr * colorKey) % 255, (cg * colorKey) % 255, (cb * colorKey) % 255, error === 0 ? 255 : 50));
                             s.line(0, 0, x, y);
                         }
                     }
