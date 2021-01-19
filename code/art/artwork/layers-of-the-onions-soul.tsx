@@ -1,7 +1,7 @@
 /* eslint-disable new-cap */
 /* eslint-disable no-new */
 import p5 from 'p5';
-import { createRandomGenerator } from './rando';
+import { createRandomGenerator } from '../rando';
 
 export const art_layersOfTheOnionsSoul = {
     title: `Layers of the Onion's Soul`,

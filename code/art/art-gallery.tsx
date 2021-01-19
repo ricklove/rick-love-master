@@ -1,12 +1,14 @@
 import React, { useEffect, useState } from 'react';
 import { C } from 'controls-react';
 import { useDebounce } from 'utils-react/hooks';
-import { art_circles } from './circles';
-import { art_layersOfTheOnionsSoul } from './layers-of-the-onions-soul';
+import { art_circles } from './artwork/circles';
+import { art_layersOfTheOnionsSoul } from './artwork/layers-of-the-onions-soul';
+import { art_121 } from './artwork/art-121';
 import { P5Viewer } from './p5-viewer';
 
 export const ArtGallery = (props: {}) => {
     const artItems = [
+        art_121,
         art_circles,
         art_layersOfTheOnionsSoul,
     ];
