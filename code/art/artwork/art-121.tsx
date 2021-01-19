@@ -1,5 +1,6 @@
 /* eslint-disable new-cap */
 /* eslint-disable no-new */
+import { error } from 'console';
 import p5 from 'p5';
 import { createRandomGenerator } from '../rando';
 
@@ -21,26 +22,46 @@ export const art_121 = {
             s.draw = () => {
                 s.background(0);
 
-                const drawClock = (index: number, clockRadius: number, units: number, error: number) => {
+                const drawClock = (index: number, clockRadius: number, units: number, value: number) => {
 
                     const perUnit = 1 / units;
                     const d = 0.8 * clockRadius * Math.sin(Math.PI * 2 * perUnit);
-                    const angleOffset = -0.25 + error * perUnit;
+                    const angleOffset = -0.25 + value * perUnit;
 
-                    for (let i = 0; i < units; i++) {
-                        const x = clockRadius * Math.cos(Math.PI * 2 * (angleOffset - i * perUnit));
-                        const y = clockRadius * Math.sin(Math.PI * 2 * (angleOffset - i * perUnit));
+                    for (let iHalf = 0; iHalf <= 1; iHalf++) {
+                        const isFront = iHalf === 1;
+                        for (let i = 0; i < units; i++) {
 
-                        const colorKey = index + 1;
 
-                        s.noFill();
-                        s.stroke(s.color((cr * colorKey) % 255, (cg * colorKey) % 255, (cb * colorKey) % 255, error === 0 || i === 0 ? 255 : 50));
-                        s.strokeWeight(2);
-                        s.line(x * 0.95, y * 0.95, x, y);
+                            const errorRatioRaw = value * perUnit;
+                            const errorRatio = (0.5 - Math.abs((value * perUnit) - 0.5)) * 2;
+                            const correctRatio = 1 - errorRatio;
+                            const x = correctRatio * clockRadius * Math.cos(Math.PI * 2 * (angleOffset - i * perUnit));
+                            const y = clockRadius * Math.sin(Math.PI * 2 * (angleOffset - i * perUnit));
 
-                        if (i === 0) {
-                            s.stroke(s.color((cr * colorKey) % 255, (cg * colorKey) % 255, (cb * colorKey) % 255, error === 0 ? 255 : 50));
-                            s.line(0, 0, x, y);
+                            const isFrontOnLeft = errorRatioRaw < 0.5;
+                            // const isFrontOnLeft = errorRatioRaw > 0.5;
+
+                            if (isFront && (isFrontOnLeft && x < 0 || !isFrontOnLeft && x > 0)) { continue; }
+                            // if (!isFront && (isFrontOnLeft && x > 0 || !isFrontOnLeft && x < 0)) { continue; }
+                            // if (!isFront && value !== 0) { continue; }
+
+                            const colorKey = index + 1;
+
+                            // const alphaShift = 0.5 + 0.5 * (x / clockRadius) * (isFrontOnLeft ? -1 : 1);
+                            // const alphaShift = 1;
+                            const alphaShift = isFront || value === 0 ? 1 : 0.25;
+                            const lowAlpha = Math.ceil(units < 100 ? 100 : 25);
+
+                            s.noFill();
+                            s.stroke(s.color((cr * colorKey) % 255, (cg * colorKey) % 255, (cb * colorKey) % 255, value === 0 || i === 0 ? 255 : Math.ceil(lowAlpha * alphaShift)));
+                            s.strokeWeight(2);
+                            s.line(x * (1 - 0.05 * correctRatio), y * 0.95, x, y);
+
+                            if (i === 0) {
+                                s.stroke(s.color((cr * colorKey) % 255, (cg * colorKey) % 255, (cb * colorKey) % 255, value === 0 ? 255 : 50));
+                                s.line(0, 0, x, y);
+                            }
                         }
                     }
 
@@ -48,15 +69,16 @@ export const art_121 = {
 
                 s.translate(200, 200);
 
-                const now = (new Date(`2021-01-21 21:21:21.212Z`)).getTime() - Date.now();
+                const delta = ((new Date(`2021-01-21 21:21:21.212Z`)).getTime() - Date.now());
+                // const delta = ((new Date(`2000-01-01 00:00:00.000Z`)).getTime() - Date.now());
                 const e = {
-                    year: Math.floor(now / (1000 * 60 * 60 * 24 * 365)),
-                    month: Math.floor(now / (1000 * 60 * 60 * 24 * 31) % 12),
-                    day: Math.floor(now / (1000 * 60 * 60 * 24) % 31),
-                    hour: Math.floor(now / (1000 * 60 * 60) % 24),
-                    minute: Math.floor(now / (1000 * 60) % 60),
-                    second: Math.floor(now / (1000) % 60),
-                    ms: now % 1000,
+                    year: Math.floor(delta / (1000 * 60 * 60 * 24 * 365)),
+                    month: Math.floor(delta / (1000 * 60 * 60 * 24 * 31) % 12),
+                    day: Math.floor(delta / (1000 * 60 * 60 * 24) % 31),
+                    hour: Math.floor(delta / (1000 * 60 * 60) % 24),
+                    minute: Math.floor(delta / (1000 * 60) % 60),
+                    second: Math.floor(delta / (1000) % 60),
+                    ms: delta % 1000,
                 };
                 const isBefore = true;
 
