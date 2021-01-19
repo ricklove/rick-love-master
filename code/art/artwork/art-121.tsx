@@ -23,7 +23,7 @@ export const art_121 = {
 
                 const drawClock = (index: number, clockRadius: number, units: number, error: number) => {
 
-                    const perUnit = 1 / (units - 1);
+                    const perUnit = 1 / units;
                     const d = 0.8 * clockRadius * Math.sin(Math.PI * 2 * perUnit);
                     const angleOffset = -0.25 + error * perUnit;
 
@@ -71,18 +71,22 @@ export const art_121 = {
 
                 s.translate(-200, -200);
 
-                s.textSize(20);
-                s.noStroke();
-                s.textFont(`monospace`);
 
-                const pad = (value: number, digits: number) => (`${value}`).padStart(digits, `0`);
+                const drawText = () => {
+                    s.textSize(20);
+                    s.noStroke();
+                    s.textFont(`monospace`);
 
-                s.fill(s.color(255, 255, 255));
-                s.text(`1/21/21 21:21:21.212 GST`, 70, 30);
+                    const pad = (value: number, digits: number) => (`${value}`).padStart(digits, `0`);
 
-                s.fill(!isBefore ? s.color(0, 255, 0) : s.color(255, 0, 0));
-                s.text(`${isBefore ? `-` : `+`} ${pad(e.year, 2)}y ${pad(e.month, 2)}m ${pad(e.day, 2)}d ${pad(e.hour, 2)}:${pad(e.minute, 2)}:${pad(e.second, 2)}.${pad(e.ms, 3)}`, 50, 380);
+                    s.fill(s.color(255, 255, 255));
+                    s.text(`1/21/21 21:21:21.212 GST`, 70, 30);
 
+                    s.fill(!isBefore ? s.color(0, 255, 0) : s.color(255, 0, 0));
+                    s.text(`${isBefore ? `-` : `+`} ${pad(e.year, 2)}y ${pad(e.month, 2)}m ${pad(e.day, 2)}d ${pad(e.hour, 2)}:${pad(e.minute, 2)}:${pad(e.second, 2)}.${pad(e.ms, 3)}`, 50, 380);
+                };
+
+                // drawText();
             };
         }, hostElement);
     },
