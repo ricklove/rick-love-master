@@ -15,6 +15,8 @@ export const art_121 = {
         const { a, b, c } = { a: 1 + Math.floor(57 * random()), b: 1 + Math.floor(213 * random()), c: 1 + Math.floor(115 * random()) };
         const { cr, cg, cb, ca } = { cr: Math.floor(25 + 230 * random()), cg: Math.floor(25 + 230 * random()), cb: Math.floor(25 + 230 * random()), ca: Math.floor(25 + 25 * random()) };
 
+        let tick = 0;
+
         return new p5((s: p5) => {
             s.setup = () => {
                 s.createCanvas(400, 400);
@@ -26,20 +28,28 @@ export const art_121 = {
 
                     const perUnit = 1 / units;
                     const d = 0.8 * clockRadius * Math.sin(Math.PI * 2 * perUnit);
-                    const angleOffset = -0.25 + value * perUnit;
 
                     for (let iHalf = 0; iHalf <= 1; iHalf++) {
                         const isFront = iHalf === 1;
+                        let xZeroValue = 0;
                         for (let i = 0; i < units; i++) {
 
 
                             const errorRatioRaw = value * perUnit;
                             const errorRatio = (0.5 - Math.abs((value * perUnit) - 0.5)) * 2;
-                            const correctRatio = 1 - errorRatio;
+                            const correctRatioRaw = 1 - errorRatio;
+                            // const correctRatio = correctRatioRaw * ((tick * 0.121 * correctRatioRaw) % 2 - 1);
+                            const correctRatio = Math.sin((tick * 0.0121 * correctRatioRaw));
+                            const angleOffset = -0.25 + value * perUnit;
+
                             const x = correctRatio * clockRadius * Math.cos(Math.PI * 2 * (angleOffset - i * perUnit));
                             const y = clockRadius * Math.sin(Math.PI * 2 * (angleOffset - i * perUnit));
 
-                            const isFrontOnLeft = errorRatioRaw < 0.5;
+                            if (i === 0) {
+                                xZeroValue = x;
+                            }
+
+                            const isFrontOnLeft = Math.sign(xZeroValue) === Math.sign(x);
                             // const isFrontOnLeft = errorRatioRaw > 0.5;
 
                             if (isFront && (isFrontOnLeft && x < 0 || !isFrontOnLeft && x > 0)) { continue; }
@@ -56,7 +66,7 @@ export const art_121 = {
                             s.noFill();
                             s.stroke(s.color((cr * colorKey) % 255, (cg * colorKey) % 255, (cb * colorKey) % 255, value === 0 || i === 0 ? 255 : Math.ceil(lowAlpha * alphaShift)));
                             s.strokeWeight(2);
-                            s.line(x * (1 - 0.05 * correctRatio), y * 0.95, x, y);
+                            s.line(x * (1 - 0.05 * Math.abs(correctRatio)), y * 0.95, x, y);
 
                             if (i === 0) {
                                 s.stroke(s.color((cr * colorKey) % 255, (cg * colorKey) % 255, (cb * colorKey) % 255, value === 0 ? 255 : 50));
@@ -69,8 +79,11 @@ export const art_121 = {
 
                 s.translate(200, 200);
 
-                const delta = ((new Date(`2021-01-21 21:21:21.212Z`)).getTime() - Date.now());
+                // const delta = ((new Date(`2021-01-21 21:21:21.212Z`)).getTime() - Date.now());
+                const delta = ((new Date(`2022-01-21 21:21:21.212Z`)).getTime() - Date.now());
                 // const delta = ((new Date(`2000-01-01 00:00:00.000Z`)).getTime() - Date.now());
+                // const delta = 0;
+
                 const e = {
                     year: Math.floor(delta / (1000 * 60 * 60 * 24 * 365)),
                     month: Math.floor(delta / (1000 * 60 * 60 * 24 * 31) % 12),
@@ -82,13 +95,19 @@ export const art_121 = {
                 };
                 const isBefore = true;
 
-                drawClock(0, 140, 100, e.year);
-                drawClock(1, 120, 12, e.month);
-                drawClock(2, 100, 31, e.day);
-                drawClock(3, 80, 60, e.hour);
-                drawClock(4, 60, 60, e.minute);
-                drawClock(5, 40, 60, e.second);
-                drawClock(6, 20, 1000, e.ms);
+                // tick = 0;
+                for (let iTick = 0; iTick < 1; iTick++) {
+                    drawClock(0, 140, 100, e.year);
+                    drawClock(1, 120, 12, e.month);
+                    drawClock(2, 100, 31, e.day);
+                    drawClock(3, 80, 60, e.hour);
+                    drawClock(4, 60, 60, e.minute);
+                    drawClock(5, 40, 60, e.second);
+                    drawClock(6, 20, 1000, e.ms);
+
+                    s.background(s.color(0, 0, 0, 50));
+                    tick++;
+                }
 
                 s.translate(-200, -200);
 
@@ -108,6 +127,8 @@ export const art_121 = {
                 };
 
                 // drawText();
+
+                tick++;
             };
         }, hostElement);
     },
