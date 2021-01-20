@@ -11,7 +11,7 @@ However the exact outcome cannot be controlled:
 
 The color scheme is generated from the hash of the address that mints the crypto-art.
 
-Even more difficult to predict - the block mining timestamp since 1/21/21 21:21:21.212 controls the behavior of the clocks:
+Even more difficult to predict - the block mining timestamp since 1/21/21 21:21:21.212 UTC controls the behavior of the clocks:
 
 Year
 Month
