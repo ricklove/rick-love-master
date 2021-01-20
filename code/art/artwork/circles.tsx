@@ -14,6 +14,7 @@ export const art_circles = {
         const { a, b, c } = { a: 1 + Math.floor(57 * random()), b: 1 + Math.floor(213 * random()), c: 1 + Math.floor(115 * random()) };
         const { cr, cg, cb, ca } = { cr: Math.floor(25 + 230 * random()), cg: Math.floor(25 + 230 * random()), cb: Math.floor(25 + 230 * random()), ca: Math.floor(25 + 25 * random()) };
 
+        let tick = 0;
         return new p5((s: p5) => {
             s.setup = () => {
                 s.createCanvas(400, 400);
@@ -28,9 +29,13 @@ export const art_circles = {
                         s.circle(200 - a / 2 + j % a, 200 - b / 2 + j % b, 270 - (i * 5) % c);
                     }
                     s.translate(200, 200);
-                    s.rotate((a + b + c) % 2);
+                    // s.rotate((a + b + c + tick * 0.001) % 2);
+                    s.rotate((a + b + c + tick * 0.001));
                     s.translate(-200, -200);
+                    tick++;
                 }
+
+                tick++;
             };
         }, hostElement);
     },
