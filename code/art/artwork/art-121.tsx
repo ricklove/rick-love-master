@@ -5,7 +5,28 @@ import { createRandomGenerator } from '../rando';
 
 export const art_121 = {
     title: `1/21/21 21:21:21.212`,
-    description: `Cypto Art Generated from blockchain data. If this is mined at the exact millisecond, perfect stability will be achieved.`,
+    description: `This exact time pattern will occur only once in our human timeline. This NFT crypto art will attempt to capture that time to the precise millisecond and embed it in the distributed blockchain forever. 
+    
+However the exact outcome cannot be controlled: 
+
+The color scheme is generated from the hash of the address that mints the crypto-art.
+
+Even more difficult to predict - the block mining timestamp since 1/21/21 21:21:21.212 controls the behavior of the clocks:
+
+Year
+Month
+Day
+Hour
+Minute
+Second
+Millesecond
+
+If this is mined at the exact millisecond, perfect stability will be achieved.
+
+This is all up to whatever timing occurs on the blockchain when these NFTs are mined by the collectors.
+
+Only one will have the most precise time. And only one might have the exact precision.
+`,
     artist: `Rick Love`,
     renderArt: (hostElement: HTMLElement, hash = `This is my hash!`) => {
         // const { a, b, c } = { a: 57, b: 23, c: 15 };
