@@ -18,7 +18,7 @@ export const P5Viewer = (props: {
 
     return (
         <>
-            <div style={{ width: 400, height: 400, background: `#888888` }} ref={hostElementRef} />
+            <div style={{}} ref={hostElementRef} />
         </>
     );
 };

@@ -4,14 +4,14 @@ import p5 from 'p5';
 import { createRandomGenerator } from '../rando';
 
 export const art_121 = {
-    title: `1/21/21 21:21:21.212`,
+    title: `1/21/21 21:21:21`,
     description: `This exact time pattern will occur only once in our human timeline. This NFT crypto art will attempt to capture that time to the precise millisecond and embed it in the distributed blockchain forever. 
     
 However the exact outcome cannot be controlled: 
 
 The color scheme is generated from the hash of the address that mints the crypto-art.
 
-Even more difficult to predict - the block mining timestamp since 1/21/21 21:21:21.212 UTC controls the behavior of the clocks:
+Even more difficult to predict - the block mining timestamp since 1/21/21 21:21:21 UTC controls the behavior of the clocks:
 
 Year
 Month
@@ -19,13 +19,12 @@ Day
 Hour
 Minute
 Second
-Millesecond
 
-If this is mined at the exact millisecond, perfect stability will be achieved.
+If this is mined at the exact second, perfect stability will be achieved.
 
 This is all up to whatever timing occurs on the blockchain when these NFTs are mined by the collectors.
 
-Only one will have the most precise time. And only one might have the exact precision.
+Can we obtain the exact precision?
 `,
     artist: `Rick Love`,
     renderArt: (hostElement: HTMLElement, hash = `This is my hash!`) => {
@@ -39,7 +38,7 @@ Only one will have the most precise time. And only one might have the exact prec
 
         return new p5((s: p5) => {
             s.setup = () => {
-                s.createCanvas(400, 400);
+                s.createCanvas(350, 350);
             };
             s.draw = () => {
                 s.background(0);
@@ -100,12 +99,12 @@ Only one will have the most precise time. And only one might have the exact prec
 
                 };
 
-                s.translate(200, 200);
+                s.translate(175, 175);
 
-                // const delta = ((new Date(`2021-01-21 21:21:21.212Z`)).getTime() - Date.now());
+                const delta = ((new Date(`2021-01-21 21:21:21.212Z`)).getTime() - Date.now());
                 // const delta = ((new Date(`2022-01-21 21:21:21.212Z`)).getTime() - Date.now());
                 // const delta = ((new Date(`2000-01-01 00:00:00.000Z`)).getTime() - Date.now());
-                const delta = 0;
+                // const delta = 0;
 
                 const e = {
                     year: Math.floor(delta / (1000 * 60 * 60 * 24 * 365)),
@@ -114,7 +113,7 @@ Only one will have the most precise time. And only one might have the exact prec
                     hour: Math.floor(delta / (1000 * 60 * 60) % 24),
                     minute: Math.floor(delta / (1000 * 60) % 60),
                     second: Math.floor(delta / (1000) % 60),
-                    ms: delta % 1000,
+                    // ms: delta % 1000,
                 };
                 const isBefore = true;
 
@@ -126,13 +125,13 @@ Only one will have the most precise time. And only one might have the exact prec
                     drawClock(3, 80, 60, e.hour);
                     drawClock(4, 60, 60, e.minute);
                     drawClock(5, 40, 60, e.second);
-                    drawClock(6, 20, 1000, e.ms);
+                    // drawClock(6, 20, 1000, e.ms);
 
                     s.background(s.color(0, 0, 0, 5));
                     tick++;
                 }
 
-                s.translate(-200, -200);
+                s.translate(-175, -175);
 
 
                 const drawText = () => {
@@ -143,13 +142,13 @@ Only one will have the most precise time. And only one might have the exact prec
                     const pad = (value: number, digits: number) => (`${value}`).padStart(digits, `0`);
 
                     s.fill(s.color(255, 255, 255));
-                    s.text(`1/21/21 21:21:21.212 GST`, 70, 30);
+                    s.text(`1/21/21 21:21:21 GST`, 60, 20);
 
                     s.fill(!isBefore ? s.color(0, 255, 0) : s.color(255, 0, 0));
-                    s.text(`${isBefore ? `-` : `+`} ${pad(e.year, 2)}y ${pad(e.month, 2)}m ${pad(e.day, 2)}d ${pad(e.hour, 2)}:${pad(e.minute, 2)}:${pad(e.second, 2)}.${pad(e.ms, 3)}`, 50, 380);
+                    s.text(`${isBefore ? `-` : `+`} ${pad(e.year, 2)}y ${pad(e.month, 2)}m ${pad(e.day, 2)}d ${pad(e.hour, 2)}:${pad(e.minute, 2)}:${pad(e.second, 2)}`, 50, 340);
                 };
 
-                // drawText();
+                drawText();
 
                 tick++;
             };
