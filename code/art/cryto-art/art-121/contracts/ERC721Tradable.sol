@@ -1,4 +1,5 @@
 // SPDX-License-Identifier: UNLICENSED
+// Based on: https://github.com/ProjectOpenSea/opensea-creatures/blob/master/contracts/ERC721Tradable.sol
 pragma solidity ^0.7.0;
 
 import "@openzeppelin/contracts/token/ERC721/ERC721.sol";

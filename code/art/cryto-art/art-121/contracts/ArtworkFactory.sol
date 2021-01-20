@@ -1,4 +1,5 @@
 // SPDX-License-Identifier: UNLICENSED
+// Based on: https://github.com/ProjectOpenSea/opensea-creatures/blob/master/contracts/CreatureFactory.sol
 pragma solidity ^0.7.0;
 
 import "@openzeppelin/contracts/access/Ownable.sol";
