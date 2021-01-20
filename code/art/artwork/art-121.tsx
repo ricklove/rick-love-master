@@ -49,10 +49,12 @@ export const art_121 = {
                                 xZeroValue = x;
                             }
 
-                            const isFrontOnLeft = Math.sign(xZeroValue) === Math.sign(x);
-                            // const isFrontOnLeft = errorRatioRaw > 0.5;
+                            const isFrontValue = Math.sign(xZeroValue) === Math.sign(x);
 
-                            if (isFront && (isFrontOnLeft && x < 0 || !isFrontOnLeft && x > 0)) { continue; }
+                            if (isFront && !isFrontValue) { continue; }
+                            if (!isFront && isFrontValue) { continue; }
+
+                            // if (isFront && isFrontX) { continue; }
                             // if (!isFront && (isFrontOnLeft && x > 0 || !isFrontOnLeft && x < 0)) { continue; }
                             // if (!isFront && value !== 0) { continue; }
 
@@ -79,8 +81,8 @@ export const art_121 = {
 
                 s.translate(200, 200);
 
-                // const delta = ((new Date(`2021-01-21 21:21:21.212Z`)).getTime() - Date.now());
-                const delta = ((new Date(`2022-01-21 21:21:21.212Z`)).getTime() - Date.now());
+                const delta = ((new Date(`2021-01-21 21:21:21.212Z`)).getTime() - Date.now());
+                // const delta = ((new Date(`2022-01-21 21:21:21.212Z`)).getTime() - Date.now());
                 // const delta = ((new Date(`2000-01-01 00:00:00.000Z`)).getTime() - Date.now());
                 // const delta = 0;
 
