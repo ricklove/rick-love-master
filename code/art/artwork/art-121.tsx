@@ -102,10 +102,10 @@ Only one will have the most precise time. And only one might have the exact prec
 
                 s.translate(200, 200);
 
-                const delta = ((new Date(`2021-01-21 21:21:21.212Z`)).getTime() - Date.now());
+                // const delta = ((new Date(`2021-01-21 21:21:21.212Z`)).getTime() - Date.now());
                 // const delta = ((new Date(`2022-01-21 21:21:21.212Z`)).getTime() - Date.now());
                 // const delta = ((new Date(`2000-01-01 00:00:00.000Z`)).getTime() - Date.now());
-                // const delta = 0;
+                const delta = 0;
 
                 const e = {
                     year: Math.floor(delta / (1000 * 60 * 60 * 24 * 365)),

@@ -5,7 +5,8 @@
         "controls-react": "*",
         "utils": "*",
         "utils-react": "*",
-        "react": "^16.12.0",
-        "p5": "^1.2.0"
+        "@openzeppelin/contracts": "^3.3.0",
+        "p5": "^1.2.0",
+        "react": "^16.12.0"
     }
 }
