@@ -37,7 +37,7 @@ contract Artwork is ERC721Tradable {
         return _contractURI; //"https://creatures-api.opensea.io/contract/opensea-creatures";
     }
 
-    function mintArtwork(address buyer, uint256 timestamp) public {
+    function mintArtwork(address buyer) public {
         // Must be sent from the owner proxy or owner.
         ProxyRegistry proxyRegistry = ProxyRegistry(proxyRegistryAddress);
         assert(
@@ -47,7 +47,7 @@ contract Artwork is ERC721Tradable {
 
         // Use the timestamp & token counter as the token id, so no custom storage is needed for the timestamp
         // Note: timestamp is seconds since UNIX epoch
-        uint256 newTokenId = timestamp * 1000000 + _tokenCounter;
+        uint256 newTokenId = block.timestamp * 1000000 + _tokenCounter;
         _mint(buyer, newTokenId);
         _tokenCounter++;
     }

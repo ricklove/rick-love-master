@@ -16,12 +16,12 @@ contract ArtworkFactory is FactoryERC721, Ownable {
 
     address public proxyRegistryAddress;
     address public nftAddress;
-    string public factoryBaseURI = _Config.factoryDefaultBaseURI();
+    string public factoryBaseURI = _Config.defaultFactoryBaseURI();
 
     uint256 ARTWORK_SUPPLY = _Config.artworkSupply();
     uint256 NUM_OPTIONS = 1;
 
-    constructor(address _proxyRegistryAddress, address _nftAddress) public {
+    constructor(address _proxyRegistryAddress, address _nftAddress) {
         proxyRegistryAddress = _proxyRegistryAddress;
         nftAddress = _nftAddress;
 
@@ -32,23 +32,23 @@ contract ArtworkFactory is FactoryERC721, Ownable {
         factoryBaseURI = factoryBaseURI_;
     }
 
-    function name() external view returns (string memory) {
+    function name() external view override returns (string memory) {
         return _Config.factoryName();
     }
 
-    function symbol() external view returns (string memory) {
+    function symbol() external view override returns (string memory) {
         return _Config.factorySymbol();
     }
 
-    function supportsFactoryInterface() public view returns (bool) {
+    function supportsFactoryInterface() public view override returns (bool) {
         return true;
     }
 
-    function numOptions() public view returns (uint256) {
+    function numOptions() public view override returns (uint256) {
         return NUM_OPTIONS;
     }
 
-    function transferOwnership(address newOwner) public onlyOwner {
+    function transferOwnership(address newOwner) public override onlyOwner {
         address _prevOwner = owner();
         super.transferOwnership(newOwner);
         fireTransferEvents(_prevOwner, newOwner);
@@ -60,7 +60,7 @@ contract ArtworkFactory is FactoryERC721, Ownable {
         }
     }
 
-    function mint(uint256 _optionId, address _toAddress) public {
+    function mint(uint256 _optionId, address _toAddress) public override {
         // Must be sent from the owner proxy or owner.
         ProxyRegistry proxyRegistry = ProxyRegistry(proxyRegistryAddress);
         assert(
@@ -70,10 +70,10 @@ contract ArtworkFactory is FactoryERC721, Ownable {
         require(canMint(_optionId));
 
         Artwork artwork = Artwork(nftAddress);
-        artwork.mintArtwork(_toAddress, block.timestamp);
+        artwork.mintArtwork(_toAddress);
     }
 
-    function canMint(uint256 _optionId) public view returns (bool) {
+    function canMint(uint256 _optionId) public view override returns (bool) {
         if (_optionId >= NUM_OPTIONS) {
             return false;
         }
@@ -84,9 +84,17 @@ contract ArtworkFactory is FactoryERC721, Ownable {
         return existingCount < ARTWORK_SUPPLY;
     }
 
-    function tokenURI(uint256 _optionId) external view returns (string memory) {
+    function tokenURI(uint256 _optionId)
+        external
+        view
+        override
+        returns (string memory)
+    {
         return
-            StringHelpers.strConcat(baseURI, StringHelpers.uint2str(_optionId));
+            StringHelpers.strConcat(
+                factoryBaseURI,
+                StringHelpers.uint2str(_optionId)
+            );
     }
 
     // --- Open Sea Integration ---

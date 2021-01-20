@@ -25,15 +25,15 @@ library _Config {
         return "RLART121";
     }
 
+    function artworkSupply() internal pure returns (uint256) {
+        return 1212;
+    }
+
     function factoryName() internal pure returns (string memory) {
         return "1/21/21 21:21:21.212 Artwork Sell";
     }
 
     function factorySymbol() internal pure returns (string memory) {
         return "RLART121F";
-    }
-
-    function artworkSupply() internal pure returns (string memory) {
-        return "1212";
     }
 }
