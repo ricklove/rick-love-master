@@ -99,7 +99,7 @@ export const art_121 = {
                 const isBefore = true;
 
                 // tick = 0;
-                for (let iTick = 0; iTick < 1; iTick++) {
+                for (let iTick = 0; iTick < 10; iTick++) {
                     drawClock(0, 140, 100, e.year);
                     drawClock(1, 120, 12, e.month);
                     drawClock(2, 100, 31, e.day);
@@ -108,7 +108,7 @@ export const art_121 = {
                     drawClock(5, 40, 60, e.second);
                     drawClock(6, 20, 1000, e.ms);
 
-                    s.background(s.color(0, 0, 0, 50));
+                    s.background(s.color(0, 0, 0, 5));
                     tick++;
                 }
 
