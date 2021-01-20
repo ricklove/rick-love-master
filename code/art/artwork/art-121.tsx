@@ -5,7 +5,7 @@ import { createRandomGenerator } from '../rando';
 
 export const art_121 = {
     title: `1/21/21 21:21:21`,
-    description: `This exact time pattern will occur only once in our human timeline. This NFT crypto art will attempt to capture that time to the precise millisecond and embed it in the distributed blockchain forever. 
+    description: `This exact time pattern will occur only once in our human timeline. This NFT crypto art will attempt to capture that time to the precise second and embed it in the distributed blockchain forever. 
     
 However the exact outcome cannot be controlled: 
 
@@ -148,7 +148,7 @@ Can we obtain the exact precision?
                     s.text(`${isBefore ? `-` : `+`} ${pad(e.year, 2)}y ${pad(e.month, 2)}m ${pad(e.day, 2)}d ${pad(e.hour, 2)}:${pad(e.minute, 2)}:${pad(e.second, 2)}`, 50, 340);
                 };
 
-                drawText();
+                // drawText();
 
                 tick++;
             };
