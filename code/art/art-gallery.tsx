@@ -46,8 +46,8 @@ export const ArtGallery = (props: {}) => {
 
             <C.Text_FormTitle>{art.title}</C.Text_FormTitle>
             <C.Text_FormTitle>{art.artist}</C.Text_FormTitle>
-            <C.Text_FormTitle>{art.description}</C.Text_FormTitle>
             <P5Viewer renderArt={renderArt.renderArt} />
+            <C.Text_FormTitle>{art.description}</C.Text_FormTitle>
         </C.View_Panel>
     );
 };
