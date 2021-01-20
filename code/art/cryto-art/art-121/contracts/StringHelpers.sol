@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: UNLICENSED
 pragma solidity ^0.7.0;
 
-library Strings {
+library StringHelpers {
     // via https://github.com/oraclize/ethereum-api/blob/master/oraclizeAPI_0.5.sol
     function strConcat(
         string memory _a,

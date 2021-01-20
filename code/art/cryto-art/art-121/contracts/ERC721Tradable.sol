@@ -12,13 +12,12 @@ contract ProxyRegistry {
 
 /**
  * @title ERC721Tradable
- * ERC721Tradable - ERC721 contract that whitelists a trading address, and has minting functionality.
+ * ERC721Tradable - ERC721 contract that whitelists a trading address to enable Open Sea to trade for owners.
  */
 contract ERC721Tradable is ERC721, Ownable {
     using Strings for string;
 
     address proxyRegistryAddress;
-    uint256 private _currentTokenId = 0;
 
     constructor(
         string memory _name,
@@ -26,31 +25,6 @@ contract ERC721Tradable is ERC721, Ownable {
         address _proxyRegistryAddress
     ) ERC721(_name, _symbol) {
         proxyRegistryAddress = _proxyRegistryAddress;
-    }
-
-    /**
-     * @dev Mints a token to an address with a tokenURI.
-     * @param _to address of the future owner of the token
-     */
-    function mintTo(address _to) public onlyOwner {
-        uint256 newTokenId = _getNextTokenId();
-        _mint(_to, newTokenId);
-        _incrementTokenId();
-    }
-
-    /**
-     * @dev calculates the next token ID based on value of _currentTokenId
-     * @return uint256 for the next token ID
-     */
-    function _getNextTokenId() private view returns (uint256) {
-        return _currentTokenId + 1;
-    }
-
-    /**
-     * @dev increments the value of _currentTokenId
-     */
-    function _incrementTokenId() private {
-        _currentTokenId++;
     }
 
     /**
