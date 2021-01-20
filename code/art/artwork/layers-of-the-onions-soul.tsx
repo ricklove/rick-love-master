@@ -15,6 +15,7 @@ export const art_layersOfTheOnionsSoul = {
         // const { cr, cg, cb } = { cr: 207, cg: 175, cb: 65 };
         const { cr, cg, cb } = { cr: Math.floor(25 + 230 * random()), cg: Math.floor(25 + 230 * random()), cb: Math.floor(25 + 230 * random()) };
 
+        let tick = 0;
 
         return new p5((s: p5) => {
             s.setup = () => {
@@ -23,10 +24,13 @@ export const art_layersOfTheOnionsSoul = {
             s.draw = () => {
                 s.background(0);
                 for (let i = 0; i < 35; i++) {
-                    const color = s.color(cr, cg * (1 + i * a) % 255, cb + i);
+                    const color = s.color((cr + b * i) % 255, cg * (1 + i * a) % 255, (cb + i * d) % 255);
                     s.fill(color);
-                    s.circle(150 + (i * 7) % b - a, 250 + i - c % 35 + b, (270 - i) % e);
-                    s.rotate(d);
+                    s.circle(150 + (i * 7) % b - a + 32 * Math.sin(tick * 0.001), 250 + i - c % 35 + b, (270 - i) % e);
+                    s.translate(100, 100);
+                    s.rotate(d + tick * 0.000007);
+                    s.translate(-120, -150);
+                    tick++;
                 }
             };
         }, hostElement);
