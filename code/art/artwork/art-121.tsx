@@ -35,21 +35,22 @@ export const art_121 = {
                         for (let i = 0; i < units; i++) {
 
 
-                            const errorRatioRaw = value * perUnit;
                             const errorRatio = (0.5 - Math.abs((value * perUnit) - 0.5)) * 2;
                             const correctRatioRaw = 1 - errorRatio;
                             // const correctRatio = correctRatioRaw * ((tick * 0.121 * correctRatioRaw) % 2 - 1);
-                            const correctRatio = Math.sin((tick * 0.0121 * correctRatioRaw));
+                            const zRotation = Math.cos((tick * 0.0121 * correctRatioRaw + index * 0.25));
                             const angleOffset = -0.25 + value * perUnit;
 
-                            const x = correctRatio * clockRadius * Math.cos(Math.PI * 2 * (angleOffset - i * perUnit));
+                            const x = zRotation * clockRadius * Math.cos(Math.PI * 2 * (angleOffset - i * perUnit));
                             const y = clockRadius * Math.sin(Math.PI * 2 * (angleOffset - i * perUnit));
 
                             if (i === 0) {
                                 xZeroValue = x;
                             }
 
-                            const isFrontValue = Math.sign(xZeroValue) === Math.sign(x);
+                            const isFrontValue = (value === 0 && index % 2 === 0 ? -1 : 1) * Math.sign(xZeroValue) === Math.sign(x);
+                            // const isFrontValue = Math.sign(xZeroValue) === Math.sign(x);
+                            // const isFrontValue = Math.sign(xZeroValue) === Math.sign(x);
 
                             if (isFront && !isFrontValue) { continue; }
                             if (!isFront && isFrontValue) { continue; }
@@ -62,13 +63,13 @@ export const art_121 = {
 
                             // const alphaShift = 0.5 + 0.5 * (x / clockRadius) * (isFrontOnLeft ? -1 : 1);
                             // const alphaShift = 1;
-                            const alphaShift = isFront || value === 0 ? 1 : 0.25;
+                            const alphaShift = isFront ? 1 : 0.25;
                             const lowAlpha = Math.ceil(units < 100 ? 100 : 25);
 
                             s.noFill();
-                            s.stroke(s.color((cr * colorKey) % 255, (cg * colorKey) % 255, (cb * colorKey) % 255, value === 0 || i === 0 ? 255 : Math.ceil(lowAlpha * alphaShift)));
+                            s.stroke(s.color((cr * colorKey) % 255, (cg * colorKey) % 255, (cb * colorKey) % 255, Math.ceil((value === 0 ? 255 : lowAlpha) * alphaShift)));
                             s.strokeWeight(2);
-                            s.line(x * (1 - 0.05 * Math.abs(correctRatio)), y * 0.95, x, y);
+                            s.line(x * (1 - 0.05 * Math.abs(zRotation)), y * 0.95, x, y);
 
                             if (i === 0) {
                                 s.stroke(s.color((cr * colorKey) % 255, (cg * colorKey) % 255, (cb * colorKey) % 255, value === 0 ? 255 : 50));
@@ -81,10 +82,10 @@ export const art_121 = {
 
                 s.translate(200, 200);
 
-                const delta = ((new Date(`2021-01-21 21:21:21.212Z`)).getTime() - Date.now());
+                // const delta = ((new Date(`2021-01-21 21:21:21.212Z`)).getTime() - Date.now());
                 // const delta = ((new Date(`2022-01-21 21:21:21.212Z`)).getTime() - Date.now());
                 // const delta = ((new Date(`2000-01-01 00:00:00.000Z`)).getTime() - Date.now());
-                // const delta = 0;
+                const delta = 0;
 
                 const e = {
                     year: Math.floor(delta / (1000 * 60 * 60 * 24 * 365)),
