@@ -1,12 +1,11 @@
 /* eslint-disable new-cap */
 /* eslint-disable no-new */
-import { error } from 'console';
 import p5 from 'p5';
 import { createRandomGenerator } from '../rando';
 
 export const art_121 = {
-    title: `121`,
-    description: `1/21/21 21:21:21.212`,
+    title: `1/21/21 21:21:21.212`,
+    description: `Cypto Art Generated from blockchain data. If this is mined at the exact millisecond, perfect stability will be achieved.`,
     artist: `Rick Love`,
     renderArt: (hostElement: HTMLElement, hash = `This is my hash!`) => {
         // const { a, b, c } = { a: 57, b: 23, c: 15 };
