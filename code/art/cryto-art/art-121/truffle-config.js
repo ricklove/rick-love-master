@@ -31,6 +31,8 @@ const MNEMONIC = process.env.MNEMONIC;
 const NODE_API_KEY = process.env.INFURA_KEY || process.env.ALCHEMY_KEY;
 const isInfura = !!process.env.INFURA_KEY;
 
+console.log(`Using env`, { MNEMONIC, NODE_API_KEY, isInfura });
+
 const needsNodeAPI =
   process.env.npm_config_argv &&
   (process.env.npm_config_argv.includes("rinkeby") ||
@@ -94,7 +96,12 @@ module.exports = {
     // }
     rinkeby: {
       provider: function () {
-        return new HDWalletProvider(MNEMONIC, rinkebyNodeUrl);
+        return new HDWalletProvider({
+          mnemonic: {
+            phrase: MNEMONIC
+          },
+          providerOrUrl: rinkebyNodeUrl
+        });
       },
       gas: 5000000,
       network_id: "*",
@@ -102,7 +109,12 @@ module.exports = {
     live: {
       network_id: 1,
       provider: function () {
-        return new HDWalletProvider(MNEMONIC, mainnetNodeUrl);
+        return new HDWalletProvider({
+          mnemonic: {
+            phrase: MNEMONIC
+          },
+          providerOrUrl: mainnetNodeUrl
+        });
       },
       gas: 5000000,
       gasPrice: 5000000000,

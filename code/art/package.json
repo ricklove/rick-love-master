@@ -15,5 +15,9 @@
         "truffle": "^5.1.62",
         "utils": "*",
         "utils-react": "*"
+    },
+    "devDependencies": {
+        "dotenv": "^8.2.0",
+        "env-cmd": "^10.1.0"
     }
 }
