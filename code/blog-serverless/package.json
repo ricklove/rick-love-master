@@ -2,6 +2,7 @@
     "name": "blog-serverless",
     "version": "1.0.0",
     "dependencies": {
+        "art": "*",
         "doodle": "*",
         "upload-api": "*",
         "websockets-api": "*",

@@ -6,6 +6,7 @@ custom:
   tempbucket: rick-love-blog-user-data-temp
   websocketstable: rick-love-blog-websockets-table
   serverstatebucket: rick-love-blog-server-state
+  nftbucket: rick-love-nft-data
 
 resources:
   Resources:
@@ -125,6 +126,15 @@ provider:
       Resource: 'arn:aws:dynamodb:${self:provider.region}:*:table/${self:custom.websocketstable}'
 
 functions:
+  nft-api:
+    handler: lambda/nft-api/index.handler
+    environment:
+      BUCKET: ${self:custom.nftbucket}
+    events:
+      - http:
+          path: nft-api/{param}
+          method: POST
+          cors: true
   upload-api:
     handler: lambda/upload-api/index.handler
     environment:

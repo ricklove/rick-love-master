@@ -2,14 +2,16 @@
 /* eslint-disable no-new */
 import p5 from 'p5';
 import { createRandomGenerator } from '../rando';
+import { parseTokenId_art121 } from './art-121-helpers';
 
 export const art_121 = {
+    key: `art-121`,
     title: `1/21/21 21:21:21`,
     description: `This exact time pattern will occur only once in our human timeline. This NFT crypto art will attempt to capture that time to the precise second and embed it in the distributed blockchain forever. 
     
 However the exact outcome cannot be controlled: 
 
-The color scheme is generated from the hash of the address that mints the crypto-art.
+The color scheme is generated from the token hash.
 
 Even more difficult to predict - the block mining timestamp since 1/21/21 21:21:21 UTC controls the behavior of the clocks:
 
@@ -27,14 +29,23 @@ This is all up to whatever timing occurs on the blockchain when these NFTs are m
 Can we obtain the exact precision?
 `,
     artist: `Rick Love`,
-    renderArt: (hostElement: HTMLElement, hash = `This is my hash!`) => {
+    getTokenDescription: (tokenId: string) => {
+        const tokenData = parseTokenId_art121(tokenId);
+        if (!tokenData) { return null; }
+
+        return `${tokenData.timeDeltaSecs} Seconds from 1/21/21 21:21:21 (#${tokenData.tokenCounter})`;
+    },
+    renderArt: (hostElement: HTMLElement, tokenId: string) => {
         // const { a, b, c } = { a: 57, b: 23, c: 15 };
 
-        const { random } = createRandomGenerator(hash);
+
+        const { random } = createRandomGenerator(tokenId);
         const { a, b, c } = { a: 1 + Math.floor(57 * random()), b: 1 + Math.floor(213 * random()), c: 1 + Math.floor(115 * random()) };
         const { cr, cg, cb, ca } = { cr: Math.floor(25 + 230 * random()), cg: Math.floor(25 + 230 * random()), cb: Math.floor(25 + 230 * random()), ca: Math.floor(25 + 25 * random()) };
 
         let tick = 0;
+
+        const tokenData = parseTokenId_art121(tokenId);
 
         return new p5((s: p5) => {
             s.setup = () => {
@@ -101,10 +112,14 @@ Can we obtain the exact precision?
 
                 s.translate(175, 175);
 
-                const delta = ((new Date(`2021-01-21 21:21:21.212Z`)).getTime() - Date.now());
-                // const delta = ((new Date(`2022-01-21 21:21:21.212Z`)).getTime() - Date.now());
-                // const delta = ((new Date(`2000-01-01 00:00:00.000Z`)).getTime() - Date.now());
-                // const delta = 0;
+                const defaultDelta = ((new Date(`2021-01-21 21:21:21.212Z`)).getTime() - Date.now());
+                // const defaultDelta = ((new Date(`2022-01-21 21:21:21.212Z`)).getTime() - Date.now());
+                // const defaultDelta = ((new Date(`2000-01-01 00:00:00.000Z`)).getTime() - Date.now());
+                // const defaultDelta = 0;
+
+                const tokenTimeDeltaSecs = tokenData?.timeDeltaSecs;
+                const delta = tokenTimeDeltaSecs != null ? tokenTimeDeltaSecs * 1000 : defaultDelta;
+                // console.log(`delta`, { delta, defaultDelta, tokenId });
 
                 const e = {
                     year: Math.floor(delta / (1000 * 60 * 60 * 24 * 365)),

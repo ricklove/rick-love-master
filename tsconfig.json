@@ -47,6 +47,7 @@
         "code/code-training/**/*",
         "code/blog/**/*",
         "code/art/**/*",
+        "code/blog-serverless/**/*",
         // "code",
         // "scripts",
         // "projects",

@@ -4,9 +4,13 @@ import p5 from 'p5';
 import { createRandomGenerator } from '../rando';
 
 export const art_circles = {
+    key: `art-circles`,
     title: `Circles`,
     description: `The circles we travel in life always bring us back home.`,
     artist: `Rick Love`,
+    getTokenDescription: (tokenId: string) => {
+        return null;
+    },
     renderArt: (hostElement: HTMLElement, hash = `This is my hash!`) => {
         // const { a, b, c } = { a: 57, b: 23, c: 15 };
 

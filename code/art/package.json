@@ -3,9 +3,11 @@
     "version": "1.0.0",
     "dependencies": {
         "controls-react": "*",
+        "themes": "*",
         "utils": "*",
         "utils-react": "*",
         "@openzeppelin/contracts": "^3.3.0",
+        "aws-sdk": "^2.749.0",
         "p5": "^1.2.0",
         "react": "^16.12.0"
     }
