@@ -15,7 +15,7 @@ export const cloneToBuildFolder = async (rootRaw?: string) => {
     const rootCode = getPathNormalized(root, `./code`);
 
     const startup = async () => {
-        console.log(`Statup: Clone & Process Imports`);
+        console.log(`Startup: Clone & Process Imports`);
         const tsConfigPaths = await loadTsConfigPaths(root);
 
         // Clone files and expand to relative

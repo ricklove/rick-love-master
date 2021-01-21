@@ -8,7 +8,7 @@ export const handler = async (event: APIGatewayEvent): Promise<unknown> => {
         console.log(`handler START`);
         // console.log(`event.body ${event?.body ?? `null`}`);
         // const data = JSON.parse(event?.body ?? `{}`);
-        const result = await handleNftApiWebRequest({ path: event.path });
+        const result = await handleNftApiWebRequest({ path: event.path, params: event.queryStringParameters ?? {} });
         return {
             statusCode: 200,
             headers: corsHeaders,

@@ -4,17 +4,17 @@ pragma solidity ^0.7.0;
 library _Config {
     function defaultArtworkBaseURI() internal pure returns (string memory) {
         return
-            "https://s7mrgkmtk5.execute-api.us-east-1.amazonaws.com/prod/nft-api/art-121/artwork/";
+            "https://s7mrgkmtk5.execute-api.us-east-1.amazonaws.com/prod/nft-api/art-121?type=artwork&tokenId=";
     }
 
     function defaultArtworkContractURI() internal pure returns (string memory) {
         return
-            "https://s7mrgkmtk5.execute-api.us-east-1.amazonaws.com/prod/nft-api/art-121/contract/";
+            "https://s7mrgkmtk5.execute-api.us-east-1.amazonaws.com/prod/nft-api/art-121?type=contract";
     }
 
     function defaultFactoryBaseURI() internal pure returns (string memory) {
         return
-            "https://s7mrgkmtk5.execute-api.us-east-1.amazonaws.com/prod/nft-api/art-121/factory/";
+            "https://s7mrgkmtk5.execute-api.us-east-1.amazonaws.com/prod/nft-api/art-121?type=factory";
     }
 
     function artworkName() internal pure returns (string memory) {

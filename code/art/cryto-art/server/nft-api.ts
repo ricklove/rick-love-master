@@ -13,12 +13,12 @@ export type Settings = {
 export const createNftApi = (settings: Settings) => {
 
     const api = {
-        generateNftMetadata: async ({ path }: { path: string }) => {
+        generateNftMetadata: async ({ path, params }: { path: string, params: { [name: string]: string } }) => {
             if (path.includes(`art-121`)) {
-                return await generateNftMetadata_art121({ path });
+                return await generateNftMetadata_art121({ params });
             }
 
-            throw new ApiError(`Unknown Artwork`, { path });
+            throw new ApiError(`Unknown Artwork`, { path, params });
         },
     };
 

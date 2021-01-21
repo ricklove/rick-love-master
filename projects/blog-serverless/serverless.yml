@@ -133,7 +133,7 @@ functions:
     events:
       - http:
           path: nft-api/{param}
-          method: POST
+          method: GET
           cors: true
   upload-api:
     handler: lambda/upload-api/index.handler

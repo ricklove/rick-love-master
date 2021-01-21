@@ -1,6 +1,6 @@
 import { parseTokenId_art121 } from '../../../artwork/art-121-helpers';
 
-export const generateNftMetadata_art121 = async ({ path }: { path: string }) => {
+export const generateNftMetadata_art121 = async ({ params }: { params: { [name: string]: string } }) => {
 
   // Contract
   /*
@@ -11,7 +11,7 @@ export const generateNftMetadata_art121 = async ({ path }: { path: string }) => 
       "external_link": "https://openseacreatures.io"
   }
   */
-  if (path.includes(`contract`)) {
+  if (params.type === `contract`) {
     return {
       name: `1/21/21 21:21:21 Art Sell`,
       description: `This exact time pattern will occur only once in our human timeline. This NFT crypto art will attempt to capture that time to the precise second and embed it in the distributed blockchain forever.`,
@@ -21,8 +21,13 @@ export const generateNftMetadata_art121 = async ({ path }: { path: string }) => 
   }
 
   // Factory
-  if (path.includes(`factory`)) {
-    return {};
+  if (params.type === `factory`) {
+    return {
+      name: `1/21/21 21:21:21 Art Sell`,
+      description: `This exact time pattern will occur only once in our human timeline. This NFT crypto art will attempt to capture that time to the precise second and embed it in the distributed blockchain forever.`,
+      image: `https://ricklove.me/blog-content/posts/2021-01-21-crypto-art-121/art-121.png`,
+      external_link: `https://ricklove.me/art?artwork=art-121`,
+    };
   }
 
 
@@ -77,9 +82,7 @@ export const generateNftMetadata_art121 = async ({ path }: { path: string }) => 
   }
   */
 
-  const pathParts = path.split(`/`);
-  const lastPart = pathParts[pathParts.length - 1];
-  const tokenId = lastPart;
+  const tokenId = params.tokenId || ``;
 
   const {
     tokenCounter,
@@ -118,10 +121,10 @@ export const generateNftMetadata_art121 = async ({ path }: { path: string }) => 
         "value": timestampSecs,
       },
     ],
-    "description": `Capture this unique second in our human timeline with this NFT crypto art.`,
+    name: `2021-01-21 21:21:21 Art`,
+    description: `Capture this unique second in our human timeline with this NFT crypto art.`,
     // TODO: use an actual image
     image: `https://ricklove.me/blog-content/posts/2021-01-21-crypto-art-121/art-121.png`,
     external_link: `https://ricklove.me/art?key=art-121&tokenId=${tokenId}`,
-    name: `2021-01-21 21:21:21 Art`,
   };
 };

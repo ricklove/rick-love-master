@@ -120,20 +120,30 @@ export async function processDirectoryItems(dir: string, options: {
     onDirectory?: (fullPath: string, name: string, info: Dirent) => Promise<void>;
     shouldSkipDirectory?: (fullPath: string, name: string, info: Dirent) => boolean;
     onFile?: (fullPath: string, name: string, info: Dirent) => Promise<void>;
+    batchSize?: number;
 }) {
-    const { onDirectory, onFile, shouldSkipDirectory } = options;
+    const { onDirectory, onFile, shouldSkipDirectory, batchSize = 100 } = options;
     const items = await fs.readdir(dir, { withFileTypes: true });
-    await Promise.all(items.map(async (item) => {
-        const fullPath = getPathNormalized(dir, item.name);
-        if (item.isDirectory()) {
-            await onDirectory?.(fullPath, item.name, item);
-            const shouldSkip = shouldSkipDirectory?.(fullPath, item.name, item) ?? false;
-            if (!shouldSkip) {
-                await processDirectoryItems(fullPath, options);
+
+    const remainingItems = [...items];
+    while (remainingItems.length > 0) {
+        const batchItems = remainingItems.splice(0, batchSize);
+
+        // eslint-disable-next-line no-await-in-loop
+        await Promise.all(batchItems.map(async (item) => {
+            const fullPath = getPathNormalized(dir, item.name);
+            if (item.isDirectory()) {
+                await onDirectory?.(fullPath, item.name, item);
+                const shouldSkip = shouldSkipDirectory?.(fullPath, item.name, item) ?? false;
+                if (!shouldSkip) {
+                    await processDirectoryItems(fullPath, options);
+                }
             }
-        }
-        else { await onFile?.(fullPath, item.name, item); }
-    }));
+            else { await onFile?.(fullPath, item.name, item); }
+        }));
+    }
+
+
 }
 
 export async function processDirectoryFiles(dir: string, onFile: (filePath: string) => Promise<void>) {

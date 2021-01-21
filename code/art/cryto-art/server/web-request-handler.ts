@@ -9,11 +9,11 @@ const settings = {
     // tempBucket: process.env.TEMPBUCKET!,
 };
 
-export const handleNftApiWebRequest = async (requestData: { path: string }) => {
-    const { path } = requestData;
+export const handleNftApiWebRequest = async (requestData: { path: string, params: { [name: string]: string } }) => {
+    const { path, params } = requestData;
 
     const nftApi = createNftApi(settings);
-    const result = await nftApi.generateNftMetadata({ path });
+    const result = await nftApi.generateNftMetadata({ path, params });
 
     return result;
 };
