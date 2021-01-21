@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: UNLICENSED
 // Based on: https://github.com/ProjectOpenSea/opensea-creatures/blob/master/contracts/IFactoryERC721.sol
-pragma solidity ^0.7.0;
+pragma solidity ^0.6.0;
 
 /**
  * This is a generic factory contract that can be used to mint tokens. The configuration

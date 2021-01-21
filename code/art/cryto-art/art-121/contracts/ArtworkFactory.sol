@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: UNLICENSED
 // Based on: https://github.com/ProjectOpenSea/opensea-creatures/blob/master/contracts/CreatureFactory.sol
-pragma solidity ^0.7.0;
+pragma solidity ^0.6.0;
 
 import "@openzeppelin/contracts/access/Ownable.sol";
 import "./_Config.sol";
@@ -22,7 +22,7 @@ contract ArtworkFactory is FactoryERC721, Ownable {
     uint256 ARTWORK_SUPPLY = _Config.artworkSupply();
     uint256 NUM_OPTIONS = 1;
 
-    constructor(address _proxyRegistryAddress, address _nftAddress) {
+    constructor(address _proxyRegistryAddress, address _nftAddress) public {
         proxyRegistryAddress = _proxyRegistryAddress;
         nftAddress = _nftAddress;
 

@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: UNLICENSED
-pragma solidity ^0.7.0;
+pragma solidity ^0.6.0;
 
 library _Config {
     function defaultArtworkBaseURI() internal pure returns (string memory) {

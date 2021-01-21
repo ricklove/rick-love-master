@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: UNLICENSED
 // Based on: https://github.com/ProjectOpenSea/opensea-creatures/blob/master/contracts/ERC721Tradable.sol
-pragma solidity ^0.7.0;
+pragma solidity ^0.6.0;
 
 import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
@@ -24,10 +24,11 @@ contract ERC721Tradable is ERC721, Ownable {
         string memory _name,
         string memory _symbol,
         address _proxyRegistryAddress
-    ) ERC721(_name, _symbol) {
+    ) public ERC721(_name, _symbol) {
         proxyRegistryAddress = _proxyRegistryAddress;
     }
 
+    // IMPORTANT: Requires adding virtual to ERC721.isApprovedForAll for solc 0.6.0
     /**
      * Override isApprovedForAll to whitelist user's OpenSea proxy accounts to enable gas-less listings.
      */

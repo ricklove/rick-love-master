@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: UNLICENSED
 // Based on: https://github.com/ProjectOpenSea/opensea-creatures/blob/master/contracts/Strings.sol
-pragma solidity ^0.7.0;
+pragma solidity ^0.6.0;
 
 library StringHelpers {
     // via https://github.com/oraclize/ethereum-api/blob/master/oraclizeAPI_0.5.sol

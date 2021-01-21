@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: UNLICENSED
 // Based on: https://github.com/ProjectOpenSea/opensea-creatures/blob/master/contracts/Creature.sol
-pragma solidity ^0.7.0;
+pragma solidity ^0.6.0;
 
 import "./_Config.sol";
 import "./ERC721Tradable.sol";
@@ -14,6 +14,7 @@ contract Artwork is ERC721Tradable {
     uint256 private _tokenCounter = 0;
 
     constructor(address _proxyRegistryAddress)
+        public
         ERC721Tradable(
             _Config.artworkName(),
             _Config.artworkSymbol(),
