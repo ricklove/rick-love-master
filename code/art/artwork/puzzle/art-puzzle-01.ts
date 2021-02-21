@@ -83,6 +83,7 @@ export const art_puzzle01 = {
             s.setup = () => {
                 s.createCanvas(canvasSize, canvasSize);
                 s.background(0);
+                // s.colorMode(s.HSB);
 
                 // Create board out of backwards generation of correct moves
                 const { random } = createRandomGenerator(tokenId);
@@ -181,6 +182,15 @@ export const art_puzzle01 = {
                     };
                 };
 
+                // Add outer wall
+                for (let i = 0; i < gridSize; i++) {
+                    board.push({ renderSeed: getNextWallRandomSeed(), item: `wall`, pos: { x: i, y: 0 } });
+                    board.push({ renderSeed: getNextWallRandomSeed(), item: `wall`, pos: { x: i, y: gridSize - 1 } });
+                    board.push({ renderSeed: getNextWallRandomSeed(), item: `wall`, pos: { x: 0, y: i } });
+                    board.push({ renderSeed: getNextWallRandomSeed(), item: `wall`, pos: { x: gridSize - 1, y: i } });
+                }
+
+                // Add game walls
                 for (let i = 0; i < maxMoveCount; i++) {
 
                     // Reverse Move player
@@ -241,13 +251,6 @@ export const art_puzzle01 = {
                     }
                 }
 
-                // Add outer wall
-                for (let i = 0; i < gridSize; i++) {
-                    board.push({ renderSeed: getNextWallRandomSeed(), item: `wall`, pos: { x: i, y: 0 } });
-                    board.push({ renderSeed: getNextWallRandomSeed(), item: `wall`, pos: { x: i, y: gridSize - 1 } });
-                    board.push({ renderSeed: getNextWallRandomSeed(), item: `wall`, pos: { x: 0, y: i } });
-                    board.push({ renderSeed: getNextWallRandomSeed(), item: `wall`, pos: { x: gridSize - 1, y: i } });
-                }
 
                 player.renderPos = getRenderPosition(player.pos);
                 state.board.forEach(x => drawPuzzleItem(x));
