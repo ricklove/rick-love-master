@@ -130,12 +130,18 @@ export const art_puzzle01 = {
                     };
                 };
 
+                const wallColorMaxCount = 16;
+                const wallColorCount = 4 + Math.floor(random() * (wallColorMaxCount - 4));
+                const wallColors = [...new Array(wallColorCount)].map(x => `${random()}`);
+                const getNextWallRandomSeed = () => {
+                    return wallColors[Math.floor(random() * wallColorCount)];
+                };
+
                 // Reversed moves to generate board
                 let lastReverseMove = {
                     distance: 0,
                     direction: `unknown`,
                 } as unknown as Move;
-
 
                 const calculatePlayerReverseMove = (reverseMove: Move): null | ActualMove => {
                     let d = reverseMove.distance;
@@ -158,17 +164,13 @@ export const art_puzzle01 = {
                         const itemAtNextPos = board.find(x => x.item !== `player` && x.pos.x === nextPos.x && x.pos.y === nextPos.y);
                         if (itemAtNextPos?.item === `wall`) { return null; }
 
-                        // // Already visited - fail
-                        // const visitedPos = boardVisits.find(x => x.pos.x === pos.x && x.pos.y === pos.y);
-                        // if (visitedPos) { return null; }
-
-                        // // Already next visited - fail
-                        // const visitedNextPos = boardVisits.find(x => x.pos.x === nextPos.x && x.pos.y === nextPos.y);
-                        // if (visitedNextPos) { return null; }
-
                         d--;
                         lastPos = { ...pos };
                     }
+
+                    // If in line with any existing endmove, reject
+                    const inLineWithLastPos = state.moveSequence.find(m => m.endPosition.x === lastPos.x || m.endPosition.y === lastPos.y);
+                    if (inLineWithLastPos) { return null; }
 
                     const actualDistance = reverseMove.distance - d;
                     return {
@@ -200,7 +202,7 @@ export const art_puzzle01 = {
                         board.push({
                             item: `wall`,
                             pos: nextPos,
-                            renderSeed: `${random()}`,
+                            renderSeed: getNextWallRandomSeed(),
                         });
                     }
 
@@ -221,8 +223,33 @@ export const art_puzzle01 = {
                     console.log(`boardVisits`, { actualReverseMove: actualMove, boardVisits: [...state.boardVisits] });
                 }
 
-                player.renderPos = getRenderPosition(player.pos);
+                // Add random walls
+                for (let x = 0; x < gridSize; x++) {
+                    for (let y = 0; y < gridSize; y++) {
+                        const isVisited = !!boardVisits.find(b => b.pos.x === x && b.pos.y === y);
+                        const item = !!board.find(b => b.pos.x === x && b.pos.y === y);
 
+                        if (isVisited || item) { continue; }
+
+                        if (random() > 0.75) {
+                            board.push({
+                                item: `wall`,
+                                pos: { x, y },
+                                renderSeed: getNextWallRandomSeed(),
+                            });
+                        }
+                    }
+                }
+
+                // Add outer wall
+                for (let i = 0; i < gridSize; i++) {
+                    board.push({ renderSeed: getNextWallRandomSeed(), item: `wall`, pos: { x: i, y: 0 } });
+                    board.push({ renderSeed: getNextWallRandomSeed(), item: `wall`, pos: { x: i, y: gridSize - 1 } });
+                    board.push({ renderSeed: getNextWallRandomSeed(), item: `wall`, pos: { x: 0, y: i } });
+                    board.push({ renderSeed: getNextWallRandomSeed(), item: `wall`, pos: { x: gridSize - 1, y: i } });
+                }
+
+                player.renderPos = getRenderPosition(player.pos);
                 state.board.forEach(x => drawPuzzleItem(x));
             };
 
@@ -235,7 +262,7 @@ export const art_puzzle01 = {
             const drawPuzzleItem = (item: typeof state.board[0]) => {
                 const { random } = createRandomGenerator(item.renderSeed);
                 const { a, b, c } = { a: 1 + Math.floor(57 * random()), b: 1 + Math.floor(213 * random()), c: 1 + Math.floor(115 * random()) };
-                const { cr, cg, cb, ca } = { cr: Math.floor(25 + 230 * random()), cg: Math.floor(25 + 230 * random()), cb: Math.floor(25 + 230 * random()), ca: Math.floor(125 + 125 * random()) };
+                const { cr, cg, cb, ca } = { cr: Math.floor(25 + 230 * random()), cg: Math.floor(25 + 230 * random()), cb: Math.floor(25 + 230 * random()), ca: Math.floor(25 + 125 * random()) };
 
                 const { x, y } = item.renderPos ?? getRenderPosition(item.pos);
                 s.fill(cr, cg, cb, ca);
@@ -294,9 +321,11 @@ export const art_puzzle01 = {
                         return;
                     }
 
-                    s.fill(cr, cg, cb, 200);
-                    s.rect(x + itemSize * 0.25, y + itemSize * 0.25, itemSize * 0.5, itemSize * 0.5);
+                    // s.fill(cr, cg, cb, 200);
+                    s.fill(255, 255, 255);
                     s.rect(x, y, itemSize, itemSize);
+                    s.fill(0, 0, 0);
+                    s.rect(x + itemSize * 0.25, y + itemSize * 0.25, itemSize * 0.5, itemSize * 0.5);
                     return;
                 }
 
@@ -324,6 +353,10 @@ export const art_puzzle01 = {
                     // return;
                 }
 
+                if (gameWon) {
+                    // return;
+                    s.fill(cr, cg, cb, Math.floor(Math.sin((tick + a * c) / alphaCycle) * 25 + 25));
+                }
                 s.rect(x, y, itemSize, itemSize);
             };
 
@@ -424,7 +457,14 @@ export const art_puzzle01 = {
                 const nextMove = state.moveSequence[state.moveIndex];
                 if (!nextMove) { return; }
 
-                if (nextMove.direction !== d) { return; }
+                if (nextMove.direction !== d) {
+                    state.moveIndex = 0;
+                    state.player.activeMove = undefined;
+                    state.player.renderPos = undefined;
+                    state.player.targetRenderPos = undefined;
+                    state.board.filter(x => x.item === `wall-broken`).forEach(x => { x.item = `wall`; });
+                    return;
+                }
 
                 state.player.activeMove = nextMove;
                 state.player.renderPos = getRenderPosition(nextMove.startPosition);
