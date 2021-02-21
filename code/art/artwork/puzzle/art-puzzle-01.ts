@@ -242,13 +242,59 @@ export const art_puzzle01 = {
                 s.stroke(cr, cg, cb, 255);
                 s.strokeWeight(1);
 
+                const gameWon = state.moveIndex >= state.moveSequence.length && !state.player.targetRenderPos;
+
+                const aOffset = tick / 100;
+
                 if (item.item === `player`) {
+                    if (gameWon) {
+                        s.fill(cr, cg, cb, 150);
+                        s.stroke(0, 0, 0, 20);
+
+                        let angle = a;
+                        let trans = c;
+                        for (let i = 0; i < 32; i++) {
+
+                            // s.rect(x + itemSize * 0.25, y + itemSize * 0.25, itemSize * 0.5, itemSize * 0.5);
+                            s.translate(-trans, -trans);
+                            s.rotate(angle + aOffset);
+                            s.circle(x + 0.5 * itemSize, y + 0.5 * itemSize, itemSize + trans);
+                            s.rotate(-angle - aOffset);
+                            s.translate(trans, trans);
+                            angle += b;
+                            trans += c;
+                            trans %= 125;
+                        }
+                        return;
+                    }
+
                     s.fill(0, 0, 0, 0);
                     s.circle(x + 0.5 * itemSize, y + 0.5 * itemSize, itemSize);
                     return;
                 }
 
                 if (item.item === `exit`) {
+                    if (gameWon) {
+                        s.fill(cr, cg, cb, 50);
+                        s.stroke(0, 0, 0, 10);
+
+                        let angle = a;
+                        let trans = c;
+                        for (let i = 0; i < 32; i++) {
+
+                            // s.rect(x + itemSize * 0.25, y + itemSize * 0.25, itemSize * 0.5, itemSize * 0.5);
+                            s.translate(trans, trans);
+                            s.rotate(angle + aOffset);
+                            s.rect(x + itemSize * 0.25, y + itemSize * 0.25, c * x, c * y);
+                            s.rotate(-angle - aOffset);
+                            s.translate(-trans, -trans);
+                            angle += b;
+                            trans += c;
+                            trans %= 125;
+                        }
+                        return;
+                    }
+
                     s.fill(cr, cg, cb, 200);
                     s.rect(x + itemSize * 0.25, y + itemSize * 0.25, itemSize * 0.5, itemSize * 0.5);
                     s.rect(x, y, itemSize, itemSize);
@@ -260,13 +306,17 @@ export const art_puzzle01 = {
                     s.stroke(0, 0, 0, 10);
 
                     let angle = a;
+                    const trans = c % (canvasSize * 0.5);
                     for (let i = 0; i < 8; i++) {
 
-                        // s.rect(x + itemSize * 0.25, y + itemSize * 0.25, itemSize * 0.5, itemSize * 0.5);
-                        s.rotate(angle);
+                        s.translate(-trans, -trans);
+                        s.rotate(angle + aOffset);
                         s.rect(x, y, itemSize * x, itemSize * y);
-                        s.rotate(-angle);
+                        s.rotate(-angle - aOffset);
+                        s.translate(trans, trans);
                         angle += b;
+                        // trans += c;
+                        // trans %= 3;
                     }
                     return;
 
@@ -297,8 +347,9 @@ export const art_puzzle01 = {
                     // s.text(`${i}`, x1,y1);
                 };
 
-                state.board.forEach(x => drawPuzzleItem(x));
-                // state.board.filter(x => x.item === `wall-broken`).forEach(x => drawPuzzleItem(x));
+                // state.board.forEach(x => drawPuzzleItem(x));
+                state.board.filter(x => x.item === `wall-broken`).forEach(x => drawPuzzleItem(x));
+                state.board.filter(x => x.item !== `wall-broken`).forEach(x => drawPuzzleItem(x));
 
                 drawPuzzleItem(state.player);
 
