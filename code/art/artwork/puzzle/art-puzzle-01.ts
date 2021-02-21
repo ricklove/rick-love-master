@@ -1,5 +1,6 @@
 /* eslint-disable new-cap */
 /* eslint-disable no-new */
+import { SSL_OP_SSLEAY_080_CLIENT_DH_BUG } from 'constants';
 import p5 from 'p5';
 import { createRandomGenerator } from '../../rando';
 
@@ -81,6 +82,7 @@ export const art_puzzle01 = {
         return new p5((s: p5) => {
             s.setup = () => {
                 s.createCanvas(canvasSize, canvasSize);
+                s.background(0);
 
                 // Create board out of backwards generation of correct moves
                 const { random } = createRandomGenerator(tokenId);
@@ -220,6 +222,8 @@ export const art_puzzle01 = {
                 }
 
                 player.renderPos = getRenderPosition(player.pos);
+
+                state.board.forEach(x => drawPuzzleItem(x));
             };
 
             const getRenderPosition = (p: Vector2) => {
@@ -228,37 +232,56 @@ export const art_puzzle01 = {
                 return { x, y };
             };
 
+            const drawPuzzleItem = (item: typeof state.board[0]) => {
+                const { random } = createRandomGenerator(item.renderSeed);
+                const { a, b, c } = { a: 1 + Math.floor(57 * random()), b: 1 + Math.floor(213 * random()), c: 1 + Math.floor(115 * random()) };
+                const { cr, cg, cb, ca } = { cr: Math.floor(25 + 230 * random()), cg: Math.floor(25 + 230 * random()), cb: Math.floor(25 + 230 * random()), ca: Math.floor(125 + 125 * random()) };
 
+                const { x, y } = item.renderPos ?? getRenderPosition(item.pos);
+                s.fill(cr, cg, cb, ca);
+                s.stroke(cr, cg, cb, 255);
+                s.strokeWeight(1);
+
+                if (item.item === `player`) {
+                    s.fill(0, 0, 0, 0);
+                    s.circle(x + 0.5 * itemSize, y + 0.5 * itemSize, itemSize);
+                    return;
+                }
+
+                if (item.item === `exit`) {
+                    s.fill(cr, cg, cb, 200);
+                    s.rect(x + itemSize * 0.25, y + itemSize * 0.25, itemSize * 0.5, itemSize * 0.5);
+                    s.rect(x, y, itemSize, itemSize);
+                    return;
+                }
+
+                if (item.item === `wall-broken`) {
+                    s.fill(cr, cg, cb, 50);
+                    s.stroke(0, 0, 0, 10);
+
+                    let angle = a;
+                    for (let i = 0; i < 8; i++) {
+
+                        // s.rect(x + itemSize * 0.25, y + itemSize * 0.25, itemSize * 0.5, itemSize * 0.5);
+                        s.rotate(angle);
+                        s.rect(x, y, itemSize * x, itemSize * y);
+                        s.rotate(-angle);
+                        angle += b;
+                    }
+                    return;
+
+                    // s.rect(x + itemSize * 0.25, y + itemSize * 0.25, itemSize * 0.5, itemSize * 0.5);
+                    // s.rect(x, y, itemSize * x, itemSize * y);
+                    // return;
+                }
+
+                s.rect(x, y, itemSize, itemSize);
+            };
+
+            let tick = 0;
             s.draw = () => {
                 s.background(0);
-
-                const drawPuzzleItem = (item: typeof state.board[0]) => {
-                    const { random } = createRandomGenerator(item.renderSeed);
-                    const { a, b, c } = { a: 1 + Math.floor(57 * random()), b: 1 + Math.floor(213 * random()), c: 1 + Math.floor(115 * random()) };
-                    const { cr, cg, cb, ca } = { cr: Math.floor(25 + 230 * random()), cg: Math.floor(25 + 230 * random()), cb: Math.floor(25 + 230 * random()), ca: Math.floor(25 + 25 * random()) };
-
-                    const { x, y } = item.renderPos ?? getRenderPosition(item.pos);
-                    s.fill(cr, cg, cb, ca);
-                    s.stroke(cr, cg, cb, 255);
-
-                    if (item.item === `player`) {
-                        s.circle(x + 0.5 * itemSize, y + 0.5 * itemSize, itemSize);
-                        return;
-                    }
-
-                    if (item.item === `exit`) {
-                        s.fill(cr, cg, cb, 200);
-                    }
-
-                    if (item.item === `wall-broken`) {
-                        // s.rect(x + itemSize * 0.25, y + itemSize * 0.25, itemSize * 0.5, itemSize * 0.5);
-                        s.stroke(0, 0, 0, 0);
-                        // s.rect(x, y, itemSize * x, itemSize * y);
-                        // return;
-                    }
-
-                    s.rect(x, y, itemSize, itemSize);
-                };
+                // s.background(0, 0, 0, 5);
 
                 const drawMoveHistory = (m: typeof state.moveSequence[0]) => {
                     s.noFill();
@@ -275,19 +298,27 @@ export const art_puzzle01 = {
                 };
 
                 state.board.forEach(x => drawPuzzleItem(x));
+                // state.board.filter(x => x.item === `wall-broken`).forEach(x => drawPuzzleItem(x));
+
                 drawPuzzleItem(state.player);
 
                 // Animate
                 if (state.player.activeMove && state.player.renderPos && state.player.targetRenderPos) {
-                    state.player.renderPos = {
-                        x: 0.9 * state.player.renderPos.x + 0.1 * state.player.targetRenderPos.x,
-                        y: 0.9 * state.player.renderPos.y + 0.1 * state.player.targetRenderPos.y,
-                    };
+                    // state.player.renderPos = {
+                    //     x: 0.9 * state.player.renderPos.x + 0.1 * state.player.targetRenderPos.x,
+                    //     y: 0.9 * state.player.renderPos.y + 0.1 * state.player.targetRenderPos.y,
+                    // };
 
-                    const dist = Math.abs(state.player.renderPos.x - state.player.targetRenderPos.x)
-                        + Math.abs(state.player.renderPos.y - state.player.targetRenderPos.y);
-                    if (dist < 1) {
-                        state.player.renderPos = state.player.targetRenderPos;
+                    const speed = 3;
+                    for (let i = 0; i < speed; i++) {
+                        state.player.renderPos = calculateNextPos(state.player.renderPos, state.player.activeMove.direction);
+
+                        const dist = Math.abs(state.player.renderPos.x - state.player.targetRenderPos.x)
+                            + Math.abs(state.player.renderPos.y - state.player.targetRenderPos.y);
+                        if (dist < 1) {
+                            state.player.renderPos = state.player.targetRenderPos;
+                            break;
+                        }
                     }
                 }
 
@@ -313,6 +344,7 @@ export const art_puzzle01 = {
 
                 // Debug
                 //  state.moveSequence.forEach(x => drawMoveHistory(x));
+                tick++;
             };
 
             s.keyPressed = () => {
