@@ -1,5 +1,5 @@
 import '@babel/polyfill';
-import { handleNftApiWebRequest } from 'art/cryto-art/server/web-request-handler';
+import { handleNftApiWebRequest } from 'art/crypto-art/server/web-request-handler';
 import { APIGatewayEvent } from 'aws-lambda';
 import { corsHeaders } from '../helpers';
 
