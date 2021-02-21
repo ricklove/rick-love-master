@@ -299,7 +299,8 @@ export const art_puzzle01 = {
 
                     s.fill(0, 0, 0, 0);
                     const circleCount = 4;
-                    const spiralRadius = 0.1;
+                    const spiralRadius = 0.01 * (4 + state.moveSequence.length - state.moveIndex);
+                    // const spiralRadius = 0.1;
                     for (let i = 0; i < circleCount; i++) {
                         s.stroke(cr, cg, cb, Math.floor(255 * (i + 1) / (circleCount + 1)));
 
@@ -365,16 +366,16 @@ export const art_puzzle01 = {
                 }
 
                 if (gameWon) {
-                    // return;
-                    s.fill(cr, cg, cb, Math.floor(Math.sin((tick + a * c) / alphaCycle) * 25 + 25));
-                    s.rect(x, y, itemSize, itemSize);
                     return;
+                    // s.fill(cr, cg, cb, Math.floor(Math.sin((tick + a * c) / alphaCycle) * 25 + 25));
+                    // s.rect(x, y, itemSize, itemSize);
+                    // return;
                 }
                 // s.rect(x, y, itemSize, itemSize);
 
                 s.fill(0, 0, 0, 0);
                 const circleCount = 4;
-                const spiralRadius = 0.1;
+                const spiralRadius = 0.015 * (4 + state.moveSequence.length - state.moveIndex);
                 const iOffset = random();
                 for (let i = 0; i < circleCount; i++) {
                     s.stroke(cr, cg, cb, Math.floor(255 * (i + 1) / (circleCount + 1)));
