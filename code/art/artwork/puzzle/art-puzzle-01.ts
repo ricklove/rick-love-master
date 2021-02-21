@@ -245,25 +245,24 @@ export const art_puzzle01 = {
                 const gameWon = state.moveIndex >= state.moveSequence.length && !state.player.targetRenderPos;
 
                 const aOffset = tick / 100;
+                const tOffset = Math.abs(Math.floor(Math.sin((tick + a * c) / 1000) * canvasSize));
+                const alphaCycle = 100;
 
                 if (item.item === `player`) {
                     if (gameWon) {
-                        s.fill(cr, cg, cb, 150);
-                        s.stroke(0, 0, 0, 20);
+                        s.stroke(0, 0, 0, 10);
 
-                        let angle = a;
-                        let trans = c;
-                        for (let i = 0; i < 32; i++) {
+                        let mod = tick;
+                        for (let i = 0; i < 16; i++) {
+                            s.fill(cr, cg, (cb + i * c) % 255, Math.floor(Math.sin((tick + a * c) / alphaCycle) * 25 + 35));
 
-                            // s.rect(x + itemSize * 0.25, y + itemSize * 0.25, itemSize * 0.5, itemSize * 0.5);
-                            s.translate(-trans, -trans);
-                            s.rotate(angle + aOffset);
-                            s.circle(x + 0.5 * itemSize, y + 0.5 * itemSize, itemSize + trans);
-                            s.rotate(-angle - aOffset);
-                            s.translate(trans, trans);
-                            angle += b;
-                            trans += c;
-                            trans %= 125;
+                            const j = 0;
+                            s.circle(200 - a / 2 + j % a, 200 - b / 2 + j % b, 270 - (i * 5) % c);
+                            s.translate(tOffset, tOffset);
+                            // s.rotate((a + b + c + tick * 0.001) % 2);
+                            s.rotate(((a + b + c + mod) * 0.001));
+                            s.translate(-tOffset, -tOffset);
+                            mod++;
                         }
                         return;
                     }
@@ -275,7 +274,7 @@ export const art_puzzle01 = {
 
                 if (item.item === `exit`) {
                     if (gameWon) {
-                        s.fill(cr, cg, cb, 50);
+                        s.fill(cr, cg, cb, Math.floor(Math.sin((tick + a * c) / alphaCycle) * 25 + 35));
                         s.stroke(0, 0, 0, 10);
 
                         let angle = a;
@@ -302,7 +301,7 @@ export const art_puzzle01 = {
                 }
 
                 if (item.item === `wall-broken`) {
-                    s.fill(cr, cg, cb, 50);
+                    s.fill(cr, cg, cb, Math.floor(Math.sin((tick + a * c) / alphaCycle) * 25 + 25));
                     s.stroke(0, 0, 0, 10);
 
                     let angle = a;
