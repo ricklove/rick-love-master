@@ -298,7 +298,15 @@ export const art_puzzle01 = {
                     }
 
                     s.fill(0, 0, 0, 0);
-                    s.circle(x + 0.5 * itemSize, y + 0.5 * itemSize, itemSize);
+                    const circleCount = 4;
+                    const spiralRadius = 0.1;
+                    for (let i = 0; i < circleCount; i++) {
+                        s.stroke(cr, cg, cb, Math.floor(255 * (i + 1) / (circleCount + 1)));
+
+                        s.circle(x + itemSize * (0.5 + spiralRadius * Math.cos(2 * Math.PI * (i / circleCount + tick / 100))), y + itemSize * (0.5 + spiralRadius * Math.sin(2 * Math.PI * (i / circleCount + tick / 100))), itemSize);
+                    }
+
+                    // s.circle(x + 0.5 * itemSize, y + 0.5 * itemSize, itemSize);
                     return;
                 }
 
@@ -359,8 +367,19 @@ export const art_puzzle01 = {
                 if (gameWon) {
                     // return;
                     s.fill(cr, cg, cb, Math.floor(Math.sin((tick + a * c) / alphaCycle) * 25 + 25));
+                    s.rect(x, y, itemSize, itemSize);
+                    return;
                 }
-                s.rect(x, y, itemSize, itemSize);
+                // s.rect(x, y, itemSize, itemSize);
+
+                s.fill(0, 0, 0, 0);
+                const circleCount = 4;
+                const spiralRadius = 0.1;
+                const iOffset = random();
+                for (let i = 0; i < circleCount; i++) {
+                    s.stroke(cr, cg, cb, Math.floor(255 * (i + 1) / (circleCount + 1)));
+                    s.rect(x + itemSize * (0 + spiralRadius * Math.cos(2 * Math.PI * ((iOffset + i) / circleCount + tick / 100))), y + itemSize * (0 + spiralRadius * Math.sin(2 * Math.PI * ((iOffset + i) / circleCount + tick / 100))), itemSize, itemSize);
+                }
             };
 
             let tick = 0;
