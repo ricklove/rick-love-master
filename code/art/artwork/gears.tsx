@@ -83,34 +83,43 @@ const drawGear = (g: p5,
     g.noFill();
     g.stroke(color.h, color.s, color.b, color.a);
 
-    // // Draw face
-    // const radSmile = 0.5 * radI;
-    // for (let j = 0; j < 4; j++) {
+    // Draw face
+    const drawFace = randomConstant() > 0.5;
+    const faceType = randomConstant() > 0.5 ? `happy` : `creepy`;
+    if (drawFace) {
+        const radSmile = 0.5 * radI;
+        for (let j = 0; j < 4; j++) {
 
-    //     // Smile
-    //     g.noFill();
-    //     g.curveTightness(0.9);
-    //     g.beginShape();
-    //     for (let i = 0; i <= teeth / 3; i++) {
-    //         g.curveVertex(x + radSmile * g.cos((i + 0.2) * toothAngle + angle1) + jitterSize * randomSym(), y + radSmile * g.sin((i + 0.2) * toothAngle + angle1) + jitterSize * randomSym());
-    //     }
-    //     g.endShape();
+            // Smile
+            if (faceType === `creepy`) {
+                jitterSize = 12;
+            }
+            g.noFill();
+            g.curveTightness(0.9);
+            g.beginShape();
+            for (let i = 0; i <= teeth / 3; i++) {
+                g.curveVertex(x + radSmile * g.cos((i + 0.2) * toothAngle + angle1) + jitterSize * randomSym(), y + radSmile * g.sin((i + 0.2) * toothAngle + angle1) + jitterSize * randomSym());
+            }
+            g.endShape();
 
-    //     // Left Eye
-    //     for (let e = 0; e <= 1; e++) {
-    //         const r = e === 0 ? 1.1 : 1.6;
-    //         const ex = radSmile * Math.cos(r * Math.PI + angle1);
-    //         const ey = radSmile * Math.sin(r * Math.PI + angle1);
-    //         g.fill(0, 0, 0);
-    //         g.beginShape();
-    //         for (let i = 0; i <= teeth + 2; i++) {
-    //             g.curveVertex(ex + x + radiusAxis * g.cos((i + 0.3) * toothAngle + angle1) + jitterSize * randomSym(), ey + y + radiusAxis * g.sin((i + 0.3) * toothAngle + angle1) + jitterSize * randomSym());
-    //         }
-    //         g.endShape();
-    //     }
-    // }
+            // jitterSize = 2.5;
 
+            // Left Eye
+            for (let e = 0; e <= 1; e++) {
+                const r = e === 0 ? 1.1 : 1.6;
+                const ex = radSmile * Math.cos(r * Math.PI + angle1);
+                const ey = radSmile * Math.sin(r * Math.PI + angle1);
+                g.fill(0, 0, 0);
+                g.beginShape();
+                for (let i = 0; i <= teeth + 2; i++) {
+                    g.curveVertex(ex + x + radiusAxis * g.cos((i + 0.3) * toothAngle + angle1) + jitterSize * randomSym(), ey + y + radiusAxis * g.sin((i + 0.3) * toothAngle + angle1) + jitterSize * randomSym());
+                }
+                g.endShape();
+            }
+        }
+    }
 
+    jitterSize = 2.5;
     for (let j = 0; j < 4; j++) {
 
         g.noFill();
@@ -231,7 +240,7 @@ export const art_gears = {
                     const direction = i % 2 === 0 ? 1 : -1;
                     const teethDepth = 5;
                     const teeth = Math.ceil(gear.radius * Math.PI * 2 / (4 * teethDepth));
-                    const teethPassed = tick * speed;
+                    const teethPassed = tick * speed * Math.pow(1.25, i);
                     const rotationAngle = s.TWO_PI * teethPassed / teeth;
 
                     drawGear(g, {
