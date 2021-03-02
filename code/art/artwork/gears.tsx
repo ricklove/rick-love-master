@@ -50,14 +50,17 @@ const drawGear = (g: p5,
     const toothAngle = g.TWO_PI / teeth;
     const radI = radiusInner;
     const radO = radiusOuter;
-    const jitterSize = 5;
+    let jitterSize = 5;
     const angle0 = rotationAngle;
     const angle1 = angle0 + Math.PI * 2 * randomConstant();
 
-    for (let j = 0; j < 1; j++) {
+    jitterSize = radiusOuter * 0.15;
+    for (let j = 0; j < 4; j++) {
 
+        g.noStroke();
+        g.fill(color.h, color.s, color.b * 0.25, 0.4);
         // g.fill(color.h, color.s, color.b, 0.25);
-        g.fill(0, 0, 0);
+        // g.fill(0, 0, 0);
         g.curveTightness(0.9);
         g.beginShape();
         for (let i = 0; i <= teeth; i++) {
@@ -75,6 +78,10 @@ const drawGear = (g: p5,
         }
         g.endShape();
     }
+
+    jitterSize = 5;
+    g.noFill();
+    g.stroke(color.h, color.s, color.b, color.a);
 
     // // Draw face
     // const radSmile = 0.5 * radI;
@@ -102,6 +109,7 @@ const drawGear = (g: p5,
     //         g.endShape();
     //     }
     // }
+
 
     for (let j = 0; j < 4; j++) {
 
@@ -209,6 +217,7 @@ export const art_gears = {
             };
             s.draw = () => {
                 s.background(0);
+                // s.background(10, 10, 10);
                 const g = s;
                 // const g = s.createGraphics(canvasSize * 2, canvasSize * 2);
                 // g.translate(canvasSize, canvasSize);
