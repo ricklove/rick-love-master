@@ -1,5 +1,6 @@
 /* eslint-disable new-cap */
 /* eslint-disable no-new */
+import { Athena } from 'aws-sdk';
 import p5 from 'p5';
 import { createRandomGenerator } from '../rando';
 
@@ -31,6 +32,7 @@ const drawGear = (g: p5,
 
     const angleRandomKs = 16;
     // const angleRandomKs = 8;
+    const { random: randomConstant } = createRandomGenerator(`${randomSeed}`);
     const { random } = createRandomGenerator(`${randomSeed}${Math.round(rotationAngle * angleRandomKs)}`);
 
     // g.fill(color.h, color.s, color.b, color.a);
@@ -50,6 +52,7 @@ const drawGear = (g: p5,
     const radO = radiusOuter;
     const jitterSize = 5;
     const angle0 = rotationAngle;
+    const angle1 = angle0 + Math.PI * 2 * randomConstant();
 
     for (let j = 0; j < 1; j++) {
 
@@ -71,6 +74,33 @@ const drawGear = (g: p5,
             // g.arc(x, y, diaO, diaO, (i + 0.5) * toothAngle, (i + 1) * toothAngle);
         }
         g.endShape();
+    }
+
+    // Draw face
+    const radSmile = 0.5 * radI;
+    for (let j = 0; j < 4; j++) {
+
+        // Smile
+        g.noFill();
+        g.curveTightness(0.9);
+        g.beginShape();
+        for (let i = 0; i <= teeth / 3; i++) {
+            g.curveVertex(x + radSmile * g.cos((i + 0.2) * toothAngle + angle1) + jitterSize * random(), y + radSmile * g.sin((i + 0.2) * toothAngle + angle1) + jitterSize * random());
+        }
+        g.endShape();
+
+        // Left Eye
+        for (let e = 0; e <= 1; e++) {
+            const r = e === 0 ? 1.1 : 1.6;
+            const ex = radSmile * Math.cos(r * Math.PI + angle1);
+            const ey = radSmile * Math.sin(r * Math.PI + angle1);
+            g.fill(0, 0, 0);
+            g.beginShape();
+            for (let i = 0; i <= teeth + 2; i++) {
+                g.curveVertex(ex + x + radiusAxis * g.cos((i + 0.3) * toothAngle + angle1) + jitterSize * random(), ey + y + radiusAxis * g.sin((i + 0.3) * toothAngle + angle1) + jitterSize * random());
+            }
+            g.endShape();
+        }
     }
 
     for (let j = 0; j < 4; j++) {
