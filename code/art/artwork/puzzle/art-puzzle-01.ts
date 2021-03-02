@@ -297,7 +297,7 @@ export const art_puzzle01 = {
                         return;
                     }
 
-                    s.fill(0, 0, 0, 0);
+                    s.fill(cr, cg, cb, 30);
                     const circleCount = 4;
                     const spiralRadius = 0.01 * (4 + state.moveSequence.length - state.moveIndex);
                     // const spiralRadius = 0.1;
@@ -342,6 +342,8 @@ export const art_puzzle01 = {
                 }
 
                 if (item.item === `wall-broken`) {
+                    if (!gameWon) { return; }
+
                     s.fill(cr, cg, cb, Math.floor(Math.sin((tick + a * c) / alphaCycle) * 25 + 25));
                     s.stroke(0, 0, 0, 10);
 
@@ -373,7 +375,7 @@ export const art_puzzle01 = {
                 }
                 // s.rect(x, y, itemSize, itemSize);
 
-                s.fill(0, 0, 0, 0);
+                s.fill(cr, cg, cb, 5);
                 const circleCount = 4;
                 const spiralRadius = 0.015 * (4 + state.moveSequence.length - state.moveIndex);
                 const iOffset = random();

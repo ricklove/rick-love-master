@@ -7,9 +7,11 @@ import { art_layersOfTheOnionsSoul } from './artwork/layers-of-the-onions-soul';
 import { art_121 } from './artwork/art-121';
 import { P5Viewer } from './p5-viewer';
 import { art_puzzle01 } from './artwork/puzzle/art-puzzle-01';
+import { art_gears } from './artwork/gears';
 
 export const ArtGallery = (props: {}) => {
     const artItems = [
+        art_gears,
         art_puzzle01,
         art_121,
         art_circles,
