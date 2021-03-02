@@ -123,12 +123,12 @@ export const art_gears = {
         const halfSize = canvasSize * 0.5;
         const minGearRadius = canvasSize / 16;
         const maxGearRadius = canvasSize / 3;
-        const minGearCount = 8;
-        const maxGearCount = 16;
+        const minGearCount = 3;
+        const maxGearCount = 8;
         const gearCount = Math.floor(minGearCount + (maxGearCount - minGearCount) * randomMain());
 
         let lastGear = {
-            position: { x: halfSize, y: halfSize },
+            position: { x: canvasSize * randomMain(), y: canvasSize * randomMain() },
             radius: minGearRadius,
             // position: { x: canvasSize * randomMain(), y: canvasSize * randomMain() },
             // size: minGearSize + (maxGearSize - minGearSize) * randomMain(),
@@ -142,16 +142,23 @@ export const art_gears = {
             const lastPos = lastGear.position;
 
             // Try to bring back to center
-            const targetAngle = Math.PI / 2 * randomMain() +
-                (lastPos.x > halfSize && lastPos.y > halfSize ? Math.PI * 1
-                    : lastPos.x < halfSize && lastPos.y > halfSize ? Math.PI * 0.5
-                        : lastPos.x > halfSize && lastPos.y < halfSize ? Math.PI * 1.5
-                            : 0);
+            const angleQuandrant = (lastPos.x > halfSize && lastPos.y > halfSize) ? (Math.PI * 1)
+                : (lastPos.x < halfSize && lastPos.y > halfSize) ? (Math.PI * 1.5)
+                    : (lastPos.x > halfSize && lastPos.y < halfSize) ? (Math.PI * 0.5)
+                        : 0;
+            // console.log(`angleQuandrant`, { angleQuandrant, lastPos, halfSize });
+            const targetAngle = Math.PI / 2 * randomMain() + angleQuandrant;
 
-            const pos = {
+            const posRaw = {
                 x: lastPos.x + targetDistance * Math.cos(targetAngle),
                 y: lastPos.y + targetDistance * Math.sin(targetAngle),
             };
+            const pos = posRaw;
+            // const pos = {
+            //     x: 0.8 * posRaw.x + 0.2 * halfSize,
+            //     y: 0.8 * posRaw.y + 0.2 * halfSize,
+            // };
+
             const xDelta = pos.x - lastPos.x;
             const yDelta = pos.y - lastPos.y;
             const actualRadius = Math.sqrt(xDelta * xDelta + yDelta * yDelta) - lastGear.radius;
@@ -172,6 +179,10 @@ export const art_gears = {
             };
             s.draw = () => {
                 s.background(0);
+                const g = s;
+                // const g = s.createGraphics(canvasSize * 2, canvasSize * 2);
+                // g.translate(canvasSize, canvasSize);
+                // g.scale(0.25);
 
                 for (const [i, gear] of gears.entries()) {
                     const direction = i % 2 === 0 ? 1 : -1;
@@ -180,19 +191,24 @@ export const art_gears = {
                     const teethPassed = tick / 100;
                     const rotationAngle = s.TWO_PI * teethPassed / teeth;
 
-                    drawGear(s, {
+                    drawGear(g, {
                         position: gear.position,
                         // radiusInner: gear.size * 0.93,
                         // radiusOuter: gear.size * 1.07,
                         radiusInner: gear.radius - teethDepth,
                         radiusOuter: gear.radius + teethDepth,
-                        radiusAxis: gear.radius * 0.15,
+                        // radiusAxis: gear.radius * 0.15,
+                        radiusAxis: gear.radius * 0.1,
+                        // radiusAxis: teethDepth,
                         teeth,
                         color: gear.color,
                         rotationAngle: direction * rotationAngle,
                         randomSeed: gear.randomSeed,
                     });
                 }
+                // s.image(g, 0, 0, canvasSize, canvasSize);
+
+
                 // for (let i = 0; i < 10; i++) {
                 //     const color = s.color((cr * i) % 255, (cg * i) % 255, (cb * i) % 255, ca);
                 //     s.noFill();
