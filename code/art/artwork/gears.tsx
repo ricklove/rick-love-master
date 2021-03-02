@@ -84,8 +84,8 @@ const drawGear = (g: p5,
     g.stroke(color.h, color.s, color.b, color.a);
 
     // Draw face
-    const drawFace = randomConstant() > 0.75;
-    const faceType = randomConstant() > 0.5 ? `happy` : `creepy`;
+    const drawFace = randomConstant() > 0.5;
+    const faceType = random() > 0.5 ? `happy` : `creepy`;
     if (drawFace) {
         const radSmile = 0.5 * radI;
         for (let j = 0; j < 4; j++) {
@@ -167,10 +167,11 @@ export const art_gears = {
         let tick = 0;
         // const speed = 1 / (200 - 100 * randomMain());
         const speed = 1 / (100 - 70 * randomMain());
-        const sat = 65 - 10 * Math.random();
+        // const sat = 65 - 10 * Math.random();
+        const sat = 100;
         const brightness = 60 - 20 * Math.random();
 
-        const canvasSize = 300;
+        const canvasSize = 600;
         const halfSize = canvasSize * 0.5;
         const minGearRadius = canvasSize / 16;
         const maxGearRadius = canvasSize / 3;
