@@ -34,6 +34,7 @@ const drawGear = (g: p5,
     // const angleRandomKs = 8;
     const { random: randomConstant } = createRandomGenerator(`${randomSeed}`);
     const { random } = createRandomGenerator(`${randomSeed}${Math.round(rotationAngle * angleRandomKs)}`);
+    const randomSym = () => 1 - 2 * random();
 
     // g.fill(color.h, color.s, color.b, color.a);
     // g.stroke(0, 0, 0, 1);
@@ -50,11 +51,11 @@ const drawGear = (g: p5,
     const toothAngle = g.TWO_PI / teeth;
     const radI = radiusInner;
     const radO = radiusOuter;
-    let jitterSize = 5;
+    let jitterSize = 2.5;
     const angle0 = rotationAngle;
     const angle1 = angle0 + Math.PI * 2 * randomConstant();
 
-    jitterSize = radiusOuter * 0.15;
+    jitterSize = radiusOuter * 0.1;
     for (let j = 0; j < 4; j++) {
 
         g.noStroke();
@@ -66,12 +67,12 @@ const drawGear = (g: p5,
         for (let i = 0; i <= teeth; i++) {
             // g.curveVertex(x + diaI * g.cos((i + 0) * toothAngle), y + diaI * g.sin((i + 0) * toothAngle));
             if (i !== 0) {
-                g.curveVertex(x + radI * g.cos((i + 0.2) * toothAngle + angle0) + jitterSize * random(), y + radI * g.sin((i + 0.2) * toothAngle + angle0) + jitterSize * random());
+                g.curveVertex(x + radI * g.cos((i + 0.2) * toothAngle + angle0) + jitterSize * randomSym(), y + radI * g.sin((i + 0.2) * toothAngle + angle0) + jitterSize * randomSym());
             }
 
-            g.curveVertex(x + radO * g.cos((i + 0.3) * toothAngle + angle0) + jitterSize * random(), y + radO * g.sin((i + 0.3) * toothAngle + angle0) + jitterSize * random());
-            g.curveVertex(x + radO * g.cos((i + 0.7) * toothAngle + angle0) + jitterSize * random(), y + radO * g.sin((i + 0.7) * toothAngle + angle0) + jitterSize * random());
-            g.curveVertex(x + radI * g.cos((i + 0.8) * toothAngle + angle0) + jitterSize * random(), y + radI * g.sin((i + 0.8) * toothAngle + angle0) + jitterSize * random());
+            g.curveVertex(x + radO * g.cos((i + 0.3) * toothAngle + angle0) + jitterSize * randomSym(), y + radO * g.sin((i + 0.3) * toothAngle + angle0) + jitterSize * randomSym());
+            g.curveVertex(x + radO * g.cos((i + 0.7) * toothAngle + angle0) + jitterSize * randomSym(), y + radO * g.sin((i + 0.7) * toothAngle + angle0) + jitterSize * randomSym());
+            g.curveVertex(x + radI * g.cos((i + 0.8) * toothAngle + angle0) + jitterSize * randomSym(), y + radI * g.sin((i + 0.8) * toothAngle + angle0) + jitterSize * randomSym());
             // g.curveVertex(x + diaI * g.cos((i + 1) * toothAngle), y + diaI * g.sin((i + 1) * toothAngle));
             // g.arc(x, y, diaI, diaI, (i + 0) * toothAngle, (i + 0.5) * toothAngle);
             // g.arc(x, y, diaO, diaO, (i + 0.5) * toothAngle, (i + 1) * toothAngle);
@@ -79,7 +80,7 @@ const drawGear = (g: p5,
         g.endShape();
     }
 
-    jitterSize = 5;
+    jitterSize = 2.5;
     g.noFill();
     g.stroke(color.h, color.s, color.b, color.a);
 
@@ -92,7 +93,7 @@ const drawGear = (g: p5,
     //     g.curveTightness(0.9);
     //     g.beginShape();
     //     for (let i = 0; i <= teeth / 3; i++) {
-    //         g.curveVertex(x + radSmile * g.cos((i + 0.2) * toothAngle + angle1) + jitterSize * random(), y + radSmile * g.sin((i + 0.2) * toothAngle + angle1) + jitterSize * random());
+    //         g.curveVertex(x + radSmile * g.cos((i + 0.2) * toothAngle + angle1) + jitterSize * randomSym(), y + radSmile * g.sin((i + 0.2) * toothAngle + angle1) + jitterSize * randomSym());
     //     }
     //     g.endShape();
 
@@ -104,7 +105,7 @@ const drawGear = (g: p5,
     //         g.fill(0, 0, 0);
     //         g.beginShape();
     //         for (let i = 0; i <= teeth + 2; i++) {
-    //             g.curveVertex(ex + x + radiusAxis * g.cos((i + 0.3) * toothAngle + angle1) + jitterSize * random(), ey + y + radiusAxis * g.sin((i + 0.3) * toothAngle + angle1) + jitterSize * random());
+    //             g.curveVertex(ex + x + radiusAxis * g.cos((i + 0.3) * toothAngle + angle1) + jitterSize * randomSym(), ey + y + radiusAxis * g.sin((i + 0.3) * toothAngle + angle1) + jitterSize * randomSym());
     //         }
     //         g.endShape();
     //     }
@@ -121,12 +122,12 @@ const drawGear = (g: p5,
         for (let i = 0; i <= teeth; i++) {
             // g.curveVertex(x + diaI * g.cos((i + 0) * toothAngle), y + diaI * g.sin((i + 0) * toothAngle));
             if (i !== 0) {
-                g.curveVertex(x + radI * g.cos((i + 0.2) * toothAngle + angle0) + jitterSize * random(), y + radI * g.sin((i + 0.2) * toothAngle + angle0) + jitterSize * random());
+                g.curveVertex(x + radI * g.cos((i + 0.2) * toothAngle + angle0) + jitterSize * randomSym(), y + radI * g.sin((i + 0.2) * toothAngle + angle0) + jitterSize * randomSym());
             }
 
-            g.curveVertex(x + radO * g.cos((i + 0.3) * toothAngle + angle0) + jitterSize * random(), y + radO * g.sin((i + 0.3) * toothAngle + angle0) + jitterSize * random());
-            g.curveVertex(x + radO * g.cos((i + 0.7) * toothAngle + angle0) + jitterSize * random(), y + radO * g.sin((i + 0.7) * toothAngle + angle0) + jitterSize * random());
-            g.curveVertex(x + radI * g.cos((i + 0.8) * toothAngle + angle0) + jitterSize * random(), y + radI * g.sin((i + 0.8) * toothAngle + angle0) + jitterSize * random());
+            g.curveVertex(x + radO * g.cos((i + 0.3) * toothAngle + angle0) + jitterSize * randomSym(), y + radO * g.sin((i + 0.3) * toothAngle + angle0) + jitterSize * randomSym());
+            g.curveVertex(x + radO * g.cos((i + 0.7) * toothAngle + angle0) + jitterSize * randomSym(), y + radO * g.sin((i + 0.7) * toothAngle + angle0) + jitterSize * randomSym());
+            g.curveVertex(x + radI * g.cos((i + 0.8) * toothAngle + angle0) + jitterSize * randomSym(), y + radI * g.sin((i + 0.8) * toothAngle + angle0) + jitterSize * randomSym());
             // g.curveVertex(x + diaI * g.cos((i + 1) * toothAngle), y + diaI * g.sin((i + 1) * toothAngle));
             // g.arc(x, y, diaI, diaI, (i + 0) * toothAngle, (i + 0.5) * toothAngle);
             // g.arc(x, y, diaO, diaO, (i + 0.5) * toothAngle, (i + 1) * toothAngle);
@@ -137,7 +138,7 @@ const drawGear = (g: p5,
         g.fill(0, 0, 0);
         g.beginShape();
         for (let i = 0; i <= teeth + 2; i++) {
-            g.curveVertex(x + radiusAxis * g.cos((i + 0.3) * toothAngle + angle0) + jitterSize * random(), y + radiusAxis * g.sin((i + 0.3) * toothAngle + angle0) + jitterSize * random());
+            g.curveVertex(x + radiusAxis * g.cos((i + 0.3) * toothAngle + angle0) + jitterSize * randomSym(), y + radiusAxis * g.sin((i + 0.3) * toothAngle + angle0) + jitterSize * randomSym());
         }
         g.endShape();
     }
@@ -157,7 +158,7 @@ export const art_gears = {
 
         let tick = 0;
 
-        const canvasSize = 300;
+        const canvasSize = 600;
         const halfSize = canvasSize * 0.5;
         const minGearRadius = canvasSize / 16;
         const maxGearRadius = canvasSize / 3;
