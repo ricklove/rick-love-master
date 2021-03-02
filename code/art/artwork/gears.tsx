@@ -84,7 +84,7 @@ const drawGear = (g: p5,
     g.stroke(color.h, color.s, color.b, color.a);
 
     // Draw face
-    const drawFace = randomConstant() > 0.5;
+    const drawFace = randomConstant() > 0.75;
     const faceType = randomConstant() > 0.5 ? `happy` : `creepy`;
     if (drawFace) {
         const radSmile = 0.5 * radI;
@@ -156,7 +156,7 @@ const drawGear = (g: p5,
 export const art_gears = {
     key: `art-gears`,
     title: `Gears`,
-    description: `The gears mesh together to form our lives.`,
+    description: `The gears around us create the mesh of interactions that enhance our daily lives.`,
     artist: `Rick Love`,
     getTokenDescription: (tokenId: string) => {
         return null;
@@ -170,7 +170,7 @@ export const art_gears = {
         const sat = 65 - 10 * Math.random();
         const brightness = 60 - 20 * Math.random();
 
-        const canvasSize = 600;
+        const canvasSize = 300;
         const halfSize = canvasSize * 0.5;
         const minGearRadius = canvasSize / 16;
         const maxGearRadius = canvasSize / 3;
@@ -240,7 +240,7 @@ export const art_gears = {
                     const direction = i % 2 === 0 ? 1 : -1;
                     const teethDepth = 5;
                     const teeth = Math.ceil(gear.radius * Math.PI * 2 / (4 * teethDepth));
-                    const teethPassed = tick * speed * Math.pow(1.25, i);
+                    const teethPassed = tick * speed * Math.pow(1.25, i + 1);
                     const rotationAngle = s.TWO_PI * teethPassed / teeth;
 
                     drawGear(g, {
