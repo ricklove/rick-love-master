@@ -76,32 +76,32 @@ const drawGear = (g: p5,
         g.endShape();
     }
 
-    // Draw face
-    const radSmile = 0.5 * radI;
-    for (let j = 0; j < 4; j++) {
+    // // Draw face
+    // const radSmile = 0.5 * radI;
+    // for (let j = 0; j < 4; j++) {
 
-        // Smile
-        g.noFill();
-        g.curveTightness(0.9);
-        g.beginShape();
-        for (let i = 0; i <= teeth / 3; i++) {
-            g.curveVertex(x + radSmile * g.cos((i + 0.2) * toothAngle + angle1) + jitterSize * random(), y + radSmile * g.sin((i + 0.2) * toothAngle + angle1) + jitterSize * random());
-        }
-        g.endShape();
+    //     // Smile
+    //     g.noFill();
+    //     g.curveTightness(0.9);
+    //     g.beginShape();
+    //     for (let i = 0; i <= teeth / 3; i++) {
+    //         g.curveVertex(x + radSmile * g.cos((i + 0.2) * toothAngle + angle1) + jitterSize * random(), y + radSmile * g.sin((i + 0.2) * toothAngle + angle1) + jitterSize * random());
+    //     }
+    //     g.endShape();
 
-        // Left Eye
-        for (let e = 0; e <= 1; e++) {
-            const r = e === 0 ? 1.1 : 1.6;
-            const ex = radSmile * Math.cos(r * Math.PI + angle1);
-            const ey = radSmile * Math.sin(r * Math.PI + angle1);
-            g.fill(0, 0, 0);
-            g.beginShape();
-            for (let i = 0; i <= teeth + 2; i++) {
-                g.curveVertex(ex + x + radiusAxis * g.cos((i + 0.3) * toothAngle + angle1) + jitterSize * random(), ey + y + radiusAxis * g.sin((i + 0.3) * toothAngle + angle1) + jitterSize * random());
-            }
-            g.endShape();
-        }
-    }
+    //     // Left Eye
+    //     for (let e = 0; e <= 1; e++) {
+    //         const r = e === 0 ? 1.1 : 1.6;
+    //         const ex = radSmile * Math.cos(r * Math.PI + angle1);
+    //         const ey = radSmile * Math.sin(r * Math.PI + angle1);
+    //         g.fill(0, 0, 0);
+    //         g.beginShape();
+    //         for (let i = 0; i <= teeth + 2; i++) {
+    //             g.curveVertex(ex + x + radiusAxis * g.cos((i + 0.3) * toothAngle + angle1) + jitterSize * random(), ey + y + radiusAxis * g.sin((i + 0.3) * toothAngle + angle1) + jitterSize * random());
+    //         }
+    //         g.endShape();
+    //     }
+    // }
 
     for (let j = 0; j < 4; j++) {
 
