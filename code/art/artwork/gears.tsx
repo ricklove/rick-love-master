@@ -1,6 +1,5 @@
 /* eslint-disable new-cap */
 /* eslint-disable no-new */
-import { Athena } from 'aws-sdk';
 import p5 from 'p5';
 import { createRandomGenerator } from '../rando';
 
@@ -157,6 +156,9 @@ export const art_gears = {
         const { random: randomMain } = createRandomGenerator(hash);
 
         let tick = 0;
+        const speed = 1 / (200 - 100 * randomMain());
+        const sat = 65 - 10 * Math.random();
+        const brightness = 60 - 20 * Math.random();
 
         const canvasSize = 600;
         const halfSize = canvasSize * 0.5;
@@ -207,7 +209,7 @@ export const art_gears = {
                 position: pos,
                 radius: actualRadius,
                 randomSeed: `${randomMain()}`,
-                color: { h: 360 * randomMain(), s: 50, b: 50, a: 0.5 },
+                color: { h: 360 * randomMain(), s: sat, b: brightness, a: 0.5 },
             };
         });
 
@@ -228,7 +230,7 @@ export const art_gears = {
                     const direction = i % 2 === 0 ? 1 : -1;
                     const teethDepth = 5;
                     const teeth = Math.ceil(gear.radius * Math.PI * 2 / (4 * teethDepth));
-                    const teethPassed = tick / 100;
+                    const teethPassed = tick * speed;
                     const rotationAngle = s.TWO_PI * teethPassed / teeth;
 
                     drawGear(g, {
