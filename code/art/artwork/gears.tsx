@@ -156,7 +156,8 @@ export const art_gears = {
         const { random: randomMain } = createRandomGenerator(hash);
 
         let tick = 0;
-        const speed = 1 / (200 - 100 * randomMain());
+        // const speed = 1 / (200 - 100 * randomMain());
+        const speed = 1 / (100 - 70 * randomMain());
         const sat = 65 - 10 * Math.random();
         const brightness = 60 - 20 * Math.random();
 
@@ -247,6 +248,11 @@ export const art_gears = {
                         rotationAngle: direction * rotationAngle,
                         randomSeed: gear.randomSeed,
                     });
+
+                    // Rotate slightly
+                    g.translate(gear.position.x, gear.position.y);
+                    g.rotate(s.TWO_PI * teethPassed / (teeth * 4));
+                    g.translate(-gear.position.x, -gear.position.y);
                 }
                 // s.image(g, 0, 0, canvasSize, canvasSize);
 
