@@ -120,7 +120,11 @@ const drawGear = (g: p5,
         }
     }
 
-    jitterSize = 2.5;
+    if (drawFace && faceType === `creepy`) {
+        jitterSize = 5;
+    }
+
+    // jitterSize = 2.5;
     for (let j = 0; j < 4; j++) {
 
         g.noFill();
@@ -160,7 +164,7 @@ const drawGear = (g: p5,
 export const art_gears = {
     key: `art-gears`,
     title: `Gears`,
-    description: `Are the gears of conflict twisting our perceptions of others?`,
+    description: `Are the gears of conflict twisting our perceptions of others? (Press image to toggle sound)`,
     artist: `Rick Love`,
     getTokenDescription: (tokenId: string) => {
         return null;
@@ -251,9 +255,9 @@ export const art_gears = {
             s.setup = () => {
                 s.createCanvas(canvasSize, canvasSize);
             };
-            s.mousePressed = () => { toggleNoise(); };
-            s.touchStarted = () => { toggleNoise(); };
-            s.keyPressed = () => { toggleNoise(); };
+            s.mousePressed = () => { if (s.mouseX < 0 || s.mouseX > canvasSize || s.mouseY < 0 || s.mouseY > canvasSize) { return; } toggleNoise(); };
+            s.touchStarted = () => { const t = s.touches[0] as Vector2; if (t.x < 0 || t.x > canvasSize || t.y < 0 || t.y > canvasSize) { return; } toggleNoise(); };
+            // s.keyPressed = () => { toggleNoise(); };
             s.draw = () => {
                 s.background(0);
                 // noise?.amp(0);
@@ -292,6 +296,11 @@ export const art_gears = {
                         faceCount++;
                     }
                     if (result.faceType === `creepy`) {
+                        // Not actual position
+                        //  const distanceToCenterX = Math.abs(gear.position.x - halfSize);
+                        //  const distanceToCenterY = Math.abs(gear.position.y - halfSize);
+                        //  const distRatioToEdge = (halfSize - Math.sqrt(distanceToCenterX * distanceToCenterX + distanceToCenterY * distanceToCenterY)) / halfSize;
+                        // faceCreepyCount += Math.max(0, distRatioToEdge);
                         faceCreepyCount++;
                     }
 
@@ -302,6 +311,7 @@ export const art_gears = {
                 }
                 // s.image(g, 0, 0, canvasSize, canvasSize);
 
+                // console.log(`noiseLevel`, { level: faceCreepyCount / faceCount });
                 noise?.amp(faceCount > 0 ? faceCreepyCount / faceCount : 0);
 
                 // for (let i = 0; i < 10; i++) {
