@@ -54,7 +54,7 @@ const drawGear = (g: p5,
     const angle0 = rotationAngle;
     const angle1 = angle0 + Math.PI * 2 * randomConstant();
 
-    jitterSize = radiusOuter * 0.1;
+    jitterSize = radiusOuter * 0.5;
     for (let j = 0; j < 4; j++) {
 
         g.noStroke();
@@ -66,12 +66,12 @@ const drawGear = (g: p5,
         for (let i = 0; i <= teeth; i++) {
             // g.curveVertex(x + diaI * g.cos((i + 0) * toothAngle), y + diaI * g.sin((i + 0) * toothAngle));
             if (i !== 0) {
-                g.curveVertex(x + radI * g.cos((i + 0.2) * toothAngle + angle0) + jitterSize * randomSym(), y + radI * g.sin((i + 0.2) * toothAngle + angle0) + jitterSize * randomSym());
+                g.curveVertex(x + (radI - jitterSize * random()) * g.cos((i + 0.2) * toothAngle + angle0), y + (radI - jitterSize * random()) * g.sin((i + 0.2) * toothAngle + angle0));
             }
 
-            g.curveVertex(x + radO * g.cos((i + 0.3) * toothAngle + angle0) + jitterSize * randomSym(), y + radO * g.sin((i + 0.3) * toothAngle + angle0) + jitterSize * randomSym());
-            g.curveVertex(x + radO * g.cos((i + 0.7) * toothAngle + angle0) + jitterSize * randomSym(), y + radO * g.sin((i + 0.7) * toothAngle + angle0) + jitterSize * randomSym());
-            g.curveVertex(x + radI * g.cos((i + 0.8) * toothAngle + angle0) + jitterSize * randomSym(), y + radI * g.sin((i + 0.8) * toothAngle + angle0) + jitterSize * randomSym());
+            g.curveVertex(x + (radO - jitterSize * random()) * g.cos((i + 0.3) * toothAngle + angle0), y + (radO - jitterSize * random()) * g.sin((i + 0.3) * toothAngle + angle0));
+            g.curveVertex(x + (radO - jitterSize * random()) * g.cos((i + 0.7) * toothAngle + angle0), y + (radO - jitterSize * random()) * g.sin((i + 0.7) * toothAngle + angle0));
+            g.curveVertex(x + (radI - jitterSize * random()) * g.cos((i + 0.8) * toothAngle + angle0), y + (radI - jitterSize * random()) * g.sin((i + 0.8) * toothAngle + angle0));
             // g.curveVertex(x + diaI * g.cos((i + 1) * toothAngle), y + diaI * g.sin((i + 1) * toothAngle));
             // g.arc(x, y, diaI, diaI, (i + 0) * toothAngle, (i + 0.5) * toothAngle);
             // g.arc(x, y, diaO, diaO, (i + 0.5) * toothAngle, (i + 1) * toothAngle);
