@@ -6,7 +6,7 @@
         "@truffle/hdwallet-provider": "^1.2.1",
         "aws-sdk": "^2.749.0",
         "controls-react": "*",
-        "p5": "^1.2.0",
+        "p5": "0.9.0",
         "patch-package": "^6.2.2",
         "postinstall-postinstall": "^2.1.0",
         "react": "^16.12.0",

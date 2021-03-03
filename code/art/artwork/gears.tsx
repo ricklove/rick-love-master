@@ -1,6 +1,7 @@
 /* eslint-disable new-cap */
 /* eslint-disable no-new */
 import p5 from 'p5';
+import 'p5/lib/addons/p5.sound';
 import { createRandomGenerator } from '../rando';
 
 type Vector2 = { x: number, y: number };
@@ -85,7 +86,7 @@ const drawGear = (g: p5,
 
     // Draw face
     const drawFace = randomConstant() > 0.5;
-    const faceType = random() > 0.5 ? `happy` : `creepy`;
+    const faceType = random() > 0.5 ? `happy` as const : `creepy` as const;
     if (drawFace) {
         const radSmile = 0.5 * radI;
         for (let j = 0; j < 4; j++) {
@@ -151,6 +152,9 @@ const drawGear = (g: p5,
         g.endShape();
     }
 
+    return {
+        faceType: drawFace ? faceType : null,
+    };
 };
 
 export const art_gears = {
@@ -165,13 +169,15 @@ export const art_gears = {
         const { random: randomMain } = createRandomGenerator(hash);
 
         let tick = 0;
-        // const speed = 1 / (200 - 100 * randomMain());
-        const speed = 1 / (100 - 70 * randomMain());
+
         // const sat = 65 - 10 * Math.random();
         const sat = 100;
         const brightness = 60 - 20 * Math.random();
 
-        const canvasSize = 600;
+        // const canvasSize = 300; const speed = 1 / (200 - 100 * randomMain());
+        const canvasSize = 600; const speed = 1 / (100 - 70 * randomMain());
+
+
         const halfSize = canvasSize * 0.5;
         const minGearRadius = canvasSize / 16;
         const maxGearRadius = canvasSize / 3;
@@ -224,19 +230,42 @@ export const art_gears = {
             };
         });
 
+        let noise = null as null | p5.Noise;
+        let noiseDebounceTime = Date.now();
+
+        const toggleNoise = () => {
+            if (Date.now() < noiseDebounceTime + 500) { return; }
+            noiseDebounceTime = Date.now();
+
+            if (noise) {
+                noise.disconnect();
+                noise = null;
+                return;
+            }
+            noise = new p5.Noise(`white`);
+            noise.amp(0);
+            noise.start();
+        };
 
         return new p5((s: p5) => {
             s.setup = () => {
                 s.createCanvas(canvasSize, canvasSize);
             };
+            s.mousePressed = () => { toggleNoise(); };
+            s.touchStarted = () => { toggleNoise(); };
+            s.keyPressed = () => { toggleNoise(); };
             s.draw = () => {
                 s.background(0);
+                // noise?.amp(0);
+
                 // s.background(10, 10, 10);
                 const g = s;
                 // const g = s.createGraphics(canvasSize * 2, canvasSize * 2);
                 // g.translate(canvasSize, canvasSize);
                 // g.scale(0.25);
 
+                let faceCount = 0;
+                let faceCreepyCount = 0;
                 for (const [i, gear] of gears.entries()) {
                     const direction = i % 2 === 0 ? 1 : -1;
                     const teethDepth = 5;
@@ -244,7 +273,7 @@ export const art_gears = {
                     const teethPassed = tick * speed * Math.pow(1.25, i + 1);
                     const rotationAngle = s.TWO_PI * teethPassed / teeth;
 
-                    drawGear(g, {
+                    const result = drawGear(g, {
                         position: gear.position,
                         // radiusInner: gear.size * 0.93,
                         // radiusOuter: gear.size * 1.07,
@@ -259,6 +288,13 @@ export const art_gears = {
                         randomSeed: gear.randomSeed,
                     });
 
+                    if (result.faceType) {
+                        faceCount++;
+                    }
+                    if (result.faceType === `creepy`) {
+                        faceCreepyCount++;
+                    }
+
                     // Rotate slightly
                     g.translate(gear.position.x, gear.position.y);
                     g.rotate(s.TWO_PI * teethPassed / (teeth * 4));
@@ -266,6 +302,7 @@ export const art_gears = {
                 }
                 // s.image(g, 0, 0, canvasSize, canvasSize);
 
+                noise?.amp(faceCount > 0 ? faceCreepyCount / faceCount : 0);
 
                 // for (let i = 0; i < 10; i++) {
                 //     const color = s.color((cr * i) % 255, (cg * i) % 255, (cb * i) % 255, ca);
