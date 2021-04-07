@@ -8,9 +8,11 @@ import { art_121 } from './artwork/art-121';
 import { P5Viewer } from './p5-viewer';
 import { art_puzzle01 } from './artwork/puzzle/art-puzzle-01';
 import { art_gears } from './artwork/gears';
+import { ArtWork } from './artwork-type';
+
 
 export const ArtGallery = (props: {}) => {
-    const artItems = [
+    const artItems: ArtWork[] = [
         art_gears,
         art_puzzle01,
         art_121,
@@ -25,9 +27,11 @@ export const ArtGallery = (props: {}) => {
     type ArtRender = {
         kind: 'p5';
         renderArt: (hostElement: HTMLDivElement) => { remove: () => void };
+        openSea?: ArtWork['openSea'];
     } | {
         kind: 'react';
         ArtComponent: () => JSX.Element;
+        openSea?: ArtWork['openSea'];
     };
     const [artRenderer, setArtRenderer] = useState({
         kind: `p5`,
@@ -63,6 +67,7 @@ export const ArtGallery = (props: {}) => {
             setArtRenderer({
                 kind: `p5`,
                 renderArt: (hostElement) => art.current.renderArt(hostElement, value),
+                openSea: art.current.openSea,
             });
             setTokenDescription(art.current.getTokenDescription(value));
         });
@@ -91,7 +96,7 @@ export const ArtGallery = (props: {}) => {
                 <C.Text_FormTitle style={{ ...theme.text_formTitle, whiteSpace: `pre-wrap` }}>{art.current.title}</C.Text_FormTitle>
                 <C.Text_FormTitle style={{ ...theme.text_formTitle, whiteSpace: `pre-wrap` }}>{art.current.artist}</C.Text_FormTitle>
                 {artRenderer.kind === `p5` && (
-                    <P5Viewer renderArt={artRenderer.renderArt} />
+                    <P5Viewer renderArt={artRenderer.renderArt} openSea={artRenderer.openSea} />
                 )}
                 {artRenderer.kind === `react` && (
                     <artRenderer.ArtComponent />

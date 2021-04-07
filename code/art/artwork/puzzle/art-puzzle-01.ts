@@ -1,13 +1,13 @@
 /* eslint-disable new-cap */
 /* eslint-disable no-new */
-import { SSL_OP_SSLEAY_080_CLIENT_DH_BUG } from 'constants';
 import p5 from 'p5';
+import { ArtWork } from '../../artwork-type';
 import { createRandomGenerator } from '../../rando';
 
 
 const parseTokenId_puzzle01 = (tokenId: string) => { return tokenId; };
 
-export const art_puzzle01 = {
+export const art_puzzle01: ArtWork = {
     key: `art-puzzle-01`,
     title: `Puzzle 01`,
     description: `Try to puzzle it out and unlock the answer.`,

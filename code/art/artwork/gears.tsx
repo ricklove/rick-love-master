@@ -3,6 +3,7 @@
 import p5 from 'p5';
 import 'p5/lib/addons/p5.sound';
 import { createRandomGenerator } from '../rando';
+import { ArtWork } from '../artwork-type';
 
 type Vector2 = { x: number, y: number };
 type ColorHsb = {
@@ -161,7 +162,7 @@ const drawGear = (g: p5,
     };
 };
 
-export const art_gears = {
+export const art_gears: ArtWork = {
     key: `art-gears`,
     title: `Gears`,
     description: `Are the gears of conflict twisting our perceptions of others? (Press image to toggle sound)`,

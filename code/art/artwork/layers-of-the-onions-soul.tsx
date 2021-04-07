@@ -2,8 +2,9 @@
 /* eslint-disable no-new */
 import p5 from 'p5';
 import { createRandomGenerator } from '../rando';
+import { ArtWork } from '../artwork-type';
 
-export const art_layersOfTheOnionsSoul = {
+export const art_layersOfTheOnionsSoul: ArtWork = {
     key: `art-onions`,
     title: `Layers of the Onion's Soul`,
     description: `This represents the complexity of an onion's soul - which has many layers, like a human.`,
