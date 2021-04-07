@@ -22,6 +22,7 @@ export const art_gpu_02: ArtWork = {
         // const { a, b, c } = { a: 57, b: 23, c: 15 };
 
         const { random } = createRandomGenerator(hash);
+        const seed = random();
 
 
         // const { a, b, c } = { a: 1 + Math.floor(57 * random()), b: 1 + Math.floor(213 * random()), c: 1 + Math.floor(115 * random()) };
@@ -33,9 +34,9 @@ export const art_gpu_02: ArtWork = {
         // const speed = 0.5;
 
         // let tick = 0;
-        let lastTime = 0;
-        let gameTimeMs = 0;
-        let lastTimeModifier = 1;
+        let lastTimeMs = 0;
+        const gameTimeMs = 0;
+        const lastTimeModifier = 1;
 
         let shaderInstance: null | p5.Shader = null;
 
@@ -51,10 +52,10 @@ export const art_gpu_02: ArtWork = {
                 if (!shaderInstance) { return; }
 
                 // send resolution of sketch into shader
-                const deltaTimeMs = lastTime - s.millis();
-                lastTime = s.millis();
+                const deltaTimeMs = lastTimeMs - s.millis();
+                lastTimeMs = s.millis();
 
-                const timeModifier = 0.7 * (0.5 + 0.7 * Math.cos(s.millis() / (5 * 1000)));
+                // const timeModifier = 0.7 * (0.5 + 0.7 * Math.cos(s.millis() / (5 * 1000)));
                 // const timeModifier01 = lastTimeModifier + 0.25 * (0.5 - Math.random());
                 // const timeModifier02 = Math.min(1, Math.max(0, timeModifier01));
                 // const dampen = Math.pow(Math.abs(timeModifier02 - 0.5) * 2, 5);
@@ -63,15 +64,16 @@ export const art_gpu_02: ArtWork = {
                 // const timeModifier01 = lastTimeModifier + 0.25 * (0.5 - Math.random());
                 // const timeModifier02 = Math.min(1, Math.max(0, timeModifier01));
 
-                lastTimeModifier = timeModifier;
-                gameTimeMs += deltaTimeMs * timeModifier;
+                // lastTimeModifier = timeModifier;
+                // gameTimeMs += deltaTimeMs * timeModifier;
 
 
-                console.log(`draw`, { lastTimeModifier });
+                // console.log(`draw`, { lastTimeModifier, seed, mouse: s.mouseX, gameTimeMs });
 
                 shaderInstance.setUniform(`u_resolution`, [size, size]);
-                shaderInstance.setUniform(`u_time`, gameTimeMs / 1000);
+                shaderInstance.setUniform(`u_time`, lastTimeMs / 1000);
                 shaderInstance.setUniform(`u_mouse`, [s.mouseX, s.map(s.mouseY, 0, size, size, 0)]);
+                shaderInstance.setUniform(`u_seed`, seed);
 
                 // shader() sets the active shader with our shader
                 s.shader(shaderInstance);

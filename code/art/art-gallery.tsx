@@ -42,7 +42,7 @@ export const ArtGallery = (props: {}) => {
     } as ArtRender);
     const [tokenDescription, setTokenDescription] = useState(null as null | string);
 
-    const { debounce } = useDebounce(50);
+    const { debounce } = useDebounce(250);
 
     useEffect(() => {
         const queryParts = document.location.search.substr(1).split(`&`);
@@ -67,12 +67,12 @@ export const ArtGallery = (props: {}) => {
         setTokenId(value);
 
         debounce(() => {
+            setTokenDescription(art.current.getTokenDescription(value));
             setArtRenderer({
                 kind: `p5`,
                 renderArt: (hostElement) => art.current.renderArt(hostElement, value),
                 openSea: art.current.openSea,
             });
-            setTokenDescription(art.current.getTokenDescription(value));
         });
     };
 
