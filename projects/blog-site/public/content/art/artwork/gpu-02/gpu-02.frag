@@ -19,8 +19,8 @@ float random(inout float r)
     return r;
 }
 
-#define NUM_POINTS 5
-#define NUM_POINTS_FL 5.0
+#define NUM_POINTS 10
+#define NUM_POINTS_FL 10.0
 
 void main() {
 
@@ -35,20 +35,16 @@ void main() {
 
     for(int i = 0; i < NUM_POINTS; i++){
         vec3 c0 = vec3(random(r), random(r), random(r));
-        float s0 = 0.5 + 0.5 * random(r) * sin((st.x * random(r) + u_time * random(r) / (0.3 + random(r))));
+        float y0 = 0.5 + 0.5 * random(r) * sin((st.x * random(r) + u_time * random(r) / (0.3 + random(r))));
         float s1 = 0.5 + 0.5 * random(r) * sin((st.x * random(r) + u_time * random(r) / (0.3 + random(r))));
         float s2 = 0.5 + 0.5 * random(r) * sin((st.x * random(r) + u_time * random(r) / (0.3 + random(r))));
         float s3 = 0.5 + 0.5 * random(r) * sin((st.x * random(r) + u_time * random(r) / (0.3 + random(r))));
-        vec2 p0 = vec2(random(r), s0);
 
-        // float dist = distance(st, p0);
-        float dist = abs(st.y - p0.y);
-        // float distY = abs(st.y - p0.y);
-        // float distX = abs(st.x - p0.x);
-        // float dist = distY - 0.1 * distX;
+        float dist = abs(st.y - y0);
+
         float strength = 1.0 - clamp(dist * (10.0 - 8.0 * s1),0.0,1.0);
-        float strPow = pow(strength, 0.5 + 2.0 * s3) ;
-        color += (3.0 * s2 * strPow/NUM_POINTS_FL) * c0;
+        float strPow = pow(strength, 0.5 + 5.0 * s3) ;
+        color += strPow * c0;
     }
 
     gl_FragColor = vec4(color,1.);
