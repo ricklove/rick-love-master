@@ -113,16 +113,16 @@ export const loadStaticPageData = async (): Promise<SitePageData<PageData>> => {
 
     const blogContentDir = getPathNormalized(__dirname, `../../blog-content`);
     const webBlogContentPath = `/blog-content`;
-    const publicDestDir = getPathNormalized(process.cwd(), `public${webBlogContentPath}`);
+    const webBlogPublicDestDir = getPathNormalized(process.cwd(), `public${webBlogContentPath}`);
 
     const calculateWebPath = (sourceFilePath: string, mediaPath: string) => {
         const sourceFileRelPath = sourceFilePath.replace(blogContentDir, ``);
         const sourceFileRelDir = getDirectoryPath(sourceFileRelPath);
         const oldPathFull = getPathNormalized(blogContentDir, sourceFileRelDir, mediaPath);
-        const newPathFull = getPathNormalized(publicDestDir, sourceFileRelDir, mediaPath);
+        const newPathFull = getPathNormalized(webBlogPublicDestDir, sourceFileRelDir, mediaPath);
 
         // Website Path
-        const webPath = newPathFull.replace(publicDestDir, webBlogContentPath);
+        const webPath = newPathFull.replace(webBlogPublicDestDir, webBlogContentPath);
 
         return { webPath, oldPathFull, newPathFull };
     };
@@ -142,6 +142,15 @@ export const loadStaticPageData = async (): Promise<SitePageData<PageData>> => {
     await processDirectoryFiles(`${blogContentDir}/posts`, async x => { if (x.endsWith(`.md`)) { posts.push(await createPageData_fromMarkdownFile(x, `post`, onMediaFile)); } });
     await processDirectoryFiles(`${blogContentDir}/pages`, async x => { if (x.endsWith(`.md`)) { pagePosts.push(await createPageData_fromMarkdownFile(x, `page`, onMediaFile)); } });
 
+    // Trigger gatsby watch to rebuild (with a file change)
+    const triggerGatsbyRebuild = () => {
+        setTimeout(async () => {
+            const filename = getPathNormalized(__dirname, `./_rebuild-trigger.ts`);
+            console.log(`Writing to Rebuild Trigger`, { filename });
+            await writeFile(filename, `export const __trigger = 0;\r\n`, { overwrite: true });
+        }, 100);
+    };
+
     // Subscribe to dirs
     await watchFileChanges({ pathRoot: blogContentDir, runOnStart: false }, async (files) => {
         const postFiles = files.filter(x => x.startsWith(`${blogContentDir}/posts`) && x.endsWith(`.md`));
@@ -160,13 +169,49 @@ export const loadStaticPageData = async (): Promise<SitePageData<PageData>> => {
         // console.log(`File Changed DONE`, { postFiles, pageFiles });
         if (postFiles.length <= 0 && pageFiles.length <= 0) { return; }
 
-        // Trigger gatsby watch to rebuild (with a file change)
-        setTimeout(async () => {
-            const filename = getPathNormalized(__dirname, `./_rebuild-trigger.ts`);
-            console.log(`Writing to Rebuild Trigger`, { filename });
-            await writeFile(filename, `export const __trigger = 0;\r\n`, { overwrite: true });
-        }, 100);
+        triggerGatsbyRebuild();
     });
+
+    // Artwork content
+    const artContentDir = getPathNormalized(__dirname, `../../art`);
+    const artWebPublicDestDir = getPathNormalized(process.cwd(), `public/content/art`);
+
+    const isArtMediaFile = (x: string) => {
+        const artMediaFileExtsRegex = /\.(vert|frag|png|svg|jpg|gif)$/g;
+        return artMediaFileExtsRegex.test(x);
+    };
+
+    const copyIfArtFile = async (x: string) => {
+        if (!isArtMediaFile(x)) { return; }
+
+        const sourceFileRelDir = x.replace(artContentDir, ``);
+        const oldPathFull = getPathNormalized(artContentDir, sourceFileRelDir);
+        const newPathFull = getPathNormalized(artWebPublicDestDir, sourceFileRelDir);
+
+        console.log(`Artwork content`, { x, sourceFileRelDir, oldPathFull, newPathFull });
+        await copyFile(oldPathFull, newPathFull, { overwrite: true });
+    };
+
+    await processDirectoryFiles(`${artContentDir}/artwork`, async x => {
+        // console.log(`Artwork content?`, { x });
+        await copyIfArtFile(x);
+    });
+    await watchFileChanges({ pathRoot: artContentDir, runOnStart: false }, async (files) => {
+        const mediaFiles = files.filter(x => isArtMediaFile(x));
+        for (const f of mediaFiles) {
+            console.log(`Art File Changed`, { f });
+            // eslint-disable-next-line no-await-in-loop
+            await copyIfArtFile(f);
+
+            // TODO
+            // sub.onStateChange(await createPageData_fromMarkdownFile(f, `post`, onMediaFile));
+        }
+
+        if (mediaFiles.length <= 0) { return; }
+
+        triggerGatsbyRebuild();
+    });
+
 
     posts.sort((a, b) => a.data.postPage.order - b.data.postPage.order);
     pagePosts.unshift(...posts);
