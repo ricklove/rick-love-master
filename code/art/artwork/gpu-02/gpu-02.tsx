@@ -4,17 +4,13 @@ import p5 from 'p5';
 import { createRandomGenerator } from '../../rando';
 import { ArtWork } from '../../artwork-type';
 
-const path = `/content/art/artwork/gpu-01/gpu-01`;
+const path = `/content/art/artwork/gpu-02/gpu-02`;
 
-export const art_gpu_01: ArtWork = {
-    key: `art-gpu-01`,
-    title: `Gpu Example 01`,
-    description: `2015 - http://patriciogonzalezvivo.com
-
-This is included as a great example of a gpu shader.
-    
-From: https://thebookofshaders.com/13/`,
-    artist: `@patriciogv`,
+export const art_gpu_02: ArtWork = {
+    key: `art-gpu-02`,
+    title: `Gpu 02`,
+    description: `Testing Gpu`,
+    artist: `Rick Love`,
     getTokenDescription: (tokenId: string) => {
         return null;
     },
@@ -37,6 +33,9 @@ From: https://thebookofshaders.com/13/`,
         // const speed = 0.5;
 
         // let tick = 0;
+        let lastTime = 0;
+        let gameTimeMs = 0;
+        let lastTimeModifier = 1;
 
         let shaderInstance: null | p5.Shader = null;
 
@@ -52,8 +51,26 @@ From: https://thebookofshaders.com/13/`,
                 if (!shaderInstance) { return; }
 
                 // send resolution of sketch into shader
+                const deltaTimeMs = lastTime - s.millis();
+                lastTime = s.millis();
+
+                const timeModifier = 0.7 * (0.5 + 0.7 * Math.cos(s.millis() / (5 * 1000)));
+                // const timeModifier01 = lastTimeModifier + 0.25 * (0.5 - Math.random());
+                // const timeModifier02 = Math.min(1, Math.max(0, timeModifier01));
+                // const dampen = Math.pow(Math.abs(timeModifier02 - 0.5) * 2, 5);
+                // const timeModifier = dampen * 0.5 + (1 - dampen) * timeModifier02;
+
+                // const timeModifier01 = lastTimeModifier + 0.25 * (0.5 - Math.random());
+                // const timeModifier02 = Math.min(1, Math.max(0, timeModifier01));
+
+                lastTimeModifier = timeModifier;
+                gameTimeMs += deltaTimeMs * timeModifier;
+
+
+                console.log(`draw`, { lastTimeModifier });
+
                 shaderInstance.setUniform(`u_resolution`, [size, size]);
-                shaderInstance.setUniform(`u_time`, s.millis() / 1000);
+                shaderInstance.setUniform(`u_time`, gameTimeMs / 1000);
                 shaderInstance.setUniform(`u_mouse`, [s.mouseX, s.map(s.mouseY, 0, size, size, 0)]);
 
                 // shader() sets the active shader with our shader
