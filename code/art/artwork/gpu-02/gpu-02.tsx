@@ -8,8 +8,8 @@ const path = `/content/art/artwork/gpu-02/gpu-02`;
 
 export const art_gpu_02: ArtWork = {
     key: `art-gpu-02`,
-    title: `Gpu 02`,
-    description: `Testing Gpu`,
+    title: `Flying Colors`,
+    description: `Flying Colors`,
     artist: `Rick Love`,
     getTokenDescription: (tokenId: string) => {
         return null;
