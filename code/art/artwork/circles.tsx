@@ -12,10 +12,10 @@ export const art_circles: ArtWork = {
     getTokenDescription: (tokenId: string) => {
         return null;
     },
-    openSea: {
-        tokenAddress: `0x495f947276749ce646f68ac8c248420045cb7b5e`,
-        tokenId: `91242641486941084018191434774360347389366801368112854311223385694785434025985`,
-    },
+    // openSea: {
+    //     tokenAddress: `0x495f947276749ce646f68ac8c248420045cb7b5e`,
+    //     tokenId: `91242641486941084018191434774360347389366801368112854311223385694785434025985`,
+    // },
     renderArt: (hostElement: HTMLElement, hash = `This is my hash!`) => {
         // const { a, b, c } = { a: 57, b: 23, c: 15 };
 
