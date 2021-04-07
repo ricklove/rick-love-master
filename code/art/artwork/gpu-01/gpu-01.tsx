@@ -4,11 +4,15 @@ import p5 from 'p5';
 import { createRandomGenerator } from '../../rando';
 import { ArtWork } from '../../artwork-type';
 
-export const art_gpu01: ArtWork = {
-    key: `art-gpu01`,
-    title: `Gpu01`,
-    description: `Throw some shade`,
-    artist: `Rick Love`,
+export const art_gpu_01: ArtWork = {
+    key: `art-gpu-01`,
+    title: `Gpu Example 01`,
+    description: `2015 - http://patriciogonzalezvivo.com
+
+This is included as a great example of a gpu shader.
+    
+From: https://thebookofshaders.com/13/`,
+    artist: `@patriciogv`,
     getTokenDescription: (tokenId: string) => {
         return null;
     },
@@ -48,6 +52,8 @@ export const art_gpu01: ArtWork = {
 
                 // send resolution of sketch into shader
                 shaderInstance.setUniform(`u_resolution`, [size, size]);
+                shaderInstance.setUniform(`u_time`, s.millis() / 1000);
+                shaderInstance.setUniform(`u_mouse`, [s.mouseX, s.map(s.mouseY, 0, size, size, 0)]);
 
                 // shader() sets the active shader with our shader
                 s.shader(shaderInstance);

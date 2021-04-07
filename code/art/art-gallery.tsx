@@ -9,12 +9,11 @@ import { P5Viewer } from './p5-viewer';
 import { art_puzzle01 } from './artwork/puzzle/art-puzzle-01';
 import { art_gears } from './artwork/gears';
 import { ArtWork } from './artwork-type';
-import { art_gpu01 } from './artwork/gpu-01/gpu-01';
-
+import { art_gpu_01 } from './artwork/gpu-01/gpu-01';
 
 export const ArtGallery = (props: {}) => {
     const artItems: ArtWork[] = [
-        art_gpu01,
+        art_gpu_01,
         art_gears,
         art_puzzle01,
         art_121,
