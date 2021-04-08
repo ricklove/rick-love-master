@@ -10,11 +10,11 @@ import { art_puzzle01 } from './artwork/puzzle/art-puzzle-01';
 import { art_gears } from './artwork/gears';
 import { ArtWork } from './artwork-type';
 import { art_gpu_01 } from './artwork/gpu-01/gpu-01';
-import { art_gpu_02 } from './artwork/gpu-02/gpu-02';
+import { art_flyingColors } from './artwork/flying-colors/flying-colors';
 
 export const ArtGallery = (props: {}) => {
     const artItems: ArtWork[] = [
-        art_gpu_02,
+        art_flyingColors,
         art_gpu_01,
         art_gears,
         art_puzzle01,

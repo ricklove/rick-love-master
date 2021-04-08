@@ -25,9 +25,8 @@ float random(inout float r)
 void main() {
 
     vec2 st = gl_FragCoord.xy / u_resolution.xy;
-    // float r = u_mouse.x;
     float r = fract(u_mouse.x / 1000.0);
-    // float r = fract(u_seed / 1000.0);
+    // float r = fract(u_seed);
 
     random(r);
 

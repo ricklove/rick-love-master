@@ -4,12 +4,12 @@ import p5 from 'p5';
 import { createRandomGenerator } from '../../rando';
 import { ArtWork } from '../../artwork-type';
 
-const path = `/content/art/artwork/gpu-02/gpu-02`;
+const path = `/content/art/artwork/flying-colors/flying-colors`;
 
-export const art_gpu_02: ArtWork = {
-    key: `art-gpu-02`,
+export const art_flyingColors: ArtWork = {
+    key: `art-flying-colors`,
     title: `Flying Colors`,
-    description: `Flying Colors`,
+    description: `Mmmm, bright`,
     artist: `Rick Love`,
     getTokenDescription: (tokenId: string) => {
         return null;
