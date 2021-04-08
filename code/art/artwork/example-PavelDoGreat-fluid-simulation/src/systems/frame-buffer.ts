@@ -2,7 +2,7 @@ import { WebGlSystem } from './webgl';
 
 export const createFrameBufferFactory = ({ gl }: WebGlSystem) => {
 
-    function createFBO(w: number, h: number, internalFormat: number, format: number, type: number, param: number) {
+    function createFrameBufferObject(w: number, h: number, internalFormat: number, format: number, type: number, param: number) {
         gl.activeTexture(gl.TEXTURE0);
         const texture = gl.createTexture();
         if (!texture) { throw new Error(`texture not created`); }
@@ -14,10 +14,10 @@ export const createFrameBufferFactory = ({ gl }: WebGlSystem) => {
         gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
         gl.texImage2D(gl.TEXTURE_2D, 0, internalFormat, w, h, 0, format, type, null);
 
-        const fbo = gl.createFramebuffer();
-        if (!fbo) { throw new Error(`frame buffer not created`); }
+        const frameBuffer = gl.createFramebuffer();
+        if (!frameBuffer) { throw new Error(`frame buffer not created`); }
 
-        gl.bindFramebuffer(gl.FRAMEBUFFER, fbo);
+        gl.bindFramebuffer(gl.FRAMEBUFFER, frameBuffer);
         gl.framebufferTexture2D(gl.FRAMEBUFFER, gl.COLOR_ATTACHMENT0, gl.TEXTURE_2D, texture, 0);
         gl.viewport(0, 0, w, h);
         gl.clear(gl.COLOR_BUFFER_BIT);
@@ -27,7 +27,7 @@ export const createFrameBufferFactory = ({ gl }: WebGlSystem) => {
 
         return {
             texture,
-            fbo,
+            frameBuffer,
             width: w,
             height: h,
             texelSizeX,
@@ -40,9 +40,9 @@ export const createFrameBufferFactory = ({ gl }: WebGlSystem) => {
         };
     }
 
-    function createDoubleFBO(w: number, h: number, internalFormat: number, format: number, type: number, param: number) {
-        let fbo1 = createFBO(w, h, internalFormat, format, type, param);
-        let fbo2 = createFBO(w, h, internalFormat, format, type, param);
+    function createDoubleFrameBufferObject(w: number, h: number, internalFormat: number, format: number, type: number, param: number) {
+        let fbo1 = createFrameBufferObject(w, h, internalFormat, format, type, param);
+        let fbo2 = createFrameBufferObject(w, h, internalFormat, format, type, param);
 
         return {
             width: w,
@@ -71,14 +71,14 @@ export const createFrameBufferFactory = ({ gl }: WebGlSystem) => {
 
 
     return {
-        createFBO,
-        createDoubleFBO,
+        createFrameBufferObject,
+        createDoubleFrameBufferObject,
     };
 };
 
 export type FrameBufferFactory = ReturnType<typeof createFrameBufferFactory>;
-export type FrameBufferObject = ReturnType<FrameBufferFactory['createFBO']>;
-export type DoubleFrameBufferObject = ReturnType<FrameBufferFactory['createDoubleFBO']>;
+export type FrameBufferObject = ReturnType<FrameBufferFactory['createFrameBufferObject']>;
+export type DoubleFrameBufferObject = ReturnType<FrameBufferFactory['createDoubleFrameBufferObject']>;
 
 
 export const createFrameBufferUtils = ({ gl }: WebGlSystem) => {
@@ -98,7 +98,7 @@ export const createFrameBufferUtils = ({ gl }: WebGlSystem) => {
             }
             else {
                 gl.viewport(0, 0, target.width, target.height);
-                gl.bindFramebuffer(gl.FRAMEBUFFER, target.fbo);
+                gl.bindFramebuffer(gl.FRAMEBUFFER, target.frameBuffer);
             }
             if (clear) {
                 gl.clearColor(0, 0, 0, 1);

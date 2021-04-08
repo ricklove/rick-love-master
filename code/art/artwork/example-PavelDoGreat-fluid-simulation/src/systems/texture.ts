@@ -2,11 +2,11 @@ import { FrameBufferFactory, FrameBufferObject } from './frame-buffer';
 import { clamp01 } from '../utils';
 import { WebGlSystem } from './webgl';
 
-export const createTextureUtils = ({ gl, ext }: WebGlSystem, { createFBO }: FrameBufferFactory) => {
+export const createTextureUtils = ({ gl, ext }: WebGlSystem, { createFrameBufferObject }: FrameBufferFactory) => {
 
     function captureScreenshot(render: (target: FrameBufferObject) => void, { resolution }: { resolution: number }) {
         const res = getResolution(resolution);
-        const target = createFBO(res.width, res.height, ext.formatRGBA.internalFormat, ext.formatRGBA.format, ext.halfFloatTexType, gl.NEAREST);
+        const target = createFrameBufferObject(res.width, res.height, ext.formatRGBA.internalFormat, ext.formatRGBA.format, ext.halfFloatTexType, gl.NEAREST);
         render(target);
 
         const texture32 = framebufferToTexture(target);
@@ -41,7 +41,7 @@ export const createTextureUtils = ({ gl, ext }: WebGlSystem, { createFBO }: Fram
     }
 
     function framebufferToTexture(target: FrameBufferObject) {
-        gl.bindFramebuffer(gl.FRAMEBUFFER, target.fbo);
+        gl.bindFramebuffer(gl.FRAMEBUFFER, target.frameBuffer);
         const length = target.width * target.height * 4;
         const texture = new Float32Array(length);
         gl.readPixels(0, 0, target.width, target.height, gl.RGBA, gl.FLOAT, texture);

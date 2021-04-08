@@ -49,8 +49,8 @@ export const setup = () => {
 
     const frameBufferFactory = createFrameBufferFactory(webGlSystem);
     const {
-        createFBO,
-        createDoubleFBO,
+        createFrameBufferObject,
+        createDoubleFrameBufferObject,
     } = frameBufferFactory;
 
     const {
@@ -116,7 +116,7 @@ export const setup = () => {
     let sunraysTemp: FrameBufferObject;
 
     function resizeFBO(target: FrameBufferObject, w: number, h: number, internalFormat: number, format: number, type: number, param: number) {
-        const newFBO = createFBO(w, h, internalFormat, format, type, param);
+        const newFBO = createFrameBufferObject(w, h, internalFormat, format, type, param);
         copyProgram.bind();
         gl.uniform1i(copyProgram.uniforms.uTexture, target.attach(0));
         blit(newFBO);
@@ -127,7 +127,7 @@ export const setup = () => {
         if (target.width === w && target.height === h)
             return target;
         target.read = resizeFBO(target.read, w, h, internalFormat, format, type, param);
-        target.write = createFBO(w, h, internalFormat, format, type, param);
+        target.write = createFrameBufferObject(w, h, internalFormat, format, type, param);
         target.width = w;
         target.height = h;
         target.texelSizeX = 1 / w;
@@ -148,18 +148,18 @@ export const setup = () => {
         gl.disable(gl.BLEND);
 
         if (dye == null)
-            dye = createDoubleFBO(dyeRes.width, dyeRes.height, rgba.internalFormat, rgba.format, texType, filtering);
+            dye = createDoubleFrameBufferObject(dyeRes.width, dyeRes.height, rgba.internalFormat, rgba.format, texType, filtering);
         else
             dye = resizeDoubleFBO(dye, dyeRes.width, dyeRes.height, rgba.internalFormat, rgba.format, texType, filtering);
 
         if (velocity == null)
-            velocity = createDoubleFBO(simRes.width, simRes.height, rg.internalFormat, rg.format, texType, filtering);
+            velocity = createDoubleFrameBufferObject(simRes.width, simRes.height, rg.internalFormat, rg.format, texType, filtering);
         else
             velocity = resizeDoubleFBO(velocity, simRes.width, simRes.height, rg.internalFormat, rg.format, texType, filtering);
 
-        divergence = createFBO(simRes.width, simRes.height, r.internalFormat, r.format, texType, gl.NEAREST);
-        curl = createFBO(simRes.width, simRes.height, r.internalFormat, r.format, texType, gl.NEAREST);
-        pressure = createDoubleFBO(simRes.width, simRes.height, r.internalFormat, r.format, texType, gl.NEAREST);
+        divergence = createFrameBufferObject(simRes.width, simRes.height, r.internalFormat, r.format, texType, gl.NEAREST);
+        curl = createFrameBufferObject(simRes.width, simRes.height, r.internalFormat, r.format, texType, gl.NEAREST);
+        pressure = createDoubleFrameBufferObject(simRes.width, simRes.height, r.internalFormat, r.format, texType, gl.NEAREST);
 
         initBloomFramebuffers();
         initSunraysFramebuffers();
@@ -172,7 +172,7 @@ export const setup = () => {
         const rgba = ext.formatRGBA;
         const filtering = ext.supportLinearFiltering ? gl.LINEAR : gl.NEAREST;
 
-        bloom = createFBO(res.width, res.height, rgba.internalFormat, rgba.format, texType, filtering);
+        bloom = createFrameBufferObject(res.width, res.height, rgba.internalFormat, rgba.format, texType, filtering);
 
         bloomFramebuffers.length = 0;
         for (let i = 0; i < config.BLOOM_ITERATIONS; i++) {
@@ -181,7 +181,7 @@ export const setup = () => {
 
             if (width < 2 || height < 2) break;
 
-            const fbo = createFBO(width, height, rgba.internalFormat, rgba.format, texType, filtering);
+            const fbo = createFrameBufferObject(width, height, rgba.internalFormat, rgba.format, texType, filtering);
             bloomFramebuffers.push(fbo);
         }
     }
@@ -193,8 +193,8 @@ export const setup = () => {
         const r = ext.formatR;
         const filtering = ext.supportLinearFiltering ? gl.LINEAR : gl.NEAREST;
 
-        sunrays = createFBO(res.width, res.height, r.internalFormat, r.format, texType, filtering);
-        sunraysTemp = createFBO(res.width, res.height, r.internalFormat, r.format, texType, filtering);
+        sunrays = createFrameBufferObject(res.width, res.height, r.internalFormat, r.format, texType, filtering);
+        sunraysTemp = createFrameBufferObject(res.width, res.height, r.internalFormat, r.format, texType, filtering);
     }
 
 
