@@ -46,6 +46,7 @@ export const setup = () => {
     if (!webGlSystem) { return; }
 
     const { gl, ext } = webGlSystem;
+
     const frameBufferFactory = createFrameBufferFactory(webGlSystem);
     const {
         createFBO,
@@ -60,13 +61,8 @@ export const setup = () => {
         captureScreenshot,
         getResolution,
     } = createTextureUtils(webGlSystem, frameBufferFactory);
-    const shaderFactory = createShaderFactory(webGlSystem);
-    const {
-        compileShader,
-        createProgram,
-        getUniforms,
-    } = shaderFactory;
 
+    const shaderFactory = createShaderFactory(webGlSystem);
 
     const config = createConfig();
     if (isMobile()) {
@@ -108,7 +104,6 @@ export const setup = () => {
     const pressureProgram = new ShaderProgram(shaderFactory, shaders.baseVertexShader, shaders.pressureShader);
     const gradienSubtractProgram = new ShaderProgram(shaderFactory, shaders.baseVertexShader, shaders.gradientSubtractShader);
     const displayMaterial = new ShaderMaterial(shaderFactory, shaders.baseVertexShader, shaders.displayShaderSource);
-
 
     let dye: DoubleFrameBufferObject;
     let velocity: DoubleFrameBufferObject;
@@ -247,8 +242,6 @@ export const setup = () => {
     initFramebuffers();
     multipleSplats(randomIntRange(5, 25));
 
-    let lastUpdateTime = Date.now();
-    let colorUpdateTimer = 0;
     update();
 
     function update() {
@@ -263,6 +256,7 @@ export const setup = () => {
         requestAnimationFrame(update);
     }
 
+    let lastUpdateTime = Date.now();
     function calcDeltaTime() {
         const now = Date.now();
         let dt = (now - lastUpdateTime) / 1000;
@@ -282,6 +276,7 @@ export const setup = () => {
         return false;
     }
 
+    let colorUpdateTimer = 0;
     function updateColors(dt: number) {
         if (!config.COLORFUL) return;
 

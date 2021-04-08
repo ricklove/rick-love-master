@@ -83,7 +83,7 @@ export type DoubleFrameBufferObject = ReturnType<FrameBufferFactory['createDoubl
 
 export const createFrameBufferUtils = ({ gl }: WebGlSystem) => {
 
-    const blit = (() => {
+    const createBlit = () => {
         gl.bindBuffer(gl.ARRAY_BUFFER, gl.createBuffer());
         gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([-1, -1, -1, 1, 1, 1, 1, -1]), gl.STATIC_DRAW);
         gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, gl.createBuffer());
@@ -107,7 +107,8 @@ export const createFrameBufferUtils = ({ gl }: WebGlSystem) => {
             // CHECK_FRAMEBUFFER_STATUS();
             gl.drawElements(gl.TRIANGLES, 6, gl.UNSIGNED_SHORT, 0);
         };
-    })();
+    };
+    const blit = createBlit();
 
     // function CHECK_FRAMEBUFFER_STATUS() {
     //     const status = gl.checkFramebufferStatus(gl.FRAMEBUFFER);

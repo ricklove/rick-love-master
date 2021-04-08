@@ -82,8 +82,8 @@ export const createTextureUtils = ({ gl, ext }: WebGlSystem, { createFBO }: Fram
     return {
         captureScreenshot,
         getResolution,
-        framebufferToTexture,
-        normalizeTexture,
-        textureToCanvas,
+        // framebufferToTexture,
+        // normalizeTexture,
+        // textureToCanvas,
     };
 };
