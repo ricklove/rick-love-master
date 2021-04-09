@@ -27,12 +27,14 @@ Based on Fluid Simulator by Pavel Dobryakov: https://paveldogreat.github.io/WebG
         const { config } = result;
 
         const MOTION_X = -0.1;
+        const MOTION_Y = -0.025;
         const VEL_MULT = 0.05;
         const COLOR_STRENGTH = 0.06;
 
         if (config) {
             // config.SPLAT_RADIUS = 0.001;
             config.MOTION_X = MOTION_X;
+            config.MOTION_Y = MOTION_Y;
             config.COLORFUL = false;
             config.CURL = 10;
         }
@@ -64,7 +66,7 @@ Based on Fluid Simulator by Pavel Dobryakov: https://paveldogreat.github.io/WebG
             },
             player: {
                 id: 42,
-                position: { x: 0.25, y: 0.5 },
+                position: { x: 0.5, y: 0.5 },
                 velocity: { x: 0, y: 0 },
                 size: { x: 0.05, y: 0.05 },
                 color: { r: COLOR_STRENGTH, g: COLOR_STRENGTH, b: COLOR_STRENGTH },
@@ -148,8 +150,11 @@ Based on Fluid Simulator by Pavel Dobryakov: https://paveldogreat.github.io/WebG
                 }
 
                 freeObstacle.color = { r: COLOR_STRENGTH * Math.random(), g: COLOR_STRENGTH * Math.random(), b: COLOR_STRENGTH * Math.random() };
-                freeObstacle.position = { x: 1.25, y: Math.random() };
-                freeObstacle.velocity = { x: -0.05 - 0.25 * Math.random(), y: 0.2 + 0.1 - 0.2 * Math.random() };
+
+                const motionSignX = Math.sign(config.MOTION_X);
+
+                freeObstacle.position = { x: motionSignX * -1.05, y: Math.random() };
+                freeObstacle.velocity = { x: motionSignX * (0.05 + 0.25 * Math.random()), y: (0.2 + 0.1 - 0.2 * Math.random()) };
                 freeObstacle.isStill = Math.random() < 0.1;
 
                 freeObstacle.size = { x: 0.25 + 0.5 * Math.random(), y: 0.25 + 0.5 * Math.random() };
