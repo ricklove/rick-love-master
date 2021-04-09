@@ -593,7 +593,29 @@ export const runFluidSimulator = (host: HTMLDivElement, contentPath: string, sty
 
     console.log(`runFluidSimulator - 08 addEventListeners`, {});
 
-    canvas.addEventListener(`mousedown`, e => {
+    const windowSubs = [] as { name: string, handler: () => void }[];
+    const windowAddEventListener = ((name: string, handler: () => void) => {
+        window.addEventListener(name, handler);
+        windowSubs.push({ name, handler });
+    }) as typeof window.addEventListener;
+    const windowEventListenersDestroy = () => {
+        windowSubs.forEach(({ name, handler }) => {
+            window.removeEventListener(name, handler);
+        });
+    };
+
+    const canvasSubs = [] as { name: string, handler: () => void }[];
+    const canvasAddEventListener = ((name: string, handler: () => void) => {
+        canvas.addEventListener(name, handler);
+        canvasSubs.push({ name, handler });
+    }) as typeof canvas.addEventListener;
+    const canvasEventListenersDestroy = () => {
+        canvasSubs.forEach(({ name, handler }) => {
+            canvas.removeEventListener(name, handler);
+        });
+    };
+
+    canvasAddEventListener(`mousedown`, e => {
         const posX = scaleByPixelRatio(e.offsetX);
         const posY = scaleByPixelRatio(e.offsetY);
         let pointer = pointers.find(p => p.id === -1);
@@ -602,7 +624,7 @@ export const runFluidSimulator = (host: HTMLDivElement, contentPath: string, sty
         updatePointerDownData(pointer, -1, posX, posY);
     });
 
-    canvas.addEventListener(`mousemove`, e => {
+    canvasAddEventListener(`mousemove`, e => {
         const pointer = pointers[0];
         if (!pointer.down) return;
         const posX = scaleByPixelRatio(e.offsetX);
@@ -610,11 +632,11 @@ export const runFluidSimulator = (host: HTMLDivElement, contentPath: string, sty
         updatePointerMoveData(pointer, posX, posY);
     });
 
-    window.addEventListener(`mouseup`, () => {
+    windowAddEventListener(`mouseup`, () => {
         updatePointerUpData(pointers[0]);
     });
 
-    canvas.addEventListener(`touchstart`, e => {
+    canvasAddEventListener(`touchstart`, e => {
         e.preventDefault();
         const touches = e.targetTouches as unknown as Touch[];
         while (touches.length >= pointers.length)
@@ -626,7 +648,7 @@ export const runFluidSimulator = (host: HTMLDivElement, contentPath: string, sty
         }
     });
 
-    canvas.addEventListener(`touchmove`, e => {
+    canvasAddEventListener(`touchmove`, e => {
         e.preventDefault();
         const touches = e.targetTouches as unknown as Touch[];
         for (const [i, touch] of touches.entries()) {
@@ -638,7 +660,7 @@ export const runFluidSimulator = (host: HTMLDivElement, contentPath: string, sty
         }
     }, false);
 
-    window.addEventListener(`touchend`, e => {
+    windowAddEventListener(`touchend`, e => {
         const touches = e.changedTouches as unknown as Touch[];
         for (const touch of touches) {
             const pointer = pointers.find(p => p.id === touch.identifier);
@@ -647,7 +669,7 @@ export const runFluidSimulator = (host: HTMLDivElement, contentPath: string, sty
         }
     });
 
-    window.addEventListener(`keydown`, e => {
+    windowAddEventListener(`keydown`, e => {
         if (e.code === `KeyP`)
             config.PAUSED = !config.PAUSED;
         if (e.key === ` `)
@@ -690,8 +712,12 @@ export const runFluidSimulator = (host: HTMLDivElement, contentPath: string, sty
     return {
         close: () => {
             gui.gui.destroy();
-            // TODO: You better just refresh!
-            console.warn(`Refresh the browser - for real`);
+            windowEventListenersDestroy();
+            canvasEventListenersDestroy();
+
+            gl.canvas.width = 1;
+            gl.canvas.height = 1;
+            canvas.remove();
         },
     };
 };

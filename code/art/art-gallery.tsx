@@ -28,6 +28,8 @@ export const ArtGallery = (props: {}) => {
     ];
 
     const art = useRef(artItems[0]);
+
+    const [renderId, setRenderId] = useState(0);
     const [showNavigation, setShowNavigation] = useState(true);
     const [tokenId, setTokenId] = useState(`0`);
     const [isFullScreen, setIsFullScreen] = useState(false);
@@ -41,7 +43,6 @@ export const ArtGallery = (props: {}) => {
         ArtComponent: () => JSX.Element;
         openSea?: ArtWork['openSea'];
     };
-    const [artRenderer, setArtRenderer] = useState(null as null | ArtRender);
     const [tokenDescription, setTokenDescription] = useState(null as null | string);
 
     const { debounce } = useDebounce(250);
@@ -75,19 +76,36 @@ export const ArtGallery = (props: {}) => {
             setTokenDescription(art.current.getTokenDescription(value));
             const { renderArt, ArtComponent } = art.current;
             if (renderArt) {
-                setArtRenderer({
+                cacheRenderArtwork({
                     kind: `div`,
                     renderArt: (hostElement) => renderArt(hostElement, value),
                     openSea: art.current.openSea,
                 });
             } else if (ArtComponent) {
-                setArtRenderer({
+                cacheRenderArtwork({
                     kind: `react`,
                     ArtComponent: () => <ArtComponent hash={value} />,
                     openSea: art.current.openSea,
                 });
             }
         });
+    };
+
+    const ArtworkComponentRef = useRef(<></>);
+    const cacheRenderArtwork = (artRenderer: ArtRender) => {
+        ArtworkComponentRef.current = (
+            <>
+                {artRenderer?.kind === `div` && (
+                    <DivHost renderArt={artRenderer.renderArt} openSea={artRenderer.openSea} />
+                )}
+                {artRenderer?.kind === `react` && (
+                    <artRenderer.ArtComponent />
+                )}
+                <div style={{ position: `absolute`, top: 4, right: 4, width: 16, height: 16, fontFamily: `monospace`, fontSize: 14, lineHeight: `16px`, textAlign: `center`, color: `#FFFFFF`, background: `#88888888` }}
+                    onClick={() => setIsFullScreen(s => !s)}>{isFullScreen ? `-` : `+`}</div>
+            </>
+        );
+        setRenderId(s => s + 1);
     };
 
     return (
@@ -113,17 +131,8 @@ export const ArtGallery = (props: {}) => {
                 <C.Text_FormTitle style={{ ...theme.text_formTitle, whiteSpace: `pre-wrap` }}>{art.current.title}</C.Text_FormTitle>
                 <C.Text_FormTitle style={{ ...theme.text_formTitle, whiteSpace: `pre-wrap` }}>{art.current.artist}</C.Text_FormTitle>
                 <div style={isFullScreen ? { position: `fixed`, left: 0, right: 0, top: 0, bottom: 0, background: `#000000` } : { maxWidth: `600px`, maxHeight: `600px` }}>
-                    <div style={{ position: `relative`, width: `100%`, height: `100%` }}>
-                        <>
-                            {artRenderer?.kind === `div` && (
-                                <DivHost renderArt={artRenderer.renderArt} openSea={artRenderer.openSea} />
-                            )}
-                            {artRenderer?.kind === `react` && (
-                                <artRenderer.ArtComponent />
-                            )}
-                            <div style={{ position: `absolute`, top: 4, right: 4, width: 16, height: 16, fontFamily: `monospace`, fontSize: 14, lineHeight: `16px`, textAlign: `center`, color: `#FFFFFF`, background: `#88888888` }}
-                                onClick={() => setIsFullScreen(s => !s)}>{isFullScreen ? `-` : `+`}</div>
-                        </>
+                    <div style={{ position: `relative`, width: `100%`, height: `100%` }} >
+                        {ArtworkComponentRef.current}
                     </div>
                 </div>
                 {tokenDescription && (<C.Text_FormTitle style={{ ...theme.text_formTitle, background: `#EEEEEE`, padding: 8, whiteSpace: `pre-wrap` }}>{tokenDescription}</C.Text_FormTitle>)}
