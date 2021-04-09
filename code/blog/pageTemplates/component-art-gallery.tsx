@@ -8,7 +8,7 @@ export type ComponentArtGalleryPageData = {
 
 export const ComponentArtGalleryPage = (props: { data: ComponentArtGalleryPageData }) => {
     return (
-        <Layout>
+        <Layout zoom={false}>
             <SEO title='Vector Art Gallery - Rick Love' />
             <ComponentAuto data={props.data} />
         </Layout>

@@ -14,7 +14,7 @@ export const DivHost = (props: {
 }) => {
 
     const hostElementRef = useRef(null as null | HTMLDivElement);
-    const HostElement = useRef({ Component: () => <div style={{}} ref={hostElementRef} /> });
+    const HostElement = useRef({ Component: () => <div style={{ width: `100%`, height: `100%` }} ref={hostElementRef} /> });
 
     useEffect(() => {
         // if (!hasLoadedScript) {

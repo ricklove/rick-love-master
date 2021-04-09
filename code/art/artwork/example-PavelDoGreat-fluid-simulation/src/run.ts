@@ -81,7 +81,7 @@ export const runFluidSimulator = (host: HTMLDivElement, contentPath: string, sty
 
     console.log(`runFluidSimulator - 02 startGUI`, {});
 
-    startGUI({
+    const gui = startGUI({
         config,
         splatStack,
         initFramebuffers,
@@ -689,6 +689,7 @@ export const runFluidSimulator = (host: HTMLDivElement, contentPath: string, sty
     console.log(`runFluidSimulator - 10 DONE`, {});
     return {
         close: () => {
+            gui.gui.destroy();
             // TODO: You better just refresh!
             console.warn(`Refresh the browser - for real`);
         },

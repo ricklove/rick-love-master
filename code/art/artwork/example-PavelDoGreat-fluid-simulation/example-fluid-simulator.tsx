@@ -23,7 +23,7 @@ From: https://paveldogreat.github.io/WebGL-Fluid-Simulation/`,
     //     tokenId: `91242641486941084018191434774360347389366801368112854311223385694785434025985`,
     // },
     renderArt: (hostElement: HTMLDivElement, hash) => {
-        const result = runFluidSimulator(hostElement, contentPath, { width: `600px`, height: `600px` });
+        const result = runFluidSimulator(hostElement, contentPath, { width: `100%`, height: `100%` });
         return {
             remove: () => result?.close(),
         };

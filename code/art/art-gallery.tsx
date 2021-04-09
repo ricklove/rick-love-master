@@ -1,3 +1,5 @@
+/* eslint-disable jsx-a11y/no-static-element-interactions */
+/* eslint-disable jsx-a11y/click-events-have-key-events */
 import React, { useEffect, useState, useRef } from 'react';
 import { C } from 'controls-react';
 import { useDebounce } from 'utils-react/hooks';
@@ -28,6 +30,7 @@ export const ArtGallery = (props: {}) => {
     const art = useRef(artItems[0]);
     const [showNavigation, setShowNavigation] = useState(true);
     const [tokenId, setTokenId] = useState(`0`);
+    const [isFullScreen, setIsFullScreen] = useState(false);
 
     type ArtRender = {
         kind: 'div';
@@ -109,12 +112,20 @@ export const ArtGallery = (props: {}) => {
 
                 <C.Text_FormTitle style={{ ...theme.text_formTitle, whiteSpace: `pre-wrap` }}>{art.current.title}</C.Text_FormTitle>
                 <C.Text_FormTitle style={{ ...theme.text_formTitle, whiteSpace: `pre-wrap` }}>{art.current.artist}</C.Text_FormTitle>
-                {artRenderer?.kind === `div` && (
-                    <DivHost renderArt={artRenderer.renderArt} openSea={artRenderer.openSea} />
-                )}
-                {artRenderer?.kind === `react` && (
-                    <artRenderer.ArtComponent />
-                )}
+                <div style={isFullScreen ? { position: `fixed`, left: 0, right: 0, top: 0, bottom: 0, background: `#000000` } : { maxWidth: `600px`, maxHeight: `600px` }}>
+                    <div style={{ position: `relative`, width: `100%`, height: `100%` }}>
+                        <>
+                            {artRenderer?.kind === `div` && (
+                                <DivHost renderArt={artRenderer.renderArt} openSea={artRenderer.openSea} />
+                            )}
+                            {artRenderer?.kind === `react` && (
+                                <artRenderer.ArtComponent />
+                            )}
+                            <div style={{ position: `absolute`, top: 4, right: 4, width: 16, height: 16, fontFamily: `monospace`, fontSize: 14, lineHeight: `16px`, textAlign: `center`, color: `#FFFFFF`, background: `#88888888` }}
+                                onClick={() => setIsFullScreen(s => !s)}>{isFullScreen ? `-` : `+`}</div>
+                        </>
+                    </div>
+                </div>
                 {tokenDescription && (<C.Text_FormTitle style={{ ...theme.text_formTitle, background: `#EEEEEE`, padding: 8, whiteSpace: `pre-wrap` }}>{tokenDescription}</C.Text_FormTitle>)}
                 <C.Text_FormTitle style={{ ...theme.text_formTitle, whiteSpace: `pre-wrap` }}>{art.current.description}</C.Text_FormTitle>
             </C.View_Panel>
