@@ -21,13 +21,20 @@ Based on Fluid Simulator by Pavel Dobryakov: https://paveldogreat.github.io/WebG
     //     tokenId: `91242641486941084018191434774360347389366801368112854311223385694785434025985`,
     // },
     renderArt: (hostElement: HTMLDivElement, hash) => {
-        const result = runFluidSimulator(hostElement, contentPath, { width: `100%`, height: `100%` }, { disableGui: false, disableInput: true });
+        const result = runFluidSimulator(hostElement, contentPath, { width: `100%`, height: `100%` }, { disableGui: false, disableInput: true, disableStartupSplats: true });
         if (!result) { return { remove: () => { } }; }
 
         const { config } = result;
+
+        const MOTION_X = -0.1;
+        const VEL_MULT = 0.05;
+        const COLOR_STRENGTH = 0.06;
+
         if (config) {
             // config.SPLAT_RADIUS = 0.001;
-            config.MOTION_X = -0.1;
+            config.MOTION_X = MOTION_X;
+            config.COLORFUL = false;
+            config.CURL = 10;
         }
 
         type Vector2 = { x: number, y: number };
@@ -38,6 +45,7 @@ Based on Fluid Simulator by Pavel Dobryakov: https://paveldogreat.github.io/WebG
             position: Vector2;
             velocity: Vector2;
             size: Vector2;
+            isStill: boolean;
         };
         const state = {
             environment: {
@@ -58,7 +66,11 @@ Based on Fluid Simulator by Pavel Dobryakov: https://paveldogreat.github.io/WebG
                 id: 42,
                 position: { x: 0.25, y: 0.5 },
                 velocity: { x: 0, y: 0 },
-                size: { x: 0.01, y: 0.01 },
+                size: { x: 0.05, y: 0.05 },
+                color: { r: COLOR_STRENGTH, g: COLOR_STRENGTH, b: COLOR_STRENGTH },
+                color1: { r: COLOR_STRENGTH, g: COLOR_STRENGTH, b: COLOR_STRENGTH },
+                color2: { r: COLOR_STRENGTH, g: COLOR_STRENGTH, b: COLOR_STRENGTH },
+                color2Stength: 0.5,
             },
             obstacles: [] as Entity[],
             obstaclesState: {
@@ -68,6 +80,26 @@ Based on Fluid Simulator by Pavel Dobryakov: https://paveldogreat.github.io/WebG
 
         const updatePlayer = () => {
             const { player, environment: { timeDelta, size } } = state;
+
+            // Player color
+            player.color2Stength += timeDelta * 1;
+            if (player.color2Stength > 1) {
+                player.color1 = player.color2;
+                player.color2 = {
+                    r: 1 * COLOR_STRENGTH * 0.5 * Math.random(),
+                    g: 1 * COLOR_STRENGTH * 0.5 * Math.random(),
+                    b: 1 * COLOR_STRENGTH * 0.5 * Math.random(),
+                };
+                player.color2Stength = 0;
+            }
+
+
+            const ratio = player.color2Stength;
+            player.color = {
+                r: (1 - ratio) * player.color1.r + ratio * player.color2.r,
+                g: (1 - ratio) * player.color1.g + ratio * player.color2.g,
+                b: (1 - ratio) * player.color1.b + ratio * player.color2.b,
+            };
 
             // Player motion
             const speedX = 0.9;
@@ -101,7 +133,7 @@ Based on Fluid Simulator by Pavel Dobryakov: https://paveldogreat.github.io/WebG
             if (time > obstaclesState.timeNextObstacle) {
                 obstaclesState.timeNextObstacle = time + 1.5;
 
-                let freeObstacle = obstacles.find(x => x.position.x < 0.25);
+                let freeObstacle = obstacles.find(x => x.position.x < -0.25);
                 if (!freeObstacle) {
                     freeObstacle = {
                         id: obstacles.length + 1000,
@@ -109,18 +141,25 @@ Based on Fluid Simulator by Pavel Dobryakov: https://paveldogreat.github.io/WebG
                         velocity: { x: -0.125, y: 0 },
                         color: { r: 0.01, g: 0, b: 0 },
                         size: { x: 0.5, y: 0.5 },
+                        isStill: false,
                     };
                     // Add an obstacle
                     obstacles.push(freeObstacle);
                 }
 
-                const colorStength = 0.06;
-                freeObstacle.color = { r: colorStength * Math.random(), g: colorStength * Math.random(), b: colorStength * Math.random() };
+                freeObstacle.color = { r: COLOR_STRENGTH * Math.random(), g: COLOR_STRENGTH * Math.random(), b: COLOR_STRENGTH * Math.random() };
                 freeObstacle.position = { x: 1.25, y: Math.random() };
                 freeObstacle.velocity = { x: -0.05 - 0.25 * Math.random(), y: 0.2 + 0.1 - 0.2 * Math.random() };
+                freeObstacle.isStill = Math.random() < 0.1;
+
+                freeObstacle.size = { x: 0.25 + 0.5 * Math.random(), y: 0.25 + 0.5 * Math.random() };
             }
 
             for (const entity of obstacles) {
+                if (entity.isStill) {
+                    entity.velocity = { x: config.MOTION_X, y: config.MOTION_Y };
+                }
+
                 entity.position.x += entity.velocity.x * timeDelta;
                 entity.position.y += entity.velocity.y * timeDelta;
 
@@ -145,7 +184,7 @@ Based on Fluid Simulator by Pavel Dobryakov: https://paveldogreat.github.io/WebG
             updateObstacles();
 
             // Render Player
-            result.splat(player.id, true, player.position.x, player.position.y, 0, 0, player.size);
+            result.splat(player.id, true, player.position.x, player.position.y, VEL_MULT * state.environment.timeDelta * player.velocity.x, VEL_MULT * state.environment.timeDelta * player.velocity.y, player.size, player.color);
 
             // Render Entities
             for (const entity of obstacles) {
@@ -155,7 +194,11 @@ Based on Fluid Simulator by Pavel Dobryakov: https://paveldogreat.github.io/WebG
                     || entity.position.y < -0.25
                     || entity.position.y > 1.25;
 
-                result.splat(entity.id, !isHidden, entity.position.x, entity.position.y, 0, 0, entity.size, entity.color);
+                if (entity.isStill) {
+                    result.splat(entity.id, !isHidden, entity.position.x, entity.position.y, 0, 0, entity.size, entity.color);
+                    return;
+                }
+                result.splat(entity.id, !isHidden, entity.position.x, entity.position.y, VEL_MULT * state.environment.timeDelta * entity.velocity.x, VEL_MULT * state.environment.timeDelta * entity.velocity.y, entity.size, entity.color);
             }
 
             state.environment.tick++;

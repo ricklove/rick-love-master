@@ -13,7 +13,7 @@ import { createShaders } from './shaders';
 // import { setupAppPopup } from './setup-app-popup';
 
 
-export const runFluidSimulator = (host: HTMLDivElement, contentPath: string, style: { width: string, height: string }, options?: { disableGui?: boolean, disableInput?: boolean }) => {
+export const runFluidSimulator = (host: HTMLDivElement, contentPath: string, style: { width: string, height: string }, options?: { disableGui?: boolean, disableInput?: boolean, disableStartupSplats?: boolean }) => {
 
     // setupAppPopup();
 
@@ -259,7 +259,9 @@ export const runFluidSimulator = (host: HTMLDivElement, contentPath: string, sty
     initFramebuffers();
 
     console.log(`runFluidSimulator - 07 multipleSplats`, {});
-    multipleSplats(randomIntRange(5, 25));
+    if (!options?.disableStartupSplats) {
+        multipleSplats(randomIntRange(5, 25));
+    }
 
     function update() {
         // console.log(`runFluidSimulator.update START`, {});
@@ -440,10 +442,10 @@ export const runFluidSimulator = (host: HTMLDivElement, contentPath: string, sty
     let testCount = 0;
     const getTestMaterials = () => [
         dye.read,
-        // velocity.read,
-        divergence,
+        velocity.read,
+        // divergence,
         // curl,
-        pressure.read,
+        // pressure.read,
         // bloom,
         // ditheringTexture,
         // sunrays,
