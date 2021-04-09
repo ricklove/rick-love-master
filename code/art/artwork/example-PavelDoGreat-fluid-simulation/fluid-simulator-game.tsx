@@ -27,6 +27,7 @@ Based on Fluid Simulator by Pavel Dobryakov: https://paveldogreat.github.io/WebG
         const { config } = result;
         if (config) {
             config.SPLAT_RADIUS = 0.001;
+            config.MOTION_X = 0.01;
         }
 
         const state = {

@@ -26,6 +26,9 @@ export const createConfig = () => ({
     SUNRAYS: true,
     SUNRAYS_RESOLUTION: 196,
     SUNRAYS_WEIGHT: 1,
+
+    MOTION_X: 0,
+    MOTION_Y: 0,
 });
 
 // Simple

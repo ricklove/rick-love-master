@@ -111,7 +111,7 @@ export const runFluidSimulator = (host: HTMLDivElement, contentPath: string, sty
     const curlProgram = new ShaderProgram(shaderFactory, shaders.baseVertexShader, shaders.curlShader);
     const vorticityProgram = new ShaderProgram(shaderFactory, shaders.baseVertexShader, shaders.vorticityShader);
     const pressureProgram = new ShaderProgram(shaderFactory, shaders.baseVertexShader, shaders.pressureShader);
-    const gradienSubtractProgram = new ShaderProgram(shaderFactory, shaders.baseVertexShader, shaders.gradientSubtractShader);
+    const gradientSubtractProgram = new ShaderProgram(shaderFactory, shaders.baseVertexShader, shaders.gradientSubtractShader);
     const displayMaterial = new ShaderMaterial(shaderFactory, shaders.baseVertexShader, shaders.displayShaderSource);
 
     const {
@@ -368,10 +368,10 @@ export const runFluidSimulator = (host: HTMLDivElement, contentPath: string, sty
         }
 
         // Apply pressure gradient as a force to velocity
-        gradienSubtractProgram.bind();
-        gl.uniform2f(gradienSubtractProgram.uniforms.texelSize, velocity.texelSizeX, velocity.texelSizeY);
-        gl.uniform1i(gradienSubtractProgram.uniforms.uPressure, pressure.read.attach(0));
-        gl.uniform1i(gradienSubtractProgram.uniforms.uVelocity, velocity.read.attach(1));
+        gradientSubtractProgram.bind();
+        gl.uniform2f(gradientSubtractProgram.uniforms.texelSize, velocity.texelSizeX, velocity.texelSizeY);
+        gl.uniform1i(gradientSubtractProgram.uniforms.uPressure, pressure.read.attach(0));
+        gl.uniform1i(gradientSubtractProgram.uniforms.uVelocity, velocity.read.attach(1));
         blit(velocity.write);
         velocity.swap();
 
