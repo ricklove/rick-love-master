@@ -84,10 +84,15 @@ export type DoubleFrameBufferObject = ReturnType<FrameBufferFactory['createDoubl
 export const createFrameBufferUtils = ({ gl }: WebGlSystem) => {
 
     const createBlit = () => {
+        // 4 2d-coords: [0](-1,-1) [1](-1,1) [2](1,1) [3](1,-1)
         gl.bindBuffer(gl.ARRAY_BUFFER, gl.createBuffer());
         gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([-1, -1, -1, 1, 1, 1, 1, -1]), gl.STATIC_DRAW);
+
+        // 6 points (2 triangles) => [0,1,2] [0,2,3]
         gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, gl.createBuffer());
         gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, new Uint16Array([0, 1, 2, 0, 2, 3]), gl.STATIC_DRAW);
+
+        // coords = size 2, floats, no norm, stride, or offset
         gl.vertexAttribPointer(0, 2, gl.FLOAT, false, 0, 0);
         gl.enableVertexAttribArray(0);
 
@@ -107,6 +112,8 @@ export const createFrameBufferUtils = ({ gl }: WebGlSystem) => {
                 gl.clear(gl.COLOR_BUFFER_BIT);
             }
             // CHECK_FRAMEBUFFER_STATUS();
+
+            // 2 Triangles (6 points)
             gl.drawElements(gl.TRIANGLES, 6, gl.UNSIGNED_SHORT, 0);
         };
     };

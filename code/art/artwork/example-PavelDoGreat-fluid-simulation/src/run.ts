@@ -327,11 +327,13 @@ export const runFluidSimulator = (host: HTMLDivElement, contentPath: string, sty
     function step(dt: number) {
         gl.disable(gl.BLEND);
 
+        // Calculate curl strength (based on cross-velocity gradient)
         curlProgram.bind();
         gl.uniform2f(curlProgram.uniforms.texelSize, velocity.texelSizeX, velocity.texelSizeY);
         gl.uniform1i(curlProgram.uniforms.uVelocity, velocity.read.attach(0));
         blit(curl);
 
+        // Apply a vortex acceleration to velocity (based on curl strength)
         vorticityProgram.bind();
         gl.uniform2f(vorticityProgram.uniforms.texelSize, velocity.texelSizeX, velocity.texelSizeY);
         gl.uniform1i(vorticityProgram.uniforms.uVelocity, velocity.read.attach(0));
@@ -341,17 +343,20 @@ export const runFluidSimulator = (host: HTMLDivElement, contentPath: string, sty
         blit(velocity.write);
         velocity.swap();
 
+        // Calculate divergence strength (based on parallel-velocity gradient)
         divergenceProgram.bind();
         gl.uniform2f(divergenceProgram.uniforms.texelSize, velocity.texelSizeX, velocity.texelSizeY);
         gl.uniform1i(divergenceProgram.uniforms.uVelocity, velocity.read.attach(0));
         blit(divergence);
 
+        // Dilute last pressure
         clearProgram.bind();
         gl.uniform1i(clearProgram.uniforms.uTexture, pressure.read.attach(0));
         gl.uniform1f(clearProgram.uniforms.value, config.PRESSURE);
         blit(pressure.write);
         pressure.swap();
 
+        // Distribute pressure over N iterations based on divergence
         pressureProgram.bind();
         gl.uniform2f(pressureProgram.uniforms.texelSize, velocity.texelSizeX, velocity.texelSizeY);
         gl.uniform1i(pressureProgram.uniforms.uDivergence, divergence.attach(0));
@@ -361,6 +366,7 @@ export const runFluidSimulator = (host: HTMLDivElement, contentPath: string, sty
             pressure.swap();
         }
 
+        // Apply pressure gradient as a force to velocity
         gradienSubtractProgram.bind();
         gl.uniform2f(gradienSubtractProgram.uniforms.texelSize, velocity.texelSizeX, velocity.texelSizeY);
         gl.uniform1i(gradienSubtractProgram.uniforms.uPressure, pressure.read.attach(0));
@@ -368,6 +374,7 @@ export const runFluidSimulator = (host: HTMLDivElement, contentPath: string, sty
         blit(velocity.write);
         velocity.swap();
 
+        // Move the velocity position (based on the velocity)
         advectionProgram.bind();
         gl.uniform2f(advectionProgram.uniforms.texelSize, velocity.texelSizeX, velocity.texelSizeY);
         if (!ext.supportLinearFiltering)
@@ -380,6 +387,7 @@ export const runFluidSimulator = (host: HTMLDivElement, contentPath: string, sty
         blit(velocity.write);
         velocity.swap();
 
+        // Move the dye position (based on the velocity)
         if (!ext.supportLinearFiltering)
             gl.uniform2f(advectionProgram.uniforms.dyeTexelSize, dye.texelSizeX, dye.texelSizeY);
         gl.uniform1i(advectionProgram.uniforms.uVelocity, velocity.read.attach(0));
@@ -429,10 +437,10 @@ export const runFluidSimulator = (host: HTMLDivElement, contentPath: string, sty
     const getTestMaterials = () => [
         dye.read,
         // velocity.read,
-        // divergence,
+        divergence,
         // curl,
-        // pressure.read,
-        bloom,
+        pressure.read,
+        // bloom,
         // ditheringTexture,
         // sunrays,
         // sunraysTemp,
@@ -446,7 +454,7 @@ export const runFluidSimulator = (host: HTMLDivElement, contentPath: string, sty
         if (TESTING) {
             displayMaterial.bind();
             const tMats = getTestMaterials();
-            const tMat = tMats[Math.floor(testCount / 10) % tMats.length];
+            const tMat = tMats[Math.floor(testCount / 100) % tMats.length];
             gl.uniform1i(displayMaterial.uniforms.uTexture, tMat.attach(0));
             blit(target);
             testCount++;

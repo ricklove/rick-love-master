@@ -308,6 +308,8 @@ export const createShaders = ({ gl, ext, compileShader }: ShaderFactory) => {
     }
 `),
 
+        // Based on the center velocity, grab the value that would move to this position (as if the velocity is sucking that value into this position) 
+        // Also to linear interpolation of that value between the points
         advectionShader: compileShader(gl.FRAGMENT_SHADER, `
     precision highp float;
     precision highp sampler2D;
