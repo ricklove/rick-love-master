@@ -40,6 +40,7 @@ export const runFluidSimulator = (host: HTMLDivElement, contentPath: string, sty
         down = false;
         moved = false;
         color = { r: 30, g: 0, b: 300 };
+        size = undefined as undefined | { x: number, y: number };
         p = { r: 0, g: 0, b: 0 };
     }
     type PointerEntityType = PointerEntity;
@@ -385,6 +386,7 @@ export const runFluidSimulator = (host: HTMLDivElement, contentPath: string, sty
         gl.uniform1i(advectionProgram.uniforms.uSource, velocityId);
         gl.uniform1f(advectionProgram.uniforms.dt, dt);
         gl.uniform1f(advectionProgram.uniforms.dissipation, config.VELOCITY_DISSIPATION);
+        gl.uniform2f(advectionProgram.uniforms.motion, config.MOTION_X, config.MOTION_Y);
         blit(velocity.write);
         velocity.swap();
 
@@ -394,6 +396,7 @@ export const runFluidSimulator = (host: HTMLDivElement, contentPath: string, sty
         gl.uniform1i(advectionProgram.uniforms.uVelocity, velocity.read.attach(0));
         gl.uniform1i(advectionProgram.uniforms.uSource, dye.read.attach(1));
         gl.uniform1f(advectionProgram.uniforms.dissipation, config.DENSITY_DISSIPATION);
+        gl.uniform2f(advectionProgram.uniforms.motion, config.MOTION_X, config.MOTION_Y);
         blit(dye.write);
         dye.swap();
     }
@@ -551,7 +554,7 @@ export const runFluidSimulator = (host: HTMLDivElement, contentPath: string, sty
         const dx = pointer.deltaX * config.SPLAT_FORCE;
         const dy = pointer.deltaY * config.SPLAT_FORCE;
         // const dy = -10;
-        splat(pointer.texcoordX, pointer.texcoordY, dx, dy, pointer.color);
+        splat(pointer.texcoordX, pointer.texcoordY, dx, dy, pointer.color, pointer.size);
     }
 
     function multipleSplats(amount: number) {
@@ -568,7 +571,7 @@ export const runFluidSimulator = (host: HTMLDivElement, contentPath: string, sty
         }
     }
 
-    function splat(x: number, y: number, dx: number, dy: number, color: ColorRgb) {
+    function splat(x: number, y: number, dx: number, dy: number, color: ColorRgb, size?: { x: number, y: number }) {
         // console.log(`splat`, { x, y, dx, dy, color });
 
         splatProgram.bind();
@@ -576,7 +579,7 @@ export const runFluidSimulator = (host: HTMLDivElement, contentPath: string, sty
         gl.uniform1f(splatProgram.uniforms.aspectRatio, canvas.width / canvas.height);
         gl.uniform2f(splatProgram.uniforms.point, x, y);
         gl.uniform3f(splatProgram.uniforms.color, dx, dy, 0);
-        gl.uniform1f(splatProgram.uniforms.radius, correctRadius(config.SPLAT_RADIUS / 100));
+        gl.uniform1f(splatProgram.uniforms.radius, correctRadius((size?.x ?? (config.SPLAT_RADIUS * 2)) * 0.5 / 100));
         blit(velocity.write);
         velocity.swap();
 
@@ -723,13 +726,17 @@ export const runFluidSimulator = (host: HTMLDivElement, contentPath: string, sty
             height: canvas.height,
         }),
         config,
-        splat: (id: number, active: boolean, x: number, y: number, dx: number, dy: number, color?: ColorRgb) => {
+        splat: (id: number, active: boolean, x: number, y: number, dx: number, dy: number, size?: { x: number, y: number }, color?: ColorRgb) => {
             let p = pointerMap.get(id);
             if (!p) {
                 p = new PointerEntity();
+                pointerMap.set(id, p);
                 pointers.push(p);
                 p.id = id;
+                console.log(`splat - new`, { id, active, x, y });
             }
+            console.log(`splat`, { id, color, active, x, y });
+
 
             p.down = active;
             p.moved = active;
@@ -740,6 +747,7 @@ export const runFluidSimulator = (host: HTMLDivElement, contentPath: string, sty
             p.deltaX = correctDeltaX(p.texcoordX - p.prevTexcoordX, canvas);
             p.deltaY = correctDeltaY(p.texcoordY - p.prevTexcoordY, canvas);
             p.color = color ?? generateColor();
+            p.size = size;
         },
         close: () => {
             gui?.gui?.destroy();

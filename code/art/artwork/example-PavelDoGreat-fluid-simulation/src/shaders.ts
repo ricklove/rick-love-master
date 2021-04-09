@@ -321,6 +321,7 @@ export const createShaders = ({ gl, ext, compileShader }: ShaderFactory) => {
     uniform vec2 dyeTexelSize;
     uniform float dt;
     uniform float dissipation;
+    uniform vec2 motion;
 
     vec4 bilerp (sampler2D sam, vec2 uv, vec2 tsize) {
         vec2 st = uv / tsize - 0.5;
@@ -338,10 +339,10 @@ export const createShaders = ({ gl, ext, compileShader }: ShaderFactory) => {
 
     void main () {
     #ifdef MANUAL_FILTERING
-        vec2 coord = vUv - dt * bilerp(uVelocity, vUv, texelSize).xy * texelSize;
+        vec2 coord = vUv - dt * bilerp(uVelocity, vUv, texelSize).xy * texelSize - dt * motion;
         vec4 result = bilerp(uSource, coord, dyeTexelSize);
     #else
-        vec2 coord = vUv - dt * texture2D(uVelocity, vUv).xy * texelSize;
+        vec2 coord = vUv - dt * texture2D(uVelocity, vUv).xy * texelSize - dt * motion;
         vec4 result = texture2D(uSource, coord);
     #endif
         float decay = 1.0 + dissipation * dt;

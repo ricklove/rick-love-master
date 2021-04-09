@@ -26,56 +26,141 @@ Based on Fluid Simulator by Pavel Dobryakov: https://paveldogreat.github.io/WebG
 
         const { config } = result;
         if (config) {
-            config.SPLAT_RADIUS = 0.001;
-            config.MOTION_X = 0.01;
+            // config.SPLAT_RADIUS = 0.001;
+            config.MOTION_X = -0.1;
         }
 
+        type Vector2 = { x: number, y: number };
+        type ColorRgb = { r: number, g: number, b: number };
+        type Entity = {
+            id: number;
+            color: ColorRgb;
+            position: Vector2;
+            velocity: Vector2;
+            size: Vector2;
+        };
         const state = {
-            tick: 0,
+            environment: {
+                time: 0,
+                timeLast: Date.now(),
+                timeMsStart: Date.now(),
+                timeDelta: 0,
+                tick: 0,
+                size: { x: 600, y: 600 },
+            },
             input: {
                 u: false,
                 d: false,
                 l: false,
                 r: false,
             },
-            playerEntity: {
+            player: {
                 id: 42,
-                position: { x: 0, y: 0 },
+                position: { x: 0.25, y: 0.5 },
                 velocity: { x: 0, y: 0 },
+                size: { x: 0.01, y: 0.01 },
             },
-            entities: [],
+            obstacles: [] as Entity[],
+            obstaclesState: {
+                timeNextObstacle: 1,
+            },
         };
 
-        const intervalId = setInterval(() => {
-            // result?.splat(state.position.x, state.position.y, 0, 0, { r: 0.001, g: 0.001, b: 0.001 });
-            const player = state.playerEntity;
-            result.splat(player.id, true, player.position.x, player.position.y, 0, 0);
+        const updatePlayer = () => {
+            const { player, environment: { timeDelta, size } } = state;
 
-            const size = result.getSize();
-            const speedX = 0.00005;
-            const speedY = speedX * size.width / size.height;
+            // Player motion
+            const speedX = 0.9;
+            const speedY = speedX * size.x / size.y;
             player.velocity = {
-                x: player.velocity.x + (state.input.l ? -speedX : state.input.r ? speedX : 0),
-                y: player.velocity.y + (state.input.d ? -speedY : state.input.u ? speedY : 0),
+                x: player.velocity.x + timeDelta * (state.input.l ? -speedX : state.input.r ? speedX : 0),
+                y: player.velocity.y + timeDelta * (state.input.d ? -speedY : state.input.u ? speedY : 0),
             };
-            player.position.x += player.velocity.x;
-            player.position.y += player.velocity.y;
+
+            player.position.x += timeDelta * player.velocity.x;
+            player.position.y += timeDelta * player.velocity.y;
 
             // Dampening
-            player.velocity.x *= 0.99;
-            player.velocity.y *= 0.99;
+            player.velocity.x *= 1 - (0.5 * timeDelta);
+            player.velocity.y *= 1 - (0.5 * timeDelta);
 
             // Gravity
-            player.velocity.y -= 0.00004;
+            player.velocity.y -= timeDelta * 0.4;
 
             // Boundaries
-            if (player.position.x < 0) { player.position.x = 0; }
-            if (player.position.x > 1) { player.position.x = 1; }
-            if (player.position.y < 0) { player.position.y = 0; }
-            if (player.position.y > 1) { player.position.y = 1; }
+            if (player.position.x < 0) { player.position.x = 0; player.velocity.x = 0; }
+            if (player.position.x > 1) { player.position.x = 1; player.velocity.x = 0; }
+            if (player.position.y < 0) { player.position.y = 0; player.velocity.y = 0; }
+            if (player.position.y > 1) { player.position.y = 1; player.velocity.y = 0; }
+        };
 
-            state.tick++;
-        }, 10);
+        const updateObstacles = () => {
+            const { obstacles, obstaclesState, environment: { time, timeDelta } } = state;
+
+
+            if (time > obstaclesState.timeNextObstacle) {
+                obstaclesState.timeNextObstacle = time + 1.5;
+
+                let freeObstacle = obstacles.find(x => x.position.x < 0.25);
+                if (!freeObstacle) {
+                    freeObstacle = {
+                        id: obstacles.length + 1000,
+                        position: { x: 1.25, y: 0.1 },
+                        velocity: { x: -0.125, y: 0 },
+                        color: { r: 0.01, g: 0, b: 0 },
+                        size: { x: 0.5, y: 0.5 },
+                    };
+                    // Add an obstacle
+                    obstacles.push(freeObstacle);
+                }
+
+                const colorStength = 0.06;
+                freeObstacle.color = { r: colorStength * Math.random(), g: colorStength * Math.random(), b: colorStength * Math.random() };
+                freeObstacle.position = { x: 1.25, y: Math.random() };
+                freeObstacle.velocity = { x: -0.05 - 0.25 * Math.random(), y: 0.2 + 0.1 - 0.2 * Math.random() };
+            }
+
+            for (const entity of obstacles) {
+                entity.position.x += entity.velocity.x * timeDelta;
+                entity.position.y += entity.velocity.y * timeDelta;
+
+                // Gravity
+                entity.velocity.y -= timeDelta * 0.1;
+            }
+
+        };
+
+        const tickTimeMs = 16;
+        const intervalId = setInterval(() => {
+            const size = result.getSize();
+            state.environment.size = { x: size.width, y: size.height };
+            state.environment.timeLast = state.environment.time;
+            state.environment.time = 0.001 * (Date.now() - state.environment.timeMsStart);
+            state.environment.timeDelta = Math.max(tickTimeMs * 0.001 * 0.5, (state.environment.time - state.environment.timeLast));
+            // console.log(`gameInverval`, { environment: state.environment });
+
+            const { player, obstacles } = state;
+
+            updatePlayer();
+            updateObstacles();
+
+            // Render Player
+            result.splat(player.id, true, player.position.x, player.position.y, 0, 0, player.size);
+
+            // Render Entities
+            for (const entity of obstacles) {
+
+                const isHidden = entity.position.x < -0.25
+                    || entity.position.x > 1.25
+                    || entity.position.y < -0.25
+                    || entity.position.y > 1.25;
+
+                result.splat(entity.id, !isHidden, entity.position.x, entity.position.y, 0, 0, entity.size, entity.color);
+            }
+
+            state.environment.tick++;
+
+        }, tickTimeMs);
 
         const windowSubs = [] as { name: string, handler: () => void }[];
         const windowAddEventListener = ((name: string, handler: () => void) => {
