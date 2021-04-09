@@ -25,7 +25,7 @@ float random(inout float r)
 void main() {
 
     vec2 st = gl_FragCoord.xy / u_resolution.xy;
-    float r = fract(u_mouse.x / 1000.0);
+    float r = fract(u_mouse.x / 1000.0) + fract(u_mouse.y * 10.0);
     // float r = fract(u_seed);
 
     random(r);
@@ -42,7 +42,20 @@ void main() {
             st.x * cosAngle + st.y * sinAngle,
             st.y * cosAngle + st.x * sinAngle);
 
-        vec3 c0 = vec3(random(r), random(r), random(r));
+        // Color - constant
+        // vec3 c0 = vec3(random(r), random(r), random(r));
+
+        // Color - random
+        // float c1 = 0.5 + 0.5 * random(r) * sin((st2.x * random(r) + u_time * random(r) / (0.3 + random(r))));
+        // float c2 = 0.5 + 0.5 * random(r) * sin((st2.x * random(r) + u_time * random(r) / (0.3 + random(r))));
+        // float c3 = 0.5 + 0.5 * random(r) * sin((st2.x * random(r) + u_time * random(r) / (0.3 + random(r))));
+        // vec3 c0 = vec3(c1, c2, c3);
+        
+        // Color - constant with random brightness
+        float c1 = 0.8 + 0.2 * random(r) * sin((st2.x * random(r) + u_time * random(r) / (0.3 + random(r))));
+        vec3 c0 = c1 * vec3(random(r), random(r), random(r));
+
+        // Position and strength
         float y0 = 0.5 + 0.5 * random(r) * sin((st2.x * random(r) + u_time * random(r) / (0.3 + random(r))));
         float s1 = 0.5 + 0.5 * random(r) * sin((st2.x * random(r) + u_time * random(r) / (0.3 + random(r))));
         float s2 = 0.5 + 0.5 * random(r) * sin((st2.x * random(r) + u_time * random(r) / (0.3 + random(r))));
