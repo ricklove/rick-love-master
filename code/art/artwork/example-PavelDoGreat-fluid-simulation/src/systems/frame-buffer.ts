@@ -92,6 +92,8 @@ export const createFrameBufferUtils = ({ gl }: WebGlSystem) => {
         gl.enableVertexAttribArray(0);
 
         return (target: null | FrameBufferObject, clear = false) => {
+            // console.log(`blit`, { target, clear });
+
             if (target == null) {
                 gl.viewport(0, 0, gl.drawingBufferWidth, gl.drawingBufferHeight);
                 gl.bindFramebuffer(gl.FRAMEBUFFER, null);

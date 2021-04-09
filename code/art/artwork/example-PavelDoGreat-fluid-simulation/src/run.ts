@@ -13,7 +13,7 @@ import { createShaders } from './shaders';
 // import { setupAppPopup } from './setup-app-popup';
 
 
-export const runFluidSimulator = (host: HTMLDivElement, style: { width: string, height: string }): null | { close: () => void } => {
+export const runFluidSimulator = (host: HTMLDivElement, contentPath: string, style: { width: string, height: string }): null | { close: () => void } => {
 
     // setupAppPopup();
 
@@ -47,10 +47,12 @@ export const runFluidSimulator = (host: HTMLDivElement, style: { width: string, 
     const splatStack = [] as number[];
     pointers.push(new PointerEntity());
 
+    console.log(`runFluidSimulator - 01 getWebGLSystem`, {});
     const webGlSystem = getWebGLSystem(canvas);
     if (!webGlSystem) { return null; }
 
     const { gl, ext } = webGlSystem;
+    console.log(`runFluidSimulator - 01B getWebGLSystem`, { gl, ext });
 
     const frameBufferFactory = createFrameBufferFactory(webGlSystem);
     const {
@@ -58,9 +60,6 @@ export const runFluidSimulator = (host: HTMLDivElement, style: { width: string, 
         createDoubleFrameBufferObject,
     } = frameBufferFactory;
 
-    const {
-        blit,
-    } = createFrameBufferUtils(webGlSystem);
 
     const {
         captureScreenshot,
@@ -80,6 +79,8 @@ export const runFluidSimulator = (host: HTMLDivElement, style: { width: string, 
         config.SUNRAYS = false;
     }
 
+    console.log(`runFluidSimulator - 02 startGUI`, {});
+
     startGUI({
         config,
         splatStack,
@@ -88,8 +89,10 @@ export const runFluidSimulator = (host: HTMLDivElement, style: { width: string, 
         captureScreenshot: () => captureScreenshot(render, { resolution: config.CAPTURE_RESOLUTION }),
     });
 
-    const ditheringTexture = createTextureAsync(`LDR_LLL1_0.png`);
+    console.log(`runFluidSimulator - 03 ditheringTexture`, { url: `${contentPath}/LDR_LLL1_0.png` });
+    const ditheringTexture = createTextureAsync(`${contentPath}/LDR_LLL1_0.png`);
 
+    console.log(`runFluidSimulator - 04 createShaders`, {});
     const shaders = createShaders(shaderFactory);
     const blurProgram = new ShaderProgram(shaderFactory, shaders.blurVertexShader, shaders.blurShader);
     const copyProgram = new ShaderProgram(shaderFactory, shaders.baseVertexShader, shaders.copyShader);
@@ -109,6 +112,10 @@ export const runFluidSimulator = (host: HTMLDivElement, style: { width: string, 
     const pressureProgram = new ShaderProgram(shaderFactory, shaders.baseVertexShader, shaders.pressureShader);
     const gradienSubtractProgram = new ShaderProgram(shaderFactory, shaders.baseVertexShader, shaders.gradientSubtractShader);
     const displayMaterial = new ShaderMaterial(shaderFactory, shaders.baseVertexShader, shaders.displayShaderSource);
+
+    const {
+        blit,
+    } = createFrameBufferUtils(webGlSystem);
 
     let dye: DoubleFrameBufferObject;
     let velocity: DoubleFrameBufferObject;
@@ -243,13 +250,21 @@ export const runFluidSimulator = (host: HTMLDivElement, style: { width: string, 
         displayMaterial.setKeywords(displayKeywords);
     }
 
+    console.log(`runFluidSimulator - 05 updateKeywords`, {});
     updateKeywords();
+
+    console.log(`runFluidSimulator - 06 initFramebuffers`, {});
     initFramebuffers();
+
+    console.log(`runFluidSimulator - 07 multipleSplats`, {});
     multipleSplats(randomIntRange(5, 25));
 
+    console.log(`runFluidSimulator - 08 update Start Loop`, {});
     update();
 
     function update() {
+        // console.log(`runFluidSimulator.update START`, {});
+
         const dt = calcDeltaTime();
         if (resizeCanvas())
             initFramebuffers();
@@ -295,8 +310,11 @@ export const runFluidSimulator = (host: HTMLDivElement, style: { width: string, 
     }
 
     function applyInputs() {
+
         const lastSplat = splatStack.pop();
-        if (lastSplat) {
+        if (lastSplat != null) {
+            console.log(`applyInputs: lastSplat`, { lastSplat, splatStack, pointers });
+
             multipleSplats(lastSplat);
         }
 
@@ -306,6 +324,7 @@ export const runFluidSimulator = (host: HTMLDivElement, style: { width: string, 
                 splatPointer(p);
             }
         });
+
     }
 
     function step(dt: number) {
@@ -409,6 +428,8 @@ export const runFluidSimulator = (host: HTMLDivElement, style: { width: string, 
     }
 
     function drawDisplay(target: null | FrameBufferObject) {
+        // console.log(`drawDisplay`, { target });
+
         const width = target == null ? gl.drawingBufferWidth : target.width;
         const height = target == null ? gl.drawingBufferHeight : target.height;
 
@@ -518,6 +539,8 @@ export const runFluidSimulator = (host: HTMLDivElement, style: { width: string, 
     }
 
     function splat(x: number, y: number, dx: number, dy: number, color: ColorRgb) {
+        console.log(`splat`, { x, y, dx, dy, color });
+
         splatProgram.bind();
         gl.uniform1i(splatProgram.uniforms.uTarget, velocity.read.attach(0));
         gl.uniform1f(splatProgram.uniforms.aspectRatio, canvas.width / canvas.height);
@@ -539,6 +562,8 @@ export const runFluidSimulator = (host: HTMLDivElement, style: { width: string, 
             radius *= aspectRatio;
         return radius;
     }
+
+    console.log(`runFluidSimulator - 09 addEventListeners`, {});
 
     canvas.addEventListener(`mousedown`, e => {
         const posX = scaleByPixelRatio(e.offsetX);
@@ -612,6 +637,8 @@ export const runFluidSimulator = (host: HTMLDivElement, style: { width: string, 
         pointer.deltaX = 0;
         pointer.deltaY = 0;
         pointer.color = generateColor();
+
+        // console.log(`updatePointerDownData`, { pointer });
     }
 
     function updatePointerMoveData(pointer: PointerEntity, posX: number, posY: number) {
@@ -628,6 +655,7 @@ export const runFluidSimulator = (host: HTMLDivElement, style: { width: string, 
         pointer.down = false;
     }
 
+    console.log(`runFluidSimulator - 10 DONE`, {});
     return {
         close: () => {
             // TODO: You better just refresh!

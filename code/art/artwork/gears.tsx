@@ -1,7 +1,6 @@
 /* eslint-disable new-cap */
 /* eslint-disable no-new */
 import p5 from 'p5';
-import 'p5/lib/addons/p5.sound';
 import { createRandomGenerator } from '../rando';
 import { ArtWork } from '../artwork-type';
 
@@ -171,6 +170,8 @@ export const art_gears: ArtWork = {
         return null;
     },
     renderArt: (hostElement: HTMLElement, hash = `This is my hash!`) => {
+        (async () => await import(`p5/lib/addons/p5.sound`))();
+
         const { random: randomMain } = createRandomGenerator(hash);
 
         let tick = 0;
