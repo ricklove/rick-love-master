@@ -259,9 +259,6 @@ export const runFluidSimulator = (host: HTMLDivElement, contentPath: string, sty
     console.log(`runFluidSimulator - 07 multipleSplats`, {});
     multipleSplats(randomIntRange(5, 25));
 
-    console.log(`runFluidSimulator - 08 update Start Loop`, {});
-    update();
-
     function update() {
         // console.log(`runFluidSimulator.update START`, {});
 
@@ -563,7 +560,7 @@ export const runFluidSimulator = (host: HTMLDivElement, contentPath: string, sty
         return radius;
     }
 
-    console.log(`runFluidSimulator - 09 addEventListeners`, {});
+    console.log(`runFluidSimulator - 08 addEventListeners`, {});
 
     canvas.addEventListener(`mousedown`, e => {
         const posX = scaleByPixelRatio(e.offsetX);
@@ -654,6 +651,9 @@ export const runFluidSimulator = (host: HTMLDivElement, contentPath: string, sty
     function updatePointerUpData(pointer: PointerEntity) {
         pointer.down = false;
     }
+
+    console.log(`runFluidSimulator - 09 update Start Loop`, {});
+    update();
 
     console.log(`runFluidSimulator - 10 DONE`, {});
     return {
