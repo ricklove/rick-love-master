@@ -4,8 +4,10 @@ import { isMobile } from './utils';
 export const setupAppPopup = () => {
     // Mobile promo section
 
-    const promoPopup = document.querySelectorAll(`.promo`)[0] as HTMLDivElement;
-    const promoPopupClose = document.querySelectorAll(`.promo-close`)[0] as HTMLDivElement;
+    const promoPopup = document.querySelectorAll(`.promo`)?.[0] as HTMLDivElement;
+    const promoPopupClose = document.querySelectorAll(`.promo-close`)?.[0] as HTMLDivElement;
+
+    if (!promoPopup) { return; }
 
     if (isMobile()) {
         setTimeout(() => {

@@ -8,5 +8,6 @@ export type ArtWork = {
         tokenId: string;
     };
     getTokenDescription: (tokenId: string) => null | string;
-    renderArt: (hostElement: HTMLElement, hash: string) => { remove: () => void };
+    renderArt?: (hostElement: HTMLDivElement, hash: string) => { remove: () => void };
+    ArtComponent?: (props: { hash: string }) => JSX.Element;
 };

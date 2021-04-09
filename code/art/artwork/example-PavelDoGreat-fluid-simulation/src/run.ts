@@ -13,14 +13,19 @@ import { createShaders } from './shaders';
 // import { setupAppPopup } from './setup-app-popup';
 
 
-export const setup = () => {
+export const runFluidSimulator = (host: HTMLDivElement, style: { width: string, height: string }): null | { close: () => void } => {
 
     // setupAppPopup();
 
     // Simulation section
 
     // Setup ---
-    const canvas = document.querySelectorAll(`canvas`)[0] as HTMLCanvasElement;
+    // const canvas = document.querySelectorAll(`canvas`)[0] as HTMLCanvasElement;
+    const canvas = document.createElement(`canvas`);
+    canvas.style.width = style.width;
+    canvas.style.height = style.height;
+    host.append(canvas);
+
     resizeCanvas();
 
 
@@ -43,7 +48,7 @@ export const setup = () => {
     pointers.push(new PointerEntity());
 
     const webGlSystem = getWebGLSystem(canvas);
-    if (!webGlSystem) { return; }
+    if (!webGlSystem) { return null; }
 
     const { gl, ext } = webGlSystem;
 
@@ -623,4 +628,10 @@ export const setup = () => {
         pointer.down = false;
     }
 
+    return {
+        close: () => {
+            // TODO: You better just refresh!
+            console.warn(`Refresh the browser - for real`);
+        },
+    };
 };

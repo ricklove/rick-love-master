@@ -5,15 +5,17 @@ import { theme } from 'themes/theme';
 import { art_circles } from './artwork/circles';
 import { art_layersOfTheOnionsSoul } from './artwork/layers-of-the-onions-soul';
 import { art_121 } from './artwork/art-121';
-import { P5Viewer } from './p5-viewer';
+import { DivHost } from './div-host';
 import { art_puzzle01 } from './artwork/puzzle/art-puzzle-01';
 import { art_gears } from './artwork/gears';
 import { ArtWork } from './artwork-type';
 import { art_gpu_01 } from './artwork/gpu-01/gpu-01';
 import { art_flyingColors } from './artwork/flying-colors/flying-colors';
+import { art_exampleFluidSimulator } from './artwork/example-PavelDoGreat-fluid-simulation/example-fluid-simulator';
 
 export const ArtGallery = (props: {}) => {
     const artItems: ArtWork[] = [
+        art_exampleFluidSimulator,
         art_flyingColors,
         art_gpu_01,
         art_gears,
@@ -28,7 +30,7 @@ export const ArtGallery = (props: {}) => {
     const [tokenId, setTokenId] = useState(`0`);
 
     type ArtRender = {
-        kind: 'p5';
+        kind: 'div';
         renderArt: (hostElement: HTMLDivElement) => { remove: () => void };
         openSea?: ArtWork['openSea'];
     } | {
@@ -36,10 +38,7 @@ export const ArtGallery = (props: {}) => {
         ArtComponent: () => JSX.Element;
         openSea?: ArtWork['openSea'];
     };
-    const [artRenderer, setArtRenderer] = useState({
-        kind: `p5`,
-        renderArt: () => { return { remove: () => { } }; },
-    } as ArtRender);
+    const [artRenderer, setArtRenderer] = useState(null as null | ArtRender);
     const [tokenDescription, setTokenDescription] = useState(null as null | string);
 
     const { debounce } = useDebounce(250);
@@ -64,15 +63,27 @@ export const ArtGallery = (props: {}) => {
     };
 
     const changeTokenId = (value: string) => {
+        console.log(`changeTokenId`, { value });
+
         setTokenId(value);
 
         debounce(() => {
+            console.log(`changeTokenId debounce`, { value });
             setTokenDescription(art.current.getTokenDescription(value));
-            setArtRenderer({
-                kind: `p5`,
-                renderArt: (hostElement) => art.current.renderArt(hostElement, value),
-                openSea: art.current.openSea,
-            });
+            const { renderArt, ArtComponent } = art.current;
+            if (renderArt) {
+                setArtRenderer({
+                    kind: `div`,
+                    renderArt: (hostElement) => renderArt(hostElement, value),
+                    openSea: art.current.openSea,
+                });
+            } else if (ArtComponent) {
+                setArtRenderer({
+                    kind: `react`,
+                    ArtComponent: () => <ArtComponent hash={value} />,
+                    openSea: art.current.openSea,
+                });
+            }
         });
     };
 
@@ -98,10 +109,10 @@ export const ArtGallery = (props: {}) => {
 
                 <C.Text_FormTitle style={{ ...theme.text_formTitle, whiteSpace: `pre-wrap` }}>{art.current.title}</C.Text_FormTitle>
                 <C.Text_FormTitle style={{ ...theme.text_formTitle, whiteSpace: `pre-wrap` }}>{art.current.artist}</C.Text_FormTitle>
-                {artRenderer.kind === `p5` && (
-                    <P5Viewer renderArt={artRenderer.renderArt} openSea={artRenderer.openSea} />
+                {artRenderer?.kind === `div` && (
+                    <DivHost renderArt={artRenderer.renderArt} openSea={artRenderer.openSea} />
                 )}
-                {artRenderer.kind === `react` && (
+                {artRenderer?.kind === `react` && (
                     <artRenderer.ArtComponent />
                 )}
                 {tokenDescription && (<C.Text_FormTitle style={{ ...theme.text_formTitle, background: `#EEEEEE`, padding: 8, whiteSpace: `pre-wrap` }}>{tokenDescription}</C.Text_FormTitle>)}
