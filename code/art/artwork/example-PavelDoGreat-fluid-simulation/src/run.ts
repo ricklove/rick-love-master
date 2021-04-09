@@ -13,7 +13,7 @@ import { createShaders } from './shaders';
 // import { setupAppPopup } from './setup-app-popup';
 
 
-export const runFluidSimulator = (host: HTMLDivElement, contentPath: string, style: { width: string, height: string }): null | { close: () => void } => {
+export const runFluidSimulator = (host: HTMLDivElement, contentPath: string, style: { width: string, height: string }, options?: { disableGui?: boolean, disableInput?: boolean }) => {
 
     // setupAppPopup();
 
@@ -42,8 +42,9 @@ export const runFluidSimulator = (host: HTMLDivElement, contentPath: string, sty
         color = { r: 30, g: 0, b: 300 };
         p = { r: 0, g: 0, b: 0 };
     }
+    type PointerEntityType = PointerEntity;
 
-    const pointers = [] as PointerEntity[];
+    const pointers = [] as PointerEntityType[];
     const splatStack = [] as number[];
     pointers.push(new PointerEntity());
 
@@ -81,7 +82,7 @@ export const runFluidSimulator = (host: HTMLDivElement, contentPath: string, sty
 
     console.log(`runFluidSimulator - 02 startGUI`, {});
 
-    const gui = startGUI({
+    const gui = options?.disableGui ? null : startGUI({
         config,
         splatStack,
         initFramebuffers,
@@ -549,6 +550,7 @@ export const runFluidSimulator = (host: HTMLDivElement, contentPath: string, sty
     function splatPointer(pointer: PointerEntity) {
         const dx = pointer.deltaX * config.SPLAT_FORCE;
         const dy = pointer.deltaY * config.SPLAT_FORCE;
+        // const dy = -10;
         splat(pointer.texcoordX, pointer.texcoordY, dx, dy, pointer.color);
     }
 
@@ -567,7 +569,7 @@ export const runFluidSimulator = (host: HTMLDivElement, contentPath: string, sty
     }
 
     function splat(x: number, y: number, dx: number, dy: number, color: ColorRgb) {
-        console.log(`splat`, { x, y, dx, dy, color });
+        // console.log(`splat`, { x, y, dx, dy, color });
 
         splatProgram.bind();
         gl.uniform1i(splatProgram.uniforms.uTarget, velocity.read.attach(0));
@@ -595,6 +597,8 @@ export const runFluidSimulator = (host: HTMLDivElement, contentPath: string, sty
 
     const windowSubs = [] as { name: string, handler: () => void }[];
     const windowAddEventListener = ((name: string, handler: () => void) => {
+        if (options?.disableInput) { return; }
+
         window.addEventListener(name, handler);
         windowSubs.push({ name, handler });
     }) as typeof window.addEventListener;
@@ -606,6 +610,8 @@ export const runFluidSimulator = (host: HTMLDivElement, contentPath: string, sty
 
     const canvasSubs = [] as { name: string, handler: () => void }[];
     const canvasAddEventListener = ((name: string, handler: () => void) => {
+        if (options?.disableInput) { return; }
+
         canvas.addEventListener(name, handler);
         canvasSubs.push({ name, handler });
     }) as typeof canvas.addEventListener;
@@ -709,9 +715,34 @@ export const runFluidSimulator = (host: HTMLDivElement, contentPath: string, sty
     update();
 
     console.log(`runFluidSimulator - 10 DONE`, {});
+
+    const pointerMap = new Map<number, PointerEntity>();
     return {
+        getSize: () => ({
+            width: canvas.width,
+            height: canvas.height,
+        }),
+        config,
+        splat: (id: number, active: boolean, x: number, y: number, dx: number, dy: number, color?: ColorRgb) => {
+            let p = pointerMap.get(id);
+            if (!p) {
+                p = new PointerEntity();
+                pointers.push(p);
+                p.id = id;
+            }
+
+            p.down = active;
+            p.moved = active;
+            p.texcoordX = x;
+            p.texcoordY = y;
+            p.prevTexcoordX = x - dx;
+            p.prevTexcoordY = y - dy;
+            p.deltaX = correctDeltaX(p.texcoordX - p.prevTexcoordX, canvas);
+            p.deltaY = correctDeltaY(p.texcoordY - p.prevTexcoordY, canvas);
+            p.color = color ?? generateColor();
+        },
         close: () => {
-            gui.gui.destroy();
+            gui?.gui?.destroy();
             windowEventListenersDestroy();
             canvasEventListenersDestroy();
 
