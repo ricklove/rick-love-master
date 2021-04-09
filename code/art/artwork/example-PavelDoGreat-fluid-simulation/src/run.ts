@@ -424,11 +424,34 @@ export const runFluidSimulator = (host: HTMLDivElement, contentPath: string, sty
         blit(target);
     }
 
+    const TESTING = false;
+    let testCount = 0;
+    const getTestMaterials = () => [
+        dye.read,
+        // velocity.read,
+        // divergence,
+        // curl,
+        // pressure.read,
+        bloom,
+        // ditheringTexture,
+        // sunrays,
+        // sunraysTemp,
+    ];
     function drawDisplay(target: null | FrameBufferObject) {
         // console.log(`drawDisplay`, { target });
 
         const width = target == null ? gl.drawingBufferWidth : target.width;
         const height = target == null ? gl.drawingBufferHeight : target.height;
+
+        if (TESTING) {
+            displayMaterial.bind();
+            const tMats = getTestMaterials();
+            const tMat = tMats[Math.floor(testCount / 10) % tMats.length];
+            gl.uniform1i(displayMaterial.uniforms.uTexture, tMat.attach(0));
+            blit(target);
+            testCount++;
+            return;
+        }
 
         displayMaterial.bind();
         if (config.SHADING)
