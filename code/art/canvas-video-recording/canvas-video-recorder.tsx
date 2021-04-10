@@ -48,7 +48,8 @@ export const createRecorder = () => {
 
             recorder = new MediaRecorder(stream, {
                 audioBitsPerSecond: 128000,
-                videoBitsPerSecond: 2500000,
+                // videoBitsPerSecond: 2500000,
+                videoBitsPerSecond: 25000000,
                 // mimeType: `video/mp4`,
                 mimeType: `video/webm`,
             });
@@ -219,11 +220,11 @@ export const CanvasVideoRecorderControl = (props: { recorder: CanvasVideoRecorde
         doWork(async (stopIfObsolete) => {
             await props.recorder.start({
                 framesPerSecond: 15,
-                width: 1280,
-                height: 720,
+                // width: 1280,
+                // height: 720,
                 quality: 1,
-                // width: 1920,
-                // height: 1080,
+                width: 1920,
+                height: 1080,
             });
         });
     };
