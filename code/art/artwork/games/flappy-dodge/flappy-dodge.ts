@@ -354,15 +354,11 @@ export const flappyDodgeGame: ArtGame<RenderArgs> = {
         };
     },
     debugRenderer: (tools) => {
-        let callCount = 0;
         return {
             onPlayerHit: (data) => {
                 tools.drawX(data.position, { x: 0.1, y: 0.1 }, `#FF0000`);
             },
             renderEntity: (data) => {
-                console.log(`renderEntity`, { callCount, data });
-                callCount++;
-
                 tools.drawBox(data.position, data.size, data.kind === `player` ? `#0000FF` : undefined);
                 tools.drawArrow(data.position, Vector2.add(data.position, data.velocity), data.kind === `player` ? `#0000FF` : undefined);
             },

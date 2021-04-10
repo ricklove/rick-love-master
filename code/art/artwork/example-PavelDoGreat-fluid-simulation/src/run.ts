@@ -272,6 +272,7 @@ export const runFluidSimulator = (host: HTMLDivElement, contentPath: string, sty
         update();
     };
 
+    let frameTick = 0;
     function update() {
         // console.log(`runFluidSimulator.update START`, {});
         if (timeProvider.isPaused()) {
@@ -291,6 +292,8 @@ export const runFluidSimulator = (host: HTMLDivElement, contentPath: string, sty
         if (!config.PAUSED)
             step(dt);
         render(null);
+
+        frameTick++;
         requestAnimationFrame(update);
     }
 
@@ -746,6 +749,7 @@ export const runFluidSimulator = (host: HTMLDivElement, contentPath: string, sty
             width: canvas.width,
             height: canvas.height,
         }),
+        getFrameTick: () => frameTick,
         config,
         updateConfig: () => {
             updateKeywords();

@@ -64,11 +64,12 @@ Renderer based on Fluid Simulator by Pavel Dobryakov: https://paveldogreat.githu
             resetBloomAtTimeMs: 0,
         };
 
+        let frameTick = 0;
         const updateGame = () => {
             config.BLOOM_INTENSITY = clamp(0.001 * (state.resetBloomAtTimeMs - timeProvider.now()), 0, 2);
 
             game.update();
-            debugViewer?.render(game);
+            debugViewer?.render(game, { updateFrameTick: frameTick, renderFrameTick: sim.getFrameTick() });
 
             game.render({
                 onPlayerHit: () => {
@@ -117,6 +118,8 @@ Renderer based on Fluid Simulator by Pavel Dobryakov: https://paveldogreat.githu
                     config.MOTION_Y = data.velocity.y;
                 },
             });
+
+            frameTick++;
         };
 
         let isDestroyed = false;

@@ -64,6 +64,18 @@ export const createDebugDrawingTools = (context: CanvasRenderingContext2D, getDi
 
             tools.drawX(toGamePos, { x: 0.01, y: 0.01 }, color);
         },
+        drawLabel: (gamePosition: Vector2, text: string, color?: string | ColorRgb) => {
+            const position = getPosition(gamePosition);
+
+            context.fillStyle = `#000000`;
+            context.fillRect(position.x, position.y - 24, 8 * text.length, 32);
+
+            context.fillStyle = getDebugColor(color);
+
+            context.beginPath();
+            context.font = `14px monospace`;
+            context.fillText(text, position.x, position.y);
+        },
     };
 
     return tools;
