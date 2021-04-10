@@ -182,18 +182,22 @@ Based on Fluid Simulator by Pavel Dobryakov: https://paveldogreat.github.io/WebG
 
         let closed = false;
         const minTickTimeMs = 16;
-        const update = async () => {
-            if (closed) { return; }
+        const update = async (): Promise<number> => {
+            console.log(`fluidSimulatorGame.update START`, {});
+
+            if (closed) {
+                console.log(`fluidSimulatorGame.update CLOSED`, {});
+                return 0;
+            }
 
             if (timeProvider.isPaused()) {
-                console.log(`fluidSimulatorGame.renderArt timeProvider.PAUSED`, {});
+                console.log(`fluidSimulatorGame.update timeProvider.PAUSED`, {});
 
                 if (recorder?.isWaitingForFrame()) {
                     await recorder.getRecorder().addFrame(sim.canvas);
                 }
 
-                requestAnimationFrame(update);
-                return;
+                return requestAnimationFrame(update);
             }
 
             const size = sim.getSize();
@@ -221,7 +225,6 @@ Based on Fluid Simulator by Pavel Dobryakov: https://paveldogreat.github.io/WebG
 
                 if (entity.isStill) {
                     sim.splat(entity.id, !isHidden, entity.position.x, entity.position.y, 0, 0, entity.size, entity.color);
-                    return;
                 }
                 sim.splat(entity.id, !isHidden, entity.position.x, entity.position.y, VEL_MULT * state.environment.timeDelta * entity.velocity.x, VEL_MULT * state.environment.timeDelta * entity.velocity.y, entity.size, entity.color);
             }
@@ -229,10 +232,12 @@ Based on Fluid Simulator by Pavel Dobryakov: https://paveldogreat.github.io/WebG
             state.environment.tick++;
 
             if (recorder?.isRecording()) {
+                console.log(`fluidSimulatorGame.update recorder addFrame`, {});
                 await recorder.getRecorder().addFrame(sim.canvas);
             }
 
-            requestAnimationFrame(update);
+            console.log(`fluidSimulatorGame.update DONE`, {});
+            return requestAnimationFrame(update);
         };
         // Start
         (async () => await update())();

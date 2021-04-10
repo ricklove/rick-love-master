@@ -10,12 +10,15 @@ import { TimeProvider } from '../time-provider';
 export const createRecorder = () => {
 
     let _settings: null | { framesPerSecond: number, quality?: number, width: number, height: number } = null;
-    let isTargetReady = false;
 
     let timeMsLost = 0;
     let timeMs = Date.now();
     let isRecording = false;
-    let mode = `waitingForFrame` as `waitingForFrame` | `processingFrame` | 'processingVideo';
+    let mode = `none` as 'none'
+        | 'targetPrepareRequested' | 'targetReady'
+        | `waitingForFrame` | `processingFrame` | `increasingTime`
+        | 'completingVideo';
+
     let workingCanvas = null as null | HTMLCanvasElement;
     let workingContext = null as null | CanvasRenderingContext2D;
     let blobs = null as null | Blob[];
@@ -25,7 +28,7 @@ export const createRecorder = () => {
         isPaused: () => isRecording ? mode === `processingFrame` : false,
     };
 
-    const prepareTarget = async (settings: NonNullable<typeof _settings>) => {
+    const requestPrepareTarget = async (settings: NonNullable<typeof _settings>) => {
         _settings = settings;
 
         // Get canvas ready
@@ -37,17 +40,30 @@ export const createRecorder = () => {
         workingContext = workingCanvas.getContext(`2d`);
 
         // wait for target canvas
-        isTargetReady = false;
+        mode = `targetPrepareRequested`;
     };
 
     const start = async () => {
         if (!_settings) { console.error(`prepareCanvas first!`); return; }
-        if (isRecording || mode === `processingVideo`) { console.error(`Not able to start!`); return; }
+        if (isRecording || mode === `completingVideo`) { console.error(`Not able to start!`); return; }
 
         blobs = [];
-        timeMs = timeProvider.now();
+        timeMs = Date.now() - timeMsLost;
         isRecording = true;
         mode = `waitingForFrame`;
+    };
+
+    const beginIncreasingTime = () => {
+        if (!_settings) { console.error(`prepareCanvas first!`); return; }
+        const timeMsPerFrame = 1000 / _settings.framesPerSecond;
+
+        setTimeout(() => {
+            // Finally update time
+            timeMs += timeMsPerFrame;
+            mode = `waitingForFrame`;
+        }, 0);
+
+        mode = `increasingTime`;
     };
 
     const completeToBlob = async () => {
@@ -56,7 +72,7 @@ export const createRecorder = () => {
 
         isRecording = false;
         timeMsLost = Date.now() - timeMs;
-        mode = `processingVideo`;
+        mode = `completingVideo`;
 
         try {
             // const webMBlob = new Blob(blobs, { type: `video/webm; codecs=vp9` });
@@ -132,11 +148,10 @@ export const createRecorder = () => {
 
                     b && blobs?.push(b);
 
-                    // Finally update time
-                    const timeMsPerFrame = 1000 / _settings.framesPerSecond;
-                    timeMs += timeMsPerFrame;
-                    mode = `waitingForFrame`;
+                    beginIncreasingTime();
+
                     resolve();
+
                 }, `image/webp`, _settings.quality);
 
 
@@ -149,15 +164,14 @@ export const createRecorder = () => {
     };
 
     return {
-        prepareTarget,
+        prepareTarget: requestPrepareTarget,
         getSettings: () => _settings,
-        isWaitingForTarget: () => !isTargetReady && !!_settings,
-        onTargetReady: () => { isTargetReady = true; },
-        isTargetReady: () => isTargetReady,
+        getMode: () => mode,
+        targetReady: () => { mode = `targetReady`; },
         start,
         isRecording: () => isRecording,
         isWaitingForFrame: () => mode === `waitingForFrame`,
-        isProcessingVideo: () => mode === `processingVideo`,
+        iscompletingVideo: () => mode === `completingVideo`,
         getRecorder: () => {
             if (!isRecording) { throw new Error(`Recorder is not recording`); }
 
@@ -183,8 +197,12 @@ export const CanvasVideoRecorderControl = (props: { recorder: CanvasVideoRecorde
         doWork(async (stopIfObsolete) => {
             await props.recorder.prepareTarget({
                 framesPerSecond: 30,
-                width: 256,
-                height: 256,
+                // width: 1280,
+                // height: 720,
+                width: 480,
+                height: 270,
+                // width: 256,
+                // height: 256,
                 // width: 507,
                 // height: 507,
                 quality: 0.95,

@@ -71,7 +71,7 @@ export const ArtGallery = (props: {}) => {
         if (!settings) { return; }
 
         setCustomSize({ width: settings.width, height: settings.height });
-        recorderRef.current.onTargetReady();
+        recorderRef.current.targetReady();
     };
 
     const changeArt = (value: typeof artItems[0]) => {
