@@ -20,6 +20,7 @@ export type ArtGame<TRenderArgs> = {
 export const createDebugGameView = <TRenderArgs>(
     game: ArtGame<TRenderArgs>,
     gameCanvas: HTMLCanvasElement,
+    eventProvider: EventProvider,
 ) => {
     console.log(`createDebugGameView`, { game, gameCanvas });
 
@@ -34,7 +35,7 @@ export const createDebugGameView = <TRenderArgs>(
     canvas.style.opacity = `0.5`;
     // canvas.style.backgroundColor = `#00FF0022`;
 
-    const resizeCanvas = () => {
+    const autoResizeCanvas = () => {
         const width = scaleByPixelRatio(gameCanvas.clientWidth);
         const height = scaleByPixelRatio(gameCanvas.clientHeight);
         if (canvas.width !== width || canvas.height !== height) {
@@ -52,10 +53,20 @@ export const createDebugGameView = <TRenderArgs>(
     const tools = createDebugDrawingTools(context, () => ({ width: canvas.width, height: canvas.height }));
     const renderArgs = game.debugRenderer(tools, context, canvas);
 
+
+    let isVisible = true;
+    eventProvider.windowAddEventListener(`keydown`, e => {
+        if (e.key === `d`) {
+            // toggle debug
+            isVisible = !isVisible;
+            canvas.style.opacity = isVisible ? `0` : `0.5`;
+        }
+    });
+
     return {
         render: (gameInstance: { render: (renderCallbacks: TRenderArgs) => void }) => {
             console.log(`DebugGameView render`, { game, gameInstance });
-            resizeCanvas();
+            autoResizeCanvas();
 
             // Erode
             context.beginPath();
@@ -64,6 +75,9 @@ export const createDebugGameView = <TRenderArgs>(
 
             tools.drawBox({ x: 0.5, y: 0.5 }, { x: 0.1, y: 0.1 }, `#00FF008`);
             gameInstance.render(renderArgs);
+        },
+        destroy: () => {
+            canvas.remove();
         },
     };
 };

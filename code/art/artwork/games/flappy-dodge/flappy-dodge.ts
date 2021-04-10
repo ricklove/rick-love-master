@@ -361,6 +361,7 @@ export const flappyDodgeGame: ArtGame<RenderArgs> = {
                 callCount++;
 
                 tools.drawBox(data.position, data.size, data.kind === `player` ? `#0000FF` : undefined);
+                tools.drawArrow(data.position, Vector2.add(data.position, data.velocity), data.kind === `player` ? `#0000FF` : undefined);
             },
             removeEntity: (id) => {
                 // tools.drawBox(data.position, data.size, `#FF000000`);

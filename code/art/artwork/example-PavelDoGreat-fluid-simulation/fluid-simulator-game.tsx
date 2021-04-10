@@ -42,7 +42,7 @@ Renderer based on Fluid Simulator by Pavel Dobryakov: https://paveldogreat.githu
         game.setup(eventProvider);
 
         // Debug
-        const debugViewer = createDebugGameView(flappyDodgeGame, sim.canvas);
+        const debugViewer = createDebugGameView(flappyDodgeGame, sim.canvas, eventProvider);
 
         const { config } = sim;
 
@@ -147,6 +147,7 @@ Renderer based on Fluid Simulator by Pavel Dobryakov: https://paveldogreat.githu
                 isDestroyed = true;
                 eventProvider.destroy();
                 game.destroy();
+                debugViewer?.destroy();
                 sim?.close();
             },
         };

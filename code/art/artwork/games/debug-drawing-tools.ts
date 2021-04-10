@@ -14,35 +14,42 @@ export const createDebugDrawingTools = (context: CanvasRenderingContext2D, getDi
             y: (1 - uvPos.y) * size.height,
         };
     };
+    const getSize = (uvPos: Vector2) => {
+        const size = getDisplaySize();
+        return {
+            x: uvPos.x * size.width,
+            y: uvPos.y * size.height,
+        };
+    };
 
     const tools = {
         drawX: (gamePosition: Vector2, gameSize?: Vector2, color?: string | ColorRgb) => {
             const position = getPosition(gamePosition);
-            const size = gameSize ? getPosition(gameSize) : undefined;
+            const size = gameSize ? getSize(gameSize) : undefined;
             context.strokeStyle = getDebugColor(color);
 
             const r = size ? { x: size.x / 2, y: size.y / 2 } : { x: 2, y: 2 };
 
             context.beginPath();
-            context.moveTo(position.x - r.x, position.y - r.x);
-            context.lineTo(position.x + r.x, position.y + r.x);
-            context.moveTo(position.x - r.x, position.y + r.x);
-            context.lineTo(position.x + r.x, position.y - r.x);
+            context.moveTo(position.x - r.x, position.y - r.y);
+            context.lineTo(position.x + r.x, position.y + r.y);
+            context.moveTo(position.x - r.x, position.y + r.y);
+            context.lineTo(position.x + r.x, position.y - r.y);
             context.stroke();
         },
         drawBox: (gamePosition: Vector2, gameSize?: Vector2, color?: string | ColorRgb) => {
             const position = getPosition(gamePosition);
-            const size = gameSize ? getPosition(gameSize) : undefined;
+            const size = gameSize ? getSize(gameSize) : undefined;
             context.strokeStyle = getDebugColor(color);
 
             const r = size ? { x: size.x / 2, y: size.y / 2 } : { x: 2, y: 2 };
 
             context.beginPath();
-            context.moveTo(position.x - r.x, position.y - r.x);
-            context.lineTo(position.x - r.x, position.y + r.x);
-            context.lineTo(position.x + r.x, position.y + r.x);
-            context.lineTo(position.x + r.x, position.y - r.x);
-            context.lineTo(position.x - r.x, position.y - r.x);
+            context.moveTo(position.x - r.x, position.y - r.y);
+            context.lineTo(position.x - r.x, position.y + r.y);
+            context.lineTo(position.x + r.x, position.y + r.y);
+            context.lineTo(position.x + r.x, position.y - r.y);
+            context.lineTo(position.x - r.x, position.y - r.y);
             context.stroke();
         },
         drawArrow: (fromGamePos: Vector2, toGamePos: Vector2, color?: string | ColorRgb) => {
@@ -55,7 +62,7 @@ export const createDebugDrawingTools = (context: CanvasRenderingContext2D, getDi
             context.lineTo(toPos.x, toPos.y);
             context.stroke();
 
-            tools.drawX(toGamePos, { x: 0.05, y: 0.05 }, color);
+            tools.drawX(toGamePos, { x: 0.01, y: 0.01 }, color);
         },
     };
 
