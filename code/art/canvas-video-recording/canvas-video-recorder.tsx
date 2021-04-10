@@ -13,8 +13,6 @@ export const createRecorder = () => {
     let timeMs = Date.now();
     let isRecording = false;
     let mode = `waitingForFrame` as `waitingForFrame` | `processingFrame` | 'processingVideo';
-    let stream: null | MediaStream = null;
-    let recorder: null | MediaRecorder = null;
     let workingCanvas = null as null | HTMLCanvasElement;
     let workingContext = null as null | CanvasRenderingContext2D;
     let blobs = null as null | Blob[];
@@ -37,23 +35,7 @@ export const createRecorder = () => {
 
         workingContext = workingCanvas.getContext(`2d`);
 
-        stream = (workingCanvas as unknown as { captureStream: (frameRate?: number) => MediaStream }).captureStream(15);
-        recorder = new MediaRecorder(stream);
-
         blobs = [];
-        const b = blobs;
-        recorder.addEventListener(`dataavailable`, (e) => {
-            console.log(`dataavailable`, { data: e.data });
-            b.push(e.data);
-        });
-
-        // recorder.addEventListener(`dataavailable`, finishCapturing);
-        // recorder.addEventListener(`stop`, function (e) {
-        //     video.addEventListener(`canplay`, video.play);
-        //     video.src = URL.createObjectURL(new Blob(blobs, { type: `video/webm; codecs=vp9` }));
-        // });
-        // startCapturing();
-        recorder.start();
 
         timeMs = timeProvider.now();
         isRecording = true;
@@ -61,8 +43,6 @@ export const createRecorder = () => {
     };
 
     const completeToBlob = async () => {
-        if (!recorder) { throw new Error(`Recorder has not started`); }
-        const w = recorder;
         isRecording = false;
         timeMsLost = Date.now() - timeMs;
         mode = `processingVideo`;
@@ -71,19 +51,15 @@ export const createRecorder = () => {
             setTimeout(() => {
                 try {
                     console.log(`completeToBlob.compile started`);
-                    // const webMBlob = w.getTracks()[0];
-                    w.addEventListener(`stop`, (e) => {
-                        // video.addEventListener(`canplay`, video.play);
-                        // video.src = URL.createObjectURL(new Blob(blobs, { type: `video/webm; codecs=vp9` }));
 
-                        if (!blobs) {
-                            throw new Error(`No blobs!`);
-                        }
+                    if (!blobs) {
+                        throw new Error(`No blobs!`);
+                    }
 
-                        const webMBlob = new Blob(blobs, { type: `video/webm; codecs=vp9` });
-                        console.log(`completeToBlob.compile done`, { webMBlob });
-                        resolve(webMBlob);
-                    });
+                    // const webMBlob = new Blob(blobs, { type: `video/webm; codecs=vp9` });
+                    const webMBlob = new Blob(blobs, { type: `video/webm` });
+                    console.log(`completeToBlob.compile done`, { webMBlob });
+                    resolve(webMBlob);
 
                 } catch (err) {
                     console.error(`completeToBlob.compile ERROR`, { err });
@@ -116,38 +92,32 @@ export const createRecorder = () => {
 
 
     const addFrame = async (canvas: HTMLCanvasElement) => {
-        if (!recorder || !_settings) { throw new Error(`Recorder has not started`); }
 
-        try {
-            mode = `processingFrame`;
+        return await new Promise<void>((resolve, reject) => {
+            setTimeout(() => {
+                const context = workingContext;
+                if (!context || !blobs || !_settings) { throw new Error(`Recorder has not started`); }
 
+                try {
+                    mode = `processingFrame`;
 
-            const clone = workingCanvas;
-            const context = workingContext;
+                    context.drawImage(canvas, 0, 0, _settings.width, _settings.height);
+                    canvas.toBlob(b => {
+                        b && blobs?.push(b);
+                        resolve();
+                    }, `image/webp`, 1);
 
-            if (!context) {
-                throw new Error(`Could not get context`);
-            }
-            if (!stream) {
-                throw new Error(`Could not get stream`);
-            }
-
-            context.drawImage(canvas, 0, 0, _settings.width, _settings.height);
-            // stream.getTracks()[0].
-            // recorder.requestData();
-
-            // Add clone as frame
-            // const frame = clone.toDataURL(`image/webp`, 1);
-            // writer.add(frame);
-
-            // Finally update time
-            const timeMsPerFrame = 1000 / _settings.framesPerSecond;
-            timeMs += timeMsPerFrame;
-            mode = `waitingForFrame`;
-        } catch (err) {
-            console.error(`addFrame ERROR`, { err });
-            mode = `waitingForFrame`;
-        }
+                    // Finally update time
+                    const timeMsPerFrame = 1000 / _settings.framesPerSecond;
+                    timeMs += timeMsPerFrame;
+                    mode = `waitingForFrame`;
+                } catch (err) {
+                    console.error(`addFrame ERROR`, { err });
+                    mode = `waitingForFrame`;
+                    reject(err);
+                }
+            });
+        });
     };
 
     return {
@@ -156,7 +126,7 @@ export const createRecorder = () => {
         isWaitingForFrame: () => mode === `waitingForFrame`,
         isProcessingVideo: () => mode === `processingVideo`,
         getRecorder: () => {
-            if (!isRecording || !recorder) { throw new Error(`Recorder is not recording`); }
+            if (!isRecording) { throw new Error(`Recorder is not recording`); }
 
             return {
                 addFrame,
