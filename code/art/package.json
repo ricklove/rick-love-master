@@ -15,7 +15,8 @@
         "themes": "*",
         "truffle": "^5.1.62",
         "utils": "*",
-        "utils-react": "*"
+        "utils-react": "*",
+        "whammy": "^0.0.1"
     },
     "devDependencies": {
         "@types/dat.gui": "^0.7.6",

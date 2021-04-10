@@ -2,6 +2,7 @@
 /* eslint-disable lines-between-class-members */
 /* eslint-disable max-classes-per-file */
 
+import { TimeProvider } from '../../../time-provider';
 import { createConfig } from './config';
 import { createFrameBufferFactory, createFrameBufferUtils, DoubleFrameBufferObject, FrameBufferObject } from './systems/frame-buffer';
 import { getWebGLSystem } from './systems/webgl';
@@ -13,7 +14,9 @@ import { createShaders } from './shaders';
 // import { setupAppPopup } from './setup-app-popup';
 
 
-export const runFluidSimulator = (host: HTMLDivElement, contentPath: string, style: { width: string, height: string }, options?: { disableGui?: boolean, disableInput?: boolean, disableStartupSplats?: boolean }) => {
+export const runFluidSimulator = (host: HTMLDivElement, contentPath: string, style: { width: string, height: string }, options?: { timeProvider?: TimeProvider, disableGui?: boolean, disableInput?: boolean, disableStartupSplats?: boolean }) => {
+
+    const timeProvider = options?.timeProvider ?? { now: () => Date.now(), isPaused: () => false };
 
     // setupAppPopup();
 
@@ -265,8 +268,14 @@ export const runFluidSimulator = (host: HTMLDivElement, contentPath: string, sty
 
     function update() {
         // console.log(`runFluidSimulator.update START`, {});
+        if (timeProvider.isPaused()) {
+            console.log(`runFluidSimulator.update timeProvider.PAUSED`, {});
+            requestAnimationFrame(update);
+            return;
+        }
 
         const dt = calcDeltaTime();
+
         if (resizeCanvas())
             initFramebuffers();
         updateColors(dt);
@@ -277,11 +286,11 @@ export const runFluidSimulator = (host: HTMLDivElement, contentPath: string, sty
         requestAnimationFrame(update);
     }
 
-    let lastUpdateTime = Date.now();
+    let lastUpdateTime = timeProvider.now();
     function calcDeltaTime() {
-        const now = Date.now();
-        let dt = (now - lastUpdateTime) / 1000;
-        dt = Math.min(dt, 0.016666);
+        const now = timeProvider.now();
+        const dtActual = (now - lastUpdateTime) / 1000;
+        const dt = Math.min(dtActual, 0.016666);
         lastUpdateTime = now;
         return dt;
     }
@@ -723,6 +732,7 @@ export const runFluidSimulator = (host: HTMLDivElement, contentPath: string, sty
 
     const pointerMap = new Map<number, PointerEntity>();
     return {
+        canvas,
         getSize: () => ({
             width: canvas.width,
             height: canvas.height,

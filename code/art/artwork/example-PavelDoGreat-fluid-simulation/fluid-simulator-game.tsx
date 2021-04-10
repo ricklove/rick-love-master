@@ -20,11 +20,17 @@ Based on Fluid Simulator by Pavel Dobryakov: https://paveldogreat.github.io/WebG
     //     tokenAddress: `0x495f947276749ce646f68ac8c248420045cb7b5e`,
     //     tokenId: `91242641486941084018191434774360347389366801368112854311223385694785434025985`,
     // },
-    renderArt: (hostElement: HTMLDivElement, hash) => {
-        const result = runFluidSimulator(hostElement, contentPath, { width: `100%`, height: `100%` }, { disableGui: false, disableInput: true, disableStartupSplats: true });
-        if (!result) { return { remove: () => { } }; }
+    renderArt: (hostElement, hash, recorder) => {
+        const sim = runFluidSimulator(hostElement, contentPath, { width: `100%`, height: `100%` }, {
+            disableGui: false, disableInput: true, disableStartupSplats: true,
+            timeProvider: recorder?.timeProvider,
+        });
+        if (!sim) { return { remove: () => { } }; }
 
-        const { config } = result;
+        const timeProvider = recorder?.timeProvider ?? { now: () => Date.now(), isPaused: () => false };
+
+
+        const { config } = sim;
 
         const MOTION_X = -0.1;
         const MOTION_Y = -0.025;
@@ -52,8 +58,8 @@ Based on Fluid Simulator by Pavel Dobryakov: https://paveldogreat.github.io/WebG
         const state = {
             environment: {
                 time: 0,
-                timeLast: Date.now(),
-                timeMsStart: Date.now(),
+                timeLast: timeProvider.now(),
+                timeMsStart: timeProvider.now(),
                 timeDelta: 0,
                 tick: 0,
                 size: { x: 600, y: 600 },
@@ -174,13 +180,22 @@ Based on Fluid Simulator by Pavel Dobryakov: https://paveldogreat.github.io/WebG
 
         };
 
-        const tickTimeMs = 16;
-        const intervalId = setInterval(() => {
-            const size = result.getSize();
+        let closed = false;
+        const minTickTimeMs = 16;
+        const update = async () => {
+            if (closed) { return; }
+
+            if (!timeProvider.isPaused()) {
+                console.log(`fluidSimulatorGame.renderArt timeProvider.PAUSED`, {});
+                requestAnimationFrame(update);
+                return;
+            }
+
+            const size = sim.getSize();
             state.environment.size = { x: size.width, y: size.height };
             state.environment.timeLast = state.environment.time;
-            state.environment.time = 0.001 * (Date.now() - state.environment.timeMsStart);
-            state.environment.timeDelta = Math.max(tickTimeMs * 0.001 * 0.5, (state.environment.time - state.environment.timeLast));
+            state.environment.time = 0.001 * (timeProvider.now() - state.environment.timeMsStart);
+            state.environment.timeDelta = Math.max(minTickTimeMs * 0.001 * 0.5, state.environment.time - state.environment.timeLast);
             // console.log(`gameInverval`, { environment: state.environment });
 
             const { player, obstacles } = state;
@@ -189,7 +204,7 @@ Based on Fluid Simulator by Pavel Dobryakov: https://paveldogreat.github.io/WebG
             updateObstacles();
 
             // Render Player
-            result.splat(player.id, true, player.position.x, player.position.y, VEL_MULT * state.environment.timeDelta * player.velocity.x, VEL_MULT * state.environment.timeDelta * player.velocity.y, player.size, player.color);
+            sim.splat(player.id, true, player.position.x, player.position.y, VEL_MULT * state.environment.timeDelta * player.velocity.x, VEL_MULT * state.environment.timeDelta * player.velocity.y, player.size, player.color);
 
             // Render Entities
             for (const entity of obstacles) {
@@ -200,15 +215,23 @@ Based on Fluid Simulator by Pavel Dobryakov: https://paveldogreat.github.io/WebG
                     || entity.position.y > 1.25;
 
                 if (entity.isStill) {
-                    result.splat(entity.id, !isHidden, entity.position.x, entity.position.y, 0, 0, entity.size, entity.color);
+                    sim.splat(entity.id, !isHidden, entity.position.x, entity.position.y, 0, 0, entity.size, entity.color);
                     return;
                 }
-                result.splat(entity.id, !isHidden, entity.position.x, entity.position.y, VEL_MULT * state.environment.timeDelta * entity.velocity.x, VEL_MULT * state.environment.timeDelta * entity.velocity.y, entity.size, entity.color);
+                sim.splat(entity.id, !isHidden, entity.position.x, entity.position.y, VEL_MULT * state.environment.timeDelta * entity.velocity.x, VEL_MULT * state.environment.timeDelta * entity.velocity.y, entity.size, entity.color);
             }
 
             state.environment.tick++;
 
-        }, tickTimeMs);
+            if (recorder?.isRecording()) {
+                await recorder.getRecorder().addFrame(sim.canvas);
+            }
+
+            requestAnimationFrame(update);
+        };
+        // Start
+        (async () => await update())();
+
 
         const windowSubs = [] as { name: string, handler: () => void }[];
         const windowAddEventListener = ((name: string, handler: () => void) => {
@@ -233,11 +256,13 @@ Based on Fluid Simulator by Pavel Dobryakov: https://paveldogreat.github.io/WebG
             if (e.key === `ArrowRight`) { state.input.r = false; }
         });
 
+
         return {
+            recorder,
             remove: () => {
                 windowEventListenersDestroy();
-                clearInterval(intervalId);
-                result?.close();
+                closed = true;
+                sim?.close();
             },
         };
     },

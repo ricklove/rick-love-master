@@ -2,5 +2,6 @@
     "extends": "../../../../tsconfig",
     "compilerOptions": {
         "target": "es2017",
+        "baseUrl": "../../../../"
     }
 }

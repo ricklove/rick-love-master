@@ -15,6 +15,7 @@ import { art_gpu_01 } from './artwork/gpu-01/gpu-01';
 import { art_flyingColors } from './artwork/flying-colors/flying-colors';
 import { art_exampleFluidSimulator } from './artwork/example-PavelDoGreat-fluid-simulation/example-fluid-simulator';
 import { art_fluidSimulatorGame } from './artwork/example-PavelDoGreat-fluid-simulation/fluid-simulator-game';
+import { CanvasVideoRecorderControl, createRecorder } from './canvas-video-recorder';
 
 export const ArtGallery = (props: {}) => {
     const artItems: ArtWork[] = [
@@ -30,6 +31,7 @@ export const ArtGallery = (props: {}) => {
     ];
 
     const art = useRef(artItems[0]);
+    const recorderRef = useRef(createRecorder());
 
     const [renderId, setRenderId] = useState(0);
     const [showNavigation, setShowNavigation] = useState(true);
@@ -80,7 +82,7 @@ export const ArtGallery = (props: {}) => {
             if (renderArt) {
                 cacheRenderArtwork({
                     kind: `div`,
-                    renderArt: (hostElement) => renderArt(hostElement, value),
+                    renderArt: (hostElement) => renderArt(hostElement, value, recorderRef.current),
                     openSea: art.current.openSea,
                 });
             } else if (ArtComponent) {
@@ -137,6 +139,11 @@ export const ArtGallery = (props: {}) => {
                         {ArtworkComponentRef.current}
                     </div>
                 </div>
+                {recorderRef.current && (
+                    <div style={{ position: `fixed`, right: 0, bottom: 0 }} >
+                        <CanvasVideoRecorderControl recorder={recorderRef.current} />
+                    </div>
+                )}
                 {tokenDescription && (<C.Text_FormTitle style={{ ...theme.text_formTitle, background: `#EEEEEE`, padding: 8, whiteSpace: `pre-wrap` }}>{tokenDescription}</C.Text_FormTitle>)}
                 <C.Text_FormTitle style={{ ...theme.text_formTitle, whiteSpace: `pre-wrap` }}>{art.current.description}</C.Text_FormTitle>
             </C.View_Panel>
