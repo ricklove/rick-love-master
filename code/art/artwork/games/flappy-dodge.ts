@@ -1,3 +1,4 @@
+import { EventProvider, scaleByPixelRatio } from './event-provider';
 import { ArtGame, ColorRgb, Vector2 } from './types';
 
 type EntityRenderData = {
@@ -49,6 +50,10 @@ export const flappyDodgeGame: ArtGame<UpdateArgs, RenderArgs> = {
                 d: false,
                 l: false,
                 r: false,
+                pointer: null as null | {
+                    position: Vector2;
+                    timeMs: number;
+                },
             },
             player: {
                 id: 42,
@@ -92,10 +97,20 @@ export const flappyDodgeGame: ArtGame<UpdateArgs, RenderArgs> = {
             // Player motion
             const speedX = 0.9;
             const speedY = speedX * size.x / size.y;
+
             player.velocity = {
                 x: player.velocity.x + timeDelta * (state.input.l ? -speedX : state.input.r ? speedX : 0),
                 y: player.velocity.y + timeDelta * (state.input.d ? -speedY : state.input.u ? speedY : 0),
             };
+
+            if (state.input.pointer
+                && timeProvider.now() < state.input.pointer.timeMs + 250) {
+                // player.position = state.input.pointer.position;
+                const targetDelta = Vector2.subtract(state.input.pointer.position, player.position);
+                const velocityTarget = Vector2.scale(1 / 0.1, targetDelta);
+                const velocityDelta = Vector2.subtract(velocityTarget, player.velocity);
+                player.velocity = Vector2.add(player.velocity, Vector2.scale(timeDelta, velocityDelta));
+            }
 
             player.position.x += timeDelta * player.velocity.x;
             player.position.y += timeDelta * player.velocity.y;
@@ -257,36 +272,55 @@ export const flappyDodgeGame: ArtGame<UpdateArgs, RenderArgs> = {
             }
         };
 
-        const windowSubs = [] as { name: string, handler: () => void }[];
-        const windowAddEventListener = ((name: string, handler: () => void) => {
-            window.addEventListener(name, handler);
-            windowSubs.push({ name, handler });
-        }) as typeof window.addEventListener;
-        const windowEventListenersDestroy = () => {
-            windowSubs.forEach(({ name, handler }) => {
-                window.removeEventListener(name, handler);
-            });
-        };
-        windowAddEventListener(`keydown`, e => {
-            if (e.key === `w` || e.key === `ArrowUp`) { state.input.u = true; }
-            if (e.key === `a` || e.key === `ArrowLeft`) { state.input.l = true; }
-            if (e.key === `s` || e.key === `ArrowDown`) { state.input.d = true; }
-            if (e.key === `d` || e.key === `ArrowRight`) { state.input.r = true; }
-        });
-        windowAddEventListener(`keyup`, e => {
-            if (e.key === `w` || e.key === `ArrowUp`) { state.input.u = false; }
-            if (e.key === `a` || e.key === `ArrowLeft`) { state.input.l = false; }
-            if (e.key === `s` || e.key === `ArrowDown`) { state.input.d = false; }
-            if (e.key === `d` || e.key === `ArrowRight`) { state.input.r = false; }
-        });
 
+        const subscribeEvents = ({ windowAddEventListener, canvasAddEventListener }: EventProvider) => {
+            windowAddEventListener(`keydown`, e => {
+                if (e.key === `w` || e.key === `ArrowUp`) { state.input.u = true; }
+                if (e.key === `a` || e.key === `ArrowLeft`) { state.input.l = true; }
+                if (e.key === `s` || e.key === `ArrowDown`) { state.input.d = true; }
+                if (e.key === `d` || e.key === `ArrowRight`) { state.input.r = true; }
+            });
+            windowAddEventListener(`keyup`, e => {
+                if (e.key === `w` || e.key === `ArrowUp`) { state.input.u = false; }
+                if (e.key === `a` || e.key === `ArrowLeft`) { state.input.l = false; }
+                if (e.key === `s` || e.key === `ArrowDown`) { state.input.d = false; }
+                if (e.key === `d` || e.key === `ArrowRight`) { state.input.r = false; }
+            });
+
+            const setPointerPosition = (displayPosition: Vector2) => {
+                const size = environmentProvider.getDisplaySize();
+                const posX = scaleByPixelRatio(displayPosition.x) / size.width;
+                const posY = 1 - (scaleByPixelRatio(displayPosition.y) / size.height);
+                state.input.pointer = {
+                    position: { x: posX, y: posY },
+                    timeMs: timeProvider.now(),
+                };
+            };
+
+            canvasAddEventListener(`mousemove`, e => {
+                // const pointer = pointers[0];
+                // if (!pointer.down) return;
+                setPointerPosition({ x: e.offsetX, y: e.offsetY });
+            });
+
+            canvasAddEventListener(`touchmove`, e => {
+                e.preventDefault();
+                const touches = e.targetTouches as unknown as Touch[];
+                for (const [i, touch] of touches.entries()) {
+                    if (i > 0) { break; }
+
+                    setPointerPosition({ x: touch.pageX, y: touch.pageY });
+                }
+            }, false);
+        };
 
         return {
-            start: () => { },
+            setup: (eventProvider) => {
+                subscribeEvents(eventProvider);
+            },
             update,
             render,
             destroy: () => {
-                windowEventListenersDestroy();
                 destroyed = true;
             },
         };

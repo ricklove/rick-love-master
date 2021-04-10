@@ -4,6 +4,7 @@ import { clamp } from 'utils/clamp';
 import { ArtWork } from '../../artwork-type';
 import { runFluidSimulator } from './src/run';
 import { flappyDodgeGame } from '../games/flappy-dodge';
+import { createEventProvider } from '../games/event-provider';
 
 const contentPath = `/content/art/artwork/example-PavelDoGreat-fluid-simulation/src`;
 
@@ -29,12 +30,15 @@ Renderer based on Fluid Simulator by Pavel Dobryakov: https://paveldogreat.githu
         if (!sim) { return { remove: () => { } }; }
 
         const timeProvider = recorder?.timeProvider ?? { now: () => Date.now(), isPaused: () => false };
+        const eventProvider = createEventProvider(sim.canvas);
 
         const game = flappyDodgeGame.createGame(
             timeProvider,
             {
                 getDisplaySize: () => ({ width: sim.canvas.width, height: sim.canvas.height }),
             });
+
+        game.setup(eventProvider);
 
         const { config } = sim;
 
@@ -131,6 +135,7 @@ Renderer based on Fluid Simulator by Pavel Dobryakov: https://paveldogreat.githu
         return {
             remove: () => {
                 isDestroyed = true;
+                eventProvider.destroy();
                 game.destroy();
                 sim?.close();
             },
