@@ -31,7 +31,7 @@ export const ArtGallery = (props: {}) => {
     ];
 
     const art = useRef(artItems[0]);
-    const recorderRef = useRef(createRecorder());
+    const recorderRef = useRef(null as null | ReturnType<typeof createRecorder>);
 
     const [renderId, setRenderId] = useState(0);
     const [showNavigation, setShowNavigation] = useState(true);
@@ -54,6 +54,11 @@ export const ArtGallery = (props: {}) => {
 
     useEffect(() => {
         const queryParts = document.location.search.substr(1).split(`&`);
+
+        const camera = queryParts.find(x => x.startsWith(`camera`))?.split(`=`)[1];
+        if (camera) { recorderRef.current = createRecorder(); }
+
+
         const artKey = queryParts.find(x => x.startsWith(`key`))?.split(`=`)[1];
         if (!artKey) { changeTokenId(`0`); return; }
         const artworkItem = artItems.find(x => x.key === artKey);
@@ -62,11 +67,14 @@ export const ArtGallery = (props: {}) => {
         art.current = artworkItem;
         const newTokenId = queryParts.find(x => x.startsWith(`tokenId`))?.split(`=`)[1];
 
-        setShowNavigation(false);
+        // setShowNavigation(false);
+        setIsFullScreen(true);
         changeTokenId(`${newTokenId || tokenId}`);
     }, [document.location.search]);
 
     const prepareTarget = () => {
+        if (!recorderRef.current) { return; }
+
         const settings = recorderRef.current.getSettings();
         if (!settings) { return; }
 
@@ -114,8 +122,7 @@ export const ArtGallery = (props: {}) => {
                 {artRenderer?.kind === `react` && (
                     <artRenderer.ArtComponent />
                 )}
-                <div style={{ position: `absolute`, top: 4, right: 4, width: 16, height: 16, fontFamily: `monospace`, fontSize: 14, lineHeight: `16px`, textAlign: `center`, color: `#FFFFFF`, background: `#88888888` }}
-                    onClick={() => setIsFullScreen(s => !s)}>{isFullScreen ? `-` : `+`}</div>
+
             </>
         );
         setRenderId(s => s + 1);
@@ -148,6 +155,8 @@ export const ArtGallery = (props: {}) => {
                         : { maxWidth: `600px`, maxHeight: `600px` }}>
                     <div style={{ position: `relative`, width: `100%`, height: `100%`, ...customSize ?? {} }} >
                         {ArtworkComponentRef.current}
+                        <div style={{ position: `absolute`, top: 4, right: 4, width: 16, height: 16, fontFamily: `monospace`, fontSize: 14, lineHeight: `16px`, textAlign: `center`, color: `#FFFFFF`, background: `#88888888` }}
+                            onClick={() => setIsFullScreen(s => !s)}>{isFullScreen ? `-` : `+`}</div>
                     </div>
                 </div>
                 {recorderRef.current && (

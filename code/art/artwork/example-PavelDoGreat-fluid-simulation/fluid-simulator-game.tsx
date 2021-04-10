@@ -23,7 +23,7 @@ Renderer based on Fluid Simulator by Pavel Dobryakov: https://paveldogreat.githu
     // },
     renderArt: (hostElement, hash, recorder) => {
         const sim = runFluidSimulator(hostElement, contentPath, { width: `100%`, height: `100%` }, {
-            disableGui: false, disableInput: true, disableStartupSplats: true,
+            disableGui: true, disableInput: true, disableStartupSplats: true,
             timeProvider: recorder?.timeProvider,
         });
         if (!sim) { return { remove: () => { } }; }
@@ -110,7 +110,9 @@ Renderer based on Fluid Simulator by Pavel Dobryakov: https://paveldogreat.githu
             });
         };
 
+        let isDestroyed = false;
         const update = async () => {
+            if (isDestroyed) { return 0; }
 
             if (!timeProvider.isPaused()) {
                 updateGame();
@@ -128,6 +130,7 @@ Renderer based on Fluid Simulator by Pavel Dobryakov: https://paveldogreat.githu
 
         return {
             remove: () => {
+                isDestroyed = true;
                 game.destroy();
                 sim?.close();
             },
