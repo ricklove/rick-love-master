@@ -37,6 +37,7 @@ export const ArtGallery = (props: {}) => {
     const [showNavigation, setShowNavigation] = useState(true);
     const [tokenId, setTokenId] = useState(`0`);
     const [isFullScreen, setIsFullScreen] = useState(false);
+    const [customSize, setCustomSize] = useState(null as null | { width: number, height: number });
 
     type ArtRender = {
         kind: 'div';
@@ -64,6 +65,14 @@ export const ArtGallery = (props: {}) => {
         setShowNavigation(false);
         changeTokenId(`${newTokenId || tokenId}`);
     }, [document.location.search]);
+
+    const prepareTarget = () => {
+        const settings = recorderRef.current.getSettings();
+        if (!settings) { return; }
+
+        setCustomSize({ width: settings.width, height: settings.height });
+        recorderRef.current.onTargetReady();
+    };
 
     const changeArt = (value: typeof artItems[0]) => {
         art.current = value;
@@ -134,14 +143,16 @@ export const ArtGallery = (props: {}) => {
 
                 <C.Text_FormTitle style={{ ...theme.text_formTitle, whiteSpace: `pre-wrap` }}>{art.current.title}</C.Text_FormTitle>
                 <C.Text_FormTitle style={{ ...theme.text_formTitle, whiteSpace: `pre-wrap` }}>{art.current.artist}</C.Text_FormTitle>
-                <div style={isFullScreen ? { position: `fixed`, left: 0, right: 0, top: 0, bottom: 0, background: `#000000` } : { maxWidth: `600px`, maxHeight: `600px` }}>
-                    <div style={{ position: `relative`, width: `100%`, height: `100%` }} >
+                <div style={customSize ? { position: `fixed`, left: 0, right: 0, top: 0, bottom: 0, background: `#000000` }
+                    : isFullScreen ? { position: `fixed`, left: 0, right: 0, top: 0, bottom: 0, background: `#000000` }
+                        : { maxWidth: `600px`, maxHeight: `600px` }}>
+                    <div style={{ position: `relative`, width: `100%`, height: `100%`, ...customSize ?? {} }} >
                         {ArtworkComponentRef.current}
                     </div>
                 </div>
                 {recorderRef.current && (
                     <div style={{ position: `fixed`, right: 0, bottom: 0 }} >
-                        <CanvasVideoRecorderControl recorder={recorderRef.current} />
+                        <CanvasVideoRecorderControl recorder={recorderRef.current} onPrepareTarget={prepareTarget} />
                     </div>
                 )}
                 {tokenDescription && (<C.Text_FormTitle style={{ ...theme.text_formTitle, background: `#EEEEEE`, padding: 8, whiteSpace: `pre-wrap` }}>{tokenDescription}</C.Text_FormTitle>)}

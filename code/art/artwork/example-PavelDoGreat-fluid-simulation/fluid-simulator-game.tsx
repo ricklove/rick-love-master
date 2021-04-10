@@ -263,7 +263,6 @@ Based on Fluid Simulator by Pavel Dobryakov: https://paveldogreat.github.io/WebG
 
 
         return {
-            recorder,
             remove: () => {
                 windowEventListenersDestroy();
                 closed = true;

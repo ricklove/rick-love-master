@@ -4,12 +4,13 @@
 /* eslint-disable jsx-a11y/click-events-have-key-events */
 import { useAutoLoadingError } from 'utils-react/hooks';
 import React, { useState } from 'react';
-import { createFFmpeg, fetchFile } from '@ffmpeg/ffmpeg';
+import { createFFmpeg } from '@ffmpeg/ffmpeg';
 import { TimeProvider } from '../time-provider';
 
 export const createRecorder = () => {
 
     let _settings: null | { framesPerSecond: number, quality?: number, width: number, height: number } = null;
+    let isTargetReady = false;
 
     let timeMsLost = 0;
     let timeMs = Date.now();
@@ -24,12 +25,10 @@ export const createRecorder = () => {
         isPaused: () => isRecording ? mode === `processingFrame` : false,
     };
 
-    const start = (settings: NonNullable<typeof _settings>) => {
-        if (isRecording || mode === `processingVideo`) { return; }
-
+    const prepareTarget = async (settings: NonNullable<typeof _settings>) => {
         _settings = settings;
 
-        // Copy the canvas
+        // Get canvas ready
         workingCanvas = document.createElement(`canvas`);
         workingCanvas.width = _settings.width;
         workingCanvas.height = _settings.height;
@@ -37,8 +36,15 @@ export const createRecorder = () => {
 
         workingContext = workingCanvas.getContext(`2d`);
 
-        blobs = [];
+        // wait for target canvas
+        isTargetReady = false;
+    };
 
+    const start = async () => {
+        if (!_settings) { console.error(`prepareCanvas first!`); return; }
+        if (isRecording || mode === `processingVideo`) { console.error(`Not able to start!`); return; }
+
+        blobs = [];
         timeMs = timeProvider.now();
         isRecording = true;
         mode = `waitingForFrame`;
@@ -51,7 +57,6 @@ export const createRecorder = () => {
         isRecording = false;
         timeMsLost = Date.now() - timeMs;
         mode = `processingVideo`;
-
 
         try {
             // const webMBlob = new Blob(blobs, { type: `video/webm; codecs=vp9` });
@@ -144,6 +149,11 @@ export const createRecorder = () => {
     };
 
     return {
+        prepareTarget,
+        getSettings: () => _settings,
+        isWaitingForTarget: () => !isTargetReady && !!_settings,
+        onTargetReady: () => { isTargetReady = true; },
+        isTargetReady: () => isTargetReady,
         start,
         isRecording: () => isRecording,
         isWaitingForFrame: () => mode === `waitingForFrame`,
@@ -165,22 +175,33 @@ export const createRecorder = () => {
 
 export type CanvasVideoRecorder = ReturnType<typeof createRecorder>;
 
-export const CanvasVideoRecorderControl = (props: { recorder: CanvasVideoRecorder }) => {
+export const CanvasVideoRecorderControl = (props: { recorder: CanvasVideoRecorder, onPrepareTarget: () => void }) => {
 
-    const [mode, setMode] = useState(`ready` as 'ready' | 'recording' | 'stopped');
+    const [mode, setMode] = useState(`prepare` as 'prepare' | 'ready' | 'recording' | 'stopped');
 
-    const startRecording = () => {
-        setMode(`recording`);
+    const prepareTarget = () => {
         doWork(async (stopIfObsolete) => {
-            await props.recorder.start({
+            await props.recorder.prepareTarget({
                 framesPerSecond: 30,
-                width: 600,
-                height: 300,
+                width: 256,
+                height: 256,
+                // width: 507,
+                // height: 507,
                 quality: 0.95,
                 // quality: 0.95,
                 // width: 1920,
                 // height: 1080,
             });
+            stopIfObsolete();
+            setMode(`ready`);
+            props.onPrepareTarget();
+        });
+    };
+
+    const startRecording = () => {
+        setMode(`recording`);
+        doWork(async (stopIfObsolete) => {
+            await props.recorder.start();
         });
     };
 
@@ -201,6 +222,9 @@ export const CanvasVideoRecorderControl = (props: { recorder: CanvasVideoRecorde
                 )}
                 {loading && (
                     <div style={{ background: `#88888888` }}><span>Loading 🔄</span></div>
+                )}
+                {mode === `prepare` && (
+                    <div onClick={prepareTarget} style={{ background: `#88888888` }}><span>Prepare ⏺</span></div>
                 )}
                 {mode === `ready` && (
                     <div onClick={startRecording} style={{ background: `#88888888` }}><span>Record ⏺</span></div>
