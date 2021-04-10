@@ -1,6 +1,6 @@
 import { ArtGame } from '../art-game';
 import { EventProvider } from '../event-provider';
-import { ColorRgb, Vector2, scaleByPixelRatio } from '../utils';
+import { ColorRgb, Vector2, scaleByPixelRatio, Rect2 } from '../utils';
 
 type EntityRenderData = {
     id: number;
@@ -179,10 +179,7 @@ export const flappyDodgeGame: ArtGame<RenderArgs> = {
 
             // Collisions
             for (const entity of obstacles) {
-                const r = 0.5 * (player.size.x + entity.size.x);
-                if (r > Math.abs(entity.position.x - player.position.x)
-                    && r > Math.abs(entity.position.y - player.position.y)
-                ) {
+                if (Rect2.collidesRectangle(entity, player, 0.8)) {
                     state.playerState.wasHitThisFrame = true;
                 }
             }
@@ -214,6 +211,12 @@ export const flappyDodgeGame: ArtGame<RenderArgs> = {
             state.playerState.wasHitThisFrame = false;
             updatePlayer();
             updateObstacles();
+
+            // Fix sizes
+            const displaySize = environmentProvider.getDisplaySize();
+            for (const x of [state.player, ...state.obstacles]) {
+                x.size.y = x.size.x * displaySize.width / displaySize.height;
+            }
 
             state.environment.tick++;
 

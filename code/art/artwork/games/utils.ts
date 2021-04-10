@@ -1,6 +1,7 @@
 export type ColorRgb = { r: number, g: number, b: number };
 export type Vector2 = { x: number, y: number };
 export type Size2 = { width: number, height: number };
+export type Rect2 = { position: Vector2, size: Vector2 };
 
 export const Vector2 = {
     add: (a: Vector2, b: Vector2) => {
@@ -20,6 +21,13 @@ export const Vector2 = {
             x: a * b.x,
             y: a * b.y,
         };
+    },
+};
+
+export const Rect2 = {
+    collidesRectangle: (a: Rect2, b: Rect2, sizeRatio = 1) => {
+        return Math.abs(a.position.x - b.position.x) < sizeRatio * 0.5 * (a.size.x + b.size.x)
+            && Math.abs(a.position.y - b.position.y) < sizeRatio * 0.5 * (a.size.y + b.size.y);
     },
 };
 
