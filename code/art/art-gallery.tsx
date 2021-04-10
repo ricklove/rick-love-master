@@ -31,7 +31,7 @@ export const ArtGallery = (props: {}) => {
     ];
 
     const art = useRef(artItems[0]);
-    const recorderRef = useRef(null as null | ReturnType<typeof createRecorder>);
+    const recorderRef = useRef(document.location.search.includes(`camera=true`) ? createRecorder() : null as null | ReturnType<typeof createRecorder>);
 
     const [renderId, setRenderId] = useState(0);
     const [showNavigation, setShowNavigation] = useState(true);
@@ -49,15 +49,13 @@ export const ArtGallery = (props: {}) => {
         openSea?: ArtWork['openSea'];
     };
     const [tokenDescription, setTokenDescription] = useState(null as null | string);
-
     const { debounce } = useDebounce(250);
 
     useEffect(() => {
         const queryParts = document.location.search.substr(1).split(`&`);
 
-        const camera = queryParts.find(x => x.startsWith(`camera`))?.split(`=`)[1];
-        if (camera) { recorderRef.current = createRecorder(); }
-
+        // const camera = queryParts.find(x => x.startsWith(`camera`))?.split(`=`)[1];
+        // if (camera) { recorderRef.current = createRecorder(); }
 
         const artKey = queryParts.find(x => x.startsWith(`key`))?.split(`=`)[1];
         if (!artKey) { changeTokenId(`0`); return; }
@@ -79,7 +77,7 @@ export const ArtGallery = (props: {}) => {
         if (!settings) { return; }
 
         setCustomSize({ width: settings.width, height: settings.height });
-        recorderRef.current.targetReady();
+        recorderRef.current.setTargetReady();
     };
 
     const changeArt = (value: typeof artItems[0]) => {

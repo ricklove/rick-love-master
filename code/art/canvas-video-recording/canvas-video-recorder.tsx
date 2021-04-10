@@ -1,3 +1,4 @@
+/* eslint-disable no-console */
 /* eslint-disable no-await-in-loop */
 /* eslint-disable jsx-a11y/accessible-emoji */
 /* eslint-disable jsx-a11y/no-static-element-interactions */
@@ -5,6 +6,7 @@
 import { useAutoLoadingError } from 'utils-react/hooks';
 import React, { useState } from 'react';
 import { createFFmpeg } from '@ffmpeg/ffmpeg';
+import { delay } from 'utils/delay';
 import { TimeProvider } from '../time-provider';
 
 export const createRecorder = () => {
@@ -13,22 +15,27 @@ export const createRecorder = () => {
 
     let timeMsLost = 0;
     let timeMs = Date.now();
-    let isRecording = false;
     let mode = `none` as 'none'
         | 'targetPrepareRequested' | 'targetReady'
         | `waitingForFrame` | `processingFrame` | `increasingTime`
-        | 'completingVideo';
+        | 'requestedCompleteVideo'
+        | 'readyToCompleteVideo'
+        | 'completingVideo'
+        | 'done';
+    const isRecording = () => mode === `waitingForFrame` || mode === `processingFrame` || mode === `increasingTime`;
 
     let workingCanvas = null as null | HTMLCanvasElement;
     let workingContext = null as null | CanvasRenderingContext2D;
     let blobs = null as null | Blob[];
 
     const timeProvider: TimeProvider = {
-        now: () => isRecording ? timeMs : (Date.now() - timeMsLost),
-        isPaused: () => isRecording ? mode === `processingFrame` : false,
+        now: () => isRecording() ? timeMs : (Date.now() - timeMsLost),
+        isPaused: () => mode === `processingFrame` || mode === `completingVideo`,
     };
 
     const requestPrepareTarget = async (settings: NonNullable<typeof _settings>) => {
+        if (mode !== `none`) { console.error(`requestPrepareTarget: Wrong mode!`, mode); return; }
+
         _settings = settings;
 
         // Get canvas ready
@@ -43,17 +50,27 @@ export const createRecorder = () => {
         mode = `targetPrepareRequested`;
     };
 
+    const setTargetReady = () => {
+        if (mode !== `targetPrepareRequested`) { console.error(`setTargetReady: Wrong mode!`, mode); return; }
+        mode = `targetReady`;
+    };
+
     const start = async () => {
+        if (mode !== `targetReady`) { console.error(`start: Wrong mode!`, mode); return; }
+
         if (!_settings) { console.error(`prepareCanvas first!`); return; }
-        if (isRecording || mode === `completingVideo`) { console.error(`Not able to start!`); return; }
 
         blobs = [];
         timeMs = Date.now() - timeMsLost;
-        isRecording = true;
         mode = `waitingForFrame`;
     };
 
     const beginIncreasingTime = () => {
+        if (mode === `requestedCompleteVideo`) {
+            mode = `readyToCompleteVideo`;
+            return;
+        }
+
         if (!_settings) { console.error(`prepareCanvas first!`); return; }
         const timeMsPerFrame = 1000 / _settings.framesPerSecond;
 
@@ -70,7 +87,6 @@ export const createRecorder = () => {
         if (!blobs || !_settings) { throw new Error(`Recorder has not started`); }
         console.log(`completeToBlob.compile started`);
 
-        isRecording = false;
         timeMsLost = Date.now() - timeMs;
         mode = `completingVideo`;
 
@@ -118,6 +134,18 @@ export const createRecorder = () => {
     };
 
     const completeToDownloadFile = async (filename: string) => {
+        if (mode === `waitingForFrame` || mode === `increasingTime`) {
+            mode = `readyToCompleteVideo`;
+        }
+
+        while (mode === `processingFrame` || mode === `requestedCompleteVideo`) {
+            mode = `requestedCompleteVideo`;
+            await delay(10);
+        }
+
+        if (mode !== `readyToCompleteVideo`) { console.error(`completeToDownloadFile: Wrong mode!`, mode); return; }
+        mode = `completingVideo`;
+
         const dataUrl = await completeToDataUrl();
         console.log(`completeToDownloadFile dataUrl ready`, { dataUrl });
 
@@ -129,12 +157,15 @@ export const createRecorder = () => {
         link.remove();
 
         console.log(`completeToDownloadFile done`, { link, dataUrl });
+
+        mode = `done`;
     };
 
 
     const addFrame = async (canvas: HTMLCanvasElement) => {
-
         return await new Promise<void>((resolve, reject) => {
+            if (mode !== `waitingForFrame`) { console.error(`addFrame: Wrong mode!`, mode); return; }
+
             const cvs = workingCanvas;
             const ctx = workingContext;
             if (!cvs || !ctx || !blobs || !_settings) { throw new Error(`Recorder has not started`); }
@@ -167,19 +198,17 @@ export const createRecorder = () => {
         prepareTarget: requestPrepareTarget,
         getSettings: () => _settings,
         getMode: () => mode,
-        targetReady: () => { mode = `targetReady`; },
+        setTargetReady,
         start,
-        isRecording: () => isRecording,
         isWaitingForFrame: () => mode === `waitingForFrame`,
-        iscompletingVideo: () => mode === `completingVideo`,
         getRecorder: () => {
-            if (!isRecording) { throw new Error(`Recorder is not recording`); }
+            if (!isRecording()) { throw new Error(`Recorder is not recording`); }
 
             return {
                 addFrame,
-                completeToBlob,
+                // completeToBlob,
+                // completeToDataUrl,
                 completeToDownloadFile,
-                completeToDataUrl,
                 settings: _settings,
             };
         },
