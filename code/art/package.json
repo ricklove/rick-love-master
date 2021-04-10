@@ -2,6 +2,8 @@
     "name": "art",
     "version": "1.0.0",
     "dependencies": {
+        "@ffmpeg/core": "^0.8.5",
+        "@ffmpeg/ffmpeg": "^0.9.7",
         "@openzeppelin/contracts": "^3.3.0",
         "@truffle/hdwallet-provider": "^1.2.1",
         "aws-sdk": "^2.749.0",
@@ -15,11 +17,11 @@
         "themes": "*",
         "truffle": "^5.1.62",
         "utils": "*",
-        "utils-react": "*",
-        "whammy": "^0.0.1"
+        "utils-react": "*"
     },
     "devDependencies": {
         "@types/dat.gui": "^0.7.6",
+        "@types/dom-mediacapture-record": "^1.0.7",
         "dotenv": "^8.2.0",
         "env-cmd": "^10.1.0"
     }
