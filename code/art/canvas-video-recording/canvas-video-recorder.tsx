@@ -3,6 +3,7 @@
 /* eslint-disable jsx-a11y/click-events-have-key-events */
 import { useAutoLoadingError } from 'utils-react/hooks';
 import React, { useState } from 'react';
+import { delay } from 'utils/delay';
 import { TimeProvider } from '../time-provider';
 
 export const createRecorder = () => {
@@ -12,52 +13,73 @@ export const createRecorder = () => {
     let timeMsLost = 0;
     let timeMs = Date.now();
     let isRecording = false;
-    let mode = `waitingForFrame` as `waitingForFrame` | `processingFrame` | 'processingVideo';
+    let mode = `starting` as 'starting' | `waitingForFrame` | `processingFrame` | 'processingVideo';
     let stream: null | MediaStream = null;
     let recorder: null | MediaRecorder = null;
     let workingCanvas = null as null | HTMLCanvasElement;
     let workingContext = null as null | CanvasRenderingContext2D;
     let blobs = null as null | Blob[];
+    let dataAvailableCallback = () => { };
 
     const timeProvider: TimeProvider = {
         now: () => isRecording ? timeMs : (Date.now() - timeMsLost),
-        isPaused: () => isRecording ? mode === `processingFrame` : false,
+        isPaused: () => isRecording ? mode !== `waitingForFrame` : false,
     };
 
-    const start = (settings: NonNullable<typeof _settings>) => {
-        if (isRecording || mode === `processingVideo`) { return; }
+    const start = async (settings: NonNullable<typeof _settings>) => {
 
-        _settings = settings;
+        try {
+            if (isRecording || mode !== `starting`) { return; }
 
-        // Copy the canvas
-        workingCanvas = document.createElement(`canvas`);
-        workingCanvas.width = _settings.width;
-        workingCanvas.height = _settings.height;
-        document.body.append(workingCanvas);
+            _settings = settings;
+            isRecording = true;
 
-        workingContext = workingCanvas.getContext(`2d`);
+            // Copy the canvas
+            workingCanvas = document.createElement(`canvas`);
+            workingCanvas.width = _settings.width;
+            workingCanvas.height = _settings.height;
+            workingCanvas.style.background = `#00FF00`;
+            document.body.append(workingCanvas);
 
-        stream = (workingCanvas as unknown as { captureStream: (frameRate?: number) => MediaStream }).captureStream(15);
-        recorder = new MediaRecorder(stream);
+            await delay(100);
+            workingContext = workingCanvas.getContext(`2d`);
 
-        blobs = [];
-        const b = blobs;
-        recorder.addEventListener(`dataavailable`, (e) => {
-            console.log(`dataavailable`, { data: e.data });
-            b.push(e.data);
-        });
+            stream = (workingCanvas as unknown as { captureStream: (frameRate?: number) => MediaStream }).captureStream();
 
-        // recorder.addEventListener(`dataavailable`, finishCapturing);
-        // recorder.addEventListener(`stop`, function (e) {
-        //     video.addEventListener(`canplay`, video.play);
-        //     video.src = URL.createObjectURL(new Blob(blobs, { type: `video/webm; codecs=vp9` }));
-        // });
-        // startCapturing();
-        recorder.start();
+            recorder = new MediaRecorder(stream, {
+                audioBitsPerSecond: 128000,
+                videoBitsPerSecond: 2500000,
+                // mimeType: `video/mp4`,
+                mimeType: `video/webm`,
+            });
+            console.log(`Created MediaRecorder`, { recorder, stream, workingCanvas });
 
-        timeMs = timeProvider.now();
-        isRecording = true;
-        mode = `waitingForFrame`;
+            blobs = [];
+            const b = blobs;
+            recorder.addEventListener(`dataavailable`, (e) => {
+                if (e.data.size > 0) {
+                    console.log(`dataavailable`, { data: e.data });
+                    b.push(e.data);
+                }
+
+                dataAvailableCallback();
+            });
+
+            await delay(100);
+
+            // recorder.addEventListener(`dataavailable`, finishCapturing);
+            // recorder.addEventListener(`stop`, function (e) {
+            //     video.addEventListener(`canplay`, video.play);
+            //     video.src = URL.createObjectURL(new Blob(blobs, { type: `video/webm; codecs=vp9` }));
+            // });
+            // startCapturing();
+            recorder.start();
+
+            timeMs = timeProvider.now();
+            mode = `waitingForFrame`;
+        } catch (err) {
+            console.error(`completeToBlob.compile ERROR`, { err });
+        }
     };
 
     const completeToBlob = async () => {
@@ -80,10 +102,12 @@ export const createRecorder = () => {
                             throw new Error(`No blobs!`);
                         }
 
-                        const webMBlob = new Blob(blobs, { type: `video/webm; codecs=vp9` });
+                        const webMBlob = new Blob(blobs, { type: `video/webm` });
+                        // const webMBlob = new Blob(blobs, { type: `video/webm; codecs=vp9` });
                         console.log(`completeToBlob.compile done`, { webMBlob });
                         resolve(webMBlob);
                     });
+                    w.stop();
 
                 } catch (err) {
                     console.error(`completeToBlob.compile ERROR`, { err });
@@ -116,38 +140,52 @@ export const createRecorder = () => {
 
 
     const addFrame = async (canvas: HTMLCanvasElement) => {
-        if (!recorder || !_settings) { throw new Error(`Recorder has not started`); }
+        return await new Promise<void>((resolve, reject) => {
+            if (!recorder || !_settings) { throw new Error(`Recorder has not started`); }
 
-        try {
-            mode = `processingFrame`;
+            try {
+                mode = `processingFrame`;
+
+                const clone = workingCanvas;
+                const context = workingContext;
+
+                if (!context) {
+                    throw new Error(`Could not get context`);
+                }
+                if (!stream) {
+                    throw new Error(`Could not get stream`);
+                }
+
+                console.log(`drawImage START`, { canvas, clone });
+
+                context.drawImage(canvas, 0, 0, _settings.width, _settings.height);
+                // context.drawImage(canvas, 0, 0, _settings.width, _settings.height, 0, 0, canvas.width, canvas.height);
+                console.log(`drawImage DONE`, { canvas, clone });
 
 
-            const clone = workingCanvas;
-            const context = workingContext;
+                dataAvailableCallback = () => {
+                    if (!recorder || !_settings) { throw new Error(`Recorder has not started`); }
 
-            if (!context) {
-                throw new Error(`Could not get context`);
+                    console.log(`dataAvailableCallback`);
+                    // Add clone as frame
+                    // const frame = clone.toDataURL(`image/webp`, 1);
+                    // writer.add(frame);
+
+                    // Finally update time
+                    const timeMsPerFrame = 1000 / _settings.framesPerSecond;
+                    timeMs += timeMsPerFrame;
+                    mode = `waitingForFrame`;
+
+                    resolve();
+                };
+                recorder.requestData();
+
+            } catch (err) {
+                console.error(`addFrame ERROR`, { err });
+                mode = `waitingForFrame`;
+                reject();
             }
-            if (!stream) {
-                throw new Error(`Could not get stream`);
-            }
-
-            context.drawImage(canvas, 0, 0, _settings.width, _settings.height);
-            // stream.getTracks()[0].
-            // recorder.requestData();
-
-            // Add clone as frame
-            // const frame = clone.toDataURL(`image/webp`, 1);
-            // writer.add(frame);
-
-            // Finally update time
-            const timeMsPerFrame = 1000 / _settings.framesPerSecond;
-            timeMs += timeMsPerFrame;
-            mode = `waitingForFrame`;
-        } catch (err) {
-            console.error(`addFrame ERROR`, { err });
-            mode = `waitingForFrame`;
-        }
+        });
     };
 
     return {
@@ -177,14 +215,17 @@ export const CanvasVideoRecorderControl = (props: { recorder: CanvasVideoRecorde
     const [mode, setMode] = useState(`ready` as 'ready' | 'recording' | 'stopped');
 
     const startRecording = () => {
-        props.recorder.start({
-            framesPerSecond: 15,
-            width: 128,
-            height: 128,
-            // width: 1920,
-            // height: 1080,
-        });
         setMode(`recording`);
+        doWork(async (stopIfObsolete) => {
+            await props.recorder.start({
+                framesPerSecond: 15,
+                width: 1280,
+                height: 720,
+                quality: 1,
+                // width: 1920,
+                // height: 1080,
+            });
+        });
     };
 
     const { loading, error, doWork } = useAutoLoadingError();
