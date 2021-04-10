@@ -1,5 +1,6 @@
-import { EventProvider, scaleByPixelRatio } from './event-provider';
-import { ArtGame, ColorRgb, Vector2 } from './types';
+import { ArtGame } from '../art-game';
+import { EventProvider } from '../event-provider';
+import { ColorRgb, Vector2, scaleByPixelRatio } from '../utils';
 
 type EntityRenderData = {
     id: number;
@@ -9,15 +10,13 @@ type EntityRenderData = {
     size: Vector2;
     color: ColorRgb;
 };
-type UpdateArgs = {
-    onPlayerHit: () => void;
-};
 type RenderArgs = {
+    onPlayerHit: (data: { position: Vector2 }) => void;
     renderEntity: (data: EntityRenderData) => void;
     removeEntity: (id: number) => void;
     setBackgroundVelocity: (data: { velocity: Vector2 }) => void;
 }
-export const flappyDodgeGame: ArtGame<UpdateArgs, RenderArgs> = {
+export const flappyDodgeGame: ArtGame<RenderArgs> = {
     name: `Flappy Dodge`,
     createGame: (timeProvider, environmentProvider) => {
 
@@ -64,6 +63,9 @@ export const flappyDodgeGame: ArtGame<UpdateArgs, RenderArgs> = {
                 color1: { r: COLOR_STRENGTH, g: COLOR_STRENGTH, b: COLOR_STRENGTH },
                 color2: { r: COLOR_STRENGTH, g: COLOR_STRENGTH, b: COLOR_STRENGTH },
                 color2Stength: 0.5,
+            },
+            playerState: {
+                wasHitThisFrame: false,
             },
             obstacles: [] as Entity[],
             obstaclesState: {
@@ -129,7 +131,7 @@ export const flappyDodgeGame: ArtGame<UpdateArgs, RenderArgs> = {
             if (player.position.y > 1) { player.position.y = 1; player.velocity.y = 0; }
         };
 
-        const updateObstacles = (onPlayerHit: () => void) => {
+        const updateObstacles = () => {
             const { player, obstacles, obstaclesState, environment: { time, timeDelta } } = state;
 
             if (time > obstaclesState.timeNextObstacle) {
@@ -181,14 +183,14 @@ export const flappyDodgeGame: ArtGame<UpdateArgs, RenderArgs> = {
                 if (r > Math.abs(entity.position.x - player.position.x)
                     && r > Math.abs(entity.position.y - player.position.y)
                 ) {
-                    onPlayerHit();
+                    state.playerState.wasHitThisFrame = true;
                 }
             }
 
         };
 
         const minTickTimeMs = 16;
-        const update = (args: UpdateArgs) => {
+        const update = () => {
             // console.log(`game.update START`, {});
 
             if (destroyed) {
@@ -201,6 +203,7 @@ export const flappyDodgeGame: ArtGame<UpdateArgs, RenderArgs> = {
                 return;
             }
 
+
             const size = environmentProvider.getDisplaySize();
             state.environment.size = { x: size.width, y: size.height };
             state.environment.timeLast = state.environment.time;
@@ -208,8 +211,9 @@ export const flappyDodgeGame: ArtGame<UpdateArgs, RenderArgs> = {
             state.environment.timeDelta = Math.max(minTickTimeMs * 0.001 * 0.5, state.environment.time - state.environment.timeLast);
             // console.log(`gameInverval`, { environment: state.environment });
 
+            state.playerState.wasHitThisFrame = false;
             updatePlayer();
-            updateObstacles(args.onPlayerHit);
+            updateObstacles();
 
             state.environment.tick++;
 
@@ -217,7 +221,7 @@ export const flappyDodgeGame: ArtGame<UpdateArgs, RenderArgs> = {
         };
 
         const render = (args: RenderArgs) => {
-            const { player, obstacles } = state;
+            const { player, playerState, obstacles } = state;
 
             args.setBackgroundVelocity({
                 velocity: {
@@ -235,6 +239,10 @@ export const flappyDodgeGame: ArtGame<UpdateArgs, RenderArgs> = {
                 size: player.size,
                 color: player.color,
             });
+
+            if (playerState.wasHitThisFrame) {
+                args.onPlayerHit({ position: player.position });
+            }
 
             // Render Entities
             for (const entity of obstacles) {
@@ -339,6 +347,26 @@ export const flappyDodgeGame: ArtGame<UpdateArgs, RenderArgs> = {
             render,
             destroy: () => {
                 destroyed = true;
+            },
+        };
+    },
+    debugRenderer: (tools) => {
+        let callCount = 0;
+        return {
+            onPlayerHit: (data) => {
+                tools.drawX(data.position, { x: 0.1, y: 0.1 }, `#FF0000`);
+            },
+            renderEntity: (data) => {
+                console.log(`renderEntity`, { callCount, data });
+                callCount++;
+
+                tools.drawBox(data.position, data.size, data.kind === `player` ? `#0000FF` : undefined);
+            },
+            removeEntity: (id) => {
+                // tools.drawBox(data.position, data.size, `#FF000000`);
+            },
+            setBackgroundVelocity: (data) => {
+                tools.drawArrow({ x: 0.5, y: 0.5 }, Vector2.add({ x: 0.5, y: 0.5 }, data.velocity), `#FFFF00`);
             },
         };
     },

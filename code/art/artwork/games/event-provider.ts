@@ -34,8 +34,3 @@ export const createEventProvider = (canvas: HTMLCanvasElement) => {
         },
     };
 };
-
-export function scaleByPixelRatio(input: number) {
-    const pixelRatio = window.devicePixelRatio || 1;
-    return Math.floor(input * pixelRatio);
-}

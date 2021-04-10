@@ -742,7 +742,7 @@ export const runFluidSimulator = (host: HTMLDivElement, contentPath: string, sty
     return {
         start,
         canvas,
-        getSize: () => ({
+        getDisplaySize: () => ({
             width: canvas.width,
             height: canvas.height,
         }),

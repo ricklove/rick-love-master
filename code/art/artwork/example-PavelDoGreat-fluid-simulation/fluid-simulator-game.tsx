@@ -3,8 +3,9 @@
 import { clamp } from 'utils/clamp';
 import { ArtWork } from '../../artwork-type';
 import { runFluidSimulator } from './src/run';
-import { flappyDodgeGame } from '../games/flappy-dodge';
+import { flappyDodgeGame } from '../games/flappy-dodge/flappy-dodge';
 import { createEventProvider } from '../games/event-provider';
+import { createDebugGameView } from '../games/art-game';
 
 const contentPath = `/content/art/artwork/example-PavelDoGreat-fluid-simulation/src`;
 
@@ -40,6 +41,9 @@ Renderer based on Fluid Simulator by Pavel Dobryakov: https://paveldogreat.githu
 
         game.setup(eventProvider);
 
+        // Debug
+        const debugViewer = createDebugGameView(flappyDodgeGame, sim.canvas);
+
         const { config } = sim;
 
         if (config) {
@@ -63,7 +67,10 @@ Renderer based on Fluid Simulator by Pavel Dobryakov: https://paveldogreat.githu
         const updateGame = () => {
             config.BLOOM_INTENSITY = clamp(0.001 * (state.resetBloomAtTimeMs - timeProvider.now()), 0, 2);
 
-            game.update({
+            game.update();
+            debugViewer?.render(game);
+
+            game.render({
                 onPlayerHit: () => {
                     // console.log(`onPlayerHit`, {});
 
@@ -72,8 +79,6 @@ Renderer based on Fluid Simulator by Pavel Dobryakov: https://paveldogreat.githu
 
                     state.resetBloomAtTimeMs = timeProvider.now() + 3000;
                 },
-            });
-            game.render({
                 renderEntity: (data) => {
 
                     // if (data.kind === `player`) {
@@ -129,8 +134,9 @@ Renderer based on Fluid Simulator by Pavel Dobryakov: https://paveldogreat.githu
 
             return requestAnimationFrame(update);
         };
-        // Start
 
+
+        // Start
         setTimeout(() => {
             (async () => { await update(); })();
             sim.start();
