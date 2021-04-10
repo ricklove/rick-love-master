@@ -197,12 +197,19 @@ export const CanvasVideoRecorderControl = (props: { recorder: CanvasVideoRecorde
         doWork(async (stopIfObsolete) => {
             await props.recorder.prepareTarget({
                 framesPerSecond: 30,
-                // width: 1280,
-                // height: 720,
-                width: 480,
-                height: 270,
+
+                // 720p - Looks good on mobile
+                width: 1280,
+                height: 720,
+
+                // // Blurry on twitter
+                // width: 480,
+                // height: 270,
+
+                // // Blurry on twitter
                 // width: 256,
                 // height: 256,
+
                 // width: 507,
                 // height: 507,
                 quality: 0.95,
