@@ -59,7 +59,9 @@ export const createRecorder = () => {
                     // const webMBlob = new Blob(blobs, { type: `video/webm; codecs=vp9` });
                     // const webMBlob = new Blob(blobs, { type: `video/webm` });
 
-                    const webMBlob = new Blob(blobs, { type: `image/webp[array]?` });
+                    // const webMBlob = new Blob(blobs, { type: `image/webp[array]?` });
+                    // const webMBlob = new Blob(blobs[0], { type: `image/webp` });
+                    const webMBlob = blobs[0];
                     console.log(`completeToBlob.compile done`, { webMBlob });
                     resolve(webMBlob);
 
@@ -113,7 +115,7 @@ export const createRecorder = () => {
                     timeMs += timeMsPerFrame;
                     mode = `waitingForFrame`;
                     resolve();
-                }, `image/webp`, 1);
+                }, `image/webp`, 0.9);
 
 
             } catch (err) {
