@@ -303,6 +303,10 @@ export const flappyDodgeGame: ArtGame<UpdateArgs, RenderArgs> = {
                 setPointerPosition({ x: e.offsetX, y: e.offsetY });
             });
 
+            canvasAddEventListener(`touchstart`, e => {
+                e.preventDefault();
+            });
+
             canvasAddEventListener(`touchmove`, e => {
                 e.preventDefault();
                 const touches = e.targetTouches as unknown as Touch[];
