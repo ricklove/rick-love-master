@@ -44,14 +44,15 @@ export const createRecorder = () => {
             await delay(100);
             workingContext = workingCanvas.getContext(`2d`);
 
-            stream = (workingCanvas as unknown as { captureStream: (frameRate?: number) => MediaStream }).captureStream();
+            stream = (workingCanvas as unknown as { captureStream: (frameRate?: number) => MediaStream }).captureStream(_settings.framesPerSecond);
 
             recorder = new MediaRecorder(stream, {
-                audioBitsPerSecond: 128000,
-                // videoBitsPerSecond: 2500000,
-                videoBitsPerSecond: 25000000,
+                // audioBitsPerSecond: 128000,
+                // // videoBitsPerSecond: 2500000,
+                videoBitsPerSecond: 25 * 1000 * 1000,
                 // mimeType: `video/mp4`,
-                mimeType: `video/webm`,
+                mimeType: `video/webm;codecs=h264`,
+                // mimeType: `video/webm`,
             });
             console.log(`Created MediaRecorder`, { recorder, stream, workingCanvas });
 
