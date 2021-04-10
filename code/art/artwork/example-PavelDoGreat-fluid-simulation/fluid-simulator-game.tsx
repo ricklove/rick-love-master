@@ -1,6 +1,6 @@
 /* eslint-disable new-cap */
 /* eslint-disable no-new */
-import { createRandomGenerator } from '../../rando';
+import { clamp } from 'utils/clamp';
 import { ArtWork } from '../../artwork-type';
 import { runFluidSimulator } from './src/run';
 import { flappyDodgeGame } from '../games/flappy-dodge';
@@ -43,26 +43,56 @@ Renderer based on Fluid Simulator by Pavel Dobryakov: https://paveldogreat.githu
 
             config.COLORFUL = false;
             config.CURL = 10;
-            config.BLOOM = false;
+            // config.BLOOM = false;
         }
 
         const VEL_MULT = 0.0005;
-        const SIZE_MULT = 0.85;
-        const SIZE_MULT_PLAYER = 1.5;
+        const SIZE_MULT_OBSTACLE = 2;
+        const SIZE_MULT_PLAYER = 2;
         const COLOR_STRENGTH = 0.06;
+        // const CURL_BASE_VALUE = 30;
+
+        const state = {
+            resetBloomAtTimeMs: 0,
+        };
 
         const updateGame = () => {
-            game.update();
+            config.BLOOM_INTENSITY = clamp(0.001 * (state.resetBloomAtTimeMs - timeProvider.now()), 0, 2);
+
+            game.update({
+                onPlayerHit: () => {
+                    // console.log(`onPlayerHit`, {});
+
+                    // config.BLOOM = true;
+                    // sim.updateConfig();
+
+                    state.resetBloomAtTimeMs = timeProvider.now() + 3000;
+                },
+            });
             game.render({
                 renderEntity: (data) => {
+
+                    // if (data.kind === `player`) {
+                    //     console.log(`player`, { data, config });
+
+                    //     // // Adjust vorticity based on player speed
+                    //     // const curl = CURL_BASE_VALUE * clamp((1 + 0.1 * data.velocity.x), 0.5, 2);
+                    //     // config.CURL = curl;
+
+                    //     // if (Math.abs(data.velocity.x) > 0.25) {
+                    //     //     config.BLOOM = true;
+                    //     //     state.resetBloomAtTime = timeProvider.now() + 5;
+                    //     // }
+                    // }
+
                     sim.splat(data.id,
                         true,
                         data.position.x, data.position.y,
                         VEL_MULT * data.velocity.x,
                         VEL_MULT * data.velocity.y,
                         {
-                            x: data.size.x * (data.kind === `player` ? SIZE_MULT_PLAYER : SIZE_MULT),
-                            y: data.size.y * (data.kind === `player` ? SIZE_MULT_PLAYER : SIZE_MULT),
+                            x: data.size.x * (data.kind === `player` ? SIZE_MULT_PLAYER : SIZE_MULT_OBSTACLE),
+                            y: data.size.y * (data.kind === `player` ? SIZE_MULT_PLAYER : SIZE_MULT_OBSTACLE),
                         },
                         {
                             r: data.color.r * COLOR_STRENGTH,

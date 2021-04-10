@@ -8,12 +8,15 @@ type EntityRenderData = {
     size: Vector2;
     color: ColorRgb;
 };
-type RenderProvider = {
+type UpdateArgs = {
+    onPlayerHit: () => void;
+};
+type RenderArgs = {
     renderEntity: (data: EntityRenderData) => void;
     removeEntity: (id: number) => void;
     setBackgroundVelocity: (data: { velocity: Vector2 }) => void;
 }
-export const flappyDodgeGame: ArtGame<RenderProvider> = {
+export const flappyDodgeGame: ArtGame<UpdateArgs, RenderArgs> = {
     name: `Flappy Dodge`,
     createGame: (timeProvider, environmentProvider) => {
 
@@ -111,9 +114,8 @@ export const flappyDodgeGame: ArtGame<RenderProvider> = {
             if (player.position.y > 1) { player.position.y = 1; player.velocity.y = 0; }
         };
 
-        const updateObstacles = () => {
-            const { obstacles, obstaclesState, environment: { time, timeDelta } } = state;
-
+        const updateObstacles = (onPlayerHit: () => void) => {
+            const { player, obstacles, obstaclesState, environment: { time, timeDelta } } = state;
 
             if (time > obstaclesState.timeNextObstacle) {
                 obstaclesState.timeNextObstacle = time + 1.5;
@@ -125,7 +127,7 @@ export const flappyDodgeGame: ArtGame<RenderProvider> = {
                         position: { x: 1.25, y: 0.1 },
                         velocity: { x: -0.125, y: 0 },
                         color: { r: 0.01, g: 0, b: 0 },
-                        size: { x: 0.5, y: 0.5 },
+                        size: { x: 0.1, y: 0.1 },
                         isStill: false,
                     };
                     // Add an obstacle
@@ -143,7 +145,7 @@ export const flappyDodgeGame: ArtGame<RenderProvider> = {
                 };
                 freeObstacle.isStill = Math.random() < 0.1;
 
-                freeObstacle.size = { x: 0.25 + 0.5 * Math.random(), y: 0.25 + 0.5 * Math.random() };
+                freeObstacle.size = { x: 0.1 + 0.02 * Math.random(), y: 0.1 + 0.02 * Math.random() };
             }
 
             for (const entity of obstacles) {
@@ -158,10 +160,20 @@ export const flappyDodgeGame: ArtGame<RenderProvider> = {
                 entity.velocity.y -= timeDelta * 0.1;
             }
 
+            // Collisions
+            for (const entity of obstacles) {
+                const r = 0.35 * (player.size.x + entity.size.x);
+                if (r > Math.abs(entity.position.x - player.position.x)
+                    && r > Math.abs(entity.position.y - player.position.y)
+                ) {
+                    onPlayerHit();
+                }
+            }
+
         };
 
         const minTickTimeMs = 16;
-        const update = () => {
+        const update = (args: UpdateArgs) => {
             // console.log(`game.update START`, {});
 
             if (destroyed) {
@@ -182,17 +194,17 @@ export const flappyDodgeGame: ArtGame<RenderProvider> = {
             // console.log(`gameInverval`, { environment: state.environment });
 
             updatePlayer();
-            updateObstacles();
+            updateObstacles(args.onPlayerHit);
 
             state.environment.tick++;
 
             // console.log(`game.update DONE`, {});
         };
 
-        const render = (sim: RenderProvider) => {
+        const render = (args: RenderArgs) => {
             const { player, obstacles } = state;
 
-            sim.setBackgroundVelocity({
+            args.setBackgroundVelocity({
                 velocity: {
                     x: MOTION_X,
                     y: MOTION_Y,
@@ -200,7 +212,7 @@ export const flappyDodgeGame: ArtGame<RenderProvider> = {
             });
 
             // Render Player
-            sim.renderEntity({
+            args.renderEntity({
                 id: player.id,
                 kind: `player`,
                 position: player.position,
@@ -218,12 +230,12 @@ export const flappyDodgeGame: ArtGame<RenderProvider> = {
                     || entity.position.y > 1.25;
 
                 if (isHidden) {
-                    sim.removeEntity(entity.id);
+                    args.removeEntity(entity.id);
                     continue;
                 }
 
                 if (entity.isStill) {
-                    sim.renderEntity({
+                    args.renderEntity({
                         id: entity.id,
                         kind: `obstacle-still`,
                         position: entity.position,
@@ -234,7 +246,7 @@ export const flappyDodgeGame: ArtGame<RenderProvider> = {
                     continue;
                 }
 
-                sim.renderEntity({
+                args.renderEntity({
                     id: entity.id,
                     kind: `obstacle`,
                     position: entity.position,

@@ -740,6 +740,9 @@ export const runFluidSimulator = (host: HTMLDivElement, contentPath: string, sty
             height: canvas.height,
         }),
         config,
+        updateConfig: () => {
+            updateKeywords();
+        },
         splat: (id: number, active: boolean, x: number, y: number, dx: number, dy: number, size?: { x: number, y: number }, color?: ColorRgb) => {
             let p = pointerMap.get(id);
             if (!p) {
