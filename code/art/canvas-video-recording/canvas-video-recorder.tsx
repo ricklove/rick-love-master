@@ -1,8 +1,10 @@
+/* eslint-disable no-await-in-loop */
 /* eslint-disable jsx-a11y/accessible-emoji */
 /* eslint-disable jsx-a11y/no-static-element-interactions */
 /* eslint-disable jsx-a11y/click-events-have-key-events */
 import { useAutoLoadingError } from 'utils-react/hooks';
 import React, { useState } from 'react';
+import { createFFmpeg, fetchFile } from '@ffmpeg/ffmpeg';
 import { TimeProvider } from '../time-provider';
 
 export const createRecorder = () => {
@@ -43,41 +45,55 @@ export const createRecorder = () => {
     };
 
     const completeToBlob = async () => {
+        if (!blobs || !_settings) { throw new Error(`Recorder has not started`); }
+        console.log(`completeToBlob.compile started`);
+
         isRecording = false;
         timeMsLost = Date.now() - timeMs;
         mode = `processingVideo`;
 
-        return await new Promise<Blob>((resolve, reject) => {
-            setTimeout(() => {
-                try {
-                    console.log(`completeToBlob.compile started`);
 
-                    if (!blobs) {
-                        throw new Error(`No blobs!`);
-                    }
+        try {
+            // const webMBlob = new Blob(blobs, { type: `video/webm; codecs=vp9` });
+            // const webMBlob = new Blob(blobs, { type: `video/webm` });
 
-                    // const webMBlob = new Blob(blobs, { type: `video/webm; codecs=vp9` });
-                    // const webMBlob = new Blob(blobs, { type: `video/webm` });
+            // const webMBlob = new Blob(blobs, { type: `image/webp[array]?` });
+            // const webMBlob = new Blob(blobs[0], { type: `image/webp` });
 
-                    // const webMBlob = new Blob(blobs, { type: `image/webp[array]?` });
-                    // const webMBlob = new Blob(blobs[0], { type: `image/webp` });
-                    const webMBlob = blobs[0];
-                    console.log(`completeToBlob.compile done`, { webMBlob });
-                    resolve(webMBlob);
 
-                } catch (err) {
-                    console.error(`completeToBlob.compile ERROR`, { err });
-                    reject(err);
-                }
-            });
-        });
+            const ffmpeg = createFFmpeg({});
+            await ffmpeg.load();
+
+            // Write images to virtual file system
+            // https://github.com/welefen/canvas2video/blob/master/src/index.ts
+            for (const [i, blob] of blobs.entries()) {
+                const buffer = await blob.arrayBuffer();
+                ffmpeg.FS(`writeFile`, `image${`${i}`.padStart(3, `0`)}.webp`, new Uint8Array(buffer));
+            }
+
+            // Run ffmpeg as slideshow
+            // https://trac.ffmpeg.org/wiki/Slideshow
+            // ffmpeg -framerate 24 -i img%03d.png output.mp4
+            await ffmpeg.run(...`-framerate ${_settings.framesPerSecond} -i image%03d.webp output.mp4`.split(` `));
+
+            const data = ffmpeg.FS(`readFile`, `output.mp4`);
+            const videoBlob = new Blob([data.buffer], { type: `video/mp4` });
+
+            console.log(`completeToBlob.compile done`, { videoBlob });
+
+            return videoBlob;
+
+        } catch (err) {
+            console.error(`completeToBlob.compile ERROR`, { err });
+            throw err;
+        }
     };
 
     const completeToDataUrl = async () => {
-        const webMBlob = await completeToBlob();
-        console.log(`completeToDownloadFile webMBlob ready`, { webMBlob });
+        const videoBlob = await completeToBlob();
+        console.log(`completeToDownloadFile videoBlob ready`, { videoBlob });
 
-        return URL.createObjectURL(webMBlob);
+        return URL.createObjectURL(videoBlob);
     };
 
     const completeToDownloadFile = async (filename: string) => {
@@ -98,15 +114,16 @@ export const createRecorder = () => {
     const addFrame = async (canvas: HTMLCanvasElement) => {
 
         return await new Promise<void>((resolve, reject) => {
-            const context = workingContext;
-            if (!context || !blobs || !_settings) { throw new Error(`Recorder has not started`); }
+            const cvs = workingCanvas;
+            const ctx = workingContext;
+            if (!cvs || !ctx || !blobs || !_settings) { throw new Error(`Recorder has not started`); }
 
             try {
                 mode = `processingFrame`;
 
-                context.drawImage(canvas, 0, 0, _settings.width, _settings.height);
-                canvas.toBlob(b => {
-                    if (!context || !blobs || !_settings) { throw new Error(`Recorder has not started`); }
+                ctx.drawImage(canvas, 0, 0, _settings.width, _settings.height);
+                cvs.toBlob(b => {
+                    if (!ctx || !blobs || !_settings) { throw new Error(`Recorder has not started`); }
 
                     b && blobs?.push(b);
 
@@ -115,7 +132,7 @@ export const createRecorder = () => {
                     timeMs += timeMsPerFrame;
                     mode = `waitingForFrame`;
                     resolve();
-                }, `image/webp`, 0.9);
+                }, `image/webp`, _settings.quality);
 
 
             } catch (err) {
@@ -156,12 +173,13 @@ export const CanvasVideoRecorderControl = (props: { recorder: CanvasVideoRecorde
         setMode(`recording`);
         doWork(async (stopIfObsolete) => {
             await props.recorder.start({
-                framesPerSecond: 15,
-                // width: 1280,
-                // height: 720,
-                quality: 1,
-                width: 1920,
-                height: 1080,
+                framesPerSecond: 30,
+                width: 600,
+                height: 300,
+                quality: 0.95,
+                // quality: 0.95,
+                // width: 1920,
+                // height: 1080,
             });
         });
     };
@@ -171,7 +189,7 @@ export const CanvasVideoRecorderControl = (props: { recorder: CanvasVideoRecorde
     const stopRecording = () => {
         setMode(`stopped`);
         doWork(async (stopIfObsolete) => {
-            await props.recorder.getRecorder().completeToDownloadFile(`video.download`);
+            await props.recorder.getRecorder().completeToDownloadFile(`video.mp4`);
         });
     };
 
