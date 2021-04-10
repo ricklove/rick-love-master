@@ -4,7 +4,7 @@
     "D:/Projects/rick-love-master/node_modules/@ffmpeg/ffmpeg/src/node/getCreateFFmpegCore.js 6:30-47\nCritical dependency: the request of a dependency is an expression\n @ D:/Projects/rick-love-master/node_modules/@ffmpeg/ffmpeg/src/node/index.js\n @ D:/Projects/rick-love-master/node_modules/@ffmpeg/ffmpeg/src/index.js\n @ D:/Projects/rick-love-master/code/art/canvas-video-recording/canvas-video-recorder.tsx\n @ D:/Projects/rick-love-master/code/art/art-gallery.tsx\n @ D:/Projects/rick-love-master/code/blog/pageTemplates/component-art-gallery.tsx\n @ D:/Projects/rick-love-master/code/blog/site/create-page.tsx\n @ ./src/setup-browser.tsx\n @ ./gatsby-lite-template.ts\n @ ./.cache/_this_is_virtual_fs_path_/$virtual/sync-requires.js\n @ ./.cache/static-entry.js"
   ],
   "version": "4.46.0",
-  "hash": "25b30e0ae29e5b6d14ec",
+  "hash": "07e96a142427c97607b8",
   "publicPath": "/",
   "outputPath": "D:\\\\Projects\\\\rick-love-master\\\\projects\\\\blog-site\\\\public",
   "assetsByChunkName": {
@@ -16,7 +16,7 @@
   "assets": [
     {
       "name": "render-page.js",
-      "size": 11710178,
+      "size": 11711228,
       "chunks": [
         "main"
       ],
@@ -28,7 +28,7 @@
     },
     {
       "name": "render-page.js.map",
-      "size": 11762911,
+      "size": 11764591,
       "chunks": [
         "main"
       ],
