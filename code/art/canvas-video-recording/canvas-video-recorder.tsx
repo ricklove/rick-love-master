@@ -3,7 +3,6 @@
 /* eslint-disable jsx-a11y/click-events-have-key-events */
 import { useAutoLoadingError } from 'utils-react/hooks';
 import React, { useState } from 'react';
-import { delay } from 'utils/delay';
 import { TimeProvider } from '../time-provider';
 
 export const createRecorder = () => {
@@ -13,80 +12,37 @@ export const createRecorder = () => {
     let timeMsLost = 0;
     let timeMs = Date.now();
     let isRecording = false;
-    let mode = `starting` as 'starting' | `waitingForFrame` | `processingFrame` | 'processingVideo';
-    let stream: null | MediaStream = null;
-    let recorder: null | MediaRecorder = null;
+    let mode = `waitingForFrame` as `waitingForFrame` | `processingFrame` | 'processingVideo';
     let workingCanvas = null as null | HTMLCanvasElement;
     let workingContext = null as null | CanvasRenderingContext2D;
     let blobs = null as null | Blob[];
-    let dataAvailableCallback = () => { };
 
     const timeProvider: TimeProvider = {
         now: () => isRecording ? timeMs : (Date.now() - timeMsLost),
-        isPaused: () => isRecording ? mode !== `waitingForFrame` : false,
+        isPaused: () => isRecording ? mode === `processingFrame` : false,
     };
 
-    const start = async (settings: NonNullable<typeof _settings>) => {
+    const start = (settings: NonNullable<typeof _settings>) => {
+        if (isRecording || mode === `processingVideo`) { return; }
 
-        try {
-            if (isRecording || mode !== `starting`) { return; }
+        _settings = settings;
 
-            _settings = settings;
-            isRecording = true;
+        // Copy the canvas
+        workingCanvas = document.createElement(`canvas`);
+        workingCanvas.width = _settings.width;
+        workingCanvas.height = _settings.height;
+        document.body.append(workingCanvas);
 
-            // Copy the canvas
-            workingCanvas = document.createElement(`canvas`);
-            workingCanvas.width = _settings.width;
-            workingCanvas.height = _settings.height;
-            workingCanvas.style.background = `#00FF00`;
-            document.body.append(workingCanvas);
+        workingContext = workingCanvas.getContext(`2d`);
 
-            await delay(100);
-            workingContext = workingCanvas.getContext(`2d`);
+        blobs = [];
 
-            stream = (workingCanvas as unknown as { captureStream: (frameRate?: number) => MediaStream }).captureStream(_settings.framesPerSecond);
-
-            recorder = new MediaRecorder(stream, {
-                // audioBitsPerSecond: 128000,
-                // // videoBitsPerSecond: 2500000,
-                videoBitsPerSecond: 25 * 1000 * 1000,
-                // mimeType: `video/mp4`,
-                mimeType: `video/webm;codecs=h264`,
-                // mimeType: `video/webm`,
-            });
-            console.log(`Created MediaRecorder`, { recorder, stream, workingCanvas });
-
-            blobs = [];
-            const b = blobs;
-            recorder.addEventListener(`dataavailable`, (e) => {
-                if (e.data.size > 0) {
-                    console.log(`dataavailable`, { data: e.data });
-                    b.push(e.data);
-                }
-
-                dataAvailableCallback();
-            });
-
-            await delay(100);
-
-            // recorder.addEventListener(`dataavailable`, finishCapturing);
-            // recorder.addEventListener(`stop`, function (e) {
-            //     video.addEventListener(`canplay`, video.play);
-            //     video.src = URL.createObjectURL(new Blob(blobs, { type: `video/webm; codecs=vp9` }));
-            // });
-            // startCapturing();
-            recorder.start();
-
-            timeMs = timeProvider.now();
-            mode = `waitingForFrame`;
-        } catch (err) {
-            console.error(`completeToBlob.compile ERROR`, { err });
-        }
+        timeMs = timeProvider.now();
+        isRecording = true;
+        mode = `waitingForFrame`;
     };
 
     const completeToBlob = async () => {
-        if (!recorder) { throw new Error(`Recorder has not started`); }
-        const w = recorder;
         isRecording = false;
         timeMsLost = Date.now() - timeMs;
         mode = `processingVideo`;
@@ -95,21 +51,17 @@ export const createRecorder = () => {
             setTimeout(() => {
                 try {
                     console.log(`completeToBlob.compile started`);
-                    // const webMBlob = w.getTracks()[0];
-                    w.addEventListener(`stop`, (e) => {
-                        // video.addEventListener(`canplay`, video.play);
-                        // video.src = URL.createObjectURL(new Blob(blobs, { type: `video/webm; codecs=vp9` }));
 
-                        if (!blobs) {
-                            throw new Error(`No blobs!`);
-                        }
+                    if (!blobs) {
+                        throw new Error(`No blobs!`);
+                    }
 
-                        const webMBlob = new Blob(blobs, { type: `video/webm` });
-                        // const webMBlob = new Blob(blobs, { type: `video/webm; codecs=vp9` });
-                        console.log(`completeToBlob.compile done`, { webMBlob });
-                        resolve(webMBlob);
-                    });
-                    w.stop();
+                    // const webMBlob = new Blob(blobs, { type: `video/webm; codecs=vp9` });
+                    // const webMBlob = new Blob(blobs, { type: `video/webm` });
+
+                    const webMBlob = new Blob(blobs, { type: `image/webp[array]?` });
+                    console.log(`completeToBlob.compile done`, { webMBlob });
+                    resolve(webMBlob);
 
                 } catch (err) {
                     console.error(`completeToBlob.compile ERROR`, { err });
@@ -142,50 +94,32 @@ export const createRecorder = () => {
 
 
     const addFrame = async (canvas: HTMLCanvasElement) => {
+
         return await new Promise<void>((resolve, reject) => {
-            if (!recorder || !_settings) { throw new Error(`Recorder has not started`); }
+            const context = workingContext;
+            if (!context || !blobs || !_settings) { throw new Error(`Recorder has not started`); }
 
             try {
                 mode = `processingFrame`;
 
-                const clone = workingCanvas;
-                const context = workingContext;
-
-                if (!context) {
-                    throw new Error(`Could not get context`);
-                }
-                if (!stream) {
-                    throw new Error(`Could not get stream`);
-                }
-
-                console.log(`drawImage START`, { canvas, clone });
-
                 context.drawImage(canvas, 0, 0, _settings.width, _settings.height);
-                // context.drawImage(canvas, 0, 0, _settings.width, _settings.height, 0, 0, canvas.width, canvas.height);
-                console.log(`drawImage DONE`, { canvas, clone });
+                canvas.toBlob(b => {
+                    if (!context || !blobs || !_settings) { throw new Error(`Recorder has not started`); }
 
-
-                dataAvailableCallback = () => {
-                    if (!recorder || !_settings) { throw new Error(`Recorder has not started`); }
-
-                    console.log(`dataAvailableCallback`);
-                    // Add clone as frame
-                    // const frame = clone.toDataURL(`image/webp`, 1);
-                    // writer.add(frame);
+                    b && blobs?.push(b);
 
                     // Finally update time
                     const timeMsPerFrame = 1000 / _settings.framesPerSecond;
                     timeMs += timeMsPerFrame;
                     mode = `waitingForFrame`;
-
                     resolve();
-                };
-                recorder.requestData();
+                }, `image/webp`, 1);
+
 
             } catch (err) {
                 console.error(`addFrame ERROR`, { err });
                 mode = `waitingForFrame`;
-                reject();
+                reject(err);
             }
         });
     };
@@ -196,7 +130,7 @@ export const createRecorder = () => {
         isWaitingForFrame: () => mode === `waitingForFrame`,
         isProcessingVideo: () => mode === `processingVideo`,
         getRecorder: () => {
-            if (!isRecording || !recorder) { throw new Error(`Recorder is not recording`); }
+            if (!isRecording) { throw new Error(`Recorder is not recording`); }
 
             return {
                 addFrame,
