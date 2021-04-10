@@ -55,8 +55,8 @@ Renderer based on Fluid Simulator by Pavel Dobryakov: https://paveldogreat.githu
         }
 
         const VEL_MULT = 0.0005;
-        const SIZE_MULT_OBSTACLE = 2;
-        const SIZE_MULT_PLAYER = 2;
+        const SIZE_MULT_OBSTACLE = 4;
+        const SIZE_MULT_PLAYER = 4;
         const COLOR_STRENGTH = 0.06;
         // const CURL_BASE_VALUE = 30;
 

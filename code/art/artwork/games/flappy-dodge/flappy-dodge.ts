@@ -58,7 +58,7 @@ export const flappyDodgeGame: ArtGame<RenderArgs> = {
                 id: 42,
                 position: { x: 0.5, y: 0.5 },
                 velocity: { x: 0, y: 0 },
-                size: { x: 0.05, y: 0.05 },
+                size: { x: 0.025, y: 0.025 },
                 color: { r: COLOR_STRENGTH, g: COLOR_STRENGTH, b: COLOR_STRENGTH },
                 color1: { r: COLOR_STRENGTH, g: COLOR_STRENGTH, b: COLOR_STRENGTH },
                 color2: { r: COLOR_STRENGTH, g: COLOR_STRENGTH, b: COLOR_STRENGTH },
@@ -144,7 +144,7 @@ export const flappyDodgeGame: ArtGame<RenderArgs> = {
                         position: { x: 1.25, y: 0.1 },
                         velocity: { x: -0.125, y: 0 },
                         color: { r: 0.01, g: 0, b: 0 },
-                        size: { x: 0.1, y: 0.1 },
+                        size: { x: 0.05, y: 0.05 },
                         isStill: false,
                     };
                     // Add an obstacle
@@ -162,7 +162,7 @@ export const flappyDodgeGame: ArtGame<RenderArgs> = {
                 };
                 freeObstacle.isStill = Math.random() < 0.1;
 
-                freeObstacle.size = { x: 0.1 + 0.02 * Math.random(), y: 0.1 + 0.02 * Math.random() };
+                freeObstacle.size = { x: 0.05 + 0.01 * Math.random(), y: 0.05 + 0.01 * Math.random() };
             }
 
             for (const entity of obstacles) {
@@ -179,7 +179,7 @@ export const flappyDodgeGame: ArtGame<RenderArgs> = {
 
             // Collisions
             for (const entity of obstacles) {
-                const r = 0.35 * (player.size.x + entity.size.x);
+                const r = 0.5 * (player.size.x + entity.size.x);
                 if (r > Math.abs(entity.position.x - player.position.x)
                     && r > Math.abs(entity.position.y - player.position.y)
                 ) {
