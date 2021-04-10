@@ -185,8 +185,13 @@ Based on Fluid Simulator by Pavel Dobryakov: https://paveldogreat.github.io/WebG
         const update = async () => {
             if (closed) { return; }
 
-            if (!timeProvider.isPaused()) {
+            if (timeProvider.isPaused()) {
                 console.log(`fluidSimulatorGame.renderArt timeProvider.PAUSED`, {});
+
+                if (recorder?.isWaitingForFrame()) {
+                    await recorder.getRecorder().addFrame(sim.canvas);
+                }
+
                 requestAnimationFrame(update);
                 return;
             }

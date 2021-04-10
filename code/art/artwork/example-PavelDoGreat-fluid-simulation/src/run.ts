@@ -745,9 +745,9 @@ export const runFluidSimulator = (host: HTMLDivElement, contentPath: string, sty
                 pointerMap.set(id, p);
                 pointers.push(p);
                 p.id = id;
-                console.log(`splat - new`, { id, active, x, y });
+                // console.log(`splat - new`, { id, active, x, y });
             }
-            console.log(`splat`, { id, color, active, x, y });
+            // console.log(`splat`, { id, color, active, x, y });
 
 
             p.down = active;
