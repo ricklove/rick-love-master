@@ -255,16 +255,22 @@ export const runFluidSimulator = (host: HTMLDivElement, contentPath: string, sty
         displayMaterial.setKeywords(displayKeywords);
     }
 
-    console.log(`runFluidSimulator - 05 updateKeywords`, {});
-    updateKeywords();
+    const start = () => {
+        resizeCanvas();
 
-    console.log(`runFluidSimulator - 06 initFramebuffers`, {});
-    initFramebuffers();
+        console.log(`runFluidSimulator - 05 updateKeywords`, {});
+        updateKeywords();
 
-    console.log(`runFluidSimulator - 07 multipleSplats`, {});
-    if (!options?.disableStartupSplats) {
-        multipleSplats(randomIntRange(5, 25));
-    }
+        console.log(`runFluidSimulator - 06 initFramebuffers`, {});
+        initFramebuffers();
+
+        console.log(`runFluidSimulator - 07 multipleSplats`, {});
+        if (!options?.disableStartupSplats) {
+            multipleSplats(randomIntRange(5, 25));
+        }
+
+        update();
+    };
 
     function update() {
         // console.log(`runFluidSimulator.update START`, {});
@@ -277,8 +283,8 @@ export const runFluidSimulator = (host: HTMLDivElement, contentPath: string, sty
         const dt = calcDeltaTime();
 
         if (resizeCanvas()) {
-            initFramebuffers();
             updateKeywords();
+            initFramebuffers();
         }
         updateColors(dt);
         applyInputs();
@@ -727,13 +733,14 @@ export const runFluidSimulator = (host: HTMLDivElement, contentPath: string, sty
         pointer.down = false;
     }
 
-    console.log(`runFluidSimulator - 09 update Start Loop`, {});
-    update();
+    // console.log(`runFluidSimulator - 09 update Start Loop`, {});
+    // update();
 
     console.log(`runFluidSimulator - 10 DONE`, {});
 
     const pointerMap = new Map<number, PointerEntity>();
     return {
+        start,
         canvas,
         getSize: () => ({
             width: canvas.width,

@@ -130,7 +130,11 @@ Renderer based on Fluid Simulator by Pavel Dobryakov: https://paveldogreat.githu
             return requestAnimationFrame(update);
         };
         // Start
-        (async () => { await update(); })();
+
+        setTimeout(() => {
+            (async () => { await update(); })();
+            sim.start();
+        }, 250);
 
         return {
             remove: () => {

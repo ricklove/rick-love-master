@@ -297,14 +297,27 @@ export const flappyDodgeGame: ArtGame<UpdateArgs, RenderArgs> = {
                 };
             };
 
+            canvasAddEventListener(`mousedown`, e => {
+                setPointerPosition({ x: e.offsetX, y: e.offsetY });
+            });
+
             canvasAddEventListener(`mousemove`, e => {
                 // const pointer = pointers[0];
-                // if (!pointer.down) return;
+                if (!state.input.pointer
+                    || timeProvider.now() > state.input.pointer.timeMs + 1000
+                ) { return; }
+
                 setPointerPosition({ x: e.offsetX, y: e.offsetY });
             });
 
             canvasAddEventListener(`touchstart`, e => {
                 e.preventDefault();
+                const touches = e.targetTouches as unknown as Touch[];
+                for (const [i, touch] of touches.entries()) {
+                    if (i > 0) { break; }
+
+                    setPointerPosition({ x: touch.pageX, y: touch.pageY });
+                }
             });
 
             canvasAddEventListener(`touchmove`, e => {

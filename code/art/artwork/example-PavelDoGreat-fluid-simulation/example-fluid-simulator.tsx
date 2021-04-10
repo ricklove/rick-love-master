@@ -2,7 +2,7 @@
 /* eslint-disable no-new */
 import { createRandomGenerator } from '../../rando';
 import { ArtWork } from '../../artwork-type';
-import { runFluidSimulator } from './src/run';
+import { runFluidSimulator as createFluidSimulator } from './src/run';
 
 const contentPath = `/content/art/artwork/example-PavelDoGreat-fluid-simulation/src`;
 
@@ -23,9 +23,12 @@ From: https://paveldogreat.github.io/WebGL-Fluid-Simulation/`,
     //     tokenId: `91242641486941084018191434774360347389366801368112854311223385694785434025985`,
     // },
     renderArt: (hostElement: HTMLDivElement, hash) => {
-        const result = runFluidSimulator(hostElement, contentPath, { width: `100%`, height: `100%` });
+        const sim = createFluidSimulator(hostElement, contentPath, { width: `100%`, height: `100%` });
+        setTimeout(() => {
+            sim?.start();
+        }, 250);
         return {
-            remove: () => result?.close(),
+            remove: () => sim?.close(),
         };
     },
 };
