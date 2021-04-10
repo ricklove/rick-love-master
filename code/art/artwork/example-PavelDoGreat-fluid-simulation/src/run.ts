@@ -276,8 +276,10 @@ export const runFluidSimulator = (host: HTMLDivElement, contentPath: string, sty
 
         const dt = calcDeltaTime();
 
-        if (resizeCanvas())
+        if (resizeCanvas()) {
             initFramebuffers();
+            updateKeywords();
+        }
         updateColors(dt);
         applyInputs();
         if (!config.PAUSED)

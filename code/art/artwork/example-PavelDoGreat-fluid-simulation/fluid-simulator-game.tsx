@@ -43,6 +43,7 @@ Based on Fluid Simulator by Pavel Dobryakov: https://paveldogreat.github.io/WebG
             config.MOTION_Y = MOTION_Y;
             config.COLORFUL = false;
             config.CURL = 10;
+            config.BLOOM = false;
         }
 
         type Vector2 = { x: number, y: number };
@@ -183,7 +184,7 @@ Based on Fluid Simulator by Pavel Dobryakov: https://paveldogreat.github.io/WebG
         let closed = false;
         const minTickTimeMs = 16;
         const update = async (): Promise<number> => {
-            console.log(`fluidSimulatorGame.update START`, {});
+            // console.log(`fluidSimulatorGame.update START`, {});
 
             if (closed) {
                 console.log(`fluidSimulatorGame.update CLOSED`, {});
@@ -194,6 +195,7 @@ Based on Fluid Simulator by Pavel Dobryakov: https://paveldogreat.github.io/WebG
                 console.log(`fluidSimulatorGame.update timeProvider.PAUSED`, {});
 
                 if (recorder?.isWaitingForFrame()) {
+                    console.log(`fluidSimulatorGame.update timeProvider.PAUSED - addFrame`, {});
                     await recorder.getRecorder().addFrame(sim.canvas);
                 }
 
@@ -236,7 +238,7 @@ Based on Fluid Simulator by Pavel Dobryakov: https://paveldogreat.github.io/WebG
                 await recorder.getRecorder().addFrame(sim.canvas);
             }
 
-            console.log(`fluidSimulatorGame.update DONE`, {});
+            // console.log(`fluidSimulatorGame.update DONE`, {});
             return requestAnimationFrame(update);
         };
         // Start
