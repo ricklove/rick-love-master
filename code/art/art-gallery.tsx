@@ -15,7 +15,7 @@ import { art_gpu_01 } from './artwork/gpu-01/gpu-01';
 import { art_flyingColors } from './artwork/flying-colors/flying-colors';
 import { art_exampleFluidSimulator } from './artwork/example-PavelDoGreat-fluid-simulation/example-fluid-simulator';
 import { art_fluidSimulatorGame } from './artwork/example-PavelDoGreat-fluid-simulation/fluid-simulator-game';
-import { CanvasVideoRecorderControl, createRecorder } from './canvas-video-recorder';
+import { CanvasVideoRecorderControl, createRecorder } from './canvas-video-recording/canvas-video-recorder';
 
 export const ArtGallery = (props: {}) => {
     const artItems: ArtWork[] = [

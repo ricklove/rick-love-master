@@ -1,4 +1,4 @@
-import { CanvasVideoRecorder } from './canvas-video-recorder';
+import { CanvasVideoRecorder } from './canvas-video-recording/canvas-video-recorder';
 
 export type ArtWork = {
     key: string;

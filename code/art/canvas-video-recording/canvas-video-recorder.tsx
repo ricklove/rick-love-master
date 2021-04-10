@@ -3,9 +3,9 @@
 /* eslint-disable jsx-a11y/click-events-have-key-events */
 import { useAutoLoadingError } from 'utils-react/hooks';
 import React, { useEffect, useState, useRef } from 'react';
-import Whammy from 'whammy';
+import { Video } from './whammy';
 // import WebMWriter from 'webm-writer';
-import { TimeProvider } from './time-provider';
+import { TimeProvider } from '../time-provider';
 
 export const createRecorder = () => {
 
@@ -13,7 +13,7 @@ export const createRecorder = () => {
     let timeMs = Date.now();
     let isRecording = false;
     let mode = `waitingForFrame` as `waitingForFrame` | `processingFrame` | 'processingVideo';
-    let writer: null | Whammy.Video = null;
+    let writer: null | Video = null;
     let _settings: null | { framesPerSecond: number, quality?: number, width: number, height: number } = null;
 
     const timeProvider: TimeProvider = {
@@ -25,7 +25,7 @@ export const createRecorder = () => {
         if (isRecording || mode === `processingVideo`) { return; }
 
         _settings = settings;
-        writer = new Whammy.Video(_settings.framesPerSecond, _settings.quality ?? 1);
+        writer = new Video(_settings.framesPerSecond, _settings.quality ?? 1);
 
         timeMs = timeProvider.now();
         isRecording = true;
@@ -43,7 +43,7 @@ export const createRecorder = () => {
             setTimeout(() => {
                 try {
                     console.log(`completeToBlob.compile started`);
-                    const webMBlob = w.compile(false);
+                    const webMBlob = w.compile(false) as Blob;
                     console.log(`completeToBlob.compile done`, { webMBlob });
                     resolve(webMBlob);
                 } catch (err) {
@@ -75,30 +75,45 @@ export const createRecorder = () => {
         console.log(`completeToDownloadFile done`, { link, dataUrl });
     };
 
+    let workingCanvas = null as null | HTMLCanvasElement;
+    let workingContext = null as null | CanvasRenderingContext2D;
     const addFrame = async (canvas: HTMLCanvasElement) => {
         if (!writer || !_settings) { throw new Error(`Recorder has not started`); }
 
-        mode = `processingFrame`;
+        try {
+            mode = `processingFrame`;
 
-        // Copy the canvas
-        const clone = document.createElement(`canvas`);
-        clone.width = _settings.width;
-        clone.height = _settings.height;
+            // Copy the canvas
+            if (!workingCanvas) {
+                workingCanvas = document.createElement(`canvas`);
+                workingCanvas.width = _settings.width;
+                workingCanvas.height = _settings.height;
+                document.body.append(workingCanvas);
 
-        const context = clone.getContext(`2d`);
-        if (!context) {
-            throw new Error(`Could not get context`);
+                workingContext = workingCanvas.getContext(`2d`);
+            }
+
+            const clone = workingCanvas;
+            const context = workingContext;
+
+            if (!context) {
+                throw new Error(`Could not get context`);
+            }
+
+            context.drawImage(canvas, 0, 0, _settings.width, _settings.height);
+
+            // Add clone as frame
+            const frame = clone.toDataURL(`image/webp`, 1);
+            writer.add(frame);
+
+            // Finally update time
+            const timeMsPerFrame = 1000 / _settings.framesPerSecond;
+            timeMs += timeMsPerFrame;
+            mode = `waitingForFrame`;
+        } catch (err) {
+            console.error(`addFrame ERROR`, { err });
+            mode = `waitingForFrame`;
         }
-
-        context.drawImage(canvas, 0, 0, _settings.width, _settings.height);
-
-        // Add clone as frame
-        writer.add(clone);
-
-        // Finally update time
-        const timeMsPerFrame = 1000 / _settings.framesPerSecond;
-        timeMs += timeMsPerFrame;
-        mode = `waitingForFrame`;
     };
 
     return {
