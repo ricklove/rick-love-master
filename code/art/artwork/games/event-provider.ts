@@ -3,9 +3,9 @@ export type EventProvider = { windowAddEventListener: Window['addEventListener']
 
 export const createEventProvider = (canvas: HTMLCanvasElement) => {
     const windowSubs = [] as { name: string, handler: () => void }[];
-    const windowAddEventListener = ((name: string, handler: () => void) => {
-        window.addEventListener(name, handler);
+    const windowAddEventListener = ((name: string, handler: () => void, options?: boolean | AddEventListenerOptions) => {
         windowSubs.push({ name, handler });
+        return window.addEventListener(name, handler, options);
     }) as typeof window.addEventListener;
     const windowEventListenersDestroy = () => {
         windowSubs.forEach(({ name, handler }) => {
@@ -13,11 +13,11 @@ export const createEventProvider = (canvas: HTMLCanvasElement) => {
         });
     };
     const canvasSubs = [] as { name: string, handler: () => void }[];
-    const canvasAddEventListener = ((name: string, handler: () => void) => {
-        if (!canvas) { return; }
+    const canvasAddEventListener = ((name: string, handler: () => void, options: boolean | AddEventListenerOptions) => {
+        if (!canvas) { return null; }
 
-        canvas.addEventListener(name, handler);
         canvasSubs.push({ name, handler });
+        return canvas.addEventListener(name, handler, options);
     }) as HTMLCanvasElement['addEventListener'];
     const canvasEventListenersDestroy = () => {
         canvasSubs.forEach(({ name, handler }) => {
