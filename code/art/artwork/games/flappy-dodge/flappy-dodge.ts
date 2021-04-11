@@ -284,7 +284,7 @@ export const flappyDodgeGame: ArtGame<RenderArgs> = {
         };
 
 
-        const subscribeEvents = ({ windowAddEventListener, canvasAddEventListener }: EventProvider) => {
+        const subscribeEvents = ({ windowAddEventListener, canvasAddEventListener, tools }: EventProvider) => {
             windowAddEventListener(`keydown`, e => {
                 if (e.key === `w` || e.key === `ArrowUp`) { state.input.u = true; }
                 if (e.key === `a` || e.key === `ArrowLeft`) { state.input.l = true; }
@@ -298,47 +298,36 @@ export const flappyDodgeGame: ArtGame<RenderArgs> = {
                 if (e.key === `d` || e.key === `ArrowRight`) { state.input.r = false; }
             });
 
-            const setPointerPosition = (displayPosition: Vector2) => {
-                const size = environmentProvider.getDisplaySize();
-                const posX = scaleByPixelRatio(displayPosition.x) / size.width;
-                const posY = 1 - (scaleByPixelRatio(displayPosition.y) / size.height);
+            const setPointerPosition = (gamePosition: Vector2) => {
                 state.input.pointer = {
-                    position: { x: posX, y: posY },
+                    position: gamePosition,
                     timeMs: timeProvider.now(),
                 };
             };
 
             canvasAddEventListener(`mousedown`, e => {
-                setPointerPosition({ x: e.offsetX, y: e.offsetY });
+                setPointerPosition(tools.getMouseGamePosition(e));
             });
 
             canvasAddEventListener(`mousemove`, e => {
-                // const pointer = pointers[0];
-                if (!state.input.pointer
-                    || timeProvider.now() > state.input.pointer.timeMs + 1000
-                ) { return; }
 
-                setPointerPosition({ x: e.offsetX, y: e.offsetY });
+                // Check if mouse active
+                if (!state.input.pointer
+                    || timeProvider.now() > state.input.pointer.timeMs + 1000) { return; }
+
+                setPointerPosition(tools.getMouseGamePosition(e));
             });
 
             canvasAddEventListener(`touchstart`, e => {
+                setPointerPosition(tools.getTouchPositions(e)[0]);
                 e.preventDefault();
-                const touches = e.targetTouches as unknown as Touch[];
-                for (const [i, touch] of touches.entries()) {
-                    if (i > 0) { break; }
-
-                    setPointerPosition({ x: touch.pageX, y: touch.pageY });
-                }
+                return false;
             });
 
             canvasAddEventListener(`touchmove`, e => {
+                setPointerPosition(tools.getTouchPositions(e)[0]);
                 e.preventDefault();
-                const touches = e.targetTouches as unknown as Touch[];
-                for (const [i, touch] of touches.entries()) {
-                    if (i > 0) { break; }
-
-                    setPointerPosition({ x: touch.pageX, y: touch.pageY });
-                }
+                return false;
             }, false);
         };
 
