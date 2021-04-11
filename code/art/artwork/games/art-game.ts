@@ -26,64 +26,98 @@ export const createDebugGameView = <TRenderArgs>(
 
     if (!game.debugRenderer) { return null; }
 
-    const canvas = document.createElement(`canvas`);
-    gameCanvas.parentElement?.appendChild(canvas);
-    canvas.style.pointerEvents = `none`;
-    canvas.style.position = `absolute`;
-    canvas.style.left = `0`;
-    canvas.style.top = `0`;
-    canvas.style.opacity = `0.5`;
-    // canvas.style.backgroundColor = `#00FF0022`;
+    const setup = () => {
+        if (!game.debugRenderer) { return null; }
 
-    const autoResizeCanvas = () => {
-        const width = scaleByPixelRatio(gameCanvas.clientWidth);
-        const height = scaleByPixelRatio(gameCanvas.clientHeight);
-        if (canvas.width !== width || canvas.height !== height) {
-            canvas.width = width;
-            canvas.height = height;
+        const canvas = document.createElement(`canvas`);
+        gameCanvas.parentElement?.appendChild(canvas);
+        canvas.style.pointerEvents = `none`;
+        canvas.style.position = `absolute`;
+        canvas.style.left = `0`;
+        canvas.style.top = `0`;
+        canvas.style.opacity = `0.5`;
+        // canvas.style.backgroundColor = `#00FF0022`;
 
-            return true;
-        }
-        return false;
+        const autoResizeCanvas = () => {
+            const width = scaleByPixelRatio(gameCanvas.clientWidth);
+            const height = scaleByPixelRatio(gameCanvas.clientHeight);
+            if (canvas.width !== width || canvas.height !== height) {
+                canvas.width = width;
+                canvas.height = height;
+
+                return true;
+            }
+            return false;
+        };
+
+        const context = canvas.getContext(`2d`);
+        if (!context) { throw new Error(`createDebugCanvas: Could not get context`); }
+
+        const tools = createDebugDrawingTools(context, () => ({ width: canvas.width, height: canvas.height }));
+        const renderArgs = game.debugRenderer(tools, context, canvas);
+        const statsState = {
+            frameLast: {
+                time: Date.now(),
+                updateFrameTick: 0,
+                renderFrameTick: 0,
+            },
+            frame125: {
+                time: Date.now(),
+                updateFrameTick: 0,
+                renderFrameTick: 0,
+            },
+            frame250: {
+                time: Date.now(),
+                updateFrameTick: 0,
+                renderFrameTick: 0,
+            },
+        };
+
+        return {
+            isVisible: false,
+            canvas,
+            context,
+            tools,
+            renderArgs,
+            statsState,
+            autoResizeCanvas,
+        };
     };
 
-    const context = canvas.getContext(`2d`);
-    if (!context) { throw new Error(`createDebugCanvas: Could not get context`); }
+    let debugState = null as null | ReturnType<typeof setup>;
+    const getOrCreateState = () => {
+        if (!debugState) {
+            debugState = setup();
+        }
+        return debugState;
+    };
 
-    const tools = createDebugDrawingTools(context, () => ({ width: canvas.width, height: canvas.height }));
-    const renderArgs = game.debugRenderer(tools, context, canvas);
-
-
-    let isVisible = true;
     eventProvider.windowAddEventListener(`keydown`, e => {
+        const s = getOrCreateState();
+        if (!s) { return; }
         if (e.key === `t`) {
             // toggle debug
-            isVisible = !isVisible;
-            canvas.style.opacity = isVisible ? `0` : `0.5`;
+            s.isVisible = !s.isVisible;
+            s.canvas.style.opacity = s.isVisible ? `0.5` : `0`;
         }
     });
 
-    const statsState = {
-        frameLast: {
-            time: Date.now(),
-            updateFrameTick: 0,
-            renderFrameTick: 0,
-        },
-        frame125: {
-            time: Date.now(),
-            updateFrameTick: 0,
-            renderFrameTick: 0,
-        },
-        frame250: {
-            time: Date.now(),
-            updateFrameTick: 0,
-            renderFrameTick: 0,
-        },
-    };
-
     return {
         render: (gameInstance: { render: (renderCallbacks: TRenderArgs) => void }, stats: { updateFrameTick: number, renderFrameTick: number }) => {
-            if (!isVisible) { return; }
+            if (!debugState) { return; }
+
+            const s = getOrCreateState();
+            if (!s) { return; }
+            if (!s.isVisible) { return; }
+
+            const {
+                canvas,
+                context,
+                tools,
+                renderArgs,
+                statsState,
+                autoResizeCanvas,
+            } = s;
 
             // Stats
             if (Date.now() > statsState.frame250.time + 250) {
@@ -116,7 +150,8 @@ export const createDebugGameView = <TRenderArgs>(
             tools.drawLabel({ x: 0, y: 0.2 }, `update fps: ${((frameA.updateFrameTick - frameB.updateFrameTick) * 1000 / (frameA.time - frameB.time)).toFixed(1).padStart(8, ` `)}`);
         },
         destroy: () => {
-            canvas.remove();
+            if (!debugState) { return; }
+            debugState.canvas.remove();
         },
     };
 };
