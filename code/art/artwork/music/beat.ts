@@ -83,14 +83,64 @@ export const createBeatPlayer = () => {
         shape: null as null | PeriodicWave,
     };
 
+    const getNote = (note: string)=>{
+        // A2    110.00
+        // A#2/Bb2 	116.54
+        // B2	123.47
+        // C3	130.81
+        // C#3/Db3 	138.59
+        // D3	146.83
+        // D#3/Eb3 	155.56
+        // E3	164.81
+        // F3	174.61
+        // F#3/Gb3 	185.00
+        // G3	196.00
+        // G#3/Ab3 	207.65
+        // A3	220.00 
+
+        // A2   110.00
+        // B2	123.47
+        // C3	130.81
+        // D3	146.83
+        // E3	164.81
+        // F3	174.61
+        // G3	196.00
+    
+        switch(note){
+            case `A2`: case `a`: return 110;
+            case `B2`: case `b`: return 123.47;
+            case `C2`: case `c`: return 130.81;
+            case `D2`: case `d`: return 146.83;
+            case `E2`: case `e`: return 164.81;
+            case `F2`: case `f`: return 174.61;
+            case `G2`: case `g`: return 196;
+            case `A3`: return 220;
+            case `A4`: return 440;
+            default:  return 0;
+        }
+    };
+
+
+    const createSong = (notes:string) => notes.split(` `).map(x=>getNote(x));
+
+    // const song = createSong(`a a a a a A4 a a a a a A4 a a a a a A4 a a a`);
+    // const song = createSong(`a a a A4 . b c A4`);
+    const song = createSong(`a a a A4 . b c A4 b c d A4 c d e A4`);
+    // const song = createSong(`aabcd aabcd aabcd ffe`);
+
     const updateFrequency = ()=>{
         if(!result){ return; }
         if( state.positions.length === 0 ){ return; }
 
-        // state.iBeat++;
-        if( state.iBeat >= state.positions.length ){
+        if( state.iBeat >= song.length ){
             state.iBeat = 0;
         }
+        result.oscNode.frequency.value = song[state.iBeat] ?? 0;
+
+        // state.iBeat++;
+        // if( state.iBeat >= state.positions.length ){
+        //     state.iBeat = 0;
+        // }
         // const p = state.positions[state.iBeat];
         // if(!p){ return; }
 
@@ -100,8 +150,8 @@ export const createBeatPlayer = () => {
         // }
 
         // result.oscNode.frequency.value = 220;
-        result.oscNode.frequency.value = 220 + 220 * Math.pow(2, 2 * state.positions[0].x);
-        result.oscNode.detune.value = 500 - 1000 * state.positions[0].y;
+        // result.oscNode.frequency.value = 220 + 220 * Math.pow(2, 2 * state.positions[0].x);
+        // result.oscNode.detune.value = 500 - 1000 * state.positions[0].y;
         
         // result.oscNode.frequency.value = 80 * (1+1 * Math.pow(2, 2 * p.x));
         // result.oscNode.detune.value = 500 - 1000 * p.y;
