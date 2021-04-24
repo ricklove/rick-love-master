@@ -14,7 +14,10 @@ const createAudio = () => {
     const oscNode = audioContext.createOscillator();
     oscNode.connect( audioContext.destination );
     oscNode.frequency.value = 0;
-    oscNode.type = `square`;
+    // oscNode.type = `custom`;
+
+    // const periodicWave = audioContext.createPeriodicWave()
+
     // oscNode.type = `triangle`;
     // oscNode.type = `sine`;
 
@@ -77,6 +80,7 @@ export const createBeatPlayer = () => {
         isPlaying: false,
         iBeat: 0,
         positions: [] as Vector2[],
+        shape: null as null | PeriodicWave,
     };
 
     const updateFrequency = ()=>{
@@ -87,17 +91,35 @@ export const createBeatPlayer = () => {
         if( state.iBeat >= state.positions.length ){
             state.iBeat = 0;
         }
-        const p = state.positions[state.iBeat];
-        if(!p){ return; }
+        // const p = state.positions[state.iBeat];
+        // if(!p){ return; }
 
         // if( !state.isPlaying ){
         //     result.oscNode.frequency.value = 0;
         //     return;
         // }
 
-        // result.oscNode.frequency.value = 220 + 220 * Math.pow(2, 2 * p.x);
-        result.oscNode.frequency.value = 80 * (1+1 * Math.pow(2, 2 * p.x));
-        result.oscNode.detune.value = 500 - 1000 * p.y;
+        // result.oscNode.frequency.value = 220;
+        result.oscNode.frequency.value = 220 + 220 * Math.pow(2, 2 * state.positions[0].x);
+        result.oscNode.detune.value = 500 - 1000 * state.positions[0].y;
+        
+        // result.oscNode.frequency.value = 80 * (1+1 * Math.pow(2, 2 * p.x));
+        // result.oscNode.detune.value = 500 - 1000 * p.y;
+
+        const real = new Float32Array(2 + state.positions.length);
+        const imag = new Float32Array(2 + state.positions.length);
+        real[0] = 0;
+        imag[0] = 0;
+        real[state.positions.length-1] = 0;
+        imag[state.positions.length-1] = 0;
+
+        for(const [i,p] of state.positions.entries()){
+            real[i+1] = p.x;
+            imag[i+1] = p.y;
+        }
+
+        const wave = result.audioContext.createPeriodicWave(real,imag);
+        result.oscNode.setPeriodicWave(wave);
     };
 
     return {
@@ -117,9 +139,7 @@ export const createBeatPlayer = () => {
 
             state.isPlaying = true;
 
-            if( state.iBeat === 0){
-                state.positions = data.positions;
-            }
+            state.positions = data.positions;
             state.iBeat++;
             updateFrequency();
 
