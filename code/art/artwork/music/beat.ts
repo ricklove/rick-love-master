@@ -3,6 +3,7 @@ import { Vector2 } from '../games/utils';
 const createAudio = () => {
     const audioContext = (() => {
         try {
+            const AudioContext = (window.AudioContext || (window as unknown as { webkitAudioContext: AudioContext }).webkitAudioContext) ;
             return new AudioContext();
         } catch {
             console.error(`The Web Audio API is apparently not supported in this browser.`);
