@@ -69,14 +69,8 @@ const createAudio = () => {
 
 export const createBeatPlayer = () => {
 
-    const result = createAudio();
-
-    if( result){
-        const dest = document.body;
-        (dest as any).audioNode = result.audioContext.destination;
-    }
-
     const state = {
+        audio: null as null | ReturnType<typeof createAudio>,
         isStarted: false,
         isPlaying: false,
         iBeat: 0,
@@ -130,13 +124,14 @@ export const createBeatPlayer = () => {
     // const song = createSong(`aabcd aabcd aabcd ffe`);
 
     const updateFrequency = ()=>{
-        if(!result){ return; }
+        const {audio} = state;
+        if(!audio){ return; }
         if( state.positions.length === 0 ){ return; }
 
         if( state.iBeat >= song.length ){
             state.iBeat = 0;
         }
-        result.oscNode.frequency.value = song[state.iBeat] ?? 0;
+        audio.oscNode.frequency.value = song[state.iBeat] ?? 0;
 
         // state.iBeat++;
         // if( state.iBeat >= state.positions.length ){
@@ -169,8 +164,8 @@ export const createBeatPlayer = () => {
             imag[i+1] = p.y;
         }
 
-        const wave = result.audioContext.createPeriodicWave(real,imag);
-        result.oscNode.setPeriodicWave(wave);
+        const wave = audio.audioContext.createPeriodicWave(real,imag);
+        audio.oscNode.setPeriodicWave(wave);
     };
 
     return {
@@ -178,14 +173,16 @@ export const createBeatPlayer = () => {
         start: ()=>{
             if( state.isStarted ) { return; }
             state.isStarted = true;
-            result?.oscNode.start(0);
+
+            state.audio = createAudio();
+            state.audio?.oscNode.start(0);
 
             // setInterval(()=>{
               
             // }, 1);
         },
         beat: (data:{ positions:Vector2[] }) => {
-            if(!result){ return; }
+            if(!state.audio){ return; }
             if(!state.isStarted ) { return; }
 
             state.isPlaying = true;
@@ -198,11 +195,13 @@ export const createBeatPlayer = () => {
             // result.oscNode.frequency.value = 220 + 220 * Math.pow(2, 2 * data.positions[0].x);
             // const timeToPlay = 50;
 
-            const timeToPlay = 50;
+            const timeToPlay = 1000 * 10/110;
             // const timeToPlay = 50 + 50 * data.positions[0].y;
             // result.oscNode.detune.value = 500 - 1000 * data.position.y;
             setTimeout(()=>{
-                result.oscNode.frequency.value = 0;
+                if(!state.audio){ return; }
+
+                state.audio.oscNode.frequency.value = 0;
                 state.isPlaying = false;
                 // result.oscNode.stop();
             },timeToPlay);
