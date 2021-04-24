@@ -7,6 +7,7 @@ import { flappyDodgeGame } from '../games/flappy-dodge/flappy-dodge';
 import { createEventProvider } from '../games/event-provider';
 import { createDebugGameView } from '../games/art-game';
 import { snakeGame } from '../games/snake/snake';
+import { createBeatPlayer } from '../music/beat';
 
 const contentPath = `/content/art/artwork/example-PavelDoGreat-fluid-simulation/src`;
 
@@ -26,7 +27,7 @@ Renderer based on Fluid Simulator by Pavel Dobryakov: https://paveldogreat.githu
     // },
     renderArt: (hostElement, hash, recorder) => {
         const sim = runFluidSimulator(hostElement, contentPath, { width: `100%`, height: `100%` }, {
-            disableGui: true, disableInput: true, disableStartupSplats: true,
+            disableGui: false, disableInput: true, disableStartupSplats: true,
             timeProvider: recorder?.timeProvider,
         });
         if (!sim) { return { remove: () => { } }; }
@@ -43,6 +44,17 @@ Renderer based on Fluid Simulator by Pavel Dobryakov: https://paveldogreat.githu
             });
 
         game.setup(eventProvider);
+
+        const beatPlayer = createBeatPlayer();
+        eventProvider.canvasAddEventListener(`touchdown`, ()=>{
+            beatPlayer.start();
+        });
+        eventProvider.canvasAddEventListener(`mousedown`, ()=>{
+            beatPlayer.start();
+        });
+        eventProvider.canvasAddEventListener(`keydown`, ()=>{
+            beatPlayer.start();
+        });
 
         // Debug
         const debugViewer = createDebugGameView(gameSource, sim.canvas, eventProvider);
@@ -68,6 +80,7 @@ Renderer based on Fluid Simulator by Pavel Dobryakov: https://paveldogreat.githu
         };
 
         let frameTick = 0;
+        let beatCount = 0;
         const updateGame = () => {
             config.BLOOM_INTENSITY = clamp(0.001 * (state.resetBloomAtTimeMs - timeProvider.now()), 0, 2);
 
@@ -90,6 +103,22 @@ Renderer based on Fluid Simulator by Pavel Dobryakov: https://paveldogreat.githu
                     // sim.updateConfig();
 
                     state.resetBloomAtTimeMs = timeProvider.now() + 500;
+                },
+                onBeat: (data) => {
+                    beatCount++;
+                    beatPlayer.beat(data);
+
+                    // console.log(`onPlayerHit`, {});
+
+                    // config.BLOOM = true;
+                    // sim.updateConfig();
+
+                    // if(beatCount % 4 !== 0){ return; }
+
+                    if(timeProvider.now() > state.resetBloomAtTimeMs){
+                        console.log(`onBeat`);
+                        state.resetBloomAtTimeMs = timeProvider.now() + 50;
+                    }
                 },
                 renderEntity: (data) => {
 

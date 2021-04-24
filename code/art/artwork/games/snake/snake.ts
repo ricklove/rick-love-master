@@ -13,6 +13,7 @@ type EntityRenderData = {
 type RenderArgs = {
     onPlayerHit: (data: { position: Vector2 }) => void;
     onPlayerReward: (data: { position: Vector2 }) => void;
+    onBeat: (data: { position: Vector2 }) => void;
     renderEntity: (data: EntityRenderData) => void;
     removeEntity: (id: number) => void;
     setBackgroundVelocity: (data: { velocity: Vector2 }) => void;
@@ -79,6 +80,7 @@ export const snakeGame: ArtGame<RenderArgs> = {
                 restartAtTime: null as null | number,
                 wasHitThisFrame: false,
                 ateThisFrame: false,
+                wasThisFrameOnBeat: false,
                 timeNextTurn: 0,
                 nextDirection: { x: 1, y: 0 },
             },
@@ -115,9 +117,6 @@ export const snakeGame: ArtGame<RenderArgs> = {
 
             const foodDelta = Vector2.subtract( f.position, player.position );
             const nextPlayerPosition_noTurn = toPositionFromGridPosition(Vector2.add(player.targetGridPosition, playerState.nextDirection));
-            const nextFoodDelta = Vector2.subtract( f.position, nextPlayerPosition_noTurn );
-            const isGoingTowardsFood = Vector2.lengthSq(nextFoodDelta) < Vector2.lengthSq(foodDelta) ;
-            if( isGoingTowardsFood ){ return; }
 
             const turnNone = playerState.nextDirection;
             const turnA = {
@@ -132,7 +131,11 @@ export const snakeGame: ArtGame<RenderArgs> = {
             const nextPlayerPosition_turnB = toPositionFromGridPosition(Vector2.add(player.targetGridPosition, turnB));
 
             // Turn to food
-            if( Math.random() < 0.75 ){
+            const nextFoodDelta = Vector2.subtract( f.position, nextPlayerPosition_noTurn );
+            const isGoingTowardsFood = Vector2.lengthSq(nextFoodDelta) < Vector2.lengthSq(foodDelta) ;
+
+            if( !isGoingTowardsFood && Math.random() < 0.75 ){
+
                 const turnAFoodDelta = Vector2.subtract( f.position, nextPlayerPosition_turnA );
                 const turnBFoodDelta = Vector2.subtract( f.position, nextPlayerPosition_turnB );
 
@@ -217,6 +220,7 @@ export const snakeGame: ArtGame<RenderArgs> = {
             // Change directions
             if(time > playerState.timeNextTurn){
                 playerState.timeNextTurn = time + timePerUnit;
+                playerState.wasThisFrameOnBeat = true;
 
                 // Segments
                 for(let i = player.segments.length - 1; i >= 0; i--){
@@ -302,7 +306,7 @@ export const snakeGame: ArtGame<RenderArgs> = {
                     id: 10000 + food.length,
                     color: player.color,
                     isStill: true,
-                    position: { x: Math.random(), y: Math.random() },
+                    position: { x: 0.1 + 0.8 * Math.random(), y: 0.1 + 0.8 * Math.random() },
                     size: gridUnitSize,
                     velocity: { x: 0, y: 0 },
                 });
@@ -387,6 +391,7 @@ export const snakeGame: ArtGame<RenderArgs> = {
 
             state.playerState.ateThisFrame = false;
             state.playerState.wasHitThisFrame = false;
+            state.playerState.wasThisFrameOnBeat = false;
             updatePlayer();
             updateObstacles();
 
@@ -427,6 +432,10 @@ export const snakeGame: ArtGame<RenderArgs> = {
 
             if (playerState.wasHitThisFrame) {
                 args.onPlayerHit({ position: player.position });
+            }
+
+            if (playerState.wasThisFrameOnBeat) {
+                args.onBeat({ position: player.position });
             }
 
             // Render player segments
@@ -543,6 +552,9 @@ export const snakeGame: ArtGame<RenderArgs> = {
             },
             onPlayerReward: (data) => {
                 tools.drawX(data.position, { x: 0.1, y: 0.1 }, `#0000FF`);
+            },
+            onBeat: (data) => {
+                tools.drawX(data.position, { x: 0.1, y: 0.1 }, `#00FFFF`);
             },
             renderEntity: (data) => {
                 tools.drawBox(data.position, data.size, data.kind === `player` ? `#0000FF` : undefined);
