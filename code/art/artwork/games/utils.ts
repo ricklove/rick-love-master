@@ -34,6 +34,9 @@ export const Vector2 = {
     distanceSq: (a: Vector2, b: Vector2) => {
         return Vector2.lengthSq(Vector2.subtract(a,b));
     },
+    equal: (a: Vector2, b: Vector2, margin = 0.0001) => {
+        return Vector2.distanceSq(a,b) <= margin;
+    },
 };
 
 export const Rect2 = {
