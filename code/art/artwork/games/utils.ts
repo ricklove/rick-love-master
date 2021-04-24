@@ -16,11 +16,23 @@ export const Vector2 = {
             y: a.y - b.y,
         };
     },
+    divide: (a: Vector2, b: Vector2) => {
+        return {
+            x: a.x / b.x,
+            y: a.y / b.y,
+        };
+    },
     scale: (a: number, b: Vector2) => {
         return {
             x: a * b.x,
             y: a * b.y,
         };
+    },
+    lengthSq: (a: Vector2) => {
+        return a.x * a.x + a.y * a.y;
+    },
+    distanceSq: (a: Vector2, b: Vector2) => {
+        return Vector2.lengthSq(Vector2.subtract(a,b));
     },
 };
 

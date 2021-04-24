@@ -6,6 +6,7 @@ import { runFluidSimulator } from './src/run';
 import { flappyDodgeGame } from '../games/flappy-dodge/flappy-dodge';
 import { createEventProvider } from '../games/event-provider';
 import { createDebugGameView } from '../games/art-game';
+import { snakeGame } from '../games/snake/snake';
 
 const contentPath = `/content/art/artwork/example-PavelDoGreat-fluid-simulation/src`;
 
@@ -33,7 +34,9 @@ Renderer based on Fluid Simulator by Pavel Dobryakov: https://paveldogreat.githu
         const timeProvider = recorder?.timeProvider ?? { now: () => Date.now(), isPaused: () => false };
         const eventProvider = createEventProvider(sim.canvas);
 
-        const game = flappyDodgeGame.createGame(
+        // const game = flappyDodgeGame.createGame(
+        const gameSource = snakeGame;
+        const game = gameSource.createGame(
             timeProvider,
             {
                 getDisplaySize: () => ({ width: sim.canvas.width, height: sim.canvas.height }),
@@ -42,7 +45,7 @@ Renderer based on Fluid Simulator by Pavel Dobryakov: https://paveldogreat.githu
         game.setup(eventProvider);
 
         // Debug
-        const debugViewer = createDebugGameView(flappyDodgeGame, sim.canvas, eventProvider);
+        const debugViewer = createDebugGameView(gameSource, sim.canvas, eventProvider);
 
         const { config } = sim;
 
@@ -79,6 +82,14 @@ Renderer based on Fluid Simulator by Pavel Dobryakov: https://paveldogreat.githu
                     // sim.updateConfig();
 
                     state.resetBloomAtTimeMs = timeProvider.now() + 3000;
+                },
+                onPlayerReward: (data) => {
+                    // console.log(`onPlayerHit`, {});
+
+                    // config.BLOOM = true;
+                    // sim.updateConfig();
+
+                    state.resetBloomAtTimeMs = timeProvider.now() + 500;
                 },
                 renderEntity: (data) => {
 
