@@ -14,8 +14,9 @@ const createAudio = () => {
     const oscNode = audioContext.createOscillator();
     oscNode.connect( audioContext.destination );
     oscNode.frequency.value = 0;
+    oscNode.type = `square`;
     // oscNode.type = `triangle`;
-    oscNode.type = `sine`;
+    // oscNode.type = `sine`;
 
 	// const isMobile = (navigator.userAgent.includes(`Android`))||(navigator.userAgent.includes(`iPad`))||(navigator.userAgent.includes(`iPhone`));
 
@@ -73,6 +74,30 @@ export const createBeatPlayer = () => {
 
     const state = {
         isStarted: false,
+        isPlaying: false,
+        iBeat: 0,
+        positions: [] as Vector2[],
+    };
+
+    const updateFrequency = ()=>{
+        if(!result){ return; }
+        if( state.positions.length === 0 ){ return; }
+
+        // state.iBeat++;
+        if( state.iBeat >= state.positions.length ){
+            state.iBeat = 0;
+        }
+        const p = state.positions[state.iBeat];
+        if(!p){ return; }
+
+        // if( !state.isPlaying ){
+        //     result.oscNode.frequency.value = 0;
+        //     return;
+        // }
+
+        // result.oscNode.frequency.value = 220 + 220 * Math.pow(2, 2 * p.x);
+        result.oscNode.frequency.value = 80 * (1+1 * Math.pow(2, 2 * p.x));
+        result.oscNode.detune.value = 500 - 1000 * p.y;
     };
 
     return {
@@ -81,17 +106,33 @@ export const createBeatPlayer = () => {
             if( state.isStarted ) { return; }
             state.isStarted = true;
             result?.oscNode.start(0);
+
+            // setInterval(()=>{
+              
+            // }, 1);
         },
-        beat: (data:{position:Vector2}) => {
+        beat: (data:{ positions:Vector2[] }) => {
             if(!result){ return; }
             if(!state.isStarted ) { return; }
 
+            state.isPlaying = true;
+
+            if( state.iBeat === 0){
+                state.positions = data.positions;
+            }
+            state.iBeat++;
+            updateFrequency();
+
             // result.oscNode.start(0);
-            result.oscNode.frequency.value = 220 + 220 * Math.pow(2, 2 * data.position.x);
-            const timeToPlay = 25 + 25 * data.position.y;
+            // result.oscNode.frequency.value = 220 + 220 * Math.pow(2, 2 * data.positions[0].x);
+            // const timeToPlay = 50;
+
+            const timeToPlay = 50;
+            // const timeToPlay = 50 + 50 * data.positions[0].y;
             // result.oscNode.detune.value = 500 - 1000 * data.position.y;
             setTimeout(()=>{
                 result.oscNode.frequency.value = 0;
+                state.isPlaying = false;
                 // result.oscNode.stop();
             },timeToPlay);
         },

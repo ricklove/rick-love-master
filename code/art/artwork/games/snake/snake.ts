@@ -13,7 +13,7 @@ type EntityRenderData = {
 type RenderArgs = {
     onPlayerHit: (data: { position: Vector2 }) => void;
     onPlayerReward: (data: { position: Vector2 }) => void;
-    onBeat: (data: { position: Vector2 }) => void;
+    onBeat: (data: { positions: Vector2[] }) => void;
     renderEntity: (data: EntityRenderData) => void;
     removeEntity: (id: number) => void;
     setBackgroundVelocity: (data: { velocity: Vector2 }) => void;
@@ -435,7 +435,7 @@ export const snakeGame: ArtGame<RenderArgs> = {
             }
 
             if (playerState.wasThisFrameOnBeat) {
-                args.onBeat({ position: player.position });
+                args.onBeat({ positions: [player.position, ...player.segments.map(x=>x.position)] });
             }
 
             // Render player segments
@@ -554,7 +554,9 @@ export const snakeGame: ArtGame<RenderArgs> = {
                 tools.drawX(data.position, { x: 0.1, y: 0.1 }, `#0000FF`);
             },
             onBeat: (data) => {
-                tools.drawX(data.position, { x: 0.1, y: 0.1 }, `#00FFFF`);
+                data.positions.forEach( p => {
+                    tools.drawX(p, { x: 0.1, y: 0.1 }, `#00FFFF`);
+                });
             },
             renderEntity: (data) => {
                 tools.drawBox(data.position, data.size, data.kind === `player` ? `#0000FF` : undefined);
