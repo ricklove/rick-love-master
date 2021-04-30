@@ -4,76 +4,29 @@ module.exports = {
     parserOptions: {
         project: './tsconfig.json',
     },
-    globals: {
-        graphql: true,
-        __PATH_PREFIX__: true,
-        __BASE_PATH__: true, // this will rarely, if ever, be used by consumers
-    },
     plugins: [
-        `@typescript-eslint`,
-        `eslint-comments`,
+        '@typescript-eslint',
         `import-quotes`,
-        `promise`,
-        `unicorn`,
-        // `custom-rules`,
+        'jest',
     ],
     extends: [
-        `airbnb-typescript`,
-        `eslint-config-react-app`,
-        `plugin:@typescript-eslint/recommended`,
-        `plugin:eslint-comments/recommended`,
-        `plugin:promise/recommended`,
-        `plugin:unicorn/recommended`,
-        `prettier`,
-        `prettier/react`,
-        `prettier/@typescript-eslint`,
+        'eslint:recommended',
+        // 'plugin:prettier/recommended',
+        'plugin:@typescript-eslint/recommended',
+        // 'prettier',
     ],
+    env: {
+        es6: true,
+        jest: true,
+        browser: true,
+        node: true,
+    },
     rules: {
-        // Always Use Named Exports
-        "import/prefer-default-export": "off",
-        "import/no-default-export": "error",
+        "semi": "off",
+        "@typescript-eslint/semi": ["error"],
 
-        // Sometimes it's useful to keep props especially when passing through to a nested component
-        "react/destructuring-assignment": "off",
+        "@typescript-eslint/explicit-module-boundary-types": "off",
 
-        // For Typescript only .tsx, for Javascript either
-        "react/jsx-filename-extension": [2, { "extensions": [".js", ".jsx", ".tsx"] }],
-
-        // Need to disable because of not supporting module level const arrow functions
-        // However, typescript itself will check this, so still safe
-        "no-use-before-define": ["off"],
-
-        // Many Functions should use an inferred return type
-        "@typescript-eslint/explicit-function-return-type": [
-            "off",
-        ],
-
-        // Allow common abbreviates like: e, err, props, args, len
-        "unicorn/prevent-abbreviations": "off",
-
-        // Allow return undefined
-        "unicorn/no-useless-undefined": "off",
-
-        // Allow return null
-        "unicorn/no-null": "off",
-
-        // Allow nested ternary
-        "unicorn/no-nested-ternary": "off",
-
-        // Allow Disable ESLint Rule for whole file
-        "eslint-comments/disable-enable-pair": ["error", { "allowWholeFile": true }],
-
-        // Yes, of course we use continue with loops
-        "no-continue": "off",
-
-        // Always use semicolon
-        "semi": ["error", "always"],
-
-        // Single line at end of file, no multiple blank lines over 2
-        "eol-last": ["error", "always"],
-        "no-multiple-empty-lines": ["error", { "max": 2, "maxEOF": 0 }],
-
-        // Always Comma Dangle with multiline
         "comma-dangle": ["error", {
             "arrays": "always-multiline",
             "objects": "always-multiline",
@@ -81,8 +34,6 @@ module.exports = {
             "exports": "always-multiline",
             "functions": "always-multiline",
         }],
-
-        // Use semicolons for multiline types, comma for single line types
         "@typescript-eslint/member-delimiter-style": ["error", {
             "multiline": {
                 "delimiter": "semi",
@@ -94,58 +45,94 @@ module.exports = {
             }
         }],
 
-        // Normal Backticks Everywhere (except jsx and imports)
+        // "object-property-newline": ["error"],
+        "object-curly-newline": ["error", { "multiline": true }],
+        "object-curly-spacing": "off",
+        "@typescript-eslint/object-curly-spacing": ["error", "always"],
+        "array-element-newline": ["error", { "ArrayExpression": "consistent", }],
+        "array-bracket-spacing": ["error", "never"],
 
-        // Normal quotes must be disabled because typescript types must use single
-        "quotes": ["off", "backtick"],
+        "@typescript-eslint/type-annotation-spacing": "error",
+        "@typescript-eslint/brace-style": ["error", "1tbs", { "allowSingleLine": true }],
+        // "max-statements-per-line": ["error", { "max": 2 }],
+
+        "eol-last": ["error", "always"],
+        "no-trailing-spaces": "error",
+        "no-multiple-empty-lines": "error",
+
+        "no-tabs": "error",
+
+        "indent": "off",
+        "@typescript-eslint/indent": ["error", 4, {
+            ignoredNodes: ['TSTypeParameterInstantiation']
+        }],
+
+        "comma-spacing": "off",
+        "@typescript-eslint/comma-spacing": ["error"],
+
+        "dot-notation": "off",
+        "@typescript-eslint/dot-notation": ["error"],
+
+        "keyword-spacing": "off",
+        "@typescript-eslint/keyword-spacing": ["error"],
+
+        "func-call-spacing": "off",
+        "@typescript-eslint/func-call-spacing": ["error", "never"],
+
+        "space-before-function-paren": "off",
+        "@typescript-eslint/space-before-function-paren": ["error", {
+            "anonymous": "never",
+            "named": "never",
+            "asyncArrow": "always"
+        }],
+
+        "space-in-parens": "error",
+
+        "key-spacing": "error",
+        "no-multi-spaces": "error",
+        "space-unary-ops": "error",
+        "space-infix-ops": ["error", { "int32Hint": false }],
+        "arrow-spacing": "error",
+        "semi-spacing": ["error", { "before": false, "after": true }],
+
+        // Normal Backticks Everywhere (except jsx and imports)
+        "quotes": "off",
         "@typescript-eslint/quotes": ["error", "backtick"],
         "jsx-quotes": ["error", "prefer-single"],
         "import-quotes/import-quotes": ["error", "single"],
 
         "react/jsx-props-no-spreading": ["off"],
 
-        // Underscores are useful for long names, allow them
-        "camelcase": ['off'],
-        "@typescript-eslint/camelcase": ['off'],
-        "react/jsx-pascal-case": ['off'],
-        "no-underscore-dangle": ['off'],
-
-        // This is not a problem when using semicolons, allow
-        "no-plusplus": ['off'],
-
-        // Disagree with rule, substr is preferred for strings
-        "unicorn/prefer-string-slice": ["off"],
-
-        // Disagree, it's bettero to keep the functions close to usage
-        "unicorn/consistent-function-scoping": ["off"],
-
-        // Always Return await!
-        // V8 actually performs better if it is always there
-        // Debug Stack is complete
-        // Try Catch won't fail
-        // Code consistently marks every promise with await (which helps with the common, oops forgot to call await for Promise<void>)
-        // The original rule is the opposite: Runtime performance is actually better with await always
+        // async-await
+        "@typescript-eslint/no-misused-promises": ["error"],
         "no-return-await": "off",
         "@typescript-eslint/return-await": ["error", "always"],
         "@typescript-eslint/no-floating-promises": ["error", { ignoreIIFE: true }],
-        // This is not needed because of above, promises can return a value sometimes without an await, but all promises must be awaited (above)
-        // Use Promise.resolve(if needed)
-        "require-await": "off",
-        "@typescript-eslint/require-await": ["off"],
 
-        // Not Needed with Typescript
-        "react/prop-types": ["off"],
+        "@typescript-eslint/no-explicit-any": ["error"],
+        "@typescript-eslint/no-var-requires": ["error"],
+        "@typescript-eslint/no-empty-function": ["error"],
+        "no-useless-escape": "error",
+        "max-len": ["warn", {
+            code: 120,
+            ignoreComments: true,
+            ignoreStrings: true,
+            ignoreTemplateLiterals: true,
+            tabWidth: 4,
+        }],
+        "no-useless-catch": "error",
 
-        // Too many weird false positives:
-        "react-hooks/exhaustive-deps": ["off"],
+        // Need to disable because of not supporting module level const arrow functions
+        // However, typescript itself will check this, so still safe
+        "no-use-before-define": ["off"],
+        "@typescript-eslint/no-use-before-define": ["off"],
 
-        // Too strict
-        "no-param-reassign": ['off'],
+        // Many Functions should use an inferred return type
+        "@typescript-eslint/explicit-function-return-type": [
+            "off",
+        ],
 
-        // Sometimes just want it there as a placeholder - stop getting rid of it!
-        "no-useless-return": ['off'],
-
-        // Conflicts with error variable
-        "unicorn/catch-error-name": ['off']
+        "camelcase": "off",
+        "@typescript-eslint/camelcase": ["off"],
     },
-}
+};
