@@ -13,11 +13,11 @@ type EntityRenderData = {
 type RenderArgs = {
     onPlayerHit: (data: { position: Vector2 }) => void;
     onPlayerReward: (data: { position: Vector2 }) => void;
-    onBeat: (data: { positions: Vector2[] }) => void;
+    onBeat: (data: { beatIndex: number, positions: Vector2[] }) => void;
     renderEntity: (data: EntityRenderData) => void;
     removeEntity: (id: number) => void;
     setBackgroundVelocity: (data: { velocity: Vector2 }) => void;
-}
+};
 export const snakeGame: ArtGame<RenderArgs> = {
     name: `Snake`,
     createGame: (timeProvider, environmentProvider) => {
@@ -81,27 +81,27 @@ export const snakeGame: ArtGame<RenderArgs> = {
                 wasHitThisFrame: false,
                 ateThisFrame: false,
                 wasThisFrameOnBeat: false,
+                beatIndex: 0,
                 timeNextTurn: 0,
                 nextDirection: { x: 1, y: 0 },
             },
             food: [] as Entity[],
-            foodState: {
-            },
+            foodState: {},
         };
 
         const toPositionFromGridPosition = (gridPosition: Vector2) => {
             return Vector2.divide(
-                Vector2.add(gridPosition, { x: 0.5, y: 0.5 }), 
-                Vector2.add(state.environment.gridSize, { x:1, y:1 }));
+                Vector2.add(gridPosition, { x: 0.5, y: 0.5 }),
+                Vector2.add(state.environment.gridSize, { x: 1, y: 1 }));
         };
 
-        const adjustGridPositionForWall = (gridPosition: Vector2)=>{
-            const g = {...gridPosition};
+        const adjustGridPositionForWall = (gridPosition: Vector2) => {
+            const g = { ...gridPosition };
             const s = state.environment.gridSize;
-            if (g.x < 0)   { g.x = 0;     }
-            if (g.y < 0)   { g.y = 0;     }
-            if (g.x > s.x) { g.x = s.x;   }
-            if (g.y > s.y) { g.y = s.y;   }
+            if (g.x < 0) { g.x = 0; }
+            if (g.y < 0) { g.y = 0; }
+            if (g.x > s.x) { g.x = s.x; }
+            if (g.y > s.y) { g.y = s.y; }
 
             return g;
         };
@@ -109,13 +109,13 @@ export const snakeGame: ArtGame<RenderArgs> = {
         const updateAutoPilot = () => {
             const { player, playerState, input, environment: { time, timeDelta, size } } = state;
 
-            if( time < state.input.lastTime + 15 ) { return; }
-            
+            if (time < state.input.lastTime + 15) { return; }
+
             // Turn toward the food
             const f = state.food[0];
-            if(!f){ return; }
+            if (!f){ return; }
 
-            const foodDelta = Vector2.subtract( f.position, player.position );
+            const foodDelta = Vector2.subtract(f.position, player.position);
             const nextPlayerPosition_noTurn = toPositionFromGridPosition(Vector2.add(player.targetGridPosition, playerState.nextDirection));
 
             const turnNone = playerState.nextDirection;
@@ -131,17 +131,17 @@ export const snakeGame: ArtGame<RenderArgs> = {
             const nextPlayerPosition_turnB = toPositionFromGridPosition(Vector2.add(player.targetGridPosition, turnB));
 
             // Turn to food
-            const nextFoodDelta = Vector2.subtract( f.position, nextPlayerPosition_noTurn );
-            const isGoingTowardsFood = Vector2.lengthSq(nextFoodDelta) < Vector2.lengthSq(foodDelta) ;
+            const nextFoodDelta = Vector2.subtract(f.position, nextPlayerPosition_noTurn);
+            const isGoingTowardsFood = Vector2.lengthSq(nextFoodDelta) < Vector2.lengthSq(foodDelta);
 
-            if( !isGoingTowardsFood && Math.random() < 0.75 ){
+            if (!isGoingTowardsFood && Math.random() < 0.75){
 
-                const turnAFoodDelta = Vector2.subtract( f.position, nextPlayerPosition_turnA );
-                const turnBFoodDelta = Vector2.subtract( f.position, nextPlayerPosition_turnB );
+                const turnAFoodDelta = Vector2.subtract(f.position, nextPlayerPosition_turnA);
+                const turnBFoodDelta = Vector2.subtract(f.position, nextPlayerPosition_turnB);
 
-                if( Vector2.lengthSq(turnAFoodDelta) < Vector2.lengthSq(turnBFoodDelta) ){
+                if (Vector2.lengthSq(turnAFoodDelta) < Vector2.lengthSq(turnBFoodDelta)){
                     playerState.nextDirection = turnA;
-                }else{
+                } else {
                     playerState.nextDirection = turnB;
                 }
             }
@@ -150,17 +150,17 @@ export const snakeGame: ArtGame<RenderArgs> = {
             const willHitWall_turnA = !Vector2.equal(nextPlayerPosition_turnA, adjustGridPositionForWall(nextPlayerPosition_turnA));
             const willHitWall_turnB = !Vector2.equal(nextPlayerPosition_turnB, adjustGridPositionForWall(nextPlayerPosition_turnB));
 
-            const willHit_turnA = willHitWall_turnA || player.segments.some(x=> Vector2.equal(x.targetPosition, nextPlayerPosition_turnA));
-            const willHit_turnB = willHitWall_turnB || player.segments.some(x=> Vector2.equal(x.targetPosition, nextPlayerPosition_turnB));
-            if( willHit_turnA && willHit_turnB ){
+            const willHit_turnA = willHitWall_turnA || player.segments.some(x => Vector2.equal(x.targetPosition, nextPlayerPosition_turnA));
+            const willHit_turnB = willHitWall_turnB || player.segments.some(x => Vector2.equal(x.targetPosition, nextPlayerPosition_turnB));
+            if (willHit_turnA && willHit_turnB){
                 playerState.nextDirection = turnNone;
                 return;
             }
-            if( willHit_turnA ){
+            if (willHit_turnA){
                 playerState.nextDirection = turnB;
                 return;
             }
-            if( willHit_turnB ){
+            if (willHit_turnB){
                 playerState.nextDirection = turnA;
                 return;
             }
@@ -168,21 +168,21 @@ export const snakeGame: ArtGame<RenderArgs> = {
 
         const addPlayerSegment = () => {
             const { player } = state;
-            const s = player.segments[player.segments.length-1] ?? player;
+            const s = player.segments[player.segments.length - 1] ?? player;
 
             player.segments.push({
                 id: 1000 + player.segments.length,
                 isStill: false,
-                color: {...player.color},
-                position: {...s.position},
-                velocity: {...s.velocity},
-                size: {...s.size},
-                targetPosition: Vector2.add({...s.targetPosition}, { x: 0.001, y: 0 }),
+                color: { ...player.color },
+                position: { ...s.position },
+                velocity: { ...s.velocity },
+                size: { ...s.size },
+                targetPosition: Vector2.add({ ...s.targetPosition }, { x: 0.001, y: 0 }),
             });
 
             const GROWTH_SCALE = 1.01;
-            player.size = Vector2.scale( GROWTH_SCALE, player.size );
-            player.segments.forEach(x => {x.size = Vector2.scale( GROWTH_SCALE, x.size ); });
+            player.size = Vector2.scale(GROWTH_SCALE, player.size);
+            player.segments.forEach(x => {x.size = Vector2.scale(GROWTH_SCALE, x.size); });
         };
 
         const updatePlayer = () => {
@@ -209,22 +209,22 @@ export const snakeGame: ArtGame<RenderArgs> = {
             };
 
             // Player motion
-            if(input.l){ playerState.nextDirection = { x: -1, y: +0 }; }
-            if(input.r){ playerState.nextDirection = { x: +1, y: +0 }; }
-            if(input.u){ playerState.nextDirection = { x: +0, y: +1 }; }
-            if(input.d){ playerState.nextDirection = { x: +0, y: -1 }; }
+            if (input.l){ playerState.nextDirection = { x: -1, y: +0 }; }
+            if (input.r){ playerState.nextDirection = { x: +1, y: +0 }; }
+            if (input.u){ playerState.nextDirection = { x: +0, y: +1 }; }
+            if (input.d){ playerState.nextDirection = { x: +0, y: -1 }; }
 
             const gridUnitPerSec = 3 * Math.pow(1.01, player.segments.length);
             const timePerUnit = 1 / gridUnitPerSec;
 
             // Change directions
-            if(time > playerState.timeNextTurn){
+            if (time > playerState.timeNextTurn){
                 playerState.timeNextTurn = time + timePerUnit;
                 playerState.wasThisFrameOnBeat = true;
 
                 // Segments
-                for(let i = player.segments.length - 1; i >= 0; i--){
-                    player.segments[i].targetPosition = player.segments[i-1]?.targetPosition ?? player.targetPosition;
+                for (let i = player.segments.length - 1; i >= 0; i--){
+                    player.segments[i].targetPosition = player.segments[i - 1]?.targetPosition ?? player.targetPosition;
                     const deltaSegment = Vector2.subtract(player.segments[i].targetPosition, player.segments[i].position);
                     player.segments[i].velocity = {
                         x: deltaSegment.x * gridUnitPerSec,
@@ -234,8 +234,8 @@ export const snakeGame: ArtGame<RenderArgs> = {
 
                 // If autopilot
                 updateAutoPilot();
-                               
-                player.targetGridPosition = playerState.deadAtTime ? player.targetGridPosition 
+
+                player.targetGridPosition = playerState.deadAtTime ? player.targetGridPosition
                     : Vector2.add(player.targetGridPosition, playerState.nextDirection);
 
                 // Block
@@ -252,7 +252,7 @@ export const snakeGame: ArtGame<RenderArgs> = {
                 // if( Math.random() < 0.25 ){
                 //     addPlayerSegment();
                 // }
-        
+
             }
 
             // const speedX = 0.9;
@@ -262,46 +262,46 @@ export const snakeGame: ArtGame<RenderArgs> = {
             player.position.y += timeDelta * player.velocity.y;
 
             // Segments
-            for(const s of player.segments){
+            for (const s of player.segments){
                 s.position.x += timeDelta * s.velocity.x;
                 s.position.y += timeDelta * s.velocity.y;
             }
 
-            // Wrap 
+            // Wrap
             // if (player.position.x < 0) { player.position.x = 1; player.targetPosition = player.position; }
             // if (player.position.x > 1) { player.position.x = 0; player.targetPosition = player.position; }
             // if (player.position.y < 0) { player.position.y = 1; player.targetPosition = player.position; }
             // if (player.position.y > 1) { player.position.y = 0; player.targetPosition = player.position; }
 
-             // Collisions
-             for (const entity of player.segments) {
+            // Collisions
+            for (const entity of player.segments) {
                 if (Vector2.distanceSq(entity.targetPosition, player.targetPosition) <= 0) {
                     state.playerState.wasHitThisFrame = true;
                     state.playerState.deadAtTime = time;
                     break;
                 }
             }
-            
+
             // Reset player if all segments have been smashed
-            if( state.playerState.deadAtTime && !state.playerState.restartAtTime ){
-                const allAtPlayer = player.segments.every(x=>Vector2.distanceSq(x.targetPosition, player.targetPosition) <= 0.01);
-                if( allAtPlayer){
+            if (state.playerState.deadAtTime && !state.playerState.restartAtTime){
+                const allAtPlayer = player.segments.every(x => Vector2.distanceSq(x.targetPosition, player.targetPosition) <= 0.01);
+                if (allAtPlayer){
                     playerState.restartAtTime = time + 3;
                 }
             }
-            if( state.playerState.restartAtTime && time > state.playerState.restartAtTime ){
+            if (state.playerState.restartAtTime && time > state.playerState.restartAtTime){
                 player.segments = [];
                 playerState.deadAtTime = null;
                 playerState.restartAtTime = null;
-                player.size = {...player.sizeInit};
+                player.size = { ...player.sizeInit };
             }
         };
 
         const updateObstacles = () => {
             const { player, food, foodState, environment: { time, timeDelta } } = state;
-            const gridUnitSize = Vector2.divide( {x:1, y:1}, state.environment.gridSize);
+            const gridUnitSize = Vector2.divide({ x: 1, y: 1 }, state.environment.gridSize);
 
-            if( food.length <= 0 ){
+            if (food.length <= 0){
                 food.push({
                     id: 10000 + food.length,
                     color: player.color,
@@ -355,7 +355,7 @@ export const snakeGame: ArtGame<RenderArgs> = {
             // }
 
             // Collisions
-            for (const [i,entity] of food.entries()) {
+            for (const [i, entity] of food.entries()) {
                 if (Rect2.collidesRectangle(entity, player, 0.8)) {
                     state.playerState.ateThisFrame = true;
                     addPlayerSegment();
@@ -427,7 +427,7 @@ export const snakeGame: ArtGame<RenderArgs> = {
             });
 
             if (playerState.ateThisFrame) {
-                args.onPlayerReward({ position: player.segments[player.segments.length-1].position });
+                args.onPlayerReward({ position: player.segments[player.segments.length - 1].position });
             }
 
             if (playerState.wasHitThisFrame) {
@@ -435,7 +435,12 @@ export const snakeGame: ArtGame<RenderArgs> = {
             }
 
             if (playerState.wasThisFrameOnBeat) {
-                args.onBeat({ positions: [player.position, ...player.segments.map(x=>x.position).filter(x => !Vector2.equal(x, player.position))] });
+                args.onBeat({
+                    beatIndex: playerState.beatIndex,
+                    positions: [player.position, ...player.segments.map(x => x.position)
+                        .filter(x => !Vector2.equal(x, player.position))],
+                });
+                playerState.beatIndex++;
             }
 
             // Render player segments
@@ -489,10 +494,10 @@ export const snakeGame: ArtGame<RenderArgs> = {
 
         const subscribeEvents = ({ windowAddEventListener, canvasAddEventListener, tools }: EventProvider) => {
             windowAddEventListener(`keydown`, e => {
-                if (e.key === `w` || e.key === `ArrowUp`) { state.input.u = true;  state.input.lastTime = state.environment.time;  }
-                if (e.key === `a` || e.key === `ArrowLeft`) { state.input.l = true;  state.input.lastTime = state.environment.time;  }
-                if (e.key === `s` || e.key === `ArrowDown`) { state.input.d = true;  state.input.lastTime = state.environment.time;  }
-                if (e.key === `d` || e.key === `ArrowRight`) { state.input.r = true;  state.input.lastTime = state.environment.time;  }
+                if (e.key === `w` || e.key === `ArrowUp`) { state.input.u = true; state.input.lastTime = state.environment.time; }
+                if (e.key === `a` || e.key === `ArrowLeft`) { state.input.l = true; state.input.lastTime = state.environment.time; }
+                if (e.key === `s` || e.key === `ArrowDown`) { state.input.d = true; state.input.lastTime = state.environment.time; }
+                if (e.key === `d` || e.key === `ArrowRight`) { state.input.r = true; state.input.lastTime = state.environment.time; }
             });
             windowAddEventListener(`keyup`, e => {
                 if (e.key === `w` || e.key === `ArrowUp`) { state.input.u = false; state.input.lastTime = state.environment.time; }
@@ -554,7 +559,7 @@ export const snakeGame: ArtGame<RenderArgs> = {
                 tools.drawX(data.position, { x: 0.1, y: 0.1 }, `#0000FF`);
             },
             onBeat: (data) => {
-                data.positions.forEach( p => {
+                data.positions.forEach(p => {
                     tools.drawX(p, { x: 0.1, y: 0.1 }, `#00FFFF`);
                 });
             },

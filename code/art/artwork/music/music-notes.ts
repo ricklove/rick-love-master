@@ -1,12 +1,47 @@
-const parseMusicNotes = (doc:string)=>{
+const parseMusicNotes = (doc: string) => {
     const lines = doc
         .split(`\n`)
         .filter(x => x);
 
-    const notes = lines.map(l => {
-        l.split(` `).filter(x => x);
+    const entries = lines.map(l => {
+        const [noteText, frequencyText] = l.split(` `).filter(x => x);
+        const notes = noteText.split(`/`).filter(y => y).map(y => y as NoteName);
+        return {
+            notes,
+            frequency: parseFloat(frequencyText),
+        };
     });
+    const noteMap = new Map<NoteName, number>();
+    entries.forEach(x => x.notes.forEach(n => noteMap.set(n, x.frequency)));
+    return noteMap;
 };
+
+type NoteKey =
+| 'C'
+| 'C#' | 'Db'
+| 'D'
+| 'D#' | 'Eb'
+| 'E'
+| 'F'
+| 'F#' | 'Gb'
+| 'G'
+| 'G#' | 'Ab'
+| 'A'
+| 'A#' | 'Bb'
+| 'B'
+    ;
+type NoteOctave =
+| '0'
+| '1'
+| '2'
+| '3'
+| '4'
+| '5'
+| '6'
+| '7'
+| '8'
+;
+export type NoteName = `${NoteKey}${NoteOctave}`;
 
 export const musicNotes = parseMusicNotes(`
 C0        16.35                 

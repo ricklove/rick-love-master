@@ -30,7 +30,7 @@ Renderer based on Fluid Simulator by Pavel Dobryakov: https://paveldogreat.githu
             disableGui: false, disableInput: true, disableStartupSplats: true,
             timeProvider: recorder?.timeProvider,
         });
-        if (!sim) { return { remove: () => { } }; }
+        if (!sim) { return { remove: () => { /* Ignore */ } }; }
 
         const timeProvider = recorder?.timeProvider ?? { now: () => Date.now(), isPaused: () => false };
         const eventProvider = createEventProvider(sim.canvas);
@@ -39,20 +39,18 @@ Renderer based on Fluid Simulator by Pavel Dobryakov: https://paveldogreat.githu
         const gameSource = snakeGame;
         const game = gameSource.createGame(
             timeProvider,
-            {
-                getDisplaySize: () => ({ width: sim.canvas.width, height: sim.canvas.height }),
-            });
+            { getDisplaySize: () => ({ width: sim.canvas.width, height: sim.canvas.height }) });
 
         game.setup(eventProvider);
 
         const beatPlayer = createBeatPlayer();
-        eventProvider.canvasAddEventListener(`touchdown`, ()=>{
+        eventProvider.canvasAddEventListener(`touchdown`, () => {
             beatPlayer.start();
         });
-        eventProvider.canvasAddEventListener(`mousedown`, ()=>{
+        eventProvider.canvasAddEventListener(`mousedown`, () => {
             beatPlayer.start();
         });
-        eventProvider.canvasAddEventListener(`keydown`, ()=>{
+        eventProvider.canvasAddEventListener(`keydown`, () => {
             beatPlayer.start();
         });
 
@@ -84,7 +82,7 @@ Renderer based on Fluid Simulator by Pavel Dobryakov: https://paveldogreat.githu
         let frameTick = 0;
         const updateGame = () => {
             config.BLOOM_INTENSITY = clamp(0.001 * (state.resetBloomAtTimeMs - timeProvider.now()), 0, 2);
-            config.SUNRAYS_WEIGHT =  timeProvider.now() > state.darkenAtTimeMs && timeProvider.now() < state.darkenUntilTimeMs ? 0 : 1;
+            config.SUNRAYS_WEIGHT = timeProvider.now() > state.darkenAtTimeMs && timeProvider.now() < state.darkenUntilTimeMs ? 0 : 1;
 
             game.update();
             debugViewer?.render(game, { updateFrameTick: frameTick, renderFrameTick: sim.getFrameTick() });
@@ -108,8 +106,10 @@ Renderer based on Fluid Simulator by Pavel Dobryakov: https://paveldogreat.githu
                 },
                 onBeat: (data) => {
                     beatPlayer.beat(data);
-                    state.darkenAtTimeMs = timeProvider.now() + 0;
-                    state.darkenUntilTimeMs = timeProvider.now() + 50;
+                    if (data.beatIndex % 4 === 3){
+                        state.darkenAtTimeMs = timeProvider.now() + 0;
+                        state.darkenUntilTimeMs = timeProvider.now() + 50;
+                    }
                 },
                 renderEntity: (data) => {
 
@@ -155,7 +155,7 @@ Renderer based on Fluid Simulator by Pavel Dobryakov: https://paveldogreat.githu
 
         let isDestroyed = false;
         const update = async () => {
-            if (isDestroyed) { return 0; }
+            if (isDestroyed) { return; }
 
             if (!timeProvider.isPaused()) {
                 updateGame();
@@ -166,7 +166,7 @@ Renderer based on Fluid Simulator by Pavel Dobryakov: https://paveldogreat.githu
                 await recorder.getRecorder().addFrame(sim.canvas);
             }
 
-            return requestAnimationFrame(update);
+            return requestAnimationFrame(() => {void update();});
         };
 
 
