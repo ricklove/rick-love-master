@@ -1,5 +1,6 @@
 import { Vector2 } from '../games/utils';
 import { musicNotes, NoteName } from './music-notes';
+import { waveTable_celeste, waveTable_piano } from './wave-tables';
 
 const createAudio = () => {
     const audioContext = (() => {
@@ -19,8 +20,18 @@ const createAudio = () => {
     const gainNode = audioContext.createGain();
     gainNode.gain.value = 0;
 
+    const filterNode = audioContext.createBiquadFilter();
+    // filterNode.frequency.value =         timbre.cutoff + record.frequency * timbre.cutfollow;
+    filterNode.Q.value = 1;
+
     // Connect nodes
-    oscNode.connect(gainNode);
+    const enableFilter = false;
+    if (enableFilter){
+        oscNode.connect(filterNode);
+        filterNode.connect(gainNode);
+    } else {
+        oscNode.connect(gainNode);
+    }
     gainNode.connect(audioContext.destination);
 
 
@@ -72,6 +83,7 @@ const createAudio = () => {
     return {
         audioContext,
         oscNode,
+        filterNode,
         gainNode,
     };
 
@@ -117,7 +129,7 @@ export const createBeatPlayer = () => {
         const imag = new Float32Array(2 + state.positions.length);
         real[0] = 0;
         imag[0] = 0;
-        real[state.positions.length - 1] = 0;
+        real[state.positions.length - 1] = 1;
         imag[state.positions.length - 1] = 0;
 
         for (const [i, p] of state.positions.entries()){
@@ -125,7 +137,16 @@ export const createBeatPlayer = () => {
             imag[i + 1] = p.y;
         }
 
-        const wave = audio.audioContext.createPeriodicWave(real, imag);
+        // const waveTable = waveTable_piano;
+        // const n = waveTable.real.length;
+        // const real = new Float32Array(n);
+        // const imag = new Float32Array(n);
+        // for (let i = 0; i < n; ++i) {
+        //     real[i] = waveTable.real[i];
+        //     imag[i] = waveTable.imag[i];
+        // }
+
+        const wave = audio.audioContext.createPeriodicWave(real, imag, { disableNormalization: true });
         audio.oscNode.setPeriodicWave(wave);
     };
 
@@ -139,23 +160,26 @@ export const createBeatPlayer = () => {
 
         const freq = song[iBeat] ?? 0;
         audio.oscNode.frequency.setValueAtTime(freq, audioTime);
+        audio.filterNode.frequency.setValueAtTime(freq * 0.9, audioTime);
+        // audio.filterNode.frequency.setValueAtTime(800 + freq * 0.1, audioTime);
+        // if (!freq){ return;}
 
-        if (!freq){ return;}
+        // // Note length
+        // const timeToDelaySec = 0.05 * 10 / 110;
+        // const timeToStartSec = 0.1 * 10 / 110;
+        // const timeToStopSec = 0.1 * 10 / 110;
+        // const timeToPlaySec = 1 * 10 / 110;
+        // const timeStart = audioTime + timeToDelaySec;
+        // const timePlay = timeStart + timeToStartSec;
+        // const timePlayEnd = timePlay + timeToPlaySec;
+        // const timeStop = timePlayEnd + timeToStopSec;
 
-        // Note length
-        const timeToDelaySec = 0.05 * 10 / 110;
-        const timeToStartSec = 0.1 * 10 / 110;
-        const timeToStopSec = 0.1 * 10 / 110;
-        const timeToPlaySec = 1 * 10 / 110;
-        const timeStart = audioTime + timeToDelaySec;
-        const timePlay = timeStart + timeToStartSec;
-        const timePlayEnd = timePlay + timeToPlaySec;
-        const timeStop = timePlayEnd + timeToStopSec;
+        // audio.gainNode.gain.setValueAtTime(0, timeStart);
+        // audio.gainNode.gain.linearRampToValueAtTime(1, timePlay);
+        // audio.gainNode.gain.setValueAtTime(1, timePlayEnd);
+        // audio.gainNode.gain.linearRampToValueAtTime(0, timeStop);
 
-        audio.gainNode.gain.setValueAtTime(0, timeStart);
-        audio.gainNode.gain.linearRampToValueAtTime(1, timePlay);
-        audio.gainNode.gain.setValueAtTime(1, timePlayEnd);
-        audio.gainNode.gain.linearRampToValueAtTime(0, timeStop);
+        audio.gainNode.gain.setValueAtTime(1, audioTime);
     };
 
     return {
