@@ -77,12 +77,14 @@ Renderer based on Fluid Simulator by Pavel Dobryakov: https://paveldogreat.githu
 
         const state = {
             resetBloomAtTimeMs: 0,
+            darkenAtTimeMs: 0,
+            darkenUntilTimeMs: 0,
         };
 
         let frameTick = 0;
-        let beatCount = 0;
         const updateGame = () => {
             config.BLOOM_INTENSITY = clamp(0.001 * (state.resetBloomAtTimeMs - timeProvider.now()), 0, 2);
+            config.SUNRAYS_WEIGHT =  timeProvider.now() > state.darkenAtTimeMs && timeProvider.now() < state.darkenUntilTimeMs ? 0 : 1;
 
             game.update();
             debugViewer?.render(game, { updateFrameTick: frameTick, renderFrameTick: sim.getFrameTick() });
@@ -105,20 +107,9 @@ Renderer based on Fluid Simulator by Pavel Dobryakov: https://paveldogreat.githu
                     state.resetBloomAtTimeMs = timeProvider.now() + 500;
                 },
                 onBeat: (data) => {
-                    beatCount++;
                     beatPlayer.beat(data);
-
-                    // console.log(`onPlayerHit`, {});
-
-                    // config.BLOOM = true;
-                    // sim.updateConfig();
-
-                    // if(beatCount % 4 !== 0){ return; }
-
-                    if(timeProvider.now() > state.resetBloomAtTimeMs){
-                        console.log(`onBeat`);
-                        state.resetBloomAtTimeMs = timeProvider.now() + 50;
-                    }
+                    state.darkenAtTimeMs = timeProvider.now() + 0;
+                    state.darkenUntilTimeMs = timeProvider.now() + 50;
                 },
                 renderEntity: (data) => {
 

@@ -435,7 +435,7 @@ export const snakeGame: ArtGame<RenderArgs> = {
             }
 
             if (playerState.wasThisFrameOnBeat) {
-                args.onBeat({ positions: [player.position, ...player.segments.map(x=>x.position)] });
+                args.onBeat({ positions: [player.position, ...player.segments.map(x=>x.position).filter(x => !Vector2.equal(x, player.position))] });
             }
 
             // Render player segments
