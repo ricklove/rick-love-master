@@ -23,9 +23,10 @@ const createAudio = () => {
     const filterNode = audioContext.createBiquadFilter();
     // filterNode.frequency.value =         timbre.cutoff + record.frequency * timbre.cutfollow;
     filterNode.Q.value = 1;
+    filterNode.type = `bandpass`;
 
     // Connect nodes
-    const enableFilter = false;
+    const enableFilter = true;
     if (enableFilter){
         oscNode.connect(filterNode);
         filterNode.connect(gainNode);
@@ -160,7 +161,7 @@ export const createBeatPlayer = () => {
 
         const freq = song[iBeat] ?? 0;
         audio.oscNode.frequency.setValueAtTime(freq, audioTime);
-        audio.filterNode.frequency.setValueAtTime(freq * 0.9, audioTime);
+        audio.filterNode.frequency.setValueAtTime(freq, audioTime);
         // audio.filterNode.frequency.setValueAtTime(800 + freq * 0.1, audioTime);
         // if (!freq){ return;}
 
