@@ -213,7 +213,7 @@ export const createBeatPlayer = () => {
             if (state.isStarted) { return; }
             state.isStarted = true;
 
-            state.audio = createAudio(1);
+            state.audio = createAudio(2);
             state.audio?.voices.forEach(v => v.oscNode.start(0));
         },
         beat: (data: { beatIndex: number, positions: Vector2[] }) => {
@@ -245,18 +245,18 @@ export const createBeatPlayer = () => {
                 updateWaveform(v, positions);
 
                 for (let i = 0; i < chunkSize; i++){
-                    // const timeForNote = state.timePerBeat
-                    //     / Math.min(1 + state.positions.length, state.audio.voices.length);
-                    // scheduleNote(v,
-                    //     (state.iBeat + i) % state.songs[v].length,
-                    //     i * state.timePerBeat + v * timeForNote,
-                    //     timeForNote);
-
-                    const timeForNote = 0.25 * state.timePerBeat;
+                    const timeForNote = state.timePerBeat
+                        / Math.min(1 + state.positions.length, state.audio.voices.length);
                     scheduleNote(v,
                         (state.iBeat + i) % state.songs[v].length,
-                        i * state.timePerBeat,
+                        i * state.timePerBeat + v * timeForNote,
                         timeForNote);
+
+                    // const timeForNote = 0.25 * state.timePerBeat;
+                    // scheduleNote(v,
+                    //     (state.iBeat + i) % state.songs[v].length,
+                    //     i * state.timePerBeat,
+                    //     timeForNote);
                 }
             }
 
