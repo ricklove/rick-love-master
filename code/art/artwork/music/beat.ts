@@ -157,6 +157,7 @@ export const createBeatPlayer = () => {
         const { audio } = state;
         if (!audio){ return; }
         if (positions.length === 0){ return; }
+        console.log(`updateWaveform`, { iVoice, positions });
 
         const real = new Float32Array(2 + positions.length);
         const imag = new Float32Array(2 + positions.length);
@@ -169,15 +170,6 @@ export const createBeatPlayer = () => {
             real[i + 1] = p.x;
             imag[i + 1] = p.y;
         }
-
-        // const waveTable = waveTable_piano;
-        // const n = waveTable.real.length;
-        // const real = new Float32Array(n);
-        // const imag = new Float32Array(n);
-        // for (let i = 0; i < n; ++i) {
-        //     real[i] = waveTable.real[i];
-        //     imag[i] = waveTable.imag[i];
-        // }
 
         const wave = audio.audioContext.createPeriodicWave(real, imag, { disableNormalization: true });
         audio.voices[iVoice].oscNode.setPeriodicWave(wave);
@@ -221,7 +213,7 @@ export const createBeatPlayer = () => {
             if (state.isStarted) { return; }
             state.isStarted = true;
 
-            state.audio = createAudio(4);
+            state.audio = createAudio(1);
             state.audio?.voices.forEach(v => v.oscNode.start(0));
         },
         beat: (data: { beatIndex: number, positions: Vector2[] }) => {
@@ -237,7 +229,8 @@ export const createBeatPlayer = () => {
 
 
             state.positions = data.positions;
-            for (let v = 0; v < state.audio.voices.length; v++){
+            const voiceLength = state.audio.voices.length;
+            for (let v = 0; v < voiceLength; v++){
                 if (v >= state.positions.length){ continue;}
 
                 if (!state.songs[v]
@@ -247,8 +240,8 @@ export const createBeatPlayer = () => {
                     state.iBeat = 0;
                 }
 
-                state.audio.voices[v].oscNode.type = `triangle`;
-                const positions = state.positions.filter((x, i) => i % v === 0);
+                // state.audio.voices[v].oscNode.type = `custom`;
+                const positions = state.positions.filter((x, i) => i % voiceLength === v);
                 updateWaveform(v, positions);
 
                 for (let i = 0; i < chunkSize; i++){
