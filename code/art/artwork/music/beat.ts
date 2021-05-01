@@ -14,6 +14,13 @@ const createAudio = (voiceCount: number) => {
     })();
     if (!audioContext){ return null; }
 
+    const mixNode = !audioContext.createDynamicsCompressor ? audioContext.destination
+        : (() => {
+            const compressor = audioContext.createDynamicsCompressor();
+            compressor.connect(audioContext.destination);
+            return compressor;
+        })();
+
     const createVoice = () => {
         const oscNode = audioContext.createOscillator();
         oscNode.frequency.value = 0;
@@ -33,7 +40,7 @@ const createAudio = (voiceCount: number) => {
         } else {
             oscNode.connect(gainNode);
         }
-        gainNode.connect(audioContext.destination);
+        gainNode.connect(mixNode);
 
         return {
             oscNode,
@@ -163,7 +170,7 @@ export const createBeatPlayer = () => {
         audio.voices[iVoice].oscNode.setPeriodicWave(wave);
     };
 
-    const scheduleNote = (iVoice: number, iBeat: number, timeOffset: number) => {
+    const scheduleNote = (iVoice: number, iBeat: number, timeOffset: number, timeForNote: number) => {
         const { audio } = state;
         if (!audio){ return; }
         if (state.positions.length === 0){ return; }
@@ -178,21 +185,21 @@ export const createBeatPlayer = () => {
         if (!freq){ return;}
 
         // Note length
-        // const timeToDelaySec = 0.05 * 10 / 110;
-        // const timeToStartSec = 0.1 * 10 / 110;
-        // const timeToStopSec = 0.1 * 10 / 110;
-        // const timeToPlaySec = 1 * 10 / 110;
-        // const timeStart = audioTime + timeToDelaySec;
-        // const timePlay = timeStart + timeToStartSec;
-        // const timePlayEnd = timePlay + timeToPlaySec;
-        // const timeStop = timePlayEnd + timeToStopSec;
+        const timeToDelaySec = 0.01 * timeForNote;
+        const timeToStartSec = 0.1 * timeForNote;
+        const timeToStopSec = 0.1 * timeForNote;
+        const timeToPlaySec = timeForNote;
+        const timeStart = audioTime + timeToDelaySec;
+        const timePlay = timeStart + timeToStartSec;
+        const timePlayEnd = timePlay + timeToPlaySec;
+        const timeStop = timePlayEnd + timeToStopSec;
 
-        // audio.voices[iVoice].gainNode.gain.setValueAtTime(0, timeStart);
-        // audio.voices[iVoice].gainNode.gain.linearRampToValueAtTime(1, timePlay);
-        // audio.voices[iVoice].gainNode.gain.setValueAtTime(1, timePlayEnd);
-        // audio.voices[iVoice].gainNode.gain.linearRampToValueAtTime(0, timeStop);
+        audio.voices[iVoice].gainNode.gain.setValueAtTime(0, timeStart);
+        audio.voices[iVoice].gainNode.gain.linearRampToValueAtTime(1, timePlay);
+        audio.voices[iVoice].gainNode.gain.setValueAtTime(1, timePlayEnd);
+        audio.voices[iVoice].gainNode.gain.linearRampToValueAtTime(0, timeStop);
 
-        audio.voices[iVoice].gainNode.gain.setValueAtTime(1, audioTime);
+        // audio.voices[iVoice].gainNode.gain.setValueAtTime(1, audioTime);
     };
 
     return {
@@ -201,7 +208,7 @@ export const createBeatPlayer = () => {
             if (state.isStarted) { return; }
             state.isStarted = true;
 
-            state.audio = createAudio(2);
+            state.audio = createAudio(4);
             state.audio?.voices.forEach(v => v.oscNode.start(0));
         },
         beat: (data: { beatIndex: number, positions: Vector2[] }) => {
@@ -218,7 +225,7 @@ export const createBeatPlayer = () => {
 
             state.positions = data.positions;
             for (let v = 0; v < state.audio.voices.length; v++){
-                if (v > state.positions.length){ continue;}
+                if (v >= state.positions.length){ continue;}
 
                 if (!state.songs[v]
                     || (data.beatIndex % state.songs[v].length === 0
@@ -227,11 +234,17 @@ export const createBeatPlayer = () => {
                     state.iBeat = 0;
                 }
 
+                state.audio.voices[v].oscNode.type = `triangle`;
                 // const positions = state.positions.filter((x, i) => i % v === 0);
                 // updateWaveform(v, positions);
 
                 for (let i = 0; i < chunkSize; i++){
-                    scheduleNote(v, (state.iBeat + i) % state.songs[v].length, i * state.timePerBeat + v * state.audio.voices.length / state.timePerBeat);
+                    const timeForNote = state.timePerBeat
+                        / Math.min(1 + state.positions.length, state.audio.voices.length);
+                    scheduleNote(v,
+                        (state.iBeat + i) % state.songs[v].length,
+                        i * state.timePerBeat + v * timeForNote,
+                        timeForNote);
                 }
             }
 
