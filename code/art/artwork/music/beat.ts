@@ -1,4 +1,4 @@
-import { randomItem } from 'utils/random';
+import { randomItem, randomOrder } from 'utils/random';
 import { Vector2 } from '../games/utils';
 import { musicNotes, NoteName } from './music-notes';
 
@@ -154,7 +154,7 @@ export const createBeatPlayer = () => {
     `);
 
     const song5 = createSong(`
-     . A2 . F1  
+     . A2 .  F1  
     E2 E1 D1 . 
      . F2 E1 A2  
     B2 A2 F1 . 
@@ -167,8 +167,10 @@ export const createBeatPlayer = () => {
     const createRandomSong = () => {
         // const sSong = randomItem([song3]);
         const sSong = randomItem([song1, song2, song3, song4, song5]);
-        return sSong;
-        // return [...new Array(2 + 4 * Math.floor(4 * Math.random()))].map(() => randomItem(sSong));
+        // return sSong;
+        // return [...new Array(2 + 4 * Math.floor(4 * Math.random()))]
+        //     .map((_, i) => (i % 4 === 3) ? sSong[0] : randomItem(sSong));
+        return randomOrder(sSong);
     };
 
     const state = {
