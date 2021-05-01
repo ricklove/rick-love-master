@@ -1,8 +1,8 @@
+import { randomItem } from 'utils/random';
 import { Vector2 } from '../games/utils';
 import { musicNotes, NoteName } from './music-notes';
-import { waveTable_celeste, waveTable_piano } from './wave-tables';
 
-const createAudio = () => {
+const createAudio = (voiceCount: number) => {
     const audioContext = (() => {
         try {
             const AudioContext = (window.AudioContext || (window as unknown as { webkitAudioContext: AudioContext }).webkitAudioContext);
@@ -14,26 +14,33 @@ const createAudio = () => {
     })();
     if (!audioContext){ return null; }
 
-    const oscNode = audioContext.createOscillator();
-    oscNode.frequency.value = 0;
+    const createVoice = () => {
+        const oscNode = audioContext.createOscillator();
+        oscNode.frequency.value = 0;
 
-    const gainNode = audioContext.createGain();
-    gainNode.gain.value = 0;
+        const gainNode = audioContext.createGain();
+        gainNode.gain.value = 0;
 
-    const filterNode = audioContext.createBiquadFilter();
-    // filterNode.frequency.value =         timbre.cutoff + record.frequency * timbre.cutfollow;
-    filterNode.Q.value = 1;
-    filterNode.type = `bandpass`;
+        const filterNode = audioContext.createBiquadFilter();
+        filterNode.Q.value = 1;
+        filterNode.type = `bandpass`;
 
-    // Connect nodes
-    const enableFilter = true;
-    if (enableFilter){
-        oscNode.connect(filterNode);
-        filterNode.connect(gainNode);
-    } else {
-        oscNode.connect(gainNode);
-    }
-    gainNode.connect(audioContext.destination);
+        // Connect nodes
+        const enableFilter = true;
+        if (enableFilter){
+            oscNode.connect(filterNode);
+            filterNode.connect(gainNode);
+        } else {
+            oscNode.connect(gainNode);
+        }
+        gainNode.connect(audioContext.destination);
+
+        return {
+            oscNode,
+            filterNode,
+            gainNode,
+        };
+    };
 
 
     // oscNode.type = `custom`;
@@ -83,14 +90,37 @@ const createAudio = () => {
 
     return {
         audioContext,
-        oscNode,
-        filterNode,
-        gainNode,
+        voices: [... new Array(voiceCount)].map(() => createVoice()),
     };
 
 };
 
 export const createBeatPlayer = () => {
+    const getNote = (note: string) => {
+        if (!musicNotes.has(note as NoteName)){ return 0;}
+        return musicNotes.get(note as NoteName);
+    };
+    const createSong = (notes: string) => notes.replace(/\s/g, ` `).split(` `).filter(x => x).map(x => getNote(x));
+
+    // const song = createSong(`a a a a a A4 a a a a a A4 a a a a a A4 a a a`);
+    // const song = createSong(`a a a A4 . b c A4`);
+    const song1 = createSong(`
+     . B2 C3 A3  
+    B2 C3 D3 A3  
+    C3 D3 E3 A3  
+    A2 A2 A2 A3`);
+
+    const song2 = createSong(`
+     . B2 C3 D3  
+    F2 C3 D3 A3  
+    C3 .  E3 D3  
+    A2 E2 G2 A3`);
+
+    // const song = createSong(`C3 A3 B3 C3 . A3 C3 A3 A3 F3 G3 A3 . F3 A3 F3 B3 G3 A3 B3 . G3 B3 A3 G3 G3 G3 G3`);
+    // const song = createSong(`A3 C3 A3 A3 F3 G3 A3 . F3 A3 F3 B3 G3 A3 B3 . G3 C4 B3 A3 .`);
+    // const song = createSong(`aabcd aabcd aabcd ffe`);
+
+    const createRandomSong = () => [...new Array(2 + 4 * Math.floor(4 * Math.random()))].map(() => randomItem(song2));
 
     const state = {
         audio: null as null | ReturnType<typeof createAudio>,
@@ -100,40 +130,22 @@ export const createBeatPlayer = () => {
         timeLastBeat: 0,
         positions: [] as Vector2[],
         shape: null as null | PeriodicWave,
+        songs: [createRandomSong()],
     };
 
-    const getNote = (note: string) => {
-        if (!musicNotes.has(note as NoteName)){ return 0;}
-        return musicNotes.get(note as NoteName);
-    };
-
-
-    const createSong = (notes: string) => notes.replace(/\s/g, ` `).split(` `).filter(x => x).map(x => getNote(x));
-
-    // const song = createSong(`a a a a a A4 a a a a a A4 a a a a a A4 a a a`);
-    // const song = createSong(`a a a A4 . b c A4`);
-    const song = createSong(`
-     . B2 C3 A3  
-    B2 C3 D3 A3  
-    C3 D3 E3 A3  
-    A2 A2 A2 A3`);
-    // const song = createSong(`C3 A3 B3 C3 . A3 C3 A3 A3 F3 G3 A3 . F3 A3 F3 B3 G3 A3 B3 . G3 B3 A3 G3 G3 G3 G3`);
-    // const song = createSong(`A3 C3 A3 A3 F3 G3 A3 . F3 A3 F3 B3 G3 A3 B3 . G3 C4 B3 A3 .`);
-    // const song = createSong(`aabcd aabcd aabcd ffe`);
-
-    const updateWaveform = () => {
+    const updateWaveform = (iVoice: number, positions: Vector2[]) => {
         const { audio } = state;
         if (!audio){ return; }
-        if (state.positions.length === 0){ return; }
+        if (positions.length === 0){ return; }
 
-        const real = new Float32Array(2 + state.positions.length);
-        const imag = new Float32Array(2 + state.positions.length);
+        const real = new Float32Array(2 + positions.length);
+        const imag = new Float32Array(2 + positions.length);
         real[0] = 0;
         imag[0] = 0;
-        real[state.positions.length - 1] = 1;
-        imag[state.positions.length - 1] = 0;
+        real[positions.length - 1] = 1;
+        imag[positions.length - 1] = 0;
 
-        for (const [i, p] of state.positions.entries()){
+        for (const [i, p] of positions.entries()){
             real[i + 1] = p.x;
             imag[i + 1] = p.y;
         }
@@ -148,10 +160,10 @@ export const createBeatPlayer = () => {
         // }
 
         const wave = audio.audioContext.createPeriodicWave(real, imag, { disableNormalization: true });
-        audio.oscNode.setPeriodicWave(wave);
+        audio.voices[iVoice].oscNode.setPeriodicWave(wave);
     };
 
-    const scheduleNote = (iBeat: number, timeOffset: number) => {
+    const scheduleNote = (iVoice: number, iBeat: number, timeOffset: number) => {
         const { audio } = state;
         if (!audio){ return; }
         if (state.positions.length === 0){ return; }
@@ -159,13 +171,13 @@ export const createBeatPlayer = () => {
         // Play song
         const audioTime = audio.audioContext.currentTime + timeOffset;
 
-        const freq = song[iBeat] ?? 0;
-        audio.oscNode.frequency.setValueAtTime(freq, audioTime);
-        audio.filterNode.frequency.setValueAtTime(freq, audioTime);
+        const freq = state.songs[iVoice][iBeat] ?? 0;
+        audio.voices[iVoice].oscNode.frequency.setValueAtTime(freq, audioTime);
+        audio.voices[iVoice].filterNode.frequency.setValueAtTime(freq, audioTime);
         // audio.filterNode.frequency.setValueAtTime(800 + freq * 0.1, audioTime);
-        // if (!freq){ return;}
+        if (!freq){ return;}
 
-        // // Note length
+        // Note length
         // const timeToDelaySec = 0.05 * 10 / 110;
         // const timeToStartSec = 0.1 * 10 / 110;
         // const timeToStopSec = 0.1 * 10 / 110;
@@ -175,12 +187,12 @@ export const createBeatPlayer = () => {
         // const timePlayEnd = timePlay + timeToPlaySec;
         // const timeStop = timePlayEnd + timeToStopSec;
 
-        // audio.gainNode.gain.setValueAtTime(0, timeStart);
-        // audio.gainNode.gain.linearRampToValueAtTime(1, timePlay);
-        // audio.gainNode.gain.setValueAtTime(1, timePlayEnd);
-        // audio.gainNode.gain.linearRampToValueAtTime(0, timeStop);
+        // audio.voices[iVoice].gainNode.gain.setValueAtTime(0, timeStart);
+        // audio.voices[iVoice].gainNode.gain.linearRampToValueAtTime(1, timePlay);
+        // audio.voices[iVoice].gainNode.gain.setValueAtTime(1, timePlayEnd);
+        // audio.voices[iVoice].gainNode.gain.linearRampToValueAtTime(0, timeStop);
 
-        audio.gainNode.gain.setValueAtTime(1, audioTime);
+        audio.voices[iVoice].gainNode.gain.setValueAtTime(1, audioTime);
     };
 
     return {
@@ -189,12 +201,8 @@ export const createBeatPlayer = () => {
             if (state.isStarted) { return; }
             state.isStarted = true;
 
-            state.audio = createAudio();
-            state.audio?.oscNode.start(0);
-
-            // setInterval(()=>{
-
-            // }, 1);
+            state.audio = createAudio(2);
+            state.audio?.voices.forEach(v => v.oscNode.start(0));
         },
         beat: (data: { beatIndex: number, positions: Vector2[] }) => {
             if (!state.audio){ return; }
@@ -207,11 +215,24 @@ export const createBeatPlayer = () => {
             if (data.beatIndex % chunkSize !== 0){ return;}
             state.iBeat += chunkSize;
 
-            state.positions = data.positions;
-            updateWaveform();
 
-            for (let i = 0; i < chunkSize; i++){
-                scheduleNote((state.iBeat + i) % song.length, i * state.timePerBeat);
+            state.positions = data.positions;
+            for (let v = 0; v < state.audio.voices.length; v++){
+                if (v > state.positions.length){ continue;}
+
+                if (!state.songs[v]
+                    || (data.beatIndex % state.songs[v].length === 0
+                    && Math.random() < 0.35)){
+                    state.songs[v] = createRandomSong();
+                    state.iBeat = 0;
+                }
+
+                // const positions = state.positions.filter((x, i) => i % v === 0);
+                // updateWaveform(v, positions);
+
+                for (let i = 0; i < chunkSize; i++){
+                    scheduleNote(v, (state.iBeat + i) % state.songs[v].length, i * state.timePerBeat + v * state.audio.voices.length / state.timePerBeat);
+                }
             }
 
             // console.log(`beat`, { iBeat: state.iBeat });
