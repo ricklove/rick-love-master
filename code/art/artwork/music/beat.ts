@@ -14,12 +14,25 @@ const createAudio = (voiceCount: number) => {
     })();
     if (!audioContext){ return null; }
 
-    const mixNode = !audioContext.createDynamicsCompressor ? audioContext.destination
+    const finalMixNode = !audioContext.createDynamicsCompressor ? audioContext.destination
         : (() => {
             const compressor = audioContext.createDynamicsCompressor();
             compressor.connect(audioContext.destination);
             return compressor;
         })();
+
+    const mainFilterNode = audioContext.createBiquadFilter();
+    mainFilterNode.Q.value = 1;
+    mainFilterNode.type = `lowpass`;
+    mainFilterNode.frequency.value = 0.5 * audioContext.sampleRate;
+    mainFilterNode.connect(finalMixNode);
+
+    // Create master volume.
+    const mainGainNode = audioContext.createGain();
+    mainGainNode.gain.value = 0.7; // reduce overall volume to avoid clipping
+    mainGainNode.connect(mainFilterNode);
+
+    const mixNode = mainGainNode;
 
     const createVoice = () => {
         const oscNode = audioContext.createOscillator();
@@ -235,15 +248,21 @@ export const createBeatPlayer = () => {
                 }
 
                 state.audio.voices[v].oscNode.type = `triangle`;
-                // const positions = state.positions.filter((x, i) => i % v === 0);
-                // updateWaveform(v, positions);
+                const positions = state.positions.filter((x, i) => i % v === 0);
+                updateWaveform(v, positions);
 
                 for (let i = 0; i < chunkSize; i++){
-                    const timeForNote = state.timePerBeat
-                        / Math.min(1 + state.positions.length, state.audio.voices.length);
+                    // const timeForNote = state.timePerBeat
+                    //     / Math.min(1 + state.positions.length, state.audio.voices.length);
+                    // scheduleNote(v,
+                    //     (state.iBeat + i) % state.songs[v].length,
+                    //     i * state.timePerBeat + v * timeForNote,
+                    //     timeForNote);
+
+                    const timeForNote = 0.25 * state.timePerBeat;
                     scheduleNote(v,
                         (state.iBeat + i) % state.songs[v].length,
-                        i * state.timePerBeat + v * timeForNote,
+                        i * state.timePerBeat,
                         timeForNote);
                 }
             }
