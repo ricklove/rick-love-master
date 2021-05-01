@@ -136,11 +136,32 @@ export const createBeatPlayer = () => {
     C3 .  E3 D3  
     A2 E2 G2 A3`);
 
+    const song3 = createSong(`
+     . B2 C5 D4  
+    F2 C3 D5 A4  
+    C3 .  E5 D4  
+    A2 E2 G4 A4`);
+
+    const song4 = createSong(`
+     . A4 C4 F4  
+    F3 C3 B4 B4  
+    E3 .  E4 D4  
+    A2 E2 F3 A4`);
+
+    const song5 = createSong(`
+     . A1 C0 F1  
+    F2 C1 B0 B1  
+    E2 .  E0 D1  
+    A2 E1 F0 A1`);
+
     // const song = createSong(`C3 A3 B3 C3 . A3 C3 A3 A3 F3 G3 A3 . F3 A3 F3 B3 G3 A3 B3 . G3 B3 A3 G3 G3 G3 G3`);
     // const song = createSong(`A3 C3 A3 A3 F3 G3 A3 . F3 A3 F3 B3 G3 A3 B3 . G3 C4 B3 A3 .`);
     // const song = createSong(`aabcd aabcd aabcd ffe`);
 
-    const createRandomSong = () => [...new Array(2 + 4 * Math.floor(4 * Math.random()))].map(() => randomItem(song2));
+    const createRandomSong = () => {
+        const sSong = randomItem([song1, song2, song4, song5]);
+        return [...new Array(2 + 4 * Math.floor(4 * Math.random()))].map(() => randomItem(sSong));
+    };
 
     const state = {
         audio: null as null | ReturnType<typeof createAudio>,
@@ -235,7 +256,7 @@ export const createBeatPlayer = () => {
 
                 if (!state.songs[v]
                     || (data.beatIndex % state.songs[v].length === 0
-                    && Math.random() < 0.35)){
+                    && Math.random() < 0.15)){
                     state.songs[v] = createRandomSong();
                     state.iBeat = 0;
                 }
