@@ -27,7 +27,7 @@ Renderer based on Fluid Simulator by Pavel Dobryakov: https://paveldogreat.githu
     // },
     renderArt: (hostElement, hash, recorder) => {
         const sim = runFluidSimulator(hostElement, contentPath, { width: `100%`, height: `100%` }, {
-            disableGui: false, disableInput: true, disableStartupSplats: true,
+            disableGui: true, disableInput: true, disableStartupSplats: true,
             timeProvider: recorder?.timeProvider,
         });
         if (!sim) { return { remove: () => { /* Ignore */ } }; }
