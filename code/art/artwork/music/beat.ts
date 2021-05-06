@@ -122,55 +122,81 @@ export const createBeatPlayer = () => {
     };
     const createSong = (notes: string) => notes.replace(/\s/g, ` `).split(` `).filter(x => x).map(x => getNote(x));
 
-    // const song = createSong(`a a a a a A4 a a a a a A4 a a a a a A4 a a a`);
-    // const song = createSong(`a a a A4 . b c A4`);
+    // const song1 = createSong(`A2 A2 A2 A2 A2 A4 A2 A2 A2 A2 A2 A4 A2 A2 A2 A2 A2 A4 A2 A2 A2`);
+    // const song1 = createSong(`A2 A2 A2 A4 . B2 C3 A4`);
     const song1 = createSong(`
-     . B2 C3 A3  
-    B2 C3 D3 A3  
-    C3 D3 E3 A3  
-    A2 A2 A2 A3
+    C2 D2 E2 G2
+    D2 E2 G2 A2
+    E2 G2 A2 C3
     `);
 
     const song2 = createSong(`
-     . B2 C3 D3  
-    F2 C3 D3 A3  
-    C3 .  E3 D3  
-    A2 E2 G2 A3
+    C2 E2 D2 G2
+    E2 A2 G2 C3
+    A2 D3 C3 E3
+
+    D3 G3 E3 A3 
+    G3 C4 A3 D4 
+    C4 .  .  .
     `);
+
+    // const song3Dis = createSong(`
+    // F#2 G#3 D#3 A#2
+    // F#2 G#3 D#3 .
+    // `);
 
     const song3 = createSong(`
-     . B2 C3  .
-    F2 C3 D3 A4
-    C3 .  E3 D4
-    A2 E2 G4 A4
+    C4 A3 G3 E3
+    A3 G3 E3 .
+    G3 E3 D3 C3
+    E3 D3 C3 .
+    D3 C3 A2 G2
+    C3 A2 G2 .
+    A2 G2 E2 D2
+    G2 E2 D2 .
     `);
 
-    const song4 = createSong(`
-     . C3 A3 A3
-    F3 G3 A3 . 
-    F3 A3 F3 B3 
-    G3 A3 B3 . 
-    G3 C4 B3 A3
-    `);
+    // const song2 = createSong(`
+    //  . B2 C3 D3
+    // F2 C3 D3 A3
+    // C3 .  E3 D3
+    // A2 E2 G2 A3
+    // `);
 
-    const song5 = createSong(`
-     . A2 .  F1  
-    E2 E1 D1 . 
-     . F2 E1 A2  
-    B2 A2 F1 . 
-    `);
+    // const song3 = createSong(`
+    //  . B2 C3  .
+    // F2 C3 D3 A4
+    // C3 .  E3 D4
+    // A2 E2 G4 A4
+    // `);
+
+    // const song4 = createSong(`
+    //  . C3 A3 A3
+    // F3 G3 A3 .
+    // F3 A3 F3 B3
+    // G3 A3 B3 .
+    // G3 C4 B3 A3
+    // `);
+
+    // const song5 = createSong(`
+    //  . A2 .  F1
+    // E2 E1 D1 .
+    //  . F2 E1 A2
+    // B2 A2 F1 .
+    // `);
 
     // const song = createSong(`C3 A3 B3 C3 . A3 C3 A3 A3 F3 G3 A3 . F3 A3 F3 B3 G3 A3 B3 . G3 B3 A3 G3 G3 G3 G3`);
     // const song = createSong(`A3 C3 A3 A3 F3 G3 A3 . F3 A3 F3 B3 G3 A3 B3 . G3 C4 B3 A3 .`);
     // const song = createSong(`aabcd aabcd aabcd ffe`);
 
     const createRandomSong = () => {
-        // const sSong = randomItem([song3]);
-        const sSong = randomItem([song1, song2, song3, song4, song5]);
+        const sSong = randomItem([song1, song2, song3]);
+        // const sSong = randomItem([song1, song2, song3, song4, song5]);
         // return sSong;
         // return [...new Array(2 + 4 * Math.floor(4 * Math.random()))]
         //     .map((_, i) => (i % 4 === 3) ? sSong[0] : randomItem(sSong));
-        return randomOrder(sSong);
+        // return randomOrder(sSong);
+        return sSong;
     };
 
     const state = {
