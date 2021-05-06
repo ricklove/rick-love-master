@@ -122,7 +122,11 @@ export const createBeatPlayer = () => {
     };
     const createSong = (notes: string) => notes.replace(/\s/g, ` `).split(` `).filter(x => x).map(x => getNote(x));
 
-    // const song1 = createSong(`A2 A2 A2 A2 A2 A4 A2 A2 A2 A2 A2 A4 A2 A2 A2 A2 A2 A4 A2 A2 A2`);
+    const song1A = createSong(`
+    A2 A2 A2 .
+    A2 A2 A2 A4
+    `);
+
     // const song1 = createSong(`A2 A2 A2 A4 . B2 C3 A4`);
     const song1 = createSong(`
     C2 D2 E2 G2
@@ -190,12 +194,30 @@ export const createBeatPlayer = () => {
     // const song = createSong(`aabcd aabcd aabcd ffe`);
 
     const createRandomSong = () => {
-        const sSong = randomItem([song1, song2, song3]);
+
+        if (Math.random() < 0.25){
+            const mainNotes = `CDEGACDEGA.`.split(``);
+            const mainOctave = randomItem([2, 3]);
+
+            const sSongSource = [...new Array(4 * (2 + Math.floor(4 * Math.random())))]
+                .map(() => `${randomItem(mainNotes)}${mainOctave} `)
+                .join(``);
+            const sSong = createSong(sSongSource.substr(1) + `C${mainOctave + 1}`);
+            return sSong;
+        }
+
+        //const sSong = randomItem([song1A, song1, song2, song3]);
+        const sSong = randomItem([song1A, song1, song3]);
         // const sSong = randomItem([song1, song2, song3, song4, song5]);
         // return sSong;
         // return [...new Array(2 + 4 * Math.floor(4 * Math.random()))]
         //     .map((_, i) => (i % 4 === 3) ? sSong[0] : randomItem(sSong));
         // return randomOrder(sSong);
+
+        // if (Math.random() < 0.25){
+        //     return randomOrder(sSong);
+        // }
+
         return sSong;
     };
 
