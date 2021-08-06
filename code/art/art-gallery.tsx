@@ -76,7 +76,7 @@ export const ArtGallery = (props: {}) => {
             console.log(`changeTokenId debounce`, { value });
             if (!art.current){ return; }
 
-            setTokenDescription(art.current.getTokenDescription(value));
+            setTokenDescription(art.current.getTokenDescription(value) ?? `TokenId: ${value}`);
             const { renderArt, ArtComponent } = art.current;
             if (renderArt) {
                 cacheRenderArtwork({
@@ -141,9 +141,17 @@ export const ArtGallery = (props: {}) => {
                                 <div style={{ position: `absolute`, top: 4, right: 4, width: 16, height: 16, fontFamily: `monospace`, fontSize: 14, lineHeight: `16px`, textAlign: `center`, color: `#FFFFFF`, background: `#88888888` }}
                                     onClick={() => setIsFullScreen(s => !s)}>{isFullScreen ? `-` : `+`}</div>
                                 {isFullScreen && (
-                                    <div style={{ position: `fixed`, right: 4, bottom: 4 }}>
-                                        <a href='/art'>🧙‍♂️ Other Art by Rick Love</a>
-                                    </div>
+                                    <>
+                                        <div style={{ position: `fixed`, left: 4, bottom: 4, maxWidth: `600`, color: `white` }}>
+                                            <div style={{ opacity: 0.5 }}>
+                                                <div style={{ padding: 4, whiteSpace: `pre-wrap` }}>{art.current.title}</div>
+                                                <div style={{ padding: 4, whiteSpace: `pre-wrap` }}>{art.current.artist}</div>
+                                                {!!tokenDescription && <div style={{ padding: 4, whiteSpace: `pre-wrap` }}>{tokenDescription}</div>}
+                                                <div style={{ padding: 4, whiteSpace: `pre-wrap` }}>{art.current.description}</div>
+                                            </div>
+                                            <a href='/art'>🧙‍♂️ Other Art by Rick Love</a>
+                                        </div>
+                                    </>
                                 )}
                             </div>
                         </div>

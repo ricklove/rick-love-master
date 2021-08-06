@@ -10,15 +10,11 @@ const parseTokenId_puzzle01 = (tokenId: string) => { return tokenId; };
 export const art_puzzle01: ArtWork = {
     key: `puzzle-01`,
     title: `Puzzle 01`,
-    description: `Try to puzzle it out and unlock the answer.
-    
+    description: `Solve the puzzle and unlock the final art.
 Directions: Use arrow keys to move the circle towards the exit`,
     artist: `Rick Love`,
     getTokenDescription: (tokenId: string) => {
-        const tokenData = parseTokenId_puzzle01(tokenId);
-        if (!tokenData) { return null; }
-
-        return `TokenId: ${tokenData}`;
+        return null;
     },
     renderArt: (hostElement: HTMLElement, tokenId: string) => {
         // const { a, b, c } = { a: 57, b: 23, c: 15 };

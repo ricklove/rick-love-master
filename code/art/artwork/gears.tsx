@@ -162,7 +162,8 @@ const drawGear = (g: p5,
 export const art_gears: ArtWork = {
     key: `gears`,
     title: `Gears`,
-    description: `Are the gears of conflict twisting our perceptions of others? (Press image to toggle sound)`,
+    description: `Are the gears of conflict twisting our perceptions of others?
+(Press image for sound)`,
     artist: `Rick Love`,
     getTokenDescription: (tokenId: string) => {
         return null;
