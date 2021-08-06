@@ -10,8 +10,11 @@ import { artItems } from './art-items';
 export const ArtGallery = (props: {}) => {
 
     const queryParts = document.location.search.substr(1).split(`&`);
-    const artKey = queryParts.find(x => x.startsWith(`key`))?.split(`=`)[1] ?? document.location.pathname.match(/art\/([^/]+)/)?.[1];
-    const newTokenId = queryParts.find(x => x.startsWith(`tokenId`))?.split(`=`)[1];
+    const artKey = queryParts.find(x => x.startsWith(`key`))?.split(`=`)[1]
+        ?? document.location.pathname.match(/art\/([^/]+)/)?.[1];
+    const newTokenId = queryParts.find(x => x.startsWith(`tokenId`))?.split(`=`)[1]
+        ?? queryParts.find(x => x.startsWith(`seed`))?.split(`=`)[1]
+        ?? document.location.pathname.match(new RegExp(`art/${artKey}/([^/]+)`))?.[1];
     const showCamera = document.location.search.includes(`camera=true`);
 
     const art = useRef(null as null | ArtWork);
@@ -76,7 +79,7 @@ export const ArtGallery = (props: {}) => {
             console.log(`changeTokenId debounce`, { value });
             if (!art.current){ return; }
 
-            setTokenDescription(art.current.getTokenDescription(value) ?? `TokenId: ${value}`);
+            setTokenDescription(art.current.getTokenDescription(value) ?? `Seed: ${value}`);
             const { renderArt, ArtComponent } = art.current;
             if (renderArt) {
                 cacheRenderArtwork({
@@ -122,10 +125,7 @@ export const ArtGallery = (props: {}) => {
                                 </div>
                             </React.Fragment>
                         ))}
-                        <C.View_FieldRow>
-                            <C.Text_FormTitle>Enter a preview tokenId:</C.Text_FormTitle>
-                            <C.Input_Text value={tokenId} onChange={changeTokenId} />
-                        </C.View_FieldRow>
+                        <SeedController value={tokenId} onChange={changeTokenId}/>
                     </C.View_Form>
                 )}
 
@@ -151,6 +151,9 @@ export const ArtGallery = (props: {}) => {
                                             </div>
                                             <a href='/art'>🧙‍♂️ Other Art by Rick Love</a>
                                         </div>
+                                        <div style={{ position: `fixed`, right: 4, bottom: 4, opacity: 0.7 }}>
+                                            <SeedController value={tokenId} onChange={changeTokenId}/>
+                                        </div>
                                     </>
                                 )}
                             </div>
@@ -171,5 +174,62 @@ export const ArtGallery = (props: {}) => {
                 </div>
             )}
         </>
+    );
+};
+
+
+export const SeedController = (props: {
+    value: string;
+    onChange: (value: string) => void;
+}) => {
+
+    return (
+        <>
+            <div style={{
+                display: `flex`, flexDirection: `row`, flexWrap: `wrap`, alignItems: `center`,
+                padding: 8, borderRadius: 8,
+                background: `#FFFFFF`,
+            }}>
+                <C.Text_FieldLabel>Seed</C.Text_FieldLabel>
+                <C.Input_Text value={props.value} onChange={props.onChange} />
+                <ConnectWalletButton label={`Use Wallet Address`} onWalletAddress={props.onChange} />
+            </div>
+        </>
+    );
+};
+
+
+declare const ethereum: {
+    request: (args: { method: 'eth_requestAccounts' }) => Promise<string[]>;
+};
+export const ConnectWalletButton = (props: {
+    label?: string;
+    onWalletAddress: (address: string) => void;
+}) => {
+
+    const [connected, setConnected] = useState(false);
+
+    if (typeof ethereum === undefined){
+        return <></>;
+    }
+
+    const connect = async () => {
+        const accounts = await ethereum.request({ method: `eth_requestAccounts` });
+        const account = accounts[0];
+        props.onWalletAddress(account);
+        setConnected(true);
+    };
+
+    return (
+        <div
+            style={{
+                background: `#037dd6`,
+                color: `#FFFFFF`,
+                padding: `8px`,
+                borderRadius: 8,
+                textAlign: `center`,
+                fontSize: 16,
+            }}
+            onClick={connect}>{props.label ?? `Connect Wallet`}</div>
     );
 };
