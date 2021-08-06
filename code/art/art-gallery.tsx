@@ -142,18 +142,19 @@ export const ArtGallery = (props: {}) => {
                                     onClick={() => setIsFullScreen(s => !s)}>{isFullScreen ? `-` : `+`}</div>
                                 {isFullScreen && (
                                     <>
-                                        <div style={{ position: `fixed`, left: 4, bottom: 4, maxWidth: `600`, color: `white` }}>
+                                        <div style={{ position: `fixed`, left: 4, bottom: 4, maxWidth: `75%`, color: `white` }}>
                                             <div style={{ opacity: 0.5 }}>
                                                 <div style={{ padding: 4, whiteSpace: `pre-wrap` }}>{art.current.title}</div>
                                                 <div style={{ padding: 4, whiteSpace: `pre-wrap` }}>{art.current.artist}</div>
-                                                {!!tokenDescription && <div style={{ padding: 4, whiteSpace: `pre-wrap` }}>{tokenDescription}</div>}
                                                 <div style={{ padding: 4, whiteSpace: `pre-wrap` }}>{art.current.description}</div>
+                                                {!!tokenDescription && <div style={{ padding: 4, whiteSpace: `pre-wrap`, wordBreak: `break-all` }}>{tokenDescription}</div>}
+                                            </div>
+                                            <div style={{ opacity: 0.75 }}>
+                                                <SeedController value={tokenId} onChange={changeTokenId}/>
                                             </div>
                                             <a href='/art'>🧙‍♂️ Other Art by Rick Love</a>
                                         </div>
-                                        <div style={{ position: `fixed`, right: 4, bottom: 4, opacity: 0.7 }}>
-                                            <SeedController value={tokenId} onChange={changeTokenId}/>
-                                        </div>
+
                                     </>
                                 )}
                             </div>
@@ -187,11 +188,15 @@ export const SeedController = (props: {
         <>
             <div style={{
                 display: `flex`, flexDirection: `row`, flexWrap: `wrap`, alignItems: `center`,
-                padding: 8, borderRadius: 8,
-                background: `#FFFFFF`,
+                color: `white`,
+                // padding: 8, borderRadius: 8,
+                // background: `#FFFFFF`,
             }}>
-                <C.Text_FieldLabel>Seed</C.Text_FieldLabel>
-                <C.Input_Text value={props.value} onChange={props.onChange} />
+                <div style={{ padding: 4 }}>Seed:</div>
+                <input type='text'
+                    style={{ padding: 4, borderRadius: 4 }}
+                    value={props.value} onInput={x => props.onChange(x.currentTarget.value)}/>
+                {/* <C.Input_Text value={props.value} onChange={props.onChange} /> */}
                 <ConnectWalletButton label={`Use Wallet Address`} onWalletAddress={props.onChange} />
             </div>
         </>
@@ -225,10 +230,9 @@ export const ConnectWalletButton = (props: {
             style={{
                 background: `#037dd6`,
                 color: `#FFFFFF`,
-                padding: `8px`,
-                borderRadius: 8,
+                borderRadius: 4,
+                padding: 4,
                 textAlign: `center`,
-                fontSize: 16,
             }}
             onClick={connect}>{props.label ?? `Connect Wallet`}</div>
     );
