@@ -16,7 +16,7 @@ export const ComponentArtGalleryPage = (props: { data: ComponentArtGalleryPageDa
         artTitle,
         artImageUrl,
     } = props.data;
-    console.log(`ComponentArtGalleryPage`, { artKey, artTitle, artImageUrl });
+    // console.log(`ComponentArtGalleryPage`, { artKey, artTitle, artImageUrl });
 
     return (
         <Layout zoom={false}>
