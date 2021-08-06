@@ -4,12 +4,26 @@ import { Layout } from './layout/layout';
 import { SEO } from './layout/seo';
 
 export type ComponentArtGalleryPageData = {
+    artKey?: string;
+    artTitle?: string;
+    artImageUrl?: string;
 };
 
 export const ComponentArtGalleryPage = (props: { data: ComponentArtGalleryPageData }) => {
+
+    const {
+        artKey,
+        artTitle,
+        artImageUrl,
+    } = props.data;
+    console.log(`ComponentArtGalleryPage`, { artKey, artTitle, artImageUrl });
+
     return (
         <Layout zoom={false}>
-            <SEO title='Vector Art Gallery - Rick Love' />
+            <SEO
+                title={`${artTitle ? `${artTitle} - ` : ``}NFT Art - Rick Love`}
+                imageUrl={artImageUrl ? `/content/art${artImageUrl.replace(/^\./, ``)}` : undefined}
+            />
             <ComponentAuto data={props.data} />
         </Layout>
     );

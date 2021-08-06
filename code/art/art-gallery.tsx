@@ -149,10 +149,20 @@ export const ArtGallery = (props: {}) => {
                                                 <div style={{ padding: 4, whiteSpace: `pre-wrap` }}>{art.current.description}</div>
                                                 {!!tokenDescription && <div style={{ padding: 4, whiteSpace: `pre-wrap`, wordBreak: `break-all` }}>{tokenDescription}</div>}
                                             </div>
-                                            <div style={{ opacity: 0.75 }}>
+                                            <div style={{ opacity: 0.75, padding: 4 }}>
                                                 <SeedController value={tokenId} onChange={changeTokenId}/>
                                             </div>
-                                            <a href='/art'>🧙‍♂️ Other Art by Rick Love</a>
+                                            <div style={{ opacity: 0.75, padding: 4 }}>
+                                                {artKey && tokenId && (
+                                                    <ReserveButton
+                                                        artKey={artKey}
+                                                        seed={tokenId}
+                                                    />
+                                                )}
+                                            </div>
+                                            <div style={{ marginTop: 8 }}>
+                                                <a href='/art'>🧙‍♂️ Other Art by Rick Love</a>
+                                            </div>
                                         </div>
 
                                     </>
@@ -178,6 +188,44 @@ export const ArtGallery = (props: {}) => {
     );
 };
 
+export const ReserveButton = ({
+    artKey,
+    seed,
+}: {
+    artKey: string;
+    seed: string;
+}) => {
+
+    const reserve = async () => {
+        const accounts = await ethereum.request({ method: `eth_requestAccounts` });
+        const account = accounts[0];
+        const nftUrl = `https://ricklove.me/art/${artKey}?seed=${seed}`;
+        const reserveMessage = `@RickLoveToldMe I want to reserve this NFT: ${nftUrl}${account && account !== seed ? ` for ${account}` : ``}`;
+
+        // Public message
+        const url = `https://twitter.com/intent/tweet?text=${encodeURIComponent(reserveMessage)}`;
+
+        // Direct message
+        // const url = `https://twitter.com/messages/compose?recipient_id=1001&text=${encodeURIComponent(reserveMessage)}`;
+
+        window.location.href = url;
+    };
+
+    return (
+        <>
+            <div
+                style={{
+                    background: `#037dd6`,
+                    color: `#FFFFFF`,
+                    borderRadius: 4,
+                    padding: 4,
+                    textAlign: `center`,
+                }}
+                onClick={reserve}>{`Reserve NFT`}</div>
+        </>
+    );
+};
+
 
 export const SeedController = (props: {
     value: string;
@@ -195,7 +243,10 @@ export const SeedController = (props: {
                 <div style={{ padding: 4 }}>Seed:</div>
                 <input type='text'
                     style={{ padding: 4, borderRadius: 4 }}
-                    value={props.value} onInput={x => props.onChange(x.currentTarget.value)}/>
+                    value={props.value}
+                    onInput={x => props.onChange(x.currentTarget.value)}
+                    onChange={x => props.onChange(x.currentTarget.value)}
+                />
                 {/* <C.Input_Text value={props.value} onChange={props.onChange} /> */}
                 <ConnectWalletButton label={`Use Wallet Address`} onWalletAddress={props.onChange} />
             </div>

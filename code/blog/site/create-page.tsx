@@ -34,51 +34,37 @@ export const createStaticPage = (sitePath: string, data: PageData, navigation: S
     // Set Navigation
     setupNavigation(navigation);
 
-    const { postPage, postIndexPage, notFoundPage, lazyComponentExamplePage, componentTestsPage, componentGamesPage, componentLessonModulePage, componentLessonListPage, componentArtGalleryPage } = data;
+    const {
+        postPage, postIndexPage, notFoundPage, lazyComponentExamplePage,
+        componentTestsPage, componentGamesPage,
+        componentLessonModulePage, componentLessonListPage, componentArtGalleryPage,
+    } = data;
 
     if (postPage) {
-        return {
-            Component: () => <PostPage data={postPage} />,
-        };
+        return { Component: () => <PostPage data={postPage} /> };
     }
     if (postIndexPage) {
-        return {
-            Component: () => <PostIndexPage data={postIndexPage} />,
-        };
+        return { Component: () => <PostIndexPage data={postIndexPage} /> };
     }
     if (lazyComponentExamplePage) {
-        return {
-            Component: () => <LazyComponentExamplePage data={lazyComponentExamplePage} />,
-        };
+        return { Component: () => <LazyComponentExamplePage data={lazyComponentExamplePage} /> };
     }
     if (componentTestsPage) {
-        return {
-            Component: () => <ComponentTestsPage data={componentTestsPage} />,
-        };
+        return { Component: () => <ComponentTestsPage data={componentTestsPage} /> };
     }
     if (componentGamesPage) {
-        return {
-            Component: () => <ComponentGamesPage data={componentGamesPage} />,
-        };
+        return { Component: () => <ComponentGamesPage data={componentGamesPage} /> };
     }
     if (componentLessonModulePage) {
-        return {
-            Component: () => <ComponentLessonModulePage data={componentLessonModulePage} />,
-        };
+        return { Component: () => <ComponentLessonModulePage data={componentLessonModulePage} /> };
     }
     if (componentLessonListPage) {
-        return {
-            Component: () => <ComponentLessonListPage data={componentLessonListPage} />,
-        };
+        return { Component: () => <ComponentLessonListPage data={componentLessonListPage} /> };
     }
     if (componentArtGalleryPage) {
-        return {
-            Component: () => <ComponentArtGalleryPage data={componentArtGalleryPage} />,
-        };
+        return { Component: () => <ComponentArtGalleryPage data={componentArtGalleryPage} /> };
     }
 
     // Dynamic Pages Here
-    return {
-        Component: () => <NotFoundPage data={notFoundPage ?? {}} />,
-    };
+    return { Component: () => <NotFoundPage data={notFoundPage ?? {}} /> };
 };

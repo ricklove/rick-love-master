@@ -1,4 +1,4 @@
-import { ArtKey } from './art-keys';
+import { ArtKey } from './art-index';
 import { CanvasVideoRecorder } from './canvas-video-recording/canvas-video-recorder';
 
 export type ArtWork = {

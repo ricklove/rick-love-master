@@ -6,7 +6,7 @@ import { distinct_key, groupItems } from 'utils/arrays';
 import { PageData } from './create-page';
 import { componentTestList } from '../pageTemplates/component-tests-list';
 import { componentGamesList } from '../pageTemplates/component-games-list';
-import { artKeys } from 'art/art-keys';
+import { artIndex } from 'art/art-index';
 // import { artItems } from 'art/art-items';
 
 export type SitePageData<T> = {
@@ -250,10 +250,16 @@ export const loadStaticPageData = async (): Promise<SitePageData<PageData>> => {
         data: { componentArtGalleryPage: {} },
     });
 
-    artKeys.forEach(x => {
+    artIndex.forEach(x => {
         pages.push({
-            sitePath: `/art/${x}`,
-            data: { componentArtGalleryPage: {} },
+            sitePath: `/art/${x.key}`,
+            data: {
+                componentArtGalleryPage: {
+                    artKey: x.key,
+                    artTitle: `${x.title} - NFT Art - Rick Love`,
+                    artImageUrl: `${x.imageUrl}`,
+                },
+            },
         });
     });
 
