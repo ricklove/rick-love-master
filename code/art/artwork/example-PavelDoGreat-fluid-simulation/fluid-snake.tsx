@@ -13,9 +13,9 @@ const contentPath = `/content/art/artwork/example-PavelDoGreat-fluid-simulation/
 export const art_fluidSnakeGame: ArtWork = {
     key: `fluid-snake-game`,
     title: `Fluid Snake Game`,
-    description: `Snake with Fluid Simulator Renderer 
-
-Renderer based on Fluid Simulator by Pavel Dobryakov: https://paveldogreat.github.io/WebGL-Fluid-Simulation/`,
+    description: `Snake with Fluid Simulator Renderer and Procedural Music
+Music is procedurally generated using waveforms shaped like the snake's current body and position.
+Fluid Renderer is based on Fluid Simulator by Pavel Dobryakov: https://paveldogreat.github.io/WebGL-Fluid-Simulation/`,
     artist: `Rick Love`,
     getTokenDescription: (tokenId: string) => {
         return null;
