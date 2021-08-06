@@ -178,9 +178,10 @@ export const art_gears: ArtWork = {
         const sat = 100;
         const brightness = 60 - 20 * Math.random();
 
-        // const canvasSize = 300; const speed = 1 / (200 - 100 * randomMain());
-        const canvasSize = 600; const speed = 1 / (100 - 70 * randomMain());
-
+        const TARGET_SIZE = 600;
+        const SMALL_SIZE = 300;
+        const canvasSize = window.innerWidth > TARGET_SIZE && window.innerHeight > TARGET_SIZE ? TARGET_SIZE : SMALL_SIZE;
+        const speed = canvasSize === TARGET_SIZE ? 1 / (100 - 70 * randomMain()) : 1 / (200 - 100 * randomMain());
 
         const halfSize = canvasSize * 0.5;
         const minGearRadius = canvasSize / 16;

@@ -141,7 +141,7 @@ export const ArtGallery = (props: {}) => {
                                 <div style={{ position: `absolute`, top: 4, right: 4, width: 16, height: 16, fontFamily: `monospace`, fontSize: 14, lineHeight: `16px`, textAlign: `center`, color: `#FFFFFF`, background: `#88888888` }}
                                     onClick={() => setIsFullScreen(s => !s)}>{isFullScreen ? `-` : `+`}</div>
                                 {isFullScreen && (
-                                    <div style={{ position: `fixed`, right: 0, bottom: 0 }}>
+                                    <div style={{ position: `fixed`, right: 4, bottom: 4 }}>
                                         <a href='/art'>🧙‍♂️ Other Art by Rick Love</a>
                                     </div>
                                 )}

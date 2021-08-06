@@ -25,7 +25,10 @@ export const art_circles: ArtWork = {
         const { a, b, c } = { a: 1 + Math.floor(57 * random()), b: 1 + Math.floor(213 * random()), c: 1 + Math.floor(115 * random()) };
         const { cr, cg, cb, ca } = { cr: Math.floor(25 + 230 * random()), cg: Math.floor(25 + 230 * random()), cb: Math.floor(25 + 230 * random()), ca: Math.floor(25 + 25 * random()) };
 
-        const size = 600;
+        const TARGET_SIZE = 600;
+        const SMALL_SIZE = 300;
+        const size = window.innerWidth > TARGET_SIZE && window.innerHeight > TARGET_SIZE ? TARGET_SIZE : SMALL_SIZE;
+
         const h = 200;
         const scale = size / 400;
         const speed = 0.5;
