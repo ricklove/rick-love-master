@@ -2,7 +2,8 @@
 // Note: this file needs to be importable with no dependencies to build the site index
 
 export const artKeys = [
-    `fluid-simulator-game`,
+    `fluid-snake-game`,
+    `fluid-flappy-game`,
     `example-fluid-simulator`,
     `flying-colors`,
     `gpu-01`,

@@ -3,7 +3,6 @@
 import { clamp } from 'utils/clamp';
 import { ArtWork } from '../../artwork-type';
 import { runFluidSimulator } from './src/run';
-import { flappyDodgeGame } from '../games/flappy-dodge/flappy-dodge';
 import { createEventProvider } from '../games/event-provider';
 import { createDebugGameView } from '../games/art-game';
 import { snakeGame } from '../games/snake/snake';
@@ -11,10 +10,10 @@ import { createBeatPlayer } from '../music/beat';
 
 const contentPath = `/content/art/artwork/example-PavelDoGreat-fluid-simulation/src`;
 
-export const art_fluidSimulatorGame: ArtWork = {
-    key: `fluid-simulator-game`,
-    title: `Fluid Simulator Game`,
-    description: `Flappy Dodge with Fluid Simulator Renderer 
+export const art_fluidSnakeGame: ArtWork = {
+    key: `fluid-snake-game`,
+    title: `Fluid Snake Game`,
+    description: `Snake with Fluid Simulator Renderer 
 
 Renderer based on Fluid Simulator by Pavel Dobryakov: https://paveldogreat.github.io/WebGL-Fluid-Simulation/`,
     artist: `Rick Love`,
