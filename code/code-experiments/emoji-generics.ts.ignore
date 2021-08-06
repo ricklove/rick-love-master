@@ -1,0 +1,3 @@
+function joinLiterals<🤣 extends string, 😎 extends string> (a: 🤣, b: 😎) {
+    return `${a}${b}` as `${🤣}${😎}`;
+}

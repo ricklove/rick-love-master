@@ -12,7 +12,7 @@ import { createBeatPlayer } from '../music/beat';
 const contentPath = `/content/art/artwork/example-PavelDoGreat-fluid-simulation/src`;
 
 export const art_fluidSimulatorGame: ArtWork = {
-    key: `art-fluid-simulator-game`,
+    key: `fluid-simulator-game`,
     title: `Fluid Simulator Game`,
     description: `Flappy Dodge with Fluid Simulator Renderer 
 

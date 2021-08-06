@@ -5,7 +5,7 @@ import { createRandomGenerator } from '../rando';
 import { ArtWork } from '../artwork-type';
 
 export const art_layersOfTheOnionsSoul: ArtWork = {
-    key: `art-onions`,
+    key: `onions`,
     title: `Layers of the Onion's Soul`,
     description: `This represents the complexity of an onion's soul - which has many layers, like a human.`,
     artist: `Rick Love & Lydia Love - who called me weirdo as inspiration, and mentioned a circle, some squares, a tetrahedron, Minecraft blocks, and then said she meant cubes and spheres.`,

@@ -7,7 +7,7 @@ import { ArtWork } from '../../artwork-type';
 const path = `/content/art/artwork/gpu-01/gpu-01`;
 
 export const art_gpu_01: ArtWork = {
-    key: `art-gpu-01`,
+    key: `gpu-01`,
     title: `Gpu Example 01`,
     description: `2015 - http://patriciogonzalezvivo.com
 

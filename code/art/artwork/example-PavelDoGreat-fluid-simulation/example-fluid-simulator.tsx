@@ -7,7 +7,7 @@ import { runFluidSimulator as createFluidSimulator } from './src/run';
 const contentPath = `/content/art/artwork/example-PavelDoGreat-fluid-simulation/src`;
 
 export const art_exampleFluidSimulator: ArtWork = {
-    key: `art-exampleFluidSimulator`,
+    key: `example-fluid-simulator`,
     title: `Fluid Simulator`,
     description: `2017 
 
@@ -27,8 +27,6 @@ From: https://paveldogreat.github.io/WebGL-Fluid-Simulation/`,
         setTimeout(() => {
             sim?.start();
         }, 250);
-        return {
-            remove: () => sim?.close(),
-        };
+        return { remove: () => sim?.close() };
     },
 };

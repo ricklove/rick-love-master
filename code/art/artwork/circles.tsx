@@ -5,7 +5,7 @@ import { createRandomGenerator } from '../rando';
 import { ArtWork } from '../artwork-type';
 
 export const art_circles: ArtWork = {
-    key: `art-circles`,
+    key: `circles`,
     title: `Circles`,
     description: `The circles we travel in life always bring us back home.`,
     artist: `Rick Love`,

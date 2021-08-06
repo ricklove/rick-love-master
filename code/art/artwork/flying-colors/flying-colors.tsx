@@ -7,7 +7,7 @@ import { ArtWork } from '../../artwork-type';
 const path = `/content/art/artwork/flying-colors/flying-colors`;
 
 export const art_flyingColors: ArtWork = {
-    key: `art-flying-colors`,
+    key: `flying-colors`,
     title: `Flying Colors`,
     description: `Mmmm, bright`,
     artist: `Rick Love`,

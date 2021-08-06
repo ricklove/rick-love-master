@@ -8,9 +8,11 @@ import { createRandomGenerator } from '../../rando';
 const parseTokenId_puzzle01 = (tokenId: string) => { return tokenId; };
 
 export const art_puzzle01: ArtWork = {
-    key: `art-puzzle-01`,
+    key: `puzzle-01`,
     title: `Puzzle 01`,
-    description: `Try to puzzle it out and unlock the answer.`,
+    description: `Try to puzzle it out and unlock the answer.
+    
+Directions: Use arrow keys to move the circle towards the exit`,
     artist: `Rick Love`,
     getTokenDescription: (tokenId: string) => {
         const tokenData = parseTokenId_puzzle01(tokenId);
@@ -35,15 +37,15 @@ export const art_puzzle01: ArtWork = {
             renderPos?: Vector2;
             targetRenderPos?: Vector2;
             activeMove?: ActualMove;
-        }
+        };
         type MoveDirection = 'up' | 'down' | 'left' | 'right';
         const oppositeDirection = (dir: MoveDirection): MoveDirection => {
             switch (dir) {
-                case `up`: return `down`;
-                case `down`: return `up`;
-                case `left`: return `right`;
-                case `right`: return `left`;
-                default: return `up`;
+            case `up`: return `down`;
+            case `down`: return `up`;
+            case `left`: return `right`;
+            case `right`: return `left`;
+            default: return `up`;
             }
         };
         type Move = {
@@ -62,6 +64,7 @@ export const art_puzzle01: ArtWork = {
             moveSequence: [] as ActualMove[],
             player: {} as BoardItem,
             moveIndex: 0,
+            gameOverTime: 0,
         };
 
         const canvasSize = 350;
@@ -449,6 +452,14 @@ export const art_puzzle01: ArtWork = {
                     }
                 }
 
+                const GAME_OVER_FADE_TIME = 3000;
+                const timeSinceGameOver = Date.now() - state.gameOverTime;
+                if (timeSinceGameOver < GAME_OVER_FADE_TIME){
+                    console.log(`Game over Fade`, { gameOverTime: state.gameOverTime, timeSinceGameOver });
+                    s.fill(0, 0, 0, 255 * (GAME_OVER_FADE_TIME - timeSinceGameOver) / GAME_OVER_FADE_TIME);
+                    s.noStroke();
+                    s.rect(0, 0, canvasSize, canvasSize);
+                }
 
                 // Debug
                 //  state.moveSequence.forEach(x => drawMoveHistory(x));
@@ -460,18 +471,18 @@ export const art_puzzle01: ArtWork = {
 
                 const getKeyDirection = (): null | MoveDirection => {
                     switch (key) {
-                        case `w`: return `up`;
-                        case `a`: return `left`;
-                        case `s`: return `down`;
-                        case `d`: return `right`;
-                        default: break;
+                    case `w`: return `up`;
+                    case `a`: return `left`;
+                    case `s`: return `down`;
+                    case `d`: return `right`;
+                    default: break;
                     }
                     switch (keyCode) {
-                        case s.UP_ARROW: return `up`;
-                        case s.LEFT_ARROW: return `left`;
-                        case s.DOWN_ARROW: return `down`;
-                        case s.RIGHT_ARROW: return `right`;
-                        default: return null;
+                    case s.UP_ARROW: return `up`;
+                    case s.LEFT_ARROW: return `left`;
+                    case s.DOWN_ARROW: return `down`;
+                    case s.RIGHT_ARROW: return `right`;
+                    default: return null;
                     }
                 };
 
@@ -483,6 +494,8 @@ export const art_puzzle01: ArtWork = {
                 if (!nextMove) { return; }
 
                 if (nextMove.direction !== d) {
+                    // Reset game on bad move
+                    state.gameOverTime = Date.now();
                     state.moveIndex = 0;
                     state.player.activeMove = undefined;
                     state.player.renderPos = undefined;

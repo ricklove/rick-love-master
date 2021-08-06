@@ -69,6 +69,7 @@
   },
   "scripts": {
     "build": "cd scripts/build && ts-node -r tsconfig-paths/register build.ts",
+    "develop": "cd projects/blog-site && gatsby develop",
     "build-blog": "cd projects/blog-site && gatsby build",
     "postinstall": "patch-package"
   },

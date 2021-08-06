@@ -1,7 +1,8 @@
+import { ArtKey } from './art-keys';
 import { CanvasVideoRecorder } from './canvas-video-recording/canvas-video-recorder';
 
 export type ArtWork = {
-    key: string;
+    key: ArtKey;
     title: string;
     description: string;
     artist: string;

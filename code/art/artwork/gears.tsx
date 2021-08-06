@@ -156,13 +156,11 @@ const drawGear = (g: p5,
         g.endShape();
     }
 
-    return {
-        faceType: drawFace ? faceType : null,
-    };
+    return { faceType: drawFace ? faceType : null };
 };
 
 export const art_gears: ArtWork = {
-    key: `art-gears`,
+    key: `gears`,
     title: `Gears`,
     description: `Are the gears of conflict twisting our perceptions of others? (Press image to toggle sound)`,
     artist: `Rick Love`,

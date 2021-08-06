@@ -6,7 +6,7 @@ import { parseTokenId_art121 } from './art-121-helpers';
 import { ArtWork } from '../artwork-type';
 
 export const art_121: ArtWork = {
-    key: `art-121`,
+    key: `121`,
     title: `1/21/21 21:21:21`,
     description: `This exact time pattern will occur only once in our human timeline. This NFT crypto art will attempt to capture that time to the precise second and embed it in the distributed blockchain forever. 
     

@@ -1,6 +1,4 @@
-/* eslint-disable @typescript-eslint/camelcase */
 /* eslint-disable no-console */
-/* eslint-disable unicorn/consistent-function-scoping */
 import { processDirectoryFiles, getFileName, readFile, getPathNormalized, getDirectoryPath, copyFile, watchFileChanges, writeFile, deleteFile, copyDirectory } from 'utils/files';
 import { createSubscribable, Subscribe } from 'utils/subscribable';
 import { createLessonApiServer_localFileServer } from 'code-training/lesson-server/server/lesson-api-local-file-server';
@@ -8,6 +6,8 @@ import { distinct_key, groupItems } from 'utils/arrays';
 import { PageData } from './create-page';
 import { componentTestList } from '../pageTemplates/component-tests-list';
 import { componentGamesList } from '../pageTemplates/component-games-list';
+import { artKeys } from 'art/art-keys';
+// import { artItems } from 'art/art-items';
 
 export type SitePageData<T> = {
     pages: SitePageInfo<T>[];
@@ -247,24 +247,25 @@ export const loadStaticPageData = async (): Promise<SitePageData<PageData>> => {
 
     pages.push({
         sitePath: `/art`,
-        data: {
-            componentArtGalleryPage: {},
-        },
+        data: { componentArtGalleryPage: {} },
+    });
+
+    artKeys.forEach(x => {
+        pages.push({
+            sitePath: `/art/${x}`,
+            data: { componentArtGalleryPage: {} },
+        });
     });
 
     pages.push({
         sitePath: `/games`,
-        data: {
-            componentGamesPage: { showList: true },
-        },
+        data: { componentGamesPage: { showList: true } },
     });
 
     componentGamesList.forEach(x => {
         pages.push({
             sitePath: `/games/${x.name}`,
-            data: {
-                componentGamesPage: { gameName: x.name },
-            },
+            data: { componentGamesPage: { gameName: x.name } },
         });
     });
 
@@ -278,9 +279,7 @@ export const loadStaticPageData = async (): Promise<SitePageData<PageData>> => {
     componentTestList.forEach(x => {
         pages.push({
             sitePath: `/tests/${x.name}`,
-            data: {
-                componentTestsPage: { testName: x.name },
-            },
+            data: { componentTestsPage: { testName: x.name } },
         });
     });
 
@@ -289,9 +288,7 @@ export const loadStaticPageData = async (): Promise<SitePageData<PageData>> => {
 
     pages.push({
         sitePath: `/404.html`,
-        data: {
-            notFoundPage: {},
-        },
+        data: { notFoundPage: {} },
     });
 
     console.log(`loadStaticPages END`, { time: `${(Date.now() - startTime) / 1000} secs`, pages: pagePosts });
@@ -338,9 +335,7 @@ const createLessonModules = async (pages: SitePageInfo<PageData>[]) => {
     lessonModuleList.forEach(x => {
         pages.push({
             sitePath: `/lessons/${x.key}`,
-            data: {
-                componentLessonModulePage: { lessonModuleKey: x.key, lessonModuleTitle: x.title },
-            },
+            data: { componentLessonModulePage: { lessonModuleKey: x.key, lessonModuleTitle: x.title } },
         });
     });
 
@@ -348,9 +343,7 @@ const createLessonModules = async (pages: SitePageInfo<PageData>[]) => {
     lessonModuleList.forEach(x => {
         pages.push({
             sitePath: `/lessons`,
-            data: {
-                componentLessonListPage: { lessons: lessonModuleList.map(p => ({ sitePath: `/lessons/${p.key}`, lessonModuleKey: p.key, lessonModuleTitle: p.title })) },
-            },
+            data: { componentLessonListPage: { lessons: lessonModuleList.map(p => ({ sitePath: `/lessons/${p.key}`, lessonModuleKey: p.key, lessonModuleTitle: p.title })) } },
         });
     });
 };

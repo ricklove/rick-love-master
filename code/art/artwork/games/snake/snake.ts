@@ -258,8 +258,14 @@ export const snakeGame: ArtGame<RenderArgs> = {
             // const speedX = 0.9;
             // const speedY = speedX * size.x / size.y;
 
-            player.position.x += timeDelta * player.velocity.x;
-            player.position.y += timeDelta * player.velocity.y;
+            // Smooth movement
+            // player.position.x += timeDelta * player.velocity.x;
+            // player.position.y += timeDelta * player.velocity.y;
+
+            // Jumpy movement
+            const moveDelta = Vector2.scale(0.2, Vector2.subtract(player.targetPosition, player.position));
+            player.position.x += moveDelta.x;
+            player.position.y += moveDelta.y;
 
             // Segments
             for (const s of player.segments){
