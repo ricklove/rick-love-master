@@ -144,6 +144,7 @@ export const loadStaticPageData = async (): Promise<SitePageData<PageData>> => {
 
     // Trigger gatsby watch to rebuild (with a file change)
     const triggerGatsbyRebuild = () => {
+        // eslint-disable-next-line @typescript-eslint/no-misused-promises
         setTimeout(async () => {
             const filename = getPathNormalized(__dirname, `./_rebuild-trigger.ts`);
             console.log(`Writing to Rebuild Trigger`, { filename });
@@ -247,7 +248,7 @@ export const loadStaticPageData = async (): Promise<SitePageData<PageData>> => {
 
     pages.push({
         sitePath: `/art`,
-        data: { componentArtGalleryPage: {} },
+        data: { componentArtGalleryPage: { artKey: `TEST` } },
     });
 
     artIndex.forEach(x => {
@@ -257,7 +258,7 @@ export const loadStaticPageData = async (): Promise<SitePageData<PageData>> => {
                 componentArtGalleryPage: {
                     artKey: x.key,
                     artTitle: `${x.title} - NFT Art - Rick Love`,
-                    artImageUrl: `${x.imageUrl}`,
+                    artImageUrl: x.imageUrl,
                 },
             },
         });

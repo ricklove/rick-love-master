@@ -14,9 +14,9 @@ export const ComponentArtGalleryPage = (props: { data: ComponentArtGalleryPageDa
     const {
         artKey,
         artTitle,
-        artImageUrl,
+        artImageUrl = `./artwork/circles.png`,
     } = props.data;
-    // console.log(`ComponentArtGalleryPage`, { artKey, artTitle, artImageUrl });
+    console.log(`ComponentArtGalleryPage`, { artKey, artTitle, artImageUrl });
 
     return (
         <Layout zoom={false}>
