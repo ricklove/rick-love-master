@@ -1,1 +1,0 @@
-{"version":3,"sources":["project/2048689570560080/app.tsx"],"names":["App","props"],"mappings":"mHAAA,+DAEaA,EAAM,SAACC,GAEhB,OACI,8BAFS","file":"static/js/5.9871c3d2.chunk.js","sourcesContent":["import React from 'react';\n\nexport const App = (props: {}) => {\n    const text = 'Hello World!';\n    return (\n        <span>{text}</span>\n    );\n};"],"sourceRoot":""}

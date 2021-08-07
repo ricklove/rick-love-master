@@ -1,2 +1,0 @@
-(window.__LOADABLE_LOADED_CHUNKS__=window.__LOADABLE_LOADED_CHUNKS__||[]).push([[37],{uUap:function(_,e,r){"use strict";r.r(e),r.d(e,"fullStackTestConfig",(function(){return t}));var t={stripeSecretKey:"",stripePublicKey:"",serverUrl:""}}}]);
-//# sourceMappingURL=37-cdf41b59ec46fe09cdec.js.map
