@@ -1,0 +1,79 @@
+{
+  "errors": [],
+  "warnings": [
+    "D:/Projects/rick-love-master/node_modules/@ffmpeg/ffmpeg/src/node/getCreateFFmpegCore.js 6:30-47\nCritical dependency: the request of a dependency is an expression\n @ D:/Projects/rick-love-master/node_modules/@ffmpeg/ffmpeg/src/node/index.js\n @ D:/Projects/rick-love-master/node_modules/@ffmpeg/ffmpeg/src/index.js\n @ D:/Projects/rick-love-master/code/art/canvas-video-recording/canvas-video-recorder.tsx\n @ D:/Projects/rick-love-master/code/art/art-gallery.tsx\n @ D:/Projects/rick-love-master/code/blog/pageTemplates/component-art-gallery.tsx\n @ D:/Projects/rick-love-master/code/blog/site/create-page.tsx\n @ ./src/setup-browser.tsx\n @ ./gatsby-lite-template.ts\n @ ./.cache/_this_is_virtual_fs_path_/$virtual/sync-requires.js\n @ ./.cache/static-entry.js"
+  ],
+  "version": "4.46.0",
+  "hash": "0486573b260cda73dde9",
+  "publicPath": "/",
+  "outputPath": "D:\\\\Projects\\\\rick-love-master\\\\projects\\\\blog-site\\\\public",
+  "assetsByChunkName": {
+    "main": [
+      "render-page.js",
+      "render-page.js.map"
+    ]
+  },
+  "assets": [
+    {
+      "name": "render-page.js",
+      "size": 11755318,
+      "chunks": [
+        "main"
+      ],
+      "chunkNames": [
+        "main"
+      ],
+      "info": {},
+      "emitted": false
+    },
+    {
+      "name": "render-page.js.map",
+      "size": 11846849,
+      "chunks": [
+        "main"
+      ],
+      "chunkNames": [
+        "main"
+      ],
+      "info": {
+        "development": true
+      },
+      "emitted": false
+    }
+  ],
+  "filteredAssets": 0,
+  "entrypoints": {
+    "main": {
+      "chunks": [
+        "main"
+      ],
+      "assets": [
+        "render-page.js",
+        "render-page.js.map"
+      ],
+      "children": {},
+      "childAssets": {}
+    }
+  },
+  "namedChunkGroups": {
+    "main": {
+      "chunks": [
+        "main"
+      ],
+      "assets": [
+        "render-page.js",
+        "render-page.js.map"
+      ],
+      "children": {},
+      "childAssets": {}
+    }
+  },
+  "logging": {
+    "webpack.buildChunkGraph.visitModules": {
+      "entries": [],
+      "filteredEntries": 2,
+      "debug": false
+    }
+  },
+  "children": []
+}
