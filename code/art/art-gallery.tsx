@@ -113,6 +113,8 @@ export const ArtGallery = (props: {}) => {
         setRenderId(s => s + 1);
     };
 
+    const [walletAddress, setWalletAddress] = useState(null as null | string);
+
     return (
         <>
             <C.View_Panel>
@@ -125,7 +127,7 @@ export const ArtGallery = (props: {}) => {
                                 </div>
                             </React.Fragment>
                         ))}
-                        <SeedController value={tokenId} onChange={changeTokenId}/>
+                        <SeedController value={tokenId} onChange={changeTokenId} onWalletAddress={setWalletAddress}/>
                     </C.View_Form>
                 )}
 
@@ -150,13 +152,14 @@ export const ArtGallery = (props: {}) => {
                                                 {!!tokenDescription && <div style={{ padding: 4, whiteSpace: `pre-wrap`, wordBreak: `break-all` }}>{tokenDescription}</div>}
                                             </div>
                                             <div style={{ opacity: 0.75, padding: 4 }}>
-                                                <SeedController value={tokenId} onChange={changeTokenId}/>
+                                                <SeedController value={tokenId} onChange={changeTokenId} onWalletAddress={setWalletAddress}/>
                                             </div>
                                             <div style={{ opacity: 0.75, padding: 4 }}>
                                                 {artKey && tokenId && (
                                                     <ReserveButton
                                                         artKey={artKey}
                                                         seed={tokenId}
+                                                        walletAddress={walletAddress ?? undefined}
                                                     />
                                                 )}
                                             </div>
@@ -191,16 +194,16 @@ export const ArtGallery = (props: {}) => {
 export const ReserveButton = ({
     artKey,
     seed,
+    walletAddress,
 }: {
     artKey: string;
     seed: string;
+    walletAddress?: string;
 }) => {
 
     const reserve = async () => {
-        const accounts = await ethereum.request({ method: `eth_requestAccounts` });
-        const account = accounts[0];
         const nftUrl = `https://ricklove.me/art/${artKey}?seed=${seed}`;
-        const reserveMessage = `@RickLoveToldMe I want to reserve this NFT: ${nftUrl}${account && account !== seed ? ` for ${account}` : ``}`;
+        const reserveMessage = `@RickLoveToldMe I want to reserve this NFT: ${nftUrl}${walletAddress && walletAddress !== seed ? ` for wallet=${walletAddress}` : ``}`;
 
         // Public message
         const url = `https://twitter.com/intent/tweet?text=${encodeURIComponent(reserveMessage)}`;
@@ -208,7 +211,8 @@ export const ReserveButton = ({
         // Direct message
         // const url = `https://twitter.com/messages/compose?recipient_id=1001&text=${encodeURIComponent(reserveMessage)}`;
 
-        window.location.href = url;
+        window.open(url, `_blank`);
+        // window.location.href = url;
     };
 
     return (
@@ -230,6 +234,7 @@ export const ReserveButton = ({
 export const SeedController = (props: {
     value: string;
     onChange: (value: string) => void;
+    onWalletAddress: (address: string) => void;
 }) => {
 
     return (
@@ -248,7 +253,7 @@ export const SeedController = (props: {
                     onChange={x => props.onChange(x.currentTarget.value)}
                 />
                 {/* <C.Input_Text value={props.value} onChange={props.onChange} /> */}
-                <ConnectWalletButton label={`Use Wallet Address`} onWalletAddress={props.onChange} />
+                <ConnectWalletButton label={`Use Wallet Address`} onWalletAddress={x => {props.onChange(x); props.onWalletAddress(x);}} />
             </div>
         </>
     );
