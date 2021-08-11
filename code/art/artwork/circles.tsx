@@ -16,7 +16,7 @@ export const art_circles: ArtWork = {
     //     tokenAddress: `0x495f947276749ce646f68ac8c248420045cb7b5e`,
     //     tokenId: `91242641486941084018191434774360347389366801368112854311223385694785434025985`,
     // },
-    renderArt: (hostElement: HTMLElement, hash = `This is my hash!`) => {
+    renderArt: (hostElement: HTMLElement, hash = `This is my hash!`, recorder) => {
         // const { a, b, c } = { a: 57, b: 23, c: 15 };
 
 
@@ -34,11 +34,22 @@ export const art_circles: ArtWork = {
         const speed = 0.5;
 
         let tick = 0;
+        let canvas = null as null | HTMLCanvasElement;
+
         return new p5((s: p5) => {
             s.setup = () => {
-                s.createCanvas(size, size);
+                const result = s.createCanvas(size, size);
+                const canvasId = `${Math.random()}`;
+                result.id(canvasId);
+                canvas = document.getElementById(canvasId) as HTMLCanvasElement;
             };
             s.draw = () => {
+                if (recorder?.isWaitingForFrame() && canvas) {
+                    console.log(`game.update waitingForFrame - addFrame`, {});
+                    (async () => await recorder.getRecorder().addFrame(canvas))();
+                    return;
+                }
+
                 s.background(0);
                 s.scale(scale);
 

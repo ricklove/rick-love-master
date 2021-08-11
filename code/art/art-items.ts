@@ -8,6 +8,7 @@ import { art_flyingColors } from './artwork/flying-colors/flying-colors';
 import { art_gears } from './artwork/gears';
 // import { art_gpu_01 } from './artwork/gpu-01/gpu-01';
 import { art_layersOfTheOnionsSoul } from './artwork/layers-of-the-onions-soul';
+import { art_nftAdventure_nftDungeon } from './artwork/nft-adventure/art';
 import { art_puzzle01 } from './artwork/puzzle/art-puzzle-01';
 
 export const artItems: ArtWork[] = [
@@ -21,4 +22,5 @@ export const artItems: ArtWork[] = [
     art_121,
     art_circles,
     art_layersOfTheOnionsSoul,
+    art_nftAdventure_nftDungeon,
 ];

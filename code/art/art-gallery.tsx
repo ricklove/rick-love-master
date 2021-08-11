@@ -152,7 +152,9 @@ export const ArtGallery = (props: {}) => {
                                                 {!!tokenDescription && <div style={{ padding: 4, whiteSpace: `pre-wrap`, wordBreak: `break-all` }}>{tokenDescription}</div>}
                                             </div>
                                             <div style={{ opacity: 0.75, padding: 4 }}>
-                                                <SeedController value={tokenId} onChange={changeTokenId} onWalletAddress={setWalletAddress}/>
+                                                <SeedController value={tokenId}
+                                                    onChange={changeTokenId}
+                                                    onWalletAddress={setWalletAddress}/>
                                             </div>
                                             <div style={{ opacity: 0.75, padding: 4 }}>
                                                 {artKey && tokenId && (
@@ -174,7 +176,9 @@ export const ArtGallery = (props: {}) => {
                         </div>
                         {recorderRef.current && (
                             <div style={{ position: `fixed`, right: 0, bottom: 0 }} >
-                                <CanvasVideoRecorderControl recorder={recorderRef.current} onPrepareTarget={prepareTarget} />
+                                <CanvasVideoRecorderControl
+                                    recorder={recorderRef.current}
+                                    onPrepareTarget={prepareTarget} />
                             </div>
                         )}
                         {tokenDescription && (<C.Text_FormTitle style={{ ...theme.text_formTitle, background: `#EEEEEE`, padding: 8, whiteSpace: `pre-wrap` }}>{tokenDescription}</C.Text_FormTitle>)}

@@ -1,8 +1,5 @@
 /* eslint-disable no-console */
 /* eslint-disable no-await-in-loop */
-/* eslint-disable jsx-a11y/accessible-emoji */
-/* eslint-disable jsx-a11y/no-static-element-interactions */
-/* eslint-disable jsx-a11y/click-events-have-key-events */
 import { useAutoLoadingError } from 'utils-react/hooks';
 import React, { useState } from 'react';
 import { createFFmpeg } from '@ffmpeg/ffmpeg';
@@ -16,12 +13,12 @@ export const createRecorder = () => {
     let timeMsLost = 0;
     let timeMs = Date.now();
     let mode = `none` as 'none'
-        | 'targetPrepareRequested' | 'targetReady'
-        | `waitingForFrame` | `processingFrame` | `increasingTime`
-        | 'requestedCompleteVideo'
-        | 'readyToCompleteVideo'
-        | 'completingVideo'
-        | 'done';
+    | 'targetPrepareRequested' | 'targetReady'
+    | `waitingForFrame` | `processingFrame` | `increasingTime`
+    | 'requestedCompleteVideo'
+    | 'readyToCompleteVideo'
+    | 'completingVideo'
+    | 'done';
     const isRecording = () => mode === `waitingForFrame` || mode === `processingFrame` || mode === `increasingTime`;
 
     let workingCanvas = null as null | HTMLCanvasElement;
@@ -200,6 +197,7 @@ export const createRecorder = () => {
         getMode: () => mode,
         setTargetReady,
         start,
+        isRecording,
         isWaitingForFrame: () => mode === `waitingForFrame`,
         getRecorder: () => {
             if (!isRecording()) { throw new Error(`Recorder is not recording`); }
@@ -227,9 +225,16 @@ export const CanvasVideoRecorderControl = (props: { recorder: CanvasVideoRecorde
             await props.recorder.prepareTarget({
                 framesPerSecond: 30,
 
-                // 720p - Looks good on mobile
-                width: 1280,
-                height: 720,
+                // Square
+                // width: 300,
+                // height: 300,
+                width: 600,
+                height: 600,
+
+
+                // // 720p - Looks good on mobile
+                // width: 1280,
+                // height: 720,
 
                 // // Blurry on twitter
                 // width: 480,
