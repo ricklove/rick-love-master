@@ -17,9 +17,36 @@
             patterns = { body: [[], ["tabby"], ["tabby", "belly"], ["tabby", "necktie"], ["belly"], ["necktie"], ["corners"], ["stripes"], ["tabby", "corners"]], face: [[], ["mask"], ["round"], ["nose", "round"], ["nose", "chin"], ["triangle"], ["triangle", "whiskers"], ["whiskers"], ["whiskers", "nose"], ["whiskers", "chin"], ["ear"], ["temple"], ["ear", "temple"], ["forehead", "cheeks"]] },
             breeds = [{ name: "black", odds: 51, body: [0, 4, 5, 6], face: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9], palettes: [0], eyes: [0, 1, 2, 3] }, { name: "white", odds: 26, body: [0, 6], face: [0, 10, 11, 12], palettes: [1], eyes: [0, 1, 2] }, { name: "tabby", odds: 100, body: [1, 2, 3, 4, 5, 6, 7], face: [1, 2, 3, 4, 5, 6, 7, 8, 9], palettes: [2, 3, 4], eyes: [0, 1, 2] }, { name: "shorthair", odds: 20, body: [0, 4, 5, 6], face: [0, 1, 4, 6, 7, 8], palettes: [5], eyes: [3] }, { name: "calico", odds: 17, body: [6], face: [1, 12], palettes: [6], eyes: [0, 1, 2] }, { name: "siamese", odds: 10, body: [0, 6], face: [0, 8], palettes: [7], eyes: [0, 1, 2] }, { name: "sphynx", odds: 5, body: [0], face: [0], palettes: [11], eyes: [0, 1, 2], head: 15, ear: 11 }, { name: "sandcat", odds: 5, body: [3, 8], face: [6], palettes: [12], eyes: [0, 1], head: 16, ear: 12 }, { name: "toyger", odds: 5, body: [3, 8], face: [6], palettes: [13], eyes: [0, 1, 2], head: 17, ear: 13 }, { name: "alien", odds: 12, body: [1, 2, 3, 4, 5, 6, 8], face: [1, 2, 3, 4, 5, 6, 7, 8, 9], palettes: [8, 9], eyes: [4] }, { name: "zombie", odds: 5, body: [1, 2, 3, 4, 5, 6, 7, 8], face: [2, 3, 4, 5, 6, 9], palettes: [10], eyes: [5] }]; let assign = Object.assign;
         function determine(e, y) { for (let n = 0; n < breeds.length; n++)if ((y -= e[n].odds) < 0) return n }
-        function generate() { breed = breeds[determine(breeds, rvs[0])], bps = patterns.body[breed.body[rvs[1] % breed.body.length]], fps = patterns.face[breed.face[rvs[2] % breed.face.length]], ["tabby", "toyger", "sandcat"].includes(breed.name) && (fps = fps.concat(patterns.face[13])), ["alien", "zombie"].includes(breed.name) && rvs[15] < 128 && (fps = fps.concat(patterns.face[13])), palette = palettes[breed.palettes[rvs[3] % breed.palettes.length]], assign(colors, palette), assign(s, breed.head ? heads[breed.head] : heads[rvs[4] % (heads.length - 3)]), assign(s, breed.ear ? ears[breed.ear] : ears[rvs[5] % (ears.length - 3)]), assign(s, eyes[rvs[6] % eyes.length]), assign(s, pupils[rvs[7] % pupils.length]), assign(s, mouths[rvs[8] % mouths.length]), assign(s, whiskers[rvs[9] % whiskers.length]), 1 == s.tng && (s.tng = rvs[15] < 18 && !["alien", "zombie"].includes(breed.name)), s.flip = rvs[10] < 128, s.swap = rvs[11] < 128, s.swap && "calico" == breed.name && (colors.prim = palette.sec, colors.sec = palette.prim), s.heterochromia = rvs[12] < 13, breed.eyes.length > 1 && s.heterochromia ? (colors.eye = eyeColors[0], colors.eyeAlt = eyeColors[breed.eyes[rvs[13] % (breed.eyes.length > 2 ? 2 : 1) + 1]]) : colors.eye = colors.eyeAlt = eyeColors[breed.eyes[rvs[13] % breed.eyes.length]], s.eyeSwap = rvs[14] < 128 }
+        function generate() {
+            breed = breeds[determine(breeds, rvs[0])],
+                bps = patterns.body[breed.body[rvs[1] % breed.body.length]],
+                fps = patterns.face[breed.face[rvs[2] % breed.face.length]],
+                ["tabby", "toyger", "sandcat"].includes(breed.name) && (fps = fps.concat(patterns.face[13])),
+                ["alien", "zombie"].includes(breed.name) && rvs[15] < 128 && (fps = fps.concat(patterns.face[13])),
+                palette = palettes[breed.palettes[rvs[3] % breed.palettes.length]],
+                assign(colors, palette), assign(s, breed.head ? heads[breed.head] : heads[rvs[4] % (heads.length - 3)]),
+                assign(s, breed.ear ? ears[breed.ear] : ears[rvs[5] % (ears.length - 3)]),
+                assign(s, eyes[rvs[6] % eyes.length]),
+                assign(s, pupils[rvs[7] % pupils.length]), assign(s, mouths[rvs[8] % mouths.length]),
+                assign(s, whiskers[rvs[9] % whiskers.length]),
+                1 == s.tng && (s.tng = rvs[15] < 18 && !["alien", "zombie"].includes(breed.name)),
+                s.flip = rvs[10] < 128,
+                s.swap = rvs[11] < 128,
+                s.swap && "calico" == breed.name && (colors.prim = palette.sec, colors.sec = palette.prim),
+                s.heterochromia = rvs[12] < 13,
+                breed.eyes.length > 1 && s.heterochromia ? (colors.eye = eyeColors[0],
+                    colors.eyeAlt = eyeColors[breed.eyes[rvs[13] % (breed.eyes.length > 2 ? 2 : 1) + 1]]) : colors.eye = colors.eyeAlt = eyeColors[breed.eyes[rvs[13] % breed.eyes.length]], s.eyeSwap = rvs[14] < 128
+        }
         let SIZE, SCALE, MID, BASE = 300;
-        function setup() { SIZE = Math.min(windowWidth, windowHeight), SCALE = SIZE / BASE, MID = SIZE / 2, createCanvas(SIZE, SIZE), generate(), update() }
+        function setup() {
+            SIZE = Math.min(windowWidth, windowHeight),
+                SCALE = SIZE / BASE,
+                MID = SIZE / 2,
+                createCanvas(SIZE, SIZE),
+                rotate(1.25),
+                generate(),
+                update()
+        }
         function update() { updateFace(), updateBody(), updateEars(), updateEyes(), updateNose(), updateMouth(), updateWhiskers() }
         function updateFace() { fa[0] = s.fh, fa[1] = s.tpl, fa[2] = s.chk, fa[3] = s.chn, fm[0] = midPoint(fa[0], fa[1]), fm[1] = midPoint(fa[1], fa[2]), fm[2] = midPoint(fa[2], fa[3]); let e = (fm[0].y - fa[0].y) / (fa[1].x - fa[0].x), y = s.chkc, n = s.chnc * (fm[2].y - fa[2].y) / (fa[3].x - fa[2].x); fn[0] = { y: fm[0].y - e * (fa[1].x - fa[0].x), x: fm[0].x + e * (fa[1].y - fa[0].y) }, fn[1] = { y: fm[1].y - y * (fa[2].x - fa[1].x), x: fm[1].x + y * (fa[2].y - fa[1].y) }, fn[2] = { y: fm[1].y + y * (fa[2].x - fa[1].x), x: fm[1].x - y * (fa[2].y - fa[1].y) }, fn[3] = { y: fm[2].y - n * (fa[3].x - fa[2].x), x: fm[2].x + n * (fa[3].y - fa[2].y) }, fc[0] = { x: .4 * fa[1].x, y: fa[0].y }, fc[1] = lerpPoint(fa[1], fn[0], .5), fc[2] = midPoint(fa[1], lerpPoint(fn[1], fn[2], s.chko)), fc[3] = midPoint(fa[2], lerpPoint(fn[2], fn[1], 1)), fc[4] = lerpPoint(fa[2], fn[3], .5), fc[5] = { x: fa[2].x * s.chno, y: fa[3].y } }
         function updateBody() { b = { x: bezierPoint(fa[2].x, fc[4].x, fc[5].x, fa[3].x, s.bw), y: bezierPoint(fa[2].y, fc[4].y, fc[5].y, fa[3].y, s.bw) } }

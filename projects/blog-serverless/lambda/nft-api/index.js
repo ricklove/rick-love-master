@@ -350,27 +350,27 @@ var generateNftMetadata_art121 = /*#__PURE__*/function () {
               }, {
                 "display_type": "number",
                 "trait_type": "Interactive Version",
-                "value": 9
+                "value": 10
               }],
               name: "2021-01-21 21:21:21 Art",
-              description: "TEST 09 - TESTING ONLY - Not a real NFT! --- Capture this unique second in our human timeline with this NFT crypto art.",
+              description: "TEST 10 - TESTING ONLY - Not a real NFT! --- Capture this unique second in our human timeline with this NFT crypto art.",
               // TODO: use an actual image
               image: "https://ricklove.me/blog-content/posts/2021-01-21-crypto-art-121/art-121.png",
               external_link: "https://ricklove.me/art/art-121?tokenId=".concat(tokenId),
               // TESTING Interactive
               "is dynamic": true,
-              "script type": "p5js",
-              "animation_url": "https://ricklove.me/art/art-121/?tokenId=".concat(tokenId),
-              interactive_nft: {
-                code_uri: "https://ricklove.me/art/art-121/?tokenId=".concat(tokenId),
-                version: "0.0.9"
-              } // // TESTING Interactive - FROM cat blocks
-              // "animation_url": `https://ricklove.me/art/interactive-test/`,
-              // "interactive_nft": {
-              //     "code_uri": `https://ricklove.me/art/interactive-test/`,
-              //     "version": `0.0.9`,
+              // "script type": `p5js`,
+              // "animation_url": `https://ricklove.me/art/art-121/?tokenId=${tokenId}`,
+              // interactive_nft: {
+              //     code_uri: `https://ricklove.me/art/art-121/?tokenId=${tokenId}`,
+              //     version: `0.0.9`,
               // },
-
+              // // TESTING Interactive - FROM cat blocks
+              "animation_url": "https://ricklove.me/art/interactive-test/",
+              "interactive_nft": {
+                "code_uri": "https://ricklove.me/art/interactive-test/",
+                "version": "0.0.10"
+              }
             });
 
           case 8:
