@@ -360,9 +360,9 @@ var generateNftMetadata_art121 = /*#__PURE__*/function () {
               // TESTING Interactive
               "is dynamic": true,
               // "script type": `p5js`,
-              "animation_url": "https://ricklove.me/art/121/?tokenId=".concat(tokenId),
+              "animation_url": "https://ricklove.me/art/build/121/?tokenId=".concat(tokenId),
               interactive_nft: {
-                code_uri: "https://ricklove.me/art/121/?tokenId=".concat(tokenId),
+                code_uri: "https://ricklove.me/art/build/121/?tokenId=".concat(tokenId),
                 version: "0.0.11"
               } // // // // TESTING Interactive - FROM cat blocks
               // "animation_url": `https://ricklove.me/art/interactive-test/`,
