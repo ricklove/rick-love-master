@@ -350,29 +350,22 @@ var generateNftMetadata_art121 = /*#__PURE__*/function () {
               }, {
                 "display_type": "number",
                 "trait_type": "Interactive Version",
-                "value": 6
+                "value": 7
               }],
               name: "2021-01-21 21:21:21 Art",
-              description: "TEST ONLY - Not a real NFT! --- Capture this unique second in our human timeline with this NFT crypto art. (6)",
+              description: "TEST 07 - TESTING ONLY - Not a real NFT! --- Capture this unique second in our human timeline with this NFT crypto art.",
               // TODO: use an actual image
               image: "https://ricklove.me/blog-content/posts/2021-01-21-crypto-art-121/art-121.png",
               external_link: "https://ricklove.me/art/art-121?tokenId=".concat(tokenId),
               // TESTING Interactive
-              // "is dynamic": true,
-              // "script type": `p5js`,
+              "is dynamic": true,
+              "script type": "p5js",
               // "animation_url": `https://ricklove.me/art/art-121?tokenId=${tokenId}`,
               // interactive_nft: {
               //     code_uri: `https://ricklove.me/art/art-121?tokenId=${tokenId}`,
               //     version: `0.0.9`,
               // },
               // TESTING Interactive - FROM cat blocks
-              "is dynamic": true,
-              "script type": "p5js",
-              "aspect ratio (w/h)": "1",
-              // "uses hash": true,
-              "tokenID": "73000362",
-              // "token hash": `0x820969f356d934272722976f870d6743fc90938275e1c93866a2e025565fa71f`,
-              // "license": `NIFTY`,
               "animation_url": "https://generator.artblocks.io/73000362",
               "interactive_nft": {
                 "code_uri": "https://generator.artblocks.io/73000362",
