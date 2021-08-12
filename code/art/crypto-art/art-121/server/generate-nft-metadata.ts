@@ -123,7 +123,7 @@ export const generateNftMetadata_art121 = async ({ params }: { params: { [name: 
             {
                 "display_type": `number`,
                 "trait_type": `Interactive Version`,
-                "value": 1,
+                "value": 2,
             },
         ],
         name: `2021-01-21 21:21:21 Art`,
