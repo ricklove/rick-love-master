@@ -64,7 +64,7 @@ type GameStep = {
 /** There is only a single linear progression, all other choices end in death */
 const story: GameStep[] = [
     {
-        title: `Nft Dungeon`,
+        title: `Nft Text Adventure`,
         asciiArt: asciiArt_manArmUp,
         description: `
 
