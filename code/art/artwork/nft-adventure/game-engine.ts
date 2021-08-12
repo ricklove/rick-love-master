@@ -1,5 +1,5 @@
 import { createRandomGenerator } from 'art/rando';
-import p5 from 'p5';
+import type p5 from 'p5';
 
 type GameStep = {
     title: string;

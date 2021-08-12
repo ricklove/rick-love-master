@@ -1,0 +1,956 @@
+
+<html>
+<head>
+    <style>
+    html, body, div, span, applet, object, iframe,
+    h1, h2, h3, h4, h5, h6, p, blockquote, pre,
+    a, abbr, acronym, address, big, cite, code,
+    del, dfn, em, img, ins, kbd, q, s, samp,
+    small, strike, strong, sub, sup, tt, var,
+    b, u, i, center,
+    dl, dt, dd, ol, ul, li,
+    fieldset, form, label, legend,
+    table, caption, tbody, tfoot, thead, tr, th, td,
+    article, aside, canvas, details, embed, 
+    figure, figcaption, footer, header, hgroup, 
+    menu, nav, output, ruby, section, summary,
+    time, mark, audio, video {
+        margin: 0;
+        padding: 0;
+        border: 0;
+        font-size: 100%;
+        font: inherit;
+        vertical-align: baseline;
+    }
+    /* HTML5 display-role reset for older browsers */
+    article, aside, details, figcaption, figure, 
+    footer, header, hgroup, menu, nav, section {
+        display: block;
+    }
+    body {
+        line-height: 1;
+    }
+    ol, ul {
+        list-style: none;
+    }
+    blockquote, q {
+        quotes: none;  
+    }
+    blockquote:before, blockquote:after,
+    q:before, q:after {
+        content: '';
+        content: none;
+    }
+    table {
+        border-collapse: collapse;
+        border-spacing: 0;
+    }
+
+    body { 
+        background: #000000;
+    }
+    </style>
+</head>
+<body>
+
+    <div id='host'></div>
+    
+<script src="https://cdn.jsdelivr.net/npm/p5@1.4.0/lib/p5.js"></script>
+
+    <script>
+    (function (exports, p5) {
+  'use strict';
+
+  function _interopDefaultLegacy (e) { return e && typeof e === 'object' && 'default' in e ? e : { 'default': e }; }
+
+  var p5__default = /*#__PURE__*/_interopDefaultLegacy(p5);
+
+  function ownKeys(object, enumerableOnly) {
+    var keys = Object.keys(object);
+
+    if (Object.getOwnPropertySymbols) {
+      var symbols = Object.getOwnPropertySymbols(object);
+
+      if (enumerableOnly) {
+        symbols = symbols.filter(function (sym) {
+          return Object.getOwnPropertyDescriptor(object, sym).enumerable;
+        });
+      }
+
+      keys.push.apply(keys, symbols);
+    }
+
+    return keys;
+  }
+
+  function _objectSpread2(target) {
+    for (var i = 1; i < arguments.length; i++) {
+      var source = arguments[i] != null ? arguments[i] : {};
+
+      if (i % 2) {
+        ownKeys(Object(source), true).forEach(function (key) {
+          _defineProperty(target, key, source[key]);
+        });
+      } else if (Object.getOwnPropertyDescriptors) {
+        Object.defineProperties(target, Object.getOwnPropertyDescriptors(source));
+      } else {
+        ownKeys(Object(source)).forEach(function (key) {
+          Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key));
+        });
+      }
+    }
+
+    return target;
+  }
+
+  function _typeof(obj) {
+    "@babel/helpers - typeof";
+
+    if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") {
+      _typeof = function (obj) {
+        return typeof obj;
+      };
+    } else {
+      _typeof = function (obj) {
+        return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj;
+      };
+    }
+
+    return _typeof(obj);
+  }
+
+  function _defineProperty(obj, key, value) {
+    if (key in obj) {
+      Object.defineProperty(obj, key, {
+        value: value,
+        enumerable: true,
+        configurable: true,
+        writable: true
+      });
+    } else {
+      obj[key] = value;
+    }
+
+    return obj;
+  }
+
+  function _toConsumableArray(arr) {
+    return _arrayWithoutHoles(arr) || _iterableToArray(arr) || _unsupportedIterableToArray(arr) || _nonIterableSpread();
+  }
+
+  function _arrayWithoutHoles(arr) {
+    if (Array.isArray(arr)) return _arrayLikeToArray(arr);
+  }
+
+  function _iterableToArray(iter) {
+    if (typeof Symbol !== "undefined" && iter[Symbol.iterator] != null || iter["@@iterator"] != null) return Array.from(iter);
+  }
+
+  function _unsupportedIterableToArray(o, minLen) {
+    if (!o) return;
+    if (typeof o === "string") return _arrayLikeToArray(o, minLen);
+    var n = Object.prototype.toString.call(o).slice(8, -1);
+    if (n === "Object" && o.constructor) n = o.constructor.name;
+    if (n === "Map" || n === "Set") return Array.from(o);
+    if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return _arrayLikeToArray(o, minLen);
+  }
+
+  function _arrayLikeToArray(arr, len) {
+    if (len == null || len > arr.length) len = arr.length;
+
+    for (var i = 0, arr2 = new Array(len); i < len; i++) arr2[i] = arr[i];
+
+    return arr2;
+  }
+
+  function _nonIterableSpread() {
+    throw new TypeError("Invalid attempt to spread non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method.");
+  }
+
+  function _createForOfIteratorHelper(o, allowArrayLike) {
+    var it = typeof Symbol !== "undefined" && o[Symbol.iterator] || o["@@iterator"];
+
+    if (!it) {
+      if (Array.isArray(o) || (it = _unsupportedIterableToArray(o)) || allowArrayLike && o && typeof o.length === "number") {
+        if (it) o = it;
+        var i = 0;
+
+        var F = function () {};
+
+        return {
+          s: F,
+          n: function () {
+            if (i >= o.length) return {
+              done: true
+            };
+            return {
+              done: false,
+              value: o[i++]
+            };
+          },
+          e: function (e) {
+            throw e;
+          },
+          f: F
+        };
+      }
+
+      throw new TypeError("Invalid attempt to iterate non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method.");
+    }
+
+    var normalCompletion = true,
+        didErr = false,
+        err;
+    return {
+      s: function () {
+        it = it.call(o);
+      },
+      n: function () {
+        var step = it.next();
+        normalCompletion = step.done;
+        return step;
+      },
+      e: function (e) {
+        didErr = true;
+        err = e;
+      },
+      f: function () {
+        try {
+          if (!normalCompletion && it.return != null) it.return();
+        } finally {
+          if (didErr) throw err;
+        }
+      }
+    };
+  }
+
+  /* eslint-disable no-return-assign */
+
+  /* eslint-disable no-multi-assign */
+
+  /* eslint-disable @typescript-eslint/no-unused-expressions */
+
+  /* eslint-disable no-bitwise */
+  // FROM: https://stackoverflow.com/a/47593316/567524
+  function xmur3(str) {
+    var h = 1779033703 ^ str.length;
+
+    for (var i = 0; i < str.length; i++) {
+      h = Math.imul(h ^ str.charCodeAt(i), 3432918353);
+      h = h << 13 | h >>> 19;
+    }
+
+    return function () {
+      h = Math.imul(h ^ h >>> 16, 2246822507);
+      h = Math.imul(h ^ h >>> 13, 3266489909);
+      return (h ^= h >>> 16) >>> 0;
+    };
+  }
+
+  function mulberry32(a) {
+    return function () {
+      var t = a += 0x6D2B79F5;
+      t = Math.imul(t ^ t >>> 15, t | 1);
+      t ^= t + Math.imul(t ^ t >>> 7, t | 61);
+      return ((t ^ t >>> 14) >>> 0) / 4294967296;
+    };
+  }
+
+  var createRandomGenerator = function createRandomGenerator(hash) {
+    var seed = xmur3(hash)();
+    return {
+      random: mulberry32(seed)
+    };
+  };
+
+  var art_puzzle01 = {
+    key: "puzzle-01",
+    title: "Puzzle 01",
+    description: "Solve the puzzle and unlock the final art.\nDirections: Use arrow keys to move the circle towards the exit",
+    artist: "Rick Love",
+    getTokenDescription: function getTokenDescription(tokenId) {
+      return null;
+    },
+    renderArt: function renderArt(hostElement, tokenId) {
+
+      var oppositeDirection = function oppositeDirection(dir) {
+        switch (dir) {
+          case "up":
+            return "down";
+
+          case "down":
+            return "up";
+
+          case "left":
+            return "right";
+
+          case "right":
+            return "left";
+
+          default:
+            return "up";
+        }
+      };
+
+      var state = {
+        board: [],
+        boardVisits: [],
+        moveSequence: [],
+        player: {},
+        moveIndex: 0,
+        gameOverTime: 0
+      };
+      var canvasSize = 350;
+      var gridSize = 16;
+      var itemSize = 20;
+      var gridAreaOffset = 15;
+      var maxMoveCount = 20;
+
+      var calculateNextPos = function calculateNextPos(posRaw, dir) {
+        var pos = _objectSpread2({}, posRaw);
+
+        if (dir === "up") {
+          pos.y--;
+        }
+
+        if (dir === "down") {
+          pos.y++;
+        }
+
+        if (dir === "left") {
+          pos.x--;
+        }
+
+        if (dir === "right") {
+          pos.x++;
+        }
+
+        return pos;
+      };
+
+      return new p5__default['default'](function (s) {
+        s.setup = function () {
+          s.createCanvas(canvasSize, canvasSize);
+          s.background(0); // s.colorMode(s.HSB);
+          // Create board out of backwards generation of correct moves
+
+          var _createRandomGenerato = createRandomGenerator(tokenId),
+              random = _createRandomGenerato.random;
+
+          var board = state.board,
+              boardVisits = state.boardVisits;
+          var exit = {
+            renderSeed: "".concat(random()),
+            item: "exit",
+            pos: {
+              x: Math.floor(1 + (gridSize - 2) * random()),
+              y: Math.floor(1 + (gridSize - 2) * random())
+            }
+          };
+          state.player = {
+            renderSeed: "".concat(random()),
+            item: "player",
+            pos: _objectSpread2({}, exit.pos),
+            renderPos: {
+              x: 0,
+              y: 0
+            }
+          };
+          var player = state.player;
+          board.push(exit); // board.push(player);
+          // // Crete outer wall
+          // for (let i = 0; i < gridSize; i++) {
+          //     board.push({ renderSeed: `${random()}`, item: `wall`, pos: { x: i, y: 0 } });
+          //     board.push({ renderSeed: `${random()}`, item: `wall`, pos: { x: i, y: gridSize - 1 } });
+          //     board.push({ renderSeed: `${random()}`, item: `wall`, pos: { x: 0, y: i } });
+          //     board.push({ renderSeed: `${random()}`, item: `wall`, pos: { x: gridSize - 1, y: i } });
+          // }
+
+          var randomMoveDirection = function randomMoveDirection() {
+            var r = random();
+
+            if (r > 0.75) {
+              return "up";
+            }
+
+            if (r > 0.5) {
+              return "down";
+            }
+
+            if (r > 0.25) {
+              return "left";
+            }
+
+            return "right";
+          };
+
+          var randomMove = function randomMove() {
+            return {
+              direction: randomMoveDirection(),
+              distance: Math.floor(0 + gridSize * 0.75 * random())
+            };
+          };
+
+          var wallColorMaxCount = 16;
+          var wallColorCount = 4 + Math.floor(random() * (wallColorMaxCount - 4));
+
+          var wallColors = _toConsumableArray(new Array(wallColorCount)).map(function (x) {
+            return "".concat(random());
+          });
+
+          var getNextWallRandomSeed = function getNextWallRandomSeed() {
+            return wallColors[Math.floor(random() * wallColorCount)];
+          }; // Reversed moves to generate board
+
+
+          var lastReverseMove = {
+            distance: 0,
+            direction: "unknown"
+          };
+
+          var calculatePlayerReverseMove = function calculatePlayerReverseMove(reverseMove) {
+            var d = reverseMove.distance;
+
+            var lastPos = _objectSpread2({}, player.pos);
+
+            var dir = reverseMove.direction;
+
+            var _loop = function _loop() {
+              var pos = calculateNextPos(lastPos, dir);
+              var nextPos = calculateNextPos(lastPos, dir); // Past edge - fail
+
+              if (pos.x <= 0 || pos.x >= gridSize - 1 || pos.y <= 0 || pos.y >= gridSize - 1) {
+                return {
+                  v: null
+                };
+              } // Hit existing wall - fail
+
+
+              var itemAtPos = board.find(function (x) {
+                return x.item !== "player" && x.pos.x === pos.x && x.pos.y === pos.y;
+              });
+
+              if ((itemAtPos === null || itemAtPos === void 0 ? void 0 : itemAtPos.item) === "wall") {
+                return {
+                  v: null
+                };
+              } // Already next wall - fail
+
+
+              var itemAtNextPos = board.find(function (x) {
+                return x.item !== "player" && x.pos.x === nextPos.x && x.pos.y === nextPos.y;
+              });
+
+              if ((itemAtNextPos === null || itemAtNextPos === void 0 ? void 0 : itemAtNextPos.item) === "wall") {
+                return {
+                  v: null
+                };
+              }
+
+              d--;
+              lastPos = _objectSpread2({}, pos);
+            };
+
+            while (d > 0) {
+              var _ret = _loop();
+
+              if (_typeof(_ret) === "object") return _ret.v;
+            } // If in line with any existing endmove, reject
+
+
+            var inLineWithLastPos = state.moveSequence.find(function (m) {
+              return m.endPosition.x === lastPos.x || m.endPosition.y === lastPos.y;
+            });
+
+            if (inLineWithLastPos) {
+              return null;
+            }
+
+            var actualDistance = reverseMove.distance - d;
+            return {
+              direction: oppositeDirection(reverseMove.direction),
+              distance: actualDistance,
+              endPosition: _objectSpread2({}, player.pos),
+              startPosition: lastPos
+            };
+          }; // Add outer wall
+
+
+          for (var i = 0; i < gridSize; i++) {
+            board.push({
+              renderSeed: getNextWallRandomSeed(),
+              item: "wall",
+              pos: {
+                x: i,
+                y: 0
+              }
+            });
+            board.push({
+              renderSeed: getNextWallRandomSeed(),
+              item: "wall",
+              pos: {
+                x: i,
+                y: gridSize - 1
+              }
+            });
+            board.push({
+              renderSeed: getNextWallRandomSeed(),
+              item: "wall",
+              pos: {
+                x: 0,
+                y: i
+              }
+            });
+            board.push({
+              renderSeed: getNextWallRandomSeed(),
+              item: "wall",
+              pos: {
+                x: gridSize - 1,
+                y: i
+              }
+            });
+          } // Add game walls
+
+
+          for (var _i = 0; _i < maxMoveCount; _i++) {
+            // Reverse Move player
+            var reverseMove = randomMove();
+
+            while (reverseMove.direction === lastReverseMove.direction || reverseMove.direction === oppositeDirection(lastReverseMove.direction)) {
+              reverseMove = randomMove();
+            } // Calculate reverse move
+
+
+            var actualMove = calculatePlayerReverseMove(reverseMove);
+
+            if (!actualMove || actualMove.distance <= 0) {
+              continue;
+            } // Add wall which would have stopped the player (having made this move forward)
+
+
+            if (state.moveSequence.length > 0) {
+              var nextPos = calculateNextPos(player.pos, oppositeDirection(reverseMove.direction));
+              board.push({
+                item: "wall",
+                pos: nextPos,
+                renderSeed: getNextWallRandomSeed()
+              });
+            } // Move player
+
+
+            player.pos = actualMove.startPosition;
+            state.moveSequence.unshift(actualMove);
+            lastReverseMove = actualMove; // Add board visits
+
+            var p = actualMove.startPosition;
+            state.boardVisits.push({
+              pos: _objectSpread2({}, p)
+            });
+
+            while (p.x !== actualMove.endPosition.x || p.y !== actualMove.endPosition.y) {
+              p = calculateNextPos(p, actualMove.direction);
+              state.boardVisits.push({
+                pos: _objectSpread2({}, p)
+              });
+            }
+
+            console.log("boardVisits", {
+              actualReverseMove: actualMove,
+              boardVisits: _toConsumableArray(state.boardVisits)
+            });
+          } // Add random walls
+
+
+          var _loop2 = function _loop2(x) {
+            var _loop3 = function _loop3(y) {
+              var isVisited = !!boardVisits.find(function (b) {
+                return b.pos.x === x && b.pos.y === y;
+              });
+              var item = !!board.find(function (b) {
+                return b.pos.x === x && b.pos.y === y;
+              });
+
+              if (isVisited || item) {
+                return "continue";
+              }
+
+              if (random() > 0.75) {
+                board.push({
+                  item: "wall",
+                  pos: {
+                    x: x,
+                    y: y
+                  },
+                  renderSeed: getNextWallRandomSeed()
+                });
+              }
+            };
+
+            for (var y = 0; y < gridSize; y++) {
+              var _ret2 = _loop3(y);
+
+              if (_ret2 === "continue") continue;
+            }
+          };
+
+          for (var x = 0; x < gridSize; x++) {
+            _loop2(x);
+          }
+
+          player.renderPos = getRenderPosition(player.pos);
+          state.board.forEach(function (x) {
+            return drawPuzzleItem(x);
+          });
+        };
+
+        var getRenderPosition = function getRenderPosition(p) {
+          var x = gridAreaOffset + p.x * itemSize;
+          var y = gridAreaOffset + p.y * itemSize;
+          return {
+            x: x,
+            y: y
+          };
+        };
+
+        var drawPuzzleItem = function drawPuzzleItem(item) {
+          var _item$renderPos;
+
+          var _createRandomGenerato2 = createRandomGenerator(item.renderSeed),
+              random = _createRandomGenerato2.random;
+
+          var _a$b$c = {
+            a: 1 + Math.floor(57 * random()),
+            b: 1 + Math.floor(213 * random()),
+            c: 1 + Math.floor(115 * random())
+          },
+              a = _a$b$c.a,
+              b = _a$b$c.b,
+              c = _a$b$c.c;
+          var _cr$cg$cb$ca = {
+            cr: Math.floor(25 + 230 * random()),
+            cg: Math.floor(25 + 230 * random()),
+            cb: Math.floor(25 + 230 * random()),
+            ca: Math.floor(25 + 125 * random())
+          },
+              cr = _cr$cg$cb$ca.cr,
+              cg = _cr$cg$cb$ca.cg,
+              cb = _cr$cg$cb$ca.cb,
+              ca = _cr$cg$cb$ca.ca;
+
+          var _ref = (_item$renderPos = item.renderPos) !== null && _item$renderPos !== void 0 ? _item$renderPos : getRenderPosition(item.pos),
+              x = _ref.x,
+              y = _ref.y;
+
+          s.fill(cr, cg, cb, ca);
+          s.stroke(cr, cg, cb, 255);
+          s.strokeWeight(1);
+          var gameWon = state.moveIndex >= state.moveSequence.length && !state.player.targetRenderPos;
+          var aOffset = tick / 100;
+          var tOffset = Math.abs(Math.floor(Math.sin((tick + a * c) / 1000) * canvasSize));
+          var alphaCycle = 100;
+
+          if (item.item === "player") {
+            if (gameWon) {
+              s.stroke(0, 0, 0, 10);
+              var mod = tick;
+
+              for (var i = 0; i < 16; i++) {
+                s.fill(cr, cg, (cb + i * c) % 255, Math.floor(Math.sin((tick + a * c) / alphaCycle) * 25 + 35));
+                var j = 0;
+                s.circle(200 - a / 2 + j % a, 200 - b / 2 + j % b, 270 - i * 5 % c);
+                s.translate(tOffset, tOffset); // s.rotate((a + b + c + tick * 0.001) % 2);
+
+                s.rotate((a + b + c + mod) * 0.001);
+                s.translate(-tOffset, -tOffset);
+                mod++;
+              }
+
+              return;
+            }
+
+            s.fill(cr, cg, cb, 30);
+            var _circleCount = 4;
+
+            var _spiralRadius = 0.01 * (4 + state.moveSequence.length - state.moveIndex); // const spiralRadius = 0.1;
+
+
+            for (var _i2 = 0; _i2 < _circleCount; _i2++) {
+              s.stroke(cr, cg, cb, Math.floor(255 * (_i2 + 1) / (_circleCount + 1)));
+              s.circle(x + itemSize * (0.5 + _spiralRadius * Math.cos(2 * Math.PI * (_i2 / _circleCount + tick / 100))), y + itemSize * (0.5 + _spiralRadius * Math.sin(2 * Math.PI * (_i2 / _circleCount + tick / 100))), itemSize);
+            } // s.circle(x + 0.5 * itemSize, y + 0.5 * itemSize, itemSize);
+
+
+            return;
+          }
+
+          if (item.item === "exit") {
+            if (gameWon) {
+              s.fill(cr, cg, cb, Math.floor(Math.sin((tick + a * c) / alphaCycle) * 25 + 35));
+              s.stroke(0, 0, 0, 10);
+              var angle = a;
+              var trans = c;
+
+              for (var _i3 = 0; _i3 < 32; _i3++) {
+                // s.rect(x + itemSize * 0.25, y + itemSize * 0.25, itemSize * 0.5, itemSize * 0.5);
+                s.translate(trans, trans);
+                s.rotate(angle + aOffset);
+                s.rect(x + itemSize * 0.25, y + itemSize * 0.25, c * x, c * y);
+                s.rotate(-angle - aOffset);
+                s.translate(-trans, -trans);
+                angle += b;
+                trans += c;
+                trans %= 125;
+              }
+
+              return;
+            } // s.fill(cr, cg, cb, 200);
+
+
+            s.fill(255, 255, 255);
+            s.rect(x, y, itemSize, itemSize);
+            s.fill(0, 0, 0);
+            s.rect(x + itemSize * 0.25, y + itemSize * 0.25, itemSize * 0.5, itemSize * 0.5);
+            return;
+          }
+
+          if (item.item === "wall-broken") {
+            if (!gameWon) {
+              return;
+            }
+
+            s.fill(cr, cg, cb, Math.floor(Math.sin((tick + a * c) / alphaCycle) * 25 + 25));
+            s.stroke(0, 0, 0, 10);
+            var _angle = a;
+
+            var _trans = c % (canvasSize * 0.5);
+
+            for (var _i4 = 0; _i4 < 8; _i4++) {
+              s.translate(-_trans, -_trans);
+              s.rotate(_angle + aOffset);
+              s.rect(x, y, itemSize * x, itemSize * y);
+              s.rotate(-_angle - aOffset);
+              s.translate(_trans, _trans);
+              _angle += b; // trans += c;
+              // trans %= 3;
+            }
+
+            return; // s.rect(x + itemSize * 0.25, y + itemSize * 0.25, itemSize * 0.5, itemSize * 0.5);
+            // s.rect(x, y, itemSize * x, itemSize * y);
+            // return;
+          }
+
+          if (gameWon) {
+            return; // s.fill(cr, cg, cb, Math.floor(Math.sin((tick + a * c) / alphaCycle) * 25 + 25));
+            // s.rect(x, y, itemSize, itemSize);
+            // return;
+          } // s.rect(x, y, itemSize, itemSize);
+
+
+          s.fill(cr, cg, cb, 5);
+          var circleCount = 4;
+          var spiralRadius = 0.015 * (4 + state.moveSequence.length - state.moveIndex);
+          var iOffset = random();
+
+          for (var _i5 = 0; _i5 < circleCount; _i5++) {
+            s.stroke(cr, cg, cb, Math.floor(255 * (_i5 + 1) / (circleCount + 1)));
+            s.rect(x + itemSize * (0 + spiralRadius * Math.cos(2 * Math.PI * ((iOffset + _i5) / circleCount + tick / 100))), y + itemSize * (0 + spiralRadius * Math.sin(2 * Math.PI * ((iOffset + _i5) / circleCount + tick / 100))), itemSize, itemSize);
+          }
+        };
+
+        var tick = 0;
+
+        s.draw = function () {
+          s.background(0); // s.background(0, 0, 0, 5);
+
+
+          state.board.filter(function (x) {
+            return x.item === "wall-broken";
+          }).forEach(function (x) {
+            return drawPuzzleItem(x);
+          });
+          state.board.filter(function (x) {
+            return x.item !== "wall-broken";
+          }).forEach(function (x) {
+            return drawPuzzleItem(x);
+          });
+          drawPuzzleItem(state.player); // Animate
+
+          if (state.player.activeMove && state.player.renderPos && state.player.targetRenderPos) {
+            // state.player.renderPos = {
+            //     x: 0.9 * state.player.renderPos.x + 0.1 * state.player.targetRenderPos.x,
+            //     y: 0.9 * state.player.renderPos.y + 0.1 * state.player.targetRenderPos.y,
+            // };
+            var speed = 3;
+
+            for (var i = 0; i < speed; i++) {
+              state.player.renderPos = calculateNextPos(state.player.renderPos, state.player.activeMove.direction);
+              var dist = Math.abs(state.player.renderPos.x - state.player.targetRenderPos.x) + Math.abs(state.player.renderPos.y - state.player.targetRenderPos.y);
+
+              if (dist < 1) {
+                state.player.renderPos = state.player.targetRenderPos;
+                break;
+              }
+            }
+          } // If player is done animating destroy wall
+
+
+          var activeMove = state.player.activeMove;
+          var pPos = state.player.renderPos;
+          var tPos = state.player.targetRenderPos;
+
+          if (activeMove && pPos && tPos && pPos.x === tPos.x && pPos.y === tPos.y) {
+            console.log("Reached", {
+              activeMove: activeMove,
+              pPos: pPos,
+              tPos: tPos
+            });
+            state.player.targetRenderPos = undefined; // Break any walls that have been reached
+
+            var _iterator = _createForOfIteratorHelper(state.moveSequence.slice(0, state.moveIndex)),
+                _step;
+
+            try {
+              var _loop4 = function _loop4() {
+                var m = _step.value;
+                var wallPos = calculateNextPos(m.endPosition, m.direction);
+                var wall = state.board.find(function (x) {
+                  return x.pos.x === wallPos.x && x.pos.y === wallPos.y;
+                });
+
+                if (!wall) {
+                  return "continue";
+                }
+
+                wall.item = "wall-broken";
+              };
+
+              for (_iterator.s(); !(_step = _iterator.n()).done;) {
+                var _ret3 = _loop4();
+
+                if (_ret3 === "continue") continue;
+              }
+            } catch (err) {
+              _iterator.e(err);
+            } finally {
+              _iterator.f();
+            }
+          }
+
+          var GAME_OVER_FADE_TIME = 3000;
+          var timeSinceGameOver = Date.now() - state.gameOverTime;
+
+          if (timeSinceGameOver < GAME_OVER_FADE_TIME) {
+            console.log("Game over Fade", {
+              gameOverTime: state.gameOverTime,
+              timeSinceGameOver: timeSinceGameOver
+            });
+            s.fill(0, 0, 0, 255 * (GAME_OVER_FADE_TIME - timeSinceGameOver) / GAME_OVER_FADE_TIME);
+            s.noStroke();
+            s.rect(0, 0, canvasSize, canvasSize);
+          } // Debug
+          //  state.moveSequence.forEach(x => drawMoveHistory(x));
+
+
+          tick++;
+        };
+
+        s.keyPressed = function () {
+          var key = s.key,
+              keyCode = s.keyCode;
+
+          var getKeyDirection = function getKeyDirection() {
+            switch (key) {
+              case "w":
+                return "up";
+
+              case "a":
+                return "left";
+
+              case "s":
+                return "down";
+
+              case "d":
+                return "right";
+            }
+
+            switch (keyCode) {
+              case s.UP_ARROW:
+                return "up";
+
+              case s.LEFT_ARROW:
+                return "left";
+
+              case s.DOWN_ARROW:
+                return "down";
+
+              case s.RIGHT_ARROW:
+                return "right";
+
+              default:
+                return null;
+            }
+          };
+
+          var d = getKeyDirection();
+
+          if (!d) {
+            return;
+          } // Move the player
+
+
+          var nextMove = state.moveSequence[state.moveIndex];
+
+          if (!nextMove) {
+            return;
+          }
+
+          if (nextMove.direction !== d) {
+            // Reset game on bad move
+            state.gameOverTime = Date.now();
+            state.moveIndex = 0;
+            state.player.activeMove = undefined;
+            state.player.renderPos = undefined;
+            state.player.targetRenderPos = undefined;
+            state.board.filter(function (x) {
+              return x.item === "wall-broken";
+            }).forEach(function (x) {
+              x.item = "wall";
+            });
+            return;
+          }
+
+          state.player.activeMove = nextMove;
+          state.player.renderPos = getRenderPosition(nextMove.startPosition);
+          state.player.targetRenderPos = getRenderPosition(nextMove.endPosition);
+          state.moveIndex++;
+        };
+      }, hostElement);
+    }
+  };
+
+  exports.art_puzzle01 = art_puzzle01;
+
+  Object.defineProperty(exports, '__esModule', { value: true });
+
+  return exports;
+
+}(window, window.p5));
+
+    
+var seedMatch = document.location.search.match(/seed=([^;])/) || document.location.search.match(/tokenId=([^;])/);
+var seed = seedMatch && seedMatch[1] || '0';
+
+var createP5 = function(s,host){
+    return new p5(s,host);
+};
+
+window.art_puzzle01.renderArt(
+    document.getElementById('host'),
+    seed,
+    null,
+    createP5
+)
+    </script>
+
+</body>
+</html>

@@ -1,6 +1,6 @@
 /* eslint-disable new-cap */
 /* eslint-disable no-new */
-import p5 from 'p5';
+import type p5 from 'p5';
 import { createRandomGenerator } from '../../rando';
 import { ArtWork } from '../../artwork-type';
 import { createNftAdventure_nftTextAdventure } from './stories/nft-text-adventure';
@@ -30,7 +30,7 @@ export const art_nftAdventure_nftTextAdventure: ArtWork = {
     //     tokenAddress: `0x495f947276749ce646f68ac8c248420045cb7b5e`,
     //     tokenId: `91242641486941084018191434774360347389366801368112854311223385694785434025985`,
     // },
-    renderArt: (hostElement: HTMLElement, seed = `This is my hash!`, recorder) => {
+    renderArt: (hostElement: HTMLElement, seed = `This is my hash!`, recorder, createP5) => {
         // const { a, b, c } = { a: 57, b: 23, c: 15 };
 
 
@@ -54,14 +54,18 @@ export const art_nftAdventure_nftTextAdventure: ArtWork = {
 
         const [stepIndex, actionIndex] = seed.split(`:`).map(x => parseInt(x, 10));
 
-        return new p5((s: p5) => {
+        return createP5((s: p5) => {
             s.setup = () => {
+                console.log(`renderArt:createP5:s.setup`);
+
                 const result = s.createCanvas(size, size);
                 const canvasId = `${Math.random()}`;
                 result.id(canvasId);
                 canvas = document.getElementById(canvasId) as HTMLCanvasElement;
             };
             s.draw = () => {
+                console.log(`renderArt:createP5:s.draw`);
+
                 if (recorder?.isRecording() && !wasRecording){
                     timeStart = recorder.timeProvider.now();
                     isDone = false;

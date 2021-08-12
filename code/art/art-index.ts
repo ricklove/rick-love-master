@@ -14,3 +14,4 @@ export const artIndex = [
     { key: `nft-text-adventure`, title: `Nft Text Adventure`, imageUrl: `./artwork/nft-adventure/stories/nft-text-adventure.png`, load: async () => (await import (`./artwork/nft-adventure/art`)).art_nftAdventure_nftTextAdventure },
 ] as const;
 export type ArtKey = typeof artIndex[number]['key'];
+export type ArtIndexEntry = typeof artIndex[number];

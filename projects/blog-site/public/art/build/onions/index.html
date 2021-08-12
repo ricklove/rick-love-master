@@ -1,0 +1,192 @@
+
+<html>
+<head>
+    <style>
+    html, body, div, span, applet, object, iframe,
+    h1, h2, h3, h4, h5, h6, p, blockquote, pre,
+    a, abbr, acronym, address, big, cite, code,
+    del, dfn, em, img, ins, kbd, q, s, samp,
+    small, strike, strong, sub, sup, tt, var,
+    b, u, i, center,
+    dl, dt, dd, ol, ul, li,
+    fieldset, form, label, legend,
+    table, caption, tbody, tfoot, thead, tr, th, td,
+    article, aside, canvas, details, embed, 
+    figure, figcaption, footer, header, hgroup, 
+    menu, nav, output, ruby, section, summary,
+    time, mark, audio, video {
+        margin: 0;
+        padding: 0;
+        border: 0;
+        font-size: 100%;
+        font: inherit;
+        vertical-align: baseline;
+    }
+    /* HTML5 display-role reset for older browsers */
+    article, aside, details, figcaption, figure, 
+    footer, header, hgroup, menu, nav, section {
+        display: block;
+    }
+    body {
+        line-height: 1;
+    }
+    ol, ul {
+        list-style: none;
+    }
+    blockquote, q {
+        quotes: none;  
+    }
+    blockquote:before, blockquote:after,
+    q:before, q:after {
+        content: '';
+        content: none;
+    }
+    table {
+        border-collapse: collapse;
+        border-spacing: 0;
+    }
+
+    body { 
+        background: #000000;
+    }
+    </style>
+</head>
+<body>
+
+    <div id='host'></div>
+    
+<script src="https://cdn.jsdelivr.net/npm/p5@1.4.0/lib/p5.js"></script>
+
+    <script>
+    (function (exports, p5) {
+    'use strict';
+
+    function _interopDefaultLegacy (e) { return e && typeof e === 'object' && 'default' in e ? e : { 'default': e }; }
+
+    var p5__default = /*#__PURE__*/_interopDefaultLegacy(p5);
+
+    /* eslint-disable no-return-assign */
+
+    /* eslint-disable no-multi-assign */
+
+    /* eslint-disable @typescript-eslint/no-unused-expressions */
+
+    /* eslint-disable no-bitwise */
+    // FROM: https://stackoverflow.com/a/47593316/567524
+    function xmur3(str) {
+      var h = 1779033703 ^ str.length;
+
+      for (var i = 0; i < str.length; i++) {
+        h = Math.imul(h ^ str.charCodeAt(i), 3432918353);
+        h = h << 13 | h >>> 19;
+      }
+
+      return function () {
+        h = Math.imul(h ^ h >>> 16, 2246822507);
+        h = Math.imul(h ^ h >>> 13, 3266489909);
+        return (h ^= h >>> 16) >>> 0;
+      };
+    }
+
+    function mulberry32(a) {
+      return function () {
+        var t = a += 0x6D2B79F5;
+        t = Math.imul(t ^ t >>> 15, t | 1);
+        t ^= t + Math.imul(t ^ t >>> 7, t | 61);
+        return ((t ^ t >>> 14) >>> 0) / 4294967296;
+      };
+    }
+
+    var createRandomGenerator = function createRandomGenerator(hash) {
+      var seed = xmur3(hash)();
+      return {
+        random: mulberry32(seed)
+      };
+    };
+
+    /* eslint-disable new-cap */
+    var art_layersOfTheOnionsSoul = {
+      key: "onions",
+      title: "Layers of the Onion's Soul",
+      description: "This represents the complexity of an onion's soul - which has many layers, like a human.",
+      artist: "Rick Love & Lydia Love - who called me weirdo as inspiration, and mentioned a circle, some squares, a tetrahedron, Minecraft blocks, and then said she meant cubes and spheres.",
+      getTokenDescription: function getTokenDescription(tokenId) {
+        return null;
+      },
+      renderArt: function renderArt(hostElement) {
+        var hash = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : "This is my hash!";
+
+        // const { a, b, c } = { a: 3, b: 7, c: 15 };
+        var _createRandomGenerato = createRandomGenerator(hash),
+            random = _createRandomGenerato.random;
+
+        var _a$b$c$d$e = {
+          a: 1 + Math.floor(17 * random()),
+          b: 1 + Math.floor(57 * random()),
+          c: 1 + Math.floor(35 * random()),
+          d: 0 + Math.floor(5 * random()),
+          e: 20 + Math.floor(255 * random())
+        },
+            a = _a$b$c$d$e.a,
+            b = _a$b$c$d$e.b,
+            c = _a$b$c$d$e.c,
+            d = _a$b$c$d$e.d,
+            e = _a$b$c$d$e.e; // const { cr, cg, cb } = { cr: 207, cg: 175, cb: 65 };
+
+        var _cr$cg$cb = {
+          cr: Math.floor(25 + 230 * random()),
+          cg: Math.floor(25 + 230 * random()),
+          cb: Math.floor(25 + 230 * random())
+        },
+            cr = _cr$cg$cb.cr,
+            cg = _cr$cg$cb.cg,
+            cb = _cr$cg$cb.cb;
+        var tick = 0;
+        return new p5__default['default'](function (s) {
+          s.setup = function () {
+            s.createCanvas(400, 400);
+          };
+
+          s.draw = function () {
+            s.background(0);
+
+            for (var i = 0; i < 35; i++) {
+              var color = s.color((cr + b * i) % 255, cg * (1 + i * a) % 255, (cb + i * d) % 255);
+              s.fill(color);
+              s.circle(150 + i * 7 % b - a + 32 * Math.sin(tick * 0.001), 250 + i - c % 35 + b, (270 - i) % e);
+              s.translate(100, 100);
+              s.rotate(d + tick * 0.000007);
+              s.translate(-120, -150);
+              tick++;
+            }
+          };
+        }, hostElement);
+      }
+    };
+
+    exports.art_layersOfTheOnionsSoul = art_layersOfTheOnionsSoul;
+
+    Object.defineProperty(exports, '__esModule', { value: true });
+
+    return exports;
+
+}(window, window.p5));
+
+    
+var seedMatch = document.location.search.match(/seed=([^;])/) || document.location.search.match(/tokenId=([^;])/);
+var seed = seedMatch && seedMatch[1] || '0';
+
+var createP5 = function(s,host){
+    return new p5(s,host);
+};
+
+window.art_layersOfTheOnionsSoul.renderArt(
+    document.getElementById('host'),
+    seed,
+    null,
+    createP5
+)
+    </script>
+
+</body>
+</html>
