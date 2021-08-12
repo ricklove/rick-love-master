@@ -1,3 +1,4 @@
+import { createRandomGenerator } from 'art/rando';
 import p5 from 'p5';
 
 type GameStep = {
@@ -33,6 +34,9 @@ export const drawGameStepAction = ({
     timeMs: number;
     frame: { width: number, height: number };
 }): { done: boolean } => {
+
+    const { random: randomSlow } = createRandomGenerator(`${step}${Math.floor(timeMs / 250)}`);
+    const { random: random } = createRandomGenerator(`${step}${Math.floor(timeMs / 50)}`);
 
     const charsPerSecond = 30;
     let charLength = Math.floor(timeMs / 1000 * charsPerSecond);
@@ -135,8 +139,29 @@ export const drawGameStepAction = ({
     //     255 - 60 + 30 * Math.sin((2 * Math.PI * (timeMs + 400) / 1000) / 3),
     //     255 - 60 + 30 * Math.sin((2 * Math.PI * (timeMs + 800) / 1000) / 3),
     // );
-    // Skip title
 
+    // Use random glitch effect
+    if (randomSlow() > 0.90){
+        s.rotate(0.25 * random());
+        s.scale(1 - 0.25 * random(), 1);
+        s.background(s.color(0, 150 * random(), 0));
+
+        if (randomSlow() > 0.25){
+            s.fill(s.color(255, 255, 255));
+            s.textAlign(`center`);
+            s.textSize(12);
+            const texts = [`HELP ME!`, `Who are you?`, `What are you?`, `How are you?`, `Where are you?`, `Why are you?`];
+            s.text(texts[Math.floor(random() * texts.length) ],
+                PAD,
+                PAD + LINE * 5,
+                PAD * -2 + frame.width,
+                PAD * -2 + frame.height,
+            );
+            return { done: false };
+        }
+    }
+
+    // Skip title typing
     charLength += step.title.trim().length;
     s.textAlign(`center`);
     const titleColor = s.color(255, 255, 255);

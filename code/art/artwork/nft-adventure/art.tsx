@@ -24,7 +24,7 @@ export const art_nftAdventure_nftTextAdventure: ArtWork = {
         // const { a, b, c } = { a: 57, b: 23, c: 15 };
 
 
-        // const { random } = createRandomGenerator(hash);
+        const { random } = createRandomGenerator(hash);
 
         // const { a, b, c } = { a: 1 + Math.floor(57 * random()), b: 1 + Math.floor(213 * random()), c: 1 + Math.floor(115 * random()) };
         // const { cr, cg, cb, ca } = { cr: Math.floor(25 + 230 * random()), cg: Math.floor(25 + 230 * random()), cb: Math.floor(25 + 230 * random()), ca: Math.floor(25 + 25 * random()) };
