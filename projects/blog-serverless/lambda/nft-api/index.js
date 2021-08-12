@@ -360,6 +360,7 @@ var generateNftMetadata_art121 = /*#__PURE__*/function () {
               // TESTING Interactive
               "is dynamic": true,
               // "script type": `p5js`,
+              "aspect ratio (w/h)": "1",
               "animation_url": "https://ricklove.me/art/build/121/?tokenId=".concat(tokenId),
               interactive_nft: {
                 code_uri: "https://ricklove.me/art/build/121/?tokenId=".concat(tokenId),
