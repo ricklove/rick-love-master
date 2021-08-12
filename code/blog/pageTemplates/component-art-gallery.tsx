@@ -1,10 +1,11 @@
+import { ArtKey } from 'art/art-index';
 import React, { useEffect } from 'react';
 import { useLoadable } from 'utils-react/loadable';
 import { Layout } from './layout/layout';
 import { SEO } from './layout/seo';
 
 export type ComponentArtGalleryPageData = {
-    artKey?: string;
+    artKey?: ArtKey;
     artTitle?: string;
     artImageUrl?: string;
 };
@@ -19,7 +20,7 @@ export const ComponentArtGalleryPage = (props: { data: ComponentArtGalleryPageDa
     console.log(`ComponentArtGalleryPage`, { artKey, artTitle, artImageUrl });
 
     return (
-        <Layout zoom={false}>
+        <Layout zoom={false} gameMode={!!artKey}>
             <SEO
                 title={`${artTitle ? `${artTitle} - ` : ``}NFT Art - Rick Love`}
                 imageUrl={artImageUrl ? `/content/art${artImageUrl.replace(/^\./, ``)}` : undefined}
@@ -32,11 +33,16 @@ export const ComponentArtGalleryPage = (props: { data: ComponentArtGalleryPageDa
 
 const ComponentAuto = (props: { data: ComponentArtGalleryPageData }) => {
 
-    const { LoadedComponent, load } = useLoadable(async () => (await import(`art/art-gallery`)).ArtGallery);
+    const { artKey } = props.data;
+
+    const { LoadedComponent, load } = useLoadable(async () => (
+        artKey ? (await import(`art/art-gallery`)).ArtWorkGenerator
+            : (await import(`art/art-gallery`)).ArtGallery));
+
     useEffect(() => { (async () => await load())(); }, [load]);
     return (
         <div>
-            {LoadedComponent && <LoadedComponent />}
+            {LoadedComponent && <LoadedComponent artKey={artKey} />}
         </div>
     );
 };

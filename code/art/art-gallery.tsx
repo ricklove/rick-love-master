@@ -5,13 +5,13 @@ import { theme } from 'themes/theme';
 import { DivHost } from './div-host';
 import { ArtWork } from './artwork-type';
 import { CanvasVideoRecorderControl, createRecorder } from './canvas-video-recording/canvas-video-recorder';
-import { artItems } from './art-items';
+import { artIndex, ArtKey } from './art-index';
 
 export const ArtGallery = (props: {}) => {
 
     const queryParts = document.location.search.substr(1).split(`&`);
-    const artKey = queryParts.find(x => x.startsWith(`key`))?.split(`=`)[1]
-        ?? document.location.pathname.match(/art\/([^/]+)/)?.[1];
+    const artKey = (queryParts.find(x => x.startsWith(`key`))?.split(`=`)[1]
+        ?? document.location.pathname.match(/art\/([^/]+)/)?.[1]) as undefined | ArtKey;
     const newTokenId = queryParts.find(x => x.startsWith(`tokenId`))?.split(`=`)[1]
         ?? queryParts.find(x => x.startsWith(`seed`))?.split(`=`)[1]
         ?? document.location.pathname.match(new RegExp(`art/${artKey}/([^/]+)`))?.[1];
@@ -44,14 +44,17 @@ export const ArtGallery = (props: {}) => {
         // if (camera) { recorderRef.current = createRecorder(); }
 
         if (!artKey) { changeTokenId(`0`); return; }
-        const artworkItem = artItems.find(x => x.key === artKey);
+        const artworkItem = artIndex.find(x => x.key === artKey);
         if (!artworkItem) { changeTokenId(`0`); return; }
 
-        art.current = artworkItem;
+        (async () => {
+            art.current = await artworkItem.load();
 
-        // setShowNavigation(false);
-        setIsFullScreen(true);
-        changeTokenId(`${newTokenId || tokenId}`);
+            // setShowNavigation(false);
+            setIsFullScreen(true);
+            changeTokenId(`${newTokenId || tokenId}`);
+        })();
+
     }, [document.location.search]);
 
     const prepareTarget = () => {
@@ -121,7 +124,7 @@ export const ArtGallery = (props: {}) => {
             <C.View_Panel>
                 {showNavigation && (
                     <C.View_Form>
-                        {artItems.map(x => (
+                        {artIndex.map(x => (
                             <React.Fragment key={x.title}>
                                 <div style={{ paddingBottom: 4 }}>
                                     <C.Button_FormAction onPress={() => changeArt(x)}>{x.title}</C.Button_FormAction>
@@ -199,6 +202,80 @@ export const ArtGallery = (props: {}) => {
             )}
         </>
     );
+};
+
+export const ArtWorkGenerator = ({
+    artKey,
+    tokenId,
+}: {
+    artKey?: string;
+    tokenId?: string;
+}) => {
+
+    const queryParts = document.location.search.substr(1).split(`&`);
+    const actualTokenId = tokenId
+        ?? queryParts.find(x => x.startsWith(`tokenId`))?.split(`=`)[1]
+        ?? queryParts.find(x => x.startsWith(`seed`))?.split(`=`)[1]
+        ?? document.location.pathname.match(new RegExp(`art/${artKey}/([^/]+)`))?.[1]
+        ?? `0`;
+
+    const [art, setArt] = useState(null as null|ArtWork);
+    useEffect(() => {
+        const artworkItem = artIndex.find(x => x.key === artKey);
+        if (!artworkItem) { return; }
+
+        (async () => {
+            const result = await artworkItem.load();
+            setArt(result);
+        })();
+    }, []);
+
+    const { renderArt, ArtComponent } = art ?? {};
+
+    if (renderArt) {
+        return <DivHost
+            renderArt={(hostElement) => renderArt(hostElement, actualTokenId, null)}
+            openSea={art?.openSea} />;
+    }
+
+    if (ArtComponent) {
+        return <ArtComponent hash={actualTokenId} />;
+    }
+
+    return <></>;
+
+    // return (
+    //     <div>
+    //         {ArtworkComponentRef.current}
+    //         {/* <div style={{ position: `fixed`, left: 4, bottom: 4, maxWidth: `75%`, color: `white` }}>
+    //             <div style={{ opacity: 0.5 }}>
+    //                 <div style={{ padding: 4, whiteSpace: `pre-wrap` }}>{art.title}</div>
+    //                 <div style={{ padding: 4, whiteSpace: `pre-wrap` }}>{art.artist}</div>
+    //                 <div style={{ padding: 4, whiteSpace: `pre-wrap` }}>{art.description}</div>
+    //                 {!!tokenDescription && <div style={{ padding: 4, whiteSpace: `pre-wrap`, wordBreak: `break-all` }}>{tokenDescription}</div>}
+    //             </div>
+    //             {canSetSeed && (
+    //                 <div style={{ opacity: 0.75, padding: 4 }}>
+    //                     <SeedController value={tokenId}
+    //                         onChange={changeTokenId}
+    //                         onWalletAddress={setWalletAddress}/>
+    //                 </div>
+    //             )}
+    //             <div style={{ opacity: 0.75, padding: 4 }}>
+    //                 {artKey && tokenId && (
+    //                     <ReserveButton
+    //                         artKey={artKey}
+    //                         seed={tokenId}
+    //                         walletAddress={walletAddress ?? undefined}
+    //                     />
+    //                 )}
+    //             </div>
+    //             <div style={{ marginTop: 8 }}>
+    //                 <a href='/art'>🧙‍♂️ Other Art by Rick Love</a>
+    //             </div>
+    //         </div> */}
+    //     </div>
+    // );
 };
 
 export const ReserveButton = ({

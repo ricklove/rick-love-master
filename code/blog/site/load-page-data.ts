@@ -248,7 +248,7 @@ export const loadStaticPageData = async (): Promise<SitePageData<PageData>> => {
 
     pages.push({
         sitePath: `/art`,
-        data: { componentArtGalleryPage: { artKey: `TEST` } },
+        data: { componentArtGalleryPage: { } },
     });
 
     artIndex.forEach(x => {
