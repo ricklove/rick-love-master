@@ -1,0 +1,681 @@
+
+<html>
+<head>
+    <style>
+    html, body, div, span, applet, object, iframe,
+    h1, h2, h3, h4, h5, h6, p, blockquote, pre,
+    a, abbr, acronym, address, big, cite, code,
+    del, dfn, em, img, ins, kbd, q, s, samp,
+    small, strike, strong, sub, sup, tt, var,
+    b, u, i, center,
+    dl, dt, dd, ol, ul, li,
+    fieldset, form, label, legend,
+    table, caption, tbody, tfoot, thead, tr, th, td,
+    article, aside, canvas, details, embed, 
+    figure, figcaption, footer, header, hgroup, 
+    menu, nav, output, ruby, section, summary,
+    time, mark, audio, video {
+        margin: 0;
+        padding: 0;
+        border: 0;
+        font-size: 100%;
+        font: inherit;
+        vertical-align: baseline;
+    }
+    /* HTML5 display-role reset for older browsers */
+    article, aside, details, figcaption, figure, 
+    footer, header, hgroup, menu, nav, section {
+        display: block;
+    }
+    body {
+        line-height: 1;
+    }
+    ol, ul {
+        list-style: none;
+    }
+    blockquote, q {
+        quotes: none;  
+    }
+    blockquote:before, blockquote:after,
+    q:before, q:after {
+        content: '';
+        content: none;
+    }
+    table {
+        border-collapse: collapse;
+        border-spacing: 0;
+    }
+
+    body { 
+        background: #000000;
+    }
+    </style>
+</head>
+<body>
+
+    <div id='host'></div>
+    
+<script src="https://cdn.jsdelivr.net/npm/p5@1.4.0/lib/p5.js"></script>
+
+    <script>
+    (function (exports, p5) {
+  'use strict';
+
+  function _interopDefaultLegacy (e) { return e && typeof e === 'object' && 'default' in e ? e : { 'default': e }; }
+
+  var p5__default = /*#__PURE__*/_interopDefaultLegacy(p5);
+
+  function asyncGeneratorStep(gen, resolve, reject, _next, _throw, key, arg) {
+    try {
+      var info = gen[key](arg);
+      var value = info.value;
+    } catch (error) {
+      reject(error);
+      return;
+    }
+
+    if (info.done) {
+      resolve(value);
+    } else {
+      Promise.resolve(value).then(_next, _throw);
+    }
+  }
+
+  function _asyncToGenerator(fn) {
+    return function () {
+      var self = this,
+          args = arguments;
+      return new Promise(function (resolve, reject) {
+        var gen = fn.apply(self, args);
+
+        function _next(value) {
+          asyncGeneratorStep(gen, resolve, reject, _next, _throw, "next", value);
+        }
+
+        function _throw(err) {
+          asyncGeneratorStep(gen, resolve, reject, _next, _throw, "throw", err);
+        }
+
+        _next(undefined);
+      });
+    };
+  }
+
+  function _slicedToArray(arr, i) {
+    return _arrayWithHoles(arr) || _iterableToArrayLimit(arr, i) || _unsupportedIterableToArray(arr, i) || _nonIterableRest();
+  }
+
+  function _toConsumableArray(arr) {
+    return _arrayWithoutHoles(arr) || _iterableToArray(arr) || _unsupportedIterableToArray(arr) || _nonIterableSpread();
+  }
+
+  function _arrayWithoutHoles(arr) {
+    if (Array.isArray(arr)) return _arrayLikeToArray(arr);
+  }
+
+  function _arrayWithHoles(arr) {
+    if (Array.isArray(arr)) return arr;
+  }
+
+  function _iterableToArray(iter) {
+    if (typeof Symbol !== "undefined" && iter[Symbol.iterator] != null || iter["@@iterator"] != null) return Array.from(iter);
+  }
+
+  function _iterableToArrayLimit(arr, i) {
+    var _i = arr == null ? null : typeof Symbol !== "undefined" && arr[Symbol.iterator] || arr["@@iterator"];
+
+    if (_i == null) return;
+    var _arr = [];
+    var _n = true;
+    var _d = false;
+
+    var _s, _e;
+
+    try {
+      for (_i = _i.call(arr); !(_n = (_s = _i.next()).done); _n = true) {
+        _arr.push(_s.value);
+
+        if (i && _arr.length === i) break;
+      }
+    } catch (err) {
+      _d = true;
+      _e = err;
+    } finally {
+      try {
+        if (!_n && _i["return"] != null) _i["return"]();
+      } finally {
+        if (_d) throw _e;
+      }
+    }
+
+    return _arr;
+  }
+
+  function _unsupportedIterableToArray(o, minLen) {
+    if (!o) return;
+    if (typeof o === "string") return _arrayLikeToArray(o, minLen);
+    var n = Object.prototype.toString.call(o).slice(8, -1);
+    if (n === "Object" && o.constructor) n = o.constructor.name;
+    if (n === "Map" || n === "Set") return Array.from(o);
+    if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return _arrayLikeToArray(o, minLen);
+  }
+
+  function _arrayLikeToArray(arr, len) {
+    if (len == null || len > arr.length) len = arr.length;
+
+    for (var i = 0, arr2 = new Array(len); i < len; i++) arr2[i] = arr[i];
+
+    return arr2;
+  }
+
+  function _nonIterableSpread() {
+    throw new TypeError("Invalid attempt to spread non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method.");
+  }
+
+  function _nonIterableRest() {
+    throw new TypeError("Invalid attempt to destructure non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method.");
+  }
+
+  function _createForOfIteratorHelper(o, allowArrayLike) {
+    var it = typeof Symbol !== "undefined" && o[Symbol.iterator] || o["@@iterator"];
+
+    if (!it) {
+      if (Array.isArray(o) || (it = _unsupportedIterableToArray(o)) || allowArrayLike && o && typeof o.length === "number") {
+        if (it) o = it;
+        var i = 0;
+
+        var F = function () {};
+
+        return {
+          s: F,
+          n: function () {
+            if (i >= o.length) return {
+              done: true
+            };
+            return {
+              done: false,
+              value: o[i++]
+            };
+          },
+          e: function (e) {
+            throw e;
+          },
+          f: F
+        };
+      }
+
+      throw new TypeError("Invalid attempt to iterate non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method.");
+    }
+
+    var normalCompletion = true,
+        didErr = false,
+        err;
+    return {
+      s: function () {
+        it = it.call(o);
+      },
+      n: function () {
+        var step = it.next();
+        normalCompletion = step.done;
+        return step;
+      },
+      e: function (e) {
+        didErr = true;
+        err = e;
+      },
+      f: function () {
+        try {
+          if (!normalCompletion && it.return != null) it.return();
+        } finally {
+          if (didErr) throw err;
+        }
+      }
+    };
+  }
+
+  /* eslint-disable no-return-assign */
+
+  /* eslint-disable no-multi-assign */
+
+  /* eslint-disable @typescript-eslint/no-unused-expressions */
+
+  /* eslint-disable no-bitwise */
+  // FROM: https://stackoverflow.com/a/47593316/567524
+  function xmur3(str) {
+    var h = 1779033703 ^ str.length;
+
+    for (var i = 0; i < str.length; i++) {
+      h = Math.imul(h ^ str.charCodeAt(i), 3432918353);
+      h = h << 13 | h >>> 19;
+    }
+
+    return function () {
+      h = Math.imul(h ^ h >>> 16, 2246822507);
+      h = Math.imul(h ^ h >>> 13, 3266489909);
+      return (h ^= h >>> 16) >>> 0;
+    };
+  }
+
+  function mulberry32(a) {
+    return function () {
+      var t = a += 0x6D2B79F5;
+      t = Math.imul(t ^ t >>> 15, t | 1);
+      t ^= t + Math.imul(t ^ t >>> 7, t | 61);
+      return ((t ^ t >>> 14) >>> 0) / 4294967296;
+    };
+  }
+
+  var createRandomGenerator = function createRandomGenerator(hash) {
+    var seed = xmur3(hash)();
+    return {
+      random: mulberry32(seed)
+    };
+  };
+
+  var drawGear = function drawGear(g, options) {
+    g.colorMode("hsl");
+    var _options$position = options.position,
+        x = _options$position.x,
+        y = _options$position.y,
+        radiusInner = options.radiusInner,
+        radiusOuter = options.radiusOuter,
+        radiusAxis = options.radiusAxis,
+        teeth = options.teeth,
+        rotationAngle = options.rotationAngle,
+        color = options.color,
+        randomSeed = options.randomSeed;
+    var angleRandomKs = 16; // const angleRandomKs = 8;
+
+    var _createRandomGenerato = createRandomGenerator("".concat(randomSeed)),
+        randomConstant = _createRandomGenerato.random;
+
+    var _createRandomGenerato2 = createRandomGenerator("".concat(randomSeed).concat(Math.round(rotationAngle * angleRandomKs))),
+        random = _createRandomGenerato2.random;
+
+    var randomSym = function randomSym() {
+      return 1 - 2 * random();
+    }; // g.fill(color.h, color.s, color.b, color.a);
+    // g.stroke(0, 0, 0, 1);
+    // g.stroke(0, 0, 0, color.a);
+    // g.stroke(0, 0, 0, 0);
+    // g.circle(x, y, radiusOuter * 2);
+    // g.circle(x, y, radius * 2);
+
+
+    g.stroke(color.h, color.s, color.b, color.a);
+    g.noFill(); // g.circle(x, y, radiusOuter * 2);
+
+    var toothAngle = g.TWO_PI / teeth;
+    var radI = radiusInner;
+    var radO = radiusOuter;
+    var jitterSize = 2.5;
+    var angle0 = rotationAngle;
+    var angle1 = angle0 + Math.PI * 2 * randomConstant();
+    jitterSize = radiusOuter * 0.5;
+
+    for (var j = 0; j < 4; j++) {
+      g.noStroke();
+      g.fill(color.h, color.s, color.b * 0.25, 0.4); // g.fill(color.h, color.s, color.b, 0.25);
+      // g.fill(0, 0, 0);
+
+      g.curveTightness(0.9);
+      g.beginShape();
+
+      for (var i = 0; i <= teeth; i++) {
+        // g.curveVertex(x + diaI * g.cos((i + 0) * toothAngle), y + diaI * g.sin((i + 0) * toothAngle));
+        if (i !== 0) {
+          g.curveVertex(x + (radI - jitterSize * random()) * g.cos((i + 0.2) * toothAngle + angle0), y + (radI - jitterSize * random()) * g.sin((i + 0.2) * toothAngle + angle0));
+        }
+
+        g.curveVertex(x + (radO - jitterSize * random()) * g.cos((i + 0.3) * toothAngle + angle0), y + (radO - jitterSize * random()) * g.sin((i + 0.3) * toothAngle + angle0));
+        g.curveVertex(x + (radO - jitterSize * random()) * g.cos((i + 0.7) * toothAngle + angle0), y + (radO - jitterSize * random()) * g.sin((i + 0.7) * toothAngle + angle0));
+        g.curveVertex(x + (radI - jitterSize * random()) * g.cos((i + 0.8) * toothAngle + angle0), y + (radI - jitterSize * random()) * g.sin((i + 0.8) * toothAngle + angle0)); // g.curveVertex(x + diaI * g.cos((i + 1) * toothAngle), y + diaI * g.sin((i + 1) * toothAngle));
+        // g.arc(x, y, diaI, diaI, (i + 0) * toothAngle, (i + 0.5) * toothAngle);
+        // g.arc(x, y, diaO, diaO, (i + 0.5) * toothAngle, (i + 1) * toothAngle);
+      }
+
+      g.endShape();
+    }
+
+    jitterSize = 2.5;
+    g.noFill();
+    g.stroke(color.h, color.s, color.b, color.a); // Draw face
+
+    var drawFace = randomConstant() > 0.5;
+    var faceType = random() > 0.5 ? "happy" : "creepy";
+
+    if (drawFace) {
+      var radSmile = 0.5 * radI;
+
+      for (var _j = 0; _j < 4; _j++) {
+        // Smile
+        if (faceType === "creepy") {
+          jitterSize = 12;
+        }
+
+        g.noFill();
+        g.curveTightness(0.9);
+        g.beginShape();
+
+        for (var _i = 0; _i <= teeth / 3; _i++) {
+          g.curveVertex(x + radSmile * g.cos((_i + 0.2) * toothAngle + angle1) + jitterSize * randomSym(), y + radSmile * g.sin((_i + 0.2) * toothAngle + angle1) + jitterSize * randomSym());
+        }
+
+        g.endShape(); // jitterSize = 2.5;
+        // Left Eye
+
+        for (var e = 0; e <= 1; e++) {
+          var r = e === 0 ? 1.1 : 1.6;
+          var ex = radSmile * Math.cos(r * Math.PI + angle1);
+          var ey = radSmile * Math.sin(r * Math.PI + angle1);
+          g.fill(0, 0, 0);
+          g.beginShape();
+
+          for (var _i2 = 0; _i2 <= teeth + 2; _i2++) {
+            g.curveVertex(ex + x + radiusAxis * g.cos((_i2 + 0.3) * toothAngle + angle1) + jitterSize * randomSym(), ey + y + radiusAxis * g.sin((_i2 + 0.3) * toothAngle + angle1) + jitterSize * randomSym());
+          }
+
+          g.endShape();
+        }
+      }
+    }
+
+    if (drawFace && faceType === "creepy") {
+      jitterSize = 5;
+    } // jitterSize = 2.5;
+
+
+    for (var _j2 = 0; _j2 < 4; _j2++) {
+      g.noFill(); // g.fill(0, 0, 0, 0.1);
+      // g.fill(color.h, color.s, color.b, 0.05);
+
+      g.curveTightness(0.9);
+      g.beginShape();
+
+      for (var _i3 = 0; _i3 <= teeth; _i3++) {
+        // g.curveVertex(x + diaI * g.cos((i + 0) * toothAngle), y + diaI * g.sin((i + 0) * toothAngle));
+        if (_i3 !== 0) {
+          g.curveVertex(x + radI * g.cos((_i3 + 0.2) * toothAngle + angle0) + jitterSize * randomSym(), y + radI * g.sin((_i3 + 0.2) * toothAngle + angle0) + jitterSize * randomSym());
+        }
+
+        g.curveVertex(x + radO * g.cos((_i3 + 0.3) * toothAngle + angle0) + jitterSize * randomSym(), y + radO * g.sin((_i3 + 0.3) * toothAngle + angle0) + jitterSize * randomSym());
+        g.curveVertex(x + radO * g.cos((_i3 + 0.7) * toothAngle + angle0) + jitterSize * randomSym(), y + radO * g.sin((_i3 + 0.7) * toothAngle + angle0) + jitterSize * randomSym());
+        g.curveVertex(x + radI * g.cos((_i3 + 0.8) * toothAngle + angle0) + jitterSize * randomSym(), y + radI * g.sin((_i3 + 0.8) * toothAngle + angle0) + jitterSize * randomSym()); // g.curveVertex(x + diaI * g.cos((i + 1) * toothAngle), y + diaI * g.sin((i + 1) * toothAngle));
+        // g.arc(x, y, diaI, diaI, (i + 0) * toothAngle, (i + 0.5) * toothAngle);
+        // g.arc(x, y, diaO, diaO, (i + 0.5) * toothAngle, (i + 1) * toothAngle);
+      }
+
+      g.endShape(); // Inner circle
+
+      g.fill(0, 0, 0);
+      g.beginShape();
+
+      for (var _i4 = 0; _i4 <= teeth + 2; _i4++) {
+        g.curveVertex(x + radiusAxis * g.cos((_i4 + 0.3) * toothAngle + angle0) + jitterSize * randomSym(), y + radiusAxis * g.sin((_i4 + 0.3) * toothAngle + angle0) + jitterSize * randomSym());
+      }
+
+      g.endShape();
+    }
+
+    return {
+      faceType: drawFace ? faceType : null
+    };
+  };
+
+  var art_gears = {
+    key: "gears",
+    title: "Gears",
+    description: "Are the gears of conflict twisting our perceptions of others?\n(Press image for sound)",
+    artist: "Rick Love",
+    getTokenDescription: function getTokenDescription(tokenId) {
+      return null;
+    },
+    renderArt: function renderArt(hostElement) {
+      var hash = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : "This is my hash!";
+
+      _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee() {
+        return regeneratorRuntime.wrap(function _callee$(_context) {
+          while (1) {
+            switch (_context.prev = _context.next) {
+              case 0:
+                _context.next = 2;
+                return import('p5/lib/addons/p5.sound');
+
+              case 2:
+                return _context.abrupt("return", _context.sent);
+
+              case 3:
+              case "end":
+                return _context.stop();
+            }
+          }
+        }, _callee);
+      }))();
+
+      var _createRandomGenerato3 = createRandomGenerator(hash),
+          randomMain = _createRandomGenerato3.random;
+
+      var tick = 0; // const sat = 65 - 10 * Math.random();
+
+      var sat = 100;
+      var brightness = 60 - 20 * Math.random();
+      var TARGET_SIZE = 600;
+      var SMALL_SIZE = 300;
+      var canvasSize = window.innerWidth > TARGET_SIZE && window.innerHeight > TARGET_SIZE ? TARGET_SIZE : SMALL_SIZE;
+      var speed = canvasSize === TARGET_SIZE ? 1 / (100 - 70 * randomMain()) : 1 / (200 - 100 * randomMain());
+      var halfSize = canvasSize * 0.5;
+      var minGearRadius = canvasSize / 16;
+      var maxGearRadius = canvasSize / 3;
+      var minGearCount = 3;
+      var maxGearCount = 8;
+      var gearCount = Math.floor(minGearCount + (maxGearCount - minGearCount) * randomMain());
+      var lastGear = {
+        position: {
+          x: canvasSize * randomMain(),
+          y: canvasSize * randomMain()
+        },
+        radius: minGearRadius,
+        // position: { x: canvasSize * randomMain(), y: canvasSize * randomMain() },
+        // size: minGearSize + (maxGearSize - minGearSize) * randomMain(),
+        randomSeed: "".concat(randomMain()),
+        color: {
+          h: 360 * randomMain(),
+          s: 50,
+          b: 50,
+          a: 0.5
+        }
+      };
+
+      var gears = _toConsumableArray(new Array(gearCount)).map(function () {
+        var targetRadius = minGearRadius + (maxGearRadius - minGearRadius) * randomMain();
+        var targetDistance = lastGear.radius + targetRadius;
+        var lastPos = lastGear.position; // Try to bring back to center
+
+        var angleQuandrant = lastPos.x > halfSize && lastPos.y > halfSize ? Math.PI * 1 : lastPos.x < halfSize && lastPos.y > halfSize ? Math.PI * 1.5 : lastPos.x > halfSize && lastPos.y < halfSize ? Math.PI * 0.5 : 0; // console.log(`angleQuandrant`, { angleQuandrant, lastPos, halfSize });
+
+        var targetAngle = Math.PI / 2 * randomMain() + angleQuandrant;
+        var posRaw = {
+          x: lastPos.x + targetDistance * Math.cos(targetAngle),
+          y: lastPos.y + targetDistance * Math.sin(targetAngle)
+        };
+        var pos = posRaw; // const pos = {
+        //     x: 0.8 * posRaw.x + 0.2 * halfSize,
+        //     y: 0.8 * posRaw.y + 0.2 * halfSize,
+        // };
+
+        var xDelta = pos.x - lastPos.x;
+        var yDelta = pos.y - lastPos.y;
+        var actualRadius = Math.sqrt(xDelta * xDelta + yDelta * yDelta) - lastGear.radius; // eslint-disable-next-line no-return-assign
+
+        return lastGear = {
+          position: pos,
+          radius: actualRadius,
+          randomSeed: "".concat(randomMain()),
+          color: {
+            h: 360 * randomMain(),
+            s: sat,
+            b: brightness,
+            a: 0.5
+          }
+        };
+      });
+
+      var noise = null;
+      var noiseDebounceTime = Date.now();
+
+      var toggleNoise = function toggleNoise() {
+        if (Date.now() < noiseDebounceTime + 500) {
+          return;
+        }
+
+        noiseDebounceTime = Date.now();
+
+        if (noise) {
+          noise.disconnect();
+          noise = null;
+          return;
+        }
+
+        noise = new p5__default['default'].Noise("white");
+        noise.amp(0);
+        noise.start();
+      };
+
+      return new p5__default['default'](function (s) {
+        s.setup = function () {
+          s.createCanvas(canvasSize, canvasSize);
+        };
+
+        s.mousePressed = function () {
+          if (s.mouseX < 0 || s.mouseX > canvasSize || s.mouseY < 0 || s.mouseY > canvasSize) {
+            return;
+          }
+
+          toggleNoise();
+        };
+
+        s.touchStarted = function () {
+          var t = s.touches[0];
+
+          if (t.x < 0 || t.x > canvasSize || t.y < 0 || t.y > canvasSize) {
+            return;
+          }
+
+          toggleNoise();
+        }; // s.keyPressed = () => { toggleNoise(); };
+
+
+        s.draw = function () {
+          var _noise;
+
+          s.background(0); // noise?.amp(0);
+          // s.background(10, 10, 10);
+
+          var g = s; // const g = s.createGraphics(canvasSize * 2, canvasSize * 2);
+          // g.translate(canvasSize, canvasSize);
+          // g.scale(0.25);
+
+          var faceCount = 0;
+          var faceCreepyCount = 0;
+
+          var _iterator = _createForOfIteratorHelper(gears.entries()),
+              _step;
+
+          try {
+            for (_iterator.s(); !(_step = _iterator.n()).done;) {
+              var _step$value = _slicedToArray(_step.value, 2),
+                  i = _step$value[0],
+                  gear = _step$value[1];
+
+              var direction = i % 2 === 0 ? 1 : -1;
+              var teethDepth = 5;
+              var teeth = Math.ceil(gear.radius * Math.PI * 2 / (4 * teethDepth));
+              var teethPassed = tick * speed * Math.pow(1.25, i + 1);
+              var rotationAngle = s.TWO_PI * teethPassed / teeth;
+              var result = drawGear(g, {
+                position: gear.position,
+                // radiusInner: gear.size * 0.93,
+                // radiusOuter: gear.size * 1.07,
+                radiusInner: gear.radius - teethDepth,
+                radiusOuter: gear.radius + teethDepth,
+                // radiusAxis: gear.radius * 0.15,
+                radiusAxis: gear.radius * 0.1,
+                // radiusAxis: teethDepth,
+                teeth: teeth,
+                color: gear.color,
+                rotationAngle: direction * rotationAngle,
+                randomSeed: gear.randomSeed
+              });
+
+              if (result.faceType) {
+                faceCount++;
+              }
+
+              if (result.faceType === "creepy") {
+                // Not actual position
+                //  const distanceToCenterX = Math.abs(gear.position.x - halfSize);
+                //  const distanceToCenterY = Math.abs(gear.position.y - halfSize);
+                //  const distRatioToEdge = (halfSize - Math.sqrt(distanceToCenterX * distanceToCenterX + distanceToCenterY * distanceToCenterY)) / halfSize;
+                // faceCreepyCount += Math.max(0, distRatioToEdge);
+                faceCreepyCount++;
+              } // Rotate slightly
+
+
+              g.translate(gear.position.x, gear.position.y);
+              g.rotate(s.TWO_PI * teethPassed / (teeth * 4));
+              g.translate(-gear.position.x, -gear.position.y);
+            } // s.image(g, 0, 0, canvasSize, canvasSize);
+            // console.log(`noiseLevel`, { level: faceCreepyCount / faceCount });
+
+          } catch (err) {
+            _iterator.e(err);
+          } finally {
+            _iterator.f();
+          }
+
+          (_noise = noise) === null || _noise === void 0 ? void 0 : _noise.amp(faceCount > 0 ? faceCreepyCount / faceCount : 0); // for (let i = 0; i < 10; i++) {
+          //     const color = s.color((cr * i) % 255, (cg * i) % 255, (cb * i) % 255, ca);
+          //     s.noFill();
+          //     s.stroke(color);
+          //     for (let j = 0; j < 36; j++) {
+          //         s.circle(200 - a / 2 + j % a, 200 - b / 2 + j % b, 270 - (i * 5) % c);
+          //     }
+          //     s.translate(200, 200);
+          //     // s.rotate((a + b + c + tick * 0.001) % 2);
+          //     s.rotate((a + b + c + tick * 0.001));
+          //     s.translate(-200, -200);
+          //     tick++;
+          // }
+
+          tick++;
+        };
+      }, hostElement);
+    }
+  };
+
+  exports.art_gears = art_gears;
+
+  Object.defineProperty(exports, '__esModule', { value: true });
+
+  return exports;
+
+}(window, window.p5));
+
+    
+var seedMatch = document.location.search.match(/seed=([^;])/) || document.location.search.match(/tokenId=([^;])/);
+var seed = seedMatch && seedMatch[1] || '0';
+
+var createP5 = function(s,host){
+    return new p5(s,host);
+};
+
+window.art_gears.renderArt(
+    document.getElementById('host'),
+    seed,
+    null,
+    createP5
+)
+    </script>
+
+</body>
+</html>
