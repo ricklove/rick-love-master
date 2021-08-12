@@ -135,17 +135,17 @@ export const generateNftMetadata_art121 = async ({ params }: { params: { [name: 
         // TESTING Interactive
         "is dynamic": true,
         // "script type": `p5js`,
-        // "animation_url": `https://ricklove.me/art/121/?tokenId=${tokenId}`,
-        // interactive_nft: {
-        //     code_uri: `https://ricklove.me/art/121/?tokenId=${tokenId}`,
-        //     version: `0.0.11`,
-        // },
-
-        // // // TESTING Interactive - FROM cat blocks
-        "animation_url": `https://ricklove.me/art/interactive-test/`,
-        "interactive_nft": {
-            "code_uri": `https://ricklove.me/art/interactive-test/`,
-            "version": `0.0.10`,
+        "animation_url": `https://ricklove.me/art/121/?tokenId=${tokenId}`,
+        interactive_nft: {
+            code_uri: `https://ricklove.me/art/121/?tokenId=${tokenId}`,
+            version: `0.0.11`,
         },
+
+        // // // // TESTING Interactive - FROM cat blocks
+        // "animation_url": `https://ricklove.me/art/interactive-test/`,
+        // "interactive_nft": {
+        //     "code_uri": `https://ricklove.me/art/interactive-test/`,
+        //     "version": `0.0.10`,
+        // },
     };
 };
