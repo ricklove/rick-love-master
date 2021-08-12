@@ -8,6 +8,7 @@ const metadata = {
 // https://cloudapps.herokuapp.com/imagetoascii/
 // .:*I$VMoun-
 // .!"#$%&O0olWM()*+-{|}~<>[]
+// .,:|'(){}[]
 const asciiArt_manArmUp = `
 ..........()*,......................
 ........()~}.M},....................
@@ -70,7 +71,7 @@ Cold, damp, wet... you wake up shivering.
 
 When you open your eyes, everything is still dark.
 
-You can't see anything, but you can feel that you are lying on a hard cold surface...`,
+You can't see anything, but you can feel that you are lying on a cold hard surface...`,
         inventory: [],
         actions: [
             { name: `search the ground`, description: `?` },

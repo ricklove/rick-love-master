@@ -27,7 +27,7 @@ export const drawGameStepAction = ({
     frame,
 }: {
     step: GameStep;
-    actionIndex: number;
+    actionIndex?: number;
     gameData: GameData;
     s: p5;
     timeMs: number;
@@ -166,7 +166,8 @@ export const drawGameStepAction = ({
         return { done: false };
     }
 
-    if (!drawNextPart(`> ${step.actions[actionIndex].name}`, drawActionInputText, s.color(100, 255, 100), 14).done){
+    const actionName = step.actions[actionIndex ?? -1]?.name ?? ``;
+    if (!drawNextPart(`> ${actionName}`, drawActionInputText, s.color(100, 255, 100), 14).done){
         return { done: false };
     }
 
