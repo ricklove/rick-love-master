@@ -12,6 +12,6 @@ export const artIndex = [
     { key: `121`, title: `121`, imageUrl: undefined },
     { key: `circles`, title: `Circles`, imageUrl: `./artwork/circles.png` },
     { key: `onions`, title: `Onions`, imageUrl: undefined },
-    { key: `nft-adventure-nft-dungeon`, title: `Nft Dungeon`, imageUrl: undefined },
+    { key: `nft-text-adventure`, title: `Nft Text Adventure`, imageUrl: undefined },
 ] as const;
 export type ArtKey = typeof artIndex[number]['key'];

@@ -8,8 +8,8 @@ import { drawGameStepAction } from './game-engine';
 
 const nftAdventure_nftDungeon = createNftAdventure_nftTextAdventure();
 
-export const art_nftAdventure_nftDungeon: ArtWork = {
-    key: `nft-adventure-nft-dungeon`,
+export const art_nftAdventure_nftTextAdventure: ArtWork = {
+    key: `nft-text-adventure`,
     title: nftAdventure_nftDungeon.metadata.name,
     description: nftAdventure_nftDungeon.metadata.description,
     artist: nftAdventure_nftDungeon.metadata.author,
