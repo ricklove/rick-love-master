@@ -123,7 +123,7 @@ export const generateNftMetadata_art121 = async ({ params }: { params: { [name: 
             {
                 "display_type": `number`,
                 "trait_type": `Interactive Version`,
-                "value": 2,
+                "value": 3,
             },
         ],
         name: `2021-01-21 21:21:21 Art`,
@@ -135,6 +135,7 @@ export const generateNftMetadata_art121 = async ({ params }: { params: { [name: 
         // Interactive
         "is dynamic": true,
         "script type": `p5js`,
+        "animation_url": `https://ricklove.me/art/art-121?tokenId=${tokenId}`,
         interactive_nft: {
             code_uri: `https://ricklove.me/art/art-121?tokenId=${tokenId}`,
             version: `0.0.9`,
