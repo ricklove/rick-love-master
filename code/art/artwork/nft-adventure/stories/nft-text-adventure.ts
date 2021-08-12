@@ -1,7 +1,7 @@
 const metadata = {
-    key: `nft-dungeon`,
-    name: `Nft Dungeon`,
-    description: `Nft Dungeon is a text adventure driven by the nft community`,
+    key: `nft-text-adventure`,
+    name: `NFT Text Adventure`,
+    description: `NFT Text Adventure is a game where actions are chosen by the NFT community`,
     author: `Rick Love & the NFT Community`,
 };
 
@@ -82,7 +82,7 @@ You can't see anything, but you can feel that you are lying on a cold hard surfa
     },
 ];
 
-export const createNftAdventure_nftDungeon = () => {
+export const createNftAdventure_nftTextAdventure = () => {
 
     return {
         metadata,

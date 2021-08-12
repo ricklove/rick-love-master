@@ -3,10 +3,10 @@
 import p5 from 'p5';
 import { createRandomGenerator } from '../../rando';
 import { ArtWork } from '../../artwork-type';
-import { createNftAdventure_nftDungeon } from './stories/nft-dungeon';
+import { createNftAdventure_nftTextAdventure } from './stories/nft-text-adventure';
 import { drawGameStepAction } from './game-engine';
 
-const nftAdventure_nftDungeon = createNftAdventure_nftDungeon();
+const nftAdventure_nftDungeon = createNftAdventure_nftTextAdventure();
 
 export const art_nftAdventure_nftDungeon: ArtWork = {
     key: `nft-adventure-nft-dungeon`,
