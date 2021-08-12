@@ -178,7 +178,7 @@ export const loadStaticPageData = async (): Promise<SitePageData<PageData>> => {
     const artWebPublicDestDir = getPathNormalized(process.cwd(), `public/content/art`);
 
     const isArtMediaFile = (x: string) => {
-        const artMediaFileExtsRegex = /\.(vert|frag|png|svg|jpg|gif)$/g;
+        const artMediaFileExtsRegex = /\.(vert|frag|png|svg|jpg|gif|mp4)$/g;
         return artMediaFileExtsRegex.test(x);
     };
 
