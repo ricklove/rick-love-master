@@ -5,7 +5,9 @@ import { theme } from 'themes/theme';
 import { DivHost } from './div-host';
 import { ArtWork } from './artwork-type';
 import { CanvasVideoRecorderControl, createRecorder } from './canvas-video-recording/canvas-video-recorder';
-import { artIndex, ArtKey } from './art-index';
+import { artIndex, ArtIndexEntry, ArtKey } from './art-index';
+import { ArtRenderer, ReserveButton } from './art-renderer';
+import p5 from 'p5';
 
 export const ArtGallery = (props: {}) => {
 
@@ -67,8 +69,8 @@ export const ArtGallery = (props: {}) => {
         recorderRef.current.setTargetReady();
     };
 
-    const changeArt = (value: ArtWork) => {
-        art.current = value;
+    const changeArt = (value: ArtIndexEntry) => {
+        // art.current = value;
         window.location.pathname = `/art/${value.key}`;
         // changeTokenId(tokenId);
     };
@@ -87,7 +89,8 @@ export const ArtGallery = (props: {}) => {
             if (renderArt) {
                 cacheRenderArtwork({
                     kind: `div`,
-                    renderArt: (hostElement) => renderArt(hostElement, value, recorderRef.current),
+                    renderArt: (hostElement) => renderArt(hostElement, value, recorderRef.current,
+                        (x, host) => new p5(x, host)),
                     openSea: art.current.openSea,
                 });
             } else if (ArtComponent) {
@@ -230,129 +233,14 @@ export const ArtWorkGenerator = ({
         })();
     }, []);
 
-    const { renderArt, ArtComponent } = art ?? {};
-
-    const ArtInfoComponent = () => {
-        if (!art){ return <></>;}
-
-        const tokenDescription = tokenId ? art.getTokenDescription(tokenId) : undefined;
-
-        return (
-            <div style={{ position: `fixed`, left: 4, bottom: 4, maxWidth: `75%`, color: `white` }}>
-                <div style={{ opacity: 0.5 }}>
-                    <div style={{ padding: 4, whiteSpace: `pre-wrap` }}>{art.title}</div>
-                    <div style={{ padding: 4, whiteSpace: `pre-wrap` }}>{art.artist}</div>
-                    <div style={{ padding: 4, whiteSpace: `pre-wrap` }}>{art.description}</div>
-                    {!!tokenDescription && <div style={{ padding: 4, whiteSpace: `pre-wrap`, wordBreak: `break-all` }}>{tokenDescription}</div>}
-                </div>
-                <div style={{ opacity: 0.75, padding: 4 }}>
-                    <ReserveButton
-                        artKey={art.key}
-                        seed={tokenId}
-                    />
-                </div>
-                <div style={{ marginTop: 8 }}>
-                    <a href='/art'>🧙‍♂️ Other Art by Rick Love</a>
-                </div>
-            </div>
-        );
-    };
-
-    if (renderArt) {
-        return (
-            <>
-                <DivHost
-                    renderArt={(hostElement) => renderArt(hostElement, tokenId, null)}
-                    openSea={art?.openSea} />
-                <ArtInfoComponent/>
-            </>
-        );
-    }
-
-    if (ArtComponent) {
-        return (
-            <>
-                <ArtComponent hash={tokenId} />
-                <ArtInfoComponent/>
-            </>
-        );
-    }
-
-    return <></>;
-
-    // return (
-    //     <div>
-    //         {ArtworkComponentRef.current}
-    //         {/* <div style={{ position: `fixed`, left: 4, bottom: 4, maxWidth: `75%`, color: `white` }}>
-    //             <div style={{ opacity: 0.5 }}>
-    //                 <div style={{ padding: 4, whiteSpace: `pre-wrap` }}>{art.title}</div>
-    //                 <div style={{ padding: 4, whiteSpace: `pre-wrap` }}>{art.artist}</div>
-    //                 <div style={{ padding: 4, whiteSpace: `pre-wrap` }}>{art.description}</div>
-    //                 {!!tokenDescription && <div style={{ padding: 4, whiteSpace: `pre-wrap`, wordBreak: `break-all` }}>{tokenDescription}</div>}
-    //             </div>
-    //             {canSetSeed && (
-    //                 <div style={{ opacity: 0.75, padding: 4 }}>
-    //                     <SeedController value={tokenId}
-    //                         onChange={changeTokenId}
-    //                         onWalletAddress={setWalletAddress}/>
-    //                 </div>
-    //             )}
-    //             <div style={{ opacity: 0.75, padding: 4 }}>
-    //                 {artKey && tokenId && (
-    //                     <ReserveButton
-    //                         artKey={artKey}
-    //                         seed={tokenId}
-    //                         walletAddress={walletAddress ?? undefined}
-    //                     />
-    //                 )}
-    //             </div>
-    //             <div style={{ marginTop: 8 }}>
-    //                 <a href='/art'>🧙‍♂️ Other Art by Rick Love</a>
-    //             </div>
-    //         </div> */}
-    //     </div>
-    // );
-};
-
-export const ReserveButton = ({
-    artKey,
-    seed,
-    walletAddress,
-}: {
-    artKey: string;
-    seed?: string;
-    walletAddress?: string;
-}) => {
-
-    const reserve = async () => {
-        const nftUrl = `https://ricklove.me/art/${artKey}${seed ? `?seed=${seed}` : ``}`;
-        const reserveMessage = `@RickLoveToldMe I want to reserve this NFT: ${nftUrl}${walletAddress && walletAddress !== seed ? ` for wallet=${walletAddress}` : ``}`;
-
-        // Public message
-        const url = `https://twitter.com/intent/tweet?text=${encodeURIComponent(reserveMessage)}`;
-
-        // Direct message
-        // const url = `https://twitter.com/messages/compose?recipient_id=1001&text=${encodeURIComponent(reserveMessage)}`;
-
-        window.open(url, `_blank`);
-        // window.location.href = url;
-    };
-
     return (
         <>
-            <div
-                style={{
-                    background: `#037dd6`,
-                    color: `#FFFFFF`,
-                    borderRadius: 4,
-                    padding: 4,
-                    textAlign: `center`,
-                }}
-                onClick={reserve}>{`Reserve NFT`}</div>
+            {art && (
+                <ArtRenderer art={art} tokenId={tokenId} showInfo={true} createP5={(x, host) => new p5(x, host)}/>
+            )}
         </>
     );
 };
-
 
 export const SeedController = (props: {
     value: string;

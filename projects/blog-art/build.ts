@@ -177,8 +177,8 @@ async function runSync(changedFiles: string[]) {
     console.log(`--- Files cloned - Starting Rollup ---`);
 
     // Lambda Functions
-    const sourceFunDir = `${ROOT}.build/src/code/blog-serverless/server-lambda/`;
-    const destFunDir = `${ROOT}projects/blog-serverless/lambda/`;
+    const sourceFunDir = `${ROOT}.build/src/code/art/server-lambda/`;
+    const destFunDir = `${ROOT}projects/blog-art/build/`;
 
     const sourceDirContents = await fs.readDir(sourceFunDir, { withFileTypes: true });
     const functionNames = sourceDirContents.filter(x => x.isDirectory()).map(x => x.name);
