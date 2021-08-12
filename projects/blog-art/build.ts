@@ -5,8 +5,8 @@ import * as path from 'path';
 import { rollup } from 'rollup';
 import * as child_process from 'child_process';
 import { consoleColors } from 'utils/console-colors';
-import { toKeyValueObject, toKeyValueArray } from 'utils/objects';
 import { cloneToBuildFolder } from './clone';
+import { getArtHtml } from './html-template';
 
 const babel = require(`rollup-plugin-babel`);
 const resolve = require(`rollup-plugin-node-resolve`);
@@ -17,6 +17,7 @@ const fs = {
     stat: util.promisify(fsRaw.stat),
     watch: fsRaw.watch,
     copyFile: util.promisify(fsRaw.copyFile),
+    readFile: util.promisify(fsRaw.readFile),
     writeFile: util.promisify(fsRaw.writeFile),
     deleteFile: util.promisify(fsRaw.unlink),
     mkdir: util.promisify(fsRaw.mkdir),
@@ -35,21 +36,19 @@ const state = {
     gitIgnoreFileGroups: [] as { sourcePath: string, destintionFilePaths: string[] }[],
 };
 
-async function runBuildFunction(sourceFunDir: string, destFunDir: string, funName: string, fileName = `index`) {
+async function runBuildArt(artInfo: { key: string, absoluteImportPath: string, importObject: string }, destDir: string) {
     console.log(`### runBuildFunction`);
+    const artKey = artInfo.key;
 
     try {
-        const sourceIndexFile = `${sourceFunDir}${funName}/${fileName}.ts`;
-        const destDirPath = `${destFunDir}${funName}`;
-        const destIndexFile = `${destFunDir}${funName}/${fileName}.js`;
-        const destPackageFile = `${destFunDir}${funName}/package.json`;
-        const destPackageLockFile = `${destFunDir}${funName}/package-lock.json`;
-
-        await fs.mkdir(path.dirname(destIndexFile), { recursive: true });
-        await fs.mkdir(path.dirname(destPackageFile), { recursive: true });
+        const fileName = `index`;
+        const sourceEntryFile = artInfo.absoluteImportPath;
+        const destDirPath = `${destDir}${artKey}`;
+        const destIndexFile = `${destDir}${artKey}/${fileName}.js`;
+        const destHtmlFile = `${destDir}${artKey}/${fileName}.html`;
 
         const extensions = [`.js`, `.jsx`, `.ts`, `.tsx`];
-        console.log(`Bundling ${funName}`);
+        console.log(`Bundling ${artKey}`);
 
         const packageJson = (await import(`../../package.json`));
         const packageJsonDependencies = { ...packageJson.dependencies, ...packageJson.devDependencies };
@@ -67,7 +66,7 @@ async function runBuildFunction(sourceFunDir: string, destFunDir: string, funNam
 
         const idLog = [] as { id: string, isInTsconfig?: boolean, isInPackages?: boolean, isWithoutDot?: boolean, isFilePath?: boolean, external: boolean }[];
         const bundle = await rollup({
-            input: sourceIndexFile,
+            input: sourceEntryFile,
             plugins: [
                 // includePaths({
                 //     // 'angular': 'bower_components/angular/angular.js'
@@ -128,7 +127,7 @@ async function runBuildFunction(sourceFunDir: string, destFunDir: string, funNam
 
         const packageText = `
 {
-    "name": "${funName}",
+    "name": "${artKey}",
     "version": "1.0.0",
     "description": "",
     "main": "index.js",
@@ -139,29 +138,25 @@ async function runBuildFunction(sourceFunDir: string, destFunDir: string, funNam
 }
           `;
 
-        // Write Package
-        console.log(`Writing Package ${destPackageFile}`);
-        await fs.writeFile(destPackageFile, packageText);
-        // await fs.writeFile(destServerlessFile, serverlessText);
 
-
-        console.log(`Writing Bundle ${funName}`);
+        console.log(`Writing Bundle ${artKey}`);
         const result = await bundle.write({
             file: destIndexFile,
-            format: `cjs`,
+            format: `iife`,
         });
 
-        state.gitIgnoreFileGroups.push({
-            sourcePath: sourceIndexFile,
-            destintionFilePaths: [destIndexFile, destPackageFile, destPackageLockFile],
-        });
+        // Read file and wrap in html template
+        const outputJs = await fs.readFile(destIndexFile,{encoding:'utf-8'});
+        const outputHtml = getArtHtml(outputJs, artInfo);
+
+        await fs.writeFile(destHtmlFile, outputHtml);
 
         // Run `npm i` in each folder
         await exec(`npm install`, { cwd: destDirPath });
 
         // const { output } = await bundle.generate({});
     } catch (error) {
-        console.error(`Failed to 'babel-rollup' function ${funName}`);
+        console.error(`Failed to 'babel-rollup' function ${artKey}`);
         console.error(consoleColors.FgRed, error, consoleColors.Reset);
     }
 }
@@ -177,37 +172,37 @@ async function runSync(changedFiles: string[]) {
     console.log(`--- Files cloned - Starting Rollup ---`);
 
     // Lambda Functions
-    const sourceFunDir = `${ROOT}.build/src/code/art/server-lambda/`;
-    const destFunDir = `${ROOT}projects/blog-art/build/`;
 
-    const sourceDirContents = await fs.readDir(sourceFunDir, { withFileTypes: true });
-    const functionNames = sourceDirContents.filter(x => x.isDirectory()).map(x => x.name);
+    const artIndexFile = `${ROOT}.build/src/code/art/art-index.ts`;
+    //const destDir = `${ROOT}projects/blog-art/build/`;
+    const destDir = `${ROOT}projects/blog-site/public/art/build/`;
+
+    const artIndexContent = await fs.readFile(artIndexFile, {encoding:'utf-8'});
+    const artEntries = [...artIndexContent.matchAll(/key:\s*`([^`]+)`[^>]+>\s*\(await import\s*\(\s*`([^`]+)`\s*\)\)\.(\w+)/g)].map(m => ({
+        key: m[1],
+        importPath: m[2],
+        importObject: m[3],
+    })).map(x=>({
+        ...x, 
+        absoluteImportPath: path.resolve(path.join(path.dirname(artIndexFile), x.importPath)),
+    })).map(x=>({
+        ...x,
+        absoluteImportPathTs: x.absoluteImportPath + '.ts',  
+        absoluteImportPathTsx: x.absoluteImportPath + '.tsx',  
+    })).map(x=>({
+        ...x,
+        absoluteImportPath: 
+            fsRaw.existsSync(x.absoluteImportPathTs) ? x.absoluteImportPathTs 
+            : fsRaw.existsSync(x.absoluteImportPathTsx) ? x.absoluteImportPathTsx 
+            : ''
+    })).filter(x=>x.absoluteImportPath);
+    console.log(`artEntries`,{ artEntries, artIndexFile });
 
     // --- Functions to Build
-    for (const fun of functionNames) {
+    for (const a of artEntries) {
         // eslint-disable-next-line no-await-in-loop
-        await runBuildFunction(sourceFunDir, destFunDir, fun);
+        await runBuildArt(a, destDir);
     }
-
-    //     // Update gitIgnore (not needed - entire destination folder is ignored)
-    //     const gitIgnoreRootPath = destFunDir;
-    //     const gitIgnorePath = `${gitIgnoreRootPath}.gitignore`;
-
-    //     const gitIgnore = state.gitIgnoreFileGroups
-    //         .map(x => `# From ${x.sourcePath}
-    // ${x.destintionFilePaths
-    //                 .map(p => p.replace(gitIgnoreRootPath, ``))
-    //                 .join(`
-    // `)}
-    // `)
-    //         .join(`
-
-    // `);
-    //     if (gitIgnore !== state.lastGitIgnore) {
-    //         state.lastGitIgnore = gitIgnore;
-    //         await fs.writeFile(gitIgnorePath, gitIgnore);
-    //     }
-
 }
 
 // eslint-disable-next-line @typescript-eslint/no-floating-promises
