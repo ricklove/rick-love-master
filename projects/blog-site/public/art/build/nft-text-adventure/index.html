@@ -1,0 +1,615 @@
+
+<html>
+<head>
+    <style>
+    html, body, div, span, applet, object, iframe,
+    h1, h2, h3, h4, h5, h6, p, blockquote, pre,
+    a, abbr, acronym, address, big, cite, code,
+    del, dfn, em, img, ins, kbd, q, s, samp,
+    small, strike, strong, sub, sup, tt, var,
+    b, u, i, center,
+    dl, dt, dd, ol, ul, li,
+    fieldset, form, label, legend,
+    table, caption, tbody, tfoot, thead, tr, th, td,
+    article, aside, canvas, details, embed, 
+    figure, figcaption, footer, header, hgroup, 
+    menu, nav, output, ruby, section, summary,
+    time, mark, audio, video {
+        margin: 0;
+        padding: 0;
+        border: 0;
+        font-size: 100%;
+        font: inherit;
+        vertical-align: baseline;
+    }
+    /* HTML5 display-role reset for older browsers */
+    article, aside, details, figcaption, figure, 
+    footer, header, hgroup, menu, nav, section {
+        display: block;
+    }
+    body {
+        line-height: 1;
+    }
+    ol, ul {
+        list-style: none;
+    }
+    blockquote, q {
+        quotes: none;  
+    }
+    blockquote:before, blockquote:after,
+    q:before, q:after {
+        content: '';
+        content: none;
+    }
+    table {
+        border-collapse: collapse;
+        border-spacing: 0;
+    }
+
+    body { 
+        background: #000000;
+    }
+    body, div {
+        display: flex;
+        flex: 1;
+        justify-content: center;
+        align-items: center;
+        max-width: 100%;
+        max-height: 100%;
+    }
+    </style>
+</head>
+<body>
+
+    <div id='host'></div>
+    
+<script src="https://cdn.jsdelivr.net/npm/p5@1.4.0/lib/p5.js"></script>
+
+    <script>
+    (function (exports) {
+  'use strict';
+
+  function asyncGeneratorStep(gen, resolve, reject, _next, _throw, key, arg) {
+    try {
+      var info = gen[key](arg);
+      var value = info.value;
+    } catch (error) {
+      reject(error);
+      return;
+    }
+
+    if (info.done) {
+      resolve(value);
+    } else {
+      Promise.resolve(value).then(_next, _throw);
+    }
+  }
+
+  function _asyncToGenerator(fn) {
+    return function () {
+      var self = this,
+          args = arguments;
+      return new Promise(function (resolve, reject) {
+        var gen = fn.apply(self, args);
+
+        function _next(value) {
+          asyncGeneratorStep(gen, resolve, reject, _next, _throw, "next", value);
+        }
+
+        function _throw(err) {
+          asyncGeneratorStep(gen, resolve, reject, _next, _throw, "throw", err);
+        }
+
+        _next(undefined);
+      });
+    };
+  }
+
+  function _slicedToArray(arr, i) {
+    return _arrayWithHoles(arr) || _iterableToArrayLimit(arr, i) || _unsupportedIterableToArray(arr, i) || _nonIterableRest();
+  }
+
+  function _arrayWithHoles(arr) {
+    if (Array.isArray(arr)) return arr;
+  }
+
+  function _iterableToArrayLimit(arr, i) {
+    var _i = arr == null ? null : typeof Symbol !== "undefined" && arr[Symbol.iterator] || arr["@@iterator"];
+
+    if (_i == null) return;
+    var _arr = [];
+    var _n = true;
+    var _d = false;
+
+    var _s, _e;
+
+    try {
+      for (_i = _i.call(arr); !(_n = (_s = _i.next()).done); _n = true) {
+        _arr.push(_s.value);
+
+        if (i && _arr.length === i) break;
+      }
+    } catch (err) {
+      _d = true;
+      _e = err;
+    } finally {
+      try {
+        if (!_n && _i["return"] != null) _i["return"]();
+      } finally {
+        if (_d) throw _e;
+      }
+    }
+
+    return _arr;
+  }
+
+  function _unsupportedIterableToArray(o, minLen) {
+    if (!o) return;
+    if (typeof o === "string") return _arrayLikeToArray(o, minLen);
+    var n = Object.prototype.toString.call(o).slice(8, -1);
+    if (n === "Object" && o.constructor) n = o.constructor.name;
+    if (n === "Map" || n === "Set") return Array.from(o);
+    if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return _arrayLikeToArray(o, minLen);
+  }
+
+  function _arrayLikeToArray(arr, len) {
+    if (len == null || len > arr.length) len = arr.length;
+
+    for (var i = 0, arr2 = new Array(len); i < len; i++) arr2[i] = arr[i];
+
+    return arr2;
+  }
+
+  function _nonIterableRest() {
+    throw new TypeError("Invalid attempt to destructure non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method.");
+  }
+
+  /* eslint-disable no-return-assign */
+
+  /* eslint-disable no-multi-assign */
+
+  /* eslint-disable @typescript-eslint/no-unused-expressions */
+
+  /* eslint-disable no-bitwise */
+  // FROM: https://stackoverflow.com/a/47593316/567524
+  function xmur3(str) {
+    var h = 1779033703 ^ str.length;
+
+    for (var i = 0; i < str.length; i++) {
+      h = Math.imul(h ^ str.charCodeAt(i), 3432918353);
+      h = h << 13 | h >>> 19;
+    }
+
+    return function () {
+      h = Math.imul(h ^ h >>> 16, 2246822507);
+      h = Math.imul(h ^ h >>> 13, 3266489909);
+      return (h ^= h >>> 16) >>> 0;
+    };
+  }
+
+  function mulberry32(a) {
+    return function () {
+      var t = a += 0x6D2B79F5;
+      t = Math.imul(t ^ t >>> 15, t | 1);
+      t ^= t + Math.imul(t ^ t >>> 7, t | 61);
+      return ((t ^ t >>> 14) >>> 0) / 4294967296;
+    };
+  }
+
+  var createRandomGenerator = function createRandomGenerator(hash) {
+    var seed = xmur3(hash)();
+    return {
+      random: mulberry32(seed)
+    };
+  };
+
+  var metadata = {
+    key: "nft-text-adventure",
+    name: "NFT Text Adventure",
+    description: "NFT Text Adventure is a game where actions are chosen by the NFT community",
+    author: "Rick Love & the NFT Community"
+  }; // https://cloudapps.herokuapp.com/imagetoascii/
+  // .:*I$VMoun-
+  // .!"#$%&O0olWM()*+-{|}~<>[]
+  // .,:|'Oo(){}[]
+  // .-:SOo
+
+  var asciiArt_manArmUp = "\n.........()-,.......................\n.......(),...}:.....................\n..........\"}:==::>..................\n.....()::}:-==:::::>................\n..........,==:::::::::}.............\n.....():\"}..:::::::::::::::.........\n.............:::-...<::::::::::.....\n...........():..........::::::::::..\n..........................-::::::::.\n.........oooSS:.............-::::::.\n......:SSOOOoo::...........:::::::-.\n......oOoo:o::..:.........::::::::..\n.....:OOo:...:::::........::::::::..\n......oOS:::::::::........o::::::...\n......-oOo::::...::..:ooooooo:::....\n..........::::--::::oooooooooo:.....\n...........:::::::oooooooooooo:.....\n....-:oooo:ooooooooooooooooooo:.....\n".trim().replace(/\./g, " ");
+  var items = [{
+    key: "torch",
+    name: "Torch",
+    description: "This torch will be your light when all other lights go out..."
+  }, {
+    key: "torch_lit",
+    name: "Lit Torch",
+    description: "This torch it lit!"
+  }, {
+    key: "rope",
+    name: "Knife",
+    description: "That's not a knife... This is a knife!"
+  }];
+
+  /** There is only a single linear progression, all other choices end in death */
+  var story = [{
+    title: "Cold",
+    asciiArt: asciiArt_manArmUp,
+    description: "\n\nCold, damp, wet... you wake up shivering. \n\nWhen you open your eyes, everything is still dark.\n\nYou can't see anything, but you can feel that you are lying on a cold hard surface...",
+    glitch: {
+      ratio: 0.07,
+      messages: ["HELP ME!", "Who are you?", "What are you?", "How are you?", "Where are you?", "Why are you?", "I'm cold", "I'm alone", "I'm afraid"]
+    },
+    inventory: [],
+    actions: [{
+      name: "search the ground",
+      description: "?"
+    }, {
+      name: "call for help",
+      description: "?"
+    }, {
+      name: "listen",
+      description: "?"
+    }]
+  }];
+  var createNftAdventure_nftTextAdventure = function createNftAdventure_nftTextAdventure() {
+    return {
+      metadata: metadata,
+      items: items,
+      story: story
+    };
+  };
+
+  var drawGameStepAction = function drawGameStepAction(_ref) {
+    var _step$actions$name, _step$actions;
+
+    var step = _ref.step,
+        actionIndex = _ref.actionIndex;
+        _ref.gameData;
+        var s = _ref.s,
+        timeMs = _ref.timeMs,
+        frame = _ref.frame,
+        seed = _ref.seed;
+
+    if (!step) {
+      return {
+        done: true
+      };
+    }
+
+    var _createRandomGenerato = createRandomGenerator("".concat(seed).concat(step).concat(Math.floor(timeMs / 250))),
+        randomSlow = _createRandomGenerato.random;
+
+    var _createRandomGenerato2 = createRandomGenerator("".concat(seed).concat(step).concat(Math.floor(timeMs / 50))),
+        random = _createRandomGenerato2.random;
+
+    var shouldGlitch = step.glitch && randomSlow() > 1.0 - step.glitch.ratio;
+    var charsPerSecond = 30;
+    var charLength = Math.floor(timeMs / 1000 * charsPerSecond);
+    s.background(s.color(25 - 25 * Math.cos(2 * Math.PI * timeMs / 1000 / 10), 0, 0)); // s.background(0);
+
+    s.fill(s.color(255, 255, 255));
+    s.textFont("monospace");
+    s.textAlign("left");
+    s.textSize(14);
+    var LINE = 20;
+    var PAD = 4;
+    var actionCount = step.actions.length;
+
+    var drawTitleText = function drawTitleText(t) {
+      s.text(t, PAD, PAD * +1 + 0 * LINE, PAD * -2 + frame.width, PAD * +1 + 2 * LINE);
+    };
+
+    var drawAsciiArtText = function drawAsciiArtText(t) {
+      s.text(t, PAD, PAD + +3 + 2 * LINE, PAD * -2 + frame.width, PAD * -1 + frame.height);
+    };
+
+    var drawDescriptionText = function drawDescriptionText(t) {
+      s.text(t, PAD, PAD + +3 + 2 * LINE, PAD * -2 + frame.width, PAD * -6 + frame.height - (actionCount + 2) * LINE);
+    };
+
+    var drawActionsText = function drawActionsText(t) {
+      s.text(t, PAD, PAD * -4 + frame.height - (actionCount + 2) * LINE, PAD * -2 + frame.width, PAD * -3 + frame.height - 2 * LINE);
+    };
+
+    var drawActionInputText = function drawActionInputText(t) {
+      s.text(t, PAD, PAD * -2 + frame.height - 2 * LINE, PAD * -2 + frame.width, PAD * -1 + frame.height);
+    };
+
+    var drawNextPart = function drawNextPart(text, drawText, color, fontSize) {
+      var speedMultiplier = arguments.length > 4 && arguments[4] !== undefined ? arguments[4] : 1;
+      s.fill(color);
+      s.textSize(fontSize);
+
+      if (charLength * speedMultiplier < text.length) {
+        var _t = text.substr(0, charLength * speedMultiplier);
+
+        drawText(_t);
+        return {
+          done: false
+        };
+      }
+
+      drawText(text);
+      charLength -= Math.floor(text.length / speedMultiplier);
+      return {
+        done: true
+      };
+    };
+
+    var drawWaitMessage = function drawWaitMessage(timeMs, text, altText, drawText, color, fontSize) {
+      var waitChars = timeMs / 1000 * charsPerSecond;
+
+      if (charLength < waitChars) {
+        var waitText = !text ? "" : !altText ? text : charLength / charsPerSecond * 1000 % 1000 < 500 ? text : altText;
+
+        if (color) {
+          s.fill(color);
+        }
+
+        if (fontSize) {
+          s.textSize(fontSize);
+        }
+
+        if (waitText && drawText) {
+          drawText(waitText);
+        }
+
+        return {
+          done: false
+        };
+      }
+
+      charLength -= waitChars;
+      return {
+        done: true
+      };
+    }; // const titleColor = s.color(
+    //     255 - 60 + 30 * Math.sin((2 * Math.PI * (timeMs + 100) / 1000) / 3),
+    //     255 - 60 + 30 * Math.sin((2 * Math.PI * (timeMs + 400) / 1000) / 3),
+    //     255 - 60 + 30 * Math.sin((2 * Math.PI * (timeMs + 800) / 1000) / 3),
+    // );
+    // Use random glitch effect
+
+
+    if (step.glitch && shouldGlitch) {
+      s.rotate(0.25 * random());
+      s.scale(1 - 0.25 * random(), 1);
+      s.background(s.color(0, 150 * random(), 0));
+
+      if (randomSlow() > 0.25) {
+        s.fill(s.color(255, 255, 255));
+        s.textAlign("center");
+        s.textSize(12);
+        var glitches = step.glitch.messages;
+        s.text(glitches[Math.floor(random() * glitches.length)], PAD, PAD + LINE * 5, PAD * -2 + frame.width, PAD * -2 + frame.height);
+        return {
+          done: false
+        };
+      }
+    } // Skip title typing
+
+
+    charLength += step.title.trim().length;
+    s.textAlign("center");
+    var titleColor = s.color(255, 255, 255);
+
+    if (!drawNextPart(step.title.trim(), drawTitleText, titleColor, 14).done) {
+      return {
+        done: false
+      };
+    }
+
+    if (!drawWaitMessage(5000, step.asciiArt, step.asciiArt, drawAsciiArtText, titleColor, 10).done) {
+      return {
+        done: false
+      };
+    }
+
+    s.textAlign("left");
+
+    if (!drawNextPart(step.description.trim(), drawDescriptionText, s.color(255, 255, 255), 12).done) {
+      return {
+        done: false
+      };
+    }
+
+    if (!drawWaitMessage(1000).done) {
+      return {
+        done: false
+      };
+    }
+
+    var actionsText = "".concat(step.actions.map(function (x) {
+      return "    - ".concat(x.name, "\n");
+    }).join(""));
+
+    if (!drawNextPart(actionsText, drawActionsText, s.color(255, 255, 100), 12).done) {
+      return {
+        done: false
+      };
+    } // Wait a sec
+
+
+    if (!drawWaitMessage(3000, ">", "> |", drawActionInputText, s.color(100, 255, 100), 12).done) {
+      return {
+        done: false
+      };
+    }
+
+    var actionName = (_step$actions$name = (_step$actions = step.actions[actionIndex !== null && actionIndex !== void 0 ? actionIndex : -1]) === null || _step$actions === void 0 ? void 0 : _step$actions.name) !== null && _step$actions$name !== void 0 ? _step$actions$name : "";
+
+    if (!drawNextPart("> ".concat(actionName), drawActionInputText, s.color(100, 255, 100), 14).done) {
+      return {
+        done: false
+      };
+    }
+
+    if (!drawWaitMessage(1000).done) {
+      return {
+        done: false
+      };
+    }
+
+    return {
+      done: true
+    };
+  };
+
+  var nftAdventure_nftDungeon = createNftAdventure_nftTextAdventure();
+  var art_nftAdventure_nftTextAdventure = {
+    key: "nft-text-adventure",
+    title: nftAdventure_nftDungeon.metadata.name,
+    description: nftAdventure_nftDungeon.metadata.description,
+    artist: nftAdventure_nftDungeon.metadata.author,
+    canSetSeed: false,
+    getTokenDescription: function getTokenDescription(seed) {
+      var _step$title2, _action$name;
+
+      var _seed$split$map = seed.split(":").map(function (x) {
+        return parseInt(x, 10);
+      }),
+          _seed$split$map2 = _slicedToArray(_seed$split$map, 2),
+          stepIndex = _seed$split$map2[0],
+          actionIndex = _seed$split$map2[1];
+
+      var step = nftAdventure_nftDungeon.story[stepIndex];
+      var action = step === null || step === void 0 ? void 0 : step.actions[actionIndex];
+
+      if (!action) {
+        var _step$title;
+
+        return "".concat(stepIndex, " - ").concat((_step$title = step === null || step === void 0 ? void 0 : step.title) !== null && _step$title !== void 0 ? _step$title : "");
+      }
+
+      return "".concat(stepIndex, ":").concat(actionIndex, " - ").concat((_step$title2 = step === null || step === void 0 ? void 0 : step.title) !== null && _step$title2 !== void 0 ? _step$title2 : "", " > ").concat((_action$name = action === null || action === void 0 ? void 0 : action.name) !== null && _action$name !== void 0 ? _action$name : "");
+    },
+    // openSea: {
+    //     tokenAddress: `0x495f947276749ce646f68ac8c248420045cb7b5e`,
+    //     tokenId: `91242641486941084018191434774360347389366801368112854311223385694785434025985`,
+    // },
+    renderArt: function renderArt(hostElement) {
+      var seed = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : "This is my hash!";
+      var recorder = arguments.length > 2 ? arguments[2] : undefined;
+      var createP5 = arguments.length > 3 ? arguments[3] : undefined;
+
+      // const { a, b, c } = { a: 57, b: 23, c: 15 };
+      createRandomGenerator(seed);
+   // const { a, b, c } = { a: 1 + Math.floor(57 * random()), b: 1 + Math.floor(213 * random()), c: 1 + Math.floor(115 * random()) };
+      // const { cr, cg, cb, ca } = { cr: Math.floor(25 + 230 * random()), cg: Math.floor(25 + 230 * random()), cb: Math.floor(25 + 230 * random()), ca: Math.floor(25 + 25 * random()) };
+
+
+      var TARGET_SIZE = 300;
+      var SMALL_SIZE = 300;
+      var size = window.innerWidth > TARGET_SIZE && window.innerHeight > TARGET_SIZE ? TARGET_SIZE : SMALL_SIZE;
+      var canvas = null;
+      var timeStart = Date.now();
+      var wasRecording = false;
+      var isDone = false;
+
+      var _seed$split$map3 = seed.split(":").map(function (x) {
+        return parseInt(x, 10);
+      }),
+          _seed$split$map4 = _slicedToArray(_seed$split$map3, 2),
+          stepIndex = _seed$split$map4[0],
+          actionIndex = _seed$split$map4[1];
+
+      return createP5(function (s) {
+        s.setup = function () {
+          console.log("renderArt:createP5:s.setup");
+          var result = s.createCanvas(size, size);
+          var canvasId = "".concat(Math.random());
+          result.id(canvasId);
+          canvas = document.getElementById(canvasId);
+        };
+
+        s.draw = function () {
+          var _recorder$isRecording;
+
+          console.log("renderArt:createP5:s.draw");
+
+          if (recorder !== null && recorder !== void 0 && recorder.isRecording() && !wasRecording) {
+            timeStart = recorder.timeProvider.now();
+            isDone = false;
+          }
+
+          wasRecording = (_recorder$isRecording = recorder === null || recorder === void 0 ? void 0 : recorder.isRecording()) !== null && _recorder$isRecording !== void 0 ? _recorder$isRecording : false;
+
+          if (isDone) {
+            return;
+          } // if (recorder?.isWaitingForFrame() && canvas) {
+          //     console.log(`game.update waitingForFrame - addFrame`, {});
+          //     (async () => await recorder.getRecorder().addFrame(canvas))();
+          //     return;
+          // }
+
+
+          var timeMs = recorder ? recorder.timeProvider.now() - timeStart : Date.now() - timeStart;
+          var result = drawGameStepAction({
+            frame: {
+              width: size,
+              height: size
+            },
+            s: s,
+            gameData: nftAdventure_nftDungeon,
+            step: nftAdventure_nftDungeon.story[stepIndex],
+            actionIndex: actionIndex,
+            timeMs: timeMs,
+            seed: seed
+          });
+
+          if (result.done) {
+            isDone = true;
+          }
+
+          if (recorder !== null && recorder !== void 0 && recorder.isWaitingForFrame() && canvas) {
+            console.log("game.update waitingForFrame - addFrame", {});
+
+            _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee() {
+              return regeneratorRuntime.wrap(function _callee$(_context) {
+                while (1) {
+                  switch (_context.prev = _context.next) {
+                    case 0:
+                      _context.next = 2;
+                      return recorder.getRecorder().addFrame(canvas);
+
+                    case 2:
+                      return _context.abrupt("return", _context.sent);
+
+                    case 3:
+                    case "end":
+                      return _context.stop();
+                  }
+                }
+              }, _callee);
+            }))();
+          }
+        };
+      }, hostElement);
+    }
+  };
+
+  exports.art_nftAdventure_nftTextAdventure = art_nftAdventure_nftTextAdventure;
+
+  Object.defineProperty(exports, '__esModule', { value: true });
+
+  return exports;
+
+}(window));
+
+    
+var seedMatch = document.location.search.match(/seed=([^;])/) || document.location.search.match(/tokenId=([^;])/);
+var seed = seedMatch && seedMatch[1] || '0';
+
+var createP5 = function(s,host){
+    return new p5(s,host);
+};
+
+window.art_nftAdventure_nftTextAdventure.renderArt(
+    document.getElementById('host'),
+    seed,
+    null,
+    createP5
+)
+    </script>
+
+</body>
+</html>

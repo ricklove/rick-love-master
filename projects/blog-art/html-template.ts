@@ -72,6 +72,14 @@ window.${artInfo.importObject}.renderArt(
     body { 
         background: #000000;
     }
+    body, div {
+        display: flex;
+        flex: 1;
+        justify-content: center;
+        align-items: center;
+        max-width: 100%;
+        max-height: 100%;
+    }
     </style>
 </head>
 <body>
