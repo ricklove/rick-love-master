@@ -13,18 +13,28 @@ export const art_nftAdventure_nftTextAdventure: ArtWork = {
     title: nftAdventure_nftDungeon.metadata.name,
     description: nftAdventure_nftDungeon.metadata.description,
     artist: nftAdventure_nftDungeon.metadata.author,
-    getTokenDescription: (tokenId: string) => {
-        return null;
+    canSetSeed: false,
+    getTokenDescription: (seed: string) => {
+        const [stepIndex, actionIndex] = seed.split(`:`).map(x => parseInt(x, 10));
+
+        const step = nftAdventure_nftDungeon.story[stepIndex];
+        const action = step?.actions[actionIndex];
+
+        if (!action){
+            return `${stepIndex} - ${step?.title ?? ``}`;
+        }
+
+        return `${stepIndex}:${actionIndex} - ${step?.title ?? ``} > ${action?.name ?? ``}`;
     },
     // openSea: {
     //     tokenAddress: `0x495f947276749ce646f68ac8c248420045cb7b5e`,
     //     tokenId: `91242641486941084018191434774360347389366801368112854311223385694785434025985`,
     // },
-    renderArt: (hostElement: HTMLElement, hash = `This is my hash!`, recorder) => {
+    renderArt: (hostElement: HTMLElement, seed = `This is my hash!`, recorder) => {
         // const { a, b, c } = { a: 57, b: 23, c: 15 };
 
 
-        const { random } = createRandomGenerator(hash);
+        const { random } = createRandomGenerator(seed);
 
         // const { a, b, c } = { a: 1 + Math.floor(57 * random()), b: 1 + Math.floor(213 * random()), c: 1 + Math.floor(115 * random()) };
         // const { cr, cg, cb, ca } = { cr: Math.floor(25 + 230 * random()), cg: Math.floor(25 + 230 * random()), cb: Math.floor(25 + 230 * random()), ca: Math.floor(25 + 25 * random()) };
@@ -42,7 +52,7 @@ export const art_nftAdventure_nftTextAdventure: ArtWork = {
         let wasRecording = false;
         let isDone = false;
 
-        const [stepIndex, actionIndex] = hash.split(`:`).map(x => parseInt(x, 10));
+        const [stepIndex, actionIndex] = seed.split(`:`).map(x => parseInt(x, 10));
 
         return new p5((s: p5) => {
             s.setup = () => {
@@ -75,6 +85,7 @@ export const art_nftAdventure_nftTextAdventure: ArtWork = {
                     step: nftAdventure_nftDungeon.story[stepIndex],
                     actionIndex,
                     timeMs,
+                    seed: seed,
                 });
 
                 if (result.done){

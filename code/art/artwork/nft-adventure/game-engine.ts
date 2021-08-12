@@ -30,6 +30,7 @@ export const drawGameStepAction = ({
     s,
     timeMs,
     frame,
+    seed,
 }: {
     step: GameStep;
     actionIndex?: number;
@@ -37,10 +38,13 @@ export const drawGameStepAction = ({
     s: p5;
     timeMs: number;
     frame: { width: number, height: number };
+    seed: string;
 }): { done: boolean } => {
 
-    const { random: randomSlow } = createRandomGenerator(`${step}${Math.floor(timeMs / 250)}`);
-    const { random: random } = createRandomGenerator(`${step}${Math.floor(timeMs / 50)}`);
+    if (!step){ return { done: true };}
+
+    const { random: randomSlow } = createRandomGenerator(`${seed}${step}${Math.floor(timeMs / 250)}`);
+    const { random: random } = createRandomGenerator(`${seed}${step}${Math.floor(timeMs / 50)}`);
 
     const charsPerSecond = 30;
     let charLength = Math.floor(timeMs / 1000 * charsPerSecond);

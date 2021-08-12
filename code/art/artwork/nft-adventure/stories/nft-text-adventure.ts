@@ -68,7 +68,7 @@ type GameStep = {
 /** There is only a single linear progression, all other choices end in death */
 const story: GameStep[] = [
     {
-        title: `Nft Text Adventure`,
+        title: `Cold`,
         asciiArt: asciiArt_manArmUp,
         description: `
 
@@ -78,7 +78,7 @@ When you open your eyes, everything is still dark.
 
 You can't see anything, but you can feel that you are lying on a cold hard surface...`,
         glitch: {
-            ratio: 0.1,
+            ratio: 0.06,
             messages: [`HELP ME!`, `Who are you?`, `What are you?`, `How are you?`, `Where are you?`, `Why are you?`],
         },
         inventory: [],

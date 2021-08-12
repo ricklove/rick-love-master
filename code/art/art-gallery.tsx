@@ -114,6 +114,7 @@ export const ArtGallery = (props: {}) => {
     };
 
     const [walletAddress, setWalletAddress] = useState(null as null | string);
+    const canSetSeed = art.current?.canSetSeed ?? true;
 
     return (
         <>
@@ -127,7 +128,10 @@ export const ArtGallery = (props: {}) => {
                                 </div>
                             </React.Fragment>
                         ))}
-                        <SeedController value={tokenId} onChange={changeTokenId} onWalletAddress={setWalletAddress}/>
+                        {canSetSeed && (
+                            <SeedController value={tokenId} onChange={changeTokenId}
+                                onWalletAddress={setWalletAddress}/>
+                        )}
                     </C.View_Form>
                 )}
 
@@ -151,11 +155,13 @@ export const ArtGallery = (props: {}) => {
                                                 <div style={{ padding: 4, whiteSpace: `pre-wrap` }}>{art.current.description}</div>
                                                 {!!tokenDescription && <div style={{ padding: 4, whiteSpace: `pre-wrap`, wordBreak: `break-all` }}>{tokenDescription}</div>}
                                             </div>
-                                            <div style={{ opacity: 0.75, padding: 4 }}>
-                                                <SeedController value={tokenId}
-                                                    onChange={changeTokenId}
-                                                    onWalletAddress={setWalletAddress}/>
-                                            </div>
+                                            {canSetSeed && (
+                                                <div style={{ opacity: 0.75, padding: 4 }}>
+                                                    <SeedController value={tokenId}
+                                                        onChange={changeTokenId}
+                                                        onWalletAddress={setWalletAddress}/>
+                                                </div>
+                                            )}
                                             <div style={{ opacity: 0.75, padding: 4 }}>
                                                 {artKey && tokenId && (
                                                     <ReserveButton

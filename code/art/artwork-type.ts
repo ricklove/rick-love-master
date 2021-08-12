@@ -13,4 +13,5 @@ export type ArtWork = {
     getTokenDescription: (tokenId: string) => null | string;
     renderArt?: (hostElement: HTMLDivElement, hash: string, recorder: null | CanvasVideoRecorder) => { remove: () => void, recorder?: null | CanvasVideoRecorder };
     ArtComponent?: (props: { hash: string }) => JSX.Element;
+    canSetSeed?: boolean;
 };
