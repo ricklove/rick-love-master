@@ -131,6 +131,10 @@ export const generateNftMetadata_art121 = async ({ params }: { params: { [name: 
         // TODO: use an actual image
         image: `https://ricklove.me/blog-content/posts/2021-01-21-crypto-art-121/art-121.png`,
         external_link: `https://ricklove.me/art/art-121?tokenId=${tokenId}`,
+
+        // Interactive
+        "is dynamic": true,
+        "script type": `p5js`,
         interactive_nft: {
             code_uri: `https://ricklove.me/art/art-121?tokenId=${tokenId}`,
             version: `0.0.9`,

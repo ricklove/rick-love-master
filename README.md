@@ -1,5 +1,31 @@
 This is where I put all the cool stuff.
 
+
+---
+
+# Useful Commands
+
+## Develop Blog
+
+- `cd ./projects/blog-site`
+- Sometimes `gatsby clean` is things like seo change
+- `gatsby develop`
+
+## Deploy Blog
+
+- `cd ./projects/blog-site`
+- `gatsby build`
+- Commit & Push to master branch (auto deploy)
+
+## Deploy blog-serverless
+
+- `cd ./projects/blog-serverless`
+- `ts-node ./build.ts`
+- `serverless deploy --aws-profile ricklove`
+
+---
+
+
 # Folder Structure
 
 - packages
