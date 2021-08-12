@@ -1,0 +1,14 @@
+{
+    "name": "upload-api",
+    "version": "1.0.0",
+    "description": "",
+    "main": "index.js",
+    "dependencies": {
+        "@babel/polyfill": "^7.11.5",
+        "aws-sdk": "^2.749.0",
+        "uuid": "^8.3.0"
+    },
+    "devDependencies": {},
+    "author": "",
+    "license": "Private"
+}

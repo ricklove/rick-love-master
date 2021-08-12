@@ -1,0 +1,13 @@
+{
+    "name": "nft-api",
+    "version": "1.0.0",
+    "description": "",
+    "main": "index.js",
+    "dependencies": {
+        "@babel/polyfill": "^7.11.5",
+        "aws-sdk": "^2.749.0"
+    },
+    "devDependencies": {},
+    "author": "",
+    "license": "Private"
+}
