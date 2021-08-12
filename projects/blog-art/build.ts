@@ -146,7 +146,7 @@ async function runBuildArt(artInfo: { key: string, absoluteImportPath: string, i
         });
 
         // Read file and wrap in html template
-        const outputJs = await fs.readFile(destIndexFile,{encoding:'utf-8'});
+        const outputJs = await fs.readFile(destIndexFile, { encoding: `utf-8` });
         const outputHtml = getArtHtml(outputJs, artInfo);
 
         await fs.writeFile(destHtmlFile, outputHtml);
@@ -177,26 +177,26 @@ async function runSync(changedFiles: string[]) {
     //const destDir = `${ROOT}projects/blog-art/build/`;
     const destDir = `${ROOT}projects/blog-site/public/art/build/`;
 
-    const artIndexContent = await fs.readFile(artIndexFile, {encoding:'utf-8'});
+    const artIndexContent = await fs.readFile(artIndexFile, { encoding: `utf-8` });
     const artEntries = [...artIndexContent.matchAll(/key:\s*`([^`]+)`[^>]+>\s*\(await import\s*\(\s*`([^`]+)`\s*\)\)\.(\w+)/g)].map(m => ({
         key: m[1],
         importPath: m[2],
         importObject: m[3],
-    })).map(x=>({
-        ...x, 
+    })).map(x => ({
+        ...x,
         absoluteImportPath: path.resolve(path.join(path.dirname(artIndexFile), x.importPath)),
-    })).map(x=>({
+    })).map(x => ({
         ...x,
-        absoluteImportPathTs: x.absoluteImportPath + '.ts',  
-        absoluteImportPathTsx: x.absoluteImportPath + '.tsx',  
-    })).map(x=>({
+        absoluteImportPathTs: x.absoluteImportPath + `.ts`,
+        absoluteImportPathTsx: x.absoluteImportPath + `.tsx`,
+    })).map(x => ({
         ...x,
-        absoluteImportPath: 
-            fsRaw.existsSync(x.absoluteImportPathTs) ? x.absoluteImportPathTs 
-            : fsRaw.existsSync(x.absoluteImportPathTsx) ? x.absoluteImportPathTsx 
-            : ''
-    })).filter(x=>x.absoluteImportPath);
-    console.log(`artEntries`,{ artEntries, artIndexFile });
+        absoluteImportPath:
+            fsRaw.existsSync(x.absoluteImportPathTs) ? x.absoluteImportPathTs
+                : fsRaw.existsSync(x.absoluteImportPathTsx) ? x.absoluteImportPathTsx
+                    : ``,
+    })).filter(x => x.absoluteImportPath);
+    console.log(`artEntries`, { artEntries, artIndexFile });
 
     // --- Functions to Build
     for (const a of artEntries) {
