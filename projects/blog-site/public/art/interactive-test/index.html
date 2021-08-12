@@ -43,7 +43,6 @@
                 SCALE = SIZE / BASE,
                 MID = SIZE / 2,
                 createCanvas(SIZE, SIZE),
-                rotate(1.25),
                 generate(),
                 update()
         }
@@ -59,7 +58,15 @@
         let petTimeout = 0, petAmt = 0, petting = !1;
         function updatePetting() { petTimeout > 0 && (petTimeout -= .001 * deltaTime, blinkTimeout = 3, blinkAmt = 0); let e = (mouseX - MID) / SCALE, y = (mouseY - MID) / SCALE; if (e > -fa[2].x && e < fa[2].x && y > fa[0].y && y < 150) { let n = (pmouseX - MID) / SCALE, c = (pmouseY - MID) / SCALE; (e - n) * (e - n) + (y - c) * (y - c) > 200 && (petting && (petTimeout = .5), petting = !0) } petTimeout > 0 ? petAmt < 1 && (petAmt = constrain(petAmt + .012 * deltaTime, 0, 1)) : petAmt > 0 && 0 == (petAmt = constrain(petAmt - .01 * deltaTime, 0, 1)) && (petting = !1) }
         let blinkTimeout = 5, blinkAmt = 0, blinking = !1;
-        function updateBlinking() { blinkTimeout > 0 ? blinkTimeout -= .001 * deltaTime : blinkAmt < 1 && !blinking ? 1 == (blinkAmt = constrain(blinkAmt + .01 * deltaTime, 0, 1)) && (blinking = !0, blinkTimeout = .08) : blinkAmt > 0 && blinking && 0 == (blinkAmt = constrain(blinkAmt - .01 * deltaTime, 0, 1)) && (blinking = !1, blinkTimeout = 5) } function draw() { updatePetting(), updateBlinking(), updateEyes(), background(colors.bg), translate(MID, MID), scale(SCALE), drawBody(), drawEars(), drawFace(), drawEyes(), drawTongue(), drawMouth(), drawNose(), drawWhiskers() }
+        function updateBlinking() { blinkTimeout > 0 ? blinkTimeout -= .001 * deltaTime : blinkAmt < 1 && !blinking ? 1 == (blinkAmt = constrain(blinkAmt + .01 * deltaTime, 0, 1)) && (blinking = !0, blinkTimeout = .08) : blinkAmt > 0 && blinking && 0 == (blinkAmt = constrain(blinkAmt - .01 * deltaTime, 0, 1)) && (blinking = !1, blinkTimeout = 5) }
+
+        function draw() {
+            updatePetting(), updateBlinking(), updateEyes(), background(colors.bg), translate(MID, MID), scale(SCALE),
+
+                rotate(1.25),
+
+                drawBody(), drawEars(), drawFace(), drawEyes(), drawTongue(), drawMouth(), drawNose(), drawWhiskers()
+        }
         function drawBody() { push(), noStroke(), fill(colors.body), bps.includes("corners") && !["calico", "white", "siamese"].includes(breed.name) && fill(colors.prim), beginShape(), vertex(b.x, b.y), vertex(b.x + 30, b.y + 150), vertex(-b.x - 30, b.y + 150), vertex(-b.x, b.y), endShape(), drawingContext.clip(), drawBodyPatterns(), strokeWeight(12), stroke(colors.neck), noFill(), blendMode(MULTIPLY), beginShape(), vertex(fa[2].x, fa[2].y), bezierVertex(fc[4].x, fc[4].y, fc[5].x, fc[5].y, fa[3].x, fa[3].y), bezierVertex(-fc[5].x, fc[5].y, -fc[4].x, fc[4].y, -fa[2].x, fa[2].y), endShape(), pop() }
         function drawBodyPatterns() { if (push(), bps.includes("stripes")) { strokeWeight(14), stroke(colors.sec), noFill(); for (let e = 1; e < 5; e++) { let y = lerpPoint(b, { x: b.x + 30, y: b.y + 150 }, .18 * e), n = lerp(50, 0, s.bw); bezier(y.x, y.y, .5 * y.x, y.y + n, .5 * -y.x, y.y + n, -y.x, y.y) } } if (bps.includes("corners")) { noStroke(), fill(colors.body), ["calico", "white", "siamese"].includes(breed.name) && fill(colors.prim); let e = lerpPoint(b, { x: b.x + 30, y: b.y + 150 }, lerp(.4, .1, s.bw)); triangle(e.x, e.y, e.x - 110, e.y + 150, e.x + 30, e.y + 150), "calico" == breed.name && fill(colors.sec), triangle(-e.x, e.y, 110 - e.x, e.y + 150, -e.x - 30, e.y + 150) } if (bps.includes("tabby")) { strokeWeight(2), strokeJoin(ROUND), stroke(colors.sec), fill(colors.sec); for (let e = 0; e < 4; e++) { let y = lerpPoint(b, { x: b.x + 30, y: b.y + 150 }, lerp(.42, 0, s.bw) + .12 * e); "calico" == breed.name && (stroke(e % 2 == 1 ? colors.prim : colors.sec), fill(e % 2 == 1 ? colors.prim : colors.sec)), triangle(y.x, y.y, y.x, y.y - 7, y.x - 32, y.y + 6), triangle(-y.x, y.y, -y.x, y.y - 7, 32 - y.x, y.y + 6) } } if (bps.includes("necktie")) { noStroke(), fill(colors.prim); let e = lerp(70, 0, s.bw); quad(b.x - e, b.y, b.x, b.y + 5 * e, -b.x, b.y + 5 * e, -b.x + e, b.y) } if (bps.includes("belly")) { noStroke(), fill(colors.prim); let e = lerp(100, 50, s.bw); ellipse(0, 165, e, 100) } pop() }
         function drawFace() { push(), noStroke(), fill(colors.face), fps.includes("mask") && "calico" != breed.name && fill(colors.prim), beginShape(), vertex(fa[0].x, fa[0].y), bezierVertex(fc[0].x, fc[0].y, fc[1].x, fc[1].y, fa[1].x, fa[1].y), bezierVertex(fc[2].x, fc[2].y, fc[3].x, fc[3].y, fa[2].x, fa[2].y), bezierVertex(fc[4].x, fc[4].y, fc[5].x, fc[5].y, fa[3].x, fa[3].y), bezierVertex(-fc[5].x, fc[5].y, -fc[4].x, fc[4].y, -fa[2].x, fa[2].y), bezierVertex(-fc[3].x, fc[3].y, -fc[2].x, fc[2].y, -fa[1].x, fa[1].y), bezierVertex(-fc[1].x, fc[1].y, -fc[0].x, fc[0].y, -fa[0].x, fa[0].y), endShape(), drawingContext.clip(), drawFacePatterns(), pop() }
