@@ -123,11 +123,11 @@ export const generateNftMetadata_art121 = async ({ params }: { params: { [name: 
             {
                 "display_type": `number`,
                 "trait_type": `Interactive Version`,
-                "value": 3,
+                "value": 4,
             },
         ],
         name: `2021-01-21 21:21:21 Art`,
-        description: `Capture this unique second in our human timeline with this NFT crypto art.`,
+        description: `Capture this unique second in our human timeline with this NFT crypto art. (4)`,
         // TODO: use an actual image
         image: `https://ricklove.me/blog-content/posts/2021-01-21-crypto-art-121/art-121.png`,
         external_link: `https://ricklove.me/art/art-121?tokenId=${tokenId}`,
