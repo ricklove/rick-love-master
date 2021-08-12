@@ -120,6 +120,11 @@ export const generateNftMetadata_art121 = async ({ params }: { params: { [name: 
                 "trait_type": `Timestamp`,
                 "value": timestampSecs,
             },
+            {
+                "display_type": `number`,
+                "trait_type": `Interactive Version`,
+                "value": 1,
+            },
         ],
         name: `2021-01-21 21:21:21 Art`,
         description: `Capture this unique second in our human timeline with this NFT crypto art.`,
