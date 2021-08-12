@@ -1,0 +1,2 @@
+(window.__LOADABLE_LOADED_CHUNKS__=window.__LOADABLE_LOADED_CHUNKS__||[]).push([[31],{epJf:function(e,n,t){"use strict";t.r(n),t.d(n,"LayoutGameCss",(function(){return c}));var u=t("ERkP"),o=t.n(u),c=function(e){return Object(u.useEffect)((function(){document.body.style.userSelect="none",document.body.style.webkitUserSelect="none"}),[]),o.a.createElement(o.a.Fragment,null)}}}]);
+//# sourceMappingURL=31-89e761fe30d3b217e6d4.js.map
