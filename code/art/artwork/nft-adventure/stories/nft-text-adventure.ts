@@ -54,6 +54,10 @@ type GameStep = {
     title: string;
     asciiArt?: string;
     description: string;
+    glitch?: {
+        ratio: number;
+        messages: string[];
+    };
     inventory: GameItemKey[];
     actions: {
         name: string;
@@ -73,6 +77,10 @@ Cold, damp, wet... you wake up shivering.
 When you open your eyes, everything is still dark.
 
 You can't see anything, but you can feel that you are lying on a cold hard surface...`,
+        glitch: {
+            ratio: 0.1,
+            messages: [`HELP ME!`, `Who are you?`, `What are you?`, `How are you?`, `Where are you?`, `Why are you?`],
+        },
         inventory: [],
         actions: [
             { name: `search the ground`, description: `?` },

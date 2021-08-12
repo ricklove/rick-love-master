@@ -5,6 +5,10 @@ type GameStep = {
     title: string;
     asciiArt?: string;
     description: string;
+    glitch?: {
+        ratio: number;
+        messages: string[];
+    };
     inventory: string[];
     actions: {
         name: string;
@@ -141,23 +145,25 @@ export const drawGameStepAction = ({
     // );
 
     // Use random glitch effect
-    if (randomSlow() > 0.90){
-        s.rotate(0.25 * random());
-        s.scale(1 - 0.25 * random(), 1);
-        s.background(s.color(0, 150 * random(), 0));
+    if (step.glitch){
+        if (randomSlow() > 1.0 - step.glitch.ratio){
+            s.rotate(0.25 * random());
+            s.scale(1 - 0.25 * random(), 1);
+            s.background(s.color(0, 150 * random(), 0));
 
-        if (randomSlow() > 0.25){
-            s.fill(s.color(255, 255, 255));
-            s.textAlign(`center`);
-            s.textSize(12);
-            const texts = [`HELP ME!`, `Who are you?`, `What are you?`, `How are you?`, `Where are you?`, `Why are you?`];
-            s.text(texts[Math.floor(random() * texts.length) ],
-                PAD,
-                PAD + LINE * 5,
-                PAD * -2 + frame.width,
-                PAD * -2 + frame.height,
-            );
-            return { done: false };
+            if (randomSlow() > 0.25){
+                s.fill(s.color(255, 255, 255));
+                s.textAlign(`center`);
+                s.textSize(12);
+                const glitches = step.glitch.messages;
+                s.text(glitches[Math.floor(random() * glitches.length) ],
+                    PAD,
+                    PAD + LINE * 5,
+                    PAD * -2 + frame.width,
+                    PAD * -2 + frame.height,
+                );
+                return { done: false };
+            }
         }
     }
 
