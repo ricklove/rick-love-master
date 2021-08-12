@@ -78,8 +78,8 @@ When you open your eyes, everything is still dark.
 
 You can't see anything, but you can feel that you are lying on a cold hard surface...`,
         glitch: {
-            ratio: 0.06,
-            messages: [`HELP ME!`, `Who are you?`, `What are you?`, `How are you?`, `Where are you?`, `Why are you?`],
+            ratio: 0.07,
+            messages: [`HELP ME!`, `Who are you?`, `What are you?`, `How are you?`, `Where are you?`, `Why are you?`, `I'm cold`, `I'm alone`, `I'm afraid`],
         },
         inventory: [],
         actions: [

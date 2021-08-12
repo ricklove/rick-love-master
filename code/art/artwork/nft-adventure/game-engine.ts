@@ -45,6 +45,7 @@ export const drawGameStepAction = ({
 
     const { random: randomSlow } = createRandomGenerator(`${seed}${step}${Math.floor(timeMs / 250)}`);
     const { random: random } = createRandomGenerator(`${seed}${step}${Math.floor(timeMs / 50)}`);
+    const shouldGlitch = step.glitch && randomSlow() > (1.0 - step.glitch.ratio);
 
     const charsPerSecond = 30;
     let charLength = Math.floor(timeMs / 1000 * charsPerSecond);
@@ -149,25 +150,23 @@ export const drawGameStepAction = ({
     // );
 
     // Use random glitch effect
-    if (step.glitch){
-        if (randomSlow() > 1.0 - step.glitch.ratio){
-            s.rotate(0.25 * random());
-            s.scale(1 - 0.25 * random(), 1);
-            s.background(s.color(0, 150 * random(), 0));
+    if (step.glitch && shouldGlitch){
+        s.rotate(0.25 * random());
+        s.scale(1 - 0.25 * random(), 1);
+        s.background(s.color(0, 150 * random(), 0));
 
-            if (randomSlow() > 0.25){
-                s.fill(s.color(255, 255, 255));
-                s.textAlign(`center`);
-                s.textSize(12);
-                const glitches = step.glitch.messages;
-                s.text(glitches[Math.floor(random() * glitches.length) ],
-                    PAD,
-                    PAD + LINE * 5,
-                    PAD * -2 + frame.width,
-                    PAD * -2 + frame.height,
-                );
-                return { done: false };
-            }
+        if (randomSlow() > 0.25){
+            s.fill(s.color(255, 255, 255));
+            s.textAlign(`center`);
+            s.textSize(12);
+            const glitches = step.glitch.messages;
+            s.text(glitches[Math.floor(random() * glitches.length) ],
+                PAD,
+                PAD + LINE * 5,
+                PAD * -2 + frame.width,
+                PAD * -2 + frame.height,
+            );
+            return { done: false };
         }
     }
 
