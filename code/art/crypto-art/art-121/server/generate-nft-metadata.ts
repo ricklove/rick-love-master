@@ -103,96 +103,96 @@ export const generateNftMetadata_art121 = async ({ params }: { params: { [name: 
     // TODO: Check if image already exists in image bucket
     //
 
-    // TESTING - return art cats metadata
-    return {
-        "platform": `Art Blocks Factory`,
-        "name": `CatBlocks #362`,
-        "curation_status": `factory`,
-        "series": `N/A`,
-        "description": `TESTING - NOT REAL NFT! Adorable and purrfect, these carefully bred kitties express a wide range of emotions and personalities. They live entirely on-chain and they just love receiving pets. Additional project feature(s) => Breed: Tabby, Color: Ginger, Body Pattern: 3, Face Pattern: 7, Eye Color: Yellow, Head: Cheeky, Ears: Floppy, Eyes: Doe, Pupils: Normal, Mouth: Pouting`,
-        "external_url": `https://www.artblocks.io/token/73000362`,
-        "artist": `Kristy Glas`,
-        "royaltyInfo": {
-            "artistAddress": `0x0EB47BEabd9CE2cab7CbED57aA6B040975BDc1b7`,
-            "additionalPayee": `0x0000000000000000000000000000000000000000`,
-            "additionalPayeePercentage": `0`,
-            "royaltyFeeByID": `10`,
-        },
-        "collection_name": `CatBlocks by Kristy Glas`,
-        "traits": [
-            {
-                "trait_type": `CatBlocks`,
-                "value": `All CatBlocks`,
-            },
-            {
-                "trait_type": `CatBlocks`,
-                "value": `Breed: Tabby`,
-            },
-            {
-                "trait_type": `CatBlocks`,
-                "value": `Color: Ginger`,
-            },
-            {
-                "trait_type": `CatBlocks`,
-                "value": `Body Pattern: 3`,
-            },
-            {
-                "trait_type": `CatBlocks`,
-                "value": `Face Pattern: 7`,
-            },
-            {
-                "trait_type": `CatBlocks`,
-                "value": `Eye Color: Yellow`,
-            },
-            {
-                "trait_type": `CatBlocks`,
-                "value": `Head: Cheeky`,
-            },
-            {
-                "trait_type": `CatBlocks`,
-                "value": `Ears: Floppy`,
-            },
-            {
-                "trait_type": `CatBlocks`,
-                "value": `Eyes: Doe`,
-            },
-            {
-                "trait_type": `CatBlocks`,
-                "value": `Pupils: Normal`,
-            },
-            {
-                "trait_type": `CatBlocks`,
-                "value": `Mouth: Pouting`,
-            },
-        ],
-        "payout_address": `0x6C093Fe8bc59e1e0cAe2Ec10F0B717D3D182056B`,
-        "features": [
-            `Breed: Tabby`,
-            `Color: Ginger`,
-            `Body Pattern: 3`,
-            `Face Pattern: 7`,
-            `Eye Color: Yellow`,
-            `Head: Cheeky`,
-            `Ears: Floppy`,
-            `Eyes: Doe`,
-            `Pupils: Normal`,
-            `Mouth: Pouting`,
-        ],
-        "website": `https://www.kristyglas.com/`,
-        "is dynamic": true,
-        "script type": `p5js`,
-        "aspect ratio (w/h)": `1`,
-        "uses hash": true,
-        "tokenID": `73000362`,
-        "token hash": `0x820969f356d934272722976f870d6743fc90938275e1c93866a2e025565fa71f`,
-        "license": `NIFTY`,
-        "animation_url": `https://generator.artblocks.io/73000362`,
-        "image": `https://api.artblocks.io/image/73000362`,
-        "interactive_nft": {
-            "code_uri": `https://generator.artblocks.io/73000362`,
-            "version": `0.0.9`,
-        },
-    };
+    // // TESTING - return art cats metadata
+    // return {
+    //     "platform": `Art Blocks Factory`,
+    //     "name": `CatBlocks #362`,
+    //     "curation_status": `factory`,
+    //     "series": `N/A`,
+    //     "description": `TESTING - NOT REAL NFT! Adorable and purrfect, these carefully bred kitties express a wide range of emotions and personalities. They live entirely on-chain and they just love receiving pets. Additional project feature(s) => Breed: Tabby, Color: Ginger, Body Pattern: 3, Face Pattern: 7, Eye Color: Yellow, Head: Cheeky, Ears: Floppy, Eyes: Doe, Pupils: Normal, Mouth: Pouting`,
+    //     "external_url": `https://www.artblocks.io/token/73000362`,
+    //     "artist": `Kristy Glas`,
+    //     "royaltyInfo": {
+    //         "artistAddress": `0x0EB47BEabd9CE2cab7CbED57aA6B040975BDc1b7`,
+    //         "additionalPayee": `0x0000000000000000000000000000000000000000`,
+    //         "additionalPayeePercentage": `0`,
+    //         "royaltyFeeByID": `10`,
+    //     },
+    //     "collection_name": `CatBlocks by Kristy Glas`,
+    //     "traits": [
+    //         {
+    //             "trait_type": `CatBlocks`,
+    //             "value": `All CatBlocks`,
+    //         },
+    //         {
+    //             "trait_type": `CatBlocks`,
+    //             "value": `Breed: Tabby`,
+    //         },
+    //         {
+    //             "trait_type": `CatBlocks`,
+    //             "value": `Color: Ginger`,
+    //         },
+    //         {
+    //             "trait_type": `CatBlocks`,
+    //             "value": `Body Pattern: 3`,
+    //         },
+    //         {
+    //             "trait_type": `CatBlocks`,
+    //             "value": `Face Pattern: 7`,
+    //         },
+    //         {
+    //             "trait_type": `CatBlocks`,
+    //             "value": `Eye Color: Yellow`,
+    //         },
+    //         {
+    //             "trait_type": `CatBlocks`,
+    //             "value": `Head: Cheeky`,
+    //         },
+    //         {
+    //             "trait_type": `CatBlocks`,
+    //             "value": `Ears: Floppy`,
+    //         },
+    //         {
+    //             "trait_type": `CatBlocks`,
+    //             "value": `Eyes: Doe`,
+    //         },
+    //         {
+    //             "trait_type": `CatBlocks`,
+    //             "value": `Pupils: Normal`,
+    //         },
+    //         {
+    //             "trait_type": `CatBlocks`,
+    //             "value": `Mouth: Pouting`,
+    //         },
+    //     ],
+    //     "payout_address": `0x6C093Fe8bc59e1e0cAe2Ec10F0B717D3D182056B`,
+    //     "features": [
+    //         `Breed: Tabby`,
+    //         `Color: Ginger`,
+    //         `Body Pattern: 3`,
+    //         `Face Pattern: 7`,
+    //         `Eye Color: Yellow`,
+    //         `Head: Cheeky`,
+    //         `Ears: Floppy`,
+    //         `Eyes: Doe`,
+    //         `Pupils: Normal`,
+    //         `Mouth: Pouting`,
+    //     ],
+    //     "website": `https://www.kristyglas.com/`,
+    //     "is dynamic": true,
+    //     "script type": `p5js`,
+    //     "aspect ratio (w/h)": `1`,
+    //     "uses hash": true,
+    //     "tokenID": `73000362`,
+    //     "token hash": `0x820969f356d934272722976f870d6743fc90938275e1c93866a2e025565fa71f`,
+    //     "license": `NIFTY`,
+    //     "animation_url": `https://generator.artblocks.io/73000362`,
+    //     "image": `https://api.artblocks.io/image/73000362`,
+    //     "interactive_nft": {
+    //         "code_uri": `https://generator.artblocks.io/73000362`,
+    //         "version": `0.0.9`,
+    //     },
+    // };
 
 
     return {
@@ -215,21 +215,36 @@ export const generateNftMetadata_art121 = async ({ params }: { params: { [name: 
             {
                 "display_type": `number`,
                 "trait_type": `Interactive Version`,
-                "value": 4,
+                "value": 5,
             },
         ],
         name: `2021-01-21 21:21:21 Art`,
-        description: `Capture this unique second in our human timeline with this NFT crypto art. (4)`,
+        description: `TEST ONLY - Not a real NFT! --- Capture this unique second in our human timeline with this NFT crypto art. (5)`,
         // TODO: use an actual image
         image: `https://ricklove.me/blog-content/posts/2021-01-21-crypto-art-121/art-121.png`,
         external_link: `https://ricklove.me/art/art-121?tokenId=${tokenId}`,
 
+        // TESTING Interactive
+        // "is dynamic": true,
+        // "script type": `p5js`,
+        // "animation_url": `https://ricklove.me/art/art-121?tokenId=${tokenId}`,
+        // interactive_nft: {
+        //     code_uri: `https://ricklove.me/art/art-121?tokenId=${tokenId}`,
+        //     version: `0.0.9`,
+        // },
+
+        // TESTING Interactive - FROM cat blocks
         "is dynamic": true,
         "script type": `p5js`,
-        "animation_url": `https://ricklove.me/art/art-121?tokenId=${tokenId}`,
-        interactive_nft: {
-            code_uri: `https://ricklove.me/art/art-121?tokenId=${tokenId}`,
-            version: `0.0.9`,
+        "aspect ratio (w/h)": `1`,
+        "uses hash": true,
+        "tokenID": `73000362`,
+        "token hash": `0x820969f356d934272722976f870d6743fc90938275e1c93866a2e025565fa71f`,
+        "license": `NIFTY`,
+        "animation_url": `https://generator.artblocks.io/73000362`,
+        "interactive_nft": {
+            "code_uri": `https://generator.artblocks.io/73000362`,
+            "version": `0.0.9`,
         },
     };
 };
