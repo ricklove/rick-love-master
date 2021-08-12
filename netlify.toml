@@ -1,0 +1,4 @@
+[[headers]]
+  for = "/art/*"
+    [headers.values]
+    Access-Control-Allow-Origin = "*"
