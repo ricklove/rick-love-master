@@ -69,6 +69,44 @@
     (function (exports) {
   'use strict';
 
+  function ownKeys(object, enumerableOnly) {
+    var keys = Object.keys(object);
+
+    if (Object.getOwnPropertySymbols) {
+      var symbols = Object.getOwnPropertySymbols(object);
+
+      if (enumerableOnly) {
+        symbols = symbols.filter(function (sym) {
+          return Object.getOwnPropertyDescriptor(object, sym).enumerable;
+        });
+      }
+
+      keys.push.apply(keys, symbols);
+    }
+
+    return keys;
+  }
+
+  function _objectSpread2(target) {
+    for (var i = 1; i < arguments.length; i++) {
+      var source = arguments[i] != null ? arguments[i] : {};
+
+      if (i % 2) {
+        ownKeys(Object(source), true).forEach(function (key) {
+          _defineProperty(target, key, source[key]);
+        });
+      } else if (Object.getOwnPropertyDescriptors) {
+        Object.defineProperties(target, Object.getOwnPropertyDescriptors(source));
+      } else {
+        ownKeys(Object(source)).forEach(function (key) {
+          Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key));
+        });
+      }
+    }
+
+    return target;
+  }
+
   function asyncGeneratorStep(gen, resolve, reject, _next, _throw, key, arg) {
     try {
       var info = gen[key](arg);
@@ -103,6 +141,21 @@
         _next(undefined);
       });
     };
+  }
+
+  function _defineProperty(obj, key, value) {
+    if (key in obj) {
+      Object.defineProperty(obj, key, {
+        value: value,
+        enumerable: true,
+        configurable: true,
+        writable: true
+      });
+    } else {
+      obj[key] = value;
+    }
+
+    return obj;
   }
 
   function _slicedToArray(arr, i) {
@@ -231,8 +284,18 @@
 
   /** There is only a single linear progression, all other choices end in death */
   var story = [{
-    title: "Cold",
+    title: "NFT Text Adventure",
     asciiArt: asciiArt_manArmUp,
+    description: "",
+    inventory: [],
+    actions: [{
+      name: "play",
+      description: "",
+      gameOver: false
+    }]
+  }, {
+    title: "Cold",
+    // asciiArt: asciiArt_manArmUp,
     description: "\n\nCold, damp, wet... you wake up shivering. \n\nWhen you open your eyes, everything is still dark.\n\nYou can't see anything, but you can feel that you are lying on a cold hard surface...",
     glitch: {
       ratio: 0.07,
@@ -241,13 +304,35 @@
     inventory: [],
     actions: [{
       name: "search the ground",
-      description: "?"
+      description: "You search the ground...",
+      gameOver: "\nAs you feel around your position, you realize that there is no ground anywhere around you.\n                \nThere is no way you can escape.\n\n"
     }, {
       name: "call for help",
-      description: "?"
+      description: "You call for help...",
+      gameOver: "\nSuddenly you hear scratching quickly coming towards you.\n                \nYou feel a sharp pain in your stomach. Your muscles spasm for a moment, but then you are no longer able to move.\n"
     }, {
       name: "listen",
-      description: "?"
+      description: "You carefully listen without making a sound...",
+      gameOver: false
+    }]
+  }, {
+    title: "Whispers",
+    // asciiArt: asciiArt_manArmUp,
+    description: "\n\nIn the distance, you hear the slight brookling of water flowing over stones, but nothing else at first.\n\nThen, you hear something you did not expect, a whisper in your ear that says: \n\n\"Do not move... They will see you...\"",
+    glitch: {
+      ratio: 0.03,
+      messages: ["HELP ME!", "Who are you?", "What are you?", "How are you?", "Where are you?", "Why are you?", "I'm cold", "I'm alone", "I'm afraid"]
+    },
+    inventory: [],
+    actions: [{
+      name: "remain still",
+      description: "You decide not moving is a good idea for now..."
+    }, {
+      name: "move away",
+      description: "You jerk away from the whisper..."
+    }, {
+      name: "stand up",
+      description: "You push yourself off the ground..."
     }]
   }];
   var createNftAdventure_nftTextAdventure = function createNftAdventure_nftTextAdventure() {
@@ -258,22 +343,25 @@
     };
   };
 
-  var drawGameStepAction = function drawGameStepAction(_ref) {
-    var _step$actions$name, _step$actions;
+  var drawGameStep = function drawGameStep(_ref) {
+    var _ref2, _action$name;
 
     var step = _ref.step,
-        actionIndex = _ref.actionIndex;
-        _ref.gameData;
-        var s = _ref.s,
-        timeMs = _ref.timeMs,
+        actionIndex = _ref.actionIndex,
+        s = _ref.s,
+        timeMsRaw = _ref.timeMs,
         frame = _ref.frame,
-        seed = _ref.seed;
+        seed = _ref.seed,
+        input = _ref.input,
+        mode = _ref.mode;
 
     if (!step) {
       return {
         done: true
       };
     }
+
+    var timeMs = timeMsRaw;
 
     var _createRandomGenerato = createRandomGenerator("".concat(seed).concat(step).concat(Math.floor(timeMs / 250))),
         randomSlow = _createRandomGenerato.random;
@@ -385,6 +473,10 @@
           done: false
         };
       }
+    }
+
+    if (mode !== "step") {
+      charLength = Number.MAX_SAFE_INTEGER;
     } // Skip title typing
 
 
@@ -426,7 +518,7 @@
       return {
         done: false
       };
-    } // Wait a sec
+    } // Blink
 
 
     if (!drawWaitMessage(3000, ">", "> |", drawActionInputText, s.color(100, 255, 100), 12).done) {
@@ -435,7 +527,8 @@
       };
     }
 
-    var actionName = (_step$actions$name = (_step$actions = step.actions[actionIndex !== null && actionIndex !== void 0 ? actionIndex : -1]) === null || _step$actions === void 0 ? void 0 : _step$actions.name) !== null && _step$actions$name !== void 0 ? _step$actions$name : "";
+    var action = step.actions[actionIndex !== null && actionIndex !== void 0 ? actionIndex : -1];
+    var actionName = (_ref2 = (_action$name = action === null || action === void 0 ? void 0 : action.name) !== null && _action$name !== void 0 ? _action$name : input) !== null && _ref2 !== void 0 ? _ref2 : "";
 
     if (!drawNextPart("> ".concat(actionName), drawActionInputText, s.color(100, 255, 100), 14).done) {
       return {
@@ -449,8 +542,269 @@
       };
     }
 
+    if (mode === "response" && action) {
+      var _action$gameOver;
+
+      charLength = Math.floor(timeMs / 1000 * charsPerSecond);
+      s.background(s.color(25 - 25 * Math.cos(2 * Math.PI * timeMs / 1000 / 10), 0, 0));
+      var actionResponse = action.description;
+      var gameOver = (_action$gameOver = action.gameOver) !== null && _action$gameOver !== void 0 ? _action$gameOver : false;
+      var actionColor = gameOver ? s.color(255, 100, 100) : s.color(100, 100, 255);
+
+      if (!drawNextPart(actionResponse, drawDescriptionText, actionColor, 14).done) {
+        return {
+          done: false
+        };
+      }
+
+      if (!drawWaitMessage(1000).done) {
+        return {
+          done: false
+        };
+      }
+
+      if (action.gameOver == null) {
+        s.textAlign("center");
+
+        if (!drawNextPart("TO BE CONTINUED", drawActionInputText, actionColor, 14).done) {
+          return {
+            done: true
+          };
+        }
+      }
+
+      if (gameOver) {
+        s.background(s.color(25 - 25 * Math.cos(2 * Math.PI * timeMs / 1000 / 10), 0, 0));
+
+        if (!drawNextPart(gameOver, drawDescriptionText, actionColor, 14).done) {
+          return {
+            done: false
+          };
+        }
+
+        if (!drawWaitMessage(1000).done) {
+          return {
+            done: false
+          };
+        }
+
+        s.textAlign("center");
+
+        if (!drawNextPart("GAME OVER", drawActionInputText, actionColor, 14).done) {
+          return {
+            done: true
+          };
+        }
+      }
+    }
+
     return {
       done: true
+    };
+  };
+  var drawGame = function drawGame(_ref3) {
+    var _gameData$story;
+
+    var gameState = _ref3.gameState,
+        gameData = _ref3.gameData,
+        s = _ref3.s,
+        frame = _ref3.frame,
+        seed = _ref3.seed,
+        timeMs = _ref3.timeMs;
+
+    if (gameState.mode === "step" && gameState.input) {
+      gameState.timeStartMs = 1;
+      gameState.actionIndex = undefined;
+    }
+
+    var _gameState$stepIndex = gameState.stepIndex,
+        stepIndex = _gameState$stepIndex === void 0 ? 0 : _gameState$stepIndex,
+        actionIndex = gameState.actionIndex,
+        _gameState$input = gameState.input,
+        input = _gameState$input === void 0 ? "" : _gameState$input,
+        mode = gameState.mode;
+    var step = (_gameData$story = gameData.story[stepIndex || 0]) !== null && _gameData$story !== void 0 ? _gameData$story : undefined;
+
+    if (!step) {
+      return {
+        done: true,
+        gameState: gameState
+      };
+    }
+
+    var result = drawGameStep({
+      step: step,
+      actionIndex: actionIndex,
+      s: s,
+      timeMs: timeMs,
+      frame: frame,
+      seed: seed,
+      input: input,
+      mode: mode
+    });
+
+    if (input.endsWith("\n") && input.trim()) {
+      var words = input.trim().split(" ").filter(function (x) {
+        return x;
+      });
+      var i = step.actions.findIndex(function (x) {
+        return x.name.split(" ").some(function (n) {
+          return words.some(function (w) {
+            return w === n;
+          });
+        });
+      });
+
+      if (i >= 0) {
+        return {
+          done: false,
+          gameState: _objectSpread2(_objectSpread2({}, gameState), {}, {
+            input: "",
+            actionIndex: i,
+            mode: "response",
+            timeStartMs: undefined
+          })
+        };
+      } else {
+        return {
+          done: false,
+          gameState: _objectSpread2(_objectSpread2({}, gameState), {}, {
+            input: ""
+          })
+        };
+      }
+    }
+
+    if (gameState.mode === "response" && result.done) {
+      var _step$actions$gameOve, _step$actions, _gameState$actionInde;
+
+      var isGameOver = (_step$actions$gameOve = (_step$actions = step.actions[(_gameState$actionInde = gameState.actionIndex) !== null && _gameState$actionInde !== void 0 ? _gameState$actionInde : -1]) === null || _step$actions === void 0 ? void 0 : _step$actions.gameOver) !== null && _step$actions$gameOve !== void 0 ? _step$actions$gameOve : true;
+
+      if (isGameOver) {
+        // Start over
+        if (input) {
+          return {
+            done: false,
+            gameState: _objectSpread2(_objectSpread2({}, gameState), {}, {
+              mode: "step",
+              stepIndex: 0,
+              actionIndex: undefined,
+              timeStartMs: undefined,
+              input: ""
+            })
+          };
+        }
+
+        return {
+          done: true,
+          gameState: gameState
+        };
+      }
+
+      return {
+        done: false,
+        gameState: _objectSpread2(_objectSpread2({}, gameState), {}, {
+          mode: "step",
+          stepIndex: stepIndex + 1,
+          actionIndex: undefined,
+          timeStartMs: undefined
+        })
+      };
+    }
+
+    return _objectSpread2(_objectSpread2({}, result), {}, {
+      gameState: gameState
+    });
+  };
+
+  function scaleByPixelRatio(input) {
+    var pixelRatio = window.devicePixelRatio || 1;
+    return Math.floor(input * pixelRatio);
+  }
+
+  var createEventProvider = function createEventProvider(canvas) {
+    var windowSubs = [];
+
+    var windowAddEventListener = function windowAddEventListener(name, handler, options) {
+      windowSubs.push({
+        name: name,
+        handler: handler
+      });
+      return window.addEventListener(name, handler, options);
+    };
+
+    var windowEventListenersDestroy = function windowEventListenersDestroy() {
+      windowSubs.forEach(function (_ref) {
+        var name = _ref.name,
+            handler = _ref.handler;
+        window.removeEventListener(name, handler);
+      });
+    };
+
+    var canvasSubs = [];
+
+    var canvasAddEventListener = function canvasAddEventListener(name, handler, options) {
+      if (!canvas) {
+        return null;
+      }
+
+      canvasSubs.push({
+        name: name,
+        handler: handler
+      });
+      return canvas.addEventListener(name, handler, options);
+    };
+
+    var canvasEventListenersDestroy = function canvasEventListenersDestroy() {
+      canvasSubs.forEach(function (_ref2) {
+        var name = _ref2.name,
+            handler = _ref2.handler;
+        canvas.removeEventListener(name, handler);
+      });
+    };
+
+    var clientToGamePosition = function clientToGamePosition(item, rectCached) {
+      var rect = rectCached !== null && rectCached !== void 0 ? rectCached : canvas.getBoundingClientRect();
+      var canvasPos = {
+        x: item.clientX - rect.left,
+        y: item.clientY - rect.top
+      };
+      var gamePos = {
+        x: scaleByPixelRatio(canvasPos.x) / canvas.width,
+        y: 1 - scaleByPixelRatio(canvasPos.y) / canvas.height
+      };
+      return gamePos;
+    };
+
+    return {
+      windowAddEventListener: windowAddEventListener,
+      canvasAddEventListener: canvasAddEventListener,
+      tools: {
+        getMouseGamePosition: function getMouseGamePosition(e) {
+          return clientToGamePosition(e);
+        },
+        getTouchPositions: function getTouchPositions(e) {
+          var rect = canvas.getBoundingClientRect();
+          var pos = [];
+          var touches = e.touches;
+
+          for (var i = 0; i < touches.length; i++) {
+            var touch = touches.item(i);
+
+            if (!touch) {
+              continue;
+            }
+
+            pos.push(clientToGamePosition(touch, rect));
+          }
+
+          return pos;
+        }
+      },
+      destroy: function destroy() {
+        windowEventListenersDestroy();
+        canvasEventListenersDestroy();
+      }
     };
   };
 
@@ -501,17 +855,28 @@
       var SMALL_SIZE = 300;
       var size = window.innerWidth > TARGET_SIZE && window.innerHeight > TARGET_SIZE ? TARGET_SIZE : SMALL_SIZE;
       var canvas = null;
-      var timeStart = Date.now();
       var wasRecording = false;
-      var isDone = false;
+      var eventProvider = null;
 
       var _seed$split$map3 = seed.split(":").map(function (x) {
         return parseInt(x, 10);
       }),
           _seed$split$map4 = _slicedToArray(_seed$split$map3, 2),
-          stepIndex = _seed$split$map4[0],
-          actionIndex = _seed$split$map4[1];
+          stepIndexInit = _seed$split$map4[0],
+          actionIndexInit = _seed$split$map4[1];
 
+      var now = function now() {
+        return recorder ? recorder.timeProvider.now() : Date.now();
+      };
+
+      var gameState = {
+        timeStart: now(),
+        stepIndex: stepIndexInit,
+        actionIndex: actionIndexInit,
+        input: "",
+        isRespondingToInput: false,
+        mode: "step"
+      };
       return createP5(function (s) {
         s.setup = function () {
           console.log("renderArt:createP5:s.setup");
@@ -519,45 +884,59 @@
           var canvasId = "".concat(Math.random());
           result.id(canvasId);
           canvas = document.getElementById(canvasId);
+          eventProvider = createEventProvider(canvas);
+          eventProvider.windowAddEventListener("keydown", function (x) {
+            if (x.key.toLowerCase() === "backspace") {
+              gameState.input = gameState.input.substr(0, gameState.input.length - 1);
+            } else if (x.key.toLowerCase() === "enter") {
+              gameState.input += "\n";
+            } else if (x.key.match(/^[A-Za-z0-9 ]$/)) {
+              gameState.input = gameState.input.trimStart() + x.key;
+            }
+
+            console.log("keypress", {
+              x: x,
+              input: gameState.input
+            });
+          });
         };
 
         s.draw = function () {
-          var _recorder$isRecording;
+          var _recorder$isRecording, _gameState$timeStartM;
 
-          console.log("renderArt:createP5:s.draw");
-
+          // console.log(`renderArt:createP5:s.draw`);
           if (recorder !== null && recorder !== void 0 && recorder.isRecording() && !wasRecording) {
-            timeStart = recorder.timeProvider.now();
-            isDone = false;
+            gameState.timeStartMs = recorder.timeProvider.now();
           }
 
-          wasRecording = (_recorder$isRecording = recorder === null || recorder === void 0 ? void 0 : recorder.isRecording()) !== null && _recorder$isRecording !== void 0 ? _recorder$isRecording : false;
-
-          if (isDone) {
-            return;
-          } // if (recorder?.isWaitingForFrame() && canvas) {
+          wasRecording = (_recorder$isRecording = recorder === null || recorder === void 0 ? void 0 : recorder.isRecording()) !== null && _recorder$isRecording !== void 0 ? _recorder$isRecording : false; // if (isDone){ return; }
+          // if (recorder?.isWaitingForFrame() && canvas) {
           //     console.log(`game.update waitingForFrame - addFrame`, {});
           //     (async () => await recorder.getRecorder().addFrame(canvas))();
           //     return;
           // }
 
-
-          var timeMs = recorder ? recorder.timeProvider.now() - timeStart : Date.now() - timeStart;
-          var result = drawGameStepAction({
+          var timeStart = (_gameState$timeStartM = gameState.timeStartMs) !== null && _gameState$timeStartM !== void 0 ? _gameState$timeStartM : now();
+          var timeMs = now() - timeStart;
+          var result = drawGame({
             frame: {
               width: size,
               height: size
             },
             s: s,
             gameData: nftAdventure_nftDungeon,
-            step: nftAdventure_nftDungeon.story[stepIndex],
-            actionIndex: actionIndex,
-            timeMs: timeMs,
-            seed: seed
+            gameState: gameState,
+            seed: seed,
+            timeMs: timeMs
           });
+          gameState = result.gameState;
+
+          if (!gameState.timeStartMs) {
+            gameState.timeStartMs = now();
+          }
 
           if (result.done) {
-            isDone = true;
+            return;
           }
 
           if (recorder !== null && recorder !== void 0 && recorder.isWaitingForFrame() && canvas) {
