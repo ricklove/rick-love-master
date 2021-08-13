@@ -367,9 +367,9 @@ var generateNftMetadata_art121 = /*#__PURE__*/function () {
               //     version: `0.0.11`,
               // },
               // TESTING Interactive - NFT Adventure
-              "animation_url": "https://ricklove.me/art/build/nft-text-adventure/?tokenId=".concat(tokenId),
+              "animation_url": "https://ricklove.me/art/build/nft-text-adventure",
               interactive_nft: {
-                code_uri: "https://ricklove.me/art/build/nft-text-adventure/?tokenId=".concat(tokenId),
+                code_uri: "https://ricklove.me/art/build/nft-text-adventure",
                 version: "0.0.11"
               }
             });

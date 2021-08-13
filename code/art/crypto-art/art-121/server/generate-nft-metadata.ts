@@ -143,9 +143,9 @@ export const generateNftMetadata_art121 = async ({ params }: { params: { [name: 
         // },
 
         // TESTING Interactive - NFT Adventure
-        "animation_url": `https://ricklove.me/art/build/nft-text-adventure/?tokenId=${tokenId}`,
+        "animation_url": `https://ricklove.me/art/build/nft-text-adventure`,
         interactive_nft: {
-            code_uri: `https://ricklove.me/art/build/nft-text-adventure/?tokenId=${tokenId}`,
+            code_uri: `https://ricklove.me/art/build/nft-text-adventure`,
             version: `0.0.11`,
         },
 
