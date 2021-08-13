@@ -4,7 +4,8 @@ import type p5 from 'p5';
 import { createRandomGenerator } from '../../rando';
 import { ArtWork } from '../../artwork-type';
 import { createNftAdventure_nftTextAdventure } from './stories/nft-text-adventure';
-import { drawGameStepAction } from './game-engine';
+import { drawGame, GameState } from './game-engine';
+import { createEventProvider, EventProvider } from '../games/event-provider';
 
 const nftAdventure_nftDungeon = createNftAdventure_nftTextAdventure();
 
@@ -48,11 +49,24 @@ export const art_nftAdventure_nftTextAdventure: ArtWork = {
         const speed = 0.5;
 
         let canvas = null as null | HTMLCanvasElement;
-        let timeStart = Date.now();
         let wasRecording = false;
         let isDone = false;
 
-        const [stepIndex, actionIndex] = seed.split(`:`).map(x => parseInt(x, 10));
+        let eventProvider = null as null |EventProvider;
+        const [stepIndexInit, actionIndexInit] = seed.split(`:`).map(x => parseInt(x, 10) as undefined | number);
+
+        const now = () => {
+            return recorder ? recorder.timeProvider.now() : Date.now();
+        };
+
+        let gameState = {
+            timeStart: now(),
+            stepIndex: stepIndexInit,
+            actionIndex: actionIndexInit,
+            input: ``,
+            isRespondingToInput: false,
+            mode: `step`,
+        } as GameState;
 
         return createP5((s: p5) => {
             s.setup = () => {
@@ -62,17 +76,32 @@ export const art_nftAdventure_nftTextAdventure: ArtWork = {
                 const canvasId = `${Math.random()}`;
                 result.id(canvasId);
                 canvas = document.getElementById(canvasId) as HTMLCanvasElement;
+
+                eventProvider = createEventProvider(canvas);
+                eventProvider.windowAddEventListener(`keydown`, x => {
+
+                    if (x.key.toLowerCase() === `backspace`){
+                        gameState.input = gameState.input.substr(0, gameState.input.length - 1);
+                    } else if (x.key.toLowerCase() === `enter`){
+                        gameState. input += `\n`;
+                    } else if (x.key.match(/^[A-Za-z0-9 ]$/)) {
+                        gameState.input = gameState.input.trimStart() + x.key;
+                    }
+
+                    console.log(`keypress`, { x, input: gameState.input });
+                });
+
             };
             s.draw = () => {
-                console.log(`renderArt:createP5:s.draw`);
+                // console.log(`renderArt:createP5:s.draw`);
 
                 if (recorder?.isRecording() && !wasRecording){
-                    timeStart = recorder.timeProvider.now();
+                    gameState.timeStartMs = recorder.timeProvider.now();
                     isDone = false;
                 }
                 wasRecording = recorder?.isRecording() ?? false;
 
-                if (isDone){ return; }
+                // if (isDone){ return; }
 
                 // if (recorder?.isWaitingForFrame() && canvas) {
                 //     console.log(`game.update waitingForFrame - addFrame`, {});
@@ -80,20 +109,26 @@ export const art_nftAdventure_nftTextAdventure: ArtWork = {
                 //     return;
                 // }
 
-                const timeMs = recorder ? (recorder.timeProvider.now() - timeStart)
-                    : (Date.now() - timeStart);
-                const result = drawGameStepAction({
+                const timeStart = gameState.timeStartMs ?? now();
+                const timeMs = now() - timeStart;
+
+                const result = drawGame({
                     frame: { width: size, height: size },
                     s,
                     gameData: nftAdventure_nftDungeon,
-                    step: nftAdventure_nftDungeon.story[stepIndex],
-                    actionIndex,
-                    timeMs,
+                    gameState,
                     seed: seed,
+                    timeMs,
                 });
+
+                gameState = result.gameState;
+                if (!gameState.timeStartMs){
+                    gameState.timeStartMs = now();
+                }
 
                 if (result.done){
                     isDone = true;
+                    return;
                 }
 
                 if (recorder?.isWaitingForFrame() && canvas){

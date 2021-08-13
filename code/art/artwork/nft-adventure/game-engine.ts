@@ -13,7 +13,7 @@ type GameStep = {
     actions: {
         name: string;
         description: string;
-        gameOver?: boolean;
+        gameOver?: string | false;
     }[];
 };
 type GameItem = {
@@ -21,27 +21,32 @@ type GameItem = {
     description: string;
 };
 type GameData = {
+    story: GameStep[];
     items: readonly GameItem [];
 };
-export const drawGameStepAction = ({
+export const drawGameStep = ({
     step,
     actionIndex,
-    gameData,
     s,
-    timeMs,
+    timeMs: timeMsRaw,
     frame,
     seed,
+    input,
+    mode,
 }: {
     step: GameStep;
     actionIndex?: number;
-    gameData: GameData;
     s: p5;
     timeMs: number;
     frame: { width: number, height: number };
     seed: string;
+    input: string;
+    mode: 'step' | 'response';
 }): { done: boolean } => {
 
     if (!step){ return { done: true };}
+
+    const timeMs = timeMsRaw;
 
     const { random: randomSlow } = createRandomGenerator(`${seed}${step}${Math.floor(timeMs / 250)}`);
     const { random: random } = createRandomGenerator(`${seed}${step}${Math.floor(timeMs / 50)}`);
@@ -170,6 +175,10 @@ export const drawGameStepAction = ({
         }
     }
 
+    if (mode !== `step`){
+        charLength = Number.MAX_SAFE_INTEGER;
+    }
+
     // Skip title typing
     charLength += step.title.trim().length;
     s.textAlign(`center`);
@@ -195,12 +204,13 @@ export const drawGameStepAction = ({
         return { done: false };
     }
 
-    // Wait a sec
+    // Blink
     if (!drawWaitMessage(3000, `>`, `> |`, drawActionInputText, s.color(100, 255, 100), 12).done){
         return { done: false };
     }
 
-    const actionName = step.actions[actionIndex ?? -1]?.name ?? ``;
+    const action = step.actions[actionIndex ?? -1];
+    const actionName = action?.name ?? input ?? ``;
     if (!drawNextPart(`> ${actionName}`, drawActionInputText, s.color(100, 255, 100), 14).done){
         return { done: false };
     }
@@ -209,5 +219,166 @@ export const drawGameStepAction = ({
         return { done: false };
     }
 
+    if (mode === `response` && action){
+        charLength = Math.floor(timeMs / 1000 * charsPerSecond);
+
+        s.background(s.color(25 - 25 * Math.cos((2 * Math.PI * timeMs / 1000) / 10), 0, 0));
+
+        const actionResponse = action.description;
+        const gameOver = action.gameOver ?? false;
+        const actionColor = gameOver ? s.color(255, 100, 100) : s.color(100, 100, 255);
+        if (!drawNextPart(actionResponse, drawDescriptionText, actionColor, 14).done){
+            return { done: false };
+        }
+
+        if (!drawWaitMessage(1000).done){
+            return { done: false };
+        }
+
+        if (action.gameOver == null){
+            s.textAlign(`center`);
+            if (!drawNextPart(`TO BE CONTINUED`, drawActionInputText, actionColor, 14).done){
+                return { done: true };
+            }
+        }
+
+        if (gameOver){
+            s.background(s.color(25 - 25 * Math.cos((2 * Math.PI * timeMs / 1000) / 10), 0, 0));
+
+            if (!drawNextPart(gameOver, drawDescriptionText, actionColor, 14).done){
+                return { done: false };
+            }
+
+            if (!drawWaitMessage(1000).done){
+                return { done: false };
+            }
+
+            s.textAlign(`center`);
+            if (!drawNextPart(`GAME OVER`, drawActionInputText, actionColor, 14).done){
+                return { done: true };
+            }
+        }
+    }
+
+
     return { done: true };
+};
+
+export type GameState = {
+    timeStartMs?: number;
+    stepIndex?: number;
+    actionIndex?: number;
+    input: string;
+    mode: 'step' | 'response';
+};
+export const drawGame = ({
+    gameState,
+    gameData,
+    s,
+    frame,
+    seed,
+    timeMs,
+}: {
+    gameState: GameState;
+    gameData: GameData;
+    s: p5;
+    frame: { width: number, height: number };
+    seed: string;
+    timeMs: number;
+}): { done: boolean, gameState: GameState } => {
+
+
+    if (gameState.mode === `step` && gameState.input){
+        gameState.timeStartMs = 1;
+        gameState.actionIndex = undefined;
+    }
+
+    const {
+        stepIndex = 0,
+        actionIndex,
+        input = ``,
+        mode,
+    } = gameState;
+
+    const step = gameData.story[stepIndex || 0] ?? undefined;
+
+    if (!step){
+        return {
+            done: true,
+            gameState,
+        };
+    }
+
+    const result = drawGameStep({
+        step, actionIndex, s,
+        timeMs, frame, seed, input, mode,
+    });
+
+    if (input.endsWith(`\n`) && input.trim()){
+        const words = input.trim().split(` `).filter(x => x);
+        const i = step.actions.findIndex(x => x.name.split(` `).some(n => words.some(w => w === n)));
+        if (i >= 0){
+            return {
+                done: false,
+                gameState: {
+                    ...gameState,
+                    input: ``,
+                    actionIndex: i,
+                    mode: `response`,
+                    timeStartMs: undefined,
+                },
+            };
+        } else {
+            return {
+                done: false,
+                gameState: {
+                    ...gameState,
+                    input: ``,
+                },
+            };
+        }
+    }
+
+    if (gameState.mode === `response` && result.done){
+
+        const isGameOver = step.actions[gameState.actionIndex ?? -1]?.gameOver ?? true;
+        if (isGameOver){
+
+            // Start over
+            if (input){
+                return {
+                    done: false,
+                    gameState: {
+                        ...gameState,
+                        mode: `step`,
+                        stepIndex: 0,
+                        actionIndex: undefined,
+                        timeStartMs: undefined,
+                        input: ``,
+                    },
+                };
+            }
+
+            return {
+                done: true,
+                gameState,
+            };
+        }
+
+        return {
+            done: false,
+            gameState: {
+                ...gameState,
+                mode: `step`,
+                stepIndex: stepIndex + 1,
+                actionIndex: undefined,
+                timeStartMs: undefined,
+            },
+        };
+    }
+
+    return {
+        ...result,
+        gameState,
+    };
 };
