@@ -136,17 +136,18 @@ export const generateNftMetadata_art121 = async ({ params }: { params: { [name: 
         "is dynamic": true,
         // "script type": `p5js`,
         "aspect ratio (w/h)": `1`,
-        "animation_url": `https://ricklove.me/art/build/121/?tokenId=${tokenId}`,
+        // "animation_url": `https://ricklove.me/art/build/121/?tokenId=${tokenId}`,
+        // interactive_nft: {
+        //     code_uri: `https://ricklove.me/art/build/121/?tokenId=${tokenId}`,
+        //     version: `0.0.11`,
+        // },
+
+        // TESTING Interactive - NFT Adventure
+        "animation_url": `https://ricklove.me/art/build/nft-text-adventure/?tokenId=${tokenId}`,
         interactive_nft: {
-            code_uri: `https://ricklove.me/art/build/121/?tokenId=${tokenId}`,
+            code_uri: `https://ricklove.me/art/build/nft-text-adventure/?tokenId=${tokenId}`,
             version: `0.0.11`,
         },
 
-        // // // // TESTING Interactive - FROM cat blocks
-        // "animation_url": `https://ricklove.me/art/interactive-test/`,
-        // "interactive_nft": {
-        //     "code_uri": `https://ricklove.me/art/interactive-test/`,
-        //     "version": `0.0.10`,
-        // },
     };
 };
