@@ -51,6 +51,12 @@ export const drawGameStep = ({
         s.background(s.color(25 - 25 * Math.cos((2 * Math.PI * timeMs / 1000) / 10), 0, 0));
         lineCount = 0;
     };
+    const jumpToBottomLineOfScreen = (offsetLines = 1) => {
+        const frameBottomLine = frame.height - PAD - LINE_HEIGHT * offsetLines;
+        if (lineCount * LINE_HEIGHT < frameBottomLine){
+            lineCount = frameBottomLine / LINE_HEIGHT;
+        }
+    };
 
     clearScreen();
     s.fill(s.color(255, 255, 255));
@@ -328,6 +334,8 @@ export const drawGameStep = ({
     if (!drawWaitMessage(1000).done){
         return { done: false };
     }
+
+    jumpToBottomLineOfScreen(1 + (1 + step.actions.length * FONT_SIZE_M * LINE_HEIGHT_MULTIPLIER / LINE_HEIGHT));
 
     const actionsText = `${step.actions.map(x => `    - ${x.name}`).join(`\n`)}`;
     if (!drawNextPart(actionsText, drawActionsText, {
