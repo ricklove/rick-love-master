@@ -47,8 +47,12 @@ export const drawGameStep = ({
     const charsPerSecond = 30;
     let charLength = Math.floor(timeMs / 1000 * charsPerSecond);
 
-    s.background(s.color(25 - 25 * Math.cos((2 * Math.PI * timeMs / 1000) / 10), 0, 0));
-    // s.background(0);
+    const clearScreen = () => {
+        s.background(s.color(25 - 25 * Math.cos((2 * Math.PI * timeMs / 1000) / 10), 0, 0));
+        lineCount = 0;
+    };
+
+    clearScreen();
     s.fill(s.color(255, 255, 255));
     // s.textFont(`monospace`);
     s.textAlign(`left`);
@@ -62,6 +66,7 @@ export const drawGameStep = ({
     const LINE_HEIGHT = 20;
     const LINE_HEIGHT_MULTIPLIER = 1.4;
     const PAD = 4;
+    const LINE_PAD = 12;
     const actionCount = step.actions.length;
 
     let lineCount = 0.0;
@@ -98,7 +103,7 @@ export const drawGameStep = ({
                 wrapped[wrapped.length - 1] += wRemaining + ` `;
 
                 remainingTextLength -= w.length;
-                if (remainingTextLength < 0){
+                if (remainingTextLength <= 0){
                     break outer;
                 }
             }
@@ -115,8 +120,7 @@ export const drawGameStep = ({
             lineCount += (fontSize * LINE_HEIGHT_MULTIPLIER) / LINE_HEIGHT;
         }
 
-        lineCount += PAD / LINE_HEIGHT;
-
+        lineCount += LINE_PAD / LINE_HEIGHT;
     };
 
     const drawTitleText = (t: string) => {
@@ -199,6 +203,10 @@ export const drawGameStep = ({
 
         s.fill(color);
         s.textSize(fontSize);
+
+        if (!text){
+            return { done: true };
+        }
 
         printText({ text, textLength: charLength * speedMultiplier, fontSize });
 
@@ -321,7 +329,7 @@ export const drawGameStep = ({
         return { done: false };
     }
 
-    const actionsText = `${step.actions.map(x => `    - ${x.name} \n`).join(``)}`;
+    const actionsText = `${step.actions.map(x => `    - ${x.name}`).join(`\n`)}`;
     if (!drawNextPart(actionsText, drawActionsText, {
         color: s.color(255, 255, 100),
         fontSize: FONT_SIZE_M,
@@ -338,8 +346,8 @@ export const drawGameStep = ({
     }
 
     const action = step.actions[actionIndex ?? -1];
-    const actionName = action?.name ?? input ?? ``;
-    if (!drawNextPart(`> ${actionName}`, drawActionInputText, {
+    const commandText = action?.name ?? input ?? ``;
+    if (!drawNextPart(`> ${commandText}`, drawActionInputText, {
         color: s.color(100, 255, 100),
         fontSize: FONT_SIZE_M,
     }).done){
@@ -352,13 +360,13 @@ export const drawGameStep = ({
 
     if (mode === `response` && action){
         charLength = Math.floor(timeMs / 1000 * charsPerSecond);
-
-        s.background(s.color(25 - 25 * Math.cos((2 * Math.PI * timeMs / 1000) / 10), 0, 0));
+        clearScreen();
 
         const actionResponse = action.description;
         const gameOver = action.gameOver ?? false;
-        const actionColor = gameOver ? s.color(255, 100, 100) : s.color(100, 100, 255);
-        if (!drawNextPart(actionResponse, drawDescriptionText, {
+        const actionColor = s.color(255, 255, 0);
+        const responseColor = gameOver ? s.color(255, 100, 100) : s.color(100, 100, 255);
+        if (!drawNextPart(actionResponse.trim(), drawDescriptionText, {
             color: actionColor,
             fontSize: FONT_SIZE_M,
         }).done){
@@ -372,7 +380,7 @@ export const drawGameStep = ({
         if (action.gameOver == null){
             s.textAlign(`center`);
             if (!drawNextPart(`TO BE CONTINUED`, drawActionInputText, {
-                color: actionColor,
+                color: responseColor,
                 fontSize: FONT_SIZE_L,
             }).done){
                 return { done: true };
@@ -380,10 +388,10 @@ export const drawGameStep = ({
         }
 
         if (gameOver){
-            s.background(s.color(25 - 25 * Math.cos((2 * Math.PI * timeMs / 1000) / 10), 0, 0));
+            // clearScreen();
 
-            if (!drawNextPart(gameOver, drawDescriptionText, {
-                color: actionColor,
+            if (!drawNextPart(gameOver.trim(), drawDescriptionText, {
+                color: responseColor,
                 fontSize: FONT_SIZE_M,
             }).done){
                 return { done: false };
@@ -395,7 +403,7 @@ export const drawGameStep = ({
 
             s.textAlign(`center`);
             if (!drawNextPart(`GAME OVER`, drawActionInputText, {
-                color: actionColor,
+                color: responseColor,
                 fontSize: FONT_SIZE_L,
             }).done){
                 return { done: true };
