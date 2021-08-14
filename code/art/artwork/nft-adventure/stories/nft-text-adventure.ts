@@ -69,13 +69,16 @@ const story: GameStep<GameItemKey>[] = [
             {
                 name: `play`,
                 description: ``,
-                gameOver: false,
+                result: { gameOver: false },
             },
         ],
     },
     {
         title: `Cold`,
-        // asciiArt: asciiArt_manArmUp,
+        art: {
+            //ascii: asciiArt_manArmUp,
+            base64: base64_manArmUp,
+        },
         description: `
 
 Cold, damp, wet... you wake up shivering. 
@@ -92,23 +95,27 @@ You can't see anything, but you can feel that you are lying on a cold hard surfa
             {
                 name: `search the ground`,
                 description: `You search the ground...`,
-                gameOver: `
+                result: {
+                    gameOver: `
 As you feel around your position, you realize that there is no ground anywhere around you.
                 
 There is no way you can escape.
 
 `,
+                },
             },
             {
                 name: `call for help`,
                 description: `You call for help...`,
-                gameOver: `
+                result: {
+                    gameOver: `
 Suddenly you hear scratching quickly coming towards you.
                 
 You feel a sharp pain in your stomach. Your muscles spasm for a moment, but then you are no longer able to move.
 `,
+                },
             },
-            { name: `listen`, description: `You carefully listen without making a sound...`, gameOver: false },
+            { name: `listen`, description: `You carefully listen without making a sound...`, result: { gameOver: false } },
         ],
     },
     {

@@ -41,10 +41,22 @@ export const drawGameStep = ({
     // s Buffer
     const sQueue = [] as { callback: () => void, lineCount: number }[];
     const s = {
-        color: (r: number, g: number, b: number) => sRaw.color(r, g, b),
+        color: (r: number, g: number, b: number, a?: number) => sRaw.color(r, g, b, a),
         textWidth: (text: string) => sRaw.textWidth(text),
+        noStroke: () => {
+            sQueue.push({ callback: () => sRaw.noStroke(), lineCount });
+        },
+        stroke: (color: p5.Color) => {
+            sQueue.push({ callback: () => sRaw.stroke(color), lineCount });
+        },
         fill: (color: p5.Color) => {
             sQueue.push({ callback: () => sRaw.fill(color), lineCount });
+        },
+        noTint: () => {
+            sQueue.push({ callback: () => sRaw.noTint(), lineCount });
+        },
+        tint: (gray: number, alpha: number) => {
+            sQueue.push({ callback: () => sRaw.tint(gray, alpha), lineCount });
         },
         background: (color: p5.Color) => {
             console.log(`background`, { color });
@@ -63,6 +75,9 @@ export const drawGameStep = ({
         },
         image: (value: p5.Image, x: number, y: number, w: number, h: number) => {
             sQueue.push({ callback: () => sRaw.image(value, x, y, w, h), lineCount });
+        },
+        rect: (x: number, y: number, w: number, h: number) => {
+            sQueue.push({ callback: () => sRaw.rect(x, y, w, h), lineCount });
         },
         rotate: (value: number) => {
             sQueue.push({ callback: () => sRaw.rotate(value), lineCount });
@@ -94,8 +109,10 @@ export const drawGameStep = ({
         const charsPerSecond = 30;
         let charLength = Math.floor(timeMs / 1000 * charsPerSecond);
 
+        const getBackgroundColor = (opacity = 1) =>
+            s.color(25 - 25 * Math.cos((2 * Math.PI * timeMs / 1000) / 10), 0, 0, opacity * 255);
         const clearScreen = () => {
-            s.background(s.color(25 - 25 * Math.cos((2 * Math.PI * timeMs / 1000) / 10), 0, 0));
+            s.background(getBackgroundColor());
             lineCount = 0;
         };
         const jumpToBottomLineOfScreen = (offsetLines = 1) => {
@@ -106,6 +123,7 @@ export const drawGameStep = ({
         };
 
         clearScreen();
+        s.noStroke();
         s.fill(s.color(255, 255, 255));
         s.textAlign(`left`);
         s.textSize(FONT_SIZE_L);
@@ -179,7 +197,7 @@ export const drawGameStep = ({
                 PAD * -1 + frame.height,
             );
         };
-        const drawBase64Art = (base64: string) => {
+        const drawBase64Art = (base64: string, opacity = 1) => {
             const xTarget = PAD;
             const yTarget = PAD + +3 + 2 * LINE_HEIGHT;
             const wTarget = PAD * -1 + frame.width - (PAD);
@@ -199,12 +217,28 @@ export const drawGameStep = ({
             const x = xTarget + Math.floor((wTarget - w) / 2);
             const y = yTarget + Math.floor((hTarget - h) / 2);
 
+            // image.
+
+            if (opacity < 1){
+                s.tint(255, opacity * 255);
+            }
+
             s.image(image,
                 x,
                 y,
                 w,
                 h,
             );
+
+            s.noTint();
+
+            // if (opacity < 1){
+            //     s.noStroke();
+            //     s.fill(getBackgroundColor(opacity));
+            //     s.rect(x, y, w, h);
+            // }
+
+            // lineCount += (PAD * 2 + h) / LINE_HEIGHT;
         };
         const drawDescriptionText = (t: string) => {
             s.text(t,
@@ -266,15 +300,17 @@ export const drawGameStep = ({
         const drawWaitMessage = (timeMs: number,
             text?: string, altText?: string,
             drawText?: (t: string) => void,
-            options?: { color?: p5.Color, fontSize?: number },
+            options?: { color?: p5.Color, fontSize?: number, alwaysDraw?: boolean },
         ) => {
             const {
                 color,
                 fontSize,
+                alwaysDraw,
             } = options ?? {};
 
             const waitChars = timeMs / 1000 * charsPerSecond;
-            if (charLength < waitChars){
+            const isWaiting = charLength < waitChars;
+            if (alwaysDraw || isWaiting){
                 const waitText = !text ? ``
                     : !altText ? text
                         : ((charLength / charsPerSecond * 1000) % 1000 < 500 ? text : altText);
@@ -288,7 +324,10 @@ export const drawGameStep = ({
                     printText({ text: waitText, textLength: waitText.length, fontSize: FONT_SIZE_M });
                 //drawText(waitText);
                 }
-                return { done: false };
+
+                if (isWaiting){
+                    return { done: false };
+                }
             }
 
             charLength -= waitChars;
@@ -337,24 +376,27 @@ export const drawGameStep = ({
             return { done: false };
         }
 
+        const ALWAYS_DRAW_ART = true;
         if (step.art?.ascii){
             if (!drawWaitMessage(5000, step.art.ascii, step.art.ascii, drawAsciiArtText, {
                 color: titleColor,
                 fontSize: FONT_SIZE_S,
+                alwaysDraw: ALWAYS_DRAW_ART,
             }).done){
                 return { done: false };
             }
         }
         if (step.art?.base64){
-            if (charLength < 5 * charsPerSecond){
-                drawBase64Art(step.art.base64);
-                return { done: false };
-            }
             charLength -= 5 * charsPerSecond;
 
-        // if (!drawWaitMessage(5000, step.art.base64, step.art.base64, drawBase64Art).done){
-        //     return { done: false };
-        // }
+            const opacity = charLength <= 0 ? 1 : (1.0 - 0.75 * Math.min(1, charLength / charsPerSecond));
+            if (ALWAYS_DRAW_ART || charLength < 0){
+                drawBase64Art(step.art.base64, opacity);
+            }
+
+            if (charLength < 0){
+                return { done: false };
+            }
         }
 
 
@@ -380,7 +422,10 @@ export const drawGameStep = ({
         }
 
         // Blink
-        if (!drawWaitMessage(3000, `>`, `> |`, drawActionInputText, {
+        const blinkTime = actionIndex != null ? 3000
+            : input ? 0
+                : Number.MAX_SAFE_INTEGER;
+        if (!drawWaitMessage(blinkTime, `>`, `> |`, drawActionInputText, {
             color: s.color(100, 255, 100),
             fontSize: FONT_SIZE_M,
         }).done){
@@ -407,7 +452,7 @@ export const drawGameStep = ({
             clearScreen();
 
             const actionResponse = action.description;
-            const gameOver = action.gameOver ?? false;
+            const gameOver = action.result?.gameOver ?? false;
             const actionColor = s.color(255, 255, 0);
             const responseColor = gameOver ? s.color(255, 100, 100) : s.color(100, 100, 255);
             if (!drawNextPart(actionResponse.trim(), drawDescriptionText, {
@@ -421,7 +466,7 @@ export const drawGameStep = ({
                 return { done: false };
             }
 
-            if (action.gameOver == null){
+            if (action.result?.gameOver == null){
                 s.textAlign(`center`);
                 if (!drawNextPart(`TO BE CONTINUED`, drawActionInputText, {
                     color: responseColor,
@@ -552,7 +597,7 @@ export const drawGame = ({
 
     if (gameState.mode === `response` && result.done){
 
-        const isGameOver = step.actions[gameState.actionIndex ?? -1]?.gameOver ?? true;
+        const isGameOver = step.actions[gameState.actionIndex ?? -1]?.result?.gameOver ?? true;
         if (isGameOver){
 
             // Start over
