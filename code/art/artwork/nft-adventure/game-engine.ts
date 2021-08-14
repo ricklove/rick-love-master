@@ -1,6 +1,7 @@
 import { createRandomGenerator } from 'art/rando';
+import { GameAction } from 'dork/types';
 import type p5 from 'p5';
-import { GameStep } from './types';
+import { GameArt, GameStep, GameStepAction } from './types';
 import { GameImage, loadAndScaleImage } from './utils';
 
 type GameItem = {
@@ -59,7 +60,7 @@ export const drawGameStep = ({
             sQueue.push({ callback: () => sRaw.tint(gray, alpha), lineCount });
         },
         background: (color: p5.Color) => {
-            console.log(`background`, { color });
+            // console.log(`background`, { color });
             sQueue.push({ callback: () => sRaw.background(color), lineCount });
         },
         textAlign: (value: p5.HORIZ_ALIGN) => {
@@ -207,8 +208,9 @@ export const drawGameStep = ({
             if (!gameCache.images[base64]){
                 gameCache.images[base64] = loadAndScaleImage(sRaw, base64, [{ width: wTarget, height: hTarget }]);
             }
-            const { image } = gameCache.images[base64].imageScales[0] ?? {};
-            // console.log(`drawBase64Art`, { drawBase64Art, image });
+            const { isLoaded, imageScales } = gameCache.images[base64];
+            const { image } = imageScales?.[0] ?? {};
+            console.log(`drawBase64Art`, { isLoaded: isLoaded(), drawBase64Art, image });
 
             if (!image){ return;}
 
@@ -221,6 +223,9 @@ export const drawGameStep = ({
 
             if (opacity < 1){
                 s.tint(255, opacity * 255);
+            } else {
+                s.tint(255, 255);
+                // s.noTint();
             }
 
             s.image(image,
@@ -230,7 +235,7 @@ export const drawGameStep = ({
                 h,
             );
 
-            s.noTint();
+            // s.noTint();
 
             // if (opacity < 1){
             //     s.noStroke();
@@ -240,6 +245,32 @@ export const drawGameStep = ({
 
             // lineCount += (PAD * 2 + h) / LINE_HEIGHT;
         };
+
+        const drawArt = (art: undefined | GameArt, alwaysDraw: boolean) => {
+            if (art?.ascii){
+                if (!drawWaitMessage(5000, art.ascii, art.ascii, drawAsciiArtText, {
+                    color: titleColor,
+                    fontSize: FONT_SIZE_S,
+                    alwaysDraw,
+                }).done){
+                    return { done: false };
+                }
+            }
+            if (art?.base64){
+                charLength -= 5 * charsPerSecond;
+
+                const opacity = charLength <= 0 ? 1 : (1.0 - 0.85 * Math.min(1, charLength / charsPerSecond));
+                if (alwaysDraw || charLength < 0){
+                    drawBase64Art(art.base64, opacity);
+                }
+
+                if (charLength < 0){
+                    return { done: false };
+                }
+            }
+        };
+
+
         const drawDescriptionText = (t: string) => {
             s.text(t,
                 PAD,
@@ -376,29 +407,7 @@ export const drawGameStep = ({
             return { done: false };
         }
 
-        const ALWAYS_DRAW_ART = true;
-        if (step.art?.ascii){
-            if (!drawWaitMessage(5000, step.art.ascii, step.art.ascii, drawAsciiArtText, {
-                color: titleColor,
-                fontSize: FONT_SIZE_S,
-                alwaysDraw: ALWAYS_DRAW_ART,
-            }).done){
-                return { done: false };
-            }
-        }
-        if (step.art?.base64){
-            charLength -= 5 * charsPerSecond;
-
-            const opacity = charLength <= 0 ? 1 : (1.0 - 0.85 * Math.min(1, charLength / charsPerSecond));
-            if (ALWAYS_DRAW_ART || charLength < 0){
-                drawBase64Art(step.art.base64, opacity);
-            }
-
-            if (charLength < 0){
-                return { done: false };
-            }
-        }
-
+        drawArt(step.art, mode === `step`);
 
         s.textAlign(`left`);
         if (!drawNextPart(step.description.trim(), drawDescriptionText, {
@@ -411,33 +420,43 @@ export const drawGameStep = ({
             return { done: false };
         }
 
-        jumpToBottomLineOfScreen(1 + (1 + step.actions.length * FONT_SIZE_M * LINE_HEIGHT_MULTIPLIER / LINE_HEIGHT));
+        const drawActionInputSection = (
+            actions: GameStepAction[], actionIndex: undefined|number, actionInput: undefined|string,
+        ) => {
+            jumpToBottomLineOfScreen(1 + (1 + actions.length * FONT_SIZE_M * LINE_HEIGHT_MULTIPLIER / LINE_HEIGHT));
 
-        const actionsText = `${step.actions.map(x => `    - ${x.name}`).join(`\n`)}`;
-        if (!drawNextPart(actionsText, drawActionsText, {
-            color: s.color(255, 255, 100),
-            fontSize: FONT_SIZE_M,
-        }).done){
-            return { done: false };
-        }
+            const actionsText = `${actions.map(x => `    - ${x.name}`).join(`\n`)}`;
+            if (!drawNextPart(actionsText, drawActionsText, {
+                color: s.color(255, 255, 100),
+                fontSize: FONT_SIZE_M,
+            }).done){
+                return { done: false };
+            }
 
-        // Blink
-        const blinkTime = actionIndex != null ? 3000
-            : input ? 0
-                : Number.MAX_SAFE_INTEGER;
-        if (!drawWaitMessage(blinkTime, `>`, `> |`, drawActionInputText, {
-            color: s.color(100, 255, 100),
-            fontSize: FONT_SIZE_M,
-        }).done){
-            return { done: false };
-        }
+            // Blink
+            const blinkTime = actionIndex != null ? 3000
+                : actionInput ? 0
+                    : Number.MAX_SAFE_INTEGER;
+            if (!drawWaitMessage(blinkTime, `>`, `> |`, drawActionInputText, {
+                color: s.color(100, 255, 100),
+                fontSize: FONT_SIZE_M,
+            }).done){
+                return { done: false };
+            }
 
-        const action = step.actions[actionIndex ?? -1];
-        const commandText = action?.name ?? input?.trimEnd() ?? ``;
-        if (!drawNextPart(`> ${commandText}`, drawActionInputText, {
-            color: s.color(100, 255, 100),
-            fontSize: FONT_SIZE_M,
-        }).done){
+            const action = actions[actionIndex ?? -1];
+            const commandText = action?.name ?? actionInput?.trimEnd() ?? ``;
+            if (!drawNextPart(`> ${commandText}`, drawActionInputText, {
+                color: s.color(100, 255, 100),
+                fontSize: FONT_SIZE_M,
+            }).done){
+                return { done: false };
+            }
+
+            return { done: true };
+        };
+
+        if (!drawActionInputSection(step.actions, actionIndex, input).done){
             return { done: false };
         }
 
@@ -447,6 +466,7 @@ export const drawGameStep = ({
             }
         }
 
+        const action = step.actions[actionIndex ?? -1];
         if (mode === `response` && action){
             charLength = Math.floor(timeMs / 1000 * charsPerSecond);
             clearScreen();
@@ -479,6 +499,11 @@ export const drawGameStep = ({
             if (gameOver){
             // clearScreen();
 
+                const gameOverArt = action.result?.art;
+                if (gameOverArt){
+                    drawArt(gameOverArt, true);
+                }
+
                 if (!drawNextPart(gameOver.trim(), drawDescriptionText, {
                     color: responseColor,
                     fontSize: FONT_SIZE_M,
@@ -495,7 +520,12 @@ export const drawGameStep = ({
                     color: responseColor,
                     fontSize: FONT_SIZE_L,
                 }).done){
-                    return { done: true };
+                    return { done: false };
+                }
+
+                s.textAlign(`left`);
+                if (!drawActionInputSection([{ name: `restart`, description: `` }], undefined, input).done){
+                    return { done: false };
                 }
             }
         }
@@ -544,9 +574,9 @@ export const drawGame = ({
 }): { done: boolean, gameState: GameState } => {
 
 
-    if (gameState.mode === `step` && gameState.input){
+    if (gameState.input){
         gameState.timeStartMs = 1;
-        gameState.actionIndex = undefined;
+        // gameState.actionIndex = undefined;
     }
 
     const {
@@ -572,19 +602,23 @@ export const drawGame = ({
 
     if (input.endsWith(`\n`) && input.trim()){
         const words = input.trim().split(` `).filter(x => x);
-        const i = step.actions.findIndex(x => x.name.split(` `).some(n => words.some(w => w === n)));
-        if (i >= 0){
-            return {
-                done: false,
-                gameState: {
-                    ...gameState,
-                    input: ``,
-                    actionIndex: i,
-                    mode: `response`,
-                    timeStartMs: undefined,
-                },
-            };
-        } else {
+
+        if (mode === `step`){
+            const i = step.actions.findIndex(x => x.name.split(` `).some(n => words.some(w => w === n)));
+
+            if (i >= 0){
+                return {
+                    done: false,
+                    gameState: {
+                        ...gameState,
+                        input: ``,
+                        actionIndex: i,
+                        mode: `response`,
+                        timeStartMs: undefined,
+                    },
+                };
+            }
+
             return {
                 done: false,
                 gameState: {
@@ -601,7 +635,7 @@ export const drawGame = ({
         if (isGameOver){
 
             // Start over
-            if (input){
+            if (input === `restart\n`){
                 return {
                     done: false,
                     gameState: {
@@ -610,6 +644,15 @@ export const drawGame = ({
                         stepIndex: 0,
                         actionIndex: undefined,
                         timeStartMs: undefined,
+                        input: ``,
+                    },
+                };
+            }
+            if (input.endsWith(`\n`)){
+                return {
+                    done: false,
+                    gameState: {
+                        ...gameState,
                         input: ``,
                     },
                 };

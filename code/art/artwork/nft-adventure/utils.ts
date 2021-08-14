@@ -2,7 +2,7 @@ import type p5 from 'p5';
 
 export type GameImage = {
     image: p5.Image;
-    // isLoaded: () => boolean;
+    isLoaded: () => boolean;
     imageScales: {
         scaleRatio: number;
         image: p5.Image;
@@ -12,9 +12,9 @@ export const loadAndScaleImage = (s: p5, base64: string,
     targetSizes: { width: number, height: number }[],
 ): GameImage => {
 
-    //let isLoaded = false;
+    let isLoaded = false;
     const image = s.loadImage(base64, () => {
-        //  isLoaded = true;
+        isLoaded = true;
 
         image.loadPixels();
 
@@ -27,7 +27,7 @@ export const loadAndScaleImage = (s: p5, base64: string,
 
     const data: GameImage = {
         image,
-        // isLoaded: () => isLoaded,
+        isLoaded: () => isLoaded,
         imageScales: [],
     };
 
