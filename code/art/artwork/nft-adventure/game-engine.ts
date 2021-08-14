@@ -524,7 +524,7 @@ export const drawGameStep = ({
                 }
 
                 s.textAlign(`left`);
-                if (!drawActionInputSection([{ name: `restart`, description: `` }], undefined, input).done){
+                if (!drawActionInputSection(gameOverActions.map(x => ({ name: x, description: `` })), undefined, input).done){
                     return { done: false };
                 }
             }
@@ -547,6 +547,9 @@ export const drawGameStep = ({
 
     return result;
 };
+
+const gameOverActions = [`retry`, `restart`] as const;
+type GameOverAction = typeof gameOverActions[number];
 
 export type GameState = {
     timeStartMs?: number;
@@ -642,6 +645,18 @@ export const drawGame = ({
                         ...gameState,
                         mode: `step`,
                         stepIndex: 0,
+                        actionIndex: undefined,
+                        timeStartMs: undefined,
+                        input: ``,
+                    },
+                };
+            }
+            if (input === `retry\n`){
+                return {
+                    done: false,
+                    gameState: {
+                        ...gameState,
+                        mode: `step`,
                         actionIndex: undefined,
                         timeStartMs: undefined,
                         input: ``,
