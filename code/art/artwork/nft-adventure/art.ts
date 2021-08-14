@@ -4,7 +4,7 @@ import type p5 from 'p5';
 import { createRandomGenerator } from '../../rando';
 import { ArtWork } from '../../artwork-type';
 import { createNftAdventure_nftTextAdventure } from './stories/nft-text-adventure';
-import { drawGame, GameState } from './game-engine';
+import { drawGame, GameCache, GameState } from './game-engine';
 import { createEventProvider, EventProvider } from '../games/event-provider';
 
 const nftAdventure_nftDungeon = createNftAdventure_nftTextAdventure();
@@ -68,6 +68,8 @@ export const art_nftAdventure_nftTextAdventure: ArtWork = {
             mode: `step`,
         } as GameState;
 
+        const gameCache = {} as GameCache;
+
         return createP5((s: p5) => {
             s.setup = () => {
                 console.log(`renderArt:createP5:s.setup`);
@@ -117,6 +119,7 @@ export const art_nftAdventure_nftTextAdventure: ArtWork = {
                     s,
                     gameData: nftAdventure_nftDungeon,
                     gameState,
+                    gameCache,
                     seed: seed,
                     timeMs,
                 });

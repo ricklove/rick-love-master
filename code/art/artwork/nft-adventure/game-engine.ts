@@ -1,21 +1,8 @@
 import { createRandomGenerator } from 'art/rando';
 import type p5 from 'p5';
+import { GameStep } from './types';
+import { GameImage, loadAndScaleImage } from './utils';
 
-type GameStep = {
-    title: string;
-    asciiArt?: string;
-    description: string;
-    glitch?: {
-        ratio: number;
-        messages: string[];
-    };
-    inventory: string[];
-    actions: {
-        name: string;
-        description: string;
-        gameOver?: string | false;
-    }[];
-};
 type GameItem = {
     key: string;
     description: string;
@@ -24,8 +11,12 @@ type GameData = {
     story: GameStep[];
     items: readonly GameItem [];
 };
+export type GameCache = {
+    images?: { [base64: string]: GameImage };
+};
 export const drawGameStep = ({
     step,
+    gameCache,
     actionIndex,
     s,
     timeMs: timeMsRaw,
@@ -35,6 +26,7 @@ export const drawGameStep = ({
     mode,
 }: {
     step: GameStep;
+    gameCache: GameCache;
     actionIndex?: number;
     s: p5;
     timeMs: number;
@@ -80,6 +72,33 @@ export const drawGameStep = ({
             PAD + +3 + 2 * LINE,
             PAD * -2 + frame.width,
             PAD * -1 + frame.height,
+        );
+    };
+    const drawBase64Art = (base64: string) => {
+        const xTarget = PAD;
+        const yTarget = PAD + +3 + 2 * LINE;
+        const wTarget = PAD * -1 + frame.width - (PAD);
+        const hTarget = PAD * -1 + frame.height - (PAD + +3 + 2 * LINE);
+
+        if (!gameCache.images){ gameCache.images = {};}
+        if (!gameCache.images[base64]){
+            gameCache.images[base64] = loadAndScaleImage(s, base64, [{ width: wTarget, height: hTarget }]);
+        }
+        const { image } = gameCache.images[base64].imageScales[0] ?? {};
+        console.log(`drawBase64Art`, { drawBase64Art, image });
+
+        if (!image){ return;}
+
+        const w = image.width;
+        const h = image.height;
+        const x = xTarget + Math.floor((wTarget - w) / 2);
+        const y = yTarget + Math.floor((hTarget - h) / 2);
+
+        s.image(image,
+            x,
+            y,
+            w,
+            h,
         );
     };
     const drawDescriptionText = (t: string) => {
@@ -187,9 +206,18 @@ export const drawGameStep = ({
         return { done: false };
     }
 
-    if (!drawWaitMessage(5000, step.asciiArt, step.asciiArt, drawAsciiArtText, titleColor, 10).done){
-        return { done: false };
+    console.log(`step.art`, { art: step.art });
+    if (step.art?.ascii){
+        if (!drawWaitMessage(5000, step.art.ascii, step.art.ascii, drawAsciiArtText, titleColor, 10).done){
+            return { done: false };
+        }
     }
+    if (step.art?.base64){
+        if (!drawWaitMessage(5000, step.art.base64, step.art.base64, drawBase64Art).done){
+            return { done: false };
+        }
+    }
+
 
     s.textAlign(`left`);
     if (!drawNextPart(step.description.trim(), drawDescriptionText, s.color(255, 255, 255), 12).done){
@@ -274,6 +302,7 @@ export type GameState = {
 export const drawGame = ({
     gameState,
     gameData,
+    gameCache,
     s,
     frame,
     seed,
@@ -281,6 +310,7 @@ export const drawGame = ({
 }: {
     gameState: GameState;
     gameData: GameData;
+    gameCache: GameCache;
     s: p5;
     frame: { width: number, height: number };
     seed: string;
@@ -310,7 +340,7 @@ export const drawGame = ({
     }
 
     const result = drawGameStep({
-        step, actionIndex, s,
+        step, gameCache, actionIndex, s,
         timeMs, frame, seed, input, mode,
     });
 
