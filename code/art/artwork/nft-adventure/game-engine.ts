@@ -1,5 +1,4 @@
 import { createRandomGenerator } from 'art/rando';
-import { GameAction } from 'dork/types';
 import type p5 from 'p5';
 import { GameArt, GameStep, GameStepAction } from './types';
 import { GameImage, loadAndScaleImage } from './utils';
