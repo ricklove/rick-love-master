@@ -59,38 +59,94 @@ export const drawGameStep = ({
 
     s.textSize(FONT_SIZE_L);
 
-    const LINE = 20;
+    const LINE_HEIGHT = 20;
+    const LINE_HEIGHT_MULTIPLIER = 1.4;
     const PAD = 4;
     const actionCount = step.actions.length;
+
+    let lineCount = 0.0;
+    const printText = ({
+        text,
+        textLength,
+        fontSize,
+    }: {
+        text: string;
+        textLength: number;
+        fontSize: number;
+    }) => {
+
+        s.textSize(fontSize);
+        const charWidth = Math.ceil(s.textWidth(`MW`) / 2) + 1;
+
+        const maxLineLength = Math.floor((frame.width - PAD * 2) / charWidth);
+        const lines = text.split(`\n`);
+        let remainingTextLength = textLength;
+        const wrapped = [];
+
+        outer: for (const l of lines){
+            wrapped.push(``);
+
+            const words = l.split(` `);
+            for (const w of words){
+
+                if (w.length + wrapped[wrapped.length - 1].length > maxLineLength){
+                    // Next line
+                    wrapped.push(``);
+                }
+
+                const wRemaining = w.length > remainingTextLength ? w.substr(0, remainingTextLength) : w;
+                wrapped[wrapped.length - 1] += wRemaining + ` `;
+
+                remainingTextLength -= w.length;
+                if (remainingTextLength < 0){
+                    break outer;
+                }
+            }
+        }
+
+        // Draw lines
+        for (const l of wrapped){
+            s.text(l,
+                Math.floor(PAD),
+                Math.floor(PAD * +1 + lineCount * LINE_HEIGHT),
+                Math.floor(PAD * -2 + frame.width),
+                Math.floor(PAD * +1 + (lineCount + 1) * LINE_HEIGHT),
+            );
+            lineCount += (fontSize * LINE_HEIGHT_MULTIPLIER) / LINE_HEIGHT;
+        }
+
+        lineCount += PAD / LINE_HEIGHT;
+
+    };
 
     const drawTitleText = (t: string) => {
         s.text(t,
             PAD,
-            PAD * +1 + 0 * LINE,
+            PAD * +1 + 0 * LINE_HEIGHT,
             PAD * -2 + frame.width,
-            PAD * +1 + 2 * LINE,
+            PAD * +1 + 2 * LINE_HEIGHT,
         );
     };
     const drawAsciiArtText = (t: string) => {
         s.text(t,
             PAD,
-            PAD + +3 + 2 * LINE,
+            PAD + +3 + 2 * LINE_HEIGHT,
             PAD * -2 + frame.width,
             PAD * -1 + frame.height,
         );
     };
     const drawBase64Art = (base64: string) => {
         const xTarget = PAD;
-        const yTarget = PAD + +3 + 2 * LINE;
+        const yTarget = PAD + +3 + 2 * LINE_HEIGHT;
         const wTarget = PAD * -1 + frame.width - (PAD);
-        const hTarget = PAD * -1 + frame.height - (PAD + +3 + 2 * LINE);
+        const hTarget = PAD * -1 + frame.height - (PAD + +3 + 2 * LINE_HEIGHT);
 
         if (!gameCache.images){ gameCache.images = {};}
         if (!gameCache.images[base64]){
             gameCache.images[base64] = loadAndScaleImage(s, base64, [{ width: wTarget, height: hTarget }]);
         }
         const { image } = gameCache.images[base64].imageScales[0] ?? {};
-        console.log(`drawBase64Art`, { drawBase64Art, image });
+        // console.log(`drawBase64Art`, { drawBase64Art, image });
 
         if (!image){ return;}
 
@@ -109,23 +165,24 @@ export const drawGameStep = ({
     const drawDescriptionText = (t: string) => {
         s.text(t,
             PAD,
-            PAD + +3 + 2 * LINE,
+            PAD + +3 + 2 * LINE_HEIGHT,
             PAD * -2 + frame.width,
-            PAD * -6 + frame.height - (actionCount + 2) * LINE,
+            PAD * -6 + frame.height - (actionCount + 2) * LINE_HEIGHT,
         );
     };
     const drawActionsText = (t: string) => {
+        console.log(t);
         s.text(t,
             PAD,
-            PAD * -4 + frame.height - (actionCount + 2) * LINE,
+            PAD * -4 + frame.height - (actionCount + 2) * LINE_HEIGHT,
             PAD * -2 + frame.width,
-            PAD * -3 + frame.height - 2 * LINE,
+            PAD * -3 + frame.height - 2 * LINE_HEIGHT,
         );
     };
     const drawActionInputText = (t: string) => {
         s.text(t,
             PAD,
-            PAD * -2 + frame.height - 2 * LINE,
+            PAD * -2 + frame.height - 2 * LINE_HEIGHT,
             PAD * -2 + frame.width,
             PAD * -1 + frame.height,
         );
@@ -143,13 +200,16 @@ export const drawGameStep = ({
         s.fill(color);
         s.textSize(fontSize);
 
+        printText({ text, textLength: charLength * speedMultiplier, fontSize });
+
         if (charLength * speedMultiplier < text.length){
-            const t = text.substr(0, charLength * speedMultiplier);
-            drawText(t);
+            // const t = text.substr(0, charLength * speedMultiplier);
+            // drawText(t);
             return { done: false };
         }
 
-        drawText(text);
+        // printText({ text, textLength: charLength, fontSize });
+        // drawText(text, charLength,);
         charLength -= Math.floor(text.length / speedMultiplier);
 
         return { done: true };
@@ -177,7 +237,8 @@ export const drawGameStep = ({
                 s.textSize(fontSize);
             }
             if (waitText && drawText){
-                drawText(waitText);
+                printText({ text: waitText, textLength: waitText.length, fontSize: FONT_SIZE_M });
+                //drawText(waitText);
             }
             return { done: false };
         }
@@ -205,7 +266,7 @@ export const drawGameStep = ({
             const glitches = step.glitch.messages;
             s.text(glitches[Math.floor(random() * glitches.length) ],
                 PAD,
-                PAD + LINE * 5,
+                PAD + LINE_HEIGHT * 5,
                 PAD * -2 + frame.width,
                 PAD * -2 + frame.height,
             );
@@ -237,9 +298,15 @@ export const drawGameStep = ({
         }
     }
     if (step.art?.base64){
-        if (!drawWaitMessage(5000, step.art.base64, step.art.base64, drawBase64Art).done){
+        if (charLength < 5 * charsPerSecond){
+            drawBase64Art(step.art.base64);
             return { done: false };
         }
+        charLength -= 5 * charsPerSecond;
+
+        // if (!drawWaitMessage(5000, step.art.base64, step.art.base64, drawBase64Art).done){
+        //     return { done: false };
+        // }
     }
 
 
@@ -254,7 +321,7 @@ export const drawGameStep = ({
         return { done: false };
     }
 
-    const actionsText = `\n${step.actions.map(x => `    - ${x.name}\n`).join(``)}`;
+    const actionsText = `${step.actions.map(x => `    - ${x.name} \n`).join(``)}`;
     if (!drawNextPart(actionsText, drawActionsText, {
         color: s.color(255, 255, 100),
         fontSize: FONT_SIZE_M,
@@ -265,7 +332,7 @@ export const drawGameStep = ({
     // Blink
     if (!drawWaitMessage(3000, `>`, `> |`, drawActionInputText, {
         color: s.color(100, 255, 100),
-        fontSize: FONT_SIZE_L,
+        fontSize: FONT_SIZE_M,
     }).done){
         return { done: false };
     }
@@ -274,7 +341,7 @@ export const drawGameStep = ({
     const actionName = action?.name ?? input ?? ``;
     if (!drawNextPart(`> ${actionName}`, drawActionInputText, {
         color: s.color(100, 255, 100),
-        fontSize: FONT_SIZE_L,
+        fontSize: FONT_SIZE_M,
     }).done){
         return { done: false };
     }
