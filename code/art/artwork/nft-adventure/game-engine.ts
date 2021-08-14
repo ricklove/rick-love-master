@@ -256,9 +256,14 @@ export const drawGameStep = ({
                 }
             }
             if (art?.base64){
-                charLength -= 5 * charsPerSecond;
+                const FADE_CHAR_TIME = 2 * charsPerSecond;
+                const DISPLAY_CHAR_TIME = 5 * charsPerSecond;
 
-                const opacity = charLength <= 0 ? 1 : (1.0 - 0.85 * Math.min(1, charLength / charsPerSecond));
+                const fadeInOpacity = charLength > FADE_CHAR_TIME ? 1 : (charLength / FADE_CHAR_TIME);
+                charLength -= DISPLAY_CHAR_TIME;
+                const fadeOutOpacity = charLength <= 0 ? 1 : (1.0 - 0.85 * Math.min(1, charLength / FADE_CHAR_TIME));
+
+                const opacity = Math.min(fadeInOpacity, fadeOutOpacity);
                 if (alwaysDraw || charLength < 0){
                     drawBase64Art(art.base64, opacity);
                 }
@@ -481,7 +486,8 @@ export const drawGameStep = ({
                 return { done: false };
             }
 
-            if (!drawWaitMessage(1000).done){
+            const waitTime = actionResponse.trim() ? 3000 : 500;
+            if (!drawWaitMessage(waitTime).done){
                 return { done: false };
             }
 
@@ -491,7 +497,7 @@ export const drawGameStep = ({
                     color: responseColor,
                     fontSize: FONT_SIZE_L,
                 }).done){
-                    return { done: true };
+                    return { done: false };
                 }
             }
 
@@ -527,6 +533,7 @@ export const drawGameStep = ({
                     return { done: false };
                 }
             }
+
         }
 
 

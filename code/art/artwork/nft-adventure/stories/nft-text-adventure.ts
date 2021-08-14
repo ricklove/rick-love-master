@@ -76,7 +76,7 @@ const story: GameStep<GameItemKey>[] = [
         art: art_0000_armUp,
         description: `
 
-Cold, damp, wet... you wake up shivering. 
+Cold, wet, afraid... you wake up shivering. 
 
 When you open your eyes, everything is still dark.
 
