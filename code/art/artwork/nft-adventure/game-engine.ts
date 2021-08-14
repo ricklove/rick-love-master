@@ -404,7 +404,7 @@ export const drawGameStep = ({
 
         if (mode === `response` && action){
             charLength = Math.floor(timeMs / 1000 * charsPerSecond);
-            // clearScreen();
+            clearScreen();
 
             const actionResponse = action.description;
             const gameOver = action.gameOver ?? false;
