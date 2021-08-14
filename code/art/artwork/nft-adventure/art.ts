@@ -6,6 +6,7 @@ import { ArtWork } from '../../artwork-type';
 import { createNftAdventure_nftTextAdventure } from './stories/nft-text-adventure';
 import { drawGame, GameCache, GameState } from './game-engine';
 import { createEventProvider, EventProvider } from '../games/event-provider';
+import { pixelFontBase64_pressStart } from './media/pixel-font-press-start';
 
 const nftAdventure_nftDungeon = createNftAdventure_nftTextAdventure();
 
@@ -69,12 +70,15 @@ export const art_nftAdventure_nftTextAdventure: ArtWork = {
         } as GameState;
 
         const gameCache = {} as GameCache;
+        let font = null as null | p5.Font;
 
         return createP5((s: p5) => {
             s.setup = () => {
                 console.log(`renderArt:createP5:s.setup`);
 
-                const result = s.createCanvas(size, size);
+                const result = s.createCanvas(size, size, `webgl`);
+                font = s.loadFont(pixelFontBase64_pressStart);
+
                 const canvasId = `${Math.random()}`;
                 result.id(canvasId);
                 canvas = document.getElementById(canvasId) as HTMLCanvasElement;
@@ -96,6 +100,10 @@ export const art_nftAdventure_nftTextAdventure: ArtWork = {
             };
             s.draw = () => {
                 // console.log(`renderArt:createP5:s.draw`);
+
+                // WEBGL
+                s.translate(-size / 2, -size / 2, 0);
+                if (font) { s.textFont(font); }
 
                 if (recorder?.isRecording() && !wasRecording){
                     gameState.timeStartMs = recorder.timeProvider.now();

@@ -50,9 +50,14 @@ export const drawGameStep = ({
     s.background(s.color(25 - 25 * Math.cos((2 * Math.PI * timeMs / 1000) / 10), 0, 0));
     // s.background(0);
     s.fill(s.color(255, 255, 255));
-    s.textFont(`monospace`);
+    // s.textFont(`monospace`);
     s.textAlign(`left`);
-    s.textSize(14);
+
+    const FONT_SIZE_L = 12;
+    const FONT_SIZE_M = 8;
+    const FONT_SIZE_S = 6;
+
+    s.textSize(FONT_SIZE_L);
 
     const LINE = 20;
     const PAD = 4;
@@ -126,7 +131,15 @@ export const drawGameStep = ({
         );
     };
 
-    const drawNextPart = (text: string, drawText: (t: string) => void, color: p5.Color, fontSize: number, speedMultiplier = 1) => {
+    const drawNextPart = (text: string, drawText: (t: string) => void,
+        options: { color: p5.Color, fontSize: number, speedMultiplier?: number },
+    ) => {
+        const {
+            color,
+            fontSize,
+            speedMultiplier = 1,
+        } = options;
+
         s.fill(color);
         s.textSize(fontSize);
 
@@ -144,8 +157,14 @@ export const drawGameStep = ({
 
     const drawWaitMessage = (timeMs: number,
         text?: string, altText?: string,
-        drawText?: (t: string) => void, color?: p5.Color, fontSize?: number,
+        drawText?: (t: string) => void,
+        options?: { color?: p5.Color, fontSize?: number },
     ) => {
+        const {
+            color,
+            fontSize,
+        } = options ?? {};
+
         const waitChars = timeMs / 1000 * charsPerSecond;
         if (charLength < waitChars){
             const waitText = !text ? ``
@@ -182,7 +201,7 @@ export const drawGameStep = ({
         if (randomSlow() > 0.25){
             s.fill(s.color(255, 255, 255));
             s.textAlign(`center`);
-            s.textSize(12);
+            s.textSize(10);
             const glitches = step.glitch.messages;
             s.text(glitches[Math.floor(random() * glitches.length) ],
                 PAD,
@@ -202,13 +221,18 @@ export const drawGameStep = ({
     charLength += step.title.trim().length;
     s.textAlign(`center`);
     const titleColor = s.color(255, 255, 255);
-    if (!drawNextPart(step.title.trim(), drawTitleText, titleColor, 14).done){
+    if (!drawNextPart(step.title.trim(), drawTitleText, {
+        color: titleColor,
+        fontSize: FONT_SIZE_L,
+    }).done){
         return { done: false };
     }
 
-    console.log(`step.art`, { art: step.art });
     if (step.art?.ascii){
-        if (!drawWaitMessage(5000, step.art.ascii, step.art.ascii, drawAsciiArtText, titleColor, 10).done){
+        if (!drawWaitMessage(5000, step.art.ascii, step.art.ascii, drawAsciiArtText, {
+            color: titleColor,
+            fontSize: FONT_SIZE_S,
+        }).done){
             return { done: false };
         }
     }
@@ -220,26 +244,38 @@ export const drawGameStep = ({
 
 
     s.textAlign(`left`);
-    if (!drawNextPart(step.description.trim(), drawDescriptionText, s.color(255, 255, 255), 12).done){
+    if (!drawNextPart(step.description.trim(), drawDescriptionText, {
+        color: s.color(255, 255, 255),
+        fontSize: FONT_SIZE_M,
+    }).done){
         return { done: false };
     }
     if (!drawWaitMessage(1000).done){
         return { done: false };
     }
 
-    const actionsText = `${step.actions.map(x => `    - ${x.name}\n`).join(``)}`;
-    if (!drawNextPart(actionsText, drawActionsText, s.color(255, 255, 100), 12).done){
+    const actionsText = `\n${step.actions.map(x => `    - ${x.name}\n`).join(``)}`;
+    if (!drawNextPart(actionsText, drawActionsText, {
+        color: s.color(255, 255, 100),
+        fontSize: FONT_SIZE_M,
+    }).done){
         return { done: false };
     }
 
     // Blink
-    if (!drawWaitMessage(3000, `>`, `> |`, drawActionInputText, s.color(100, 255, 100), 12).done){
+    if (!drawWaitMessage(3000, `>`, `> |`, drawActionInputText, {
+        color: s.color(100, 255, 100),
+        fontSize: FONT_SIZE_L,
+    }).done){
         return { done: false };
     }
 
     const action = step.actions[actionIndex ?? -1];
     const actionName = action?.name ?? input ?? ``;
-    if (!drawNextPart(`> ${actionName}`, drawActionInputText, s.color(100, 255, 100), 14).done){
+    if (!drawNextPart(`> ${actionName}`, drawActionInputText, {
+        color: s.color(100, 255, 100),
+        fontSize: FONT_SIZE_L,
+    }).done){
         return { done: false };
     }
 
@@ -255,7 +291,10 @@ export const drawGameStep = ({
         const actionResponse = action.description;
         const gameOver = action.gameOver ?? false;
         const actionColor = gameOver ? s.color(255, 100, 100) : s.color(100, 100, 255);
-        if (!drawNextPart(actionResponse, drawDescriptionText, actionColor, 14).done){
+        if (!drawNextPart(actionResponse, drawDescriptionText, {
+            color: actionColor,
+            fontSize: FONT_SIZE_M,
+        }).done){
             return { done: false };
         }
 
@@ -265,7 +304,10 @@ export const drawGameStep = ({
 
         if (action.gameOver == null){
             s.textAlign(`center`);
-            if (!drawNextPart(`TO BE CONTINUED`, drawActionInputText, actionColor, 14).done){
+            if (!drawNextPart(`TO BE CONTINUED`, drawActionInputText, {
+                color: actionColor,
+                fontSize: FONT_SIZE_L,
+            }).done){
                 return { done: true };
             }
         }
@@ -273,7 +315,10 @@ export const drawGameStep = ({
         if (gameOver){
             s.background(s.color(25 - 25 * Math.cos((2 * Math.PI * timeMs / 1000) / 10), 0, 0));
 
-            if (!drawNextPart(gameOver, drawDescriptionText, actionColor, 14).done){
+            if (!drawNextPart(gameOver, drawDescriptionText, {
+                color: actionColor,
+                fontSize: FONT_SIZE_M,
+            }).done){
                 return { done: false };
             }
 
@@ -282,7 +327,10 @@ export const drawGameStep = ({
             }
 
             s.textAlign(`center`);
-            if (!drawNextPart(`GAME OVER`, drawActionInputText, actionColor, 14).done){
+            if (!drawNextPart(`GAME OVER`, drawActionInputText, {
+                color: actionColor,
+                fontSize: FONT_SIZE_L,
+            }).done){
                 return { done: true };
             }
         }
