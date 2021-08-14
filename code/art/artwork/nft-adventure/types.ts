@@ -9,7 +9,7 @@ export type GameStepAction = {
 
     // Result
     result?: {
-        /** If Game Over - the game over art
+        /** The game over art
          *
          * - minting an nft action would give the buyer a 2nd NFT also
          * - this would have a placeholder metadata/image until the result is known (i.e. the final NFT image would be revealed later once the results are known)

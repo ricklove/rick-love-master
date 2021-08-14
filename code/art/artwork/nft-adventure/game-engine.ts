@@ -499,6 +499,11 @@ export const drawGameStep = ({
                 }).done){
                     return { done: false };
                 }
+
+                s.textAlign(`left`);
+                if (!drawActionInputSection(gameOverActions.map(x => ({ name: x, description: `` })), undefined, input).done){
+                    return { done: false };
+                }
             }
 
             if (gameOver){

@@ -1,6 +1,7 @@
 import { GameStep } from '../types';
 import { art_0000_armUp } from './nft-text-adventure-art/0000-arm-up';
 import { art_0000_searchGround } from './nft-text-adventure-art/0000-01-search-ground';
+import { art_0000_callForHelp } from './nft-text-adventure-art/0000-02-call-for-help';
 
 
 const metadata = {
@@ -9,32 +10,6 @@ const metadata = {
     description: `NFT Text Adventure is a game where actions are chosen by the NFT community`,
     author: `Rick Love & the NFT Community`,
 };
-
-// https://cloudapps.herokuapp.com/imagetoascii/
-// .:*I$VMoun-
-// .!"#$%&O0olWM()*+-{|}~<>[]
-// .,:|'Oo(){}[]
-// .-:SOo
-const asciiArt_manArmUp = `
-.........(;-,.......................
-.......(;,...}:.....................
-.........."}:==::>..................
-.....(;::}:-==:::::>................
-..........,==:::::::::}.............
-.....(;:"}..:::::::::::::::.........
-.............:::-...<::::::::::.....
-...........(;:..........::::::::::..
-..........................-::::::::.
-.........oooSS:.............-::::::.
-......:SSOOOoo::...........:::::::-.
-......oOoo:o::..:.........::::::::..
-.....:OOo:...:::::........::::::::..
-......oOS:::::::::........o::::::...
-......-oOo::::...::..:ooooooo:::....
-..........::::--::::oooooooooo:.....
-...........:::::::oooooooooooo:.....
-....-:oooo:ooooooooooooooooooo:.....
-`.trim().replace(/\./g, ` `);
 
 const items = [
     {
@@ -95,7 +70,7 @@ You can't see anything, but you can feel that you are lying on a cold hard surfa
                     gameOver: `
 As you feel around your position, you realize that there is no ground anywhere around you.
                 
-There is no way you can escape.
+There is no way you can escape...
 
 `,
                 },
@@ -104,10 +79,15 @@ There is no way you can escape.
                 name: `call for help`,
                 description: `You call for help...`,
                 result: {
+                    art: art_0000_callForHelp,
                     gameOver: `
-Suddenly you hear scratching quickly coming towards you.
+You listen for a response, but hear nothing at first. 
+
+Then, after a moment, you hear clicking. 
+
+The sound grows louder as it gets near.
                 
-You feel a sharp pain in your stomach. Your muscles spasm for a moment, but then you are no longer able to move.
+Suddenly, you feel a sharp pain in your stomach. Your muscles spasm for a moment, but then you are no longer able to move...
 `,
                 },
             },
