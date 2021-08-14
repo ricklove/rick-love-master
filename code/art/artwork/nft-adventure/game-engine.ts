@@ -389,7 +389,7 @@ export const drawGameStep = ({
         if (step.art?.base64){
             charLength -= 5 * charsPerSecond;
 
-            const opacity = charLength <= 0 ? 1 : (1.0 - 0.75 * Math.min(1, charLength / charsPerSecond));
+            const opacity = charLength <= 0 ? 1 : (1.0 - 0.85 * Math.min(1, charLength / charsPerSecond));
             if (ALWAYS_DRAW_ART || charLength < 0){
                 drawBase64Art(step.art.base64, opacity);
             }
