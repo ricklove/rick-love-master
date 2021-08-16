@@ -366,27 +366,16 @@ const drawFace = (sImage: p5.Image, {
 
     // Eye
     const has2Eyes = xOffset < -0.6;
-    const xEye1 = 1 + xOffset;
-    const xEye2 = 3.0 + xOffset * 0.75;
-    drawPixelInRect(sImage, {
-        x: xEye1,
-        y: -1,
-    }, eyeColor, { center, scale, rotation, random });
-
-    // Eye 2
-    if (has2Eyes){
-        drawPixelInRect(sImage, {
-            x: xEye2,
-            y: -1,
-        }, eyeColor, { center, scale, rotation, random });
-    }
+    const xEye1 = 1.0 + xOffset;
+    const xEye2 = 4.0 + xOffset;
+    const xCenter = (xEye1 + xEye2) / 2;
 
     // Nose
-    const xCenter = has2Eyes ? (xEye1 + xEye2) / 2 : undefined;
     drawPixelInRect(sImage, {
-        x: xCenter != null ? xCenter : 2.55,
-        y: 0.25,
+        x: xCenter + 0.5,
+        y: 0.75,
     }, getColorVariant(noseColor, 5, random), { center, scale, rotation, random });
+
 
     // Mouth
     // drawPixelInRect(sImage, {
@@ -394,9 +383,22 @@ const drawFace = (sImage: p5.Image, {
     //     y: 2.00,
     // }, getColorVariant(hexToRgb(`#333333`), 5, random), { center, size, rotation });
     drawPixelInRect(sImage, {
-        x: xCenter != null ? xCenter : 2.25,
-        y: 1.75,
+        x: xCenter - 0.25,
+        y: 3.0,
     }, getColorVariant(mouthColor, 5, random), { center, scale, rotation, random });
+
+    // Eyes
+    drawPixelInRect(sImage, {
+        x: xEye1,
+        y: -1,
+    }, eyeColor, { center, scale, rotation, random });
+    if (has2Eyes){
+        drawPixelInRect(sImage, {
+            x: xEye2,
+            y: -1,
+        }, eyeColor, { center, scale, rotation, random });
+    }
+
 };
 
 const drawRectangle = (sImage: p5.Image, {
@@ -457,7 +459,7 @@ const drawPixelInRect = (sImage: p5.Image, positionFromCenter: Vector2, color: R
     ){ return; }
 
     const shadowRatioRaw =
-        (1 - 0.75 * Math.max(0, Math.min(1, (pos.y - (center.y - 1)) / 5) + (pos.x - (center.x - 1)) / 10));
+        (1 - 0.5 * Math.max(0, Math.min(1, (pos.y - (center.y - 1)) / 5) + (pos.x - (center.x - 1)) / 10));
 
     drawPixel(sImage, { position: pos, color, shadowRatio: shadowRatioRaw, random });
 };
