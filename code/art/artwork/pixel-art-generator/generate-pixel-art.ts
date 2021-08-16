@@ -244,7 +244,7 @@ export const drawHead_pixels = (s: p5, {
                 drawPixelInRect(sImage, {
                     x: i,
                     y: j,
-                }, getColorVariant(hairColor, 20, random), { center, scale, rotation });
+                }, getColorVariant(hairColor, 20, random), { center, scale, rotation, random });
             }
         }
     }
@@ -267,7 +267,7 @@ export const drawHead_pixels = (s: p5, {
                 drawPixelInRect(sImage, {
                     x: i,
                     y: j,
-                }, getColorVariant(hairColor, 20, random), { center, scale, rotation });
+                }, getColorVariant(hairColor, 20, random), { center, scale, rotation, random });
             }
         }
     }
@@ -278,7 +278,7 @@ export const drawHead_pixels = (s: p5, {
                 drawPixelInRect(sImage, {
                     x: i,
                     y: j,
-                }, getColorVariant(beardColor, 20, random), { center, scale, rotation });
+                }, getColorVariant(beardColor, 20, random), { center, scale, rotation, random });
             }
         }
     }
@@ -291,7 +291,7 @@ export const drawHead_pixels = (s: p5, {
                 drawPixelInRect(sImage, {
                     x: i,
                     y: j,
-                }, getColorVariant(moustacheColor, 20, random), { center, scale, rotation });
+                }, getColorVariant(moustacheColor, 20, random), { center, scale, rotation, random });
             }
         }
     }
@@ -303,14 +303,14 @@ export const drawHead_pixels = (s: p5, {
     drawPixelInRect(sImage, {
         x: xEye1,
         y: -1,
-    }, eyeColor, { center, scale, rotation });
+    }, eyeColor, { center, scale, rotation, random });
 
     // Eye 2
     if (has2Eyes){
         drawPixelInRect(sImage, {
             x: xEye2,
             y: -1,
-        }, eyeColor, { center, scale, rotation });
+        }, eyeColor, { center, scale, rotation, random });
     }
 
     // Nose
@@ -318,7 +318,7 @@ export const drawHead_pixels = (s: p5, {
     drawPixelInRect(sImage, {
         x: xCenter != null ? xCenter : 2.55,
         y: 0.25,
-    }, getColorVariant(noseColor, 5, random), { center, scale, rotation });
+    }, getColorVariant(noseColor, 5, random), { center, scale, rotation, random });
 
     // Mouth
     // drawPixelInRect(sImage, {
@@ -328,7 +328,7 @@ export const drawHead_pixels = (s: p5, {
     drawPixelInRect(sImage, {
         x: xCenter != null ? xCenter : 2.25,
         y: 1.75,
-    }, getColorVariant(mouthColor, 5, random), { center, scale, rotation });
+    }, getColorVariant(mouthColor, 5, random), { center, scale, rotation, random });
 };
 
 const drawRectangle = (sImage: p5.Image, {
@@ -363,7 +363,7 @@ const drawRectangle = (sImage: p5.Image, {
             drawPixelInRect(sImage, {
                 x: i - size.x * 0.5,
                 y: j - size.y * 0.5,
-            }, getColorVariant(color, colorRange, random), { center, scale, rotation });
+            }, getColorVariant(color, colorRange, random), { center, scale, rotation, random });
         }
     }
 
@@ -373,10 +373,12 @@ const drawPixelInRect = (sImage: p5.Image, positionFromCenter: Vector2, color: R
     center,
     scale,
     rotation,
+    random,
 }: {
     center: Vector2;
     scale: number;
     rotation: Angle;
+    random: () => number;
 }) => {
     const pos = getPixelPositionInRect(positionFromCenter, { center, scale, rotation });
 
@@ -386,10 +388,15 @@ const drawPixelInRect = (sImage: p5.Image, positionFromCenter: Vector2, color: R
         || pos.y >= sImage.height
     ){ return; }
 
+    const shadowRatioRaw =
+        (1 - 0.75 * Math.max(0, Math.min(1, (pos.y - (center.y - 1)) / 5)))
+        * (1 - 0.25 * Math.max(0, Math.min(1, (pos.x - (center.x - 1)) / 10)));
+    const shadowRatio = 1 - (1 - shadowRatioRaw) * (0.8 + 0.2 * random());
+
     const rIndex = (pos.y * sImage.width + pos.x) * 4;
-    sImage.pixels[rIndex + 0] = color.r;
-    sImage.pixels[rIndex + 1] = color.g;
-    sImage.pixels[rIndex + 2] = color.b;
+    sImage.pixels[rIndex + 0] = color.r * shadowRatio;
+    sImage.pixels[rIndex + 1] = color.g * shadowRatio;
+    sImage.pixels[rIndex + 2] = color.b * shadowRatio;
     sImage.pixels[rIndex + 3] = color.a ?? 255;
 };
 
