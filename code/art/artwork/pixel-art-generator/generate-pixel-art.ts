@@ -209,7 +209,7 @@ export const drawHead_pixels = (s: p5, {
     const beardColor: RGBA| undefined = hexToRgb(`#633813`);
     const moustacheColor: RGBA | undefined = hexToRgb(`#633813`);
     const skinColor: RGBA = hexToRgb(`#ad7e46`);
-    const noseColor: RGBA = hexToRgb(`#ba8e56`);
+    const noseColor: RGBA = hexToRgb(`#faae86`);
     const eyeColor: RGBA = hexToRgb(`#cccccc`);
     const mouthColor: RGBA = hexToRgb(`#221111`);
 
@@ -237,8 +237,12 @@ export const drawHead_pixels = (s: p5, {
     // const mouthColor: RGBA = hexToRgb(`#221111`);
 
 
-    const rotation = { radians: tilt / 180 * Math.PI };
-    // const rotation: Angle = {};
+    const tiltQuantized = Math.round(tilt / 15) * 15;
+    const panQuantized = Math.round(pan / 15) * 15;
+
+    const rotation = { radians: tiltQuantized / 180 * Math.PI };
+    const xOffset = -panQuantized / 45;
+    const scale = size.x / 6;
 
     drawRectangle(sImage, {
         center,
@@ -269,9 +273,6 @@ export const drawHead_pixels = (s: p5, {
     //     sImage.pixels[index] = Math.min(255, Math.max(0, sImage.pixels[index] + STRENGTH - Math.floor(random() * 2 * STRENGTH)));
     // }
 
-    // const xOffset = -Math.floor(pan / 30);
-    const xOffset = -pan / 45;
-    const scale = size.x / 6;
 
     // Top Hair
     if (topHairStyle !== `none`){
@@ -332,8 +333,39 @@ export const drawHead_pixels = (s: p5, {
         }
     }
 
+    drawFace(sImage, {
+        eyeColor, noseColor, mouthColor,
+        center, scale, rotation, random,
+        pan,
+    });
+
+
+};
+
+const drawFace = (sImage: p5.Image, {
+    center,
+    pan,
+    rotation,
+    random,
+    eyeColor,
+    noseColor,
+    mouthColor,
+    scale,
+}: {
+    center: Vector2;
+    pan: number;
+    rotation: Angle;
+    random: () => number;
+    eyeColor: RGBA;
+    noseColor: RGBA;
+    mouthColor: RGBA;
+    scale: number;
+}) => {
+    const panQuantized = Math.round(pan / 15) * 15;
+    const xOffset = -panQuantized / 45;
+
     // Eye
-    const has2Eyes = xOffset < -1.0;
+    const has2Eyes = xOffset < -0.6;
     const xEye1 = 1 + xOffset;
     const xEye2 = 3.0 + xOffset * 0.75;
     drawPixelInRect(sImage, {
@@ -426,9 +458,31 @@ const drawPixelInRect = (sImage: p5.Image, positionFromCenter: Vector2, color: R
 
     const shadowRatioRaw =
         (1 - 0.75 * Math.max(0, Math.min(1, (pos.y - (center.y - 1)) / 5) + (pos.x - (center.x - 1)) / 10));
+
+    drawPixel(sImage, { position: pos, color, shadowRatio: shadowRatioRaw, random });
+};
+
+const drawPixel = (sImage: p5.Image, {
+    position,
+    color,
+    shadowRatio: shadowRatioRaw,
+    random,
+}: {
+    position: Vector2;
+    color: RGBA;
+    shadowRatio: number;
+    random: () => number;
+}) => {
+
+    if (position.x < 0
+        || position.y < 0
+        || position.x >= sImage.width
+        || position.y >= sImage.height
+    ){ return; }
+
     const shadowRatio = 1 - (1 - shadowRatioRaw) * (0.9 + 0.1 * random());
 
-    const rIndex = (pos.y * sImage.width + pos.x) * 4;
+    const rIndex = (position.y * sImage.width + position.x) * 4;
     sImage.pixels[rIndex + 0] = color.r * shadowRatio;
     sImage.pixels[rIndex + 1] = color.g * shadowRatio;
     sImage.pixels[rIndex + 2] = color.b * shadowRatio;
