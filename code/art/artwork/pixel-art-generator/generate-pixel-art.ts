@@ -229,8 +229,8 @@ export const drawHead_pixels = (s: p5, {
         }
     }
     // Beard Hair
-    for (let i = -2; i <= 3 + xOffset * 0.5; i += 0.5){
-        for (let j = 3; j <= 4; j += 0.5){
+    for (let i = -3; i <= 3 + xOffset * 0.25; i += 0.5){
+        for (let j = 3; j <= 5; j += 0.5){
             drawPixelInRect(sImage, {
                 x: i,
                 y: j,
