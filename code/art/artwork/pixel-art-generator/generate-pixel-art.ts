@@ -34,7 +34,7 @@ export const createPixelArt = (sMain: p5, options: {
         tilt: Math.floor(60 - (timeMs / 100) % 120),
         pan: Math.floor((timeMs / (100 * 120 / 30)) % 90),
         center: { x: 10, y: 10 },
-        size: { x: 5, y: 8 },
+        size: { x: 5, y: 6 },
         random,
         sImage,
     });
@@ -43,7 +43,7 @@ export const createPixelArt = (sMain: p5, options: {
         tilt: Math.floor(60 - (timeMs / 100) % 120),
         pan: Math.floor((timeMs / (100 * 120 / 30)) % 90),
         center: { x: 20, y: 20 },
-        size: { x: 6, y: 10 },
+        size: { x: 6, y: 8 },
         random,
         sImage,
     });
@@ -52,7 +52,7 @@ export const createPixelArt = (sMain: p5, options: {
         tilt: Math.floor(60 - (timeMs / 100) % 120),
         pan: Math.floor((timeMs / (100 * 120 / 30)) % 90),
         center: { x: 24, y: 8 },
-        size: { x: 3, y: 5 },
+        size: { x: 3, y: 4 },
         random,
         sImage,
     });
@@ -163,16 +163,18 @@ export const drawHead_pixels = (s: p5, {
 }) => {
 
     console.log(`drawHead_pixels`, { center, size, tilt, pan });
-    // Head
 
-    // s.push();
+    // Options
+    const hairColor: RGBA = hexToRgb(`#633813`);
+    const topHairStyle: 'none' | 'normal' = `none`; //`medium` ;
+    const backHairLength: 'none' | 'short' |'medium' |'long' = `none`; //`medium` ;
+    const beardColor: RGBA| undefined = hexToRgb(`#933813`);
+    const moustacheColor: RGBA | undefined = undefined; //hexToRgb(`#633813`);
+    const skinColor: RGBA = hexToRgb(`#ad7e46`);
+    const noseColor: RGBA = hexToRgb(`#ba8e56`);
+    const eyeColor: RGBA = hexToRgb(`#cccccc`);
+    const mouthColor: RGBA = hexToRgb(`#221111`);
 
-    // // Move to position
-    // s.translate(position.x, position.y);
-
-    // // Bring to origin & rotate
-    // s.rotate(tilt / 180 * Math.PI);
-    // s.translate(-3, -5);
 
     const rotation = { radians: tilt / 180 * Math.PI };
     // const rotation: Angle = {};
@@ -181,9 +183,9 @@ export const drawHead_pixels = (s: p5, {
         center,
         size,
         rotation,
-        color: hexToRgb(`#ad7e46`),
+        color: skinColor,
         colorRange: 15,
-        cornerRadius: 0,
+        cornerRadius: 1,
         random,
     });
 
@@ -208,44 +210,64 @@ export const drawHead_pixels = (s: p5, {
 
     // const xOffset = -Math.floor(pan / 30);
     const xOffset = -pan / 45;
-    const scale = size.y / 8;
+    const scale = size.x / 6;
 
     // Top Hair
-    for (let i = -3; i <= 3; i += 0.5){
-        for (let j = -5; j <= -3; j += 0.5){
-            drawPixelInRect(sImage, {
-                x: i,
-                y: j,
-            }, getColorVariant(hexToRgb(`#633813`), 20, random), { center, scale, rotation });
+    if (topHairStyle !== `none`){
+        for (let i = -3; i <= 3; i += 0.5){
+            for (let j = -5; j <= -3; j += 0.5){
+                drawPixelInRect(sImage, {
+                    x: i,
+                    y: j,
+                }, getColorVariant(hairColor, 20, random), { center, scale, rotation });
+            }
         }
     }
+
+    // else {
+    //     // Draw a forehead if no top hair
+    //     for (let i = -2; i <= 2; i += 0.5){
+    //         for (let j = -4; j <= -3; j += 0.5){
+    //             drawPixelInRect(sImage, {
+    //                 x: i,
+    //                 y: j,
+    //             }, getColorVariant(skinColor, 20, random), { center, scale, rotation });
+    //         }
+    //     }
+    // }
     // Back Hair
-    for (let i = -4; i <= -2 + xOffset * 0.5; i += 0.5){
-        for (let j = -4; j <= 3; j += 0.5){
-            drawPixelInRect(sImage, {
-                x: i,
-                y: j,
-            }, getColorVariant(hexToRgb(`#633813`), 20, random), { center, scale, rotation });
+    if (backHairLength !== `none`){
+        for (let i = -4; i <= -2 + xOffset * 0.5; i += 0.5){
+            for (let j = -4; j <= (backHairLength === `short` ? 1 : backHairLength === `long` ? 5 : 3); j += 0.5){
+                drawPixelInRect(sImage, {
+                    x: i,
+                    y: j,
+                }, getColorVariant(hairColor, 20, random), { center, scale, rotation });
+            }
         }
     }
     // Beard Hair
-    for (let i = -3; i <= 3 + xOffset * 0.25; i += 0.5){
-        for (let j = 3; j <= 5; j += 0.5){
-            drawPixelInRect(sImage, {
-                x: i,
-                y: j,
-            }, getColorVariant(hexToRgb(`#633813`), 20, random), { center, scale, rotation });
+    if (beardColor){
+        for (let i = -2; i <= 4 + xOffset * 0.5; i += 0.5){
+            for (let j = 3; j <= 5; j += 0.5){
+                drawPixelInRect(sImage, {
+                    x: i,
+                    y: j,
+                }, getColorVariant(beardColor, 20, random), { center, scale, rotation });
+            }
         }
     }
 
 
     // Moustache Hair
-    for (let i = 1.25 + xOffset; i <= 2.75 + xOffset * 0.5; i += 0.5){
-        for (let j = 1.5; j <= 3; j += 0.5){
-            drawPixelInRect(sImage, {
-                x: i,
-                y: j,
-            }, getColorVariant(hexToRgb(`#633813`), 20, random), { center, scale, rotation });
+    if (moustacheColor) {
+        for (let i = 1.25 + xOffset; i <= 2.75 + xOffset * 0.5; i += 0.5){
+            for (let j = 1.5; j <= 3; j += 0.5){
+                drawPixelInRect(sImage, {
+                    x: i,
+                    y: j,
+                }, getColorVariant(moustacheColor, 20, random), { center, scale, rotation });
+            }
         }
     }
 
@@ -256,14 +278,14 @@ export const drawHead_pixels = (s: p5, {
     drawPixelInRect(sImage, {
         x: xEye1,
         y: -1,
-    }, hexToRgb(`#cccccc`), { center, scale, rotation });
+    }, eyeColor, { center, scale, rotation });
 
     // Eye 2
     if (has2Eyes){
         drawPixelInRect(sImage, {
             x: xEye2,
             y: -1,
-        }, hexToRgb(`#cccccc`), { center, scale, rotation });
+        }, eyeColor, { center, scale, rotation });
     }
 
     // Nose
@@ -271,7 +293,7 @@ export const drawHead_pixels = (s: p5, {
     drawPixelInRect(sImage, {
         x: xCenter != null ? xCenter : 2.55,
         y: 0.25,
-    }, getColorVariant(hexToRgb(`#ba8e56`), 5, random), { center, scale, rotation });
+    }, getColorVariant(noseColor, 5, random), { center, scale, rotation });
 
     // Mouth
     // drawPixelInRect(sImage, {
@@ -281,7 +303,7 @@ export const drawHead_pixels = (s: p5, {
     drawPixelInRect(sImage, {
         x: xCenter != null ? xCenter : 2.25,
         y: 1.75,
-    }, getColorVariant(hexToRgb(`#221111`), 5, random), { center, scale, rotation });
+    }, getColorVariant(mouthColor, 5, random), { center, scale, rotation });
 };
 
 const drawRectangle = (sImage: p5.Image, {
@@ -307,6 +329,10 @@ const drawRectangle = (sImage: p5.Image, {
         for (let j = 0; j < size.y; j += 0.1){
 
             // TODO: Skip corner pixels
+            if (i + j <= cornerRadius){ continue;}
+            if (i + (size.y - j) <= cornerRadius){ continue;}
+            if ((size.x - i) + j <= cornerRadius){ continue;}
+            if ((size.x - i) + (size.y - j) <= cornerRadius){ continue;}
 
             const scale = 1;
             drawPixelInRect(sImage, {
