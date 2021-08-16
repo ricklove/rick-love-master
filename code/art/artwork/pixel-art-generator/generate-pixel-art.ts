@@ -196,7 +196,7 @@ export const drawHead_pixels = (s: p5, {
     // const beardColor: RGBA| undefined = hexToRgb(`#933883`);
     // const moustacheColor: RGBA | undefined = hexToRgb(`#933813`);
     // const skinColor: RGBA = hexToRgb(`#354e46`);
-    // const noseColor: RGBA = hexToRgb(`#ba8e56`);
+    // const noseColor: RGBA = hexToRgb(`#356e46`);
     // const eyeColor: RGBA = hexToRgb(`#ff7777`);
     // const mouthColor: RGBA = hexToRgb(`#221111`);
 
@@ -389,9 +389,8 @@ const drawPixelInRect = (sImage: p5.Image, positionFromCenter: Vector2, color: R
     ){ return; }
 
     const shadowRatioRaw =
-        (1 - 0.75 * Math.max(0, Math.min(1, (pos.y - (center.y - 1)) / 5)))
-        * (1 - 0.25 * Math.max(0, Math.min(1, (pos.x - (center.x - 1)) / 10)));
-    const shadowRatio = 1 - (1 - shadowRatioRaw) * (0.8 + 0.2 * random());
+        (1 - 0.75 * Math.max(0, Math.min(1, (pos.y - (center.y - 1)) / 5) + (pos.x - (center.x - 1)) / 10));
+    const shadowRatio = 1 - (1 - shadowRatioRaw) * (0.9 + 0.1 * random());
 
     const rIndex = (pos.y * sImage.width + pos.x) * 4;
     sImage.pixels[rIndex + 0] = color.r * shadowRatio;
