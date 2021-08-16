@@ -1,7 +1,7 @@
 import type p5 from 'p5';
 
 export type GameImage = {
-    image: p5.Image;
+    source?: p5.Image | p5.Graphics;
     isLoaded: () => boolean;
     imageScales: {
         scaleRatio: number;
@@ -13,20 +13,21 @@ export const loadAndScaleImage = (s: p5, base64: string,
 ): GameImage => {
 
     let isLoaded = false;
-    const image = s.loadImage(base64, () => {
+    const source = s.loadImage(base64, () => {
         isLoaded = true;
 
-        image.loadPixels();
+        source.loadPixels();
 
         const scaleRatios = targetSizes.map(t =>
-            Math.floor(Math.min(t.width / image.width, t.height / image.height)));
+            Math.floor(Math.min(t.width / source.width, t.height / source.height)));
         for (const scaleRatio of scaleRatios){
-            scaleImage(s, data, scaleRatio);
+            const dest = scaleImage(s, source, scaleRatio);
+            data.imageScales.push({ scaleRatio, image: dest });
         }
     });
 
     const data: GameImage = {
-        image,
+        source: source,
         isLoaded: () => isLoaded,
         imageScales: [],
     };
@@ -34,14 +35,13 @@ export const loadAndScaleImage = (s: p5, base64: string,
     return data;
 };
 
-const scaleImage = (s: p5, image: GameImage, scaleRatio: number) => {
+export const scaleImage = (s: p5, source: p5.Image | p5.Graphics, scaleRatio: number) => {
     // Draw each pixel
 
-    const img = image.image;
-    const width = img.width;
-    const height = img.height;
+    const width = source.width;
+    const height = source.height;
 
-    const pixels = img.pixels;
+    const pixels = source.pixels;
 
     const dest = s.createImage(width * scaleRatio, height * scaleRatio);
 
@@ -68,5 +68,5 @@ const scaleImage = (s: p5, image: GameImage, scaleRatio: number) => {
     }
 
     dest.updatePixels();
-    image.imageScales.push({ scaleRatio, image: dest });
+    return dest;
 };

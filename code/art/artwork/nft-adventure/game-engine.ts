@@ -209,7 +209,7 @@ export const drawGameStep = ({
             }
             const { isLoaded, imageScales } = gameCache.images[base64];
             const { image } = imageScales?.[0] ?? {};
-            console.log(`drawBase64Art`, { isLoaded: isLoaded(), drawBase64Art, image });
+            // console.log(`drawBase64Art`, { isLoaded: isLoaded(), drawBase64Art, image });
 
             if (!image){ return;}
 

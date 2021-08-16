@@ -12,6 +12,7 @@ export const artIndex = [
     { key: `circles`, title: `Circles`, imageUrl: `./artwork/circles.png`, load: async () => (await import (`./artwork/circles`)).art_circles },
     { key: `onions`, title: `Onions`, imageUrl: undefined, load: async () => (await import (`./artwork/layers-of-the-onions-soul`)).art_layersOfTheOnionsSoul },
     { key: `nft-text-adventure`, title: `Nft Text Adventure`, imageUrl: `./artwork/nft-adventure/stories/nft-text-adventure.png`, load: async () => (await import (`./artwork/nft-adventure/art`)).art_nftAdventure_nftTextAdventure },
+    { key: `pixel-art-generator`, title: `Pixel Art Generator`, imageUrl: undefined, load: async () => (await import (`./artwork/pixel-art-generator/art`)).art_pixelArtGenerator },
 ] as const;
 export type ArtKey = typeof artIndex[number]['key'];
 export type ArtIndexEntry = typeof artIndex[number];

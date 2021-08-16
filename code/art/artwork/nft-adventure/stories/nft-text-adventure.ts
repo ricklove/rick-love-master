@@ -1,7 +1,8 @@
 import { GameStep } from '../types';
-import { art_0000_armUp } from './nft-text-adventure-art/0000-arm-up';
 import { art_0000_searchGround } from './nft-text-adventure-art/0000-01-search-ground';
 import { art_0000_callForHelp } from './nft-text-adventure-art/0000-02-call-for-help';
+import { art_0000_armAxe } from './nft-text-adventure-art/0000-arm-axe';
+import { art_0000_cold } from './nft-text-adventure-art/0000-cold';
 
 
 const metadata = {
@@ -35,7 +36,7 @@ type GameItemKey = typeof items[number]['key'];
 const story: GameStep<GameItemKey>[] = [
     {
         title: `NFT Text Adventure`,
-        art: art_0000_armUp,
+        art: art_0000_armAxe,
         description: ``,
         inventory: [],
         actions: [
@@ -48,7 +49,7 @@ const story: GameStep<GameItemKey>[] = [
     },
     {
         title: `Cold`,
-        art: art_0000_armUp,
+        art: art_0000_cold,
         description: `
 
 Cold, wet, afraid... you wake up shivering. 
