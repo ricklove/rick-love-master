@@ -373,7 +373,7 @@ const drawFace = (sImage: p5.Image, {
     // Nose
     drawPixelInRect(sImage, {
         x: xCenter + 0.5,
-        y: 0.75,
+        y: 1.0,
     }, getColorVariant(noseColor, 5, random), { center, scale, rotation, random });
 
 
