@@ -34,7 +34,7 @@ export const createPixelArt = (sMain: p5, options: {
     drawRectangle(sImage, {
         center: { x: 12, y: 15 },
         size: { x: 2, y: 10 },
-        rotation: { degrees: -60 },
+        rotation: { degrees: 60 },
         color: hexToRgb(`#a77f51`),
         colorRange: 15,
         cornerRadius: 1,
@@ -45,7 +45,7 @@ export const createPixelArt = (sMain: p5, options: {
     drawRectangle(sImage, {
         center: { x: 0, y: 18 },
         size: { x: 7, y: 20 },
-        rotation: { degrees: 60 },
+        rotation: { degrees: -60 },
         color: hexToRgb(`#6b2d0a`),
         colorRange: 15,
         cornerRadius: 1,
@@ -56,7 +56,7 @@ export const createPixelArt = (sMain: p5, options: {
     drawRectangle(sImage, {
         center: { x: 9, y: 18 },
         size: { x: 2, y: 10 },
-        rotation: { degrees: -60 },
+        rotation: { degrees: 60 },
         color: hexToRgb(`#a77f51`),
         colorRange: 15,
         cornerRadius: 1,
@@ -77,8 +77,9 @@ export const createPixelArt = (sMain: p5, options: {
     drawHead_pixels(s, {
         tilt: Math.floor(60 - (timeMs / 100) % 120),
         pan: Math.floor((timeMs / (100 * 120 / 30)) % 90),
-        center: { x: 20, y: 20 },
+        center: { x: 24, y: 8 },
         size: { x: 6, y: 8 },
+        // size: { x: 3, y: 4 },
         random,
         sImage,
     });
@@ -86,8 +87,8 @@ export const createPixelArt = (sMain: p5, options: {
     drawHead_pixels(s, {
         tilt: Math.floor(60 - (timeMs / 100) % 120),
         pan: Math.floor((timeMs / (100 * 120 / 30)) % 90),
-        center: { x: 24, y: 8 },
-        size: { x: 3, y: 4 },
+        center: { x: 24, y: 24 },
+        size: { x: 8, y: 10 },
         random,
         sImage,
     });
@@ -204,7 +205,7 @@ export const drawHead_pixels = (s: p5, {
 
     // Normal
     const hairColor: RGBA = hexToRgb(`#633813`);
-    const topHairStyle: 'none' | 'normal' = `normal`;
+    const topHairStyle: 'none' | 'normal' = `none`;
     const backHairLength: 'none' | 'short' |'medium' |'long' = `medium`;
     const beardColor: RGBA| undefined = hexToRgb(`#633813`);
     const moustacheColor: RGBA | undefined = hexToRgb(`#633813`);
@@ -334,7 +335,7 @@ export const drawHead_pixels = (s: p5, {
     }
 
     drawFace(sImage, {
-        eyeColor, noseColor, mouthColor,
+        eyeColor, noseColor, mouthColor, eyeBrowColor: hairColor,
         center, scale, rotation, random,
         pan,
     });
@@ -350,6 +351,7 @@ const drawFace = (sImage: p5.Image, {
     eyeColor,
     noseColor,
     mouthColor,
+    eyeBrowColor,
     scale,
 }: {
     center: Vector2;
@@ -359,15 +361,16 @@ const drawFace = (sImage: p5.Image, {
     eyeColor: RGBA;
     noseColor: RGBA;
     mouthColor: RGBA;
+    eyeBrowColor: RGBA;
     scale: number;
 }) => {
     const panQuantized = Math.round(pan / 15) * 15;
     const xOffset = -panQuantized / 45;
 
-    // Eye
     const has2Eyes = xOffset < -0.6;
     const xEye1 = 1.0 + xOffset;
     const xEye2 = 4.0 + xOffset;
+    const yEye = -1.0;
     const xCenter = (xEye1 + xEye2) / 2;
 
     // Nose
@@ -387,16 +390,89 @@ const drawFace = (sImage: p5.Image, {
         y: 3.0,
     }, getColorVariant(mouthColor, 5, random), { center, scale, rotation, random });
 
-    // Eyes
-    drawPixelInRect(sImage, {
+
+    // Eye brow
+    // console.log(`scale`, { scale });
+    // drawPixelInRect(sImage, {
+    //     x: xEye1 - 0.75 / scale,
+    //     y: yEye - 0.5 / scale,
+    // }, eyeBrowColor, { center, scale, rotation, random });
+    // drawPixelInRect(sImage, {
+    //     x: xEye1 - 0.25 / scale,
+    //     y: yEye - 0.75 / scale,
+    // }, eyeBrowColor, { center, scale, rotation, random });
+    // drawPixelInRect(sImage, {
+    //     x: xEye1 + 0.25 / scale,
+    //     y: yEye - 0.75 / scale,
+    // }, eyeBrowColor, { center, scale, rotation, random });
+
+    const drawEyeBrow = (actualEyePos: Vector2) => {
+        const rDeg = (rotation.degrees ?? ((rotation.radians ?? 0) / Math.PI * 180));
+        const dir = rDeg < -30 ? `down`
+            : rDeg > 30 ? `up`
+                : `normal`;
+
+        if (dir === `down`){
+            drawPixel(sImage, {
+                position: {
+                    x: actualEyePos.x + 1,
+                    y: actualEyePos.y,
+                },
+                color: eyeBrowColor,
+                lightRatio: 1,
+                random,
+            });
+        }
+        drawPixel(sImage, {
+            position: {
+                x: actualEyePos.x,
+                y: actualEyePos.y - 1,
+            },
+            color: eyeBrowColor,
+            lightRatio: 1,
+            random,
+        });
+        if (dir === `up`){
+            drawPixel(sImage, {
+                position: {
+                    x: actualEyePos.x - 1,
+                    y: actualEyePos.y,
+                },
+                color: eyeBrowColor,
+                lightRatio: 1,
+                random,
+            });
+        }
+        if (dir === `normal`){
+            drawPixel(sImage, {
+                position: {
+                    x: actualEyePos.x - 1,
+                    y: actualEyePos.y - 1,
+                },
+                color: eyeBrowColor,
+                lightRatio: 1,
+                random,
+            });
+        }
+    };
+
+    // Eye
+    const actualEyePos1 = drawPixelInRect(sImage, {
         x: xEye1,
-        y: -1,
+        y: yEye,
     }, eyeColor, { center, scale, rotation, random });
+    if (actualEyePos1){
+        drawEyeBrow(actualEyePos1.actualPosition);
+    }
+
     if (has2Eyes){
-        drawPixelInRect(sImage, {
+        const actualEyePos2 = drawPixelInRect(sImage, {
             x: xEye2,
-            y: -1,
+            y: yEye,
         }, eyeColor, { center, scale, rotation, random });
+        if (actualEyePos2){
+            drawEyeBrow(actualEyePos2.actualPosition);
+        }
     }
 
 };
@@ -461,18 +537,20 @@ const drawPixelInRect = (sImage: p5.Image, positionFromCenter: Vector2, color: R
     const shadowRatioRaw =
         (1 - 0.5 * Math.max(0, Math.min(1, (pos.y - (center.y - 1)) / 5) + (pos.x - (center.x - 1)) / 10));
 
-    drawPixel(sImage, { position: pos, color, shadowRatio: shadowRatioRaw, random });
+    drawPixel(sImage, { position: pos, color, lightRatio: shadowRatioRaw, random });
+
+    return { actualPosition: pos };
 };
 
 const drawPixel = (sImage: p5.Image, {
     position,
     color,
-    shadowRatio: shadowRatioRaw,
+    lightRatio: lightRatioRaw,
     random,
 }: {
     position: Vector2;
     color: RGBA;
-    shadowRatio: number;
+    lightRatio: number;
     random: () => number;
 }) => {
 
@@ -482,12 +560,12 @@ const drawPixel = (sImage: p5.Image, {
         || position.y >= sImage.height
     ){ return; }
 
-    const shadowRatio = 1 - (1 - shadowRatioRaw) * (0.9 + 0.1 * random());
+    const lightRatio = 1 - (1 - lightRatioRaw) * (0.9 + 0.1 * random());
 
     const rIndex = (position.y * sImage.width + position.x) * 4;
-    sImage.pixels[rIndex + 0] = color.r * shadowRatio;
-    sImage.pixels[rIndex + 1] = color.g * shadowRatio;
-    sImage.pixels[rIndex + 2] = color.b * shadowRatio;
+    sImage.pixels[rIndex + 0] = color.r * lightRatio;
+    sImage.pixels[rIndex + 1] = color.g * lightRatio;
+    sImage.pixels[rIndex + 2] = color.b * lightRatio;
     sImage.pixels[rIndex + 3] = color.a ?? 255;
 };
 
@@ -501,7 +579,9 @@ const getPixelPositionInRect = (positionFromCenter: Vector2, {
     rotation: Angle;
 }) => {
 
-    const rad = rotation.radians ?? ((rotation.degrees ?? 0) / 180 * Math.PI);
+    const radRaw = rotation.radians ?? ((rotation.degrees ?? 0) / 180 * Math.PI);
+    // Inverse rotation for flipped y
+    const rad = -radRaw;
 
     const xRel = positionFromCenter.x * scale;
     const yRel = positionFromCenter.y * scale;
