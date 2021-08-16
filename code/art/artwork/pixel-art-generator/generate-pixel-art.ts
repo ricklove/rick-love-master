@@ -30,6 +30,41 @@ export const createPixelArt = (sMain: p5, options: {
     sImage.copy(s, 0, 0, s.width, s.height, 0, 0, s.width, s.height);
     sImage.loadPixels();
 
+    // Back Arm
+    drawRectangle(sImage, {
+        center: { x: 12, y: 15 },
+        size: { x: 2, y: 10 },
+        rotation: { degrees: -60 },
+        color: hexToRgb(`#a77f51`),
+        colorRange: 15,
+        cornerRadius: 1,
+        random,
+    });
+
+    // Body
+    drawRectangle(sImage, {
+        center: { x: 0, y: 18 },
+        size: { x: 7, y: 20 },
+        rotation: { degrees: 60 },
+        color: hexToRgb(`#6b2d0a`),
+        colorRange: 15,
+        cornerRadius: 1,
+        random,
+    });
+
+    // Arm
+    drawRectangle(sImage, {
+        center: { x: 9, y: 18 },
+        size: { x: 2, y: 10 },
+        rotation: { degrees: -60 },
+        color: hexToRgb(`#a77f51`),
+        colorRange: 15,
+        cornerRadius: 1,
+        random,
+    });
+
+
+    // Head
     drawHead_pixels(s, {
         tilt: Math.floor(60 - (timeMs / 100) % 120),
         pan: Math.floor((timeMs / (100 * 120 / 30)) % 90),
@@ -56,6 +91,7 @@ export const createPixelArt = (sMain: p5, options: {
         random,
         sImage,
     });
+
 
     // // Remove alpha
     // for (let a = 3; a < sImage.pixels.length; a += 4){
