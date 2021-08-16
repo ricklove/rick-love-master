@@ -188,7 +188,8 @@ export const drawHead_pixels = (s: p5, {
     //     sImage.pixels[index] = Math.min(255, Math.max(0, sImage.pixels[index] + STRENGTH - Math.floor(random() * 2 * STRENGTH)));
     // }
 
-    const xOffset = -Math.floor(pan / 30);
+    // const xOffset = -Math.floor(pan / 30);
+    const xOffset = -pan / 45;
 
     // Top Hair
     for (let i = -3; i <= 3; i += 0.5){
@@ -230,22 +231,26 @@ export const drawHead_pixels = (s: p5, {
     }
 
     // Eye
+    const has2Eyes = xOffset < -1.0;
+    const xEye1 = 1 + xOffset;
+    const xEye2 = 3.0 + xOffset * 0.75;
     drawPixelInRect(sImage, {
-        x: 1 + xOffset,
+        x: xEye1,
         y: -1,
     }, hexToRgb(`#cccccc`), { center, size, rotation });
 
     // Eye 2
-    if (xOffset < -0.5){
+    if (has2Eyes){
         drawPixelInRect(sImage, {
-            x: 3.5 + xOffset,
+            x: xEye2,
             y: -1,
         }, hexToRgb(`#cccccc`), { center, size, rotation });
     }
 
     // Nose
+    const xCenter = has2Eyes ? (xEye1 + xEye2) / 2 : undefined;
     drawPixelInRect(sImage, {
-        x: xOffset > -1 ? 2.55 : 2.25 + xOffset,
+        x: xCenter != null ? xCenter : 2.55,
         y: 0.25,
     }, getColorVariant(hexToRgb(`#ba8e56`), 5, random), { center, size, rotation });
 
@@ -255,7 +260,7 @@ export const drawHead_pixels = (s: p5, {
     //     y: 2.00,
     // }, getColorVariant(hexToRgb(`#333333`), 5, random), { center, size, rotation });
     drawPixelInRect(sImage, {
-        x: 2.25 + xOffset,
+        x: xCenter != null ? xCenter : 2.25,
         y: 1.75,
     }, getColorVariant(hexToRgb(`#221111`), 5, random), { center, size, rotation });
 };
