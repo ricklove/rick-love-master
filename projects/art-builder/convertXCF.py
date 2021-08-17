@@ -7,8 +7,7 @@ import time
 from gimpfu import *
 
 import sys
-sys.stderr = open('build/gimpstderr.txt', 'w')
-sys.stdout = open('build/gimpstdout.txt', 'w')
+
 
 nextIndex = 0
 
@@ -40,14 +39,15 @@ def save_layer_or_group(image, layer, layersDir):
     save_layer(image, layer, layersDir)
 
 
-def process(infile):
+def process(infile, outDirectory):
 
     print "Processing file %s " % infile
     image = pdb.gimp_xcf_load(0, infile, infile)
     print "File %s loaded OK" % infile
 
     # save image layers
-    layersDir = 'build/' + os.path.basename(infile)
+    layersDir = os.path.join(
+        outDirectory, os.path.splitext(os.path.basename(infile))[0])
 
     print "layersDir %s" % layersDir
 
@@ -60,11 +60,15 @@ def process(infile):
     pdb.gimp_image_delete(image)
 
 
-def run(directory):
+def run(directory, outDirectory):
+
+    sys.stderr = open(os.path.join(outDirectory, 'gimpstderr.log'), 'w')
+    sys.stdout = open(os.path.join(outDirectory, 'gimpstdout.log'), 'w')
+
     start = time.time()
     print "Running on directory \"%s\"" % directory
     for infile in glob.glob(os.path.join(directory, '*.xcf')):
-        process(infile)
+        process(infile, outDirectory)
     end = time.time()
     print "Finished, total processing time: %.2f seconds" % (end-start)
 
