@@ -72,14 +72,13 @@ const processImages = async (sourceDir: string, destDir: string) => {
     }
 };
 
-export const buildPixelArt = async (xcfDirectory: string, outDir: string) => {
+export const buildPixelArt = async (xcfDirectory: string, outDir: string, options?: { skipExtraction?: boolean }) => {
 
     const extractionDir = `${outDir}/xcf`;
     const dataDir = `${outDir}/data`;
 
     // TEMP: Skip extraction
-    const skipExtraction = true;
-    if (!skipExtraction){
+    if (!options?.skipExtraction){
         if (fsRaw.existsSync(outDir)){
             await fs.rmdir(outDir, { recursive: true });
         }

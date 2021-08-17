@@ -32,7 +32,7 @@ def save_layer_or_group(image, layer, layersDir, layerPath):
     if pdb.gimp_item_is_group(layer):
         gr = layer
         gr_items = pdb.gimp_item_get_children(layer)
-        for index in gr_items[1]:
+        for index in reversed(gr_items[1]):
             item = gimp.Item.from_id(index)
             save_layer_or_group(image, item, layersDir,
                                 layerPath + '-' + layer.name)
@@ -59,7 +59,7 @@ def process(infile, outDirectory):
     if not os.path.exists(layersDir):
         os.mkdir(layersDir)
 
-    for l in image.layers:
+    for l in reversed(image.layers):
         save_layer_or_group(image, l, layersDir, '')
 
     pdb.gimp_image_delete(image)
