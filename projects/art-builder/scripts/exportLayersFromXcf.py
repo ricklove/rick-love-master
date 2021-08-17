@@ -12,12 +12,13 @@ import sys
 nextIndex = 0
 
 
-def save_layer(image, layer, layersDir):
+def save_layer(image, layer, layersDir, layerPath):
     global nextIndex
     print "Saving layer %s" % layer.name
 
     outfile = layersDir + '/' + \
-        str(nextIndex).rjust(4, '0') + '-' + layer.name + '.png'
+        str(nextIndex).rjust(4, '0') + \
+        layerPath + '-' + layer.name + '.png'
 
     print "Saving to %s" % outfile
     pdb.file_png_save(image, layer, outfile, outfile, True,
@@ -26,18 +27,19 @@ def save_layer(image, layer, layersDir):
     nextIndex = nextIndex + 1
 
 
-def save_layer_or_group(image, layer, layersDir):
+def save_layer_or_group(image, layer, layersDir, layerPath):
     # check if layer is a group and drill down if it is
     if pdb.gimp_item_is_group(layer):
         gr = layer
         gr_items = pdb.gimp_item_get_children(layer)
         for index in gr_items[1]:
             item = gimp.Item.from_id(index)
-            save_layer_or_group(image, item, layersDir)
+            save_layer_or_group(image, item, layersDir,
+                                layerPath + '-' + layer.name)
         return
 
     # if not a group
-    save_layer(image, layer, layersDir)
+    save_layer(image, layer, layersDir, layerPath)
 
 
 def process(infile, outDirectory):
@@ -58,7 +60,7 @@ def process(infile, outDirectory):
         os.mkdir(layersDir)
 
     for l in image.layers:
-        save_layer_or_group(image, l, layersDir)
+        save_layer_or_group(image, l, layersDir, '')
 
     pdb.gimp_image_delete(image)
 
