@@ -40,8 +40,17 @@ const extractXcfLayers = async (sourceDirectory: string, destDir: string) => {
 
     });
 
+    const runScript = `
+import sys;
+sys.path=['.']+sys.path;
+sys.path.insert(0, './scripts');
+import exportLayersFromXcf;
+
+exportLayersFromXcf.run('${sourceDirectory}', '${destDir}')
+`.trim().replace(/\r/g, ``).replace(/\n/g, ` `);
+
     const { stdout, stderr } = await promisify(exec)(
-        `"${gimpExePath}" -idf --batch-interpreter python-fu-eval -b "import sys;sys.path=['.']+sys.path;sys.path.insert(0, './scripts');import extractLayersFromXcf;extractLayersFromXcf.run('${sourceDirectory}', '${destDir}')" -b "pdb.gimp_quit(1)"`);
+        `"${gimpExePath}" -idf --batch-interpreter python-fu-eval -b "${runScript}" -b "pdb.gimp_quit(1)"`);
 
     console.log(stdout);
     console.log(stderr);
