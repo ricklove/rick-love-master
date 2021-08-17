@@ -6,6 +6,10 @@ import sys
 import time
 from gimpfu import *
 
+import sys
+sys.stderr = open('build/gimpstderr.txt', 'w')
+sys.stdout = open('build/gimpstdout.txt', 'w')
+
 nextIndex = 0
 
 
@@ -43,7 +47,10 @@ def process(infile):
     print "File %s loaded OK" % infile
 
     # save image layers
-    layersDir = os.path.splitext(infile)[0] + '-layers'
+    layersDir = 'build/' + os.path.basename(infile)
+
+    print "layersDir %s" % layersDir
+
     if not os.path.exists(layersDir):
         os.mkdir(layersDir)
 
