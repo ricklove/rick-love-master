@@ -1,0 +1,19 @@
+{
+  "dependencies": {
+    "@babel/core": "^7.11.6",
+    "glob": "^7.1.6",
+    "rollup": "^2.26.11",
+    "rollup-plugin-babel": "^4.4.0",
+    "rollup-plugin-node-resolve": "^5.2.0",
+    "ts-node": "^8.10.1",
+    "typescript": "^3.9.3",
+    "utils": "*"
+  },
+  "scripts": {},
+  "devDependencies": {
+    "@types/glob": "^7.1.3",
+    "binary-parser": "1.1.5",
+    "lazy.js": "0.4.2",
+    "pngjs-image": "^0.11.6"
+  }
+}

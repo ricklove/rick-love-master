@@ -51,7 +51,8 @@
         // "code",
         // "scripts",
         // "projects",
-        "projects/blog-art",
+        "projects/blog-art/",
+        "projects/art-builder/",
         // "templates",
     ],
 }

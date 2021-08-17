@@ -203,16 +203,16 @@ export const drawHead_pixels = (s: p5, {
 
     // Options
 
-    // Normal
-    const hairColor: RGBA = hexToRgb(`#633813`);
-    const topHairStyle: 'none' | 'normal' = `none`;
-    const backHairLength: 'none' | 'short' |'medium' |'long' = `medium`;
-    const beardColor: RGBA| undefined = hexToRgb(`#633813`);
-    const moustacheColor: RGBA | undefined = hexToRgb(`#633813`);
-    const skinColor: RGBA = hexToRgb(`#ad7e46`);
-    const noseColor: RGBA = hexToRgb(`#faae86`);
-    const eyeColor: RGBA = hexToRgb(`#cccccc`);
-    const mouthColor: RGBA = hexToRgb(`#221111`);
+    // // Normal
+    // const hairColor: RGBA = hexToRgb(`#633813`);
+    // const topHairStyle: 'none' | 'normal' = `normal`;
+    // const backHairLength: 'none' | 'short' |'medium' |'long' = `medium`;
+    // const beardColor: RGBA| undefined = hexToRgb(`#633813`);
+    // const moustacheColor: RGBA | undefined = hexToRgb(`#633813`);
+    // const skinColor: RGBA = hexToRgb(`#ad7e46`);
+    // const noseColor: RGBA = hexToRgb(`#faae86`);
+    // const eyeColor: RGBA = hexToRgb(`#cccccc`);
+    // const mouthColor: RGBA = hexToRgb(`#221111`);
 
 
     // // Bald Red Beard
@@ -226,7 +226,18 @@ export const drawHead_pixels = (s: p5, {
     // const eyeColor: RGBA = hexToRgb(`#cccccc`);
     // const mouthColor: RGBA = hexToRgb(`#221111`);
 
-    // // Zombie with purple beard
+    // Zombie
+    const hairColor: RGBA = hexToRgb(`#633813`);
+    const topHairStyle: 'none' | 'normal' = `normal`;
+    const backHairLength: 'none' | 'short' |'medium' |'long' = `long`;
+    const beardColor: RGBA| undefined = hexToRgb(`#933813`);
+    const moustacheColor: RGBA | undefined = hexToRgb(`#933813`);
+    const skinColor: RGBA = hexToRgb(`#639813`);
+    const noseColor: RGBA = hexToRgb(`#63F813`);
+    const eyeColor: RGBA = hexToRgb(`#ff7777`);
+    const mouthColor: RGBA = hexToRgb(`#221111`);
+
+    // // Radioactic Zombie
     // const hairColor: RGBA = hexToRgb(`#639813`);
     // const topHairStyle: 'none' | 'normal' = `normal`;
     // const backHairLength: 'none' | 'short' |'medium' |'long' = `long`;
@@ -335,7 +346,7 @@ export const drawHead_pixels = (s: p5, {
     }
 
     drawFace(sImage, {
-        eyeColor, noseColor, mouthColor, eyeBrowColor: hairColor,
+        eyeColor, noseColor, mouthColor, eyeBrowColor: moustacheColor,
         center, scale, rotation, random,
         pan,
     });
