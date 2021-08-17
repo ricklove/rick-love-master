@@ -29,8 +29,8 @@ def save_layer_or_group(image, layer, layersDir):
         gr_items = pdb.gimp_item_get_children(layer)
         for index in gr_items[1]:
             item = gimp.Item.from_id(index)
-            save_layer(image, item, layersDir)
-            return
+            save_layer_or_group(image, item, layersDir)
+        return
 
     # if not a group
     save_layer(image, layer, layersDir)

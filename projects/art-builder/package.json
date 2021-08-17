@@ -11,9 +11,6 @@
   },
   "scripts": {},
   "devDependencies": {
-    "@types/glob": "^7.1.3",
-    "binary-parser": "1.1.5",
-    "lazy.js": "0.4.2",
-    "pngjs-image": "^0.11.6"
+    "@types/glob": "^7.1.3"
   }
 }
