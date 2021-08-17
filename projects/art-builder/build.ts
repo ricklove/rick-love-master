@@ -4,8 +4,11 @@ import { promisify } from 'util';
 
 const fs = fsRaw.promises;
 
+
 const extractXcfLayers = async (sourceDirectory: string, destDir: string) => {
     console.log(`# Extracting Images from *.xcf`, { sourceDirectory, destDir });
+
+    /** GIMP must be installed on the system - also, this is using the windows install path */
     const gimpExePath = `C:/Program Files/GIMP 2/bin/gimp-2.10.exe`;
 
     await fs.mkdir(destDir, { recursive: true });
@@ -38,7 +41,7 @@ const extractXcfLayers = async (sourceDirectory: string, destDir: string) => {
     });
 
     const { stdout, stderr } = await promisify(exec)(
-        `"${gimpExePath}" -idf --batch-interpreter python-fu-eval -b "import sys;sys.path=['.']+sys.path;import convertXCF;convertXCF.run('${sourceDirectory}', '${destDir}')" -b "pdb.gimp_quit(1)"`);
+        `"${gimpExePath}" -idf --batch-interpreter python-fu-eval -b "import sys;sys.path=['.']+sys.path;sys.path.insert(0, './scripts');import extractLayersFromXcf;extractLayersFromXcf.run('${sourceDirectory}', '${destDir}')" -b "pdb.gimp_quit(1)"`);
 
     console.log(stdout);
     console.log(stderr);
@@ -67,5 +70,5 @@ export const buildPixelArt = async (xcfDirectory: string) => {
     console.log(`DONE`);
     process.exit();
 };
-
-void buildPixelArt(`./art-test`);
+void buildPixelArt(`../../code/art/artwork/nft-adventure/stories/nft-text-adventure-art`);
+//void buildPixelArt(`./art-test`);

@@ -16,7 +16,8 @@ def save_layer(image, layer, layersDir):
     global nextIndex
     print "Saving layer %s" % layer.name
 
-    outfile = layersDir + '/' + str(nextIndex) + '-' + layer.name + '.png'
+    outfile = layersDir + '/' + \
+        str(nextIndex).rjust(4, '0') + '-' + layer.name + '.png'
 
     print "Saving to %s" % outfile
     pdb.file_png_save(image, layer, outfile, outfile, True,
@@ -40,6 +41,8 @@ def save_layer_or_group(image, layer, layersDir):
 
 
 def process(infile, outDirectory):
+    global nextIndex
+    nextIndex = 0
 
     print "Processing file %s " % infile
     image = pdb.gimp_xcf_load(0, infile, infile)
