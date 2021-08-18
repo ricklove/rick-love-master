@@ -1,0 +1,227 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+
+<svg
+   width="32"
+   height="32"
+   viewBox="0 0 8.4666651 8.4666651"
+   version="1.1"
+   id="svg5"
+   inkscape:version="1.1 (c68e22c387, 2021-05-23)"
+   sodipodi:docname="arm-up.svg"
+   inkscape:export-filename="D:\Projects\rick-love-master\code\art\artwork\nft-adventure\stories\nft-text-adventure-art\preview.png"
+   inkscape:export-xdpi="96"
+   inkscape:export-ydpi="96"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:xlink="http://www.w3.org/1999/xlink"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:svg="http://www.w3.org/2000/svg">
+  <sodipodi:namedview
+     id="namedview7"
+     pagecolor="#505050"
+     bordercolor="#eeeeee"
+     borderopacity="1"
+     inkscape:pageshadow="0"
+     inkscape:pageopacity="0"
+     inkscape:pagecheckerboard="0"
+     inkscape:document-units="px"
+     showgrid="true"
+     inkscape:zoom="21.213203"
+     inkscape:cx="12.232948"
+     inkscape:cy="14.472119"
+     inkscape:window-width="2698"
+     inkscape:window-height="1168"
+     inkscape:window-x="2793"
+     inkscape:window-y="894"
+     inkscape:window-maximized="0"
+     inkscape:current-layer="layer1"
+     width="32mm"
+     units="px"
+     objecttolerance="12.8"
+     showguides="true"
+     inkscape:snap-global="true"
+     inkscape:lockguides="false">
+    <inkscape:grid
+       type="xygrid"
+       id="grid13" />
+  </sodipodi:namedview>
+  <defs
+     id="defs2">
+    <linearGradient
+       inkscape:collect="always"
+       id="linearGradient20412">
+      <stop
+         style="stop-color:#6a6a6a;stop-opacity:1"
+         offset="0"
+         id="stop22154" />
+      <stop
+         style="stop-color:#585858;stop-opacity:1"
+         offset="0.7833333"
+         id="stop25251" />
+      <stop
+         style="stop-color:#bababa;stop-opacity:1"
+         offset="1"
+         id="stop20410" />
+    </linearGradient>
+    <linearGradient
+       inkscape:collect="always"
+       id="linearGradient17264">
+      <stop
+         style="stop-color:#442905;stop-opacity:1;"
+         offset="0"
+         id="stop17260" />
+      <stop
+         style="stop-color:#623b06;stop-opacity:1"
+         offset="0.20000002"
+         id="stop19400" />
+      <stop
+         style="stop-color:#2f1d03;stop-opacity:1"
+         offset="1"
+         id="stop17262" />
+    </linearGradient>
+    <linearGradient
+       id="linearGradient16722"
+       inkscape:swatch="solid">
+      <stop
+         style="stop-color:#442905;stop-opacity:1;"
+         offset="0"
+         id="stop16720" />
+    </linearGradient>
+    <linearGradient
+       inkscape:collect="always"
+       xlink:href="#linearGradient17264"
+       id="linearGradient17268"
+       x1="1.3229164"
+       y1="3.9687493"
+       x2="5.2916656"
+       y2="1.5874997"
+       gradientUnits="userSpaceOnUse" />
+    <radialGradient
+       inkscape:collect="always"
+       xlink:href="#linearGradient20412"
+       id="radialGradient21346"
+       cx="0.80560112"
+       cy="3.4339399"
+       fx="0.94154698"
+       fy="3.4516721"
+       r="1.0639241"
+       gradientTransform="matrix(-7.1691474e-8,-1.4921175,1.4921174,0,-3.2717586,4.6239953)"
+       gradientUnits="userSpaceOnUse" />
+    <filter
+       style="color-interpolation-filters:sRGB"
+       id="filter968"
+       inkscape:label="filter0"
+       x="0"
+       y="0"
+       width="1"
+       height="1">
+      <feTurbulence
+         id="feTurbulence976"
+         type="turbulence"
+         baseFrequency="1"
+         numOctaves="1"
+         seed="0"
+         in="SourceGraphic"
+         result="result2" />
+      <feComposite
+         id="feComposite1078"
+         in="result2"
+         in2="SourceGraphic"
+         result="result3"
+         operator="in" />
+      <feComposite
+         in2="SourceGraphic"
+         id="feComposite1010"
+         operator="arithmetic"
+         k1="-0.40000000000000002"
+         k2="0"
+         in="result3"
+         k3="1"
+         k4="0"
+         result="result4" />
+      <feBlend
+         mode="luminosity"
+         in2="SourceGraphic"
+         id="feBlend1012" />
+    </filter>
+  </defs>
+  <g
+     id="layer4"
+     inkscape:label="Main"
+     sodipodi:insensitive="true">
+    <g
+       id="layer1"
+       inkscape:label="FacialHair">
+      <image
+         width="8.4666653"
+         height="8.4666653"
+         preserveAspectRatio="none"
+         xlink:href="data:image/png;base64,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
+"
+         id="image1268"
+         x="-1.6794434e-07"
+         y="-1.6794434e-07"
+         inkscape:label="WalrusImage" />
+    </g>
+    <g
+       id="layer3"
+       inkscape:label="Weapon"
+       style="display:inline"
+       inkscape:export-filename="D:\Projects\rick-love-master\code\art\artwork\nft-adventure\stories\nft-text-adventure-art\layer3.png"
+       inkscape:export-xdpi="96"
+       inkscape:export-ydpi="96">
+      <g
+         id="layer2"
+         inkscape:label="Axe"
+         style="display:inline">
+        <path
+           style="fill:url(#radialGradient21346);fill-opacity:1;stroke-width:0.264583"
+           d="M 1.5874997,3.4395827 H 0.26458328 C 0.27061946,2.4947955 1.0683793,1.8589554 2.1166663,1.852083 V 3.1749994 L 2.3812496,3.704166 2.1166663,3.9687493 Z"
+           id="path10182"
+           sodipodi:nodetypes="ccccccc" />
+        <path
+           style="fill:url(#linearGradient17268);fill-opacity:1;stroke-width:0.264583"
+           d="M 1.3229165,3.4998898 5.1593742,1.2206921 5.4107283,1.2832291 5.5761931,1.7796234 3.8364577,2.4834984 C 3.7120215,2.6127963 3.6271875,2.7907175 3.4579488,2.8677466 L 1.5572525,3.9687494 h -0.234336 c 0,-0.1562865 0,-0.3125731 0,-0.4688596 z"
+           id="path10172"
+           inkscape:export-filename="D:\Projects\rick-love-master\code\art\artwork\nft-adventure\stories\nft-text-adventure-art\path10172.png"
+           inkscape:export-xdpi="96"
+           inkscape:export-ydpi="96"
+           sodipodi:nodetypes="ccccccccc" />
+      </g>
+    </g>
+  </g>
+</svg>
