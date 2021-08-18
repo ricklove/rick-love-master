@@ -26,6 +26,7 @@ export const processImageLayerFiles = async (sourceDir: string, destDir: string)
         const layerName = layerNameParts?.[2] ?? ``;
         const layerNamePrefix = layerName.split(`_`)[0];
         const layerNameVariant = layerName.split(`_`).slice(1).join(`_`);
+        const rarity = parseInt(layerNameVariant.split(`_`).slice(-1)[0], 10);
         const layerIndex = parseInt(fileName.match(/^([^-]+)-/)?.[1] || `0`, 10);
 
         return {
@@ -36,6 +37,7 @@ export const processImageLayerFiles = async (sourceDir: string, destDir: string)
             layerName,
             layerNamePrefix,
             layerNameVariant,
+            rarity: rarity || undefined,
             layerIndex,
         };
     });
@@ -235,11 +237,30 @@ export const processImageLayerFiles = async (sourceDir: string, destDir: string)
         const chooseRandomGroupLayers = () => {
             const groupLayerOptions = Object.values(groupLayerSegments).map(x => ({
                 groupName: x.groupName,
-                layerOptions: Object.values(x.layerOptions).map(x => x.layerName),
-            })).map(x => ({
-                groupName: x.groupName,
-                layerName: x.layerOptions[Math.floor(Math.random() * x.layerOptions.length)],
-            }));
+                layerOptions: Object.values(x.layerOptions)
+                    .map(x => ({ layerName: x.layerName, rarity: x.layer.rarity })),
+            })).map(x => {
+
+                const nonRareCount = x.layerOptions.filter(l => !l.rarity).length;
+                const rareTotal = x.layerOptions.reduce((out, l) => {out += l.rarity || 0; return out;}, 0);
+                const nonRareChance = !nonRareCount ? 0 : 100 / nonRareCount;
+                const total = nonRareCount * nonRareChance + rareTotal;
+
+                x.layerOptions.sort((a, b) => (a.rarity || 1000) - (b.rarity || 1000));
+                const pSelection = Math.random() * total;
+                let pRemaining = pSelection;
+                let option = x.layerOptions[0];
+                x.layerOptions.forEach(x => {
+                    if (pRemaining < 0){ return; }
+                    pRemaining -= x.rarity || nonRareChance;
+                    option = x;
+                });
+
+                return ({
+                    groupName: x.groupName,
+                    layerName: option.layerName,
+                });
+            });
 
             return new Map(groupLayerOptions.map(x => [x.groupName, x.layerName]));
         };
@@ -338,8 +359,8 @@ export const processImageLayerFiles = async (sourceDir: string, destDir: string)
                     b: Math.max(0, Math.min(255, 128 + p.b - baseColor.b)),
                 }),
             },
-            ...[... new Array(36)].map(() => createRandomSampleMaker()),
-            ...[... new Array(36)].map(() => createRandomSampleMaker_delta()),
+            ...[... new Array(100)].map(() => createRandomSampleMaker()),
+            ...[... new Array(100)].map(() => createRandomSampleMaker_delta()),
             //...[... new Array(12)].map(() => createRandomSampleMaker_drop()),
         ];
         for (const sampleMaker of sampleMakers){
