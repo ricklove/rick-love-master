@@ -17,6 +17,7 @@
     "@types/save-pixels": "^2.3.2",
     "get-pixels": "^3.3.3",
     "gl": "^4.9.0",
-    "save-pixels": "^2.3.6"
+    "save-pixels": "^2.3.6",
+    "xml-js": "^1.6.11"
   }
 }
