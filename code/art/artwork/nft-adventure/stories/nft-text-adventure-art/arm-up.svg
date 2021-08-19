@@ -27,15 +27,15 @@
      inkscape:pagecheckerboard="0"
      inkscape:document-units="px"
      showgrid="true"
-     inkscape:zoom="64"
-     inkscape:cx="11.242187"
-     inkscape:cy="21.015625"
+     inkscape:zoom="32"
+     inkscape:cx="26.453125"
+     inkscape:cy="22.28125"
      inkscape:window-width="2698"
      inkscape:window-height="1168"
      inkscape:window-x="2794"
      inkscape:window-y="903"
      inkscape:window-maximized="0"
-     inkscape:current-layer="g115039"
+     inkscape:current-layer="layer17"
      width="32mm"
      units="px"
      objecttolerance="12.8"
@@ -639,6 +639,39 @@
        fx="2.0347493"
        fy="5.4691815"
        r="1.0458362" />
+    <radialGradient
+       inkscape:collect="always"
+       xlink:href="#linearGradient103888"
+       id="radialGradient15261"
+       gradientUnits="userSpaceOnUse"
+       gradientTransform="matrix(0.6248121,1.7215893,-2.3092987,0.83811886,13.171059,-2.4858608)"
+       cx="2.0347493"
+       cy="5.4691815"
+       fx="2.0347493"
+       fy="5.4691815"
+       r="1.0458362" />
+    <radialGradient
+       inkscape:collect="always"
+       xlink:href="#linearGradient103888"
+       id="radialGradient15269"
+       gradientUnits="userSpaceOnUse"
+       gradientTransform="matrix(0.6248121,1.7215893,-2.3092987,0.83811886,13.171059,-2.4858608)"
+       cx="2.0347493"
+       cy="5.4691815"
+       fx="2.0347493"
+       fy="5.4691815"
+       r="1.0458362" />
+    <radialGradient
+       inkscape:collect="always"
+       xlink:href="#linearGradient103888"
+       id="radialGradient15271"
+       gradientUnits="userSpaceOnUse"
+       gradientTransform="matrix(0.6248121,1.7215893,-2.3092987,0.83811886,13.171059,-2.4858608)"
+       cx="2.0347493"
+       cy="5.4691815"
+       fx="2.0347493"
+       fy="5.4691815"
+       r="1.0458362" />
   </defs>
   <g
      inkscape:groupmode="layer"
@@ -729,6 +762,18 @@
     </g>
     <g
        inkscape:groupmode="layer"
+       id="layer16"
+       inkscape:label="Neck"
+       sodipodi:insensitive="true"
+       style="display:inline">
+      <path
+         id="rect40233"
+         style="fill:url(#linearGradient41214);fill-opacity:1;stroke-width:0.132292;stroke-linejoin:round"
+         d="M 3.198254,7.1432352 4.0612997,6.6077519 4.4373004,7.4145991 4.1706246,7.6753582 3.6677992,7.8331521 Z"
+         sodipodi:nodetypes="cccccc" />
+    </g>
+    <g
+       inkscape:groupmode="layer"
        id="layer10"
        inkscape:label="Clothes"
        style="display:inline"
@@ -761,11 +806,12 @@
     <g
        id="layer3"
        inkscape:label="Weapon"
-       style="display:none"
+       style="display:inline"
        inkscape:export-filename="D:\Projects\rick-love-master\code\art\artwork\nft-adventure\stories\nft-text-adventure-art\layer3.png"
        inkscape:export-xdpi="96"
        inkscape:export-ydpi="96"
-       inkscape:groupmode="layer">
+       inkscape:groupmode="layer"
+       sodipodi:insensitive="true">
       <g
          inkscape:groupmode="layer"
          id="layer6"
@@ -856,17 +902,10 @@
        style="display:inline"
        sodipodi:insensitive="true">
       <g
-         id="layer1"
-         inkscape:label="FacialHair" />
-      <path
-         id="rect40233"
-         style="fill:url(#linearGradient41214);fill-opacity:1;stroke-width:0.132292;stroke-linejoin:round"
-         d="M 3.198254,7.1432352 4.0612997,6.6077519 4.4373004,7.4145991 4.1706246,7.6753582 3.6677992,7.8331521 Z"
-         sodipodi:nodetypes="cccccc" />
-      <g
-         id="g40209"
-         inkscape:label="Face"
-         style="opacity:1">
+         inkscape:groupmode="layer"
+         id="layer17"
+         inkscape:label="HeadShape"
+         style="display:inline">
         <path
            id="rect39404"
            style="fill:url(#radialGradient41846);fill-opacity:1;stroke-width:0.132292;stroke-linejoin:round"
@@ -875,6 +914,12 @@
            inkscape:export-filename="D:\Projects\rick-love-master\code\art\artwork\nft-adventure\stories\nft-text-adventure-art\rect39404.png"
            inkscape:export-xdpi="96"
            inkscape:export-ydpi="96" />
+      </g>
+      <g
+         id="g40209"
+         inkscape:label="Face"
+         style="display:inline;opacity:1"
+         inkscape:groupmode="layer">
         <path
            id="rect43808"
            style="fill:url(#linearGradient45774);fill-opacity:1;stroke-width:0.132292;stroke-linejoin:round"
@@ -924,133 +969,135 @@
            inkscape:export-xdpi="96"
            inkscape:export-ydpi="96" />
       </g>
-    </g>
-    <g
-       inkscape:groupmode="layer"
-       id="layer14"
-       inkscape:label="Hair">
+      <g
+         id="layer1"
+         inkscape:label="FacialHair"
+         inkscape:groupmode="layer"
+         style="display:inline" />
       <g
          inkscape:groupmode="layer"
-         id="layer15"
-         inkscape:label="LongHair"
-         style="display:none"
-         sodipodi:insensitive="true">
-        <path
-           id="rect100379"
-           style="fill:url(#radialGradient103890);fill-opacity:1;stroke:none;stroke-width:0.132292;stroke-linejoin:round"
-           d="M 2.057975,4.759067 C 2.2037336,4.6179586 2.5998354,4.3026187 2.934953,4.3147315 3.1180658,4.3213501 3.3327011,4.3867723 3.4377537,4.5368992 3.5277579,4.665521 3.4269552,4.880537 3.3403767,4.9366586 3.0393126,5.1318131 2.7586455,5.2560237 2.5295569,5.5321456 2.3543557,5.7433166 2.2874827,5.9764108 2.3257912,6.2481112 c 0.184033,0.447923 0.6783364,0.8986599 1.0385511,1.1054252 0.1467466,0.1178763 0.223193,0.3056094 0.3056104,0.4748334 0.1729046,0.355017 0.6033185,0.7873097 0.388989,1.118966 -0.045088,0.06977 -0.1710668,0.052861 -0.24823,0.022095 C 3.3709302,8.7940855 3.1840456,8.2595685 2.8707126,7.9046372 2.7317394,7.7472138 2.0803624,7.2320526 1.9909235,7.1070125 1.9068563,6.9894823 1.7195081,6.6469707 1.6563818,6.4380479 1.5587488,6.1149216 1.5752644,5.6463424 1.6370255,5.4255703 1.6807492,5.2692748 1.9717863,4.842506 2.057975,4.759067 Z"
-           sodipodi:nodetypes="sssssccssssssss" />
+         id="layer14"
+         inkscape:label="Hair"
+         style="display:inline">
+        <g
+           inkscape:groupmode="layer"
+           id="layer15"
+           inkscape:label="LongHair"
+           style="display:none"
+           sodipodi:insensitive="true">
+          <path
+             id="rect100379"
+             style="fill:url(#radialGradient15269);fill-opacity:1;stroke:none;stroke-width:0.132292;stroke-linejoin:round"
+             d="M 2.057975,4.759067 C 2.2037336,4.6179586 2.5998354,4.3026187 2.934953,4.3147315 3.1180658,4.3213501 3.3327011,4.3867723 3.4377537,4.5368992 3.5277579,4.665521 3.4269552,4.880537 3.3403767,4.9366586 3.0393126,5.1318131 2.7586455,5.2560237 2.5295569,5.5321456 2.3543557,5.7433166 2.2874827,5.9764108 2.3257912,6.2481112 c 0.184033,0.447923 0.6783364,0.8986599 1.0385511,1.1054252 0.1467466,0.1178763 0.223193,0.3056094 0.3056104,0.4748334 0.1729046,0.355017 0.6033185,0.7873097 0.388989,1.118966 -0.045088,0.06977 -0.1710668,0.052861 -0.24823,0.022095 C 3.3709302,8.7940855 3.1840456,8.2595685 2.8707126,7.9046372 2.7317394,7.7472138 2.0803624,7.2320526 1.9909235,7.1070125 1.9068563,6.9894823 1.7195081,6.6469707 1.6563818,6.4380479 1.5587488,6.1149216 1.5752644,5.6463424 1.6370255,5.4255703 1.6807492,5.2692748 1.9717863,4.842506 2.057975,4.759067 Z"
+             sodipodi:nodetypes="sssssccssssssss" />
+        </g>
+        <g
+           inkscape:groupmode="layer"
+           id="g112753"
+           inkscape:label="MediumHair"
+           style="display:none"
+           sodipodi:insensitive="true">
+          <path
+             id="path112751"
+             style="fill:url(#radialGradient15271);fill-opacity:1;stroke:none;stroke-width:0.132292;stroke-linejoin:round"
+             d="M 2.057975,4.759067 C 2.2037336,4.6179586 2.5998354,4.3026187 2.934953,4.3147315 3.1180658,4.3213501 3.3327011,4.3867723 3.4377537,4.5368992 3.5277579,4.665521 3.4269552,4.880537 3.3403767,4.9366586 3.0393126,5.1318131 2.7586455,5.2560237 2.5295569,5.5321456 2.3543557,5.7433166 2.2874827,5.9764108 2.3257912,6.2481112 2.3762432,6.6059383 2.9514698,7.0446864 2.9301212,7.1927984 2.9141799,7.3033955 2.7415883,7.409541 2.630934,7.42508 2.4229846,7.4542819 2.0803624,7.2320526 1.9909235,7.1070125 1.9068563,6.9894823 1.7195081,6.6469707 1.6563818,6.4380479 1.5587488,6.1149216 1.5752644,5.6463424 1.6370255,5.4255703 1.6807492,5.2692748 1.9717863,4.842506 2.057975,4.759067 Z"
+             sodipodi:nodetypes="ssssssssssss" />
+        </g>
+        <g
+           inkscape:groupmode="layer"
+           id="g114125"
+           inkscape:label="ShortHair"
+           style="display:none"
+           sodipodi:insensitive="true">
+          <path
+             id="path114123"
+             style="fill:url(#radialGradient103890);fill-opacity:1;stroke:none;stroke-width:0.132292;stroke-linejoin:round"
+             d="M 2.0745115,5.0236503 C 2.2357671,4.8629655 2.4345694,4.7232045 2.6538332,4.6619971 c 0.1694081,-0.04729 0.363328,-0.055642 0.5276054,0.00719 0.1032143,0.03948 0.338221,0.1514563 0.2498886,0.2178583 C 3.2482179,5.0246978 2.7423548,5.2299697 2.5295569,5.5321456 2.3866885,5.7350207 2.3539252,6.0015789 2.3257912,6.2481112 2.2985395,6.4869121 2.444809,6.8716543 2.3618411,6.9682619 2.1803527,7.1795864 1.9335612,6.5856953 1.8217464,6.3305609 1.7197965,6.0979357 1.6727669,5.8223102 1.727976,5.5743984 1.7751239,5.3626848 1.9208684,5.1767496 2.0745115,5.0236503 Z"
+             sodipodi:nodetypes="ssssssssss" />
+        </g>
+        <g
+           inkscape:groupmode="layer"
+           id="g13047"
+           inkscape:label="BaldingHair"
+           style="display:none">
+          <path
+             id="path13045"
+             style="fill:url(#radialGradient15261);fill-opacity:1;stroke:none;stroke-width:0.132292;stroke-linejoin:round"
+             d="m 2.3618325,4.8748222 c 0.047182,-0.082376 0.1223463,-0.126813 0.3416101,-0.1880204 0.1694081,-0.04729 0.3219868,-0.068045 0.4862642,-0.00521 0.1032143,0.03948 -0.099995,0.1803951 -0.1883274,0.2467971 C 2.8182701,5.0660389 2.7014292,5.1802743 2.4886313,5.4824502 2.3457629,5.6853253 2.3539252,6.0015789 2.3257912,6.2481112 2.2985395,6.4869121 2.475393,6.9106193 2.3618411,6.9682619 2.2713032,7.0142218 2.0823893,6.6766458 2.0201838,6.5207301 1.9260661,6.2848274 1.9952806,5.7605669 2.0897109,5.5247891 2.1554624,5.3606177 2.3121917,4.9614909 2.3618325,4.8748222 Z"
+             sodipodi:nodetypes="ssssssssss" />
+        </g>
+        <g
+           inkscape:groupmode="layer"
+           id="g9227"
+           inkscape:label="MohawkHair"
+           style="display:inline"
+           sodipodi:insensitive="true">
+          <path
+             id="path9225"
+             style="fill:url(#radialGradient115041);fill-opacity:1;stroke:none;stroke-width:0.132292;stroke-linejoin:round"
+             d="m 2.5395993,4.5048191 c 0.1427975,0.043764 0.3674484,0.2563967 0.3674484,0.2563967 l 0.00567,0.5652991 c 0,0 -0.232649,-0.2359318 -0.3293277,-0.3092122 C 2.4668512,4.9289686 2.2604957,4.9314497 2.136816,5.045354 1.6232323,5.5183452 1.8761379,6.1533582 1.9529169,6.2887582 2.0942954,6.5380796 2.2893851,6.7142658 2.4152003,6.8554331 2.4999086,6.9504777 2.8831008,7.1722644 3.0340099,7.2607489 L 2.8845315,7.4067688 c 0,0 -0.1511081,-0.1047339 -0.2283116,-0.1546071 C 2.5812549,7.2037346 2.500279,7.1644555 2.4282274,7.1117914 2.3271709,7.037927 2.2325851,6.9548765 2.1435672,6.8668755 2.0517104,6.7760681 1.9612256,6.6821056 1.8874825,6.5760604 1.7825278,6.4251319 1.6913006,6.2622787 1.6263389,6.0903052 1.5612962,5.9181171 1.4997909,5.7365993 1.5009524,5.5525397 1.5021821,5.3576686 1.566722,5.1651208 1.6408787,4.9849069 1.6828317,4.8829538 1.7326845,4.7790064 1.8106582,4.7010668 1.8981262,4.6136368 2.0101695,4.5445198 2.1291417,4.510754 2.2607763,4.473394 2.408772,4.464724 2.5395993,4.504824 Z"
+             sodipodi:nodetypes="sccssssccssssssssss"
+             inkscape:export-filename="D:\Projects\rick-love-master\code\art\artwork\nft-adventure\stories\nft-text-adventure-art\path115037.png"
+             inkscape:export-xdpi="96"
+             inkscape:export-ydpi="96" />
+        </g>
       </g>
       <g
          inkscape:groupmode="layer"
-         id="g112753"
-         inkscape:label="MediumHair"
-         style="display:none"
-         sodipodi:insensitive="true">
-        <path
-           id="path112751"
-           style="fill:url(#radialGradient103890);fill-opacity:1;stroke:none;stroke-width:0.132292;stroke-linejoin:round"
-           d="M 2.057975,4.759067 C 2.2037336,4.6179586 2.5998354,4.3026187 2.934953,4.3147315 3.1180658,4.3213501 3.3327011,4.3867723 3.4377537,4.5368992 3.5277579,4.665521 3.4269552,4.880537 3.3403767,4.9366586 3.0393126,5.1318131 2.7586455,5.2560237 2.5295569,5.5321456 2.3543557,5.7433166 2.2874827,5.9764108 2.3257912,6.2481112 2.3762432,6.6059383 2.9514698,7.0446864 2.9301212,7.1927984 2.9141799,7.3033955 2.7415883,7.409541 2.630934,7.42508 2.4229846,7.4542819 2.0803624,7.2320526 1.9909235,7.1070125 1.9068563,6.9894823 1.7195081,6.6469707 1.6563818,6.4380479 1.5587488,6.1149216 1.5752644,5.6463424 1.6370255,5.4255703 1.6807492,5.2692748 1.9717863,4.842506 2.057975,4.759067 Z"
-           sodipodi:nodetypes="ssssssssssss" />
-      </g>
-      <g
-         inkscape:groupmode="layer"
-         id="g114125"
-         inkscape:label="ShortHair"
-         style="display:none"
-         sodipodi:insensitive="true">
-        <path
-           id="path114123"
-           style="fill:url(#radialGradient103890);fill-opacity:1;stroke:none;stroke-width:0.132292;stroke-linejoin:round"
-           d="M 2.0745115,5.0236503 C 2.2357671,4.8629655 2.4345694,4.7232045 2.6538332,4.6619971 c 0.1694081,-0.04729 0.363328,-0.055642 0.5276054,0.00719 0.1032143,0.03948 0.338221,0.1514563 0.2498886,0.2178583 C 3.2482179,5.0246978 2.7423548,5.2299697 2.5295569,5.5321456 2.3866885,5.7350207 2.3539252,6.0015789 2.3257912,6.2481112 2.2985395,6.4869121 2.444809,6.8716543 2.3618411,6.9682619 2.1803527,7.1795864 1.9335612,6.5856953 1.8217464,6.3305609 1.7197965,6.0979357 1.6727669,5.8223102 1.727976,5.5743984 1.7751239,5.3626848 1.9208684,5.1767496 2.0745115,5.0236503 Z"
-           sodipodi:nodetypes="ssssssssss" />
-      </g>
-      <g
-         inkscape:groupmode="layer"
-         id="g115039"
-         inkscape:label="PunkHair"
-         style="display:none"
-         sodipodi:insensitive="true">
-        <path
-           id="path115037"
-           style="fill:url(#radialGradient115041);fill-opacity:1;stroke:none;stroke-width:0.132292;stroke-linejoin:round"
-           d="m 2.5106605,4.7818047 0.3095708,-0.6696448 0.09249,1.214355 c 0,0 -0.2243808,-0.2731388 -0.3665347,-0.3050781 C 2.4035066,4.9893798 2.2604957,4.9314497 2.136816,5.045354 1.6232323,5.5183452 1.8761379,6.1533582 1.9529169,6.2887582 2.0942954,6.5380796 2.2893851,6.7142658 2.4152003,6.8554331 2.4999086,6.9504777 2.8831008,7.1722644 3.0340099,7.2607489 L 2.7687763,7.4398417 2.6562199,7.1488089 2.3758232,7.1530204 2.378618,6.8968175 2.1241145,6.8839391 2.1104943,6.6312311 1.8503636,6.6377907 1.904019,6.3032088 1.5856843,6.3488544 1.6842165,5.9414771 1.3186698,5.6875671 1.6828535,5.3954434 1.4961848,5.0138457 1.8534711,5.0337434 1.8313288,4.7630785 2.1134915,4.7753967 2.2324945,4.3949988 Z"
-           sodipodi:nodetypes="cccssssccccccccccccccccccc"
-           inkscape:export-filename="D:\Projects\rick-love-master\code\art\artwork\nft-adventure\stories\nft-text-adventure-art\path115037.png"
-           inkscape:export-xdpi="96"
-           inkscape:export-ydpi="96" />
-      </g>
-      <g
-         inkscape:groupmode="layer"
-         id="g9227"
-         inkscape:label="MohawkHair"
+         id="layer12"
+         inkscape:label="Headwear"
          style="display:inline"
          sodipodi:insensitive="true">
-        <path
-           id="path9225"
-           style="fill:url(#radialGradient115041);fill-opacity:1;stroke:none;stroke-width:0.132292;stroke-linejoin:round"
-           d="m 2.5395993,4.5048191 c 0.1427975,0.043764 0.3674484,0.2563967 0.3674484,0.2563967 l 0.00567,0.5652991 c 0,0 -0.232649,-0.2359318 -0.3293277,-0.3092122 C 2.4668512,4.9289686 2.2604957,4.9314497 2.136816,5.045354 1.6232323,5.5183452 1.8761379,6.1533582 1.9529169,6.2887582 2.0942954,6.5380796 2.2893851,6.7142658 2.4152003,6.8554331 2.4999086,6.9504777 2.8831008,7.1722644 3.0340099,7.2607489 L 2.8845315,7.4067688 c 0,0 -0.1511081,-0.1047339 -0.2283116,-0.1546071 C 2.5812549,7.2037346 2.500279,7.1644555 2.4282274,7.1117914 2.3271709,7.037927 2.2325851,6.9548765 2.1435672,6.8668755 2.0517104,6.7760681 1.9612256,6.6821056 1.8874825,6.5760604 1.7825278,6.4251319 1.6913006,6.2622787 1.6263389,6.0903052 1.5612962,5.9181171 1.4997909,5.7365993 1.5009524,5.5525397 1.5021821,5.3576686 1.566722,5.1651208 1.6408787,4.9849069 1.6828317,4.8829538 1.7326845,4.7790064 1.8106582,4.7010668 1.8981262,4.6136368 2.0101695,4.5445198 2.1291417,4.510754 2.2607763,4.473394 2.408772,4.464724 2.5395993,4.504824 Z"
-           sodipodi:nodetypes="sccssssccssssssssss"
-           inkscape:export-filename="D:\Projects\rick-love-master\code\art\artwork\nft-adventure\stories\nft-text-adventure-art\path115037.png"
-           inkscape:export-xdpi="96"
-           inkscape:export-ydpi="96" />
-      </g>
-    </g>
-    <g
-       inkscape:groupmode="layer"
-       id="layer12"
-       inkscape:label="Headwear"
-       style="display:inline"
-       sodipodi:insensitive="true">
-      <g
-         inkscape:groupmode="layer"
-         id="layer13"
-         inkscape:label="BaseballCap"
-         style="display:none"
-         sodipodi:insensitive="true">
-        <path
-           id="rect60995"
-           style="fill:url(#radialGradient83374);fill-opacity:1;stroke:none;stroke-width:0.144143;stroke-linejoin:round;stroke-opacity:1"
-           d="M 1.1504363,5.4739352 C 1.1927886,5.0640747 1.3513387,4.7540429 1.6708741,4.493896 1.9487804,4.2676407 2.3833357,4.1436211 2.7391776,4.1860475 3.099474,4.2290054 3.6476832,4.8016073 3.6476832,4.8016073 L 1.5904777,6.4003027 c 0,0 -0.4757258,-0.5810356 -0.4400414,-0.9263675 z"
-           sodipodi:nodetypes="sssccs" />
-        <path
-           id="path66736"
-           style="fill:url(#radialGradient66818);fill-opacity:1;stroke:none;stroke-width:0.160203;stroke-linejoin:round;stroke-opacity:1"
-           d="M 3.6429754,4.8019138 C 3.6076842,4.8343674 3.553481,4.8723222 3.3479924,5.0425553 3.2703523,5.1068751 3.1715296,4.6395696 3.2200105,4.551169 3.3350098,4.3414778 3.4957934,3.9866838 3.7174636,3.8147667 3.8676147,3.6983164 3.9972039,4.4761627 3.6429754,4.8019138 Z"
-           sodipodi:nodetypes="sssss" />
-        <path
-           id="rect62137"
-           style="fill:url(#radialGradient107180);fill-opacity:1;stroke:none;stroke-width:0.160203;stroke-linejoin:round;stroke-opacity:1"
-           d="m 2.622909,5.596141 c 0,0 -0.1461041,-0.6438352 0.03236,-0.9034873 C 2.9950953,4.352568 3.3410266,4.1001144 3.7262235,3.8036712 3.7430463,4.3141491 3.624054,4.8174853 3.3365507,5.0510844 3.0576322,5.2777079 2.622909,5.596141 2.622909,5.596141 Z"
-           sodipodi:nodetypes="cccsc" />
-      </g>
-      <g
-         inkscape:groupmode="layer"
-         id="g61999"
-         inkscape:label="ArmyHelmet"
-         style="display:none"
-         sodipodi:insensitive="true">
-        <path
-           id="path61997"
-           style="fill:url(#radialGradient110482);fill-opacity:1;stroke-width:0.156514;stroke-linejoin:round"
-           d="M 1.0711192,5.427319 C 1.1171062,4.9822838 1.2892633,4.6456448 1.6362217,4.3631715 1.9379784,4.1174989 2.4098276,3.9828357 2.7962085,4.0289032 3.1874259,4.0755475 3.7826832,4.697291 3.7826832,4.697291 L 1.5000151,6.5310095 c 0,0 -0.4676427,-0.7287217 -0.4288959,-1.1036905 z"
-           sodipodi:nodetypes="sssccs" />
-      </g>
-      <g
-         inkscape:groupmode="layer"
-         id="g61615"
-         inkscape:label="ChineseCap"
-         style="display:none">
-        <path
-           id="path61613"
-           style="fill:url(#radialGradient111234);fill-opacity:1;stroke-width:0.144968;stroke-linejoin:round"
-           d="M 1.019258,5.5320765 1.6095875,4.2733579 2.9379391,3.9586722 3.693875,4.7199968 1.5796019,6.4184399 Z"
-           sodipodi:nodetypes="cccccc" />
-        <path
-           id="rect111386"
-           style="fill:url(#radialGradient112038);fill-opacity:1;stroke-width:0.456773;stroke-linejoin:round"
-           d="M 3.3627137,4.2988312 3.7036529,4.718334 1.5789295,6.4726382 1.2615397,6.0257787 Z"
-           sodipodi:nodetypes="ccccc" />
+        <g
+           inkscape:groupmode="layer"
+           id="layer13"
+           inkscape:label="BaseballCap"
+           style="display:none"
+           sodipodi:insensitive="true">
+          <path
+             id="rect60995"
+             style="fill:url(#radialGradient83374);fill-opacity:1;stroke:none;stroke-width:0.144143;stroke-linejoin:round;stroke-opacity:1"
+             d="M 1.1504363,5.4739352 C 1.1927886,5.0640747 1.3513387,4.7540429 1.6708741,4.493896 1.9487804,4.2676407 2.3833357,4.1436211 2.7391776,4.1860475 3.099474,4.2290054 3.6476832,4.8016073 3.6476832,4.8016073 L 1.5904777,6.4003027 c 0,0 -0.4757258,-0.5810356 -0.4400414,-0.9263675 z"
+             sodipodi:nodetypes="sssccs" />
+          <path
+             id="path66736"
+             style="fill:url(#radialGradient66818);fill-opacity:1;stroke:none;stroke-width:0.160203;stroke-linejoin:round;stroke-opacity:1"
+             d="M 3.6429754,4.8019138 C 3.6076842,4.8343674 3.553481,4.8723222 3.3479924,5.0425553 3.2703523,5.1068751 3.1715296,4.6395696 3.2200105,4.551169 3.3350098,4.3414778 3.4957934,3.9866838 3.7174636,3.8147667 3.8676147,3.6983164 3.9972039,4.4761627 3.6429754,4.8019138 Z"
+             sodipodi:nodetypes="sssss" />
+          <path
+             id="rect62137"
+             style="fill:url(#radialGradient107180);fill-opacity:1;stroke:none;stroke-width:0.160203;stroke-linejoin:round;stroke-opacity:1"
+             d="m 2.622909,5.596141 c 0,0 -0.1461041,-0.6438352 0.03236,-0.9034873 C 2.9950953,4.352568 3.3410266,4.1001144 3.7262235,3.8036712 3.7430463,4.3141491 3.624054,4.8174853 3.3365507,5.0510844 3.0576322,5.2777079 2.622909,5.596141 2.622909,5.596141 Z"
+             sodipodi:nodetypes="cccsc" />
+        </g>
+        <g
+           inkscape:groupmode="layer"
+           id="g61999"
+           inkscape:label="ArmyHelmet"
+           style="display:none"
+           sodipodi:insensitive="true">
+          <path
+             id="path61997"
+             style="fill:url(#radialGradient110482);fill-opacity:1;stroke-width:0.156514;stroke-linejoin:round"
+             d="M 1.0711192,5.427319 C 1.1171062,4.9822838 1.2892633,4.6456448 1.6362217,4.3631715 1.9379784,4.1174989 2.4098276,3.9828357 2.7962085,4.0289032 3.1874259,4.0755475 3.7826832,4.697291 3.7826832,4.697291 L 1.5000151,6.5310095 c 0,0 -0.4676427,-0.7287217 -0.4288959,-1.1036905 z"
+             sodipodi:nodetypes="sssccs" />
+        </g>
+        <g
+           inkscape:groupmode="layer"
+           id="g61615"
+           inkscape:label="ChineseCap"
+           style="display:inline">
+          <path
+             id="path61613"
+             style="fill:url(#radialGradient111234);fill-opacity:1;stroke-width:0.144968;stroke-linejoin:round"
+             d="M 1.019258,5.5320765 1.6095875,4.2733579 2.9379391,3.9586722 3.693875,4.7199968 1.5796019,6.4184399 Z"
+             sodipodi:nodetypes="cccccc" />
+          <path
+             id="rect111386"
+             style="fill:url(#radialGradient112038);fill-opacity:1;stroke-width:0.456773;stroke-linejoin:round"
+             d="M 3.3627137,4.2988312 3.7036529,4.718334 1.5789295,6.4726382 1.2615397,6.0257787 Z"
+             sodipodi:nodetypes="ccccc" />
+        </g>
       </g>
     </g>
   </g>
