@@ -27,15 +27,15 @@
      inkscape:pagecheckerboard="0"
      inkscape:document-units="px"
      showgrid="true"
-     inkscape:zoom="11.313709"
-     inkscape:cx="40.967999"
-     inkscape:cy="13.700194"
+     inkscape:zoom="16"
+     inkscape:cx="35.09375"
+     inkscape:cy="24.5625"
      inkscape:window-width="2698"
      inkscape:window-height="1168"
      inkscape:window-x="2793"
      inkscape:window-y="894"
      inkscape:window-maximized="0"
-     inkscape:current-layer="g24513"
+     inkscape:current-layer="layer8"
      width="32mm"
      units="px"
      objecttolerance="12.8"
@@ -48,6 +48,90 @@
   </sodipodi:namedview>
   <defs
      id="defs2">
+    <linearGradient
+       inkscape:collect="always"
+       id="linearGradient56167">
+      <stop
+         style="stop-color:#9d6625;stop-opacity:1"
+         offset="0"
+         id="stop56157" />
+      <stop
+         style="stop-color:#9d6625;stop-opacity:1"
+         offset="0.36591762"
+         id="stop56159" />
+      <stop
+         style="stop-color:#895024;stop-opacity:1"
+         offset="0.63057262"
+         id="stop56161" />
+      <stop
+         style="stop-color:#895d2f;stop-opacity:1"
+         offset="1"
+         id="stop56165" />
+    </linearGradient>
+    <linearGradient
+       inkscape:collect="always"
+       id="linearGradient45772">
+      <stop
+         style="stop-color:#865d00;stop-opacity:1"
+         offset="0"
+         id="stop45768" />
+      <stop
+         style="stop-color:#c48800;stop-opacity:1"
+         offset="1"
+         id="stop45770" />
+    </linearGradient>
+    <linearGradient
+       inkscape:collect="always"
+       id="linearGradient41586">
+      <stop
+         style="stop-color:#d0b57c;stop-opacity:1"
+         offset="0"
+         id="stop41582" />
+      <stop
+         style="stop-color:#be9948;stop-opacity:1"
+         offset="0.63082784"
+         id="stop42972" />
+      <stop
+         style="stop-color:#ad893c;stop-opacity:1"
+         offset="1"
+         id="stop41584" />
+    </linearGradient>
+    <linearGradient
+       inkscape:collect="always"
+       id="linearGradient41212">
+      <stop
+         style="stop-color:#a07f3a;stop-opacity:1"
+         offset="0"
+         id="stop41208" />
+      <stop
+         style="stop-color:#6e5828;stop-opacity:1"
+         offset="1"
+         id="stop41210" />
+    </linearGradient>
+    <linearGradient
+       inkscape:collect="always"
+       id="linearGradient34615">
+      <stop
+         style="stop-color:#c7a75f;stop-opacity:1"
+         offset="0"
+         id="stop34609" />
+      <stop
+         style="stop-color:#c7a75f;stop-opacity:1;"
+         offset="0.36591762"
+         id="stop34617" />
+      <stop
+         style="stop-color:#ba9443;stop-opacity:1"
+         offset="0.48685959"
+         id="stop35451" />
+      <stop
+         style="stop-color:#c4a764;stop-opacity:1"
+         offset="0.67712772"
+         id="stop35517" />
+      <stop
+         style="stop-color:#896d2f;stop-opacity:1"
+         offset="1"
+         id="stop34613" />
+    </linearGradient>
     <linearGradient
        inkscape:collect="always"
        id="linearGradient26793">
@@ -260,12 +344,63 @@
        x2="3.6308854"
        y2="1.7925124"
        gradientUnits="userSpaceOnUse" />
+    <radialGradient
+       inkscape:collect="always"
+       xlink:href="#linearGradient34615"
+       id="radialGradient35869"
+       cx="4.5085726"
+       cy="8.7928972"
+       fx="4.5085726"
+       fy="8.7928972"
+       r="2.79458"
+       gradientTransform="matrix(0.05169029,-1.3292138,1.6537156,0.06430948,-9.7499543,14.417515)"
+       gradientUnits="userSpaceOnUse" />
+    <linearGradient
+       inkscape:collect="always"
+       xlink:href="#linearGradient41212"
+       id="linearGradient41214"
+       x1="3.5429912"
+       y1="7.5186248"
+       x2="4.3381176"
+       y2="7.2029123"
+       gradientUnits="userSpaceOnUse" />
+    <radialGradient
+       inkscape:collect="always"
+       xlink:href="#linearGradient41586"
+       id="radialGradient41846"
+       cx="2.964184"
+       cy="6.4673634"
+       fx="2.964184"
+       fy="6.4673634"
+       r="1.3186048"
+       gradientTransform="matrix(1.1672398,-0.01808499,0.02929936,1.8910363,-0.62361445,-5.7041639)"
+       gradientUnits="userSpaceOnUse" />
+    <linearGradient
+       inkscape:collect="always"
+       xlink:href="#linearGradient45772"
+       id="linearGradient45774"
+       x1="3.9580939"
+       y1="6.5919514"
+       x2="3.7710056"
+       y2="6.3814764"
+       gradientUnits="userSpaceOnUse" />
+    <radialGradient
+       inkscape:collect="always"
+       xlink:href="#linearGradient56167"
+       id="radialGradient35869-6"
+       cx="4.5085726"
+       cy="8.7928972"
+       fx="4.5085726"
+       fy="8.7928972"
+       r="2.79458"
+       gradientTransform="matrix(0.05796246,-1.483731,1.8543798,0.07178527,-11.428705,15.111701)"
+       gradientUnits="userSpaceOnUse" />
   </defs>
   <g
      inkscape:groupmode="layer"
      id="layer5"
      inkscape:label="Raw"
-     style="display:inline;opacity:0.263158"
+     style="display:none;opacity:0.263158"
      sodipodi:insensitive="true">
     <image
        width="8.4666653"
@@ -422,16 +557,28 @@ NoeyHv+lostYCEBaIQBphQCkFQKQVghAWiEAaYUApPX/u9t3QuoSHEMAAAAASUVORK5CYII=
     <g
        inkscape:groupmode="layer"
        id="layer7"
-       inkscape:label="Body">
+       inkscape:label="Body"
+       style="display:inline">
       <g
          inkscape:groupmode="layer"
          id="g24513"
-         inkscape:label="Arm">
+         inkscape:label="Arm"
+         style="display:inline">
         <path
            id="path24511"
            style="fill:url(#linearGradient26657);fill-opacity:1;stroke:none;stroke-width:0.132292;stroke-linejoin:round"
-           d="M 7.0936577,6.8216249 8.0446174,5.2652494 8.0197288,4.7522298 7.3021332,3.9193634 5.4333591,2.3637101 4.6734344,2.892807 6.3080284,4.6215502 6.9753466,5.0443285 6.2547386,5.5457067 5.8384753,6.350786 5.0126597,6.7531965 6.0680474,7.5759137 Z"
+           d="M 7.0819646,6.7748527 8.1381617,5.2301703 8.1249662,4.822388 7.3021332,3.9193634 5.4333591,2.3637101 4.6734344,2.892807 6.0858607,4.7034015 6.9051884,5.0326355 5.9857987,5.5340137 5.5344562,6.4209442 5.0126597,6.7531965 6.0680474,7.5759137 Z"
            sodipodi:nodetypes="ccccccccccccc" />
+      </g>
+      <g
+         inkscape:groupmode="layer"
+         id="g33808"
+         inkscape:label="Chest">
+        <path
+           id="path33806"
+           style="fill:url(#radialGradient35869);fill-opacity:1;stroke:none;stroke-width:0.132292;stroke-linejoin:round"
+           d="M 6.7194804,8.7392834 3.6714206,10.573889 2.8514053,9.1721988 1.5491577,9.5086363 1.1303205,8.5610211 1.8831545,7.9168016 3.6448526,7.5724519 4.3213708,7.2180587 5.0123532,6.7515514 5.5989401,7.0412629 6.0680474,7.5759137 Z"
+           sodipodi:nodetypes="cccccccccccc" />
       </g>
       <g
          inkscape:groupmode="layer"
@@ -447,15 +594,23 @@ NoeyHv+lostYCEBaIQBphQCkFQKQVghAWiEAaYUApPX/u9t3QuoSHEMAAAAASUVORK5CYII=
     </g>
     <g
        inkscape:groupmode="layer"
-       id="layer8"
-       inkscape:label="Head" />
-    <g
-       id="layer1"
-       inkscape:label="FacialHair" />
+       id="layer10"
+       inkscape:label="Clothes">
+      <g
+         inkscape:groupmode="layer"
+         id="layer11"
+         inkscape:label="Leather">
+        <path
+           id="path33806-4"
+           style="display:inline;fill:url(#radialGradient35869-6);fill-opacity:1;stroke:none;stroke-width:0.148007;stroke-linejoin:round"
+           d="M 7.0391533,8.773392 3.6212376,10.821265 2.2573854,9.6074237 1.2414563,9.6321799 0.77179705,8.5744072 1.615981,7.8552991 3.0886451,7.5410779 3.7864989,8.0273201 4.601951,7.593201 4.4552908,6.8999338 5.1248812,6.5545919 5.7124873,5.802222 6.5754204,6.3240291 7.010257,7.1824579 Z"
+           sodipodi:nodetypes="ccccccccccccccc" />
+      </g>
+    </g>
     <g
        id="layer3"
        inkscape:label="Weapon"
-       style="display:none"
+       style="display:inline"
        inkscape:export-filename="D:\Projects\rick-love-master\code\art\artwork\nft-adventure\stories\nft-text-adventure-art\layer3.png"
        inkscape:export-xdpi="96"
        inkscape:export-ydpi="96"
@@ -465,12 +620,12 @@ NoeyHv+lostYCEBaIQBphQCkFQKQVghAWiEAaYUApPX/u9t3QuoSHEMAAAAASUVORK5CYII=
          id="layer6"
          inkscape:label="GloveWithBall"
          style="display:inline"
-         rarity="1"
-         sodipodi:insensitive="true">
+         rarity="1">
         <g
            id="g21057"
            inkscape:label="Glove"
-           transform="translate(-0.36380202,-0.31419265)">
+           transform="translate(-0.36380202,-0.31419265)"
+           style="display:inline">
           <path
              id="path9527"
              style="fill:url(#radialGradient11148);fill-opacity:1;stroke:none;stroke-width:0.211667;stroke-linecap:butt;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
@@ -479,13 +634,14 @@ NoeyHv+lostYCEBaIQBphQCkFQKQVghAWiEAaYUApPX/u9t3QuoSHEMAAAAASUVORK5CYII=
           <path
              id="rect1661"
              style="fill:url(#radialGradient5302);fill-opacity:1;stroke:#b3751e;stroke-width:0.211667;stroke-linecap:butt;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
-             d="M 2.3812496,2.3812496 C 2.3647131,2.2667232 2.5337833,2.134443 2.6789057,2.0009111 3.0284067,1.6793236 4.2333325,1.3229164 4.2333325,1.3229164 c 0,0 0.7555185,0.2764446 1.0583332,0.5291666 0.3385571,0.2825518 0.7937498,1.0583331 0.7937498,1.0583331 L 5.8456369,3.1501947 5.556249,3.4395827 C 4.2333325,3.1749994 4.3044332,2.7041846 3.7868482,2.4804682 3.4147216,2.3239417 2.4094323,2.5764341 2.3812496,2.3812496 Z"
+             d="M 2.3812496,2.3812496 C 2.3647131,2.2667232 2.5337833,2.134443 2.6789057,2.0009111 3.0284067,1.6793236 4.1754549,1.1906248 4.1754549,1.1906248 c 0,0 0.8133961,0.4087362 1.1162108,0.6614582 0.3385571,0.2825518 0.7937498,1.0583331 0.7937498,1.0583331 L 5.8456369,3.1501947 5.556249,3.4395827 C 4.2333325,3.1749994 4.3044332,2.7041846 3.7868482,2.4804682 3.4147216,2.3239417 2.4094323,2.5764341 2.3812496,2.3812496 Z"
              sodipodi:nodetypes="sscsccccs" />
         </g>
         <g
            id="g13322"
            inkscape:label="Ball"
-           transform="translate(-1.5874997,0.00413411)">
+           transform="translate(0.26295425,5.3197227e-4)"
+           style="display:inline">
           <circle
              style="fill:url(#radialGradient18459);fill-opacity:1;stroke:none;stroke-width:0.211667;stroke-linecap:butt;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
              id="path13220"
@@ -505,9 +661,8 @@ NoeyHv+lostYCEBaIQBphQCkFQKQVghAWiEAaYUApPX/u9t3QuoSHEMAAAAASUVORK5CYII=
       <g
          id="layer2"
          inkscape:label="Axe"
-         style="display:inline"
-         inkscape:groupmode="layer"
-         sodipodi:insensitive="true">
+         style="display:none"
+         inkscape:groupmode="layer">
         <path
            style="fill:url(#radialGradient21346);fill-opacity:1;stroke-width:0.264583"
            d="M 1.5874997,3.4395827 H 0.26458328 C 0.27061946,2.4947955 1.0683793,1.8589554 2.1166663,1.852083 V 3.1749994 L 2.3812496,3.704166 2.1166663,3.9687493 Z"
@@ -515,12 +670,105 @@ NoeyHv+lostYCEBaIQBphQCkFQKQVghAWiEAaYUApPX/u9t3QuoSHEMAAAAASUVORK5CYII=
            sodipodi:nodetypes="ccccccc" />
         <path
            style="fill:url(#linearGradient17268);fill-opacity:1;stroke-width:0.264583"
-           d="M 1.3229165,3.4998898 5.1593742,1.2206921 5.4107283,1.2832291 5.5761931,1.7796234 3.8364577,2.4834984 C 3.7120215,2.6127963 3.6271875,2.7907175 3.4579488,2.8677466 L 1.5572525,3.9687494 h -0.234336 c 0,-0.1562865 0,-0.3125731 0,-0.4688596 z"
+           d="M 1.3229165,3.4998898 5.0684767,1.6302396 5.2751294,1.3116426 5.5430199,1.423789 5.6009978,1.8953786 4.2326528,2.6216722 3.7511591,2.6577827 3.7381161,2.8540473 1.5572528,3.9687493 H 1.3229168 Z"
            id="path10172"
            inkscape:export-filename="D:\Projects\rick-love-master\code\art\artwork\nft-adventure\stories\nft-text-adventure-art\path10172.png"
            inkscape:export-xdpi="96"
            inkscape:export-ydpi="96"
-           sodipodi:nodetypes="ccccccccc" />
+           sodipodi:nodetypes="ccccccccccc" />
+      </g>
+      <g
+         id="g52103"
+         inkscape:label="BattleAxe"
+         style="display:none"
+         inkscape:groupmode="layer">
+        <path
+           style="display:inline;fill:url(#radialGradient21346);fill-opacity:1;stroke-width:0.264583"
+           d="M 1.852083,3.4478509 0.26458328,3.4395827 C 0.24581478,2.6394895 0.90714886,1.7266638 2.1166663,1.852083 L 1.8644854,3.4478509 2.9558915,3.9646152 C 2.935221,4.5902444 2.1993486,4.8686081 1.4262693,4.7500968 Z"
+           id="path52099"
+           sodipodi:nodetypes="ccccccc" />
+        <path
+           style="display:inline;fill:url(#linearGradient17268);fill-opacity:1;stroke-width:0.264583"
+           d="M 1.3199932,3.4472711 1.8441426,3.4339503 1.9159118,3.1952022 5.0684767,1.6302396 5.2751294,1.3116426 5.5430199,1.423789 5.6009978,1.8953786 4.2326528,2.6216722 3.7511591,2.6577827 3.7381161,2.8540473 2.1161237,3.7061125 1.6858762,3.9716726 1.3229168,3.9687493 Z"
+           id="path52101"
+           inkscape:export-filename="D:\Projects\rick-love-master\code\art\artwork\nft-adventure\stories\nft-text-adventure-art\path10172.png"
+           inkscape:export-xdpi="96"
+           inkscape:export-ydpi="96"
+           sodipodi:nodetypes="cccccccccccccc" />
+      </g>
+    </g>
+    <g
+       inkscape:groupmode="layer"
+       id="layer8"
+       inkscape:label="Head">
+      <g
+         id="layer1"
+         inkscape:label="FacialHair" />
+      <path
+         id="rect40233"
+         style="fill:url(#linearGradient41214);fill-opacity:1;stroke-width:0.132292;stroke-linejoin:round"
+         d="M 3.198254,7.1432352 4.0612997,6.6077519 4.4373004,7.4145991 4.1706246,7.6753582 3.6677992,7.8331521 Z"
+         sodipodi:nodetypes="cccccc" />
+      <g
+         id="g40209"
+         inkscape:label="Face"
+         style="opacity:1">
+        <path
+           id="rect39404"
+           style="fill:url(#radialGradient41846);fill-opacity:1;stroke-width:0.132292;stroke-linejoin:round"
+           d="M 1.8708864,6.325934 1.8942723,5.3787978 2.5178825,4.7983772 3.1734801,4.7776189 3.9756334,5.6945099 4.3631857,6.3283455 4.5724077,6.9045212 3.9833712,7.3600602 2.7361713,7.1444468 Z"
+           sodipodi:nodetypes="cccccccccc"
+           inkscape:export-filename="D:\Projects\rick-love-master\code\art\artwork\nft-adventure\stories\nft-text-adventure-art\rect39404.png"
+           inkscape:export-xdpi="96"
+           inkscape:export-ydpi="96" />
+        <path
+           id="rect43808"
+           style="fill:url(#linearGradient45774);fill-opacity:1;stroke-width:0.132292;stroke-linejoin:round"
+           d="M 3.3266698,5.9400639 3.969787,6.1446921 3.9990198,6.4136321 3.8060844,6.6007207 3.5839167,6.4253253 Z"
+           sodipodi:nodetypes="cccccc"
+           inkscape:export-filename="D:\Projects\rick-love-master\code\art\artwork\nft-adventure\stories\nft-text-adventure-art\rect43808.png"
+           inkscape:export-xdpi="96"
+           inkscape:export-ydpi="96" />
+        <ellipse
+           style="fill:#ffffff;fill-opacity:1;stroke:none;stroke-width:0.114891;stroke-linecap:butt;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1"
+           id="ellipse43762"
+           cy="6.6408782"
+           cx="-0.90724212"
+           rx="0.21579322"
+           ry="0.13709217"
+           transform="rotate(-39.799911)" />
+        <ellipse
+           style="fill:#ffffff;fill-opacity:1;stroke:none;stroke-width:0.132292;stroke-linecap:butt;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1"
+           id="path43576"
+           cy="6.716083"
+           cx="-1.5663489"
+           rx="0.24847709"
+           ry="0.15785603"
+           transform="rotate(-39.258647)" />
+        <ellipse
+           style="fill:#333333;fill-opacity:1;stroke:none;stroke-width:0.114891;stroke-linecap:butt;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1"
+           id="ellipse43766"
+           cy="7.8109198"
+           cx="-1.1743661"
+           rx="0.21579322"
+           ry="0.13709217"
+           transform="rotate(-39.799911)" />
+        <path
+           id="path47643"
+           style="fill:#8a6000;fill-opacity:1;stroke-width:0.149503;stroke-linejoin:round"
+           d="M 2.7313984,6.455463 2.563813,5.9902561 2.9729694,5.6428866 3.2277061,5.9472649 3.0224105,5.9631535 2.7932673,6.1487116 Z"
+           sodipodi:nodetypes="ccccccc"
+           inkscape:export-filename="D:\Projects\rick-love-master\code\art\artwork\nft-adventure\stories\nft-text-adventure-art\rect43808.png"
+           inkscape:export-xdpi="96"
+           inkscape:export-ydpi="96" />
+        <path
+           id="path48926"
+           style="fill:#8a6000;fill-opacity:1;stroke-width:0.136928;stroke-linejoin:round"
+           d="M 3.8344419,5.4492525 3.475203,5.1970109 3.1092564,5.5242435 3.3201967,5.8566309 3.3867992,5.6210835 3.5630564,5.463944 Z"
+           sodipodi:nodetypes="ccccccc"
+           inkscape:export-filename="D:\Projects\rick-love-master\code\art\artwork\nft-adventure\stories\nft-text-adventure-art\rect43808.png"
+           inkscape:export-xdpi="96"
+           inkscape:export-ydpi="96" />
       </g>
     </g>
   </g>
