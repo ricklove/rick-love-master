@@ -179,7 +179,7 @@ export const injectSvgComponents = async (sourceDir: string) => {
 
     // Save all svgs
     await Promise.all(svgObjs.filter(x => x.hasChanged).map(async s => {
-        const newContent = xmljs.js2xml(s.svgObj);
+        const newContent = xmljs.js2xml(s.svgObj, { spaces: 2, indentAttributes: true });
         await fs.writeFile(s.filePath, newContent);
 
         console.log(`injectSvgComponents - file updated`, { file: s.filePath, newContent });
