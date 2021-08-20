@@ -31,15 +31,15 @@
     inkscape:pagecheckerboard="0"
     inkscape:document-units="px"
     showgrid="true"
-    inkscape:zoom="22.627417"
-    inkscape:cx="24.107922"
-    inkscape:cy="14.584077"
+    inkscape:zoom="32"
+    inkscape:cx="23.234375"
+    inkscape:cy="19.96875"
     inkscape:window-width="2698"
     inkscape:window-height="1168"
     inkscape:window-x="2700"
     inkscape:window-y="961"
     inkscape:window-maximized="0"
-    inkscape:current-layer="g165"
+    inkscape:current-layer="layer9"
     width="32mm"
     units="px"
     objecttolerance="12.8"
@@ -100,12 +100,17 @@
         id="stop73124"
       />
       <stop
-        style="stop-color:#000000;stop-opacity:0.75294118;"
-        offset="0.33383474"
+        style="stop-color:#2f1309;stop-opacity:0.75294119"
+        offset="0.2705175"
         id="stop96074"
       />
       <stop
-        style="stop-color:#000000;stop-opacity:1"
+        style="stop-color:#03011e;stop-opacity:0.94630873"
+        offset="0.51834387"
+        id="stop164706"
+      />
+      <stop
+        style="stop-color:#02003c;stop-opacity:1"
         offset="1"
         id="stop73126"
       />
@@ -309,8 +314,8 @@
       id="linearGradient73130"
       x1="0.57295918"
       y1="0.4911077"
-      x2="4.981235"
-      y2="7.7875643"
+      x2="5.8659353"
+      y2="7.9611969"
       gradientUnits="userSpaceOnUse"
     />
     <radialGradient
@@ -1908,9 +1913,8 @@
   <g
     id="layer9"
     inkscape:label="Shadow"
-    style="display:inline;opacity:0.690608;mix-blend-mode:normal"
+    style="display:inline;opacity:0.50552486;mix-blend-mode:normal"
     inkscape:groupmode="layer"
-    sodipodi:insensitive="true"
   >
     <rect
       style="fill:url(#linearGradient73130);fill-opacity:1;stroke:none;stroke-width:0.259423"
