@@ -37,8 +37,8 @@ export const renderSvg = async (sourceDir: string, destDir: string) => {
         const BASE_DPI = 96;
 
         const SIZE = 32;
-        const SCALE = 4;
-        const CANVASSCALE = 4;
+        const SCALE = 5;
+        const CANVASSCALE = SCALE;
         const K_RANGE = 8;
         const JITTER = 16;
         const random = () => Math.random();

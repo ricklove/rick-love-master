@@ -28,7 +28,7 @@
      inkscape:document-units="px"
      showgrid="true"
      inkscape:zoom="32"
-     inkscape:cx="25.671875"
+     inkscape:cx="24.890625"
      inkscape:cy="22.28125"
      inkscape:window-width="2698"
      inkscape:window-height="1168"
@@ -444,7 +444,7 @@
          inkscape:groupmode="layer"
          id="layer15"
          inkscape:label="LongHair"
-         style="display:none"
+         style="display:inline"
          sodipodi:insensitive="true">
         <path
            id="rect100379"
@@ -491,7 +491,7 @@
          inkscape:groupmode="layer"
          id="g9227"
          inkscape:label="MohawkHair"
-         style="display:inline"
+         style="display:none"
          sodipodi:insensitive="true">
         <path
            id="path9225"
@@ -513,7 +513,7 @@
          inkscape:groupmode="layer"
          id="layer13"
          inkscape:label="BaseballCap"
-         style="display:none"
+         style="display:inline"
          sodipodi:insensitive="true">
         <path
            id="rect60995"

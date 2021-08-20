@@ -28,7 +28,7 @@
      inkscape:document-units="px"
      showgrid="true"
      inkscape:zoom="16"
-     inkscape:cx="12.46875"
+     inkscape:cx="10.90625"
      inkscape:cy="26"
      inkscape:window-width="2698"
      inkscape:window-height="1168"
@@ -328,7 +328,7 @@
          inkscape:groupmode="layer"
          id="layer6"
          inkscape:label="GloveWithBall"
-         style="display:none"
+         style="display:inline"
          rarity="1">
         <g
            id="g21057"
@@ -389,7 +389,7 @@
       <g
          id="g52103"
          inkscape:label="BattleAxe"
-         style="display:inline"
+         style="display:none"
          inkscape:groupmode="layer"
          sodipodi:insensitive="true">
         <path
