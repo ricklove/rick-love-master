@@ -1,6 +1,7 @@
 import fsRaw from 'fs';
 import path from 'path';
 import canvas from 'canvas';
+import sharp from 'sharp';
 
 const fs = fsRaw.promises;
 const normalizeFilePath = (filePath: string) => path.resolve(filePath).replace(/\\/g, `/`);
@@ -32,25 +33,35 @@ export const renderSvg = async (sourceDir: string, destDir: string) => {
     await Promise.all(svgFilePaths.map(async (x) => {
         console.log(`renderSvg - render svg`, { x });
 
+        const imageBuffer = await sharp(x, { density: 96 * 4 })
+            .png()
+            .toBuffer();
+
+        // .resize(32, 32, { kernel: `nearest`, withoutEnlargement: true })
+        // .png({ dither: 0 })
+        // .toFile(`${x}.png`);
+
         const cvs = canvas.createCanvas(32, 32);
         const ctx = cvs.getContext(`2d`);
         ctx.antialias = `none`;
 
-        console.error(`renderSvg - Loading svg`, { x });
-        const svgImage = new canvas.Image();
-        svgImage.src = x;
-        await new Promise<void>((resolve, reject) => {
-            svgImage.onload = () => {
-                resolve();
-            };
-            svgImage.onerror = () => {
-                console.error(`renderSvg - Image failed to load`, { x });
-                reject();
-            };
-        });
+        // console.error(`renderSvg - Loading svg`, { x });
+        // const svgImage = new canvas.Image();
+        // svgImage.src = x;
+        // await new Promise<void>((resolve, reject) => {
+        //     svgImage.onload = () => {
+        //         resolve();
+        //     };
+        //     svgImage.onerror = () => {
+        //         console.error(`renderSvg - Image failed to load`, { x });
+        //         reject();
+        //     };
+        // });
 
-        console.log(`renderSvg - Drawing svg`, { x });
-        ctx.drawImage(svgImage, 0, 0, 32, 32);
+        // console.log(`renderSvg - Drawing svg`, { x });
+        // ctx.drawImage(svgImage, 0, 0, 32, 32);
+        const largeImage = await canvas.loadImage(imageBuffer);
+        ctx.drawImage(largeImage, 0, 0, 32, 32);
 
 
         console.log(`renderSvg - Saving png`, { x });
