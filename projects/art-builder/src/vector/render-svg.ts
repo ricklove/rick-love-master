@@ -136,9 +136,9 @@ export const renderSvg = async (sourceDir: string, destDir: string) => {
                             // Posterize channels
                             const kRange = 8;
                             const rgb = {
-                                r: Math.floor(r / kRange) * kRange,
-                                g: Math.floor(g / kRange) * kRange,
-                                b: Math.floor(b / kRange) * kRange,
+                                r: Math.round(r / kRange) * kRange,
+                                g: Math.round(g / kRange) * kRange,
+                                b: Math.round(b / kRange) * kRange,
                             };
 
                             const key = getColorKey(rgb);
@@ -204,9 +204,24 @@ export const renderSvg = async (sourceDir: string, destDir: string) => {
                     imageData2.data[iDestData + 3] = 0;
                 } else {
                     const kValue = getColorFromColorKey(maxPixel[0]);
-                    imageData2.data[iDestData + 0] = kValue.r;
-                    imageData2.data[iDestData + 1] = kValue.g;
-                    imageData2.data[iDestData + 2] = kValue.b;
+                    // imageData2.data[iDestData + 0] = kValue.r;
+                    // imageData2.data[iDestData + 1] = kValue.g;
+                    // imageData2.data[iDestData + 2] = kValue.b;
+                    // imageData2.data[iDestData + 3] = 255;
+
+                    const valuesSorted = maxPixel[1].map(x => ({
+                        x,
+                        order: 0
+                            + x.r - kValue.r
+                            + x.g - kValue.g
+                            + x.b - kValue.b
+                        ,
+                    })).sort((a, b) => a.order - b.order);
+                    const midValue = valuesSorted[Math.floor(maxPixel[1].length / 2)].x;
+
+                    imageData2.data[iDestData + 0] = midValue.r;
+                    imageData2.data[iDestData + 1] = midValue.g;
+                    imageData2.data[iDestData + 2] = midValue.b;
                     imageData2.data[iDestData + 3] = 255;
                 }
 
