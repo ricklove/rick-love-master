@@ -34,7 +34,7 @@ export const renderSvg = async (sourceDir: string, destDir: string) => {
         console.log(`renderSvg - render svg`, { x });
 
         const SCALE = 4;
-        const CANVASSCALE = 1;
+        const CANVASSCALE = 4;
         const imageBuffer = await sharp(x, { density: 96 * SCALE })
             .resize({ width: 32 * SCALE, height: 32 * SCALE, kernel: `nearest`, withoutEnlargement: true })
             .png()
@@ -69,40 +69,69 @@ export const renderSvg = async (sourceDir: string, destDir: string) => {
 
         const imageData = ctx.getImageData(0, 0, 32 * CANVASSCALE, 32 * CANVASSCALE);
 
+        const cvs2 = canvas.createCanvas(32, 32);
+        const ctx2 = cvs2.getContext(`2d`);
+        // const imageData2 = ctx2.getImageData(0, 0, 32, 32);
+
         // Pixelize data
-        for (let i = 0; i < imageData.width; i += SCALE){
-            for (let j = 0; j < imageData.height; j += SCALE){
+        for (let i = 0; i < imageData.width / SCALE; i++){
+            for (let j = 0; j < imageData.height / SCALE; j++){
 
                 const pixelCounts = new Map<number, number>();
 
                 for (let i2 = 0; i2 < SCALE; i2++){
                     for (let j2 = 0; j2 < SCALE; j2++){
-                        const iPixel = i + i2;
-                        const jPixel = j + j2;
+                        const iPixel = i * SCALE + i2;
+                        const jPixel = j * SCALE + j2;
                         const iData = (iPixel + jPixel * imageData.width) * 4;
                         const r = imageData.data[iData + 0];
                         const g = imageData.data[iData + 1];
                         const b = imageData.data[iData + 2];
                         const a = imageData.data[iData + 3];
+                        const val = (r << 8 + b) << 8 + g;
 
                         // Alpha threshold
                         if (a < 128){
                             imageData.data[iData + 3] = 0;
+                            pixelCounts.set(0, (pixelCounts.get(0) ?? 0) + 1);
                         } else {
                             imageData.data[iData + 3] = 255;
+                            pixelCounts.set(val, (pixelCounts.get(val) ?? 0) + 1);
                         }
-
                     }
                 }
+
+                // // Get max pixel value
+                // const maxPixelValue = [...pixelCounts.entries()].sort((a, b) => -(a[1] - b[1]))[0][0];
+                // const iDestData = (i + j * imageData2.width) * 4;
+                // imageData2.data[iDestData + 0] = (maxPixelValue >> 16) % 256;
+                // imageData2.data[iDestData + 1] = (maxPixelValue >> 8) % 256;
+                // imageData2.data[iDestData + 2] = (maxPixelValue >> 0) % 256;
+                // imageData2.data[iDestData + 3] = maxPixelValue > 0 ? 255 : 0;
+
+                // // // TEST
+                // // imageData2.data[iDestData + 0] = 255;
+                // // imageData2.data[iDestData + 1] = 0;
+                // // imageData2.data[iDestData + 2] = 0;
+                // // imageData2.data[iDestData + 3] = 255;
             }
         }
 
         ctx.putImageData(imageData, 0, 0);
+        // ctx2.putImageData(imageData2, 0, 0);
+
+
+        ctx2.antialias = `none`;
+        ctx2.imageSmoothingEnabled = false;
+        ctx2.drawImage(cvs,
+            0, 0, 32 * CANVASSCALE, 32 * CANVASSCALE,
+            0, 0, 32, 32);
+
 
         console.log(`renderSvg - Saving png`, { x });
         const outFilePath = x + `.png`;
         const out = fsRaw.createWriteStream(outFilePath);
-        const stream = cvs.createPNGStream();
+        const stream = cvs2.createPNGStream({});
         stream.pipe(out);
         await new Promise<void>((resolve, reject) => {
             out.on(`finish`, () => resolve())
