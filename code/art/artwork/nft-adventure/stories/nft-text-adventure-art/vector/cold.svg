@@ -1555,7 +1555,6 @@
           id="layer8"
           inkscape:label="Head"
           style="display:inline"
-          sodipodi:insensitive="true"
         >
           <g
             inkscape:groupmode="layer"
@@ -1639,7 +1638,50 @@
             inkscape:label="FacialHair"
             inkscape:groupmode="layer"
             style="display:inline"
-          />
+          >
+            <g
+              inkscape:groupmode="layer"
+              id="layer26"
+              inkscape:label="Moustache"
+              style="display:none"
+              sodipodi:insensitive="true"
+            >
+              <path
+                id="path107000"
+                style="fill:#8a6000;fill-opacity:1;stroke-width:0.136928;stroke-linejoin:round"
+                d="M 4.4421567,6.5778656 4.3144257,6.3891106 4.0746495,6.3835016 3.7211053,6.702466 3.7150437,7.0449069 3.9031068,7.1216698 3.891161,6.7496966 4.0963572,6.5636183 Z"
+                sodipodi:nodetypes="ccccccccc"
+                inkscape:export-filename="D:\Projects\rick-love-master\code\art\artwork\nft-adventure\stories\nft-text-adventure-art\rect43808.png"
+                inkscape:export-xdpi="96"
+                inkscape:export-ydpi="96"
+              />
+            </g>
+            <g
+              inkscape:groupmode="layer"
+              id="g112614"
+              inkscape:label="Goatie"
+              style="display:inline"
+            >
+              <path
+                id="path112612"
+                style="display:inline;fill:#8a6000;fill-opacity:1;stroke-width:0.136928;stroke-linejoin:round"
+                d="M 4.4421567,6.5778656 4.3144257,6.3891106 4.0746495,6.3835016 3.7211053,6.702466 3.7150437,7.0449069 3.9031068,7.1216698 4.0315883,6.9658225 3.9093986,6.9008191 3.891161,6.7496966 4.0963572,6.5636183 l 0.1764143,0.019654 0.043423,0.1923159 z"
+                sodipodi:nodetypes="ccccccccccccc"
+                inkscape:export-filename="D:\Projects\rick-love-master\code\art\artwork\nft-adventure\stories\nft-text-adventure-art\rect43808.png"
+                inkscape:export-xdpi="96"
+                inkscape:export-ydpi="96"
+              />
+              <path
+                id="path114782"
+                style="display:inline;fill:#8a6000;fill-opacity:1;stroke-width:0.136928;stroke-linejoin:round"
+                d="M 4.6705665,6.9540699 C 4.5912935,6.8156142 4.4332815,6.5689446 4.4332815,6.5689446 L 4.3299311,6.7493707 4.2505664,6.8808214 4.0290968,6.9649822 3.9041794,7.1182874 4.1542543,7.309772 C 4.2622842,7.392492 4.7048325,7.4587457 4.7533771,7.398806 4.8025591,7.338079 4.7410411,7.0771587 4.6705665,6.9540699 Z"
+                sodipodi:nodetypes="scccccsss"
+                inkscape:export-filename="D:\Projects\rick-love-master\code\art\artwork\nft-adventure\stories\nft-text-adventure-art\rect43808.png"
+                inkscape:export-xdpi="96"
+                inkscape:export-ydpi="96"
+              />
+            </g>
+          </g>
           <g
             inkscape:groupmode="layer"
             id="layer14"
@@ -1692,7 +1734,7 @@
               inkscape:groupmode="layer"
               id="g13047"
               inkscape:label="BaldingHair"
-              style="display:none"
+              style="display:inline"
             >
               <path
                 id="path13045"
@@ -1705,7 +1747,7 @@
               inkscape:groupmode="layer"
               id="g9227"
               inkscape:label="MohawkHair"
-              style="display:inline"
+              style="display:none"
               sodipodi:insensitive="true"
             >
               <path
