@@ -82,36 +82,6 @@
     </linearGradient>
     <linearGradient
       inkscape:collect="always"
-      id="linearGradient34615"
-    >
-      <stop
-        style="stop-color:#c7a75f;stop-opacity:1"
-        offset="0"
-        id="stop34609"
-      />
-      <stop
-        style="stop-color:#c7a75f;stop-opacity:1;"
-        offset="0.36591762"
-        id="stop34617"
-      />
-      <stop
-        style="stop-color:#ba9443;stop-opacity:1"
-        offset="0.48685959"
-        id="stop35451"
-      />
-      <stop
-        style="stop-color:#c4a764;stop-opacity:1"
-        offset="0.67712772"
-        id="stop35517"
-      />
-      <stop
-        style="stop-color:#896d2f;stop-opacity:1"
-        offset="1"
-        id="stop34613"
-      />
-    </linearGradient>
-    <linearGradient
-      inkscape:collect="always"
       id="linearGradient26793"
     >
       <stop
@@ -130,58 +100,6 @@
         id="stop26791"
       />
     </linearGradient>
-    <linearGradient
-      id="linearGradient16722"
-      inkscape:swatch="solid"
-    >
-      <stop
-        style="stop-color:#442905;stop-opacity:1;"
-        offset="0"
-        id="stop16720"
-      />
-    </linearGradient>
-    <filter
-      style="color-interpolation-filters:sRGB"
-      id="filter968"
-      inkscape:label="filter0"
-      x="0"
-      y="0"
-      width="1"
-      height="1"
-    >
-      <feTurbulence
-        id="feTurbulence976"
-        type="turbulence"
-        baseFrequency="1"
-        numOctaves="1"
-        seed="0"
-        in="SourceGraphic"
-        result="result2"
-      />
-      <feComposite
-        id="feComposite1078"
-        in="result2"
-        in2="SourceGraphic"
-        result="result3"
-        operator="in"
-      />
-      <feComposite
-        in2="SourceGraphic"
-        id="feComposite1010"
-        operator="arithmetic"
-        k1="-0.40000000000000002"
-        k2="0"
-        in="result3"
-        k3="1"
-        k4="0"
-        result="result4"
-      />
-      <feBlend
-        mode="luminosity"
-        in2="SourceGraphic"
-        id="feBlend1012"
-      />
-    </filter>
     <linearGradient
       inkscape:collect="always"
       xlink:href="#linearGradient26793"
@@ -202,48 +120,6 @@
       x2="7.2925773"
       y2="6.1598296"
     />
-    <filter
-      style="color-interpolation-filters:sRGB"
-      id="filter968-5"
-      inkscape:label="filter0"
-      x="0"
-      y="0"
-      width="1"
-      height="1"
-    >
-      <feTurbulence
-        id="feTurbulence976-3"
-        type="turbulence"
-        baseFrequency="1"
-        numOctaves="1"
-        seed="0"
-        in="SourceGraphic"
-        result="result2"
-      />
-      <feComposite
-        id="feComposite1078-5"
-        in="result2"
-        in2="SourceGraphic"
-        result="result3"
-        operator="in"
-      />
-      <feComposite
-        in2="SourceGraphic"
-        id="feComposite1010-5"
-        operator="arithmetic"
-        k1="-0.40000000000000002"
-        k2="0"
-        in="result3"
-        k3="1"
-        k4="0"
-        result="result4"
-      />
-      <feBlend
-        mode="luminosity"
-        in2="SourceGraphic"
-        id="feBlend1012-7"
-      />
-    </filter>
     <radialGradient
       inkscape:collect="always"
       xlink:href="#linearGradient34615"
@@ -329,6 +205,36 @@
         style="stop-color:#6e5828;stop-opacity:1"
         offset="1"
         id="stop41210"
+      />
+    </linearGradient>
+    <linearGradient
+      inkscape:collect="always"
+      id="linearGradient34615"
+    >
+      <stop
+        style="stop-color:#c7a75f;stop-opacity:1"
+        offset="0"
+        id="stop34609"
+      />
+      <stop
+        style="stop-color:#c7a75f;stop-opacity:1;"
+        offset="0.36591762"
+        id="stop34617"
+      />
+      <stop
+        style="stop-color:#ba9443;stop-opacity:1"
+        offset="0.48685959"
+        id="stop35451"
+      />
+      <stop
+        style="stop-color:#c4a764;stop-opacity:1"
+        offset="0.67712772"
+        id="stop35517"
+      />
+      <stop
+        style="stop-color:#896d2f;stop-opacity:1"
+        offset="1"
+        id="stop34613"
       />
     </linearGradient>
     <radialGradient
@@ -509,6 +415,48 @@
       gradientUnits="userSpaceOnUse"
       gradientTransform="matrix(1.3333323,-1.7690268e-6,1.1254252e-6,1.3333333,-1.6756894,-0.26457437)"
     />
+    <filter
+      style="color-interpolation-filters:sRGB"
+      id="filter968-5"
+      inkscape:label="filter0"
+      x="0"
+      y="0"
+      width="1"
+      height="1"
+    >
+      <feTurbulence
+        id="feTurbulence976-3"
+        type="turbulence"
+        baseFrequency="1"
+        numOctaves="1"
+        seed="0"
+        in="SourceGraphic"
+        result="result2"
+      />
+      <feComposite
+        id="feComposite1078-5"
+        in="result2"
+        in2="SourceGraphic"
+        result="result3"
+        operator="in"
+      />
+      <feComposite
+        in2="SourceGraphic"
+        id="feComposite1010-5"
+        operator="arithmetic"
+        k1="-0.40000000000000002"
+        k2="0"
+        in="result3"
+        k3="1"
+        k4="0"
+        result="result4"
+      />
+      <feBlend
+        mode="luminosity"
+        in2="SourceGraphic"
+        id="feBlend1012-7"
+      />
+    </filter>
     <radialGradient
       inkscape:collect="always"
       xlink:href="#linearGradient20412"
@@ -564,6 +512,26 @@
         style="stop-color:#9d7d36;stop-opacity:1"
         offset="1"
         id="stop26061"
+      />
+    </linearGradient>
+    <linearGradient
+      inkscape:collect="always"
+      id="linearGradient139248"
+    >
+      <stop
+        style="stop-color:#8a7334;stop-opacity:1"
+        offset="0"
+        id="stop139244"
+      />
+      <stop
+        style="stop-color:#615125;stop-opacity:1"
+        offset="0.44927815"
+        id="stop139800"
+      />
+      <stop
+        style="stop-color:#615125;stop-opacity:1"
+        offset="1"
+        id="stop139246"
       />
     </linearGradient>
     <linearGradient
@@ -711,6 +679,58 @@
         id="stop41584"
       />
     </linearGradient>
+    <linearGradient
+      id="linearGradient16722"
+      inkscape:swatch="solid"
+    >
+      <stop
+        style="stop-color:#442905;stop-opacity:1;"
+        offset="0"
+        id="stop16720"
+      />
+    </linearGradient>
+    <filter
+      style="color-interpolation-filters:sRGB"
+      id="filter968"
+      inkscape:label="filter0"
+      x="0"
+      y="0"
+      width="1"
+      height="1"
+    >
+      <feTurbulence
+        id="feTurbulence976"
+        type="turbulence"
+        baseFrequency="1"
+        numOctaves="1"
+        seed="0"
+        in="SourceGraphic"
+        result="result2"
+      />
+      <feComposite
+        id="feComposite1078"
+        in="result2"
+        in2="SourceGraphic"
+        result="result3"
+        operator="in"
+      />
+      <feComposite
+        in2="SourceGraphic"
+        id="feComposite1010"
+        operator="arithmetic"
+        k1="-0.40000000000000002"
+        k2="0"
+        in="result3"
+        k3="1"
+        k4="0"
+        result="result4"
+      />
+      <feBlend
+        mode="luminosity"
+        in2="SourceGraphic"
+        id="feBlend1012"
+      />
+    </filter>
     <radialGradient
       inkscape:collect="always"
       xlink:href="#linearGradient41586"
@@ -867,32 +887,12 @@
     />
     <linearGradient
       inkscape:collect="always"
-      id="linearGradient139248"
-    >
-      <stop
-        style="stop-color:#464646;stop-opacity:1"
-        offset="0"
-        id="stop139244"
-      />
-      <stop
-        style="stop-color:#333333;stop-opacity:1"
-        offset="0.39770389"
-        id="stop139800"
-      />
-      <stop
-        style="stop-color:#333333;stop-opacity:1"
-        offset="1"
-        id="stop139246"
-      />
-    </linearGradient>
-    <linearGradient
-      inkscape:collect="always"
       xlink:href="#linearGradient139248"
       id="linearGradient139444"
       x1="3.2618158"
       y1="6.9287744"
-      x2="3.6421542"
-      y2="7.3711252"
+      x2="3.8240552"
+      y2="7.503417"
       gradientUnits="userSpaceOnUse"
     />
   </defs>

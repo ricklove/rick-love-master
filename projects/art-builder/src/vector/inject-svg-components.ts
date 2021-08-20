@@ -163,11 +163,11 @@ export const injectSvgComponents = async (sourceDir: string) => {
 
             if (!sourceDefs?.elements || !destDefs?.elements){ return; }
 
-            const missingDefs = sourceDefs.elements
-                .filter(sourceDef => !destDefs.elements.find(d => d.attributes.id === sourceDef.attributes.id));
+            const defsToKeep = destDefs.elements
+                .filter(destDef => !sourceDefs.elements.find(d => d.attributes.id === destDef.attributes.id));
 
-            destDefs.elements.push(...missingDefs);
-            console.log(`injectSvgComponents - Adding missing defs`, { missingDefs, destDefs });
+            destDefs.elements = [...defsToKeep, ...sourceDefs.elements];
+            console.log(`injectSvgComponents - Adding missing defs`, { defsToKeep, destDefs });
 
             s.hasChanged = true;
 
