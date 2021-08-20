@@ -1,10 +1,9 @@
 import fsRaw from 'fs';
 import path from 'path';
-import { loadImageFile, saveImageFile } from './image-files';
+import { loadImageFile, saveImageFile } from '../image-files';
 import xmljs from 'xml-js';
 
 const fs = fsRaw.promises;
-
 const normalizeFilePath = (filePath: string) => path.resolve(filePath).replace(/\\/g, `/`);
 
 export const injectSvgComponents = async (sourceDir: string) => {
@@ -182,7 +181,7 @@ export const injectSvgComponents = async (sourceDir: string) => {
         const newContent = xmljs.js2xml(s.svgObj, { spaces: 2, indentAttributes: true });
         await fs.writeFile(s.filePath, newContent);
 
-        console.log(`injectSvgComponents - file updated`, { file: s.filePath, newContent });
+        console.log(`injectSvgComponents - file updated`, { file: s.filePath });
     }));
 
 };
