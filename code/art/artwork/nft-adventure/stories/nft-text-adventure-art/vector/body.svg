@@ -32,8 +32,8 @@
      inkscape:cy="31.5"
      inkscape:window-width="2698"
      inkscape:window-height="1168"
-     inkscape:window-x="2728"
-     inkscape:window-y="942"
+     inkscape:window-x="2750"
+     inkscape:window-y="932"
      inkscape:window-maximized="0"
      inkscape:current-layer="g86136"
      width="32mm"
@@ -299,7 +299,7 @@
          inkscape:groupmode="layer"
          id="layer11"
          inkscape:label="Leather"
-         style="display:inline"
+         style="display:none"
          sodipodi:insensitive="true">
         <path
            id="path33806-4"
@@ -311,7 +311,7 @@
          inkscape:groupmode="layer"
          id="g86136"
          inkscape:label="BaseballUniform"
-         style="display:none">
+         style="display:inline">
         <path
            id="path86134"
            style="display:inline;fill:url(#linearGradient86272);fill-opacity:1;stroke:none;stroke-width:0.148007;stroke-linejoin:round"
