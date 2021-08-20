@@ -33,20 +33,21 @@ export const renderSvg = async (sourceDir: string, destDir: string) => {
     await Promise.all(svgFilePaths.map(async (x) => {
         console.log(`renderSvg - render svg`, { x });
 
+        const SIZE = 32;
         const SCALE = 4;
         const CANVASSCALE = 4;
         const K_RANGE = 8;
 
         const imageBuffer = await sharp(x, { density: 96 * SCALE })
-            .resize({ width: 32 * SCALE, height: 32 * SCALE, kernel: `nearest`, withoutEnlargement: true })
+            .resize({ width: SIZE * SCALE, height: SIZE * SCALE, kernel: `nearest`, withoutEnlargement: true })
             .png()
             .toBuffer();
 
-        // .resize(32, 32, { kernel: `nearest`, withoutEnlargement: true })
+        // .resize(SIZE, SIZE, { kernel: `nearest`, withoutEnlargement: true })
         // .png({ dither: 0 })
         // .toFile(`${x}.png`);
 
-        const cvs = canvas.createCanvas(32 * CANVASSCALE, 32 * CANVASSCALE);
+        const cvs = canvas.createCanvas(SIZE * CANVASSCALE, SIZE * CANVASSCALE);
         const ctx = cvs.getContext(`2d`);
         ctx.antialias = `none`;
         ctx.imageSmoothingEnabled = false;
@@ -65,18 +66,18 @@ export const renderSvg = async (sourceDir: string, destDir: string) => {
         // });
 
         // console.log(`renderSvg - Drawing svg`, { x });
-        // ctx.drawImage(svgImage, 0, 0, 32, 32);
+        // ctx.drawImage(svgImage, 0, 0, SIZE, SIZE);
         const largeImage = await canvas.loadImage(imageBuffer);
-        ctx.drawImage(largeImage, 0, 0, 32 * CANVASSCALE, 32 * CANVASSCALE);
+        ctx.drawImage(largeImage, 0, 0, SIZE * CANVASSCALE, SIZE * CANVASSCALE);
 
 
-        const cvs2 = canvas.createCanvas(32, 32);
+        const cvs2 = canvas.createCanvas(SIZE, SIZE);
         const ctx2 = cvs2.getContext(`2d`);
         ctx2.antialias = `none`;
         ctx2.imageSmoothingEnabled = false;
 
-        const imageData = ctx.getImageData(0, 0, 32 * CANVASSCALE, 32 * CANVASSCALE);
-        const imageData2 = ctx2.getImageData(0, 0, 32, 32);
+        const imageData = ctx.getImageData(0, 0, SIZE * CANVASSCALE, SIZE * CANVASSCALE);
+        const imageData2 = ctx2.getImageData(0, 0, SIZE, SIZE);
 
         // Pixelize data
         for (let i = 0; i < imageData.width / SCALE; i++){
@@ -245,8 +246,8 @@ export const renderSvg = async (sourceDir: string, destDir: string) => {
         // ctx2.antialias = `none`;
         // ctx2.imageSmoothingEnabled = false;
         // ctx2.drawImage(cvs,
-        //     0, 0, 32 * CANVASSCALE, 32 * CANVASSCALE,
-        //     0, 0, 32, 32);
+        //     0, 0, SIZE * CANVASSCALE, SIZE * CANVASSCALE,
+        //     0, 0, SIZE, SIZE);
 
 
         console.log(`renderSvg - Saving png`, { x });
