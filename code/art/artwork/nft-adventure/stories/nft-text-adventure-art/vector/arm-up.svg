@@ -972,7 +972,6 @@
           id="layer7"
           inkscape:label="Body"
           style="display:inline"
-          sodipodi:insensitive="true"
         >
           <g
             inkscape:groupmode="layer"
@@ -1007,20 +1006,18 @@
             id="layer10"
             inkscape:label="Clothes"
             style="display:inline"
-            sodipodi:insensitive="true"
           >
             <g
               inkscape:groupmode="layer"
               id="layer11"
               inkscape:label="Leather"
-              style="display:inline"
-              sodipodi:insensitive="true"
+              style="display:none"
             >
               <path
                 id="path33806-4"
                 style="display:inline;fill:url(#radialGradient35869-6);fill-opacity:1;stroke:none;stroke-width:0.148007;stroke-linejoin:round"
-                d="M 7.0391533,8.773392 3.6212376,10.821265 2.1250938,9.9629575 1.4136999,10.054508 0.98514124,9.4089378 0.77179705,8.5744072 1.615981,7.8552991 3.0886451,7.5410779 c 0,0 0.4148426,0.4693335 0.6978538,0.4862422 C 4.0938868,8.0456852 4.4717485,7.8722564 4.601951,7.593201 4.7018233,7.3791505 4.4552908,6.8999338 4.4552908,6.8999338 L 4.7776156,6.3313498 5.7124873,5.802222 6.5754204,6.3240291 7.010257,7.1824579 6.8207279,7.6729254 Z"
-                sodipodi:nodetypes="ccccccccssccccccc"
+                d="m 7.0391533,8.773392 0.6229869,1.6596 L 4.9583188,12.050707 3.6212376,10.821265 2.1250938,9.9629575 1.4136999,10.054508 0.98514124,9.4089378 0.77179705,8.5744072 1.615981,7.8552991 3.0886451,7.5410779 c 0,0 0.4148426,0.4693335 0.6978538,0.4862422 C 4.0938868,8.0456852 4.4717485,7.8722564 4.601951,7.593201 4.7018233,7.3791505 4.4552908,6.8999338 4.4552908,6.8999338 L 4.7776156,6.3313498 5.7124873,5.802222 6.5754204,6.3240291 7.010257,7.1824579 6.8207279,7.6729254 Z"
+                sodipodi:nodetypes="ccccccccccssccccccc"
               />
             </g>
             <g
@@ -1028,13 +1025,12 @@
               id="g86136"
               inkscape:label="BaseballUniform"
               style="display:inline"
-              sodipodi:insensitive="true"
             >
               <path
                 id="path86134"
                 style="display:inline;fill:url(#linearGradient86272);fill-opacity:1;stroke:none;stroke-width:0.148007;stroke-linejoin:round"
-                d="M 7.0391533,8.773392 3.6212376,10.821265 2.0837526,9.9629575 1.3935311,10.078506 0.98514124,9.4006695 0.77179705,8.5744072 1.615981,7.8552991 3.0886451,7.5410779 c 0,0 0.4148426,0.4693335 0.6978538,0.4862422 C 4.0938868,8.0456852 4.4717485,7.8722564 4.601951,7.593201 4.7018233,7.3791505 4.4552908,6.8999338 4.4552908,6.8999338 L 4.7776156,6.339618 5.7124873,5.802222 6.5754204,6.3240291 7.010257,7.1824579 l -0.1830678,0.4902 z"
-                sodipodi:nodetypes="ccccccccssccccccc"
+                d="M 7.0391533,8.773392 7.6710225,10.454781 4.9606719,12.052151 3.6212376,10.821265 2.0837526,9.9629575 1.3935311,10.078506 0.98514124,9.4006695 0.77179705,8.5744072 1.615981,7.8552991 3.0886451,7.5410779 c 0,0 0.4148426,0.4693335 0.6978538,0.4862422 C 4.0938868,8.0456852 4.4717485,7.8722564 4.601951,7.593201 4.7018233,7.3791505 4.4552908,6.8999338 4.4552908,6.8999338 L 4.7776156,6.339618 5.7124873,5.802222 6.5754204,6.3240291 7.010257,7.1824579 l -0.1830678,0.4902 z"
+                sodipodi:nodetypes="ccccccccccssccccccc"
               />
             </g>
           </g>
@@ -1314,7 +1310,7 @@
               inkscape:groupmode="layer"
               id="layer15"
               inkscape:label="LongHair"
-              style="display:inline"
+              style="display:none"
               sodipodi:insensitive="true"
             >
               <path
@@ -1369,7 +1365,7 @@
               inkscape:groupmode="layer"
               id="g9227"
               inkscape:label="MohawkHair"
-              style="display:none"
+              style="display:inline"
               sodipodi:insensitive="true"
             >
               <path
@@ -1394,7 +1390,7 @@
               inkscape:groupmode="layer"
               id="layer13"
               inkscape:label="BaseballCap"
-              style="display:inline"
+              style="display:none"
               sodipodi:insensitive="true"
             >
               <path
@@ -1434,7 +1430,7 @@
               inkscape:groupmode="layer"
               id="g61615"
               inkscape:label="ChineseCap"
-              style="display:none"
+              style="display:inline"
             >
               <path
                 id="path61613"
