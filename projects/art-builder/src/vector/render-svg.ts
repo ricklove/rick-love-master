@@ -33,10 +33,9 @@ export const renderSvg = async (sourceDir: string, destDir: string) => {
     await Promise.all(svgFilePaths.map(async (x) => {
         console.log(`renderSvg - render svg`, { x });
 
-        const SCALE = 16;
-        const CANVASSCALE = 16;
+        const SCALE = 4;
+        const CANVASSCALE = 4;
         const K_RANGE = 8;
-        const ALPHA_SCORE_MULT = 0.6;
 
         const imageBuffer = await sharp(x, { density: 96 * SCALE })
             .resize({ width: 32 * SCALE, height: 32 * SCALE, kernel: `nearest`, withoutEnlargement: true })
@@ -95,6 +94,8 @@ export const renderSvg = async (sourceDir: string, destDir: string) => {
                     };
                 };
                 const kMeansPixels = new Map<string, RGB[]>();
+                let alphaPixelCount = 0;
+                let nonAlphaPixelCount = 0;
 
                 const totalPixelValue = {
                     r: 0,
@@ -129,12 +130,10 @@ export const renderSvg = async (sourceDir: string, destDir: string) => {
                         // Alpha threshold
                         if (a < 128){
                             imageData.data[iData + 3] = 0;
-                            if (!kMeansPixels.has(``)){
-                                kMeansPixels.set(``, []);
-                            }
-                            kMeansPixels.get(``)?.push({ r: 0, g: 0, b: 0, a: 0 });
+                            alphaPixelCount++;
                         } else {
                             imageData.data[iData + 3] = 255;
+                            nonAlphaPixelCount++;
 
                             // Posterize channels
                             const rgb = {
@@ -186,17 +185,14 @@ export const renderSvg = async (sourceDir: string, destDir: string) => {
 
                 // Most common pixel value
 
-                // Discount alpha
-                const alphaPixels = kMeansPixels.get(``);
-                if (alphaPixels){
-                    alphaPixels.splice(Math.floor(alphaPixels.length * ALPHA_SCORE_MULT));
-                }
-
+                // Alpha should be scored against all other colors
                 const maxPixel = [...kMeansPixels.entries()].sort((a, b) => -(a[1].length - b[1].length))[0];
+                const isAlpha = alphaPixelCount > nonAlphaPixelCount;
 
                 if (i % 4 === 0 && j % 4 === 0){
                     console.log(`maxPixelValue`, {
                         pixelCounts: kMeansPixels,
+                        isAlpha,
                         maxPixel,
                         centerPixelValueHex: getColorKey(centerPixelValue),
                         avePixelValueHex: getColorKey(avePixelValue),
@@ -206,7 +202,7 @@ export const renderSvg = async (sourceDir: string, destDir: string) => {
                 }
 
                 const iDestData = (i + j * imageData2.width) * 4;
-                if (!maxPixel[0]){
+                if (isAlpha){
                     imageData2.data[iDestData + 0] = 0;
                     imageData2.data[iDestData + 1] = 0;
                     imageData2.data[iDestData + 2] = 0;
