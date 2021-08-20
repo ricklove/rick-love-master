@@ -35,6 +35,9 @@ export const renderSvg = async (sourceDir: string, destDir: string) => {
 
         const SCALE = 4;
         const CANVASSCALE = 4;
+        const K_RANGE = 8;
+        const ALPHA_SCORE_MULT = 0.8;
+
         const imageBuffer = await sharp(x, { density: 96 * SCALE })
             .resize({ width: 32 * SCALE, height: 32 * SCALE, kernel: `nearest`, withoutEnlargement: true })
             .png()
@@ -134,11 +137,10 @@ export const renderSvg = async (sourceDir: string, destDir: string) => {
                             imageData.data[iData + 3] = 255;
 
                             // Posterize channels
-                            const kRange = 8;
                             const rgb = {
-                                r: Math.round(r / kRange) * kRange,
-                                g: Math.round(g / kRange) * kRange,
-                                b: Math.round(b / kRange) * kRange,
+                                r: Math.round(r / K_RANGE) * K_RANGE,
+                                g: Math.round(g / K_RANGE) * K_RANGE,
+                                b: Math.round(b / K_RANGE) * K_RANGE,
                             };
 
                             const key = getColorKey(rgb);
@@ -185,7 +187,6 @@ export const renderSvg = async (sourceDir: string, destDir: string) => {
                 // Most common pixel value
 
                 // Discount alpha
-                const ALPHA_SCORE_MULT = 0.8;
                 const alphaPixels = kMeansPixels.get(``);
                 if (alphaPixels){
                     alphaPixels.splice(Math.floor(alphaPixels.length * ALPHA_SCORE_MULT));
