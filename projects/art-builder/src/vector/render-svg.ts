@@ -33,10 +33,10 @@ export const renderSvg = async (sourceDir: string, destDir: string) => {
     await Promise.all(svgFilePaths.map(async (x) => {
         console.log(`renderSvg - render svg`, { x });
 
-        const SCALE = 4;
-        const CANVASSCALE = 4;
+        const SCALE = 16;
+        const CANVASSCALE = 16;
         const K_RANGE = 8;
-        const ALPHA_SCORE_MULT = 0.8;
+        const ALPHA_SCORE_MULT = 0.6;
 
         const imageBuffer = await sharp(x, { density: 96 * SCALE })
             .resize({ width: 32 * SCALE, height: 32 * SCALE, kernel: `nearest`, withoutEnlargement: true })
