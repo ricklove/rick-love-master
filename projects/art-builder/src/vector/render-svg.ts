@@ -33,7 +33,10 @@ export const renderSvg = async (sourceDir: string, destDir: string) => {
     await Promise.all(svgFilePaths.map(async (x) => {
         console.log(`renderSvg - render svg`, { x });
 
-        const imageBuffer = await sharp(x, { density: 96 * 4 })
+        const SCALE = 4;
+        const CANVASSCALE = 1;
+        const imageBuffer = await sharp(x, { density: 96 * SCALE })
+            .resize({ width: 32 * SCALE, height: 32 * SCALE, kernel: `nearest`, withoutEnlargement: true })
             .png()
             .toBuffer();
 
@@ -41,9 +44,10 @@ export const renderSvg = async (sourceDir: string, destDir: string) => {
         // .png({ dither: 0 })
         // .toFile(`${x}.png`);
 
-        const cvs = canvas.createCanvas(32, 32);
+        const cvs = canvas.createCanvas(32 * CANVASSCALE, 32 * CANVASSCALE);
         const ctx = cvs.getContext(`2d`);
         ctx.antialias = `none`;
+        ctx.imageSmoothingEnabled = false;
 
         // console.error(`renderSvg - Loading svg`, { x });
         // const svgImage = new canvas.Image();
@@ -61,8 +65,39 @@ export const renderSvg = async (sourceDir: string, destDir: string) => {
         // console.log(`renderSvg - Drawing svg`, { x });
         // ctx.drawImage(svgImage, 0, 0, 32, 32);
         const largeImage = await canvas.loadImage(imageBuffer);
-        ctx.drawImage(largeImage, 0, 0, 32, 32);
+        ctx.drawImage(largeImage, 0, 0, 32 * CANVASSCALE, 32 * CANVASSCALE);
 
+        const imageData = ctx.getImageData(0, 0, 32 * CANVASSCALE, 32 * CANVASSCALE);
+
+        // Pixelize data
+        for (let i = 0; i < imageData.width; i += SCALE){
+            for (let j = 0; j < imageData.height; j += SCALE){
+
+                const pixelCounts = new Map<number, number>();
+
+                for (let i2 = 0; i2 < SCALE; i2++){
+                    for (let j2 = 0; j2 < SCALE; j2++){
+                        const iPixel = i + i2;
+                        const jPixel = j + j2;
+                        const iData = (iPixel + jPixel * imageData.width) * 4;
+                        const r = imageData.data[iData + 0];
+                        const g = imageData.data[iData + 1];
+                        const b = imageData.data[iData + 2];
+                        const a = imageData.data[iData + 3];
+
+                        // Alpha threshold
+                        if (a < 128){
+                            imageData.data[iData + 3] = 0;
+                        } else {
+                            imageData.data[iData + 3] = 255;
+                        }
+
+                    }
+                }
+            }
+        }
+
+        ctx.putImageData(imageData, 0, 0);
 
         console.log(`renderSvg - Saving png`, { x });
         const outFilePath = x + `.png`;
