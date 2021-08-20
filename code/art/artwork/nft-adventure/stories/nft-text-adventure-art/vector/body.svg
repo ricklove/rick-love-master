@@ -299,7 +299,7 @@
          inkscape:groupmode="layer"
          id="layer11"
          inkscape:label="Leather"
-         style="display:none">
+         style="display:inline">
         <path
            id="path33806-4"
            style="display:inline;fill:url(#radialGradient35869-6);fill-opacity:1;stroke:none;stroke-width:0.148007;stroke-linejoin:round"
@@ -310,7 +310,7 @@
          inkscape:groupmode="layer"
          id="g86136"
          inkscape:label="BaseballUniform"
-         style="display:inline">
+         style="display:none">
         <path
            id="path86134"
            style="display:inline;fill:url(#linearGradient86272);fill-opacity:1;stroke:none;stroke-width:0.148007;stroke-linejoin:round"

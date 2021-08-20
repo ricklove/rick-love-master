@@ -1011,7 +1011,7 @@
               inkscape:groupmode="layer"
               id="layer11"
               inkscape:label="Leather"
-              style="display:none"
+              style="display:inline"
             >
               <path
                 id="path33806-4"
@@ -1024,7 +1024,7 @@
               inkscape:groupmode="layer"
               id="g86136"
               inkscape:label="BaseballUniform"
-              style="display:inline"
+              style="display:none"
             >
               <path
                 id="path86134"
@@ -1310,7 +1310,7 @@
               inkscape:groupmode="layer"
               id="layer15"
               inkscape:label="LongHair"
-              style="display:inline"
+              style="display:none"
               sodipodi:insensitive="true"
             >
               <path
@@ -1365,7 +1365,7 @@
               inkscape:groupmode="layer"
               id="g9227"
               inkscape:label="MohawkHair"
-              style="display:none"
+              style="display:inline"
               sodipodi:insensitive="true"
             >
               <path
@@ -1390,7 +1390,7 @@
               inkscape:groupmode="layer"
               id="layer13"
               inkscape:label="BaseballCap"
-              style="display:inline"
+              style="display:none"
               sodipodi:insensitive="true"
             >
               <path
