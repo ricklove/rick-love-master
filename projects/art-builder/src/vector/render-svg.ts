@@ -1,6 +1,6 @@
 import fsRaw from 'fs';
 import path from 'path';
-import sharp from 'sharp';
+import canvas from 'canvas';
 
 const fs = fsRaw.promises;
 const normalizeFilePath = (filePath: string) => path.resolve(filePath).replace(/\\/g, `/`);
@@ -31,21 +31,43 @@ export const renderSvg = async (sourceDir: string, destDir: string) => {
 
     await Promise.all(svgFilePaths.map(async (x) => {
         console.log(`renderSvg - render svg`, { x });
-        await sharp(x, { density: 96 * 4 })
-            .resize(32, 32, { kernel: `nearest`, withoutEnlargement: true })
-            .png({ dither: 0 })
-            .toFile(`${x}.png`);
 
-        // await new Promise<void>((resolve, reject) => {
-        //     console.log(`renderSvg - render svg`, { x });
+        const cvs = canvas.createCanvas(32, 32);
+        const ctx = cvs.getContext(`2d`);
+        ctx.antialias = `none`;
 
-        //     svgexport.render([{
-        //         input: [x, `png`, 100, `32:32`],
-        //         output: [x + `.png`],
-        //     }], () => {
-        //         resolve();
-        //     });
-        // });
+        console.error(`renderSvg - Loading svg`, { x });
+        const svgImage = new canvas.Image();
+        svgImage.src = x;
+        await new Promise<void>((resolve, reject) => {
+            svgImage.onload = () => {
+                resolve();
+            };
+            svgImage.onerror = () => {
+                console.error(`renderSvg - Image failed to load`, { x });
+                reject();
+            };
+        });
+
+        console.log(`renderSvg - Drawing svg`, { x });
+        ctx.drawImage(svgImage, 0, 0, 32, 32);
+
+
+        console.log(`renderSvg - Saving png`, { x });
+        const outFilePath = x + `.png`;
+        const out = fsRaw.createWriteStream(outFilePath);
+        const stream = cvs.createPNGStream();
+        stream.pipe(out);
+        await new Promise<void>((resolve, reject) => {
+            out.on(`finish`, () => resolve())
+                .on(`error`, () => {
+                    console.error(`renderSvg - Png file failed to save`, { outFilePath, sourceFilePath: x });
+                    reject();
+                });
+        });
+
+        console.log(`renderSvg - DONE`, { x });
+
     }));
 
 };
