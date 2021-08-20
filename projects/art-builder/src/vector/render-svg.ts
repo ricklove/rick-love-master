@@ -183,6 +183,14 @@ export const renderSvg = async (sourceDir: string, destDir: string) => {
                 // imageData2.data[iDestData + 3] = centerPixelValue.a > 128 ? 255 : 0;
 
                 // Most common pixel value
+
+                // Discount alpha
+                const ALPHA_SCORE_MULT = 0.8;
+                const alphaPixels = kMeansPixels.get(``);
+                if (alphaPixels){
+                    alphaPixels.splice(Math.floor(alphaPixels.length * ALPHA_SCORE_MULT));
+                }
+
                 const maxPixel = [...kMeansPixels.entries()].sort((a, b) => -(a[1].length - b[1].length))[0];
 
                 if (i % 4 === 0 && j % 4 === 0){
