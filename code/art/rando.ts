@@ -30,7 +30,5 @@ function mulberry32(a: number) {
 
 export const createRandomGenerator = (hash: string) => {
     const seed = xmur3(hash)();
-    return {
-        random: mulberry32(seed),
-    };
+    return { random: mulberry32(seed) };
 };

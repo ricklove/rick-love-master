@@ -2,6 +2,7 @@ import fsRaw from 'fs';
 import path from 'path';
 import canvas from 'canvas';
 import sharp from 'sharp';
+import { createRandomGenerator } from 'art/rando';
 
 const fs = fsRaw.promises;
 const normalizeFilePath = (filePath: string) => path.resolve(filePath).replace(/\\/g, `/`);
@@ -41,7 +42,7 @@ export const renderSvg = async (sourceDir: string, destDir: string) => {
         const CANVASSCALE = SCALE;
         const K_RANGE = 8;
         const JITTER = 16;
-        const random = () => Math.random();
+        const { random } = createRandomGenerator(`42`);
 
         const imageBuffer = await sharp(x, { density: BASE_DPI * SCALE * SIZE / BASE_SIZE })
             .resize({ width: SIZE * SCALE, height: SIZE * SCALE, kernel: `nearest`, withoutEnlargement: true })
