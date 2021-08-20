@@ -40,6 +40,8 @@ export const renderSvg = async (sourceDir: string, destDir: string) => {
         const SCALE = 4;
         const CANVASSCALE = 4;
         const K_RANGE = 8;
+        const JITTER = 16;
+        const random = () => Math.random();
 
         const imageBuffer = await sharp(x, { density: BASE_DPI * SCALE * SIZE / BASE_SIZE })
             .resize({ width: SIZE * SCALE, height: SIZE * SCALE, kernel: `nearest`, withoutEnlargement: true })
@@ -228,9 +230,23 @@ export const renderSvg = async (sourceDir: string, destDir: string) => {
                     })).sort((a, b) => a.order - b.order);
                     const midValue = valuesSorted[Math.floor(maxPixel[1].length / 2)].x;
 
-                    imageData2.data[iDestData + 0] = midValue.r;
-                    imageData2.data[iDestData + 1] = midValue.g;
-                    imageData2.data[iDestData + 2] = midValue.b;
+                    // Add Random Additive Jitter
+                    // const pOutput = {
+                    //     r: Math.max(0, Math.min(255, Math.floor(midValue.r + JITTER * (0.5 - random())))),
+                    //     g: Math.max(0, Math.min(255, Math.floor(midValue.g + JITTER * (0.5 - random())))),
+                    //     b: Math.max(0, Math.min(255, Math.floor(midValue.b + JITTER * (0.5 - random())))),
+                    // };
+                    // Add Random Mult Jitter (Brightness)
+                    const jitterMult = (1 + (JITTER * 1.0 / 256) * (0.5 - random()));
+                    const pOutput = {
+                        r: Math.max(0, Math.min(255, Math.floor(midValue.r * jitterMult))),
+                        g: Math.max(0, Math.min(255, Math.floor(midValue.g * jitterMult))),
+                        b: Math.max(0, Math.min(255, Math.floor(midValue.b * jitterMult))),
+                    };
+
+                    imageData2.data[iDestData + 0] = pOutput.r;
+                    imageData2.data[iDestData + 1] = pOutput.g;
+                    imageData2.data[iDestData + 2] = pOutput.b;
                     imageData2.data[iDestData + 3] = 255;
                 }
 
