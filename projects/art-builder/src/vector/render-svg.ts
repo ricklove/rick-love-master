@@ -67,17 +67,45 @@ export const renderSvg = async (sourceDir: string, destDir: string) => {
         const largeImage = await canvas.loadImage(imageBuffer);
         ctx.drawImage(largeImage, 0, 0, 32 * CANVASSCALE, 32 * CANVASSCALE);
 
-        const imageData = ctx.getImageData(0, 0, 32 * CANVASSCALE, 32 * CANVASSCALE);
 
         const cvs2 = canvas.createCanvas(32, 32);
         const ctx2 = cvs2.getContext(`2d`);
-        // const imageData2 = ctx2.getImageData(0, 0, 32, 32);
+        ctx2.antialias = `none`;
+        ctx2.imageSmoothingEnabled = false;
+
+        const imageData = ctx.getImageData(0, 0, 32 * CANVASSCALE, 32 * CANVASSCALE);
+        const imageData2 = ctx2.getImageData(0, 0, 32, 32);
 
         // Pixelize data
         for (let i = 0; i < imageData.width / SCALE; i++){
             for (let j = 0; j < imageData.height / SCALE; j++){
 
-                const pixelCounts = new Map<number, number>();
+                type RGB = { r: number, g: number, b: number, a?: number };
+                const getColorKey = ({ r, g, b }: RGB) => {
+                    return `${r.toString(16).padStart(2, `0`)}${g.toString(16).padStart(2, `0`)}${b.toString(16).padStart(2, `0`)}`;
+                };
+                const getColorFromColorKey = (rgbKey: string): RGB => {
+                    return {
+                        r: parseInt(rgbKey.substr(0, 2), 16),
+                        g: parseInt(rgbKey.substr(2, 2), 16),
+                        b: parseInt(rgbKey.substr(4, 2), 16),
+                    };
+                };
+                const kMeansPixels = new Map<string, RGB[]>();
+
+                const totalPixelValue = {
+                    r: 0,
+                    g: 0,
+                    b: 0,
+                    a: 0,
+                };
+
+                const centerPixelValue = {
+                    r: imageData.data[((i * SCALE + Math.floor(SCALE / 2)) + (j * SCALE + Math.floor(SCALE / 2)) * imageData.width) * 4 + 0],
+                    g: imageData.data[((i * SCALE + Math.floor(SCALE / 2)) + (j * SCALE + Math.floor(SCALE / 2)) * imageData.width) * 4 + 1],
+                    b: imageData.data[((i * SCALE + Math.floor(SCALE / 2)) + (j * SCALE + Math.floor(SCALE / 2)) * imageData.width) * 4 + 2],
+                    a: imageData.data[((i * SCALE + Math.floor(SCALE / 2)) + (j * SCALE + Math.floor(SCALE / 2)) * imageData.width) * 4 + 3],
+                };
 
                 for (let i2 = 0; i2 < SCALE; i2++){
                     for (let j2 = 0; j2 < SCALE; j2++){
@@ -88,26 +116,99 @@ export const renderSvg = async (sourceDir: string, destDir: string) => {
                         const g = imageData.data[iData + 1];
                         const b = imageData.data[iData + 2];
                         const a = imageData.data[iData + 3];
-                        const val = (r << 8 + b) << 8 + g;
+
+                        // totalPixelValue.r += r;
+                        // totalPixelValue.g += g;
+                        // totalPixelValue.b += b;
+                        // totalPixelValue.a += a;
+
 
                         // Alpha threshold
                         if (a < 128){
                             imageData.data[iData + 3] = 0;
-                            pixelCounts.set(0, (pixelCounts.get(0) ?? 0) + 1);
+                            if (!kMeansPixels.has(``)){
+                                kMeansPixels.set(``, []);
+                            }
+                            kMeansPixels.get(``)?.push({ r: 0, g: 0, b: 0, a: 0 });
                         } else {
                             imageData.data[iData + 3] = 255;
-                            pixelCounts.set(val, (pixelCounts.get(val) ?? 0) + 1);
+
+                            // Posterize channels
+                            const kRange = 8;
+                            const rgb = {
+                                r: Math.floor(r / kRange) * kRange,
+                                g: Math.floor(g / kRange) * kRange,
+                                b: Math.floor(b / kRange) * kRange,
+                            };
+
+                            const key = getColorKey(rgb);
+                            if (!kMeansPixels.has(key)){
+                                kMeansPixels.set(key, []);
+                            }
+                            kMeansPixels.get(key)?.push({ r, g, b });
+
+                            totalPixelValue.r += r;
+                            totalPixelValue.g += g;
+                            totalPixelValue.b += b;
+                            totalPixelValue.a += 255;
                         }
                     }
                 }
 
-                // // Get max pixel value
-                // const maxPixelValue = [...pixelCounts.entries()].sort((a, b) => -(a[1] - b[1]))[0][0];
+                // Average pixel value
+                // // const totalPixelValue = [...pixelCounts.entries()].reduce((out, p) => {
+                // //     out.r += p[1] * (p[0] >> 16) % 256;
+                // //     out.g += p[1] * (p[0] >> 8) % 256;
+                // //     out.b += p[1] * (p[0] >> 0) % 256;
+                // //     out.a += p[1] * (p[0] > 0 ? 255 : 0);
+                // //     return out;
+                // // }, { r: 0, g: 0, b: 0, a: 0 });
+                const avePixelValue = {
+                    r: Math.floor(totalPixelValue.r / (SCALE * SCALE)),
+                    g: Math.floor(totalPixelValue.g / (SCALE * SCALE)),
+                    b: Math.floor(totalPixelValue.b / (SCALE * SCALE)),
+                    a: Math.floor(totalPixelValue.a / (SCALE * SCALE)),
+                };
+                // // const iDestData = (i + j * imageData2.width) * 4;
+                // // imageData2.data[iDestData + 0] = avePixelValue.r;
+                // // imageData2.data[iDestData + 1] = avePixelValue.g;
+                // // imageData2.data[iDestData + 2] = avePixelValue.b;
+                // // imageData2.data[iDestData + 3] = avePixelValue.a > 128 ? 255 : 0;
+
+                // // Center pixel value
                 // const iDestData = (i + j * imageData2.width) * 4;
-                // imageData2.data[iDestData + 0] = (maxPixelValue >> 16) % 256;
-                // imageData2.data[iDestData + 1] = (maxPixelValue >> 8) % 256;
-                // imageData2.data[iDestData + 2] = (maxPixelValue >> 0) % 256;
-                // imageData2.data[iDestData + 3] = maxPixelValue > 0 ? 255 : 0;
+                // imageData2.data[iDestData + 0] = centerPixelValue.r;
+                // imageData2.data[iDestData + 1] = centerPixelValue.g;
+                // imageData2.data[iDestData + 2] = centerPixelValue.b;
+                // imageData2.data[iDestData + 3] = centerPixelValue.a > 128 ? 255 : 0;
+
+                // Most common pixel value
+                const maxPixel = [...kMeansPixels.entries()].sort((a, b) => -(a[1].length - b[1].length))[0];
+
+                if (i % 4 === 0 && j % 4 === 0){
+                    console.log(`maxPixelValue`, {
+                        pixelCounts: kMeansPixels,
+                        maxPixel,
+                        centerPixelValueHex: getColorKey(centerPixelValue),
+                        avePixelValueHex: getColorKey(avePixelValue),
+                        centerPixelValue,
+                        avePixelValue,
+                    });
+                }
+
+                const iDestData = (i + j * imageData2.width) * 4;
+                if (!maxPixel[0]){
+                    imageData2.data[iDestData + 0] = 0;
+                    imageData2.data[iDestData + 1] = 0;
+                    imageData2.data[iDestData + 2] = 0;
+                    imageData2.data[iDestData + 3] = 0;
+                } else {
+                    const kValue = getColorFromColorKey(maxPixel[0]);
+                    imageData2.data[iDestData + 0] = kValue.r;
+                    imageData2.data[iDestData + 1] = kValue.g;
+                    imageData2.data[iDestData + 2] = kValue.b;
+                    imageData2.data[iDestData + 3] = 255;
+                }
 
                 // // // TEST
                 // // imageData2.data[iDestData + 0] = 255;
@@ -118,14 +219,14 @@ export const renderSvg = async (sourceDir: string, destDir: string) => {
         }
 
         ctx.putImageData(imageData, 0, 0);
-        // ctx2.putImageData(imageData2, 0, 0);
+        ctx2.putImageData(imageData2, 0, 0);
 
 
-        ctx2.antialias = `none`;
-        ctx2.imageSmoothingEnabled = false;
-        ctx2.drawImage(cvs,
-            0, 0, 32 * CANVASSCALE, 32 * CANVASSCALE,
-            0, 0, 32, 32);
+        // ctx2.antialias = `none`;
+        // ctx2.imageSmoothingEnabled = false;
+        // ctx2.drawImage(cvs,
+        //     0, 0, 32 * CANVASSCALE, 32 * CANVASSCALE,
+        //     0, 0, 32, 32);
 
 
         console.log(`renderSvg - Saving png`, { x });
