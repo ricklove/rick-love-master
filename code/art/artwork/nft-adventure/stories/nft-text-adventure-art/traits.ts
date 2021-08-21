@@ -3,20 +3,30 @@
 
 // Rules for variants
 
-type ColorTrait =
-| 'eyes'
-| 'mouth'
-| 'facehair'
-| 'hair'
-| 'face'
-| 'body'
-| 'nose'
-/** Default color range for other traits */
-| 'equipment'
-;
+export const colorTraits = [
+    `eyes`,
+    `mouth`,
+    `facehair`,
+    `hair`,
+    `face`,
+    `body`,
+    `nose`,
+    /** Default color range for other traits */
+    `equipment`,
+] as const;
+export type ColorTrait =typeof colorTraits[number];
 
 export type VersionDate = `${number}-${number}-${number}`;
 const versions = { _2021_08_21: `2021-08-21` as VersionDate };
+
+export type ColorRange = {
+    h: [number, number];
+    s: [number, number];
+    l: [number, number];
+};
+export type ColorTraitRange = ColorRange & {
+    targets: ColorTrait[];
+};
 
 const traits = {
     humanoid: {
@@ -125,13 +135,14 @@ type TraitSelectionOverride = Omit<TraitSelections, 'theme'>;
 const themes = {
     baseball: {
         rarity: 1,
+        version: versions._2021_08_21,
         selections: {
             weapon: `baseballGlove`,
             headwear: `baseballCap`,
             clothes: `baseballUniform`,
         } as TraitSelectionOverride,
     },
-    normal: { rarity: undefined, selections: {} as TraitSelectionOverride },
+    normal: { rarity: undefined, version: versions._2021_08_21, selections: {} as TraitSelectionOverride },
 } as const;
 
 /** Effects require custom logic
@@ -140,14 +151,14 @@ const themes = {
  */
 const effects = {
     /** Render vector graphics instead of pixel art */
-    vector: { rarity: 1 },
+    vector: { rarity: 1, version: versions._2021_08_21 },
     /** 64x64 instead of 32x32 pixel art */
-    hiRes: { rarity: 1 },
+    hiRes: { rarity: 1, version: versions._2021_08_21 },
     /** Matrix Wireframe */
-    glitch: { rarity: 1 },
+    glitch: { rarity: 1, version: versions._2021_08_21 },
     /** ? Ascii - From pixel to ascii with a limited char set */
-    ascii: { rarity: 1 },
-    normal: { rarity: undefined },
+    ascii: { rarity: 1, version: versions._2021_08_21 },
+    normal: { rarity: undefined, version: versions._2021_08_21 },
 } as const;
 
 
