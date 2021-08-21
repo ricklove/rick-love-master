@@ -15,11 +15,15 @@ type ColorTrait =
 | 'equipment'
 ;
 
-const triats = {
+export type VersionDate = `${number}-${number}-${number}`;
+const versions = { _2021_08_21: `2021-08-21` as VersionDate };
+
+const traits = {
     humanoid: {
         // High Saturation, Any Color
         radioactive: {
             rarity: 1,
+            version: versions._2021_08_21,
             colors: [
                 { h: [0, 360], s: [80, 100], l: [70, 90], targets: [`eyes`] },
                 { h: [0, 360], s: [80, 100], l: [+0, 20], targets: [`mouth`] },
@@ -31,6 +35,7 @@ const triats = {
         // Green/Gray Colors
         zombie: {
             rarity: 1,
+            version: versions._2021_08_21,
             colors: [
                 { h: [45, 180], s: [10, 70], l: [70, 90], targets: [`eyes`] },
                 { h: [45, 180], s: [10, 70], l: [+0, 20], targets: [`mouth`] },
@@ -42,6 +47,7 @@ const triats = {
         // Natural colors
         natural: {
             rarity: undefined,
+            version: versions._2021_08_21,
             colors: [
                 { h: [0, 360], s: [+0, 90], l: [85, 95], targets: [`eyes`] },
                 { h: [+0, 30], s: [+0, 90], l: [+0, 20], targets: [`mouth`] },
@@ -52,67 +58,87 @@ const triats = {
         },
     },
     hair: {
-        mohawk: { rarity: 1 },
-        balding: { rarity: undefined },
-        long: { rarity: undefined },
-        medium: { rarity: undefined },
-        short: { rarity: undefined },
-        none: { rarity: undefined },
+        mohawk: { rarity: 1, version: versions._2021_08_21 },
+        balding: { rarity: undefined, version: versions._2021_08_21 },
+        long: { rarity: undefined, version: versions._2021_08_21 },
+        medium: { rarity: undefined, version: versions._2021_08_21 },
+        short: { rarity: undefined, version: versions._2021_08_21 },
+        none: { rarity: undefined, version: versions._2021_08_21 },
     },
     facehair: {
-        marshall: { rarity: 1 },
-        moustache: { rarity: undefined },
-        goatie: { rarity: undefined },
-        beard: { rarity: undefined },
-        none: { rarity: undefined },
+        marshall: { rarity: 1, version: versions._2021_08_21 },
+        moustache: { rarity: undefined, version: versions._2021_08_21 },
+        goatie: { rarity: undefined, version: versions._2021_08_21 },
+        beard: { rarity: undefined, version: versions._2021_08_21 },
+        none: { rarity: undefined, version: versions._2021_08_21 },
     },
     clothes: {
-        baseballUniform: { rarity: 1 },
-        tunic: { rarity: undefined },
-        none: { rarity: 1 },
+        baseballUniform: { rarity: 1, version: versions._2021_08_21 },
+        tunic: { rarity: undefined, version: versions._2021_08_21 },
+        none: { rarity: 1, version: versions._2021_08_21 },
     },
     headwear: {
-        baseballCap: { rarity: 1 },
-        chineseCap: { rarity: 1 },
-        armyHelmet: { rarity: undefined },
-        none: { rarity: undefined },
+        baseballCap: { rarity: 1, version: versions._2021_08_21 },
+        chineseCap: { rarity: 1, version: versions._2021_08_21 },
+        armyHelmet: { rarity: undefined, version: versions._2021_08_21 },
+        none: { rarity: undefined, version: versions._2021_08_21 },
     },
     weapon: {
-        baseballGlove: { rarity: 1 },
-        battleAxe: { rarity: undefined },
-        axe: { rarity: undefined },
-        none: { rarity: 1 },
+        baseballGlove: { rarity: 1, version: versions._2021_08_21 },
+        battleAxe: { rarity: undefined, version: versions._2021_08_21 },
+        axe: { rarity: undefined, version: versions._2021_08_21 },
+        none: { rarity: 1, version: versions._2021_08_21 },
     },
 
 } as const;
 
-type TraitCategory = typeof triats;
-type HumanoidColorTargets = NonNullable<TraitCategory['humanoid'][keyof TraitCategory['humanoid']]['colors'][number]['targets']>[number];
+type Traits = typeof traits;
+type HumanoidColorTargets = NonNullable<Traits['humanoid'][keyof Traits['humanoid']]['colors'][number]['targets']>[number];
 const _checkHumanoidColorTargets1: ColorTrait = null as unknown as HumanoidColorTargets;
 const _checkHumanoidColorTargets2: HumanoidColorTargets = null as unknown as ColorTrait;
 
-type WeaponTrait = keyof TraitCategory['weapon'];
-type ClothesTrait = keyof TraitCategory['clothes'];
-type HeadwearTrait = keyof TraitCategory['headwear'];
+export type TraitName = keyof Traits | 'theme' | 'effect';
+
+type HumanoidTrait = keyof Traits['humanoid'];
+type HairTrait = keyof Traits['hair'];
+type FacehairTrait = keyof Traits['facehair'];
+type WeaponTrait = keyof Traits['weapon'];
+type ClothesTrait = keyof Traits['clothes'];
+type HeadwearTrait = keyof Traits['headwear'];
+type ThemeTrait = keyof typeof themes;
+type EffectTrait = keyof typeof effects;
+
+export type TraitSelections = {
+    theme?: ThemeTrait;
+    effect?: EffectTrait;
+    humanoid?: HumanoidTrait;
+    hair?: HairTrait;
+    facehair?: FacehairTrait;
+    weapon?: WeaponTrait;
+    clothes?: ClothesTrait;
+    headwear?: HeadwearTrait;
+};
+const _checkTraitSelections = (null as unknown as TraitSelections)[(null as unknown as TraitName)];
 
 /** Themes override trait selections */
-export const themes = {
+type TraitSelectionOverride = Omit<TraitSelections, 'theme'>;
+const themes = {
     baseball: {
         rarity: 1,
         selections: {
-            weapon: `baseballGlove` as WeaponTrait,
-            headwear: `baseballCap` as HeadwearTrait,
-            clothes: `baseballUniform` as ClothesTrait,
-        },
+            weapon: `baseballGlove`,
+            headwear: `baseballCap`,
+            clothes: `baseballUniform`,
+        } as TraitSelectionOverride,
     },
-    normal: { rarity: undefined },
-};
+    normal: { rarity: undefined, selections: {} as TraitSelectionOverride },
+} as const;
 
 /** Effects require custom logic
  *
  * They can apply to a single trait or to the whole output
  */
-export const effect = {
+const effects = {
     /** Render vector graphics instead of pixel art */
     vector: { rarity: 1 },
     /** 64x64 instead of 32x32 pixel art */
@@ -122,4 +148,11 @@ export const effect = {
     /** ? Ascii - From pixel to ascii with a limited char set */
     ascii: { rarity: 1 },
     normal: { rarity: undefined },
+} as const;
+
+
+export const nftTextAdventureTraits = {
+    traits,
+    themes,
+    effects,
 };
