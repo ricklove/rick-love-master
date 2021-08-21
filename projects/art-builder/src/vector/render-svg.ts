@@ -4,6 +4,9 @@ import canvas from 'canvas';
 import sharp from 'sharp';
 import { createRandomGenerator } from 'art/rando';
 import { hslToRgb, rgbToHsl } from 'art/colors';
+import { transformSvgWithTraits } from './transform-svg-with-traits';
+import { js2xml, xml2js } from 'xml-js';
+import { SvgDoc } from './inkscape-svg-types';
 
 const fs = fsRaw.promises;
 const normalizeFilePath = (filePath: string) => path.resolve(filePath).replace(/\\/g, `/`);
@@ -22,8 +25,283 @@ const normalizeFilePath = (filePath: string) => path.resolve(filePath).replace(/
 //     render: (datafile: SvgExportDataFile, callback: () => void) => void;
 // };
 
-export const renderSvg = async (sourceDir: string, destDir: string) => {
-    console.log(`# Render Svg `, { sourceDir, destDir });
+export const renderSvgPixelArt = async (input: Buffer, output: NodeJS.WritableStream, seed: string) => {
+    console.log(`# renderSvgPixelArt`, {});
+
+    const BASE_SIZE = 32;
+    const BASE_DPI = 96;
+
+    const SIZE = 32;
+    const SCALE = 5;
+    const CANVAS_SCALE = SCALE;
+    const OUT_SCALE = 8;
+    const K_H_RANGE = 4 / 256 * 360;
+    const K_S_RANGE = 4 / 256 * 100;
+    const K_L_RANGE = 16 / 256 * 100;
+    const JITTER = 16;
+    const { random } = createRandomGenerator(`${seed}-pixel-jitter`);
+
+    const imageBuffer = await sharp(input, { density: BASE_DPI * SCALE * SIZE / BASE_SIZE })
+        .resize({ width: SIZE * SCALE, height: SIZE * SCALE, kernel: `nearest`, withoutEnlargement: true })
+        .png()
+        .toBuffer();
+
+    // .resize(SIZE, SIZE, { kernel: `nearest`, withoutEnlargement: true })
+    // .png({ dither: 0 })
+    // .toFile(`${x}.png`);
+
+    const cvs = canvas.createCanvas(SIZE * CANVAS_SCALE, SIZE * CANVAS_SCALE);
+    const ctx = cvs.getContext(`2d`);
+    ctx.antialias = `none`;
+    ctx.imageSmoothingEnabled = false;
+
+    // console.error(`renderSvg - Loading svg`, { x });
+    // const svgImage = new canvas.Image();
+    // svgImage.src = x;
+    // await new Promise<void>((resolve, reject) => {
+    //     svgImage.onload = () => {
+    //         resolve();
+    //     };
+    //     svgImage.onerror = () => {
+    //         console.error(`renderSvg - Image failed to load`, { x });
+    //         reject();
+    //     };
+    // });
+
+    // console.log(`renderSvg - Drawing svg`, { x });
+    // ctx.drawImage(svgImage, 0, 0, SIZE, SIZE);
+    const largeImage = await canvas.loadImage(imageBuffer);
+    ctx.drawImage(largeImage, 0, 0, SIZE * CANVAS_SCALE, SIZE * CANVAS_SCALE);
+
+
+    const cvs2 = canvas.createCanvas(SIZE * OUT_SCALE, SIZE * OUT_SCALE);
+    const ctx2 = cvs2.getContext(`2d`);
+    ctx2.antialias = `none`;
+    ctx2.imageSmoothingEnabled = false;
+
+    const imageData = ctx.getImageData(0, 0, SIZE * CANVAS_SCALE, SIZE * CANVAS_SCALE);
+    const imageData2 = ctx2.getImageData(0, 0, SIZE * OUT_SCALE, SIZE * OUT_SCALE);
+
+    // Pixelize data
+    for (let i = 0; i < imageData.width / SCALE; i++){
+        for (let j = 0; j < imageData.height / SCALE; j++){
+
+            type RGB = { r: number, g: number, b: number, a?: number };
+            const getColorKey = ({ r, g, b }: RGB) => {
+                return `${r.toString(16).padStart(2, `0`)}${g.toString(16).padStart(2, `0`)}${b.toString(16).padStart(2, `0`)}`;
+            };
+            const getColorKeyQuantized = ({ r, g, b }: RGB) => {
+                const hslRaw = rgbToHsl({ r, g, b });
+                const hsl = {
+                    h: Math.round(hslRaw.h / K_H_RANGE) * K_H_RANGE,
+                    s: Math.round(hslRaw.s / K_S_RANGE) * K_S_RANGE,
+                    l: Math.round(hslRaw.l / K_L_RANGE) * K_L_RANGE,
+                };
+                const rgb = hslToRgb(hsl);
+
+                return getColorKey(rgb);
+            };
+            const getColorFromColorKey = (rgbKey: string): RGB => {
+                return {
+                    r: parseInt(rgbKey.substr(0, 2), 16),
+                    g: parseInt(rgbKey.substr(2, 2), 16),
+                    b: parseInt(rgbKey.substr(4, 2), 16),
+                };
+            };
+            const kMeansPixels = new Map<string, RGB[]>();
+            let alphaPixelCount = 0;
+            let nonAlphaPixelCount = 0;
+
+            const totalPixelValue = {
+                r: 0,
+                g: 0,
+                b: 0,
+                a: 0,
+            };
+
+            const iCenter = (
+                (i * SCALE + Math.floor(SCALE / 2))
+                + (j * SCALE + Math.floor(SCALE / 2))
+                * imageData.width) * 4;
+            const centerPixelValue = {
+                r: imageData.data[iCenter + 0],
+                g: imageData.data[iCenter + 1],
+                b: imageData.data[iCenter + 2],
+                a: imageData.data[iCenter + 3],
+            };
+
+            for (let i2 = 0; i2 < SCALE; i2++){
+                for (let j2 = 0; j2 < SCALE; j2++){
+                    const iPixel = i * SCALE + i2;
+                    const jPixel = j * SCALE + j2;
+                    const iData = (iPixel + jPixel * imageData.width) * 4;
+                    const r = imageData.data[iData + 0];
+                    const g = imageData.data[iData + 1];
+                    const b = imageData.data[iData + 2];
+                    const a = imageData.data[iData + 3];
+
+                    // totalPixelValue.r += r;
+                    // totalPixelValue.g += g;
+                    // totalPixelValue.b += b;
+                    // totalPixelValue.a += a;
+
+
+                    // Alpha threshold
+                    if (a < 128){
+                        imageData.data[iData + 3] = 0;
+                        alphaPixelCount++;
+                    } else {
+                        imageData.data[iData + 3] = 255;
+                        nonAlphaPixelCount++;
+
+                        // Posterize channels
+
+                        const key = getColorKeyQuantized({ r, g, b });
+                        if (!kMeansPixels.has(key)){
+                            kMeansPixels.set(key, []);
+                        }
+                        kMeansPixels.get(key)?.push({ r, g, b });
+
+                        totalPixelValue.r += r;
+                        totalPixelValue.g += g;
+                        totalPixelValue.b += b;
+                        totalPixelValue.a += 255;
+                    }
+                }
+            }
+
+            // Average pixel value
+            // // const totalPixelValue = [...pixelCounts.entries()].reduce((out, p) => {
+            // //     out.r += p[1] * (p[0] >> 16) % 256;
+            // //     out.g += p[1] * (p[0] >> 8) % 256;
+            // //     out.b += p[1] * (p[0] >> 0) % 256;
+            // //     out.a += p[1] * (p[0] > 0 ? 255 : 0);
+            // //     return out;
+            // // }, { r: 0, g: 0, b: 0, a: 0 });
+            const avePixelValue = {
+                r: Math.floor(totalPixelValue.r / (SCALE * SCALE)),
+                g: Math.floor(totalPixelValue.g / (SCALE * SCALE)),
+                b: Math.floor(totalPixelValue.b / (SCALE * SCALE)),
+                a: Math.floor(totalPixelValue.a / (SCALE * SCALE)),
+            };
+            // // const iDestData = (i + j * imageData2.width) * 4;
+            // // imageData2.data[iDestData + 0] = avePixelValue.r;
+            // // imageData2.data[iDestData + 1] = avePixelValue.g;
+            // // imageData2.data[iDestData + 2] = avePixelValue.b;
+            // // imageData2.data[iDestData + 3] = avePixelValue.a > 128 ? 255 : 0;
+
+            // // Center pixel value
+            // const iDestData = (i + j * imageData2.width) * 4;
+            // imageData2.data[iDestData + 0] = centerPixelValue.r;
+            // imageData2.data[iDestData + 1] = centerPixelValue.g;
+            // imageData2.data[iDestData + 2] = centerPixelValue.b;
+            // imageData2.data[iDestData + 3] = centerPixelValue.a > 128 ? 255 : 0;
+
+            // Most common pixel value
+
+            // Alpha should be scored against all other colors
+            const mostPixel = [...kMeansPixels.entries()].sort((a, b) => -(a[1].length - b[1].length))[0];
+            const isAlpha = alphaPixelCount > nonAlphaPixelCount;
+
+            // if (!isAlpha && i % 4 === 0 && j % 4 === 0){
+            //     console.log(`renderSvgPixelArt sample`, {
+            //         pixelCounts: kMeansPixels,
+            //         isAlpha,
+            //         mostPixel,
+            //         centerPixelValueHex: getColorKey(centerPixelValue),
+            //         avePixelValueHex: getColorKey(avePixelValue),
+            //         centerPixelValue,
+            //         avePixelValue,
+            //     });
+            // }
+
+            const getOutputColor = () => {
+
+                const kValue = getColorFromColorKey(mostPixel[0]);
+                // imageData2.data[iDestData + 0] = kValue.r;
+                // imageData2.data[iDestData + 1] = kValue.g;
+                // imageData2.data[iDestData + 2] = kValue.b;
+                // imageData2.data[iDestData + 3] = 255;
+
+                const valuesSorted = mostPixel[1].map(x => ({
+                    x,
+                    order: 0
+                        + x.r - kValue.r
+                        + x.g - kValue.g
+                        + x.b - kValue.b
+                    ,
+                })).sort((a, b) => a.order - b.order);
+                const midValue = valuesSorted[Math.floor(mostPixel[1].length / 2)].x;
+
+                // Add Random Additive Jitter
+                // const pOutput = {
+                //     r: Math.max(0, Math.min(255, Math.floor(midValue.r + JITTER * (0.5 - random())))),
+                //     g: Math.max(0, Math.min(255, Math.floor(midValue.g + JITTER * (0.5 - random())))),
+                //     b: Math.max(0, Math.min(255, Math.floor(midValue.b + JITTER * (0.5 - random())))),
+                // };
+                // Add Random Mult Jitter (Brightness)
+                const jitterMult = (1 + (JITTER * 1.0 / 256) * (0.5 - random()));
+                return {
+                    r: Math.max(0, Math.min(255, Math.floor(midValue.r * jitterMult))),
+                    g: Math.max(0, Math.min(255, Math.floor(midValue.g * jitterMult))),
+                    b: Math.max(0, Math.min(255, Math.floor(midValue.b * jitterMult))),
+                };
+            };
+
+            const pOutput = isAlpha ? { r: 0, g: 0, b: 0, a: 0 }
+                : { ...getOutputColor(), a: 255 };
+
+            for (let i2 = 0; i2 < OUT_SCALE; i2++){
+                for (let j2 = 0; j2 < OUT_SCALE; j2++){
+                    const iPixel = i * OUT_SCALE + i2;
+                    const jPixel = j * OUT_SCALE + j2;
+                    const iData = (iPixel + jPixel * imageData2.width) * 4;
+
+                    imageData2.data[iData + 0] = pOutput.r;
+                    imageData2.data[iData + 1] = pOutput.g;
+                    imageData2.data[iData + 2] = pOutput.b;
+                    imageData2.data[iData + 3] = pOutput.a;
+                }
+            }
+
+            // // // TEST
+            // // imageData2.data[iDestData + 0] = 255;
+            // // imageData2.data[iDestData + 1] = 0;
+            // // imageData2.data[iDestData + 2] = 0;
+            // // imageData2.data[iDestData + 3] = 255;
+        }
+    }
+
+    ctx.putImageData(imageData, 0, 0);
+    ctx2.putImageData(imageData2, 0, 0);
+
+
+    // ctx2.antialias = `none`;
+    // ctx2.imageSmoothingEnabled = false;
+    // ctx2.drawImage(cvs,
+    //     0, 0, SIZE * CANVASSCALE, SIZE * CANVASSCALE,
+    //     0, 0, SIZE, SIZE);
+
+
+    console.log(`renderSvgPixelArt - Saving png`, {});
+    // const outFilePath = x + `.png`;
+    // const out = fsRaw.createWriteStream(outFilePath);
+    const stream = cvs2.createPNGStream({});
+    stream.pipe(output);
+    await new Promise<void>((resolve, reject) => {
+        stream
+            .on(`finish`, () => resolve())
+            .on(`error`, () => {
+                console.error(`renderSvg - Png Error`, {});
+                reject();
+            });
+    });
+
+    console.log(`renderSvgPixelArt - DONE`, { });
+};
+
+export const renderSvgWithTraits = async (sourceDir: string, destDir: string, seeds?: string[]) => {
+    console.log(`# renderSvgWithTraits`, { sourceDir, destDir });
 
     const dirFiles = await fs.readdir(sourceDir, { withFileTypes: true });
     const svgFilePaths = dirFiles
@@ -33,278 +311,20 @@ export const renderSvg = async (sourceDir: string, destDir: string) => {
 
 
     await Promise.all(svgFilePaths.map(async (x) => {
-        console.log(`renderSvg - render svg`, { x });
+        const svgFileContentRaw = await fs.readFile(x, { encoding: `utf-8` });
+        for (const s of seeds ?? [`42`]){
+            console.log(`## renderSvgWithTraits - Transforming svg`, { filePath: x, seed: s });
 
-        const BASE_SIZE = 32;
-        const BASE_DPI = 96;
+            const svgDoc = xml2js(svgFileContentRaw, { compact: false }) as SvgDoc;
+            transformSvgWithTraits(svgDoc, s);
+            const svgTransformed = js2xml(svgDoc, { spaces: 2, indentAttributes: true });
 
-        const SIZE = 32;
-        const SCALE = 5;
-        const CANVAS_SCALE = SCALE;
-        const OUT_SCALE = 8;
-        const K_H_RANGE = 4 / 256 * 360;
-        const K_S_RANGE = 4 / 256 * 100;
-        const K_L_RANGE = 16 / 256 * 100;
-        const JITTER = 16;
-        const { random } = createRandomGenerator(`42`);
-
-        const imageBuffer = await sharp(x, { density: BASE_DPI * SCALE * SIZE / BASE_SIZE })
-            .resize({ width: SIZE * SCALE, height: SIZE * SCALE, kernel: `nearest`, withoutEnlargement: true })
-            .png()
-            .toBuffer();
-
-        // .resize(SIZE, SIZE, { kernel: `nearest`, withoutEnlargement: true })
-        // .png({ dither: 0 })
-        // .toFile(`${x}.png`);
-
-        const cvs = canvas.createCanvas(SIZE * CANVAS_SCALE, SIZE * CANVAS_SCALE);
-        const ctx = cvs.getContext(`2d`);
-        ctx.antialias = `none`;
-        ctx.imageSmoothingEnabled = false;
-
-        // console.error(`renderSvg - Loading svg`, { x });
-        // const svgImage = new canvas.Image();
-        // svgImage.src = x;
-        // await new Promise<void>((resolve, reject) => {
-        //     svgImage.onload = () => {
-        //         resolve();
-        //     };
-        //     svgImage.onerror = () => {
-        //         console.error(`renderSvg - Image failed to load`, { x });
-        //         reject();
-        //     };
-        // });
-
-        // console.log(`renderSvg - Drawing svg`, { x });
-        // ctx.drawImage(svgImage, 0, 0, SIZE, SIZE);
-        const largeImage = await canvas.loadImage(imageBuffer);
-        ctx.drawImage(largeImage, 0, 0, SIZE * CANVAS_SCALE, SIZE * CANVAS_SCALE);
-
-
-        const cvs2 = canvas.createCanvas(SIZE * OUT_SCALE, SIZE * OUT_SCALE);
-        const ctx2 = cvs2.getContext(`2d`);
-        ctx2.antialias = `none`;
-        ctx2.imageSmoothingEnabled = false;
-
-        const imageData = ctx.getImageData(0, 0, SIZE * CANVAS_SCALE, SIZE * CANVAS_SCALE);
-        const imageData2 = ctx2.getImageData(0, 0, SIZE * OUT_SCALE, SIZE * OUT_SCALE);
-
-        // Pixelize data
-        for (let i = 0; i < imageData.width / SCALE; i++){
-            for (let j = 0; j < imageData.height / SCALE; j++){
-
-                type RGB = { r: number, g: number, b: number, a?: number };
-                const getColorKey = ({ r, g, b }: RGB) => {
-                    return `${r.toString(16).padStart(2, `0`)}${g.toString(16).padStart(2, `0`)}${b.toString(16).padStart(2, `0`)}`;
-                };
-                const getColorKeyQuantized = ({ r, g, b }: RGB) => {
-                    const hslRaw = rgbToHsl({ r, g, b });
-                    const hsl = {
-                        h: Math.round(hslRaw.h / K_H_RANGE) * K_H_RANGE,
-                        s: Math.round(hslRaw.s / K_S_RANGE) * K_S_RANGE,
-                        l: Math.round(hslRaw.l / K_L_RANGE) * K_L_RANGE,
-                    };
-                    const rgb = hslToRgb(hsl);
-
-                    return getColorKey(rgb);
-                };
-                const getColorFromColorKey = (rgbKey: string): RGB => {
-                    return {
-                        r: parseInt(rgbKey.substr(0, 2), 16),
-                        g: parseInt(rgbKey.substr(2, 2), 16),
-                        b: parseInt(rgbKey.substr(4, 2), 16),
-                    };
-                };
-                const kMeansPixels = new Map<string, RGB[]>();
-                let alphaPixelCount = 0;
-                let nonAlphaPixelCount = 0;
-
-                const totalPixelValue = {
-                    r: 0,
-                    g: 0,
-                    b: 0,
-                    a: 0,
-                };
-
-                const iCenter = (
-                    (i * SCALE + Math.floor(SCALE / 2))
-                    + (j * SCALE + Math.floor(SCALE / 2))
-                    * imageData.width) * 4;
-                const centerPixelValue = {
-                    r: imageData.data[iCenter + 0],
-                    g: imageData.data[iCenter + 1],
-                    b: imageData.data[iCenter + 2],
-                    a: imageData.data[iCenter + 3],
-                };
-
-                for (let i2 = 0; i2 < SCALE; i2++){
-                    for (let j2 = 0; j2 < SCALE; j2++){
-                        const iPixel = i * SCALE + i2;
-                        const jPixel = j * SCALE + j2;
-                        const iData = (iPixel + jPixel * imageData.width) * 4;
-                        const r = imageData.data[iData + 0];
-                        const g = imageData.data[iData + 1];
-                        const b = imageData.data[iData + 2];
-                        const a = imageData.data[iData + 3];
-
-                        // totalPixelValue.r += r;
-                        // totalPixelValue.g += g;
-                        // totalPixelValue.b += b;
-                        // totalPixelValue.a += a;
-
-
-                        // Alpha threshold
-                        if (a < 128){
-                            imageData.data[iData + 3] = 0;
-                            alphaPixelCount++;
-                        } else {
-                            imageData.data[iData + 3] = 255;
-                            nonAlphaPixelCount++;
-
-                            // Posterize channels
-
-                            const key = getColorKeyQuantized({ r, g, b });
-                            if (!kMeansPixels.has(key)){
-                                kMeansPixels.set(key, []);
-                            }
-                            kMeansPixels.get(key)?.push({ r, g, b });
-
-                            totalPixelValue.r += r;
-                            totalPixelValue.g += g;
-                            totalPixelValue.b += b;
-                            totalPixelValue.a += 255;
-                        }
-                    }
-                }
-
-                // Average pixel value
-                // // const totalPixelValue = [...pixelCounts.entries()].reduce((out, p) => {
-                // //     out.r += p[1] * (p[0] >> 16) % 256;
-                // //     out.g += p[1] * (p[0] >> 8) % 256;
-                // //     out.b += p[1] * (p[0] >> 0) % 256;
-                // //     out.a += p[1] * (p[0] > 0 ? 255 : 0);
-                // //     return out;
-                // // }, { r: 0, g: 0, b: 0, a: 0 });
-                const avePixelValue = {
-                    r: Math.floor(totalPixelValue.r / (SCALE * SCALE)),
-                    g: Math.floor(totalPixelValue.g / (SCALE * SCALE)),
-                    b: Math.floor(totalPixelValue.b / (SCALE * SCALE)),
-                    a: Math.floor(totalPixelValue.a / (SCALE * SCALE)),
-                };
-                // // const iDestData = (i + j * imageData2.width) * 4;
-                // // imageData2.data[iDestData + 0] = avePixelValue.r;
-                // // imageData2.data[iDestData + 1] = avePixelValue.g;
-                // // imageData2.data[iDestData + 2] = avePixelValue.b;
-                // // imageData2.data[iDestData + 3] = avePixelValue.a > 128 ? 255 : 0;
-
-                // // Center pixel value
-                // const iDestData = (i + j * imageData2.width) * 4;
-                // imageData2.data[iDestData + 0] = centerPixelValue.r;
-                // imageData2.data[iDestData + 1] = centerPixelValue.g;
-                // imageData2.data[iDestData + 2] = centerPixelValue.b;
-                // imageData2.data[iDestData + 3] = centerPixelValue.a > 128 ? 255 : 0;
-
-                // Most common pixel value
-
-                // Alpha should be scored against all other colors
-                const mostPixel = [...kMeansPixels.entries()].sort((a, b) => -(a[1].length - b[1].length))[0];
-                const isAlpha = alphaPixelCount > nonAlphaPixelCount;
-
-                if (!isAlpha && i % 4 === 0 && j % 4 === 0){
-                    console.log(`pixelValues sample`, {
-                        pixelCounts: kMeansPixels,
-                        isAlpha,
-                        mostPixel,
-                        centerPixelValueHex: getColorKey(centerPixelValue),
-                        avePixelValueHex: getColorKey(avePixelValue),
-                        centerPixelValue,
-                        avePixelValue,
-                    });
-                }
-
-                const getOutputColor = () => {
-
-                    const kValue = getColorFromColorKey(mostPixel[0]);
-                    // imageData2.data[iDestData + 0] = kValue.r;
-                    // imageData2.data[iDestData + 1] = kValue.g;
-                    // imageData2.data[iDestData + 2] = kValue.b;
-                    // imageData2.data[iDestData + 3] = 255;
-
-                    const valuesSorted = mostPixel[1].map(x => ({
-                        x,
-                        order: 0
-                            + x.r - kValue.r
-                            + x.g - kValue.g
-                            + x.b - kValue.b
-                        ,
-                    })).sort((a, b) => a.order - b.order);
-                    const midValue = valuesSorted[Math.floor(mostPixel[1].length / 2)].x;
-
-                    // Add Random Additive Jitter
-                    // const pOutput = {
-                    //     r: Math.max(0, Math.min(255, Math.floor(midValue.r + JITTER * (0.5 - random())))),
-                    //     g: Math.max(0, Math.min(255, Math.floor(midValue.g + JITTER * (0.5 - random())))),
-                    //     b: Math.max(0, Math.min(255, Math.floor(midValue.b + JITTER * (0.5 - random())))),
-                    // };
-                    // Add Random Mult Jitter (Brightness)
-                    const jitterMult = (1 + (JITTER * 1.0 / 256) * (0.5 - random()));
-                    return {
-                        r: Math.max(0, Math.min(255, Math.floor(midValue.r * jitterMult))),
-                        g: Math.max(0, Math.min(255, Math.floor(midValue.g * jitterMult))),
-                        b: Math.max(0, Math.min(255, Math.floor(midValue.b * jitterMult))),
-                    };
-                };
-
-                const pOutput = isAlpha ? { r: 0, g: 0, b: 0, a: 0 }
-                    : { ...getOutputColor(), a: 255 };
-
-                for (let i2 = 0; i2 < OUT_SCALE; i2++){
-                    for (let j2 = 0; j2 < OUT_SCALE; j2++){
-                        const iPixel = i * OUT_SCALE + i2;
-                        const jPixel = j * OUT_SCALE + j2;
-                        const iData = (iPixel + jPixel * imageData2.width) * 4;
-
-                        imageData2.data[iData + 0] = pOutput.r;
-                        imageData2.data[iData + 1] = pOutput.g;
-                        imageData2.data[iData + 2] = pOutput.b;
-                        imageData2.data[iData + 3] = pOutput.a;
-                    }
-                }
-
-                // // // TEST
-                // // imageData2.data[iDestData + 0] = 255;
-                // // imageData2.data[iDestData + 1] = 0;
-                // // imageData2.data[iDestData + 2] = 0;
-                // // imageData2.data[iDestData + 3] = 255;
-            }
+            console.log(`## renderSvgWithTraits - Rendering svg`, { filePath: x, seed: s });
+            const input = Buffer.from(svgTransformed);
+            const outFilePath = x + `.png`;
+            const output = fsRaw.createWriteStream(outFilePath);
+            await renderSvgPixelArt(input, output, s);
         }
-
-        ctx.putImageData(imageData, 0, 0);
-        ctx2.putImageData(imageData2, 0, 0);
-
-
-        // ctx2.antialias = `none`;
-        // ctx2.imageSmoothingEnabled = false;
-        // ctx2.drawImage(cvs,
-        //     0, 0, SIZE * CANVASSCALE, SIZE * CANVASSCALE,
-        //     0, 0, SIZE, SIZE);
-
-
-        console.log(`renderSvg - Saving png`, { x });
-        const outFilePath = x + `.png`;
-        const out = fsRaw.createWriteStream(outFilePath);
-        const stream = cvs2.createPNGStream({});
-        stream.pipe(out);
-        await new Promise<void>((resolve, reject) => {
-            out.on(`finish`, () => resolve())
-                .on(`error`, () => {
-                    console.error(`renderSvg - Png file failed to save`, { outFilePath, sourceFilePath: x });
-                    reject();
-                });
-        });
-
-        console.log(`renderSvg - DONE`, { x });
-
     }));
 
 };

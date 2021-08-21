@@ -1,6 +1,5 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 
-
 // Rules for variants
 
 export const colorTraits = [
@@ -11,13 +10,31 @@ export const colorTraits = [
     `face`,
     `body`,
     `nose`,
-    /** Default color range for other traits */
-    `equipment`,
+    // Equipment
+    `clothes`,
+    `headwear`,
+    `weapon`,
 ] as const;
 export type ColorTrait =typeof colorTraits[number];
 
-export type VersionDate = `${number}-${number}-${number}`;
-const versions = { _2021_08_21: `2021-08-21` as VersionDate };
+/** Map some color to multiple elements
+ *
+ * Colors will be applied like css styles:
+ *
+ * - the color becomes the default for that part of the tree
+ * - a more specific color overrides the default color
+ * - i.e. eyes inside of face will use eyes color
+*/
+export const colorTraitParts = {
+    'facehair': [`eyebrows`],
+    'face': [`headShape`],
+    'body': [`chest`, `neck`, `handShape`, `armR`, `armL`],
+    // 'equipment': [`clothes`, `headwear`, `weapon`],
+} as const;
+
+// export type VersionDate = `${number}-${number}-${number}`;
+export type VersionDate = string & { __type: '${number}-${number}-${number}' };
+export const versions = { _2021_08_21: `2021-08-21` as VersionDate };
 
 export type ColorRange = {
     readonly h: readonly [number, number];
@@ -39,7 +56,7 @@ const traits = {
                 { h: [0, 360], s: [80, 100], l: [+0, 20], targets: [`mouth`] },
                 { h: [0, 360], s: [80, 100], l: [20, 40], targets: [`hair`, `facehair`] },
                 { h: [0, 360], s: [80, 100], l: [40, 60], targets: [`face`, `body`, `nose`] },
-                { h: [0, 360], s: [80, 100], l: [20, 70], targets: [`equipment`] },
+                { h: [0, 360], s: [80, 100], l: [20, 70], targets: [`clothes`, `headwear`, `weapon`] },
             ],
         },
         // Green/Gray Colors
@@ -51,7 +68,7 @@ const traits = {
                 { h: [45, 180], s: [10, 70], l: [+0, 20], targets: [`mouth`] },
                 { h: [45, 180], s: [10, 70], l: [20, 40], targets: [`hair`, `facehair`] },
                 { h: [45, 180], s: [10, 70], l: [40, 60], targets: [`face`, `body`, `nose`] },
-                { h: [+0, 250], s: [10, 70], l: [20, 70], targets: [`equipment`] },
+                { h: [+0, 250], s: [10, 70], l: [20, 70], targets: [`clothes`, `headwear`, `weapon`] },
             ],
         },
         // Natural colors
@@ -63,7 +80,7 @@ const traits = {
                 { h: [+0, 30], s: [+0, 90], l: [+0, 20], targets: [`mouth`] },
                 { h: [10, 50], s: [+0, 90], l: [+0, 60], targets: [`hair`, `facehair`] },
                 { h: [20, 40], s: [50, 80], l: [10, 80], targets: [`face`, `body`, `nose`] },
-                { h: [0, 250], s: [50, 90], l: [20, 80], targets: [`equipment`] },
+                { h: [0, 250], s: [50, 90], l: [20, 80], targets: [`clothes`, `headwear`, `weapon`] },
             ],
         },
     },
@@ -128,7 +145,7 @@ export type TraitSelections = {
     clothes?: ClothesTrait;
     headwear?: HeadwearTrait;
 };
-const _checkTraitSelections = (null as unknown as TraitSelections)[(null as unknown as TraitName)];
+const _checkTraitSelections = (null as unknown as TraitSelections)?.[(null as unknown as TraitName)];
 
 /** Themes override trait selections */
 type TraitSelectionOverride = Omit<TraitSelections, 'theme'>;

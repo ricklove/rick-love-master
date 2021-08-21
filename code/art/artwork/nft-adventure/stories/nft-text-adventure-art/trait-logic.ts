@@ -107,6 +107,7 @@ export const selectTraits = (seed: string, version: VersionDate) => {
         seed,
         version,
         selectedTraits,
+        selectedColors,
     };
 };
 
