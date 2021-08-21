@@ -105,11 +105,11 @@
        inkscape:collect="always"
        id="linearGradient41212">
       <stop
-         style="stop-color:#a07f3a;stop-opacity:1"
+         style="stop-color:#ae842c;stop-opacity:1"
          offset="0"
          id="stop41208" />
       <stop
-         style="stop-color:#6e5828;stop-opacity:1"
+         style="stop-color:#785c1e;stop-opacity:1"
          offset="1"
          id="stop41210" />
     </linearGradient>
@@ -117,23 +117,23 @@
        inkscape:collect="always"
        id="linearGradient34615">
       <stop
-         style="stop-color:#c7a75f;stop-opacity:1"
+         style="stop-color:#d4ab52;stop-opacity:1"
          offset="0"
          id="stop34609" />
       <stop
-         style="stop-color:#c7a75f;stop-opacity:1;"
+         style="stop-color:#d4ac53;stop-opacity:1"
          offset="0.36591762"
          id="stop34617" />
       <stop
-         style="stop-color:#ba9443;stop-opacity:1"
+         style="stop-color:#ca9a33;stop-opacity:1"
          offset="0.48685959"
          id="stop35451" />
       <stop
-         style="stop-color:#c4a764;stop-opacity:1"
+         style="stop-color:#d4ac54;stop-opacity:1"
          offset="0.67712772"
          id="stop35517" />
       <stop
-         style="stop-color:#896d2f;stop-opacity:1"
+         style="stop-color:#937125;stop-opacity:1"
          offset="1"
          id="stop34613" />
     </linearGradient>
@@ -197,10 +197,10 @@
        inkscape:collect="always"
        xlink:href="#linearGradient41212"
        id="linearGradient41214"
-       x1="3.5429912"
-       y1="7.5186248"
-       x2="4.3381176"
-       y2="7.2029123"
+       x1="4.0390849"
+       y1="7.5351615"
+       x2="3.8172193"
+       y2="6.9714022"
        gradientUnits="userSpaceOnUse" />
     <radialGradient
        inkscape:collect="always"
@@ -270,8 +270,7 @@
        inkscape:groupmode="layer"
        id="g33808"
        inkscape:label="Chest"
-       style="display:inline"
-       sodipodi:insensitive="true">
+       style="display:inline">
       <path
          id="path33806"
          style="fill:url(#radialGradient35869);fill-opacity:1;stroke:none;stroke-width:0.132292;stroke-linejoin:round"
@@ -282,7 +281,6 @@
        inkscape:groupmode="layer"
        id="layer16"
        inkscape:label="Neck"
-       sodipodi:insensitive="true"
        style="display:inline">
       <path
          id="rect40233"
@@ -294,7 +292,8 @@
        inkscape:groupmode="layer"
        id="layer10"
        inkscape:label="Clothes"
-       style="display:inline">
+       style="display:inline"
+       sodipodi:insensitive="true">
       <g
          inkscape:groupmode="layer"
          id="layer11"

@@ -3,6 +3,7 @@ import path from 'path';
 import canvas from 'canvas';
 import sharp from 'sharp';
 import { createRandomGenerator } from 'art/rando';
+import { hslToRgb, rgbToHsl } from 'art/colors';
 
 const fs = fsRaw.promises;
 const normalizeFilePath = (filePath: string) => path.resolve(filePath).replace(/\\/g, `/`);
@@ -41,7 +42,9 @@ export const renderSvg = async (sourceDir: string, destDir: string) => {
         const SCALE = 5;
         const CANVAS_SCALE = SCALE;
         const OUT_SCALE = 8;
-        const K_RANGE = 8;
+        const K_H_RANGE = 4 / 256 * 360;
+        const K_S_RANGE = 4 / 256 * 100;
+        const K_L_RANGE = 16 / 256 * 100;
         const JITTER = 16;
         const { random } = createRandomGenerator(`42`);
 
@@ -94,6 +97,17 @@ export const renderSvg = async (sourceDir: string, destDir: string) => {
                 const getColorKey = ({ r, g, b }: RGB) => {
                     return `${r.toString(16).padStart(2, `0`)}${g.toString(16).padStart(2, `0`)}${b.toString(16).padStart(2, `0`)}`;
                 };
+                const getColorKeyQuantized = ({ r, g, b }: RGB) => {
+                    const hslRaw = rgbToHsl({ r, g, b });
+                    const hsl = {
+                        h: Math.round(hslRaw.h / K_H_RANGE) * K_H_RANGE,
+                        s: Math.round(hslRaw.s / K_S_RANGE) * K_S_RANGE,
+                        l: Math.round(hslRaw.l / K_L_RANGE) * K_L_RANGE,
+                    };
+                    const rgb = hslToRgb(hsl);
+
+                    return getColorKey(rgb);
+                };
                 const getColorFromColorKey = (rgbKey: string): RGB => {
                     return {
                         r: parseInt(rgbKey.substr(0, 2), 16),
@@ -112,11 +126,15 @@ export const renderSvg = async (sourceDir: string, destDir: string) => {
                     a: 0,
                 };
 
+                const iCenter = (
+                    (i * SCALE + Math.floor(SCALE / 2))
+                    + (j * SCALE + Math.floor(SCALE / 2))
+                    * imageData.width) * 4;
                 const centerPixelValue = {
-                    r: imageData.data[((i * SCALE + Math.floor(SCALE / 2)) + (j * SCALE + Math.floor(SCALE / 2)) * imageData.width) * 4 + 0],
-                    g: imageData.data[((i * SCALE + Math.floor(SCALE / 2)) + (j * SCALE + Math.floor(SCALE / 2)) * imageData.width) * 4 + 1],
-                    b: imageData.data[((i * SCALE + Math.floor(SCALE / 2)) + (j * SCALE + Math.floor(SCALE / 2)) * imageData.width) * 4 + 2],
-                    a: imageData.data[((i * SCALE + Math.floor(SCALE / 2)) + (j * SCALE + Math.floor(SCALE / 2)) * imageData.width) * 4 + 3],
+                    r: imageData.data[iCenter + 0],
+                    g: imageData.data[iCenter + 1],
+                    b: imageData.data[iCenter + 2],
+                    a: imageData.data[iCenter + 3],
                 };
 
                 for (let i2 = 0; i2 < SCALE; i2++){
@@ -144,13 +162,8 @@ export const renderSvg = async (sourceDir: string, destDir: string) => {
                             nonAlphaPixelCount++;
 
                             // Posterize channels
-                            const rgb = {
-                                r: Math.round(r / K_RANGE) * K_RANGE,
-                                g: Math.round(g / K_RANGE) * K_RANGE,
-                                b: Math.round(b / K_RANGE) * K_RANGE,
-                            };
 
-                            const key = getColorKey(rgb);
+                            const key = getColorKeyQuantized({ r, g, b });
                             if (!kMeansPixels.has(key)){
                                 kMeansPixels.set(key, []);
                             }
@@ -194,14 +207,14 @@ export const renderSvg = async (sourceDir: string, destDir: string) => {
                 // Most common pixel value
 
                 // Alpha should be scored against all other colors
-                const maxPixel = [...kMeansPixels.entries()].sort((a, b) => -(a[1].length - b[1].length))[0];
+                const mostPixel = [...kMeansPixels.entries()].sort((a, b) => -(a[1].length - b[1].length))[0];
                 const isAlpha = alphaPixelCount > nonAlphaPixelCount;
 
-                if (i % 4 === 0 && j % 4 === 0){
-                    console.log(`maxPixelValue`, {
+                if (!isAlpha && i % 4 === 0 && j % 4 === 0){
+                    console.log(`pixelValues sample`, {
                         pixelCounts: kMeansPixels,
                         isAlpha,
-                        maxPixel,
+                        mostPixel,
                         centerPixelValueHex: getColorKey(centerPixelValue),
                         avePixelValueHex: getColorKey(avePixelValue),
                         centerPixelValue,
@@ -211,21 +224,21 @@ export const renderSvg = async (sourceDir: string, destDir: string) => {
 
                 const getOutputColor = () => {
 
-                    const kValue = getColorFromColorKey(maxPixel[0]);
+                    const kValue = getColorFromColorKey(mostPixel[0]);
                     // imageData2.data[iDestData + 0] = kValue.r;
                     // imageData2.data[iDestData + 1] = kValue.g;
                     // imageData2.data[iDestData + 2] = kValue.b;
                     // imageData2.data[iDestData + 3] = 255;
 
-                    const valuesSorted = maxPixel[1].map(x => ({
+                    const valuesSorted = mostPixel[1].map(x => ({
                         x,
                         order: 0
-                + x.r - kValue.r
-                + x.g - kValue.g
-                + x.b - kValue.b
+                            + x.r - kValue.r
+                            + x.g - kValue.g
+                            + x.b - kValue.b
                         ,
                     })).sort((a, b) => a.order - b.order);
-                    const midValue = valuesSorted[Math.floor(maxPixel[1].length / 2)].x;
+                    const midValue = valuesSorted[Math.floor(mostPixel[1].length / 2)].x;
 
                     // Add Random Additive Jitter
                     // const pOutput = {
