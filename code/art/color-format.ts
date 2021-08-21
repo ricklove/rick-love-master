@@ -108,7 +108,7 @@ const hslToRgb = (hsl: HslColor): RgbColor => {
 };
 
 
-type RgbHexColor = string & { __type: `#FFFFFF` };
+export type RgbHexColor = string & { __type: `#FFFFFF` };
 const rgbToRgbHex = ({ r, g, b }: RgbColor): RgbHexColor => {
     return `#${r.toString(16).padStart(2, `0`)}${g.toString(16).padStart(2, `0`)}${b.toString(16).padStart(2, `0`)}` as RgbHexColor;
 };

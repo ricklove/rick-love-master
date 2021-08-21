@@ -1,7 +1,7 @@
 import { selectTraits } from 'art/artwork/nft-adventure/stories/nft-text-adventure-art/trait-logic';
 import { ColorTrait, colorTraitParts, colorTraits, versions } from 'art/artwork/nft-adventure/stories/nft-text-adventure-art/traits';
-import { colorFormat } from 'art/color-format';
-import { RgbHex, SvgDef, SvgDoc, SvgElement, SvgElementStyle } from './inkscape-svg-types';
+import { colorFormat, HslColor, RgbHexColor } from 'art/color-format';
+import { RgbHex, StopStyleString, SvgDef, SvgDoc, SvgElement, SvgElementStyle } from './inkscape-svg-types';
 
 export const transformSvgWithTraits = (svgDoc: SvgDoc, seed: string) => {
 
@@ -194,6 +194,89 @@ export const transformSvgWithTraits = (svgDoc: SvgDoc, seed: string) => {
     });
     console.log(`traitColorShifts`, { traitColorShifts, traitColors_rgb });
 
-};
 
+    // TODO: Apply the color shifts
+    const calculateShiftedColorHex = (hexValue: RgbHexColor, colorChange: HslColor) => {
+        const hsl = colorFormat.rgbToHsl(colorFormat.rgbHexToRgb(hexValue));
+        const newHsl = {
+            h: Math.max(0, Math.min(360, (hsl.h + colorChange.h) % 360)),
+            s: Math.max(0, Math.min(100, hsl.s + colorChange.s)),
+            l: Math.max(0, Math.min(100, hsl.l + colorChange.l)),
+        };
+        const newHexValue = colorFormat.rgbToRgbHex(colorFormat.hslToRgb(newHsl));
+        return newHexValue;
+    };
+
+    const changedDefIds = new Set<string>([]);
+    const applyColorShiftToDef = (ref: undefined | string, colorChange: HslColor): undefined|RgbHex => {
+        if (!ref){
+            console.error(`Missing ref`, { ref });
+            return;
+        }
+        const def = defs?.elements.find(x => `#` + x.attributes.id === ref);
+        if (!def){
+            console.error(`Missing def`, { ref, def, defs });
+            return;
+        }
+
+        if (changedDefIds.has(def.attributes.id)){ return; }
+
+        if (def.attributes[`xlink:href`]){
+            applyColorShiftToDef(def.attributes[`xlink:href`], colorChange);
+        }
+
+        const stops = def.elements?.filter(x => x.name === `stop`);
+
+        stops?.forEach(stop => {
+            // style="stop-color:#896d2f;stop-opacity:1"
+            const stopStyle = stop.attributes.style;
+            const stopColor = stopStyle.match(/stop-color:([^;]+)/)?.[1];
+            const hexValue = getRgbHex(stopColor);
+            if (!hexValue){ return;}
+
+            const newStopStyle = stopStyle.replace(hexValue, calculateShiftedColorHex(hexValue, colorChange));
+            stop.attributes.style = newStopStyle as StopStyleString;
+        });
+
+    };
+
+    const applyColorShift = (styleObj: undefined | { style?: undefined | SvgElementStyle }, styleName: 'fill'|'stroke', colorChange: HslColor): undefined|RgbHex => {
+        if (!styleObj){ return; }
+        const { style } = styleObj;
+        if (!style){ return; }
+        const styleValue = style.split(`;`).map(s => s.split(`:`)).find(s => s[0] === styleName)?.[1];
+        if (!styleValue){ return; }
+        if (styleValue === `none`){ return; }
+
+        // fill:url(#linearGradient99999);
+        // fill:url(#radialGradient99999);
+        if (styleValue.startsWith(`url(`)){
+            const ref = styleValue.match(/url\(([^)]+)\)/)?.[1];
+            return applyColorShiftToDef(ref, colorChange);
+        }
+
+        const hexValue = getRgbHex(styleValue);
+        if (!hexValue){ return;}
+
+        const newStyle = styleValue.replace(hexValue, calculateShiftedColorHex(hexValue, colorChange));
+        styleObj.style = newStyle as SvgElementStyle;
+    };
+
+    svg.elements.forEach(rootNode => {
+        if (rootNode.name === `sodipodi:namedview`){ return; }
+        if (rootNode.name === `defs`){ return; }
+
+        visitNodeWithTraitContext(rootNode, {}, (n, context) => {
+
+            const colorShift = traitColorShifts.find(x => x.trait === context.trait);
+            if (!colorShift?.colorChange){ return; }
+
+            // Apply style colors (also prevent multiple changes)
+            applyColorShift(n.attributes, `fill`, colorShift.colorChange);
+            applyColorShift(n.attributes, `stroke`, colorShift.colorChange);
+
+            return {};
+        });
+    });
+};
 

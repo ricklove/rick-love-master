@@ -16,7 +16,7 @@ export type SvgDoc = {
 // type HexColorString = `#${HexChar}${HexChar}${HexChar}${HexChar}${HexChar}${HexChar}`;
 export type RgbHex = string & { __type: '#FFFFFF' };
 // type StopStyleString = `stop-color:#${RgbHex};stop-opacity:${number}`;
-type StopStyleString = string & { __type: 'stop-color:#ffffff;stop-opacity:1' };
+export type StopStyleString = string & { __type: 'stop-color:#ffffff;stop-opacity:1' };
 type LinearGradientRef = string & { __type: '#linearGradient99999' };
 export type SvgDef = {
     name: 'linearGradient' | 'radialGradient' | '';
