@@ -1,4 +1,4 @@
-import { HSL } from 'art/colors';
+import { HslColor } from 'art/color-format';
 import { createRandomGenerator } from 'art/rando';
 import { ColorRange, ColorTrait, ColorTraitRange, colorTraits, nftTextAdventureTraits, TraitName, TraitSelections, VersionDate } from './traits';
 
@@ -129,7 +129,7 @@ export const selectColorInRange = (range: ColorRange, seed: string, key: string)
 export const selectColors = (
     seed: string,
     colorRanges: readonly ColorTraitRange[],
-): { [colorTrait in ColorTrait]: HSL } => {
+): { [colorTrait in ColorTrait]: HslColor } => {
     const selections = colorTraits.map(c => {
 
         const range = colorRanges.find(r => r.targets.some(t => t === c)) ?? colorRanges[ colorRanges.length - 1 ];
@@ -141,7 +141,7 @@ export const selectColors = (
         });
     });
 
-    const obj = {} as { [colorTrait in ColorTrait]: HSL };
+    const obj = {} as { [colorTrait in ColorTrait]: HslColor };
     selections.forEach(s => {
         obj[s.colorTrait] = s.color;
     });

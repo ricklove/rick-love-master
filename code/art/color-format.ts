@@ -4,7 +4,7 @@
  * - r,g,b: [0 - 255]
  *
  * */
-export type RGB = { r: number, g: number, b: number };
+export type RgbColor = { r: number, g: number, b: number };
 
 /** Hsl float
  *
@@ -15,13 +15,13 @@ export type RGB = { r: number, g: number, b: number };
  *  - l: [0.0 - 100.0]
  *
 */
-export type HSL = { h: number, s: number, l: number };
+export type HslColor = { h: number, s: number, l: number };
 
 /** RGB => HSL
  * Based on https://en.wikipedia.org/wiki/HSL_and_HSV
  * and https://gist.github.com/mjackson/5311256
  */
-export const rgbToHsl = ({ r, g, b }: RGB): HSL => {
+const rgbToHsl = ({ r, g, b }: RgbColor): HslColor => {
     const rNorm = Math.max(0, Math.min(1, Math.floor(r) / 255));
     const gNorm = Math.max(0, Math.min(1, Math.floor(g) / 255));
     const bNorm = Math.max(0, Math.min(1, Math.floor(b) / 255));
@@ -70,7 +70,7 @@ export const rgbToHsl = ({ r, g, b }: RGB): HSL => {
  * Based on https://en.wikipedia.org/wiki/HSL_and_HSV
  * and https://gist.github.com/mjackson/5311256
  */
-export const hslToRgb = (hsl: HSL): RGB => {
+const hslToRgb = (hsl: HslColor): RgbColor => {
     const hNorm = Math.max(0, Math.min(hsl.h % 360 / 360, 1));
     const sNorm = Math.max(0, Math.min(hsl.s / 100, 1));
     const lNorm = Math.max(0, Math.min(hsl.l / 100, 1));
@@ -105,4 +105,25 @@ export const hslToRgb = (hsl: HSL): RGB => {
         g: Math.floor(gNorm * 255),
         b: Math.floor(bNorm * 255),
     };
+};
+
+
+type RgbHexColor = string & { __type: `#FFFFFF` };
+const rgbToRgbHex = ({ r, g, b }: RgbColor): RgbHexColor => {
+    return `#${r.toString(16).padStart(2, `0`)}${g.toString(16).padStart(2, `0`)}${b.toString(16).padStart(2, `0`)}` as RgbHexColor;
+};
+const rgbHexToRgb = (rgbHex: RgbHexColor): RgbColor => {
+    const hex = rgbHex.startsWith(`#`) ? rgbHex.substr(1) : rgbHex;
+    return {
+        r: parseInt(hex.substr(0, 2), 16),
+        g: parseInt(hex.substr(2, 2), 16),
+        b: parseInt(hex.substr(4, 2), 16),
+    };
+};
+
+export const colorFormat = {
+    rgbToHsl,
+    hslToRgb,
+    rgbToRgbHex,
+    rgbHexToRgb,
 };

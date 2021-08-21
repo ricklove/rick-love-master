@@ -87,9 +87,9 @@ const traits = {
     hair: {
         mohawk: { rarity: 1, version: versions._2021_08_21 },
         balding: { rarity: undefined, version: versions._2021_08_21 },
-        long: { rarity: undefined, version: versions._2021_08_21 },
-        medium: { rarity: undefined, version: versions._2021_08_21 },
-        short: { rarity: undefined, version: versions._2021_08_21 },
+        longHair: { rarity: undefined, version: versions._2021_08_21 },
+        mediumHair: { rarity: undefined, version: versions._2021_08_21 },
+        shortHair: { rarity: undefined, version: versions._2021_08_21 },
         none: { rarity: undefined, version: versions._2021_08_21 },
     },
     facehair: {

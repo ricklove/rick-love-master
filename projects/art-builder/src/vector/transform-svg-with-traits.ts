@@ -1,5 +1,6 @@
 import { selectTraits } from 'art/artwork/nft-adventure/stories/nft-text-adventure-art/trait-logic';
 import { ColorTrait, colorTraitParts, colorTraits, versions } from 'art/artwork/nft-adventure/stories/nft-text-adventure-art/traits';
+import { colorFormat } from 'art/color-format';
 import { RgbHex, SvgDef, SvgDoc, SvgElement, SvgElementStyle } from './inkscape-svg-types';
 
 export const transformSvgWithTraits = (svgDoc: SvgDoc, seed: string) => {
@@ -8,11 +9,22 @@ export const transformSvgWithTraits = (svgDoc: SvgDoc, seed: string) => {
         selectedTraits,
         selectedColors,
     } = selectTraits(seed, versions._2021_08_21);
+    console.log(`transformSvgWithTraits`, {
+        selectedTraits: Object.entries(selectedTraits).map(x => `${x[0]}:${x[1].traitKey}`),
+        selectedColors,
+    });
 
     const svg = svgDoc.elements.find(x => x.name === `svg`);
-    if (!svg || !svg.elements.length){ return; }
+    if (!svg || !svg.elements.length){
+        console.error(`Missing svg`, { svgDoc });
+        return;
+    }
 
-    const defs = svg.elements.map(x => x.name === `defs` ? x : null)[0];
+    const defs = svg.elements.find(x => x.name === `defs`) as typeof svg['elements'][1];
+    if (!defs){
+        console.error(`Missing defs`, { defs, svg });
+        return;
+    }
 
     const visitNode = <TContext>(node: SvgElement, context: TContext,
         handleNode: (
@@ -31,16 +43,31 @@ export const transformSvgWithTraits = (svgDoc: SvgDoc, seed: string) => {
     ) => {
         const rootContext = {
             trait: `body` as ColorTrait,
-            // color: selectedColors.body,
+            parent: null as null | SvgElement,
         };
 
         visitNode(node, rootContext, (n, context) => {
+            // Is selected trait
+            // if( context.trait.)
+            const label = n.attributes[`inkscape:label`]?.toLocaleLowerCase();
+
+            const parentLabel = context.parent?.attributes[`inkscape:label`]?.toLocaleLowerCase();
+            const traitGroup = Object.entries(selectedTraits).map(x => ({ key: x[0], value: x[1] }))
+                .find(x => x.key.toLocaleLowerCase() === parentLabel);
+            const isSelectedTrait = traitGroup?.value.traitKey.toLocaleLowerCase() === label;
+            if (traitGroup && !isSelectedTrait){
+                console.log(`Skipping unselected trait`, { label, parentLabel });
+                return { skipChildren: true };
+            }
+            if (traitGroup){
+                console.log(`Visiting selected trait`, { label, parentLabel });
+            }
+
             const result = handleNode(n, context);
 
             // Detect trait change
             let newTrait = context.trait;
 
-            const label = n.attributes[`inkscape:label`]?.toLocaleLowerCase();
             if (!label){ return; }
 
             if (colorTraits.includes(label as ColorTrait)){
@@ -53,26 +80,41 @@ export const transformSvgWithTraits = (svgDoc: SvgDoc, seed: string) => {
                 }
             });
 
-            return { childContext: { ...result?.childContext ?? context, trait: newTrait } };
+            return { childContext: { ...result?.childContext ?? context, trait: newTrait, parent: n } };
         });
     };
 
     const getRgbHex = (value: undefined | string): undefined | RgbHex => {
-        if (!value){ return; }
-        if (!value.match(/^#[0-9A-Fa-f]{6}$/)){ return;}
+        if (!value){
+            console.error(`Missing rgb hex`, { value });
+            return;
+        }
+        if (!value.match(/^#[0-9A-Fa-f]{6}$/)){
+            console.error(`Invalid rgb hex`, { value });
+            return;
+        }
         return value as RgbHex;
     };
     const getDefPrimaryColor = (ref: undefined | string): undefined|RgbHex => {
-        if (!ref){ return; }
+        if (!ref){
+            console.error(`Missing ref`, { ref });
+            return;
+        }
         const def = defs?.elements.find(x => `#` + x.attributes.id === ref);
-        if (!def){ return; }
+        if (!def){
+            console.error(`Missing def`, { ref, def, defs });
+            return;
+        }
 
         if (def.attributes[`xlink:href`]){
             return getDefPrimaryColor(def.attributes[`xlink:href`]);
         }
 
         const firstStop = def.elements?.find(x => x.name === `stop`);
-        if (!firstStop){ return; }
+        if (!firstStop){
+            console.error(`Missing stop`, { ref, firstStop });
+            return;
+        }
 
         // style="stop-color:#896d2f;stop-opacity:1"
         const stopStyle = firstStop.attributes.style;
@@ -84,6 +126,7 @@ export const transformSvgWithTraits = (svgDoc: SvgDoc, seed: string) => {
         if (!style){ return; }
         const styleValue = style.split(`;`).map(s => s.split(`:`)).find(s => s[0] === styleName)?.[1];
         if (!styleValue){ return; }
+        if (styleValue === `none`){ return; }
 
         // fill:url(#linearGradient99999);
         // fill:url(#radialGradient99999);
@@ -95,19 +138,21 @@ export const transformSvgWithTraits = (svgDoc: SvgDoc, seed: string) => {
         return getRgbHex(styleValue);
     };
 
-    const traitColors = {} as { [color in ColorTrait]: RgbHex[] };
+    const traitColors_rgb = {} as { [color in ColorTrait]: RgbHex[] };
     svg.elements.forEach(rootNode => {
         if (rootNode.name === `sodipodi:namedview`){ return; }
         if (rootNode.name === `defs`){ return; }
 
         visitNodeWithTraitContext(rootNode, {}, (n, context) => {
+
             // Grab style colors
             const addColor = (color?: RgbHex) => {
                 if (!color){ return;}
-                if (!traitColors[context.trait]){
-                    traitColors[context.trait] = [];
+                if (!traitColors_rgb[context.trait]){
+                    traitColors_rgb[context.trait] = [];
                 }
-                traitColors[context.trait].push(color);
+                // if (traitColors[context.trait].includes(color)){ return; }
+                traitColors_rgb[context.trait].push(color);
             };
 
             addColor(getPrimaryColor(n.attributes.style, `fill`));
@@ -115,44 +160,39 @@ export const transformSvgWithTraits = (svgDoc: SvgDoc, seed: string) => {
 
             return {};
         });
-
-        // // Adjust style
-        // const rootContext = {
-        //     trait: `body` as ColorTrait,
-        //     // color: selectedColors.body,
-        // };
-
-        // visitNode(rootNode, rootContext, (n, context) => {
-        //     // Grab style colors
-        //     const addColor = (color?: RgbHex) => {
-        //         if (!color){ return;}
-        //         traitColors[context.trait].push(color);
-        //     };
-
-        //     addColor(getPrimaryColor(n.attributes.style, `fill`));
-        //     addColor(getPrimaryColor(n.attributes.style, `stroke`));
-
-        //     // Detect trait change
-        //     let newTrait = context.trait;
-
-        //     const label = n.attributes[`inkscape:label`].toLocaleLowerCase();
-
-        //     if (colorTraits.includes(label as ColorTrait)){
-        //         newTrait = label as ColorTrait;
-        //     }
-        //     Object.entries(colorTraitParts).map(x => ({ key: x[0] as ColorTrait, value: x[1] })).forEach(p => {
-        //         const valuesLower = [...p.value].map(x => x.toLocaleLowerCase());
-        //         if (valuesLower.includes(label)){
-        //             newTrait = p.key;
-        //         }
-        //     });
-
-        //     return { childContext: { trait: newTrait } };
-        // });
-
     });
+    console.log(`traitColors`, { traitColors_rgb, selectedColors });
 
-    console.log(`traitColors`, { traitColors });
+    const traitColorShifts = colorTraits.map(t => {
+
+        const target = selectedColors[t];
+        const hslColors = (traitColors_rgb[t] ?? []).map(x => colorFormat.rgbToHsl(colorFormat.rgbHexToRgb(x)));
+        if (!hslColors.length){
+            return {
+                trait: t,
+                colorChange: undefined,
+            };
+        }
+
+        const minChange = { h: 360, s: 100, l: 100 };
+        hslColors.forEach(x => {
+            const change = {
+                h: target.h - x.h,
+                s: target.s - x.s,
+                l: target.l - x.l,
+            };
+
+            if (Math.abs(change.h) < minChange.h){ minChange.h = change.h; }
+            if (Math.abs(change.s) < minChange.s){ minChange.s = change.s; }
+            if (Math.abs(change.l) < minChange.l){ minChange.l = change.l; }
+        });
+
+        return {
+            trait: t,
+            colorChange: minChange,
+        };
+    });
+    console.log(`traitColorShifts`, { traitColorShifts, traitColors_rgb });
 
 };
 

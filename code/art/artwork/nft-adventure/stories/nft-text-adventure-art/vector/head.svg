@@ -27,15 +27,15 @@
      inkscape:pagecheckerboard="0"
      inkscape:document-units="px"
      showgrid="true"
-     inkscape:zoom="128"
-     inkscape:cx="15.011719"
-     inkscape:cy="23.273437"
+     inkscape:zoom="11.313709"
+     inkscape:cx="68.412581"
+     inkscape:cy="20.85965"
      inkscape:window-width="2698"
      inkscape:window-height="1168"
      inkscape:window-x="2765"
      inkscape:window-y="916"
      inkscape:window-maximized="0"
-     inkscape:current-layer="layer17"
+     inkscape:current-layer="g112753"
      width="32mm"
      units="px"
      objecttolerance="12.8"
@@ -514,7 +514,7 @@
       <g
          inkscape:groupmode="layer"
          id="g13047"
-         inkscape:label="BaldingHair"
+         inkscape:label="Balding"
          style="display:none">
         <path
            id="path13045"
@@ -525,7 +525,7 @@
       <g
          inkscape:groupmode="layer"
          id="g9227"
-         inkscape:label="MohawkHair"
+         inkscape:label="Mohawk"
          style="display:inline"
          sodipodi:insensitive="true">
         <path

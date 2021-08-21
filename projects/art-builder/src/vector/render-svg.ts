@@ -3,10 +3,10 @@ import path from 'path';
 import canvas from 'canvas';
 import sharp from 'sharp';
 import { createRandomGenerator } from 'art/rando';
-import { hslToRgb, rgbToHsl } from 'art/colors';
 import { transformSvgWithTraits } from './transform-svg-with-traits';
 import { js2xml, xml2js } from 'xml-js';
-import { SvgDoc } from './inkscape-svg-types';
+import { RgbHex, SvgDoc } from './inkscape-svg-types';
+import { colorFormat } from 'art/color-format';
 
 const fs = fsRaw.promises;
 const normalizeFilePath = (filePath: string) => path.resolve(filePath).replace(/\\/g, `/`);
@@ -87,28 +87,26 @@ export const renderSvgPixelArt = async (input: Buffer, output: NodeJS.WritableSt
         for (let j = 0; j < imageData.height / SCALE; j++){
 
             type RGB = { r: number, g: number, b: number, a?: number };
-            const getColorKey = ({ r, g, b }: RGB) => {
-                return `${r.toString(16).padStart(2, `0`)}${g.toString(16).padStart(2, `0`)}${b.toString(16).padStart(2, `0`)}`;
+            const getColorKey = (rgb: RGB) => {
+                return colorFormat.rgbToRgbHex(rgb);
             };
+            const getColorFromColorKey = (rgbKey: RgbHex): RGB => {
+                return colorFormat.rgbHexToRgb(rgbKey);
+            };
+
             const getColorKeyQuantized = ({ r, g, b }: RGB) => {
-                const hslRaw = rgbToHsl({ r, g, b });
+                const hslRaw = colorFormat.rgbToHsl({ r, g, b });
                 const hsl = {
                     h: Math.round(hslRaw.h / K_H_RANGE) * K_H_RANGE,
                     s: Math.round(hslRaw.s / K_S_RANGE) * K_S_RANGE,
                     l: Math.round(hslRaw.l / K_L_RANGE) * K_L_RANGE,
                 };
-                const rgb = hslToRgb(hsl);
+                const rgb = colorFormat.hslToRgb(hsl);
 
                 return getColorKey(rgb);
             };
-            const getColorFromColorKey = (rgbKey: string): RGB => {
-                return {
-                    r: parseInt(rgbKey.substr(0, 2), 16),
-                    g: parseInt(rgbKey.substr(2, 2), 16),
-                    b: parseInt(rgbKey.substr(4, 2), 16),
-                };
-            };
-            const kMeansPixels = new Map<string, RGB[]>();
+
+            const kMeansPixels = new Map<RgbHex, RGB[]>();
             let alphaPixelCount = 0;
             let nonAlphaPixelCount = 0;
 
