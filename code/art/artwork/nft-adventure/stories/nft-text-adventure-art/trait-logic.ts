@@ -101,6 +101,8 @@ export const selectTraits = (seed: string, version: VersionDate) => {
         headwear: selectTrait(traits, `headwear`, version, seed, forcedSelections),
     };
 
+    const selectedColors = selectColors(seed, selectedTraits.humanoid.trait.colors);
+
     return {
         seed,
         version,
@@ -112,7 +114,7 @@ export const selectTraits = (seed: string, version: VersionDate) => {
 export const selectColorInRange = (range: ColorRange, seed: string, key: string) => {
     const { random } = createRandomGenerator(`${seed}-colors-${key}`);
 
-    const randomIntInRangeInclusive = (range: [number, number]) =>
+    const randomIntInRangeInclusive = (range: readonly [number, number]) =>
         Math.max(range[0], Math.min(range[1], Math.floor(range[0] + (range[1] - range[0] + 1) * random())));
 
     const hsl = {
@@ -123,7 +125,10 @@ export const selectColorInRange = (range: ColorRange, seed: string, key: string)
     return { hsl };
 };
 
-export const selectColors = (seed: string, colorRanges: ColorTraitRange[]): { [colorTrait in ColorTrait]: HSL } => {
+export const selectColors = (
+    seed: string,
+    colorRanges: readonly ColorTraitRange[],
+): { [colorTrait in ColorTrait]: HSL } => {
     const selections = colorTraits.map(c => {
 
         const range = colorRanges.find(r => r.targets.some(t => t === c)) ?? colorRanges[ colorRanges.length - 1 ];

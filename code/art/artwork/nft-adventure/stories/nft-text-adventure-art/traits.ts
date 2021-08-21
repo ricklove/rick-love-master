@@ -20,12 +20,12 @@ export type VersionDate = `${number}-${number}-${number}`;
 const versions = { _2021_08_21: `2021-08-21` as VersionDate };
 
 export type ColorRange = {
-    h: [number, number];
-    s: [number, number];
-    l: [number, number];
+    readonly h: readonly [number, number];
+    readonly s: readonly [number, number];
+    readonly l: readonly [number, number];
 };
 export type ColorTraitRange = ColorRange & {
-    targets: ColorTrait[];
+    readonly targets: readonly ColorTrait[];
 };
 
 const traits = {
