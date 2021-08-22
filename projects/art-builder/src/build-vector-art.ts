@@ -8,8 +8,8 @@ export const buildVectorArt = async (svgDirectory: string, outDir: string, optio
 
     try {
         await injectSvgComponents(svgDirectory);
-        //await renderSvgWithTraits(svgDirectory, outDir, [...new Array(100)].map((x, i) => `${i}`));
-        await renderSvgWithTraits(svgDirectory, outDir, [`92`]);
+        await renderSvgWithTraits(svgDirectory, outDir, [...new Array(256)].map((x, i) => `${i}`));
+        // await renderSvgWithTraits(svgDirectory, outDir, [`92`]);
     } catch (err){
         console.error(`FAIL buildVectorArt`, err);
     }
