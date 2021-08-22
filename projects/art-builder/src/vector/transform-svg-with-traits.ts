@@ -161,7 +161,15 @@ export const transformSvgWithTraits = (svgDoc: SvgDoc, seed: string) => {
             return {};
         });
     });
-    console.log(`traitColors`, { traitColors_rgb, selectedColors });
+    console.log(`traitColors`, {
+        traitColors_rgb,
+        selectedColors_rgb: Object.entries(selectedColors)
+            .map(x => ({
+                key: x[0],
+                value: colorFormat.rgbToRgbHex(colorFormat.hslToRgb(x[1])),
+            })),
+        selectedColors,
+    });
 
     const traitColorShifts = colorTraits.map(t => {
 
@@ -192,7 +200,10 @@ export const transformSvgWithTraits = (svgDoc: SvgDoc, seed: string) => {
             colorChange: minChange,
         };
     });
-    console.log(`traitColorShifts`, { traitColorShifts, traitColors_rgb });
+    console.log(`traitColorShifts`, {
+        traitColorShifts: traitColorShifts
+            .map(x => `${x.trait}: hsl(${x.colorChange?.h},${x.colorChange?.s},${x.colorChange?.l})`),
+    });
 
 
     // TODO: Apply the color shifts
@@ -204,6 +215,7 @@ export const transformSvgWithTraits = (svgDoc: SvgDoc, seed: string) => {
             l: Math.max(0, Math.min(100, hsl.l + colorChange.l)),
         };
         const newHexValue = colorFormat.rgbToRgbHex(colorFormat.hslToRgb(newHsl));
+        console.log(`calculateShiftedColorHex`, { hexValue, newHexValue, colorChange });
         return newHexValue;
     };
 
@@ -220,6 +232,7 @@ export const transformSvgWithTraits = (svgDoc: SvgDoc, seed: string) => {
         }
 
         if (changedDefIds.has(def.attributes.id)){ return; }
+        changedDefIds.add(def.attributes.id);
 
         if (def.attributes[`xlink:href`]){
             applyColorShiftToDef(def.attributes[`xlink:href`], colorChange);
@@ -258,8 +271,12 @@ export const transformSvgWithTraits = (svgDoc: SvgDoc, seed: string) => {
         const hexValue = getRgbHex(styleValue);
         if (!hexValue){ return;}
 
-        const newStyle = styleValue.replace(hexValue, calculateShiftedColorHex(hexValue, colorChange));
+        const newHexValue = calculateShiftedColorHex(hexValue, colorChange);
+        const newStyle = style.replace(hexValue, newHexValue);
         styleObj.style = newStyle as SvgElementStyle;
+
+        console.log(`applyColorShift - style`, { hexValue, style, newStyle });
+
     };
 
     svg.elements.forEach(rootNode => {
