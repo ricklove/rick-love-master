@@ -90,6 +90,8 @@ export const selectTraits = (seed: string, version: VersionDate) => {
     const theme = selectTrait({ theme: themes }, `theme`, version, seed, {});
     const forcedSelections = theme.trait.selections;
 
+    // console.log(`selectTraits`, { theme, forcedSelections });
+
     const selectedTraits = {
         theme,
         effect: selectTrait({ effect: effects }, `effect`, version, seed, forcedSelections),

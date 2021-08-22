@@ -9,6 +9,7 @@ export const transformSvgWithTraits = (svgDoc: SvgDoc, seed: string) => {
         selectedTraits,
         selectedColors,
     } = selectTraits(seed, versions._2021_08_21);
+
     console.log(`transformSvgWithTraits`, {
         selectedTraits: Object.entries(selectedTraits).map(x => `${x[0]}:${x[1].traitKey}`),
         selectedColors,
@@ -215,7 +216,7 @@ export const transformSvgWithTraits = (svgDoc: SvgDoc, seed: string) => {
             l: Math.max(0, Math.min(100, hsl.l + colorChange.l)),
         };
         const newHexValue = colorFormat.rgbToRgbHex(colorFormat.hslToRgb(newHsl));
-        console.log(`calculateShiftedColorHex`, { hexValue, newHexValue, colorChange });
+        // console.log(`calculateShiftedColorHex`, { hexValue, newHexValue, colorChange });
         return newHexValue;
     };
 
@@ -275,7 +276,7 @@ export const transformSvgWithTraits = (svgDoc: SvgDoc, seed: string) => {
         const newStyle = style.replace(hexValue, newHexValue);
         styleObj.style = newStyle as SvgElementStyle;
 
-        console.log(`applyColorShift - style`, { hexValue, style, newStyle });
+        // console.log(`applyColorShift - style`, { hexValue, style, newStyle });
 
     };
 
@@ -295,5 +296,10 @@ export const transformSvgWithTraits = (svgDoc: SvgDoc, seed: string) => {
             return {};
         });
     });
+
+    return {
+        selectedTraits,
+        selectedColors,
+    };
 };
 

@@ -6,9 +6,13 @@ const fs = fsRaw.promises;
 
 export const buildVectorArt = async (svgDirectory: string, outDir: string, options?: { skipExtraction?: boolean }) => {
 
-    await injectSvgComponents(svgDirectory);
-    await renderSvgWithTraits(svgDirectory, outDir);
-
+    try {
+        await injectSvgComponents(svgDirectory);
+        //await renderSvgWithTraits(svgDirectory, outDir, [...new Array(100)].map((x, i) => `${i}`));
+        await renderSvgWithTraits(svgDirectory, outDir, [`92`]);
+    } catch (err){
+        console.error(`FAIL buildVectorArt`, err);
+    }
     console.log(`DONE`);
     process.exit();
 };

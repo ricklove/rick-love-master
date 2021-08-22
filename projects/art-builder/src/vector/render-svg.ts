@@ -7,6 +7,7 @@ import { transformSvgWithTraits } from './transform-svg-with-traits';
 import { js2xml, xml2js } from 'xml-js';
 import { RgbHex, SvgDoc } from './inkscape-svg-types';
 import { colorFormat } from 'art/color-format';
+import { selectTraits } from 'art/artwork/nft-adventure/stories/nft-text-adventure-art/trait-logic';
 
 const fs = fsRaw.promises;
 const normalizeFilePath = (filePath: string) => path.resolve(filePath).replace(/\\/g, `/`);
@@ -284,22 +285,24 @@ export const renderSvgPixelArt = async (input: Buffer, output: NodeJS.WritableSt
     console.log(`renderSvgPixelArt - Saving png`, {});
     // const outFilePath = x + `.png`;
     // const out = fsRaw.createWriteStream(outFilePath);
-    const stream = cvs2.createPNGStream({});
-    stream.pipe(output);
     await new Promise<void>((resolve, reject) => {
-        stream
-            .on(`finish`, () => resolve())
+        const stream = cvs2.createPNGStream({});
+        output
+            .on(`finish`, () => {
+                resolve();
+            })
             .on(`error`, () => {
                 console.error(`renderSvg - Png Error`, {});
                 reject();
             });
+        stream.pipe(output);
     });
 
     console.log(`renderSvgPixelArt - DONE`, { });
 };
 
 export const renderSvgWithTraits = async (sourceDir: string, destDir: string, seeds?: string[]) => {
-    console.log(`# renderSvgWithTraits`, { sourceDir, destDir });
+    console.log(`# renderSvgWithTraits`, { sourceDir, destDir, seeds });
 
     const dirFiles = await fs.readdir(sourceDir, { withFileTypes: true });
     const svgFilePaths = dirFiles
@@ -308,21 +311,31 @@ export const renderSvgWithTraits = async (sourceDir: string, destDir: string, se
         .sort((a, b) => a.localeCompare(b));
 
 
-    await Promise.all(svgFilePaths.map(async (x) => {
+    for (const x of svgFilePaths){
         const svgFileContentRaw = await fs.readFile(x, { encoding: `utf-8` });
+
         for (const s of seeds ?? [`42`]){
             console.log(`## renderSvgWithTraits - Transforming svg`, { filePath: x, seed: s });
 
             const svgDoc = xml2js(svgFileContentRaw, { compact: false }) as SvgDoc;
-            transformSvgWithTraits(svgDoc, s);
+            const result = transformSvgWithTraits(svgDoc, s);
+            if (!result){ continue; }
+            const { humanoid, theme } = result.selectedTraits;
+            const summary = `${humanoid.traitKey}-${theme.traitKey}`;
+
             const svgTransformed = js2xml(svgDoc, { spaces: 2, indentAttributes: true });
 
             console.log(`## renderSvgWithTraits - Rendering svg`, { filePath: x, seed: s });
             const input = Buffer.from(svgTransformed);
-            const outFilePath = x + `.png`;
+            const outFilePath = path.join(destDir, `vector-samples`,
+                `${path.basename(x)}-${s}-${summary.toLocaleUpperCase()}.png`);
+            await fs.mkdir(path.dirname(outFilePath), { recursive: true });
             const output = fsRaw.createWriteStream(outFilePath);
             await renderSvgPixelArt(input, output, s);
+
+            console.log(`## renderSvgWithTraits - Done`, { filePath: x, seed: s });
         }
-    }));
+    }
+
 
 };
