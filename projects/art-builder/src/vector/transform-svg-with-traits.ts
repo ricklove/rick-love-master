@@ -38,8 +38,9 @@ export const transformSvgWithTraits = (svgDoc: SvgDoc, seed: string) => {
         node.elements?.forEach(n => {visitNode(n, result?.childContext ?? context, handleNode);});
     };
     const visitNodeWithTraitContext = <TContext>(node: SvgElement, context: TContext,
+        shouldSkipUnselectedTrait: boolean,
         handleNode: (
-            node: SvgElement, context: { trait: ColorTrait }
+            node: SvgElement, context: { trait: ColorTrait }, traitNode: undefined|'selected'|'unselected'
         ) => undefined | { childContext?: TContext, skipChildren?: boolean },
     ) => {
         const rootContext = {
@@ -55,8 +56,11 @@ export const transformSvgWithTraits = (svgDoc: SvgDoc, seed: string) => {
             const parentLabel = context.parent?.attributes[`inkscape:label`]?.toLocaleLowerCase();
             const traitGroup = Object.entries(selectedTraits).map(x => ({ key: x[0], value: x[1] }))
                 .find(x => x.key.toLocaleLowerCase() === parentLabel);
-            const isSelectedTrait = traitGroup?.value.traitKey.toLocaleLowerCase() === label;
-            if (traitGroup && !isSelectedTrait){
+
+            const isSelectedTraitNode = traitGroup?.value.traitKey.toLocaleLowerCase() === label;
+            const isUnselectedTraitNode = traitGroup && !isSelectedTraitNode;
+
+            if (shouldSkipUnselectedTrait && isUnselectedTraitNode){
                 console.log(`Skipping unselected trait`, { label, parentLabel });
                 return { skipChildren: true };
             }
@@ -64,9 +68,9 @@ export const transformSvgWithTraits = (svgDoc: SvgDoc, seed: string) => {
                 console.log(`Visiting selected trait`, { label, parentLabel });
             }
 
-            const result = handleNode(n, context);
+            const result = handleNode(n, context, isSelectedTraitNode ? `selected` : isUnselectedTraitNode ? `unselected` : undefined);
 
-            // Detect trait change
+            // Detect trait context change
             let newTrait = context.trait;
 
             if (!label){ return; }
@@ -81,7 +85,13 @@ export const transformSvgWithTraits = (svgDoc: SvgDoc, seed: string) => {
                 }
             });
 
-            return { childContext: { ...result?.childContext ?? context, trait: newTrait, parent: n } };
+            return {
+                childContext: {
+                    ...result?.childContext ?? context,
+                    trait: newTrait,
+                    parent: n,
+                },
+            };
         });
     };
 
@@ -144,7 +154,7 @@ export const transformSvgWithTraits = (svgDoc: SvgDoc, seed: string) => {
         if (rootNode.name === `sodipodi:namedview`){ return; }
         if (rootNode.name === `defs`){ return; }
 
-        visitNodeWithTraitContext(rootNode, {}, (n, context) => {
+        visitNodeWithTraitContext(rootNode, {}, true, (n, context) => {
 
             // Grab style colors
             const addColor = (color?: RgbHex) => {
@@ -159,7 +169,7 @@ export const transformSvgWithTraits = (svgDoc: SvgDoc, seed: string) => {
             addColor(getPrimaryColor(n.attributes.style, `fill`));
             addColor(getPrimaryColor(n.attributes.style, `stroke`));
 
-            return {};
+            return { skipChildren: true };
         });
     });
     console.log(`traitColors`, {
@@ -279,19 +289,42 @@ export const transformSvgWithTraits = (svgDoc: SvgDoc, seed: string) => {
         // console.log(`applyColorShift - style`, { hexValue, style, newStyle });
 
     };
+    const applyVisiblityStyle = (
+        styleObj: undefined | { style?: undefined | SvgElementStyle },
+        visible: boolean,
+    ): undefined|RgbHex => {
+        if (!styleObj){ return; }
+        const { style } = styleObj;
+        if (!style){ return; }
+
+        const newStyle = visible
+            ? `${style.replace(`display:none;`, ``)};display:inline`
+            : `${style.replace(`display:inline;`, ``)};display:none`;
+
+        styleObj.style = newStyle as SvgElementStyle;
+
+        console.log(`applyVisiblityStyle - style`, { visible, style, newStyle });
+    };
 
     svg.elements.forEach(rootNode => {
         if (rootNode.name === `sodipodi:namedview`){ return; }
         if (rootNode.name === `defs`){ return; }
 
-        visitNodeWithTraitContext(rootNode, {}, (n, context) => {
+        visitNodeWithTraitContext(rootNode, {}, false, (n, context, traitNode) => {
 
             const colorShift = traitColorShifts.find(x => x.trait === context.trait);
             if (!colorShift?.colorChange){ return; }
 
-            // Apply style colors (also prevent multiple changes)
             applyColorShift(n.attributes, `fill`, colorShift.colorChange);
             applyColorShift(n.attributes, `stroke`, colorShift.colorChange);
+
+
+            // Apply visibility
+            if (traitNode){
+                const visible = traitNode === `selected`;
+                applyVisiblityStyle(n.attributes, visible);
+            }
+
 
             return {};
         });
