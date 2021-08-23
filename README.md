@@ -8,6 +8,22 @@ This is where I put all the cool stuff.
 - react for web components
 - typescript for most code
 
+
+## File Structure
+
+- packages 
+    - all the code is here
+- projects 
+    - output projects are here 
+    - platform boilerplate files and configurations
+    - e.g. 
+        - next.js
+        - react native
+        - serverless framework
+    - no code
+        - this should contain only minimal custom code in order to references the required packages
+        - even build scripts, etc. should be in packages and written in a tool-agnostic way
+
 ## License
 
 *tl;dr Don't copy my blog content, lessons, games, or art, but any source code is available under MIT*
