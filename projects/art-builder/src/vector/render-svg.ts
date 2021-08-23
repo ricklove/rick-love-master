@@ -32,7 +32,7 @@ export const renderSvgPixelArt = async (input: Buffer, output: NodeJS.WritableSt
     const BASE_DPI = 96;
 
     const SIZE = 32;
-    const SCALE = 5;
+    const SCALE = 7;
     const CANVAS_SCALE = SCALE;
     const OUT_SCALE = 8;
     const K_H_RANGE = 4 / 256 * 360;
@@ -331,13 +331,14 @@ export const renderSvgWithTraits = async (sourceDir: string, destDir: string, se
                 ifNotDefault(t.hair, `short`)}${
                 ifNotDefault(t.facehair, `beard`)}${
                 ``}`;
+            const outFileName = `${s.padStart(8, `_`)}-${summary.toLocaleUpperCase()}`;
 
             const svgTransformed = js2xml(svgDoc, { spaces: 2, indentAttributes: true });
 
             console.log(`## renderSvgWithTraits - Rendering svg`, { filePath: x, seed: s });
             const input = Buffer.from(svgTransformed);
             const outFilePath = path.join(destDir, `vector-samples`,
-                `${path.basename(x)}-${summary.toLocaleUpperCase()}-${s.padStart(8, `_`)}.png`);
+                `${path.basename(x)}-${outFileName}.png`);
             await fs.mkdir(path.dirname(outFilePath), { recursive: true });
 
             if (fsRaw.existsSync(outFilePath)){

@@ -106,7 +106,7 @@ const traits = {
     },
     headwear: {
         baseballCap: { rarity: 1, version: versions._2021_08_21 },
-        chineseCap: { rarity: 1, version: versions._2021_08_21 },
+        chineseCap: { rarity: undefined, version: versions._2021_08_21 },
         armyHelmet: { rarity: undefined, version: versions._2021_08_21 },
         none: { rarity: undefined, version: versions._2021_08_21 },
     },
