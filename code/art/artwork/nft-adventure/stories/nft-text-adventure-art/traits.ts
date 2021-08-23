@@ -7,7 +7,7 @@ export const colorTraits = [
     `mouth`,
     `facehair`,
     `hair`,
-    `face`,
+    // `face`,
     `body`,
     `nose`,
     // Equipment
@@ -27,8 +27,8 @@ export type ColorTrait =typeof colorTraits[number];
 */
 export const colorTraitParts = {
     'facehair': [`eyebrows`],
-    'face': [`headShape`],
-    'body': [`chest`, `neck`, `handShape`, `armR`, `armL`],
+    // 'face': [],
+    'body': [`headShape`, `chest`, `neck`, `handShape`, `armR`, `armL`],
     // 'equipment': [`clothes`, `headwear`, `weapon`],
 } as const;
 
@@ -49,25 +49,25 @@ const traits = {
     humanoid: {
         // High Saturation, Any Color
         radioactive: {
-            rarity: 1,
+            rarity: 5,
             version: versions._2021_08_21,
             colors: [
                 { h: [0, 360], s: [80, 100], l: [70, 90], targets: [`eyes`] },
                 { h: [0, 360], s: [80, 100], l: [+0, 20], targets: [`mouth`] },
                 { h: [0, 360], s: [80, 100], l: [20, 40], targets: [`hair`, `facehair`] },
-                { h: [0, 360], s: [80, 100], l: [40, 60], targets: [`face`, `body`, `nose`] },
+                { h: [0, 360], s: [80, 100], l: [40, 60], targets: [`body`, `nose`] },
                 { h: [0, 360], s: [80, 100], l: [20, 70], targets: [`clothes`, `headwear`, `weapon`] },
             ],
         },
         // Green/Gray Colors
         zombie: {
-            rarity: 1,
+            rarity: 5,
             version: versions._2021_08_21,
             colors: [
                 { h: [45, 180], s: [10, 70], l: [70, 90], targets: [`eyes`] },
                 { h: [45, 180], s: [10, 70], l: [+0, 20], targets: [`mouth`] },
                 { h: [45, 180], s: [10, 70], l: [20, 40], targets: [`hair`, `facehair`] },
-                { h: [45, 180], s: [10, 70], l: [40, 60], targets: [`face`, `body`, `nose`] },
+                { h: [45, 180], s: [10, 70], l: [40, 60], targets: [`body`, `nose`] },
                 { h: [+0, 250], s: [10, 70], l: [20, 70], targets: [`clothes`, `headwear`, `weapon`] },
             ],
         },
@@ -79,7 +79,7 @@ const traits = {
                 { h: [0, 360], s: [+0, 90], l: [85, 95], targets: [`eyes`] },
                 { h: [+0, 30], s: [+0, 90], l: [+0, 20], targets: [`mouth`] },
                 { h: [10, 50], s: [+0, 90], l: [+0, 60], targets: [`hair`, `facehair`] },
-                { h: [20, 40], s: [50, 80], l: [10, 80], targets: [`face`, `body`, `nose`] },
+                { h: [20, 40], s: [50, 80], l: [10, 80], targets: [`body`, `nose`] },
                 { h: [0, 250], s: [50, 90], l: [20, 80], targets: [`clothes`, `headwear`, `weapon`] },
             ],
         },
@@ -167,14 +167,14 @@ const themes = {
  * They can apply to a single trait or to the whole output
  */
 const effects = {
-    /** Render vector graphics instead of pixel art */
-    vector: { rarity: 1, version: versions._2021_08_21 },
-    /** 64x64 instead of 32x32 pixel art */
-    hiRes: { rarity: 1, version: versions._2021_08_21 },
-    /** Matrix Wireframe */
-    glitch: { rarity: 1, version: versions._2021_08_21 },
-    /** ? Ascii - From pixel to ascii with a limited char set */
-    ascii: { rarity: 1, version: versions._2021_08_21 },
+    // /** Render vector graphics instead of pixel art */
+    // vector: { rarity: 1, version: versions._2021_08_21 },
+    // /** 64x64 instead of 32x32 pixel art */
+    // hiRes: { rarity: 1, version: versions._2021_08_21 },
+    // /** Matrix Wireframe */
+    // glitch: { rarity: 1, version: versions._2021_08_21 },
+    // /** ? Ascii - From pixel to ascii with a limited char set */
+    // ascii: { rarity: 1, version: versions._2021_08_21 },
     normal: { rarity: undefined, version: versions._2021_08_21 },
 } as const;
 

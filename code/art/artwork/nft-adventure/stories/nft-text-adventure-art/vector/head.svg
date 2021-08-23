@@ -27,9 +27,9 @@
      inkscape:pagecheckerboard="0"
      inkscape:document-units="px"
      showgrid="true"
-     inkscape:zoom="11.313709"
-     inkscape:cx="68.412581"
-     inkscape:cy="20.85965"
+     inkscape:zoom="45.254834"
+     inkscape:cx="20.616582"
+     inkscape:cy="24.306796"
      inkscape:window-width="2698"
      inkscape:window-height="1168"
      inkscape:window-x="2765"
@@ -622,7 +622,7 @@
          inkscape:groupmode="layer"
          id="layer13"
          inkscape:label="BaseballCap"
-         style="display:none"
+         style="display:inline"
          sodipodi:insensitive="true">
         <path
            id="rect60995"
@@ -656,7 +656,7 @@
          inkscape:groupmode="layer"
          id="g61615"
          inkscape:label="ChineseCap"
-         style="display:inline">
+         style="display:none">
         <path
            id="path61613"
            style="fill:url(#radialGradient111234);fill-opacity:1;stroke-width:0.144968;stroke-linejoin:round"

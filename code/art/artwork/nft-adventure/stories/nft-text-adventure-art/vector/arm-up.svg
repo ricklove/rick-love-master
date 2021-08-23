@@ -1514,7 +1514,7 @@
               inkscape:groupmode="layer"
               id="layer13"
               inkscape:label="BaseballCap"
-              style="display:none"
+              style="display:inline"
               sodipodi:insensitive="true"
             >
               <path
@@ -1554,7 +1554,7 @@
               inkscape:groupmode="layer"
               id="g61615"
               inkscape:label="ChineseCap"
-              style="display:inline"
+              style="display:none"
             >
               <path
                 id="path61613"

@@ -58,14 +58,17 @@ const selectTrait = <
 
     const countNonRarity = options.filter(x => x.value.rarity == null).length;
     const totalScore = 100;
-    const rarityForNonRare = (totalScore - totalRarity) / countNonRarity;
+    const rarityForNonRare = !countNonRarity ? 0 : (totalScore - totalRarity) / countNonRarity;
 
     const options_byRarity = options.sort((a, b) =>
         (a.value.rarity ?? rarityForNonRare)
         - (b.value.rarity ?? rarityForNonRare));
 
+
     const { random } = createRandomGenerator(`${seed}-${traitName}`);
     const randomScore = random() * totalScore;
+    // const randomScore = totalScore - 1;
+
 
     let scoreSoFar = 0;
     let itemAtScore = options_byRarity[0];
@@ -74,6 +77,8 @@ const selectTrait = <
         scoreSoFar += x.value.rarity ?? rarityForNonRare;
         itemAtScore = x;
     });
+
+    // console.log(`options_byRarity`, { randomScore, scoreSoFar, itemAtScore, options_byRarity, countNonRarity, rarityForNonRare });
 
     // Use override (but still go through random)
     const traitKey = itemAtScore.key;

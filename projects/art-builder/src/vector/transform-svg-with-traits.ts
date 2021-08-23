@@ -303,7 +303,7 @@ export const transformSvgWithTraits = (svgDoc: SvgDoc, seed: string) => {
 
         styleObj.style = newStyle as SvgElementStyle;
 
-        console.log(`applyVisiblityStyle - style`, { visible, style, newStyle });
+        // console.log(`applyVisiblityStyle - style`, { visible, style, newStyle });
     };
 
     svg.elements.forEach(rootNode => {
@@ -311,20 +311,21 @@ export const transformSvgWithTraits = (svgDoc: SvgDoc, seed: string) => {
         if (rootNode.name === `defs`){ return; }
 
         visitNodeWithTraitContext(rootNode, {}, false, (n, context, traitNode) => {
+            // Apply visibility
+            if (traitNode){
+                const visible = traitNode === `selected`;
+                applyVisiblityStyle(n.attributes, visible);
+
+                // if (context.trait === `headwear`){
+                //     console.log(`Apply Visibility headwear`, { labele: n.attributes[`inkscape:label`], visible });
+                // }
+            }
 
             const colorShift = traitColorShifts.find(x => x.trait === context.trait);
             if (!colorShift?.colorChange){ return; }
 
             applyColorShift(n.attributes, `fill`, colorShift.colorChange);
             applyColorShift(n.attributes, `stroke`, colorShift.colorChange);
-
-
-            // Apply visibility
-            if (traitNode){
-                const visible = traitNode === `selected`;
-                applyVisiblityStyle(n.attributes, visible);
-            }
-
 
             return {};
         });

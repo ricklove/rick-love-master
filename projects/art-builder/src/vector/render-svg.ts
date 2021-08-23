@@ -7,7 +7,6 @@ import { transformSvgWithTraits } from './transform-svg-with-traits';
 import { js2xml, xml2js } from 'xml-js';
 import { RgbHex, SvgDoc } from './inkscape-svg-types';
 import { colorFormat } from 'art/color-format';
-import { selectTraits } from 'art/artwork/nft-adventure/stories/nft-text-adventure-art/trait-logic';
 
 const fs = fsRaw.promises;
 const normalizeFilePath = (filePath: string) => path.resolve(filePath).replace(/\\/g, `/`);
@@ -320,16 +319,30 @@ export const renderSvgWithTraits = async (sourceDir: string, destDir: string, se
             const svgDoc = xml2js(svgFileContentRaw, { compact: false }) as SvgDoc;
             const result = transformSvgWithTraits(svgDoc, s);
             if (!result){ continue; }
-            const { humanoid, theme } = result.selectedTraits;
-            const summary = `${humanoid.traitKey}-${theme.traitKey}`;
+            const t = result.selectedTraits;
+            const ifNotDefault = <T extends { traitKey: TTraitKey }, TTraitKey extends string, TDefTraitKey extends TTraitKey>(obj: T, def: TDefTraitKey) => obj.traitKey === def ? `-___` : `-${obj.traitKey.substr(0, 3)}`;
+            const summary = `${
+                ifNotDefault(t.humanoid, `natural`)}${
+                ifNotDefault(t.theme, `normal`)}${
+                ifNotDefault(t.effect, `none`)}${
+                ifNotDefault(t.headwear, `armyHelmet`)}${
+                ifNotDefault(t.weapon, `axe`)}${
+                ifNotDefault(t.clothes, `tunic`)}${
+                ifNotDefault(t.hair, `short`)}${
+                ifNotDefault(t.facehair, `beard`)}${
+                ``}`;
 
             const svgTransformed = js2xml(svgDoc, { spaces: 2, indentAttributes: true });
 
             console.log(`## renderSvgWithTraits - Rendering svg`, { filePath: x, seed: s });
             const input = Buffer.from(svgTransformed);
             const outFilePath = path.join(destDir, `vector-samples`,
-                `${path.basename(x)}-${s}-${summary.toLocaleUpperCase()}.png`);
+                `${path.basename(x)}-${summary.toLocaleUpperCase()}-${s.padStart(8, `_`)}.png`);
             await fs.mkdir(path.dirname(outFilePath), { recursive: true });
+
+            if (fsRaw.existsSync(outFilePath)){
+                fsRaw.unlinkSync(outFilePath);
+            }
             const output = fsRaw.createWriteStream(outFilePath);
             await renderSvgPixelArt(input, output, s);
 
