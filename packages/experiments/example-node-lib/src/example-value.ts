@@ -4,7 +4,7 @@ import { placeholder } from '@ricklove/example-lib-lib';
 export const exampleValue10 = {
   example3: 'Here it is nice!',
 
-  run2: () => {
+  run2: async () => {
     const a = `It is within a few secs, which is ok!`;
     const b = 'What? This is NOW formatted! Also! Can we make it faster though 2? What takes so long?';
     let c: string;

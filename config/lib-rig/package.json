@@ -3,8 +3,8 @@
   "version": "1.0.0",
   "main": "lib/index.js",
   "scripts": {
-    "build": "heft test --clean",
-    "build:watch": "heft build"
+    "build": "",
+    "build:watch": ""
   },
   "dependencies": {
     "@rushstack/eslint-config": "^2.3.4",
