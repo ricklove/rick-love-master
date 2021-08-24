@@ -428,8 +428,8 @@
       "projectFolder": "config/main-rig"
     },
     {
-      "packageName": "@ricklove/example-local",
-      "projectFolder": "packages/example-local"
+      "packageName": "@ricklove/example",
+      "projectFolder": "packages/_example"
     },
     {
       "packageName": "@ricklove/blog-nextjs",

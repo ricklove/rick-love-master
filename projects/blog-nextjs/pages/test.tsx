@@ -1,5 +1,5 @@
 import { GetStaticProps, GetStaticPaths, GetServerSideProps } from 'next'
-import { exampleValue8 } from '@ricklove/example-local';
+import { exampleValue10 } from '@ricklove/example';
 
 
 export const getStaticProps: GetStaticProps = async (context) => {
@@ -9,7 +9,7 @@ export const getStaticProps: GetStaticProps = async (context) => {
 const Page = () => {
   return (
     <>
-      <div>{`${exampleValue8.example3}: ${exampleValue8.run2().c}`}</div>
+      <div>{`${exampleValue10.example3}: ${exampleValue10.run2().c}`}</div>
     </>
   );
 };

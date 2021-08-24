@@ -4,7 +4,7 @@ specifiers:
   '@babel/core': ^7.0.0
   '@rush-temp/blog-nextjs': file:./projects/blog-nextjs.tgz
   '@rush-temp/config-main-rig': file:./projects/config-main-rig.tgz
-  '@rush-temp/example-local': file:./projects/example-local.tgz
+  '@rush-temp/example': file:./projects/example.tgz
   '@rushstack/eslint-config': ^2.3.4
   '@rushstack/heft': ^0.36.3
   '@rushstack/heft-node-rig': ^1.0.31
@@ -21,7 +21,7 @@ dependencies:
   '@babel/core': 7.15.0
   '@rush-temp/blog-nextjs': file:projects/blog-nextjs.tgz
   '@rush-temp/config-main-rig': file:projects/config-main-rig.tgz
-  '@rush-temp/example-local': file:projects/example-local.tgz
+  '@rush-temp/example': file:projects/example.tgz
   '@rushstack/eslint-config': 2.4.0_eslint@7.32.0+typescript@4.3.5
   '@rushstack/heft': 0.36.3
   '@rushstack/heft-node-rig': 1.2.4_@rushstack+heft@0.36.3
@@ -6395,9 +6395,9 @@ packages:
       - utf-8-validate
     dev: false
 
-  file:projects/example-local.tgz:
-    resolution: {integrity: sha512-smHcvbZfbUKqMe1i8a1h3R+yBrwxsEVMOi5aYh4Hp4Hv3v1ZCOwpX7pSwXvigY0aL/+tjc7mfAMbl25DURaUIg==, tarball: file:projects/example-local.tgz}
-    name: '@rush-temp/example-local'
+  file:projects/example.tgz:
+    resolution: {integrity: sha512-smHcvbZfbUKqMe1i8a1h3R+yBrwxsEVMOi5aYh4Hp4Hv3v1ZCOwpX7pSwXvigY0aL/+tjc7mfAMbl25DURaUIg==, tarball: file:projects/example.tgz}
+    name: '@rush-temp/example'
     version: 0.0.0
     dependencies:
       typescript: 4.3.5

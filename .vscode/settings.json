@@ -4,4 +4,17 @@
   "[typescript]": {
     "editor.defaultFormatter": "esbenp.prettier-vscode"
   }
+  // "files.exclude": {
+  //   "**/.DS_Store": false,
+  //   "**/CVS": false,
+  //   "**/.git": true,
+  //   "**/node_modules": true,
+  //   "**/lib": true,
+  //   "**/.heft": true,
+  //   "**/.rush": true,
+  //   // "**/config": true,
+  //   "**/*.build.log": true,
+  //   "**/*.build.error.log": true,
+  //   "**/.next": true
+  // }
 }

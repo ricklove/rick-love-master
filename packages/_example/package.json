@@ -1,5 +1,5 @@
 {
-  "name": "@ricklove/example-local",
+  "name": "@ricklove/example",
   "version": "1.0.0",
   "main": "./lib/index.js",
   "scripts": {
