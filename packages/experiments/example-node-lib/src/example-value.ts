@@ -1,9 +1,9 @@
 import path from 'path';
-import { delay } from '@ricklove/utils-core';
 import { placeholder } from '@ricklove/example-lib-lib';
+import { delay } from '@ricklove/utils-core';
 
 export const exampleValue10 = {
-  example3: `Here it is nice! ${placeholder}`,
+  example3: `Here it is nice! ${placeholder} - fixed those imports`,
   example4: `OK!`,
 
   run2: async () => {
