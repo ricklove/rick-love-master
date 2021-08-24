@@ -71,4 +71,4 @@ common/autoinstallers/*/.npmrc
 # Custom
 old/
 common/
-lib
+lib/
