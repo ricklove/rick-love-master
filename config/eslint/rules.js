@@ -9,11 +9,77 @@ module.exports = {
       version: '17.0',
     },
   },
-  plugins: ['import-quotes'],
+  plugins: ['import-quotes', 'simple-import-sort', 'unused-imports'],
   ignorePatterns: ['lib', '.eslintrc.js'],
 
   rules: {
     '@rushstack/typedef-var': 'off',
+
+    // Naming
+    '@typescript-eslint/naming-convention': [
+      'error',
+      {
+        selector: 'default',
+        format: ['camelCase', 'UPPER_CASE', 'PascalCase'],
+        leadingUnderscore: 'allow',
+        filter: {
+          regex: [
+            // This is a special exception for naming patterns that use an underscore to separate two camel-cased
+            // parts.  Example:  "checkBox1_onChanged" or "_checkBox1_onChanged"
+            '^_?[a-z][a-z0-9]*([A-Z][a-z]?[a-z0-9]*)*_[a-z][a-z0-9]*([A-Z][a-z]?[a-z0-9]*)*$',
+          ]
+            .map((x) => `(${x})`)
+            .join('|'),
+          match: false,
+        },
+      },
+      // _camelCase
+      {
+        selector: 'memberLike',
+        modifiers: ['private'],
+        format: ['camelCase'],
+        leadingUnderscore: 'require',
+      },
+      // // isBoolean
+      // {
+      //   selector: 'variable',
+      //   types: ['boolean'],
+      //   format: ['PascalCase'],
+      //   prefix: ['is', 'should', 'has', 'can', 'did', 'will'],
+      // },
+      // // const CAN_BE_UPPER, or Pascal (React Components)
+      // {
+      //   selector: 'variable',
+      //   modifiers: ['const'],
+      //   format: ['camelCase', 'UPPER_CASE', 'PascalCase'],
+      // },
+      // type P<TStartsWithT>
+      {
+        selector: 'typeParameter',
+        format: ['PascalCase'],
+        prefix: ['T'],
+      },
+      // Type
+      {
+        selector: 'typeLike',
+        format: ['PascalCase'],
+      },
+      // ['@weirdName']
+      {
+        selector: [
+          'classProperty',
+          'objectLiteralProperty',
+          'typeProperty',
+          'classMethod',
+          'objectLiteralMethod',
+          'typeMethod',
+          'accessor',
+          'enumMember',
+        ],
+        format: null,
+        modifiers: ['requiresQuotes'],
+      },
+    ],
 
     // Backticks Everywhere (except jsx and imports)
     quotes: 'off',
@@ -32,6 +98,21 @@ module.exports = {
     'no-use-before-define': ['off'],
     '@typescript-eslint/no-use-before-define': ['off'],
 
+    // Imports
+    'simple-import-sort/imports': [
+      'error',
+      {
+        // The default grouping, but with no blank lines.
+        groups: [['^\\u0000', '^@?\\w', '^', '^@ricklove', '^\\.']],
+      },
+    ],
+    '@typescript-eslint/no-unused-vars': 'off',
+    'unused-imports/no-unused-imports': 'error',
+    'unused-imports/no-unused-vars': [
+      'warn',
+      { vars: 'all', varsIgnorePattern: '^_', args: 'after-used', argsIgnorePattern: '^_' },
+    ],
+
     // async-await
     '@typescript-eslint/no-misused-promises': ['error'],
     'no-return-await': 'off',
@@ -44,11 +125,11 @@ module.exports = {
     'no-useless-escape': 'error',
     'no-useless-catch': 'error',
 
-    // White space --- Many are solved by prettier so can be disabled
+    // '@typescript-eslint/explicit-module-boundary-types': 'off',
+
+    // White space
     semi: 'off',
     '@typescript-eslint/semi': ['error'],
-
-    // '@typescript-eslint/explicit-module-boundary-types': 'off',
 
     'comma-dangle': [
       'error',
@@ -74,12 +155,9 @@ module.exports = {
       },
     ],
 
-    // // "object-property-newline": ["error"],
-    // 'object-curly-newline': ['error', { multiline: true }],
-    // 'object-curly-spacing': 'off',
-    // '@typescript-eslint/object-curly-spacing': ['error', 'always'],
-    // 'array-element-newline': ['error', { ArrayExpression: 'consistent' }],
-    // 'array-bracket-spacing': ['error', 'never'],
+    'object-curly-spacing': 'off',
+    '@typescript-eslint/object-curly-spacing': ['error', 'always'],
+    'array-bracket-spacing': ['error', 'never'],
 
     // Spacing for types
     '@typescript-eslint/type-annotation-spacing': [
@@ -87,22 +165,11 @@ module.exports = {
       { before: false, after: true, overrides: { arrow: { before: true, after: true } } },
     ],
     '@typescript-eslint/brace-style': ['error', '1tbs', { allowSingleLine: true }],
-    // // "max-statements-per-line": ["error", { "max": 2 }],
 
     'eol-last': ['error', 'always'],
     'no-trailing-spaces': 'error',
-    // 'no-multiple-empty-lines': 'error',
 
     'no-tabs': 'error',
-
-    // indent: 'off',
-    // '@typescript-eslint/indent': [
-    //   'error',
-    //   2,
-    //   {
-    //     ignoredNodes: ['TSTypeParameterInstantiation'],
-    //   },
-    // ],
 
     'comma-spacing': 'off',
     '@typescript-eslint/comma-spacing': ['error'],
@@ -130,8 +197,25 @@ module.exports = {
     'key-spacing': 'error',
     'no-multi-spaces': 'error',
     'space-unary-ops': 'error',
-    'space-infix-ops': ['error', { int32Hint: false }],
+    'space-infix-ops': 'off',
+    '@typescript-eslint/space-infix-ops': ['error', { int32Hint: false }],
+
     'arrow-spacing': 'error',
     'semi-spacing': ['error', { before: false, after: true }],
+
+    // // "max-statements-per-line": ["error", { "max": 2 }],
+    // 'no-multiple-empty-lines': 'error',
+
+    // Wrapping & Indentation - handled by prettier
+    // 'object-curly-newline': ['error', { multiline: true }],
+    // 'array-element-newline': ['error', { ArrayExpression: 'consistent' }],
+    // indent: 'off',
+    // '@typescript-eslint/indent': [
+    //   'error',
+    //   1,
+    //   {
+    //     ignoredNodes: ['TSTypeParameterInstantiation'],
+    //   },
+    // ],
   },
 };

@@ -17,6 +17,8 @@ specifiers:
   '@types/react': ~17.0.19
   eslint: ~7.32.0
   eslint-plugin-import-quotes: ~0.0.1
+  eslint-plugin-simple-import-sort: ^7.0.0
+  eslint-plugin-unused-imports: ^1.1.4
   next: ^11.0.0
   react: 17.0.2
   react-dom: 17.0.2
@@ -27,7 +29,7 @@ dependencies:
   '@rush-temp/blog-nextjs': file:projects/blog-nextjs.tgz
   '@rush-temp/config-eslint': file:projects/config-eslint.tgz
   '@rush-temp/config-lib-rig': file:projects/config-lib-rig.tgz
-  '@rush-temp/example-lib-lib': file:projects/example-lib-lib.tgz_typescript@4.3.5
+  '@rush-temp/example-lib-lib': file:projects/example-lib-lib.tgz
   '@rush-temp/example-node-lib': file:projects/example-node-lib.tgz
   '@rush-temp/example-web-lib': file:projects/example-web-lib.tgz
   '@rush-temp/utils-core': file:projects/utils-core.tgz
@@ -39,6 +41,8 @@ dependencies:
   '@types/react': 17.0.19
   eslint: 7.32.0
   eslint-plugin-import-quotes: 0.0.1
+  eslint-plugin-simple-import-sort: 7.0.0_eslint@7.32.0
+  eslint-plugin-unused-imports: 1.1.4_eslint@7.32.0
   next: 11.1.0_d656e95d5564dbefda9f605dfed71e60
   react: 17.0.2
   react-dom: 17.0.2_react@17.0.2
@@ -3071,11 +3075,38 @@ packages:
       string.prototype.matchall: 4.0.5
     dev: false
 
+  /eslint-plugin-simple-import-sort/7.0.0_eslint@7.32.0:
+    resolution: {integrity: sha512-U3vEDB5zhYPNfxT5TYR7u01dboFZp+HNpnGhkDB2g/2E4wZ/g1Q9Ton8UwCLfRV9yAKyYqDh62oHOamvkFxsvw==}
+    peerDependencies:
+      eslint: '>=5.0.0'
+    dependencies:
+      eslint: 7.32.0
+    dev: false
+
   /eslint-plugin-tsdoc/0.2.14:
     resolution: {integrity: sha512-fJ3fnZRsdIoBZgzkQjv8vAj6NeeOoFkTfgosj6mKsFjX70QV256sA/wq+y/R2+OL4L8E79VVaVWrPeZnKNe8Ng==}
     dependencies:
       '@microsoft/tsdoc': 0.13.2
       '@microsoft/tsdoc-config': 0.15.2
+    dev: false
+
+  /eslint-plugin-unused-imports/1.1.4_eslint@7.32.0:
+    resolution: {integrity: sha512-6M9iqqZbnsLdcpYm8ZAyjHHxw1Gmv/pK8yK9Za/cfrKKkOyxaXmiw5/EtBXPcp/JJ6Ge9ur+OROSAcYho45smA==}
+    engines: {node: ^10.12.0 || >=12.0.0}
+    peerDependencies:
+      '@typescript-eslint/eslint-plugin': ^4.14.2
+      eslint: ^7.19.0
+    peerDependenciesMeta:
+      '@typescript-eslint/eslint-plugin':
+        optional: true
+    dependencies:
+      eslint: 7.32.0
+      eslint-rule-composer: 0.3.0
+    dev: false
+
+  /eslint-rule-composer/0.3.0:
+    resolution: {integrity: sha512-bt+Sh8CtDmn2OajxvNO+BX7Wn4CIWMpTRm3MaiKPCQcnnlm0CS2mhui6QaoeQugs+3Kj2ESKEEGJUdVafwhiCg==}
+    engines: {node: '>=4.0.0'}
     dev: false
 
   /eslint-scope/4.0.3:
@@ -8642,7 +8673,7 @@ packages:
     dev: false
 
   file:projects/config-eslint.tgz:
-    resolution: {integrity: sha512-K0zOrQbloVxqYXmMTpXwcKDapk6sbfOt9l7qHIbyuUMfn7042sicxby3NdCT7oHSc7er5rrDv1KCf/ZXCiSJxQ==, tarball: file:projects/config-eslint.tgz}
+    resolution: {integrity: sha512-qN7q6dkzLDzkh2zgSpTzQJjQTZoVDeSOe2NyuQ+Hq7ATChDQ0YxAlXYJMluuXVtZ5TrPP9LfJ4cgriUQCd+fzQ==, tarball: file:projects/config-eslint.tgz}
     name: '@rush-temp/config-eslint'
     version: 0.0.0
     dependencies:
@@ -8652,8 +8683,11 @@ packages:
       '@types/heft-jest': 1.0.2
       eslint: 7.32.0
       eslint-plugin-import-quotes: 0.0.1
+      eslint-plugin-simple-import-sort: 7.0.0_eslint@7.32.0
+      eslint-plugin-unused-imports: 1.1.4_eslint@7.32.0
       typescript: 4.3.5
     transitivePeerDependencies:
+      - '@typescript-eslint/eslint-plugin'
       - bufferutil
       - canvas
       - supports-color
@@ -8663,7 +8697,7 @@ packages:
     dev: false
 
   file:projects/config-lib-rig.tgz:
-    resolution: {integrity: sha512-OYx3UnHChdGmJMkrtqKMBwKGW+u1QCd8Jr471bjcJH3uyOpmKyWVXdSzPN7odRDo30U7yXJTztgvCUXK8FZhdA==, tarball: file:projects/config-lib-rig.tgz}
+    resolution: {integrity: sha512-7UGaGxxuMV0U47moXaFbU07L4b2VhPmCfa7WwSYTTnJEOLn9gcEMdXnPIY6iSGKwO/4FlEcg23uToSkqbDlfCw==, tarball: file:projects/config-lib-rig.tgz}
     name: '@rush-temp/config-lib-rig'
     version: 0.0.0
     dependencies:
@@ -8682,17 +8716,10 @@ packages:
       - webpack-command
     dev: false
 
-  file:projects/example-lib-lib.tgz_typescript@4.3.5:
-    resolution: {integrity: sha512-h0U2jsKrKcA8wbnyDariDo4mWag8V6vYOt9R0uqz6/9mGe69FjTxXgS3NUd2e0Vd92VfXcAyTSq6RqeHJDN+rw==, tarball: file:projects/example-lib-lib.tgz}
-    id: file:projects/example-lib-lib.tgz
+  file:projects/example-lib-lib.tgz:
+    resolution: {integrity: sha512-vpuU1yObiATxZgHGposm8JI+XYXsmVl+Eh2Ss0+OXjysu2IXcfWrLhLuldLQjTbvXOmXfixaQAUr9OrG6qAZMg==, tarball: file:projects/example-lib-lib.tgz}
     name: '@rush-temp/example-lib-lib'
     version: 0.0.0
-    dependencies:
-      '@rushstack/eslint-config': 2.4.0_eslint@7.32.0+typescript@4.3.5
-      eslint: 7.32.0
-    transitivePeerDependencies:
-      - supports-color
-      - typescript
     dev: false
 
   file:projects/example-node-lib.tgz:

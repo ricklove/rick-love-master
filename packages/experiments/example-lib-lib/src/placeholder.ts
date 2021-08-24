@@ -1,1 +1,1 @@
-export const placeholder = 'Hello!';
+export const placeholder = `Hello!`;
