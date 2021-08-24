@@ -423,9 +423,9 @@
     //   "reviewCategory": "production"
     // },
     // 
-    // {
-    //   "packageName": "blog-site-nextjs",
-    //   "projectFolder": "projects/blog-site-nextjs",
-    // }
+    {
+      "packageName": "blog-nextjs",
+      "projectFolder": "projects/blog-nextjs",
+    }
   ]
 }
