@@ -1,0 +1,18 @@
+{
+  "name": "example-local",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "build": "heft test --clean"
+  },
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "@rushstack/eslint-config": "^2.3.4",
+    "@rushstack/heft": "^0.33.0",
+    "@rushstack/heft-node-rig": "^1.0.31",
+    "@types/heft-jest": "1.0.2",
+    "@types/node": "10.17.13"
+  }
+}

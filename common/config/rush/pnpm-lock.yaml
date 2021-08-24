@@ -3,6 +3,8 @@ lockfileVersion: 5.3
 specifiers:
   '@babel/core': ^7.0.0
   '@rush-temp/blog-nextjs': file:./projects/blog-nextjs.tgz
+  '@rush-temp/example-local': file:./projects/example-local.tgz
+  '@types/react': ~17.0.19
   next: ^11.0.0
   react: 17.0.2
   react-dom: 17.0.2
@@ -11,6 +13,8 @@ specifiers:
 dependencies:
   '@babel/core': 7.15.0
   '@rush-temp/blog-nextjs': file:projects/blog-nextjs.tgz
+  '@rush-temp/example-local': file:projects/example-local.tgz
+  '@types/react': 17.0.19
   next: 11.1.0_d656e95d5564dbefda9f605dfed71e60
   react: 17.0.2
   react-dom: 17.0.2_react@17.0.2
@@ -2121,7 +2125,7 @@ packages:
     dev: false
 
   file:projects/blog-nextjs.tgz:
-    resolution: {integrity: sha512-e2ggl2jlA3zvspAXmV3ErANAFV5AQaaXcxAx/sW/4n4fjUSGgnHzzHAvPcw3/ers8Q2bXH3GedFA0XsnSTphJg==, tarball: file:projects/blog-nextjs.tgz}
+    resolution: {integrity: sha512-rt7M/ABvhQyELmUXV2+AVvkubLy16xtrfHmDVPM8XKiOEyUeCewbhn8yi5RicYKH+9+UcUV6BSzQBx2AMuH9LQ==, tarball: file:projects/blog-nextjs.tgz}
     name: '@rush-temp/blog-nextjs'
     version: 0.0.0
     dependencies:
@@ -2137,4 +2141,12 @@ packages:
       - sass
       - supports-color
       - webpack
+    dev: false
+
+  file:projects/example-local.tgz:
+    resolution: {integrity: sha512-JXW2G750dG3+qZWtJNKmkODVk6kV3nP6BSu3BtMhNFfB55JPorBmI7HFU9GeHZw3qXi9iaLundY0XQwuDDq21A==, tarball: file:projects/example-local.tgz}
+    name: '@rush-temp/example-local'
+    version: 0.0.0
+    dependencies:
+      typescript: 4.3.5
     dev: false
