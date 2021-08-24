@@ -1,13 +1,11 @@
 export const exampleValue = {
-    example: 'Here is is',
+  example: 'Here is is',
 
-    run: ()=>{
+  run: () => {
+    const a = `I just want to test some code formatting!`;
 
-                    const a = `I just want to test some code formatting!`
+    const b = 'This is not formatted!';
 
-                    const b = 'This is not formatted!';
-
-                    return {ok: true
-                };
-    },
+    return { ok: true };
+  },
 };
