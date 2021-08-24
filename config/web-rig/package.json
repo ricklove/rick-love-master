@@ -1,5 +1,5 @@
 {
-  "name": "@ricklove/config-main-rig",
+  "name": "@ricklove/config-web-rig",
   "version": "1.0.0",
   "main": "lib/index.js",
   "scripts": {
@@ -9,9 +9,8 @@
   "dependencies": {
     "@rushstack/eslint-config": "^2.3.4",
     "@rushstack/heft": "^0.36.3",
-    "@rushstack/heft-node-rig": "^1.0.31",
+    "@rushstack/heft-web-rig": "^0.4.4",
     "@types/heft-jest": "1.0.2",
-    "@types/node": "10.17.13",
     "eslint": "~7.32.0",
     "typescript": "~4.3.5"
   }

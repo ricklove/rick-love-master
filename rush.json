@@ -163,8 +163,8 @@
    * To remove these restrictions, you could set projectFolderMinDepth=1
    * and set projectFolderMaxDepth to a large number.
    */
-  // "projectFolderMinDepth": 2,
-  // "projectFolderMaxDepth": 2,
+  "projectFolderMinDepth": 2,
+  "projectFolderMaxDepth": 3,
   /**
    * Today the npmjs.com registry enforces fairly strict naming rules for packages, but in the early
    * days there was no standard and hardly any enforcement.  A few large legacy projects are still using
@@ -424,12 +424,28 @@
     // },
     //
     {
-      "packageName": "@ricklove/config-main-rig",
-      "projectFolder": "config/main-rig"
+      "packageName": "@ricklove/config-lib-rig",
+      "projectFolder": "config/lib-rig"
     },
     {
-      "packageName": "@ricklove/example",
-      "projectFolder": "packages/_example"
+      "packageName": "@ricklove/config-node-rig",
+      "projectFolder": "config/node-rig"
+    },
+    {
+      "packageName": "@ricklove/config-web-rig",
+      "projectFolder": "config/web-rig"
+    },
+    {
+      "packageName": "@ricklove/example-lib-lib",
+      "projectFolder": "packages/experiments/example-lib-lib"
+    },
+    {
+      "packageName": "@ricklove/example-node-lib",
+      "projectFolder": "packages/experiments/example-node-lib"
+    },
+    {
+      "packageName": "@ricklove/example-web-lib",
+      "projectFolder": "packages/experiments/example-web-lib"
     },
     {
       "packageName": "@ricklove/blog-nextjs",

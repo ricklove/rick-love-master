@@ -1,0 +1,12 @@
+{
+  "name": "@ricklove/example-lib-lib",
+  "version": "1.0.0",
+  "main": "./lib/index.js",
+  "scripts": {
+    "build": "heft test --clean",
+    "build:watch": "heft build"
+  },
+  "devDependencies": {
+    "@ricklove/config-lib-rig": "*"
+  }
+}

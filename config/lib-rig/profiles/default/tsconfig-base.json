@@ -17,8 +17,6 @@
     "noEmitOnError": false,
     "allowUnreachableCode": false,
 
-    "types": [],
-
     "module": "commonjs",
     "target": "es2017",
     "lib": ["es2017"]

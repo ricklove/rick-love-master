@@ -1,3 +1,6 @@
+import fs from 'fs';
+import { placeholder } from '@ricklove/example-lib-lib';
+
 export const exampleValue10 = {
   example3: 'Here it is nice!',
 
@@ -8,6 +11,8 @@ export const exampleValue10 = {
     c = `${a}     
 ${b}`;
 
-    return { a, b, c, ok: true };
+    const itExists = fs.existsSync('./index.ts');
+
+    return { a, b, c, ok: true, itExists };
   },
 };
