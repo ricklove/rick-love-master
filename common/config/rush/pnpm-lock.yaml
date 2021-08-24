@@ -3,7 +3,7 @@ lockfileVersion: 5.3
 specifiers:
   '@babel/core': ^7.0.0
   '@rush-temp/blog-nextjs': file:./projects/blog-nextjs.tgz
-  '@rush-temp/config-library-rig': file:./projects/config-library-rig.tgz
+  '@rush-temp/config-main-rig': file:./projects/config-main-rig.tgz
   '@rush-temp/example-local': file:./projects/example-local.tgz
   '@rushstack/eslint-config': ^2.3.4
   '@rushstack/heft': ^0.36.3
@@ -20,7 +20,7 @@ specifiers:
 dependencies:
   '@babel/core': 7.15.0
   '@rush-temp/blog-nextjs': file:projects/blog-nextjs.tgz
-  '@rush-temp/config-library-rig': file:projects/config-library-rig.tgz_typescript@4.3.5
+  '@rush-temp/config-main-rig': file:projects/config-main-rig.tgz
   '@rush-temp/example-local': file:projects/example-local.tgz
   '@rushstack/eslint-config': 2.4.0_eslint@7.32.0+typescript@4.3.5
   '@rushstack/heft': 0.36.3
@@ -6358,7 +6358,7 @@ packages:
     dev: false
 
   file:projects/blog-nextjs.tgz:
-    resolution: {integrity: sha512-rt7M/ABvhQyELmUXV2+AVvkubLy16xtrfHmDVPM8XKiOEyUeCewbhn8yi5RicYKH+9+UcUV6BSzQBx2AMuH9LQ==, tarball: file:projects/blog-nextjs.tgz}
+    resolution: {integrity: sha512-Craoj/vC8U0N8i/BMbpZM1yZrNSF9961O5c2p495jfyIBJZW078Jpx9FYzEVkHVrh5cZTSJWkGzDtZ9DDZKuQg==, tarball: file:projects/blog-nextjs.tgz}
     name: '@rush-temp/blog-nextjs'
     version: 0.0.0
     dependencies:
@@ -6376,10 +6376,9 @@ packages:
       - webpack
     dev: false
 
-  file:projects/config-library-rig.tgz_typescript@4.3.5:
-    resolution: {integrity: sha512-xknb+xmMgkAGFsj5lTwaabA6HD4LgInjcnUIDxVTYDBXTJYW38175FQWTHrYd5YEFZxTeLVMqWQud2rmjZFVRg==, tarball: file:projects/config-library-rig.tgz}
-    id: file:projects/config-library-rig.tgz
-    name: '@rush-temp/config-library-rig'
+  file:projects/config-main-rig.tgz:
+    resolution: {integrity: sha512-THbm+tusOkeltmH4T1q2v3SDngDSYdKUTP9NevVumdgzJU6aIlklsubeAleGhfI77Ldf3JuINY6fS+UZzzo6jQ==, tarball: file:projects/config-main-rig.tgz}
+    name: '@rush-temp/config-main-rig'
     version: 0.0.0
     dependencies:
       '@rushstack/eslint-config': 2.4.0_eslint@7.32.0+typescript@4.3.5
@@ -6388,16 +6387,18 @@ packages:
       '@types/heft-jest': 1.0.2
       '@types/node': 10.17.13
       eslint: 7.32.0
+      typescript: 4.3.5
     transitivePeerDependencies:
       - bufferutil
       - canvas
       - supports-color
-      - typescript
       - utf-8-validate
     dev: false
 
   file:projects/example-local.tgz:
-    resolution: {integrity: sha512-pztCdBpIJ6yK+gxNWTHEqVR37ZzjEcDG7b8i8lHCxooxY3UNAUkDY9iJS4pXgnYGpXfdu1KY2Y1y/BnQTdwDLg==, tarball: file:projects/example-local.tgz}
+    resolution: {integrity: sha512-smHcvbZfbUKqMe1i8a1h3R+yBrwxsEVMOi5aYh4Hp4Hv3v1ZCOwpX7pSwXvigY0aL/+tjc7mfAMbl25DURaUIg==, tarball: file:projects/example-local.tgz}
     name: '@rush-temp/example-local'
     version: 0.0.0
+    dependencies:
+      typescript: 4.3.5
     dev: false

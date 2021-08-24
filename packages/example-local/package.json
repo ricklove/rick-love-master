@@ -1,10 +1,11 @@
 {
   "name": "@ricklove/example-local",
   "version": "1.0.0",
+  "main": "lib/index.js",
   "scripts": {
     "build": "heft test --clean"
   },
   "devDependencies": {
-    "@ricklove/config-library-rig": "*"
+    "@ricklove/config-main-rig": "*"
   }
 }

@@ -424,8 +424,8 @@
     // },
     //
     {
-      "packageName": "@ricklove/config-library-rig",
-      "projectFolder": "config/library-rig"
+      "packageName": "@ricklove/config-main-rig",
+      "projectFolder": "config/main-rig"
     },
     {
       "packageName": "@ricklove/example-local",
