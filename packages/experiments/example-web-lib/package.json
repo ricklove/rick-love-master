@@ -7,7 +7,7 @@
     "build:watch": "heft build"
   },
   "devDependencies": {
-    "@ricklove/config-web-rig": "*",
+    "@ricklove/config-lib-rig": "*",
     "@ricklove/example-lib-lib": "*"
   }
 }

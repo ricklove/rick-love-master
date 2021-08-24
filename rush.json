@@ -428,12 +428,8 @@
       "projectFolder": "config/lib-rig"
     },
     {
-      "packageName": "@ricklove/config-node-rig",
-      "projectFolder": "config/node-rig"
-    },
-    {
-      "packageName": "@ricklove/config-web-rig",
-      "projectFolder": "config/web-rig"
+      "packageName": "@ricklove/utils-core",
+      "projectFolder": "packages/_utils/core"
     },
     {
       "packageName": "@ricklove/example-lib-lib",

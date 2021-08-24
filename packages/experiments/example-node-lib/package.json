@@ -6,8 +6,11 @@
     "build": "heft test --clean",
     "build:watch": "heft build"
   },
+  "dependencies": {
+    "@ricklove/utils-core": "*"
+  },
   "devDependencies": {
-    "@ricklove/config-node-rig": "*",
+    "@ricklove/config-lib-rig": "*",
     "@ricklove/example-lib-lib": "*",
     "@types/node": "14.17.5"
   }

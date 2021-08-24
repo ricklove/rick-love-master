@@ -4,11 +4,14 @@ require('@rushstack/eslint-config/patch/modern-module-resolution');
 module.exports = {
   extends: ['@rushstack/eslint-config/profile/web-app'],
   parserOptions: { tsconfigRootDir: __dirname },
-
-  // https://github.com/microsoft/rushstack/blob/master/stack/eslint-config/profile/_common.js
-  // https://github.com/microsoft/rushstack/blob/master/stack/eslint-plugin
   rules: {
-    '@rushstack/typedef-var': 'off',
-    '@typescript-eslint/naming-convention': 'off',
+    '@rushstack/typedef-var': `off`,
+    '@typescript-eslint/naming-convention': `off`,
+
+    // Backticks Everywhere (except jsx and imports)
+    quotes: `off`,
+    '@typescript-eslint/quotes': [`error`, `backtick`],
+    'jsx-quotes': [`error`, `prefer-single`],
+    'import-quotes/import-quotes': [`error`, `single`],
   },
 };

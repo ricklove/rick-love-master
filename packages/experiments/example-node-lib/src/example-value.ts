@@ -1,18 +1,21 @@
 import fs from 'fs';
+import path from 'path';
+import { delay } from '@ricklove/utils-core';
 import { placeholder } from '@ricklove/example-lib-lib';
 
 export const exampleValue10 = {
-  example3: 'Here it is nice!',
+  example3: `Here it is nice! ${placeholder}`,
+  example4: 'OK!',
 
   run2: async () => {
-    const a = `It is within a few secs, which is ok!`;
-    const b = 'What? This is NOW formatted! Also! Can we make it faster though 2? What takes so long?';
-    let c: string;
-    c = `${a}     
-${b}`;
+    const a = Date.now();
+    await delay(100);
+    const filePath = path.resolve('./index.ts');
 
-    const itExists = fs.existsSync('./index.ts');
+    const b = Date.now();
 
-    return { a, b, c, ok: true, itExists };
+    const c = `${a}-${b}: ${b - a}ms`;
+
+    return { a, b, c, ok: true, filePath };
   },
 };

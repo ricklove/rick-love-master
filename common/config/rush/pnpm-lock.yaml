@@ -4,14 +4,12 @@ specifiers:
   '@babel/core': ^7.0.0
   '@rush-temp/blog-nextjs': file:./projects/blog-nextjs.tgz
   '@rush-temp/config-lib-rig': file:./projects/config-lib-rig.tgz
-  '@rush-temp/config-node-rig': file:./projects/config-node-rig.tgz
-  '@rush-temp/config-web-rig': file:./projects/config-web-rig.tgz
   '@rush-temp/example-lib-lib': file:./projects/example-lib-lib.tgz
   '@rush-temp/example-node-lib': file:./projects/example-node-lib.tgz
   '@rush-temp/example-web-lib': file:./projects/example-web-lib.tgz
+  '@rush-temp/utils-core': file:./projects/utils-core.tgz
   '@rushstack/eslint-config': ^2.3.4
   '@rushstack/heft': ^0.36.3
-  '@rushstack/heft-node-rig': ^1.0.31
   '@rushstack/heft-web-rig': ^0.4.4
   '@types/heft-jest': 1.0.2
   '@types/node': 14.17.5
@@ -26,14 +24,12 @@ dependencies:
   '@babel/core': 7.15.0
   '@rush-temp/blog-nextjs': file:projects/blog-nextjs.tgz
   '@rush-temp/config-lib-rig': file:projects/config-lib-rig.tgz
-  '@rush-temp/config-node-rig': file:projects/config-node-rig.tgz
-  '@rush-temp/config-web-rig': file:projects/config-web-rig.tgz
   '@rush-temp/example-lib-lib': file:projects/example-lib-lib.tgz
   '@rush-temp/example-node-lib': file:projects/example-node-lib.tgz
   '@rush-temp/example-web-lib': file:projects/example-web-lib.tgz
+  '@rush-temp/utils-core': file:projects/utils-core.tgz
   '@rushstack/eslint-config': 2.4.0_eslint@7.32.0+typescript@4.3.5
   '@rushstack/heft': 0.36.3
-  '@rushstack/heft-node-rig': 1.2.4_@rushstack+heft@0.36.3
   '@rushstack/heft-web-rig': 0.4.4_@rushstack+heft@0.36.3
   '@types/heft-jest': 1.0.2
   '@types/node': 14.17.5
@@ -879,23 +875,6 @@ packages:
       jest-config: 25.4.0
       jest-snapshot: 25.4.0
       lodash: 4.17.21
-    transitivePeerDependencies:
-      - bufferutil
-      - canvas
-      - supports-color
-      - utf-8-validate
-    dev: false
-
-  /@rushstack/heft-node-rig/1.2.4_@rushstack+heft@0.36.3:
-    resolution: {integrity: sha512-9m6xHfwKMeuD6m/l/6P2Xt/GJBWzfeuZ7ulG0FAXhQXIc/BiFli0Jo3ykdxiIN2zllsk6NojjcAmtacGbsgoyw==}
-    peerDependencies:
-      '@rushstack/heft': ^0.36.3
-    dependencies:
-      '@microsoft/api-extractor': 7.18.6
-      '@rushstack/heft': 0.36.3
-      '@rushstack/heft-jest-plugin': 0.1.20_@rushstack+heft@0.36.3
-      eslint: 7.30.0
-      typescript: 3.9.10
     transitivePeerDependencies:
       - bufferutil
       - canvas
@@ -8628,7 +8607,7 @@ packages:
     dev: false
 
   file:projects/blog-nextjs.tgz:
-    resolution: {integrity: sha512-uqyg/nlvrluRmc40+U4AEXb8nlyq08lxFdMB5DdzKFqabdtDbPJBTHyAicKj1HTIPtmGiqy6qO216VMAbKW3cA==, tarball: file:projects/blog-nextjs.tgz}
+    resolution: {integrity: sha512-uFyW3yGNixqj9UgQKEtxbMEQ+/d+C7hNdZGosn5w0EspRKgNSLFF9KpnOSEtpjpVU/Y0ei17MFFIVuv7mlJKow==, tarball: file:projects/blog-nextjs.tgz}
     name: '@rush-temp/blog-nextjs'
     version: 0.0.0
     dependencies:
@@ -8666,45 +8645,6 @@ packages:
       - webpack-command
     dev: false
 
-  file:projects/config-node-rig.tgz:
-    resolution: {integrity: sha512-HNFAa1fmBQ9T0IXBK9b9Mns1T9u2EedPygYSKTdTYcGfu1g/9DCyZcT/8LvIdJzdksT4EnSVT0xE0N4Ug4yIYw==, tarball: file:projects/config-node-rig.tgz}
-    name: '@rush-temp/config-node-rig'
-    version: 0.0.0
-    dependencies:
-      '@rushstack/eslint-config': 2.4.0_eslint@7.32.0+typescript@4.3.5
-      '@rushstack/heft': 0.36.3
-      '@rushstack/heft-node-rig': 1.2.4_@rushstack+heft@0.36.3
-      '@types/heft-jest': 1.0.2
-      '@types/node': 14.17.5
-      eslint: 7.32.0
-      typescript: 4.3.5
-    transitivePeerDependencies:
-      - bufferutil
-      - canvas
-      - supports-color
-      - utf-8-validate
-    dev: false
-
-  file:projects/config-web-rig.tgz:
-    resolution: {integrity: sha512-gNLEp5QY8g+qnu9yHDU7UZpwXWwLlXn78BvjZhvxcJYpryL/gXAErf/1czf6aGCRnceym9bq2M3cNc+1NbOsyQ==, tarball: file:projects/config-web-rig.tgz}
-    name: '@rush-temp/config-web-rig'
-    version: 0.0.0
-    dependencies:
-      '@rushstack/eslint-config': 2.4.0_eslint@7.32.0+typescript@4.3.5
-      '@rushstack/heft': 0.36.3
-      '@rushstack/heft-web-rig': 0.4.4_@rushstack+heft@0.36.3
-      '@types/heft-jest': 1.0.2
-      eslint: 7.32.0
-      typescript: 4.3.5
-    transitivePeerDependencies:
-      - bufferutil
-      - canvas
-      - supports-color
-      - utf-8-validate
-      - webpack-cli
-      - webpack-command
-    dev: false
-
   file:projects/example-lib-lib.tgz:
     resolution: {integrity: sha512-vpuU1yObiATxZgHGposm8JI+XYXsmVl+Eh2Ss0+OXjysu2IXcfWrLhLuldLQjTbvXOmXfixaQAUr9OrG6qAZMg==, tarball: file:projects/example-lib-lib.tgz}
     name: '@rush-temp/example-lib-lib'
@@ -8712,7 +8652,7 @@ packages:
     dev: false
 
   file:projects/example-node-lib.tgz:
-    resolution: {integrity: sha512-QjMkeYEEKWB+4ru98Wtw+7kB/TL/YHMSWRO8sblvrsaCi8zYsX5iqAKkTit0BC8Dh1W+7/btrV4S4vousJtvPA==, tarball: file:projects/example-node-lib.tgz}
+    resolution: {integrity: sha512-cNEnAVLfeTowdl+UVTrSsnOXnPvsB90xPKX6xJSL0jrfB2Nd6EaScJkcMzJzGmLAMG0Dd7wzeth+ub6RbCga7w==, tarball: file:projects/example-node-lib.tgz}
     name: '@rush-temp/example-node-lib'
     version: 0.0.0
     dependencies:
@@ -8720,7 +8660,13 @@ packages:
     dev: false
 
   file:projects/example-web-lib.tgz:
-    resolution: {integrity: sha512-I20wrkxwOhBvhmfDyMbG7ObCPrivSP9GAmD8a++knxqkY+S01XmZI2v9O1BOzVFxD2HCB4NBmOq1wbFf//PgrQ==, tarball: file:projects/example-web-lib.tgz}
+    resolution: {integrity: sha512-QJM4MoxmSXYVZRk7V3F1ELTMCD2l4veF/rsjamzcxukn5brWfid+YFWqrlqpFzBHJxHmu7NhEJ4f8BylunAoyQ==, tarball: file:projects/example-web-lib.tgz}
     name: '@rush-temp/example-web-lib'
+    version: 0.0.0
+    dev: false
+
+  file:projects/utils-core.tgz:
+    resolution: {integrity: sha512-cEtPsCmZu/LjaGIm5b34vAstU79Rarmb5hXV8eiBYh3/or2wxSipwQBOXRcCSnuN1OuM3HogKdYFJABiahXkAQ==, tarball: file:projects/utils-core.tgz}
+    name: '@rush-temp/utils-core'
     version: 0.0.0
     dev: false

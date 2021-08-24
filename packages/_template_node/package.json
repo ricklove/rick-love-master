@@ -7,7 +7,7 @@
     "build:watch": "heft build"
   },
   "devDependencies": {
-    "@ricklove/config-node-rig": "*",
+    "@ricklove/config-lib-rig": "*",
     "@types/node": "14.17.5"
   }
 }
