@@ -7,6 +7,7 @@
     "build:watch": ""
   },
   "dependencies": {
+    "@ricklove/config-eslint": "*",
     "@rushstack/eslint-config": "^2.3.4",
     "@rushstack/heft": "^0.36.3",
     "@rushstack/heft-web-rig": "^0.4.4",

@@ -1,1 +1,1 @@
-module.exports = require('@ricklove/config-eslint/index.js')(__dirname);
+module.exports = require('@ricklove/config-lib-rig/eslint.js')(__dirname);
