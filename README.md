@@ -21,6 +21,12 @@ This is where I put all the cool stuff.
 
 - packages
   - all the code is here
+  - category/package
+    - category should be genre, project, feature rather than architecture/functionality
+    - front-end / back-end / scripts code should live in near packages using a suffix
+      - nft-quest-api
+      - nft-quest-scripts
+      - nft-quest-web
 - projects
   - output projects are here
   - platform boilerplate files and configurations
