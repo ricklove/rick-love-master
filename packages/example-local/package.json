@@ -1,10 +1,6 @@
 {
   "name": "@ricklove/example-local",
   "version": "1.0.0",
-  "exports": {
-    ".": "./index.ts",
-    "./*": "./src/*"
-  },
   "scripts": {
     "build": "heft test --clean"
   },

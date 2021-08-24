@@ -1,2 +1,1 @@
-import { exampleValue4 } from './src/example-code';
-export { exampleValue4 };
+export * from './src/example-code';

@@ -1,9 +1,9 @@
-import { exampleValue4 } from '@ricklove/example-local';
+import { exampleValue6 } from '@ricklove/example-local';
 
 export default () => {
   return (
     <>
-      <div>{exampleValue4.example}</div>
+      <div>{`${exampleValue6.example3}: ${exampleValue6.run2().a}`}</div>
     </>
   );
 };
