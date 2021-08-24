@@ -7,7 +7,6 @@
     "build:watch": "heft build"
   },
   "devDependencies": {
-    "@ricklove/config-lib-rig": "*",
-    "eslint": "~7.32.0"
+    "@ricklove/config-lib-rig": "*"
   }
 }

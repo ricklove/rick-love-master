@@ -3,7 +3,8 @@
   "editor.defaultFormatter": "esbenp.prettier-vscode",
   "[typescript]": {
     "editor.defaultFormatter": "esbenp.prettier-vscode"
-  }
+  },
+  "eslint.nodePath": "./config/eslint/node_modules/eslint"
   // "files.exclude": {
   //   "**/.DS_Store": false,
   //   "**/CVS": false,
