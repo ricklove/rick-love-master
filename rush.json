@@ -424,6 +424,10 @@
     // },
     //
     {
+      "packageName": "@ricklove/config-eslint",
+      "projectFolder": "config/eslint"
+    },
+    {
       "packageName": "@ricklove/config-lib-rig",
       "projectFolder": "config/lib-rig"
     },

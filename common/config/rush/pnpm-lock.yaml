@@ -3,6 +3,7 @@ lockfileVersion: 5.3
 specifiers:
   '@babel/core': ^7.0.0
   '@rush-temp/blog-nextjs': file:./projects/blog-nextjs.tgz
+  '@rush-temp/config-eslint': file:./projects/config-eslint.tgz
   '@rush-temp/config-lib-rig': file:./projects/config-lib-rig.tgz
   '@rush-temp/example-lib-lib': file:./projects/example-lib-lib.tgz
   '@rush-temp/example-node-lib': file:./projects/example-node-lib.tgz
@@ -15,6 +16,7 @@ specifiers:
   '@types/node': 14.17.5
   '@types/react': ~17.0.19
   eslint: ~7.32.0
+  eslint-plugin-import-quotes: ~0.0.1
   next: ^11.0.0
   react: 17.0.2
   react-dom: 17.0.2
@@ -23,8 +25,9 @@ specifiers:
 dependencies:
   '@babel/core': 7.15.0
   '@rush-temp/blog-nextjs': file:projects/blog-nextjs.tgz
+  '@rush-temp/config-eslint': file:projects/config-eslint.tgz
   '@rush-temp/config-lib-rig': file:projects/config-lib-rig.tgz
-  '@rush-temp/example-lib-lib': file:projects/example-lib-lib.tgz
+  '@rush-temp/example-lib-lib': file:projects/example-lib-lib.tgz_typescript@4.3.5
   '@rush-temp/example-node-lib': file:projects/example-node-lib.tgz
   '@rush-temp/example-web-lib': file:projects/example-web-lib.tgz
   '@rush-temp/utils-core': file:projects/utils-core.tgz
@@ -35,6 +38,7 @@ dependencies:
   '@types/node': 14.17.5
   '@types/react': 17.0.19
   eslint: 7.32.0
+  eslint-plugin-import-quotes: 0.0.1
   next: 11.1.0_d656e95d5564dbefda9f605dfed71e60
   react: 17.0.2
   react-dom: 17.0.2_react@17.0.2
@@ -3033,6 +3037,13 @@ packages:
       optionator: 0.8.3
     optionalDependencies:
       source-map: 0.6.1
+    dev: false
+
+  /eslint-plugin-import-quotes/0.0.1:
+    resolution: {integrity: sha512-Bmohewy0JkUwYRjVKTr8OuJPdkp/xFOpdyGFUIoRMpY1BOMy4BbpUtHo6T8YuqqeCGrYTFHcqTeoPxVE3vwACg==}
+    engines: {node: '>=0.10.0'}
+    dependencies:
+      requireindex: 1.1.0
     dev: false
 
   /eslint-plugin-promise/4.2.1:
@@ -6880,6 +6891,11 @@ packages:
     resolution: {integrity: sha512-NKN5kMDylKuldxYLSUfrbo5Tuzh4hd+2E8NPPX02mZtn1VuREQToYe/ZdlJy+J3uCpfaiGF05e7B8W0iXbQHmg==}
     dev: false
 
+  /requireindex/1.1.0:
+    resolution: {integrity: sha1-5UBLgVV+91225JxacgBIk/4D4WI=}
+    engines: {node: '>=0.10.5'}
+    dev: false
+
   /requires-port/1.0.0:
     resolution: {integrity: sha1-kl0mAdOaxIXgkc8NpcbmlNw9yv8=}
     dev: false
@@ -8625,6 +8641,27 @@ packages:
       - webpack
     dev: false
 
+  file:projects/config-eslint.tgz:
+    resolution: {integrity: sha512-K0zOrQbloVxqYXmMTpXwcKDapk6sbfOt9l7qHIbyuUMfn7042sicxby3NdCT7oHSc7er5rrDv1KCf/ZXCiSJxQ==, tarball: file:projects/config-eslint.tgz}
+    name: '@rush-temp/config-eslint'
+    version: 0.0.0
+    dependencies:
+      '@rushstack/eslint-config': 2.4.0_eslint@7.32.0+typescript@4.3.5
+      '@rushstack/heft': 0.36.3
+      '@rushstack/heft-web-rig': 0.4.4_@rushstack+heft@0.36.3
+      '@types/heft-jest': 1.0.2
+      eslint: 7.32.0
+      eslint-plugin-import-quotes: 0.0.1
+      typescript: 4.3.5
+    transitivePeerDependencies:
+      - bufferutil
+      - canvas
+      - supports-color
+      - utf-8-validate
+      - webpack-cli
+      - webpack-command
+    dev: false
+
   file:projects/config-lib-rig.tgz:
     resolution: {integrity: sha512-OYx3UnHChdGmJMkrtqKMBwKGW+u1QCd8Jr471bjcJH3uyOpmKyWVXdSzPN7odRDo30U7yXJTztgvCUXK8FZhdA==, tarball: file:projects/config-lib-rig.tgz}
     name: '@rush-temp/config-lib-rig'
@@ -8645,10 +8682,17 @@ packages:
       - webpack-command
     dev: false
 
-  file:projects/example-lib-lib.tgz:
-    resolution: {integrity: sha512-vpuU1yObiATxZgHGposm8JI+XYXsmVl+Eh2Ss0+OXjysu2IXcfWrLhLuldLQjTbvXOmXfixaQAUr9OrG6qAZMg==, tarball: file:projects/example-lib-lib.tgz}
+  file:projects/example-lib-lib.tgz_typescript@4.3.5:
+    resolution: {integrity: sha512-h0U2jsKrKcA8wbnyDariDo4mWag8V6vYOt9R0uqz6/9mGe69FjTxXgS3NUd2e0Vd92VfXcAyTSq6RqeHJDN+rw==, tarball: file:projects/example-lib-lib.tgz}
+    id: file:projects/example-lib-lib.tgz
     name: '@rush-temp/example-lib-lib'
     version: 0.0.0
+    dependencies:
+      '@rushstack/eslint-config': 2.4.0_eslint@7.32.0+typescript@4.3.5
+      eslint: 7.32.0
+    transitivePeerDependencies:
+      - supports-color
+      - typescript
     dev: false
 
   file:projects/example-node-lib.tgz:
