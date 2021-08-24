@@ -1,4 +1,10 @@
+import { GetStaticProps, GetStaticPaths, GetServerSideProps } from 'next'
 import { exampleValue8 } from '@ricklove/example-local';
+
+
+export const getStaticProps: GetStaticProps = async (context) => {
+  return {props:{}};
+}
 
 const Page = () => {
   return (
