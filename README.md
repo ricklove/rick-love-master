@@ -17,26 +17,70 @@ This is where I put all the cool stuff.
 - react for web components
 - typescript for most code
 
+## Dev features
+
+- [x] Refactoring across packages
+- [x] Shared configuration
+- Dependencies
+  - [x] Single declaration of dependencies
+  - [x] Enforced declaration of dependencies
+  - [x] don't pollute auto complete namespace
+  - [FAIL] automatic registration of packages
+    - rush requires listing packages in rush.json
+    - [x] Single registration of packages
+      - No need to register typescript registrations
+- [ ] Typescript stress test
+  - [ ] Typescript uses .d.ts files instead of reanalyzing all code imported code
+  - [ ] Typescript uses independent typescript.json settings for each package's code
+
 ## File Structure
 
-- packages
-  - all the code is here
-  - category/package
-    - category should be genre, project, feature rather than architecture/functionality
-    - front-end / back-end / scripts code should live in near packages using a suffix
-      - nft-quest-api
-      - nft-quest-scripts
-      - nft-quest-web
+- features
+
+  - generic functionality
+    - could become public npm packages
+    - minimalistic
+    - many and unique -> flat organization
+    - MIT License
+  - examples:
+    - artwork
+    - art-gallery
+    - pixel-art-generator
+    - canvas-recorder
+    - terminal-emulator
+    - payment-processing
+    - authentication
+
 - projects
-  - output projects are here
-  - platform boilerplate files and configurations
-  - e.g.
-    - next.js
-    - react native
-    - serverless framework
-  - no code
-    - this should contain only minimal custom code in order to references the required packages
-    - even build scripts, etc. should be in packages and written in a tool-agnostic way
+
+  - specific functionality
+    - could become an individual git repo
+    - dynamic and hard to define -> flexible organization
+    - composed of features & content
+    - Private License (original IP)
+  - examples:
+    - art/artwork/clock-121
+    - art/artwork/art-index
+    - games/dork
+  - parts
+    - example:
+      - web/blog/app-nextjs
+      - web/blog/blog-posts
+      - web/blog/blog-pages
+    - main project
+      - minimal code
+      - platform agnostic
+    - boilerplate project
+      - produces a deployable output
+      - platform boilerplate files and configurations
+      - e.g.
+        - next.js
+        - react native
+        - serverless framework
+
+- deploy
+
+  - permanent location of pre-built output artifacts needed for CD (like netlify git deploy)
 
 ## License
 
