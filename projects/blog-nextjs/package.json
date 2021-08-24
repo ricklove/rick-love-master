@@ -5,6 +5,7 @@
   "scripts": {
     "dev": "next dev",
     "build": "next build",
+    "build:watch": "next dev",
     "start": "next start"
   },
   "dependencies": {
@@ -15,7 +16,8 @@
   },
   "devDependencies": {
     "@babel/core": "^7.0.0",
-    "typescript": "~4.3.5",
-    "@types/react": "~17.0.19"
+    "@ricklove/config-main-rig": "*",
+    "@types/react": "~17.0.19",
+    "typescript": "~4.3.5"
   }
 }

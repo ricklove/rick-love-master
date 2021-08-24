@@ -1,5 +1,14 @@
 This is where I put all the cool stuff.
 
+## Commands
+
+- develop blog
+  - Tab1 - Run rush build watch
+    - `rush build:watch --to-except blog-nextjs`
+  - Tab2 - Run nextjs dev
+    - `cd \projects\blog-nextjs`
+    - `npx next dev`
+
 ## Tech Stack
 
 - rushjs monorepo

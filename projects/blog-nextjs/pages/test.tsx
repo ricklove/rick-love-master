@@ -1,9 +1,11 @@
-import { exampleValue7 } from '@ricklove/example-local';
+import { exampleValue8 } from '@ricklove/example-local';
 
-export default () => {
+const Page = () => {
   return (
     <>
-      <div>{`${exampleValue7.example3}: ${exampleValue7.run2().c}`}</div>
+      <div>{`${exampleValue8.example3}: ${exampleValue8.run2().c}`}</div>
     </>
   );
 };
+
+export default Page;

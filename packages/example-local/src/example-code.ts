@@ -1,9 +1,9 @@
-export const exampleValue7 = {
+export const exampleValue8 = {
   example3: 'Here it is nice!',
 
   run2: () => {
-    const a = `I just want to test some code formatting!`;
-    const b = ' This is not formatted!';
+    const a = `It is within a few secs, which is ok!`;
+    const b = 'What? This is not formatted! Also! 2A! ';
     let c: string;
     c = b + a;
 
