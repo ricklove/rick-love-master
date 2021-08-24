@@ -1,9 +1,8 @@
 import { GetStaticProps, GetStaticPaths, GetServerSideProps } from 'next';
 import { exampleValue10 } from '@ricklove/example-node-lib';
 
-type Props = {
-  value: string;
-};
+type Props = { value: string };
+
 export const getStaticProps: GetStaticProps<Props> = async (context) => {
   return {
     props: {
@@ -15,9 +14,9 @@ export const getStaticProps: GetStaticProps<Props> = async (context) => {
 const Page = (props: Props) => {
   return (
     <>
-      <div style={{ whiteSpace: 'pre'}}>{props.value}</div>
+      <div style={{ whiteSpace: `pre`}}>{props.value}</div>
       <div>Looks like the Page changes</div>
-      <div>But the static props doesn't get updated?</div>
+      <div>{`But the static props doesn't get updated?`}</div>
     </>
   );
 };
