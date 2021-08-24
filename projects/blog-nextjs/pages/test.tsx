@@ -1,9 +1,9 @@
-import { exampleValue } from 'example-local';
+import { exampleValue4 } from '@ricklove/example-local';
 
-export default Page = () => {
+export default () => {
   return (
     <>
-      <div>{exampleValue.example}</div>
+      <div>{exampleValue4.example}</div>
     </>
   );
 };

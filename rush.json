@@ -428,11 +428,11 @@
       "projectFolder": "config/library-rig"
     },
     {
-      "packageName": "example-local",
+      "packageName": "@ricklove/example-local",
       "projectFolder": "packages/example-local"
     },
     {
-      "packageName": "blog-nextjs",
+      "packageName": "@ricklove/blog-nextjs",
       "projectFolder": "projects/blog-nextjs"
     }
   ]
