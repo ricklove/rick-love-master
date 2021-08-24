@@ -6,6 +6,11 @@ export const exampleValue = {
 
     const b = 'This is not formatted!';
 
-    return { ok: true };
+
+    return {      ok:
+      
+      
+      
+      true };
   },
 };
