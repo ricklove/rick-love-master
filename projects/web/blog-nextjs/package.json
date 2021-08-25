@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
-    "build": "next build && next export && copyfiles -a ./out ../../../_deploy/ricklove_me",
+    "build": "next build && next export && rimraf ../../../_deploy/ricklove_me && copyfiles -u 1 -a ./out/** ../../../_deploy/ricklove_me",
     "build:watch": "next dev",
     "start": "next start"
   },
@@ -19,6 +19,7 @@
     "@ricklove/config-lib-rig": "*",
     "@types/react": "~17.0.19",
     "copyfiles": "~2.4.1",
-    "typescript": "~4.3.5"
+    "typescript": "~4.3.5",
+    "rimraf": "~3.0.2"
   }
 }
