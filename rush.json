@@ -448,8 +448,8 @@
       "projectFolder": "packages/experiments/example-web-lib"
     },
     {
-      "packageName": "@ricklove/blog-nextjs",
-      "projectFolder": "projects/web/blog-nextjs"
+      "packageName": "@ricklove/ricklove_me",
+      "projectFolder": "projects/web/ricklove_me"
     },
     {
       "packageName": "@ricklove/typescript-type-system-adventure",
