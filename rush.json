@@ -449,7 +449,7 @@
     },
     {
       "packageName": "@ricklove/blog-nextjs",
-      "projectFolder": "projects/blog/blog-nextjs"
+      "projectFolder": "projects/web/blog-nextjs"
     },
     {
       "packageName": "@ricklove/typescript-type-system-adventure",
