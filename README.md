@@ -31,7 +31,7 @@ This is where I put all the cool stuff.
       - No need to register typescript registrations
 - [ ] Typescript stress test
   - [ ] Typescript uses .d.ts files instead of reanalyzing all code imported code
-  - [ ] Typescript uses independent typescript.json settings for each package's code
+  - [x] Typescript uses independent typescript.json settings for each package's code
 
 ## File Structure
 

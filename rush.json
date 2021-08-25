@@ -450,6 +450,10 @@
     {
       "packageName": "@ricklove/blog-nextjs",
       "projectFolder": "projects/blog-nextjs"
+    },
+    {
+      "packageName": "@ricklove/typescript-type-system-adventure",
+      "projectFolder": "projects/coding/typescript-type-system-adventure"
     }
   ]
 }

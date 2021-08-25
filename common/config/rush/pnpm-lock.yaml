@@ -8,6 +8,7 @@ specifiers:
   '@rush-temp/example-lib-lib': file:./projects/example-lib-lib.tgz
   '@rush-temp/example-node-lib': file:./projects/example-node-lib.tgz
   '@rush-temp/example-web-lib': file:./projects/example-web-lib.tgz
+  '@rush-temp/typescript-type-system-adventure': file:./projects/typescript-type-system-adventure.tgz
   '@rush-temp/utils-core': file:./projects/utils-core.tgz
   '@rushstack/eslint-config': ^2.3.4
   '@rushstack/heft': ^0.36.3
@@ -32,6 +33,7 @@ dependencies:
   '@rush-temp/example-lib-lib': file:projects/example-lib-lib.tgz
   '@rush-temp/example-node-lib': file:projects/example-node-lib.tgz
   '@rush-temp/example-web-lib': file:projects/example-web-lib.tgz
+  '@rush-temp/typescript-type-system-adventure': file:projects/typescript-type-system-adventure.tgz
   '@rush-temp/utils-core': file:projects/utils-core.tgz
   '@rushstack/eslint-config': 2.4.0_eslint@7.32.0+typescript@4.3.5
   '@rushstack/heft': 0.36.3
@@ -8733,6 +8735,12 @@ packages:
   file:projects/example-web-lib.tgz:
     resolution: {integrity: sha512-QJM4MoxmSXYVZRk7V3F1ELTMCD2l4veF/rsjamzcxukn5brWfid+YFWqrlqpFzBHJxHmu7NhEJ4f8BylunAoyQ==, tarball: file:projects/example-web-lib.tgz}
     name: '@rush-temp/example-web-lib'
+    version: 0.0.0
+    dev: false
+
+  file:projects/typescript-type-system-adventure.tgz:
+    resolution: {integrity: sha512-mMeIKEmXQBjeWaV2dbFPCaZ8vxW6WnHTDhgOO0zAz+cWaIhVcxSpeg07ZdspuBhV8hHBwvjRoEDkFFQa3gbTiw==, tarball: file:projects/typescript-type-system-adventure.tgz}
+    name: '@rush-temp/typescript-type-system-adventure'
     version: 0.0.0
     dev: false
 

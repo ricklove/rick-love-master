@@ -1,0 +1,15 @@
+{
+  "name": "@ricklove/typescript-type-system-adventure",
+  "version": "1.0.3",
+  "author": "Rick Love",
+  "homepage": "https://ricklove.me/typescript-type-system-adventure",
+  "license": "CC BY-NC-ND 4.0",
+  "private": false,
+  "scripts": {
+    "build": "heft test --clean",
+    "build:watch": "heft build"
+  },
+  "devDependencies": {
+    "@ricklove/config-lib-rig": "*"
+  }
+}
