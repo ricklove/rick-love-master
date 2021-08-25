@@ -149,7 +149,7 @@ module.exports = {
           requireLast: true,
         },
         singleline: {
-          delimiter: 'comma',
+          delimiter: 'semi',
           requireLast: false,
         },
       },

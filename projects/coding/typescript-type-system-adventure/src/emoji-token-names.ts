@@ -1,5 +1,3 @@
-
-
 /** ❌ variable declarations */
 // const 😾 = false;
 // const _😥 = false;
@@ -12,13 +10,13 @@
 // export function o_o (😾: boolean) { };
 
 /** ✔ function parameter literal string type */
-export function o_o(cat: '😺') { };
+export function o_o(cat: '😺') {}
 
 /** ✔ Object Fields with String Names */
 const profile = {
-    [`🏷️`]: `Rick Love`,
-    [`🤓`]: true,
-    [`🧙‍♂️`]: true,
+  [`🏷️`]: `Rick Love`,
+  [`🤓`]: true,
+  [`🧙‍♂️`]: true,
 };
 
 /** ✔ Types support - string literals */
@@ -26,9 +24,9 @@ type EmojiType = '🤓' | '🧙‍♂️';
 
 /** ✔ Emoji Enum */
 enum EmojiEnum {
-    [`🏷️`] = `🏷️`,
-    [`🤓`] = `🤓`,
-    ['🧙‍♂️'] = `🧙‍♂️`,
+  `🏷️` = `🏷️`,
+  `🤓` = `🤓`,
+  '🧙‍♂️' = `🧙‍♂️`,
 }
 const emojiEnum = EmojiEnum[`🏷️`];
 
@@ -43,18 +41,22 @@ const emojiEnum = EmojiEnum[`🏷️`];
 //     }
 // };
 
-
 /** ### Have Fun!
  *
  * - Note: these are not the same
  * - Hint: zero-width-space
-*/
+ */
 const criticalSwitch = (value: '😇' | '​😇' | '😇​' | '​') => {
-    switch (value) {
-        case `😇`: return `😳`;
-        case `​😇`: return `​😳`;
-        case `😇​`: return `😳​`;
-        case `​`: return `​`;
-        default: return ``;
-    }
+  switch (value) {
+    case `😇`:
+      return `😳`;
+    case `​😇`:
+      return `​😳`;
+    case `😇​`:
+      return `😳​`;
+    case `​`:
+      return `​`;
+    default:
+      return ``;
+  }
 };
