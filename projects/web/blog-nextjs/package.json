@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
-    "build": "next build && next export && rimraf ../../../_deploy/ricklove_me && copyfiles -u 1 -a ./out/** ../../../_deploy/ricklove_me",
+    "build": "next build && next export && rimraf ../../../_deploy/ricklove_me && copyfiles -u 1 ./out/**/* ../../../_deploy/ricklove_me/",
     "build:watch": "next dev",
     "start": "next start"
   },
