@@ -556,10 +556,10 @@ const play = () => {
   const result = gameStart
     .command(`begin`)
     .execute.command(`look`)
-    .execute // .command(`open mailbox`).execute
+    // .command(`open mailbox`).execute
     // .command(`get mail`).execute
     // .command(`open the mailbox`).execute
-    .command(`sdoad adas`)
+    .execute.command(`sdoad adas`)
     .execute.command(`get the mail`)
     .execute.command(`look`)
     .execute.command(`inv`)
@@ -570,9 +570,9 @@ const play = () => {
     .execute.command(`look at the house`)
     .execute.command(`WALK TO THE HOUSE`)
     .execute.command(`look`)
-    .execute // .command(`break the window`).execute.youAreDead.gameOver
-    // .command(`open door`).execute.youAreDead.gameOver
-    .command(`ring the door bell`)
+    // .execute.command(`break the window`).execute.youAreDead.gameOver
+    // .execute.command(`open door`).execute.youAreDead.gameOver
+    .execute.command(`ring the door bell`)
     .execute.command(`knock on the door`).execute.wait.eatCookie.youAreNowBeingTracked.winner;
 };
 
