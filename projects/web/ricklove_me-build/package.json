@@ -6,11 +6,9 @@
     "build": "ts-node ./src/build.ts",
     "build:watch": "ts-node ./src/build.ts"
   },
-  "dependencies": {
-    "@ricklove/ricklove_me-content": "*"
-  },
   "devDependencies": {
     "@ricklove/config-lib-rig": "*",
+    "@ricklove/ricklove_me-content": "*",
     "@types/node": "12.12.6",
     "ts-node": "~10.2.1"
   }

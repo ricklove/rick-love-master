@@ -3,14 +3,16 @@
   "version": "1.0.0",
   "main": "./lib/index.js",
   "scripts": {
-    "build": "heft test --clean",
-    "build:watch": "heft build"
+    "build": "ts-node ./scripts/build.ts && heft test --clean",
+    "build:watch": "ts-node ./scripts/build.ts && heft build"
   },
   "dependencies": {
     "react": "17.0.2"
   },
   "devDependencies": {
     "@ricklove/config-lib-rig": "*",
-    "@types/react": "~17.0.19"
+    "@types/node": "12.12.6",
+    "@types/react": "~17.0.19",
+    "ts-node": "~10.2.1"
   }
 }

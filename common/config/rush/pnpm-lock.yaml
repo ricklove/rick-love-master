@@ -27,6 +27,7 @@ specifiers:
   react: 17.0.2
   react-dom: 17.0.2
   rimraf: ~3.0.2
+  ts-node: ~10.2.1
   typescript: ~4.3.5
 
 dependencies:
@@ -38,7 +39,7 @@ dependencies:
   '@rush-temp/example-web-lib': file:projects/example-web-lib.tgz
   '@rush-temp/ricklove_me': file:projects/ricklove_me.tgz
   '@rush-temp/ricklove_me-build': file:projects/ricklove_me-build.tgz_typescript@4.3.5
-  '@rush-temp/ricklove_me-content': file:projects/ricklove_me-content.tgz
+  '@rush-temp/ricklove_me-content': file:projects/ricklove_me-content.tgz_typescript@4.3.5
   '@rush-temp/typescript-type-system-adventure': file:projects/typescript-type-system-adventure.tgz
   '@rush-temp/utils-core': file:projects/utils-core.tgz
   '@rushstack/eslint-config': 2.4.0_eslint@7.32.0+typescript@4.3.5
@@ -56,6 +57,7 @@ dependencies:
   react: 17.0.2
   react-dom: 17.0.2_react@17.0.2
   rimraf: 3.0.2
+  ts-node: 10.2.1_70d6492c0feb1eb5d83e62cce7c43fd5
   typescript: 4.3.5
 
 packages:
@@ -8919,17 +8921,24 @@ packages:
       - typescript
     dev: false
 
-  file:projects/ricklove_me-content.tgz:
-    resolution: {integrity: sha512-RNUIjpHldSoyERK4TFVOGWKtrij3QP6CdnxNgy8cCu2o+DD8VzdMPGcKCyH9s03EMWofUJkkr/s61mOQ5vj1LQ==, tarball: file:projects/ricklove_me-content.tgz}
+  file:projects/ricklove_me-content.tgz_typescript@4.3.5:
+    resolution: {integrity: sha512-NX53CmiP/wKqJBk1gN8ylEPTgG9CvyDOy1dZwmF5rkLtyRXS3Y2wjhPcs5e6MQVidyXyejeOPTzrd15PPGrm9w==, tarball: file:projects/ricklove_me-content.tgz}
+    id: file:projects/ricklove_me-content.tgz
     name: '@rush-temp/ricklove_me-content'
     version: 0.0.0
     dependencies:
+      '@types/node': 12.12.6
       '@types/react': 17.0.19
       react: 17.0.2
+      ts-node: 10.2.1_70d6492c0feb1eb5d83e62cce7c43fd5
+    transitivePeerDependencies:
+      - '@swc/core'
+      - '@swc/wasm'
+      - typescript
     dev: false
 
   file:projects/ricklove_me.tgz:
-    resolution: {integrity: sha512-Rm7nf3OWiYUp2VRCoq+sz5LWge21X+M4GPA7zYmRFTHs4IKjHdPNVT09SsgJxVDB2PyDMTPEIPHW89HZZd2S6Q==, tarball: file:projects/ricklove_me.tgz}
+    resolution: {integrity: sha512-9unb4M3Njz9IXoQ24VThaAJzkar9ip4mxDrr/QGU+9+L7o0zE4PKxDAXP+IavciZDaOXi6gitpomhnTMIW+EKQ==, tarball: file:projects/ricklove_me.tgz}
     name: '@rush-temp/ricklove_me'
     version: 0.0.0
     dependencies:
