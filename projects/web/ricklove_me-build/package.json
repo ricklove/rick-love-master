@@ -3,12 +3,15 @@
   "version": "1.0.0",
   "main": "./lib/index.js",
   "scripts": {
-    "build": "heft test --clean",
-    "build:watch": "heft build"
+    "build": "ts-node ./src/build.ts",
+    "build:watch": "ts-node ./src/build.ts"
   },
-  "dependencies": {},
+  "dependencies": {
+    "@ricklove/ricklove_me-content": "*"
+  },
   "devDependencies": {
     "@ricklove/config-lib-rig": "*",
-    "@types/node": "14.17.5"
+    "@types/node": "12.12.6",
+    "ts-node": "~10.2.1"
   }
 }

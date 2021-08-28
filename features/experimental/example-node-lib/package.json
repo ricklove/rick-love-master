@@ -12,6 +12,6 @@
   "devDependencies": {
     "@ricklove/config-lib-rig": "*",
     "@ricklove/example-lib-lib": "*",
-    "@types/node": "14.17.5"
+    "@types/node": "12.12.6"
   }
 }

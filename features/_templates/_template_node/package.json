@@ -8,6 +8,6 @@
   },
   "devDependencies": {
     "@ricklove/config-lib-rig": "*",
-    "@types/node": "14.17.5"
+    "@types/node": "12.12.6"
   }
 }
