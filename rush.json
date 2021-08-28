@@ -433,23 +433,31 @@
     },
     {
       "packageName": "@ricklove/utils-core",
-      "projectFolder": "packages/_utils/core"
+      "projectFolder": "features/_utils/core"
     },
     {
       "packageName": "@ricklove/example-lib-lib",
-      "projectFolder": "packages/experiments/example-lib-lib"
+      "projectFolder": "features/experimental/example-lib-lib"
     },
     {
       "packageName": "@ricklove/example-node-lib",
-      "projectFolder": "packages/experiments/example-node-lib"
+      "projectFolder": "features/experimental/example-node-lib"
     },
     {
       "packageName": "@ricklove/example-web-lib",
-      "projectFolder": "packages/experiments/example-web-lib"
+      "projectFolder": "features/experimental/example-web-lib"
     },
     {
       "packageName": "@ricklove/ricklove_me",
       "projectFolder": "projects/web/ricklove_me"
+    },
+    {
+      "packageName": "@ricklove/ricklove_me-build",
+      "projectFolder": "projects/web/ricklove_me-build"
+    },
+    {
+      "packageName": "@ricklove/ricklove_me-content",
+      "projectFolder": "projects/web/ricklove_me-content"
     },
     {
       "packageName": "@ricklove/typescript-type-system-adventure",

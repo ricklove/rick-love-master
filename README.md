@@ -35,24 +35,9 @@ This is where I put all the cool stuff.
 
 ## File Structure
 
-- features
+- `projects`
 
-  - generic functionality
-    - could become public npm packages
-    - minimalistic
-    - many and unique -> flat organization
-    - MIT License
-  - examples:
-    - artwork
-    - art-gallery
-    - pixel-art-generator
-    - canvas-recorder
-    - terminal-emulator
-    - payment-processing
-    - authentication
-
-- projects
-
+  - everything starts as a project
   - specific functionality
     - could become an individual git repo
     - dynamic and hard to define -> flexible organization
@@ -78,7 +63,24 @@ This is where I put all the cool stuff.
         - react native
         - serverless framework
 
-- deploy
+- `features`
+
+  - features come from projects
+  - generic functionality
+    - could become public npm packages
+    - minimalistic
+    - many and unique -> flat organization
+    - MIT License
+  - examples:
+    - artwork
+    - art-gallery
+    - pixel-art-generator
+    - canvas-recorder
+    - terminal-emulator
+    - payment-processing
+    - authentication
+
+- `_deploy`
 
   - permanent location of pre-built output artifacts needed for CD (like netlify git deploy)
 

@@ -1,0 +1,16 @@
+{
+  "name": "@ricklove/ricklove_me-content",
+  "version": "1.0.0",
+  "main": "./lib/index.js",
+  "scripts": {
+    "build": "heft test --clean",
+    "build:watch": "heft build"
+  },
+  "dependencies": {
+    "react": "17.0.2"
+  },
+  "devDependencies": {
+    "@ricklove/config-lib-rig": "*",
+    "@types/react": "~17.0.19"
+  }
+}
