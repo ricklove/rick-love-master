@@ -452,10 +452,6 @@
       "projectFolder": "projects/web/ricklove_me"
     },
     {
-      "packageName": "@ricklove/ricklove_me-build",
-      "projectFolder": "projects/web/ricklove_me-build"
-    },
-    {
       "packageName": "@ricklove/ricklove_me-content",
       "projectFolder": "projects/web/ricklove_me-content"
     },

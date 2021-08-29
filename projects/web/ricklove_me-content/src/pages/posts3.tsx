@@ -15,7 +15,7 @@ export const page = createPage({
       <>
         <div style={{ whiteSpace: `pre` }}>{props.value}</div>
         <div>Looks like the Page changes</div>
-        <div>{`But the static props doesn't get updated?`}</div>
+        <div>{`How long does it take? - 6 secs! That is a bit too long! Hmm, what takes so long? heft is what takes forever!`}</div>
       </>
     );
   },

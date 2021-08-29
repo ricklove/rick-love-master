@@ -21,14 +21,17 @@ export { getStaticProps, getStaticPaths };
 export default Page;
 `.trim();
 
-    console.log(`createPages - create page`, { pageName, destFilePath });
+    const oldFileContent = fsRaw.existsSync(destFilePath)
+      ? await fs.readFile(destFilePath, { encoding: `utf-8` })
+      : null;
+    if (oldFileContent === content) {
+      return;
+    }
 
+    console.log(`createPages - create page`, { pageName, destFilePath });
     await fs.writeFile(destFilePath, content);
   }
 };
 
-const run = async () => {
-  await createPages();
-};
-
-void run();
+// eslint-disable-next-line @typescript-eslint/no-floating-promises
+createPages();

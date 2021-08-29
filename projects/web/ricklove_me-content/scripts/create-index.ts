@@ -2,7 +2,7 @@ import fsRaw from 'fs';
 import path from 'path';
 const fs = fsRaw.promises;
 
-const sourcePath = path.resolve(__dirname, `../src/pages`);
+const sourcePath = path.resolve(__dirname, `../../ricklove_me-content/src/pages`);
 
 export const createIndex = async () => {
   const pageFiles = await fs.readdir(sourcePath);
