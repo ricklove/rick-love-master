@@ -27,4 +27,5 @@ export const createIndex = async () => {
   await fs.writeFile(indexFilePath, indexContent);
 };
 
-void createIndex();
+// eslint-disable-next-line @typescript-eslint/no-floating-promises
+createIndex();
