@@ -7,7 +7,7 @@ import ts from 'highlight.js/lib/languages/typescript';
 import cs from 'highlight.js/lib/languages/csharp';
 import xml from 'highlight.js/lib/languages/xml';
 
-// import './markdown-code.css';
+// import './markdown-code.module.css';
 
 Lowlight.registerLanguage(`html`, xml);
 Lowlight.registerLanguage(`js`, js);

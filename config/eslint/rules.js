@@ -15,6 +15,7 @@ module.exports = {
   rules: {
     '@rushstack/typedef-var': 'off',
     '@rushstack/no-new-null': 'off',
+    eqeqeq: ['error', 'always', { null: 'ignore' }],
 
     // Naming
     '@typescript-eslint/naming-convention': [

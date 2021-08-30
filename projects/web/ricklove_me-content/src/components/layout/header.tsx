@@ -1,4 +1,4 @@
-import './header.css';
+import './header.module.css';
 import React from 'react';
 import { getNavigation } from '../site';
 import { ConsoleSimulatorLoader } from './console-simulator-loader';

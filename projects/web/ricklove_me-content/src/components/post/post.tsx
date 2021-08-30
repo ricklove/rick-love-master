@@ -1,4 +1,4 @@
-import './post.css';
+import './post.module.css';
 import React, { } from 'react';
 import { Layout } from '../layout/layout';
 import { SEO } from '../layout/seo';
@@ -7,14 +7,11 @@ import { getNavigation } from '../site';
 import { Utterances } from './utterances';
 
 export type PostPageData = {
-    sourceFilePath: string;
-    sourceFileContent: string;
     headers: { key: string; value: string }[];
 
     title: string;
     body: string;
     summary: string;
-    order: number;
     dateLabel?: string;
     excerpt?: string;
     imageUrl?: string;

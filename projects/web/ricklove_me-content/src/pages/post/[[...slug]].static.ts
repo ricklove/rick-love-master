@@ -2,16 +2,18 @@ import fsRaw from 'fs';
 import { promises as fs } from 'fs';
 import path from 'path';
 import { getAllFiles, getPathNormalized } from '@ricklove/utils-files';
+import { PostPageData } from '../../components/post/post';
 import { createPage } from '../../types';
-import { PageProps } from './[[...slug]]';
+import { PageProps, PageProps_Index, PageProps_Page } from './[[...slug]]';
 
-const getWebDirPath = () => process.cwd();
-const getBlogContentPath = () => path.join(getWebDirPath(), `../../../_old/code/blog-content`);
+const getWebProjectPath = () => process.cwd();
+const getBlogContentPath = () => path.join(getWebProjectPath(), `../../../_old/code/blog-content`);
 const getPostsPath = () => path.join(getBlogContentPath(), `./posts`);
-const getCachePath = () => path.join(getWebDirPath(), `./cache/markdownCache.json`);
-const getPublicPath = () => path.join(getWebDirPath(), `./public`);
+const getCachePath = () => path.join(getWebProjectPath(), `./cache/markdownCache.json`);
+const getPublicPath = () => path.join(getWebProjectPath(), `./public`);
+const getPostSitePath = (slug: string[]) => `/post/${slug.join(`/`)}`;
 
-const calculateWebPath = (sourceFilePath: string, mediaPath: string) => {
+const calculateBlogContentSitePath = (sourceFilePath: string, mediaPath: string) => {
   const blogContentSourceDir = getBlogContentPath();
   const publicBlogContentRelativePath = `/blog-content`;
   const blogContentDestDir = getPathNormalized(getPublicPath(), publicBlogContentRelativePath);
@@ -29,10 +31,9 @@ const calculateWebPath = (sourceFilePath: string, mediaPath: string) => {
 
 type MarkdownFileInfo = {
   filePath: string;
-  slug: string;
-  title: string;
-  summary: string;
-  content: string;
+  slug: string[];
+  timestamp: number;
+  postPage: PostPageData;
 };
 
 const getMarkdownFileInfosCached = async (): Promise<MarkdownFileInfo[]> => {
@@ -67,6 +68,24 @@ const getMarkdownFileInfosCached = async (): Promise<MarkdownFileInfo[]> => {
 
   const infos = infosAll.filter((x) => x).map((x) => x!);
 
+  // Sort by timestamp desc
+  infos.sort((a, b) => -(a.timestamp - b.timestamp));
+
+  // // TODO: Add related posts
+  // const tagPostPairs = pagePosts.flatMap(x => x.data.postPage.tags.map(t => ({ item: x, postSitePath: x.sitePath, title: x.data.postPage.title, tag: t, dateLabel: x.data.postPage.dateLabel, order: x.data.postPage.order })));
+  // const tagPostSitePaths = groupItems(tagPostPairs, x => x.tag);
+  // pagePosts.forEach(x => {
+  //     const r = x.data.postPage.tags.flatMap(t => tagPostSitePaths[t]);
+  //     const r2 = distinct_key(r, y => y.postSitePath);
+  //     x.data.postPage.relatedPages = r2.map(p => ({
+  //         postSitePath: p.postSitePath,
+  //         title: p.title,
+  //         tags: p.item.data.postPage.tags.filter(t => x.data.postPage.tags.includes(t)),
+  //         dateLabel: p.dateLabel,
+  //         order: p.order,
+  //     })).sort((a, b) => a.order - b.order);
+  // });
+
   // Save cache file
   await fs.mkdir(path.dirname(getCachePath()), { recursive: true });
   await fs.writeFile(getCachePath(), JSON.stringify(infos));
@@ -74,7 +93,7 @@ const getMarkdownFileInfosCached = async (): Promise<MarkdownFileInfo[]> => {
   return infos;
 };
 
-const parseMarkdownFile = async (filePath: string, content: string) => {
+const parseMarkdownFile = async (filePath: string, content: string): Promise<MarkdownFileInfo> => {
   const parts = content.split(`---`);
   const header = parts.slice(1, 1 + 1)[0];
   const headerValues =
@@ -92,14 +111,14 @@ const parseMarkdownFile = async (filePath: string, content: string) => {
 
   // Copy media files to public
   const contentCleaned = await handleMediaFiles(filePath, contentWithoutHeader, async (sourceFilePath, mediaPath) => {
-    const { webPath, oldPathFull, newPathFull } = calculateWebPath(sourceFilePath, mediaPath);
+    const { webPath, oldPathFull, newPathFull } = calculateBlogContentSitePath(sourceFilePath, mediaPath);
     await fs.copyFile(oldPathFull, newPathFull);
     return { newPath: webPath };
   });
 
   const excerpt = headerValues.find((x) => x.key === `excerpt`)?.value;
   const imageUrlRaw = headerValues.find((x) => x.key === `image`)?.value;
-  const imageUrl = !imageUrlRaw ? undefined : calculateWebPath(filePath, imageUrlRaw).webPath;
+  const imageUrl = !imageUrlRaw ? undefined : calculateBlogContentSitePath(filePath, imageUrlRaw).webPath;
 
   const sitePath = `/${
     headerValues.find((x) => x.key === `path`)?.value.replace(/^\//g, ``) ??
@@ -118,15 +137,18 @@ const parseMarkdownFile = async (filePath: string, content: string) => {
 
   return {
     filePath,
-    slug: sitePath.replace(/^\//, ``),
-    contentRaw: content,
-    content: contentCleaned,
-    summary,
-    title,
+    slug: sitePath.replace(/^\//, ``).split(`/`),
     timestamp,
-    tags,
-    excerpt,
-    imageUrl,
+    postPage: {
+      title,
+      headers: headerValues,
+      body: contentCleaned,
+      summary,
+      excerpt,
+      imageUrl,
+      tags,
+      dateLabel: date,
+    },
   };
 };
 
@@ -172,7 +194,7 @@ export const page = createPage<PageProps>({
 
     return {
       fallback: false,
-      paths: [...files.map((x) => ({ params: { slug: [x.slug] } })), { params: { slug: undefined } }],
+      paths: [...files.map((x) => ({ params: { slug: x.slug } })), { params: { slug: undefined } }],
     };
   },
   getStaticProps: async ({ params }) => {
@@ -183,32 +205,30 @@ export const page = createPage<PageProps>({
 
       return {
         props: {
-          params,
+          params: { slug },
           posts: files.map((x) => ({
-            slug: x.slug,
-            title: x.title,
-            summary: x.summary,
+            sitePath: getPostSitePath(x.slug),
+            title: x.postPage.title,
+            summary: x.postPage.summary,
           })),
-        },
+        } as PageProps_Index,
       };
     }
 
     const files = await getMarkdownFileInfosCached();
-    const file = files.find((f) => f.slug === slug[0]);
+    const file = files.find((f) => f.slug.join(`/`) === slug.join(`/`));
     if (!file) {
-      throw new Error(`Markdown File not found for slug: ${slug[0]}`);
+      throw new Error(`Markdown File not found for slug: ${slug.join(`/`)}`);
     }
 
     return {
       props: {
-        params,
+        params: { slug },
         post: {
-          slug: file.slug,
-          title: file.title,
-          summary: file.summary,
-          content: file.content,
+          ...file.postPage,
+          sitePath: getPostSitePath(file.slug),
         },
-      },
+      } as PageProps_Page,
     };
   },
 });

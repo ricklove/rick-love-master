@@ -1,5 +1,5 @@
-import './layout.css';
-import './code.css';
+import './layout.module.css';
+import './code.module.css';
 import React, { ReactNode } from 'react';
 import { siteMetadata } from '../site';
 import { Header } from './header';
