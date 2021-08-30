@@ -1,4 +1,3 @@
-// import './layout-game.module.css';
 import React, { useEffect } from 'react';
 
 export const LayoutGameCss = (props: {}) => {

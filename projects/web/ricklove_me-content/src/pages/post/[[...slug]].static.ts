@@ -112,6 +112,7 @@ const parseMarkdownFile = async (filePath: string, content: string): Promise<Mar
   // Copy media files to public
   const contentCleaned = await handleMediaFiles(filePath, contentWithoutHeader, async (sourceFilePath, mediaPath) => {
     const { webPath, oldPathFull, newPathFull } = calculateBlogContentSitePath(sourceFilePath, mediaPath);
+    await fs.mkdir(path.dirname(newPathFull), { recursive: true });
     await fs.copyFile(oldPathFull, newPathFull);
     return { newPath: webPath };
   });
@@ -194,7 +195,7 @@ export const page = createPage<PageProps>({
 
     return {
       fallback: false,
-      paths: [...files.map((x) => ({ params: { slug: x.slug } })), { params: { slug: undefined } }],
+      paths: [...files.map((x) => ({ params: { slug: x.slug } })), { params: { slug: null } }],
     };
   },
   getStaticProps: async ({ params }) => {

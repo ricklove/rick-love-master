@@ -5,7 +5,7 @@ import { PostIndexPage, PostIndexPageData } from '../../components/post/post-ind
 export type PageProps_Index = {
   posts: PostIndexPageData['posts'];
 
-  params: { slug?: undefined };
+  params: { slug: null };
   post?: undefined;
 };
 export type PageProps_Page = {

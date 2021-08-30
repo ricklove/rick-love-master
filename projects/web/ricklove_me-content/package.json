@@ -8,7 +8,7 @@
   },
   "dependencies": {
     "react": "17.0.2",
-    "react-markdown": "~7.0.1",
+    "react-markdown": "~6.0.3",
     "react-lowlight": "~2.0.0",
     "highlight.js": "~9.1.0",
     "react-helmet": "~6.1.0"
