@@ -1,5 +1,5 @@
 import React from 'react';
-import { createPage } from '../types';
+import { createPage } from '../../types';
 
 export const page = createPage({
   getStaticPaths: async () => {

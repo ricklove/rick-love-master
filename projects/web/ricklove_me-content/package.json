@@ -3,8 +3,8 @@
   "version": "1.0.0",
   "main": "./lib/index.js",
   "scripts": {
-    "build": "ts-node ./scripts/create-index.ts && heft test --clean && ts-node ./scripts/create-pages.ts",
-    "build:watch": "ts-node ./scripts/create-index.ts && heft build && ts-node ./scripts/create-pages.ts"
+    "build": "heft test --clean && ts-node ./scripts/build.ts",
+    "build:watch": "heft build && ts-node ./scripts/build.ts"
   },
   "dependencies": {
     "react": "17.0.2"

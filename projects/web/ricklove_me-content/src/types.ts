@@ -4,7 +4,7 @@ export type GetStaticProps<TProps = Record<string, never>, TParams = never> = (c
   props: TProps;
 }>;
 export type GetStaticPaths<TParams = never> = () => Promise<{
-  paths: { params: TParams };
+  paths: { params: TParams }[];
   fallback: false;
 }>;
 
