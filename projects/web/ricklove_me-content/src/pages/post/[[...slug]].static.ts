@@ -195,7 +195,7 @@ export const page = createPage<PageProps>({
 
     return {
       fallback: false,
-      paths: [...files.map((x) => ({ params: { slug: x.slug } })), { params: { slug: null } }],
+      paths: [...files.map((x) => ({ params: { slug: x.slug } })), { params: { slug: false } }],
     };
   },
   getStaticProps: async ({ params }) => {
@@ -206,7 +206,7 @@ export const page = createPage<PageProps>({
 
       return {
         props: {
-          params: { slug },
+          params: { slug: false },
           posts: files.map((x) => ({
             sitePath: getPostSitePath(x.slug),
             title: x.postPage.title,

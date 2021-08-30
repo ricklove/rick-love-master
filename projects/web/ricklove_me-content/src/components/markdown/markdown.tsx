@@ -9,8 +9,21 @@ export const Markdown = (props: { markdown: string }) => {
             <ReactMarkdown
                 components={{
                     // text: ((p: { children: ReactNode }) => <p className='markdown-text-container'>{p.children}</p>),
-                    image: ((p: unknown) => <span className='markdown-image-container'><img {...(p as never)} /></span>),
-                    code: ((p: unknown) => <CodeWrapper_ZoomButtons><MarkdownCode {...(p as { language: string; value: string; inline: string })} /></CodeWrapper_ZoomButtons>),
+                    img: ((p: unknown) => <span className='markdown-image-container'><img {...(p as never)} /></span>),
+                    code: ((p) => {
+
+                        if (p.inline){
+                            return (
+                                <code>{p.children}</code>
+                            );
+                        }
+
+                        return (
+                        <CodeWrapper_ZoomButtons>
+                            <MarkdownCode inline={p.inline} value={String(p.children)} language={p.className?.replace(`language-`, ``)}/>
+                        </CodeWrapper_ZoomButtons>
+                    );
+                }),
                 }}>{props.markdown}</ReactMarkdown>
         </div>
     );

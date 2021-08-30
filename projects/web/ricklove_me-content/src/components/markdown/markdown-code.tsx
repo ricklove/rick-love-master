@@ -20,15 +20,15 @@ Lowlight.registerLanguage(`csharp`, cs);
 Lowlight.registerLanguage(`cs`, cs);
 // Lowlight.registerAlias({ cs: [`csharp`] });
 
-export const MarkdownCode = (props: { language: string; value: string; inline: string }) => {
+export const MarkdownCode = (props: { language?: string; value: string; inline?: boolean }) => {
     // eslint-disable-next-line no-console
     console.log(`renderCodeBlock`, { props });
 
     return (
         <Lowlight
             language={props.language || `js`}
-            value={props.value}
-            inline={props.inline}
+            value={props.value || ``}
+            inline={props.inline || false}
         />
     );
 };
