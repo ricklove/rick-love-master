@@ -1,5 +1,5 @@
-import { createPage } from '../types';
-import { getPostDataCached, getPostSitePath } from './blog/get-post-data';
+import { createPage } from '../../types';
+import { getPostDataCached, getPostSitePath } from './get-post-data';
 import type { PageProps } from './index';
 
 export const page = createPage<PageProps>({

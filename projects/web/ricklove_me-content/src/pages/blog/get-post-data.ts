@@ -9,7 +9,7 @@ const getBlogContentPath = () => path.join(getWebProjectPath(), `../../../_old/c
 const getPostsPath = () => path.join(getBlogContentPath(), `./posts`);
 const getCachePath = () => path.join(getWebProjectPath(), `./cache/markdownCache.json`);
 const getPublicPath = () => path.join(getWebProjectPath(), `./public`);
-export const getPostSitePath = (slug: string[]) => `/post/${slug.join(`/`)}`;
+export const getPostSitePath = (slug: string[]) => `/blog/${slug.join(`/`)}`;
 
 const calculateBlogContentSitePath = (sourceFilePath: string, mediaPath: string) => {
   const blogContentSourceDir = getBlogContentPath();
