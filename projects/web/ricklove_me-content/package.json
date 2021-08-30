@@ -7,13 +7,18 @@
     "build:watch": "heft build && ts-node ./scripts/build.ts"
   },
   "dependencies": {
-    "react": "17.0.2"
+    "react": "17.0.2",
+    "react-markdown": "~7.0.1",
+    "react-lowlight": "~2.0.0",
+    "highlight.js": "~9.1.0",
+    "react-helmet": "~6.1.0"
   },
   "devDependencies": {
     "@ricklove/config-lib-rig": "*",
     "@ricklove/utils-files": "*",
     "@types/node": "12.12.6",
     "@types/react": "~17.0.19",
-    "ts-node": "~10.2.1"
+    "ts-node": "~10.2.1",
+    "@types/react-helmet": "~6.1.2"
   }
 }

@@ -16,11 +16,27 @@ export const createWebPages = async (
     const destFilePath = path.join(destPath, relativePath) + `.tsx`;
     await fs.mkdir(path.dirname(destFilePath), { recursive: true });
 
+    const hasStaticPaths = relativePath.includes(`[`);
+
     const content = `
-import { page_${pageName} } from '@ricklove/ricklove_me-content';
-const { Page, getStaticProps, getStaticPaths } = page_${pageName};
-export { getStaticProps, getStaticPaths };
-export default Page;
+/* eslint-disable @typescript-eslint/no-explicit-any */
+import { Page_${pageName} } from '@ricklove/ricklove_me-content';
+export default Page_${pageName};
+
+import { page_${pageName} } from '@ricklove/ricklove_me-content/lib/index-static';
+
+export const getStaticProps = async (context: any) => {
+    return await page_${pageName}.getStaticProps(context);
+};
+${
+  hasStaticPaths
+    ? `
+export const getStaticPaths = async () => {
+    return await page_${pageName}.getStaticPaths();
+};
+`
+    : ``
+}
 `.trimStart();
 
     const oldFileContent = fsRaw.existsSync(destFilePath)

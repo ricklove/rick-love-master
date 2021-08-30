@@ -1,7 +1,9 @@
 import React from 'react';
-import { createPage } from '../types';
 
-const Page = (props: { value: string }) => {
+export type PageProps = {
+  value: string;
+};
+export const Page = (props: PageProps) => {
   return (
     <>
       <div style={{ whiteSpace: `pre` }}>{props.value}</div>
@@ -10,21 +12,3 @@ const Page = (props: { value: string }) => {
     </>
   );
 };
-
-export const page = createPage({
-  Page,
-  getStaticPaths: async () => {
-    return {
-      fallback: false,
-      paths: [],
-    };
-  },
-  getStaticProps: async () => {
-    return {
-      props: {
-        //value: `${exampleValue10.example3}: ${JSON.stringify(await exampleValue10.run2(), null, 2)}!!!`,
-        value: `Static!!!`,
-      },
-    };
-  },
-});

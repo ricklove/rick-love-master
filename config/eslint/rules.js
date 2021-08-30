@@ -14,6 +14,7 @@ module.exports = {
 
   rules: {
     '@rushstack/typedef-var': 'off',
+    '@rushstack/no-new-null': 'off',
 
     // Naming
     '@typescript-eslint/naming-convention': [
@@ -25,8 +26,8 @@ module.exports = {
         filter: {
           regex: [
             // This is a special exception for naming patterns that use an underscore to separate two camel-cased
-            // parts.  Example:  "checkBox1_onChanged" or "_checkBox1_onChanged"
-            '^_?[a-z][a-z0-9]*([A-Z][a-z]?[a-z0-9]*)*_[a-z][a-z0-9]*([A-Z][a-z]?[a-z0-9]*)*$',
+            // parts.  Example:  "aLongName_variant"
+            '^_?[a-z0-9]*?([A-Z][a-z0-9]*)+_[a-zA-Z0-9]*$',
           ]
             .map((x) => `(${x})`)
             .join('|'),
@@ -63,6 +64,16 @@ module.exports = {
       {
         selector: 'typeLike',
         format: ['PascalCase'],
+        filter: {
+          regex: [
+            // This is a special exception for naming patterns that use an underscore to separate two camel-cased
+            // parts.  Example:  "aLongName_variant"
+            '^_?[a-z0-9]*?([A-Z][a-z0-9]*)+_[a-zA-Z0-9]*$',
+          ]
+            .map((x) => `(${x})`)
+            .join('|'),
+          match: false,
+        },
       },
       // ['@weirdName']
       {
