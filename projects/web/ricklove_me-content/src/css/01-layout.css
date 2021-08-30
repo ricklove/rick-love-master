@@ -101,7 +101,7 @@ a {
     text-decoration: none;
 }
 
-a, a:visited {
+a, a:visited, .link {
     color: #01ff70;
 }
 
@@ -111,6 +111,12 @@ a:visited {
 
 a:hover, a:focus, a:active {
     color: #2ecc40;
+    cursor: pointer;
+}
+
+.link:hover, .link:focus, .link:active {
+    color: #2ecc40;
+    cursor: pointer;
 }
 
 .markdown-body {

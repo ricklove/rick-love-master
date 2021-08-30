@@ -47,7 +47,7 @@ export const PostPage = (props: { data: PostPageData }) => {
                             <span style={{ display: `flex`, flexDirection: `column` }}>
                                 {relatedPages?.map(p => (
                                     <Link key={p.postSitePath} to={p.postSitePath}>
-                                        <span style={{ display: `flex`, flexDirection: `row`, ...(p.title === title ? { color: `#bbbbbb` } : {}) }}>
+                                        <span className='link' style={{ display: `flex`, flexDirection: `row`, ...(p.title === title ? { color: `#bbbbbb` } : {}) }}>
                                             <span style={{ display: `inline-block`, minWidth: 100 }}>{p.dateLabel}</span>
                                             <span style={{ display: `flex`, flex: 3 }}>{p.title}</span>
                                             <span style={{ display: `flex`, flex: 2, fontSize: 12 }}>{p.tags.join(`, `)}</span>
@@ -64,7 +64,7 @@ export const PostPage = (props: { data: PostPageData }) => {
                 </div>
             </div>
             <Link to='/'>
-                <div>
+                <div className='link'>
                     <p>Root</p>
                 </div>
             </Link>
