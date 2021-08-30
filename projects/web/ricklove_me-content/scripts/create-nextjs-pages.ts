@@ -1,6 +1,6 @@
 import fsRaw from 'fs';
 import path from 'path';
-import { getAllFiles } from '@ricklove/utils-files';
+import { getAllFiles, joinPathNormalized } from '@ricklove/utils-files';
 const fs = fsRaw.promises;
 
 export const createNextJsWebPages = async (
@@ -14,7 +14,7 @@ export const createNextJsWebPages = async (
   await fs.rmdir(destPath, { recursive: true });
 
   for (const { pageName, relativePath } of pageFiles) {
-    const destFilePath = path.join(destPath, relativePath) + `.tsx`;
+    const destFilePath = joinPathNormalized(destPath, relativePath) + `.tsx`;
     await fs.mkdir(path.dirname(destFilePath), { recursive: true });
 
     const hasStaticPaths = relativePath.includes(`[`);
@@ -62,9 +62,9 @@ export const createNextJsAppJs = async (destPath: string, sourcePath: string) =>
   );
 
   const allCss = cssContent.join(`\n\n\n`);
-  await fs.writeFile(path.join(destPath, `_app.css`), allCss);
+  await fs.writeFile(joinPathNormalized(destPath, `_app.css`), allCss);
   await fs.writeFile(
-    path.join(destPath, `_app.js`),
+    joinPathNormalized(destPath, `_app.js`),
     `
 import './_app.css';
 import Link from 'next/link'

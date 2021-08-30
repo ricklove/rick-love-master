@@ -1,25 +1,26 @@
 import fsRaw from 'fs';
 import { promises as fs } from 'fs';
 import path from 'path';
-import { getAllFiles, getPathNormalized } from '@ricklove/utils-files';
+import { groupItems } from '@ricklove/utils-core';
+import { getAllFiles, joinPathNormalized } from '@ricklove/utils-files';
 import { PostPageData } from '../../components/post/post';
 
 const getWebProjectPath = () => process.cwd();
-const getBlogContentPath = () => path.join(getWebProjectPath(), `../../../_old/code/blog-content`);
-const getPostsPath = () => path.join(getBlogContentPath(), `./posts`);
-const getCachePath = () => path.join(getWebProjectPath(), `./cache/markdownCache.json`);
-const getPublicPath = () => path.join(getWebProjectPath(), `./public`);
+const getBlogContentPath = () => joinPathNormalized(getWebProjectPath(), `../../../_old/code/blog-content`);
+const getPostsPath = () => joinPathNormalized(getBlogContentPath(), `./posts`);
+const getCachePath = () => joinPathNormalized(getWebProjectPath(), `./cache/markdownCache.json`);
+const getPublicPath = () => joinPathNormalized(getWebProjectPath(), `./public`);
 export const getPostSitePath = (slug: string[]) => `/blog/${slug.join(`/`)}`;
 
 const calculateBlogContentSitePath = (sourceFilePath: string, mediaPath: string) => {
-  const blogContentSourceDir = getBlogContentPath();
+  const blogContentSourceDir = joinPathNormalized(getBlogContentPath());
   const publicBlogContentRelativePath = `/blog-content`;
-  const blogContentDestDir = getPathNormalized(getPublicPath(), publicBlogContentRelativePath);
+  const blogContentDestDir = joinPathNormalized(getPublicPath(), publicBlogContentRelativePath);
 
-  const sourceFileRelPath = sourceFilePath.replace(blogContentSourceDir, ``);
+  const sourceFileRelPath = joinPathNormalized(sourceFilePath).replace(blogContentSourceDir, ``);
   const sourceFileRelDir = path.dirname(sourceFileRelPath);
-  const oldPathFull = getPathNormalized(blogContentSourceDir, sourceFileRelDir, mediaPath);
-  const newPathFull = getPathNormalized(blogContentDestDir, sourceFileRelDir, mediaPath);
+  const oldPathFull = joinPathNormalized(blogContentSourceDir, sourceFileRelDir, mediaPath);
+  const newPathFull = joinPathNormalized(blogContentDestDir, sourceFileRelDir, mediaPath);
 
   // Website Path
   const webPath = newPathFull.replace(blogContentDestDir, publicBlogContentRelativePath);
@@ -36,7 +37,10 @@ type PostData = {
 
 export const getPostDataCached = async (): Promise<PostData[]> => {
   const allFiles = await getAllFiles(getPostsPath());
-  const markdownFilePaths = allFiles.filter((x) => x.endsWith(`.md`));
+  const markdownFilePaths = allFiles
+    .filter((x) => x.endsWith(`.md`))
+    .map((x) => joinPathNormalized(x))
+    .filter((x) => !x.includes(`/future/`));
   const fileChangeTimesMs = await Promise.all(
     markdownFilePaths.map(async (f) => {
       const fStat = await fs.stat(f);
@@ -57,38 +61,49 @@ export const getPostDataCached = async (): Promise<PostData[]> => {
 
   console.log(`getMarkdownFileInfosCached - content changed`, { cacheChangeTimeMs });
 
-  const infosAll = await Promise.all(
+  const itemsAll = await Promise.all(
     markdownFilePaths.map(async (f) => {
       const content = await fs.readFile(f, { encoding: `utf-8` });
       return await parseMarkdownFile(f, content);
     }),
   );
 
-  const infos = infosAll.filter((x) => x).map((x) => x!);
+  const items = itemsAll.filter((x) => x).map((x) => x!);
 
   // Sort by timestamp desc
-  infos.sort((a, b) => -(a.timestamp - b.timestamp));
+  items.sort((a, b) => -(a.timestamp - b.timestamp));
 
-  // // TODO: Add related posts
-  // const tagPostPairs = pagePosts.flatMap(x => x.data.postPage.tags.map(t => ({ item: x, postSitePath: x.sitePath, title: x.data.postPage.title, tag: t, dateLabel: x.data.postPage.dateLabel, order: x.data.postPage.order })));
-  // const tagPostSitePaths = groupItems(tagPostPairs, x => x.tag);
-  // pagePosts.forEach(x => {
-  //     const r = x.data.postPage.tags.flatMap(t => tagPostSitePaths[t]);
-  //     const r2 = distinct_key(r, y => y.postSitePath);
-  //     x.data.postPage.relatedPages = r2.map(p => ({
-  //         postSitePath: p.postSitePath,
-  //         title: p.title,
-  //         tags: p.item.data.postPage.tags.filter(t => x.data.postPage.tags.includes(t)),
-  //         dateLabel: p.dateLabel,
-  //         order: p.order,
-  //     })).sort((a, b) => a.order - b.order);
-  // });
+  // Add related posts
+  const tagPostPairs = items.flatMap((x) =>
+    x.postPage.tags.map((t) => ({
+      item: x,
+      postSitePath: getPostSitePath(x.slug),
+      title: x.postPage.title,
+      tag: t,
+      dateLabel: x.postPage.dateLabel,
+      timestamp: x.timestamp,
+    })),
+  );
+  const tagPostSitePaths = groupItems(tagPostPairs, (x) => x.tag);
+  items.forEach((x) => {
+    const r = x.postPage.tags.flatMap((t) => tagPostSitePaths[t]);
+    const r2 = new Map(r.map((y) => [y.postSitePath, y]));
+    x.postPage.relatedPages = [...r2.values()]
+      .map((p) => ({
+        postSitePath: p.postSitePath,
+        title: p.title,
+        tags: p.item.postPage.tags.filter((t) => x.postPage.tags.includes(t)),
+        dateLabel: p.dateLabel,
+        timestamp: p.timestamp,
+      }))
+      .sort((a, b) => -(a.timestamp - b.timestamp));
+  });
 
   // Save cache file
   await fs.mkdir(path.dirname(getCachePath()), { recursive: true });
-  await fs.writeFile(getCachePath(), JSON.stringify(infos));
+  await fs.writeFile(getCachePath(), JSON.stringify(items));
 
-  return infos;
+  return items;
 };
 
 const parseMarkdownFile = async (filePath: string, content: string): Promise<PostData> => {

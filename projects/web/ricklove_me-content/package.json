@@ -15,6 +15,7 @@
   },
   "devDependencies": {
     "@ricklove/config-lib-rig": "*",
+    "@ricklove/utils-core": "*",
     "@ricklove/utils-files": "*",
     "@types/node": "12.12.6",
     "@types/react": "~17.0.19",

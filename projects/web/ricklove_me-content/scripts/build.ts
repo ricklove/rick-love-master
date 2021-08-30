@@ -1,15 +1,15 @@
-import path from 'path';
+import { joinPathNormalized } from '@ricklove/utils-files';
 import { copyAssetsToLib } from './copy-assets';
 import { createIndex, createStaticIndex } from './create-index';
 import { createNextJsAppJs, createNextJsWebPages } from './create-nextjs-pages';
 import { getPageFiles } from './get-page-files';
 
-const sourcePath = path.join(__dirname, `../src`);
-const sourcePagesPath = path.join(sourcePath, `./pages`);
-const indexFilePath = path.join(sourcePath, `../index.ts`);
-const staticIndexFilePath = path.join(sourcePath, `../index-static.ts`);
-const libSourcePath = path.join(sourcePath, `../lib/src/`);
-const destWebPagesPath = path.join(__dirname, `../../ricklove_me/pages`);
+const sourcePath = joinPathNormalized(__dirname, `../src`);
+const sourcePagesPath = joinPathNormalized(sourcePath, `./pages`);
+const indexFilePath = joinPathNormalized(sourcePath, `../index.ts`);
+const staticIndexFilePath = joinPathNormalized(sourcePath, `../index-static.ts`);
+const libSourcePath = joinPathNormalized(sourcePath, `../lib/src/`);
+const destWebPagesPath = joinPathNormalized(__dirname, `../../ricklove_me/pages`);
 
 export const build = async () => {
   const pageFiles = await getPageFiles(sourcePagesPath);
