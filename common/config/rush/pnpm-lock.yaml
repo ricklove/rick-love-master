@@ -11,6 +11,7 @@ specifiers:
   '@rush-temp/ricklove_me-content': file:./projects/ricklove_me-content.tgz
   '@rush-temp/typescript-type-system-adventure': file:./projects/typescript-type-system-adventure.tgz
   '@rush-temp/utils-core': file:./projects/utils-core.tgz
+  '@rush-temp/utils-files': file:./projects/utils-files.tgz
   '@rushstack/eslint-config': ^2.3.4
   '@rushstack/heft': ^0.36.3
   '@rushstack/heft-web-rig': ^0.4.4
@@ -40,6 +41,7 @@ dependencies:
   '@rush-temp/ricklove_me-content': file:projects/ricklove_me-content.tgz_typescript@4.3.5
   '@rush-temp/typescript-type-system-adventure': file:projects/typescript-type-system-adventure.tgz
   '@rush-temp/utils-core': file:projects/utils-core.tgz
+  '@rush-temp/utils-files': file:projects/utils-files.tgz
   '@rushstack/eslint-config': 2.4.0_eslint@7.32.0+typescript@4.3.5
   '@rushstack/heft': 0.36.3
   '@rushstack/heft-web-rig': 0.4.4_@rushstack+heft@0.36.3
@@ -8953,4 +8955,12 @@ packages:
     resolution: {integrity: sha512-cEtPsCmZu/LjaGIm5b34vAstU79Rarmb5hXV8eiBYh3/or2wxSipwQBOXRcCSnuN1OuM3HogKdYFJABiahXkAQ==, tarball: file:projects/utils-core.tgz}
     name: '@rush-temp/utils-core'
     version: 0.0.0
+    dev: false
+
+  file:projects/utils-files.tgz:
+    resolution: {integrity: sha512-sXo6tjibc1hGZYVlebLH9pEI9brs+MtCybYFiO2Bdx9vRMgUQ6a4dLOCq0jFAFeZvmwuQ9KYGpl1UDSNJ67g0Q==, tarball: file:projects/utils-files.tgz}
+    name: '@rush-temp/utils-files'
+    version: 0.0.0
+    dependencies:
+      '@types/node': 12.12.6
     dev: false

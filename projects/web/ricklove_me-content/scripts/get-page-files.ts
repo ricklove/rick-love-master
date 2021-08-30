@@ -1,4 +1,4 @@
-import { getAllFiles } from './get-files';
+import { getAllFiles } from '@ricklove/utils-files';
 
 export const getPageFiles = async (sourcePath: string) => {
   const pageFiles = await getAllFiles(sourcePath);

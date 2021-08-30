@@ -436,6 +436,10 @@
       "projectFolder": "features/_utils/core"
     },
     {
+      "packageName": "@ricklove/utils-files",
+      "projectFolder": "features/_utils/files"
+    },
+    {
       "packageName": "@ricklove/example-lib-lib",
       "projectFolder": "features/experimental/example-lib-lib"
     },

@@ -1,6 +1,4 @@
-export type GetStaticProps<TProps = Record<string, never>, TParams = never> = (context: {
-  params: TParams;
-}) => Promise<{
+export type GetStaticProps<TProps, TParams = never> = (context: { params: TParams }) => Promise<{
   props: TProps;
 }>;
 export type GetStaticPaths<TParams = never> = () => Promise<{
@@ -8,12 +6,12 @@ export type GetStaticPaths<TParams = never> = () => Promise<{
   fallback: false;
 }>;
 
-export type PageExports<TProps = Record<string, never>, TParams = never> = {
+export type PageExports<TProps, TParams = never> = {
   getStaticPaths?: GetStaticPaths<TParams>;
   getStaticProps: GetStaticProps<TProps, TParams>;
   Page: (props: TProps) => JSX.Element;
 };
 
-export const createPage = <TProps = Record<string, never>, TParams = never>(page: PageExports<TProps, TParams>) => {
+export const createPage = <TProps, TParams = never>(page: PageExports<TProps, TParams>) => {
   return page;
 };

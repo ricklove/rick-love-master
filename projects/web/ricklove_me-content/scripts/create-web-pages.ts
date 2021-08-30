@@ -21,7 +21,7 @@ import { page_${pageName} } from '@ricklove/ricklove_me-content';
 const { Page, getStaticProps, getStaticPaths } = page_${pageName};
 export { getStaticProps, getStaticPaths };
 export default Page;
-`.trim();
+`.trimStart();
 
     const oldFileContent = fsRaw.existsSync(destFilePath)
       ? await fs.readFile(destFilePath, { encoding: `utf-8` })

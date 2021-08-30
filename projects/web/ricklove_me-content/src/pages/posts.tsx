@@ -1,7 +1,18 @@
 import React from 'react';
 import { createPage } from '../types';
 
+const Page = (props: { value: string }) => {
+  return (
+    <>
+      <div style={{ whiteSpace: `pre` }}>{props.value}</div>
+      <div>Looks like the Page changes</div>
+      <div>{`But the static props doesn't get updated?`}</div>
+    </>
+  );
+};
+
 export const page = createPage({
+  Page,
   getStaticPaths: async () => {
     return {
       fallback: false,
@@ -15,14 +26,5 @@ export const page = createPage({
         value: `Static!!!`,
       },
     };
-  },
-  Page: (props) => {
-    return (
-      <>
-        <div style={{ whiteSpace: `pre` }}>{props.value}</div>
-        <div>Looks like the Page changes</div>
-        <div>{`But the static props doesn't get updated?`}</div>
-      </>
-    );
   },
 });
