@@ -1,4 +1,3 @@
-import './post.module.css';
 import React from 'react';
 import { Layout } from '../layout/layout';
 import { SEO } from '../layout/seo';
