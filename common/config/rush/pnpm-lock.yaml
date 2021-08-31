@@ -4,6 +4,8 @@ specifiers:
   '@babel/core': ^7.0.0
   '@rush-temp/config-eslint': file:./projects/config-eslint.tgz
   '@rush-temp/config-lib-rig': file:./projects/config-lib-rig.tgz
+  '@rush-temp/console-simulator': file:./projects/console-simulator.tgz
+  '@rush-temp/dork': file:./projects/dork.tgz
   '@rush-temp/example-lib-lib': file:./projects/example-lib-lib.tgz
   '@rush-temp/example-node-lib': file:./projects/example-node-lib.tgz
   '@rush-temp/example-web-lib': file:./projects/example-web-lib.tgz
@@ -39,6 +41,8 @@ dependencies:
   '@babel/core': 7.15.0
   '@rush-temp/config-eslint': file:projects/config-eslint.tgz
   '@rush-temp/config-lib-rig': file:projects/config-lib-rig.tgz
+  '@rush-temp/console-simulator': file:projects/console-simulator.tgz
+  '@rush-temp/dork': file:projects/dork.tgz
   '@rush-temp/example-lib-lib': file:projects/example-lib-lib.tgz
   '@rush-temp/example-node-lib': file:projects/example-node-lib.tgz
   '@rush-temp/example-web-lib': file:projects/example-web-lib.tgz
@@ -9217,6 +9221,24 @@ packages:
       - webpack-command
     dev: false
 
+  file:projects/console-simulator.tgz:
+    resolution: {integrity: sha512-DxeNGf60+t6ihCXqXyYE7b9QCBodPvgw31Ci6xnezZxdT8FhpYAHAa4hTxGS8r/p9zMSN+sAs1+5RIJSfQjo0g==, tarball: file:projects/console-simulator.tgz}
+    name: '@rush-temp/console-simulator'
+    version: 0.0.0
+    dependencies:
+      '@types/react': 17.0.19
+      react: 17.0.2
+    dev: false
+
+  file:projects/dork.tgz:
+    resolution: {integrity: sha512-juPSTgWn4pgzi5hodLR6sr0tFTjhe7gYRD8hAeOQlnmzZLjNxD52oyFvVh6PnYPNgzX028yX3W8/D1PiCNrPow==, tarball: file:projects/dork.tgz}
+    name: '@rush-temp/dork'
+    version: 0.0.0
+    dependencies:
+      '@types/react': 17.0.19
+      react: 17.0.2
+    dev: false
+
   file:projects/example-lib-lib.tgz:
     resolution: {integrity: sha512-vpuU1yObiATxZgHGposm8JI+XYXsmVl+Eh2Ss0+OXjysu2IXcfWrLhLuldLQjTbvXOmXfixaQAUr9OrG6qAZMg==, tarball: file:projects/example-lib-lib.tgz}
     name: '@rush-temp/example-lib-lib'
@@ -9238,7 +9260,7 @@ packages:
     dev: false
 
   file:projects/ricklove_me-content.tgz_typescript@4.3.5:
-    resolution: {integrity: sha512-Tp05qousYnCqaEqoYoWxdUn9ywIgTE6qXO72ISOXB4VHwBThjtNXQP+q+xAg+8fwNRXjjSXPhIw0xGlIL5tmjw==, tarball: file:projects/ricklove_me-content.tgz}
+    resolution: {integrity: sha512-hfGiafuvwjnSlv0PbuQzv3+tLpfYm3wmnzdfVqXTIKq3aN7BI9GYcdNDa9syRG3ygiDvypkJT8WtEVXPqzyROg==, tarball: file:projects/ricklove_me-content.tgz}
     id: file:projects/ricklove_me-content.tgz
     name: '@rush-temp/ricklove_me-content'
     version: 0.0.0

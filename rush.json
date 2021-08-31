@@ -452,6 +452,14 @@
       "projectFolder": "features/experimental/example-web-lib"
     },
     {
+      "packageName": "@ricklove/console-simulator",
+      "projectFolder": "projects/games/console-simulator"
+    },
+    {
+      "packageName": "@ricklove/dork",
+      "projectFolder": "projects/games/dork"
+    },
+    {
       "packageName": "@ricklove/ricklove_me",
       "projectFolder": "projects/web/ricklove_me"
     },
