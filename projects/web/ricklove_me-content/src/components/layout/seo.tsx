@@ -1,8 +1,5 @@
 import React from 'react';
 import { Helmet } from 'react-helmet';
-import favicon16 from '../assets/favicon16.png';
-import favicon32 from '../assets/favicon32.png';
-import favicon64 from '../assets/favicon64.png';
 import { siteMetadata } from '../site';
 
 export const SEO = ({
@@ -73,9 +70,9 @@ export const SEO = ({
         .concat(imageMeta)
         .concat(meta)}
       link={[
-        { rel: `icon`, type: `image/png`, sizes: `16x16`, href: `${favicon16}` },
-        { rel: `icon`, type: `image/png`, sizes: `32x32`, href: `${favicon32}` },
-        { rel: `shortcut icon`, type: `image/png`, href: `${favicon64}` },
+        { rel: `icon`, type: `image/png`, sizes: `16x16`, href: `/media/favicon16.png` },
+        { rel: `icon`, type: `image/png`, sizes: `32x32`, href: `/media/favicon32.png` },
+        { rel: `shortcut icon`, type: `image/png`, href: `/media/favicon64.png` },
       ]}
     />
   );

@@ -1,7 +1,7 @@
 import { joinPathNormalized } from '@ricklove/utils-files';
 import { copyAssetsToLib } from './copy-assets';
 import { createIndex, createStaticIndex } from './create-index';
-import { createNextJsAppJs, createNextJsWebPages } from './create-nextjs-pages';
+import { copyNextJsPublicFiles, createNextJsAppJs, createNextJsWebPages } from './create-nextjs-pages';
 import { getPageFiles } from './get-page-files';
 
 const sourcePath = joinPathNormalized(__dirname, `../src`);
@@ -10,6 +10,8 @@ const indexFilePath = joinPathNormalized(sourcePath, `../index.ts`);
 const staticIndexFilePath = joinPathNormalized(sourcePath, `../index-static.ts`);
 const libSourcePath = joinPathNormalized(sourcePath, `../lib/src/`);
 const destWebPagesPath = joinPathNormalized(__dirname, `../../ricklove_me/pages`);
+const sourcePublicPath = joinPathNormalized(sourcePath, `../public`);
+const destPublicPath = joinPathNormalized(__dirname, `../../ricklove_me/public`);
 
 export const build = async () => {
   const pageFiles = await getPageFiles(sourcePagesPath);
@@ -18,6 +20,7 @@ export const build = async () => {
   await copyAssetsToLib(sourcePath, libSourcePath);
   await createNextJsWebPages(destWebPagesPath, pageFiles);
   await createNextJsAppJs(destWebPagesPath);
+  await copyNextJsPublicFiles(destPublicPath, sourcePublicPath);
 };
 
 // eslint-disable-next-line @typescript-eslint/no-floating-promises

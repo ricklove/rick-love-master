@@ -1,6 +1,6 @@
 import fsRaw from 'fs';
 import path from 'path';
-import { joinPathNormalized } from '@ricklove/utils-files';
+import { getAllFiles, joinPathNormalized } from '@ricklove/utils-files';
 const fs = fsRaw.promises;
 
 export const createNextJsWebPages = async (
@@ -74,5 +74,15 @@ const CustomApp = ({ Component, pageProps }: { Component: (props: unknown) => JS
 
 export default CustomApp;
 `.trimStart(),
+  );
+};
+
+export const copyNextJsPublicFiles = async (destPath: string, sourcePath: string) => {
+  const publicFiles = await getAllFiles(sourcePath);
+  await Promise.all(
+    publicFiles.map(async (f) => {
+      await fs.mkdir(path.dirname(f), { recursive: true });
+      await fs.copyFile(f, joinPathNormalized(f).replace(sourcePath, destPath));
+    }),
   );
 };
