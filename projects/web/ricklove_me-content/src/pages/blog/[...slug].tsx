@@ -7,6 +7,5 @@ export type PageProps = {
 };
 
 export const Page = (props: PageProps) => {
-
-  return <PostPage data={props.post}/>;
+  return <PostPage data={props.post} />;
 };

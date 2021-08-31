@@ -1,5 +1,5 @@
-import { css, Global } from '@emotion/react';
 import React, { ReactNode } from 'react';
+import { css, Global } from '@emotion/react';
 
 const styles = css`
 body {
@@ -9,12 +9,10 @@ body {
 `;
 
 export const LayoutGame = ({ children }: { children: ReactNode }) => {
-    return (
-        <>
-            <Global styles={styles}/>
-            <div>
-                {children}
-            </div>
-        </>
-    );
+  return (
+    <>
+      <Global styles={styles} />
+      <div>{children}</div>
+    </>
+  );
 };

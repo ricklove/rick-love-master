@@ -8,13 +8,15 @@ import { PostPageData } from '../../components/post/post';
 const getWebProjectPath = () => process.cwd();
 const getBlogContentPath = () => joinPathNormalized(getWebProjectPath(), `../../../_old/code/blog-content`);
 const getPostsPath = () => joinPathNormalized(getBlogContentPath(), `./posts`);
+const getPostsIgnorePath = () => joinPathNormalized(getBlogContentPath(), `./posts/future`);
 const getCachePath = () => joinPathNormalized(getWebProjectPath(), `./cache/markdownCache.json`);
 const getPublicPath = () => joinPathNormalized(getWebProjectPath(), `./public`);
+const publicBlogContentRelativePath = `/media/blog-content`;
+
 export const getPostSitePath = (slug: string[]) => `/blog/${slug.join(`/`)}`;
 
 const calculateBlogContentSitePath = (sourceFilePath: string, mediaPath: string) => {
   const blogContentSourceDir = joinPathNormalized(getBlogContentPath());
-  const publicBlogContentRelativePath = `/blog-content`;
   const blogContentDestDir = joinPathNormalized(getPublicPath(), publicBlogContentRelativePath);
 
   const sourceFileRelPath = joinPathNormalized(sourceFilePath).replace(blogContentSourceDir, ``);
@@ -37,10 +39,12 @@ type PostData = {
 
 export const getPostDataCached = async (): Promise<PostData[]> => {
   const allFiles = await getAllFiles(getPostsPath());
+  const ignorePostsPath = joinPathNormalized(getPostsIgnorePath());
   const markdownFilePaths = allFiles
     .filter((x) => x.endsWith(`.md`))
     .map((x) => joinPathNormalized(x))
-    .filter((x) => !x.includes(`/future/`));
+    .filter((x) => !x.startsWith(ignorePostsPath));
+
   const fileChangeTimesMs = await Promise.all(
     markdownFilePaths.map(async (f) => {
       const fStat = await fs.stat(f);

@@ -116,7 +116,22 @@ module.exports = {
       'error',
       {
         // The default grouping, but with no blank lines.
-        groups: [['^\\u0000', '^@?\\w', '^', '^@ricklove', '^\\.']],
+        groups: [
+          [
+            // React
+            '^react',
+            // Side effect imports
+            '^\\u0000',
+            // Things that start with a letter (or digit or underscore), or `@` followed by a letter.
+            '^@?\\w',
+            // Catch-all
+            '^',
+            // Monorepo modules
+            '^@ricklove',
+            // Relative imports
+            '^\\.',
+          ],
+        ],
       },
     ],
     '@typescript-eslint/no-unused-vars': 'off',

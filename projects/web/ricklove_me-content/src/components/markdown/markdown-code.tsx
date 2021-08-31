@@ -1,6 +1,6 @@
 /* eslint-disable simple-import-sort/imports */
 /* eslint-disable react/prop-types */
-import React, { } from 'react';
+import React from 'react';
 import Lowlight from 'react-lowlight';
 import js from 'highlight.js/lib/languages/javascript';
 import ts from 'highlight.js/lib/languages/typescript';
@@ -21,14 +21,8 @@ Lowlight.registerLanguage(`cs`, cs);
 // Lowlight.registerAlias({ cs: [`csharp`] });
 
 export const MarkdownCode = (props: { language?: string; value: string; inline?: boolean }) => {
-    // eslint-disable-next-line no-console
-    console.log(`renderCodeBlock`, { props });
+  // eslint-disable-next-line no-console
+  console.log(`renderCodeBlock`, { props });
 
-    return (
-        <Lowlight
-            language={props.language || `js`}
-            value={props.value || ``}
-            inline={props.inline || false}
-        />
-    );
+  return <Lowlight language={props.language || `js`} value={props.value || ``} inline={props.inline || false} />;
 };

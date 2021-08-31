@@ -6,8 +6,11 @@ export type PageProps = {
 };
 
 export const Page = (props: PageProps) => {
-
-    return <PostIndexPage data={{
+  return (
+    <PostIndexPage
+      data={{
         posts: props.posts,
-    }}/>;
+      }}
+    />
+  );
 };
