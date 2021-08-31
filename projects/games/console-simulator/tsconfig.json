@@ -3,5 +3,5 @@
   "compilerOptions": {
     "lib": ["DOM", "ES2020"]
   },
-  "include": ["index.ts", "src"]
+  "include": ["index.ts"]
 }

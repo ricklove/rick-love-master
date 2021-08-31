@@ -1,4 +1,4 @@
-import './console-simulator.css';
+import './console-simulator.module.css';
 import React, { useEffect, useRef, useState } from 'react';
 import { ConCommandResult } from './types';
 import { delay } from './utils';
