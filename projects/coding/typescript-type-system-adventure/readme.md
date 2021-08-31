@@ -1,7 +1,7 @@
 ### Typescript Type System Adventure
 
 @author Rick Love
-@date   2020-10-24
+@date 2020-10-24
 @license This work is licensed under a Creative Commons Attribution-NonCommercial-NoDerivatives 4.0 International License.
 
 ### Summary
@@ -18,12 +18,8 @@ This is a text adventure entirely implemented in the typescript type system.
 import { gameStart } from '@ricklove/typescript-type-system-adventure';
 
 const play = () => {
-
-    return gameStart
-        .command(`look`).execute
-        ;
+  return gameStart.command(`look`).execute;
 };
-
 ```
 
 ### Help
@@ -36,7 +32,6 @@ Commands to try:
 - open envelope
 - read letter
 - move house
-
 
 ### Ascii Art
 
@@ -61,7 +56,7 @@ Commands to try:
 :.....................................................:
 ```
 
-### Note: 
+### Note:
 
 This is a work of fiction. It's not code that you can run or anything. It's a fun toy playing with the typescript type system.
 Feel free to learn and make your own, but please give me credit for coming up with the idea with this link:
