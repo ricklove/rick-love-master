@@ -60,8 +60,8 @@ export const createNextJsAppJs = async (destPath: string) => {
   await fs.writeFile(
     joinPathNormalized(destPath, `_app.tsx`),
     `
-import Link from 'next/link';
 import React from 'react';
+import Link from 'next/link';
 import { setupNavigation } from '@ricklove/ricklove_me-content/lib/src/components/site';
 
 setupNavigation({
