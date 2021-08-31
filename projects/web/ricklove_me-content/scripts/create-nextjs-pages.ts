@@ -61,6 +61,7 @@ export const createNextJsAppJs = async (destPath: string) => {
     joinPathNormalized(destPath, `_app.tsx`),
     `
 import React from 'react';
+import Head from 'next/head';
 import Link from 'next/link';
 import { setupNavigation } from '@ricklove/ricklove_me-content/lib/src/components/site';
 
@@ -69,7 +70,18 @@ setupNavigation({
 });
 
 const CustomApp = ({ Component, pageProps }: { Component: (props: unknown) => JSX.Element; pageProps: unknown }) => {
-  return <Component {...pageProps} />;
+  return (
+    <>
+      <Head>
+        <meta
+          name='viewport'
+          content='width=device-width, initial-scale=1, shrink-to-fit=no'
+          data-react-helmet='true'
+        />
+      </Head>
+      <Component {...pageProps} />
+    </>
+  );
 };
 
 export default CustomApp;
