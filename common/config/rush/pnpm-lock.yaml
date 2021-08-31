@@ -2,6 +2,7 @@ lockfileVersion: 5.3
 
 specifiers:
   '@babel/core': ^7.0.0
+  '@emotion/react': ~11.4.1
   '@loadable/component': ^5.12.0
   '@rush-temp/config-eslint': file:./projects/config-eslint.tgz
   '@rush-temp/config-lib-rig': file:./projects/config-lib-rig.tgz
@@ -42,11 +43,12 @@ specifiers:
 
 dependencies:
   '@babel/core': 7.15.0
+  '@emotion/react': 11.4.1_56f22c50b68024c6e259393098372ce5
   '@loadable/component': 5.15.0_react@17.0.2
   '@rush-temp/config-eslint': file:projects/config-eslint.tgz
   '@rush-temp/config-lib-rig': file:projects/config-lib-rig.tgz
-  '@rush-temp/console-simulator': file:projects/console-simulator.tgz
-  '@rush-temp/dork': file:projects/dork.tgz
+  '@rush-temp/console-simulator': file:projects/console-simulator.tgz_@babel+core@7.15.0
+  '@rush-temp/dork': file:projects/dork.tgz_@babel+core@7.15.0
   '@rush-temp/example-lib-lib': file:projects/example-lib-lib.tgz
   '@rush-temp/example-node-lib': file:projects/example-node-lib.tgz
   '@rush-temp/example-web-lib': file:projects/example-web-lib.tgz
@@ -387,6 +389,13 @@ packages:
       regenerator-runtime: 0.13.9
     dev: false
 
+  /@babel/runtime/7.15.3:
+    resolution: {integrity: sha512-OvwMLqNXkCXSz1kSm58sEsNuhqOx/fKpnUnKnFB5v8uDda5bLNEHNgKPvhDN6IU0LDcnHQ90LlJ0Q6jnyBSIBA==}
+    engines: {node: '>=6.9.0'}
+    dependencies:
+      regenerator-runtime: 0.13.9
+    dev: false
+
   /@babel/template/7.14.5:
     resolution: {integrity: sha512-6Z3Po85sfxRGachLULUhOmvAaOo7xCvqGQtxINai2mEGPFm6pQ4z5QInFnUrRpfoSV60BnjyF5F3c+15fxFV1g==}
     engines: {node: '>=6.9.0'}
@@ -444,6 +453,74 @@ packages:
     engines: {node: '>=12'}
     dependencies:
       '@cspotcode/source-map-consumer': 0.8.0
+    dev: false
+
+  /@emotion/cache/11.4.0:
+    resolution: {integrity: sha512-Zx70bjE7LErRO9OaZrhf22Qye1y4F7iDl+ITjet0J+i+B88PrAOBkKvaAWhxsZf72tDLajwCgfCjJ2dvH77C3g==}
+    dependencies:
+      '@emotion/memoize': 0.7.5
+      '@emotion/sheet': 1.0.2
+      '@emotion/utils': 1.0.0
+      '@emotion/weak-memoize': 0.2.5
+      stylis: 4.0.10
+    dev: false
+
+  /@emotion/hash/0.8.0:
+    resolution: {integrity: sha512-kBJtf7PH6aWwZ6fka3zQ0p6SBYzx4fl1LoZXE2RrnYST9Xljm7WfKJrU4g/Xr3Beg72MLrp1AWNUmuYJTL7Cow==}
+    dev: false
+
+  /@emotion/memoize/0.7.5:
+    resolution: {integrity: sha512-igX9a37DR2ZPGYtV6suZ6whr8pTFtyHL3K/oLUotxpSVO2ASaprmAe2Dkq7tBo7CRY7MMDrAa9nuQP9/YG8FxQ==}
+    dev: false
+
+  /@emotion/react/11.4.1_56f22c50b68024c6e259393098372ce5:
+    resolution: {integrity: sha512-pRegcsuGYj4FCdZN6j5vqCALkNytdrKw3TZMekTzNXixRg4wkLsU5QEaBG5LC6l01Vppxlp7FE3aTHpIG5phLg==}
+    peerDependencies:
+      '@babel/core': ^7.0.0
+      '@types/react': '*'
+      react: '>=16.8.0'
+    peerDependenciesMeta:
+      '@babel/core':
+        optional: true
+      '@types/react':
+        optional: true
+    dependencies:
+      '@babel/core': 7.15.0
+      '@babel/runtime': 7.15.3
+      '@emotion/cache': 11.4.0
+      '@emotion/serialize': 1.0.2
+      '@emotion/sheet': 1.0.2
+      '@emotion/utils': 1.0.0
+      '@emotion/weak-memoize': 0.2.5
+      '@types/react': 17.0.19
+      hoist-non-react-statics: 3.3.2
+      react: 17.0.2
+    dev: false
+
+  /@emotion/serialize/1.0.2:
+    resolution: {integrity: sha512-95MgNJ9+/ajxU7QIAruiOAdYNjxZX7G2mhgrtDWswA21VviYIRP1R5QilZ/bDY42xiKsaktP4egJb3QdYQZi1A==}
+    dependencies:
+      '@emotion/hash': 0.8.0
+      '@emotion/memoize': 0.7.5
+      '@emotion/unitless': 0.7.5
+      '@emotion/utils': 1.0.0
+      csstype: 3.0.8
+    dev: false
+
+  /@emotion/sheet/1.0.2:
+    resolution: {integrity: sha512-QQPB1B70JEVUHuNtzjHftMGv6eC3Y9wqavyarj4x4lg47RACkeSfNo5pxIOKizwS9AEFLohsqoaxGQj4p0vSIw==}
+    dev: false
+
+  /@emotion/unitless/0.7.5:
+    resolution: {integrity: sha512-OWORNpfjMsSSUBVrRBVGECkhWcULOAJz9ZW8uK9qgxD+87M7jHRcvh/A96XXNhXTLmKcoYSQtBEX7lHMO7YRwg==}
+    dev: false
+
+  /@emotion/utils/1.0.0:
+    resolution: {integrity: sha512-mQC2b3XLDs6QCW+pDQDiyO/EdGZYOygE8s5N5rrzjSI4M3IejPE/JPndCBwRT9z982aqQNi6beWs1UeayrQxxA==}
+    dev: false
+
+  /@emotion/weak-memoize/0.2.5:
+    resolution: {integrity: sha512-6U71C2Wp7r5XtFtQzYrW5iKFT67OixrSxjI4MptCHzdSVlgabczzqLe0ZSgnub/5Kp4hSbpDB1tMytZY9pwxxA==}
     dev: false
 
   /@eslint/eslintrc/0.4.3:
@@ -8133,6 +8210,10 @@ packages:
     resolution: {integrity: sha512-8/3pSmthWM7lsPBKv7NXkzn2Uc9W7NotcwGNpJaa3k7WMM1XDCA4MgT5k/8BIexd5ydZdboXtU90XH9Ec4Bv/Q==}
     dev: false
 
+  /stylis/4.0.10:
+    resolution: {integrity: sha512-m3k+dk7QeJw660eIKRRn3xPF6uuvHs/FFzjX3HQ5ove0qYsiygoAhwn5a3IYKaZPo5LrYD0rfVmtv1gNY1uYwg==}
+    dev: false
+
   /supports-color/2.0.0:
     resolution: {integrity: sha1-U10EXOa2Nj+kARcIRimZXp3zJMc=}
     engines: {node: '>=0.8.0'}
@@ -9251,22 +9332,30 @@ packages:
       - webpack-command
     dev: false
 
-  file:projects/console-simulator.tgz:
-    resolution: {integrity: sha512-DxeNGf60+t6ihCXqXyYE7b9QCBodPvgw31Ci6xnezZxdT8FhpYAHAa4hTxGS8r/p9zMSN+sAs1+5RIJSfQjo0g==, tarball: file:projects/console-simulator.tgz}
+  file:projects/console-simulator.tgz_@babel+core@7.15.0:
+    resolution: {integrity: sha512-Hyd5oDT+vnHLCPpGMk/3AGTSLEkUyhM5RPPhuqqpwmY/hZrjGITGYQ5TKBTmQvM2/h3YmWRUtYYoGsKb0725CQ==, tarball: file:projects/console-simulator.tgz}
+    id: file:projects/console-simulator.tgz
     name: '@rush-temp/console-simulator'
     version: 0.0.0
     dependencies:
+      '@emotion/react': 11.4.1_56f22c50b68024c6e259393098372ce5
       '@types/react': 17.0.19
       react: 17.0.2
+    transitivePeerDependencies:
+      - '@babel/core'
     dev: false
 
-  file:projects/dork.tgz:
-    resolution: {integrity: sha512-juPSTgWn4pgzi5hodLR6sr0tFTjhe7gYRD8hAeOQlnmzZLjNxD52oyFvVh6PnYPNgzX028yX3W8/D1PiCNrPow==, tarball: file:projects/dork.tgz}
+  file:projects/dork.tgz_@babel+core@7.15.0:
+    resolution: {integrity: sha512-Oo84hGnbqWNcgOONRB0Y3HOuAa4PFVvSfsFciSpqwWt4zaVRUErlDQB3PVJ5JxIZ8nqQFPNewUaoPhw3fC9xAA==, tarball: file:projects/dork.tgz}
+    id: file:projects/dork.tgz
     name: '@rush-temp/dork'
     version: 0.0.0
     dependencies:
+      '@emotion/react': 11.4.1_56f22c50b68024c6e259393098372ce5
       '@types/react': 17.0.19
       react: 17.0.2
+    transitivePeerDependencies:
+      - '@babel/core'
     dev: false
 
   file:projects/example-lib-lib.tgz:
@@ -9290,7 +9379,7 @@ packages:
     dev: false
 
   file:projects/ricklove_me-content.tgz_typescript@4.3.5:
-    resolution: {integrity: sha512-BOeQiYkyhrWwBMkZAA5xsJEqPvqDcTyPa1wOmAjUUHzcEqA90znw2m0jvXxr2DxTAq6riLJqF2Sd7e4Pd3J8lw==, tarball: file:projects/ricklove_me-content.tgz}
+    resolution: {integrity: sha512-fcc7alOtIU/gojPfLTzWJFpyp0wiL5Tra3Mgvt84/fRWkf4AWjAP8YZx6UjUG7k85/hDK2zfH9M4JFAxBWtNwQ==, tarball: file:projects/ricklove_me-content.tgz}
     id: file:projects/ricklove_me-content.tgz
     name: '@rush-temp/ricklove_me-content'
     version: 0.0.0

@@ -1,5 +1,5 @@
-import './console-simulator.module.css';
 import React, { useEffect, useRef, useState } from 'react';
+import { ConsoleSimulatorCss } from './console-simulator-css';
 import { ConCommandResult } from './types';
 import { delay } from './utils';
 
@@ -83,29 +83,32 @@ export const ConsoleSimulator = (props: {
     // Force Expanded
     const isExpandedActual = props.forceExpanded ?? isExpanded;
     return (
-        <div className='console-simulator' style={{ display: isExpandedActual ? `block` : `inline-block` }} onClick={focusOnInput}>
-            {isExpandedActual && <span>{consoleVersion}</span>}
-            {isExpandedActual && (lines.map((x, i) => (
-                <div key={i}>
-                    <span>{x.prefix}</span>
-                    <span>{x.text}</span>
-                    {x.Component && (<span><x.Component /></span>)}
+        <>
+            <ConsoleSimulatorCss/>
+            <div className='console-simulator' style={{ display: isExpandedActual ? `block` : `inline-block` }} onClick={focusOnInput}>
+                {isExpandedActual && <span>{consoleVersion}</span>}
+                {isExpandedActual && (lines.map((x, i) => (
+                    <div key={i}>
+                        <span>{x.prefix}</span>
+                        <span>{x.text}</span>
+                        {x.Component && (<span><x.Component /></span>)}
+                    </div>
+                )))}
+                <div style={{ display: isExpandedActual ? `block` : `inline-block` }}>
+                    <span>{prompt} </span>
+                    <span>{command}</span>
+                    <span className='console-simulator-cursor' style={isFocused ? {} : { backgroundColor: `#000000` }}>&nbsp;</span>
+                    <input type='text'
+                        ref={elementInput}
+                        style={{ opacity: 0 }}
+                        autoCorrect='off' autoCapitalize='none'
+                        value={command}
+                        onFocus={() => setIsFocused(true)}
+                        onBlur={() => setIsFocused(false)}
+                        onChange={x => setCommand(x.target.value)}
+                        onKeyPress={e => e.key === `Enter` && hitEnter()} />
                 </div>
-            )))}
-            <div style={{ display: isExpandedActual ? `block` : `inline-block` }}>
-                <span>{prompt} </span>
-                <span>{command}</span>
-                <span className='console-simulator-cursor' style={isFocused ? {} : { backgroundColor: `#000000` }}>&nbsp;</span>
-                <input type='text'
-                    ref={elementInput}
-                    style={{ opacity: 0 }}
-                    autoCorrect='off' autoCapitalize='none'
-                    value={command}
-                    onFocus={() => setIsFocused(true)}
-                    onBlur={() => setIsFocused(false)}
-                    onChange={x => setCommand(x.target.value)}
-                    onKeyPress={e => e.key === `Enter` && hitEnter()} />
             </div>
-        </div>
+        </>
     );
 };
