@@ -1,4 +1,4 @@
-import './console-simulator.css';
+import './console-simulator.module.css';
 import React from 'react';
 
 export const ConsoleSimulatorPlaceholder = ({ initialPrompt, onClick }: { initialPrompt: string; onClick: () => void }) => {

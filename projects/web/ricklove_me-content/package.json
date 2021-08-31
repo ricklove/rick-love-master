@@ -7,6 +7,8 @@
     "build:watch": "heft build && ts-node ./scripts/build.ts"
   },
   "dependencies": {
+    "@ricklove/console-simulator": "*",
+    "@ricklove/utils-core": "*",
     "react": "17.0.2",
     "react-markdown": "~6.0.3",
     "react-lowlight": "~2.0.0",
@@ -15,8 +17,8 @@
   },
   "devDependencies": {
     "@ricklove/config-lib-rig": "*",
-    "@ricklove/utils-core": "*",
     "@ricklove/utils-files": "*",
+    "@ricklove/utils-react": "*",
     "@types/node": "12.12.6",
     "@types/react": "~17.0.19",
     "ts-node": "~10.2.1",

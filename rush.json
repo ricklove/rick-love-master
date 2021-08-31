@@ -440,6 +440,10 @@
       "projectFolder": "features/_utils/files"
     },
     {
+      "packageName": "@ricklove/utils-react",
+      "projectFolder": "features/_utils/react"
+    },
+    {
       "packageName": "@ricklove/example-lib-lib",
       "projectFolder": "features/experimental/example-lib-lib"
     },
