@@ -58,19 +58,19 @@ export const getStaticPaths = async () => {
  */
 export const createNextJsAppJs = async (destPath: string) => {
   await fs.writeFile(
-    joinPathNormalized(destPath, `_app.js`),
+    joinPathNormalized(destPath, `_app.tsx`),
     `
-import React from 'react';
 import Link from 'next/link';
+import React from 'react';
 import { setupNavigation } from '@ricklove/ricklove_me-content/lib/src/components/site';
 
 setupNavigation({
-  StaticPageLinkComponent: ({children, to}) => <Link href={to}>{children}</Link>,
+  StaticPageLinkComponent: ({ children, to }) => <Link href={to}>{children}</Link>,
 });
 
-function CustomApp({ Component, pageProps }) {
+const CustomApp = ({ Component, pageProps }: { Component: (props: unknown) => JSX.Element; pageProps: unknown }) => {
   return <Component {...pageProps} />;
-}
+};
 
 export default CustomApp;
 `.trimStart(),
