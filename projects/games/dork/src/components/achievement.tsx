@@ -1,12 +1,7 @@
 import { css, Global } from '@emotion/react';
 import React from 'react';
 
-export const AchievementViewer = (props: { name: string }) => {
-
-
-    return (
-        <div>
-            <Global styles={css`
+const styles = css`
 @keyframes colorChange {
     0% {
         color: #000000;
@@ -52,7 +47,14 @@ div.achievement-label {
     animation-delay: 2s;
     animation-iteration-count: infinite;
 }            
-            `}/>
+`;
+
+export const AchievementViewer = (props: { name: string }) => {
+
+
+    return (
+        <div>
+            <Global styles={styles}/>
             <div className='achievement' style={{ display: `flex` }}>
                 <div style={{ flex: 1 }} />
                 <div className='achievement-label' style={{ fontFamily: `monospace`, color: `#CCCC style={{flex:1}}CC`, fontSize: `0.8rem` }} >New Achievement! </div>

@@ -1,9 +1,7 @@
 import { css, Global } from '@emotion/react';
 import React from 'react';
 
-export const ConsoleSimulatorCss = () => {
-    return (
-        <Global styles={css`
+const styles = css`
 div.console-simulator {
     padding-left: 8px;
     background-color: #000000;
@@ -35,6 +33,10 @@ div.console-simulator {
     100% {
         opacity: 1.0;
     }
-}`}/>
+}`;
+
+export const ConsoleSimulatorCss = () => {
+    return (
+        <Global styles={styles}/>
     );
 };
