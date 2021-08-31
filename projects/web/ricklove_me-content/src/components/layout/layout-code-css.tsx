@@ -1,3 +1,7 @@
+import { css, Global } from '@emotion/react';
+import React from 'react';
+
+const styles = css`
 /* Tomorrow Night Bright Theme */
 
 /* Original theme - https://github.com/chriskempson/tomorrow-theme */
@@ -66,3 +70,6 @@
 .code-wrapper {
     background: black;
 }
+`;
+
+export const LayoutCodeCss = () => <Global styles={styles}/>;

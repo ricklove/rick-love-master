@@ -53,7 +53,7 @@ dependencies:
   '@rush-temp/example-node-lib': file:projects/example-node-lib.tgz
   '@rush-temp/example-web-lib': file:projects/example-web-lib.tgz
   '@rush-temp/ricklove_me': file:projects/ricklove_me.tgz
-  '@rush-temp/ricklove_me-content': file:projects/ricklove_me-content.tgz_typescript@4.3.5
+  '@rush-temp/ricklove_me-content': file:projects/ricklove_me-content.tgz_f0b419a7e119055c71dcaf6063a7ba7a
   '@rush-temp/typescript-type-system-adventure': file:projects/typescript-type-system-adventure.tgz
   '@rush-temp/utils-core': file:projects/utils-core.tgz
   '@rush-temp/utils-files': file:projects/utils-files.tgz
@@ -9378,12 +9378,13 @@ packages:
     version: 0.0.0
     dev: false
 
-  file:projects/ricklove_me-content.tgz_typescript@4.3.5:
-    resolution: {integrity: sha512-fcc7alOtIU/gojPfLTzWJFpyp0wiL5Tra3Mgvt84/fRWkf4AWjAP8YZx6UjUG7k85/hDK2zfH9M4JFAxBWtNwQ==, tarball: file:projects/ricklove_me-content.tgz}
+  file:projects/ricklove_me-content.tgz_f0b419a7e119055c71dcaf6063a7ba7a:
+    resolution: {integrity: sha512-rU19xWNWPfvGgYc8P3WsqJ7euLnfrJo+9ySxPHTK7MBbbWUpQ+to/ruQrPMth1wyIxM5sQcXt91r04Fh/VorLA==, tarball: file:projects/ricklove_me-content.tgz}
     id: file:projects/ricklove_me-content.tgz
     name: '@rush-temp/ricklove_me-content'
     version: 0.0.0
     dependencies:
+      '@emotion/react': 11.4.1_56f22c50b68024c6e259393098372ce5
       '@types/node': 12.12.6
       '@types/react': 17.0.19
       '@types/react-helmet': 6.1.2
@@ -9394,6 +9395,7 @@ packages:
       react-markdown: 6.0.3_4cd822c6044f4c1a7e1f1fea0e728f12
       ts-node: 10.2.1_70d6492c0feb1eb5d83e62cce7c43fd5
     transitivePeerDependencies:
+      - '@babel/core'
       - '@swc/core'
       - '@swc/wasm'
       - supports-color

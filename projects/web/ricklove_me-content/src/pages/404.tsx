@@ -1,12 +1,44 @@
 import React from 'react';
+import { Layout } from '../components/layout/layout';
+import { Markdown } from '../components/markdown/markdown';
+import { PostCss } from '../components/post/post-css';
+import { getNavigation } from '../components/site';
 
-export type PageProps = {
-};
+export type PageProps = {};
 export const Page = (_props: PageProps) => {
+  const Link = getNavigation().StaticPageLinkComponent;
+
+const title = `404 - Not Found`;
+const content = `
+
+## Mamma always said...
+
+Life is like a random website url... You never know what you are going to get.
+
+## Some other stuff
+
+- [Cool Stuff](/blog/cool-stuff)
+
+`;
+
   return (
-    <>
-      <div>404 - Not Found</div>
-      <div>What exactly did you expect to find here?</div>
-    </>
+    <Layout>
+      <PostCss/>
+      <div className='post-item-container' >
+          <div key={title} className='post-item'>
+            <div>
+                <h2 className='post-item-title'>{title}</h2>
+                <div>
+                    <Markdown markdown={content} />
+                </div>
+            </div>
+          </div>
+      </div>
+      <Link to='/'>
+        <div className='link'>
+          <p>Root</p>
+        </div>
+      </Link>
+    </Layout>
   );
 };

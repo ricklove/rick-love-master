@@ -1,6 +1,6 @@
 import fsRaw from 'fs';
 import path from 'path';
-import { getAllFiles, joinPathNormalized } from '@ricklove/utils-files';
+import { joinPathNormalized } from '@ricklove/utils-files';
 const fs = fsRaw.promises;
 
 export const createNextJsWebPages = async (
@@ -52,33 +52,27 @@ export const getStaticPaths = async () => {
   }
 };
 
-export const createNextJsAppJs = async (destPath: string, sourcePath: string) => {
-  const allFiles = await getAllFiles(sourcePath);
-  const globalCssFiles = allFiles.filter((x) => x.endsWith(`.css`) && !x.endsWith(`.module.css`));
-  const cssContent = await Promise.all(
-    globalCssFiles.map(async (fileSourcePath) => {
-      return await fs.readFile(fileSourcePath, { encoding: `utf-8` });
-    }),
-  );
-
-  const allCss = cssContent.join(`\n\n\n`);
-  await fs.writeFile(joinPathNormalized(destPath, `_app.css`), allCss);
+/** Setup NextJs dependencies to be used
+ *
+ * 1. setupNavigation for nextjs using Link component
+ */
+export const createNextJsAppJs = async (destPath: string) => {
   await fs.writeFile(
     joinPathNormalized(destPath, `_app.js`),
     `
-import './_app.css';
-import Link from 'next/link'
+import React from 'react';
+import Link from 'next/link';
 import { setupNavigation } from '@ricklove/ricklove_me-content/lib/src/components/site';
 
 setupNavigation({
   StaticPageLinkComponent: ({children, to}) => <Link href={to}>{children}</Link>,
 });
 
-function MyApp({ Component, pageProps }) {
+function CustomApp({ Component, pageProps }) {
   return <Component {...pageProps} />;
 }
 
-export default MyApp;
+export default CustomApp;
 `.trimStart(),
   );
 };

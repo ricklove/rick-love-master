@@ -3,6 +3,7 @@ import { Layout } from '../layout/layout';
 import { SEO } from '../layout/seo';
 import { Markdown } from '../markdown/markdown';
 import { getNavigation } from '../site';
+import { PostCss } from './post-css';
 import { Utterances } from './utterances';
 
 export type PostPageData = {
@@ -24,6 +25,7 @@ export const PostPage = (props: { data: PostPageData }) => {
 
     return (
         <Layout>
+            <PostCss/>
             <SEO title={title} description={props.data.excerpt} imageUrl={props.data.imageUrl} />
             <div className='post-item-container' >
                 <div className='post-item'>

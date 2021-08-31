@@ -17,7 +17,7 @@ export const build = async () => {
   await createStaticIndex(staticIndexFilePath, pageFiles);
   await copyAssetsToLib(sourcePath, libSourcePath);
   await createNextJsWebPages(destWebPagesPath, pageFiles);
-  await createNextJsAppJs(destWebPagesPath, sourcePath);
+  await createNextJsAppJs(destWebPagesPath);
 };
 
 // eslint-disable-next-line @typescript-eslint/no-floating-promises

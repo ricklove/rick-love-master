@@ -1,15 +1,17 @@
-import React, { ReactNode, useEffect } from 'react';
+import { css, Global } from '@emotion/react';
+import React, { ReactNode } from 'react';
+
+const styles = css`
+body {
+    userSelect: none
+    webkitUserSelect: none
+}
+`;
 
 export const LayoutGame = ({ children }: { children: ReactNode }) => {
-    useEffect(() => {
-        // eslint-disable-next-line @typescript-eslint/no-misused-promises
-        setTimeout(async () => {
-            // eslint-disable-next-line unused-imports/no-unused-vars
-            const importCss = (await import(`./layout-game-css`)).LayoutGameCss;
-        });
-    }, []);
     return (
         <>
+            <Global styles={styles}/>
             <div>
                 {children}
             </div>

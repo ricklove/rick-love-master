@@ -1,3 +1,7 @@
+import { css, Global } from '@emotion/react';
+import React from 'react';
+
+const styles = css`
 div.post-item-container{
     display: flex;
     flex-direction: column;
@@ -92,3 +96,6 @@ span.markdown-image-container img {
     margin-left: auto;
     margin-right: auto;
 }  */
+`;
+
+export const PostCss = () => <Global styles={styles}/>;

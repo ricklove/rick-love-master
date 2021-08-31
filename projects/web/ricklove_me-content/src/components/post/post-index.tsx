@@ -3,6 +3,7 @@ import { Layout } from '../layout/layout';
 import { SEO } from '../layout/seo';
 import { Markdown } from '../markdown/markdown';
 import { getNavigation } from '../site';
+import { PostCss } from './post-css';
 
 export type PostIndexPageData = {
     posts: { sitePath: string; title: string; summary: string }[];
@@ -14,6 +15,7 @@ export const PostIndexPage = (props: { data: PostIndexPageData }) => {
 
     return (
         <Layout>
+            <PostCss/>
             <SEO title='Posts' />
             <div className='post-item-container' >
                 <>
