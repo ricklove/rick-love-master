@@ -7,12 +7,18 @@ specifiers:
   '@rush-temp/config-eslint': file:./projects/config-eslint.tgz
   '@rush-temp/config-lib-rig': file:./projects/config-lib-rig.tgz
   '@rush-temp/console-simulator': file:./projects/console-simulator.tgz
+  '@rush-temp/doodle-client': file:./projects/doodle-client.tgz
+  '@rush-temp/doodle-common': file:./projects/doodle-common.tgz
+  '@rush-temp/doodle-server': file:./projects/doodle-server.tgz
   '@rush-temp/dork': file:./projects/dork.tgz
   '@rush-temp/example-lib-lib': file:./projects/example-lib-lib.tgz
   '@rush-temp/example-node-lib': file:./projects/example-node-lib.tgz
   '@rush-temp/example-web-lib': file:./projects/example-web-lib.tgz
+  '@rush-temp/react-controls': file:./projects/react-controls.tgz
+  '@rush-temp/react-native-lite': file:./projects/react-native-lite.tgz
   '@rush-temp/ricklove_me': file:./projects/ricklove_me.tgz
   '@rush-temp/ricklove_me-content': file:./projects/ricklove_me-content.tgz
+  '@rush-temp/themes': file:./projects/themes.tgz
   '@rush-temp/typescript-type-system-adventure': file:./projects/typescript-type-system-adventure.tgz
   '@rush-temp/utils-core': file:./projects/utils-core.tgz
   '@rush-temp/utils-files': file:./projects/utils-files.tgz
@@ -20,11 +26,14 @@ specifiers:
   '@rushstack/eslint-config': ^2.3.4
   '@rushstack/heft': ^0.36.3
   '@rushstack/heft-web-rig': ^0.4.4
+  '@types/aws-sdk': ^2.7.0
   '@types/heft-jest': 1.0.2
   '@types/loadable__component': ^5.10.0
   '@types/node': 12.12.6
   '@types/react': ~17.0.19
   '@types/react-helmet': ~6.1.2
+  '@types/uuid': ^8.3.0
+  aws-sdk: ^2.749.0
   copyfiles: ~2.4.1
   eslint: ~7.32.0
   eslint-plugin-import-quotes: ~0.0.1
@@ -35,11 +44,13 @@ specifiers:
   react: 17.0.2
   react-dom: 17.0.2
   react-helmet: ~6.1.0
+  react-icons: ^3.10.0
   react-lowlight: ~2.0.0
   react-markdown: ~6.0.3
   rimraf: ~3.0.2
   ts-node: ~10.2.1
   typescript: ~4.3.5
+  uuid: ^8.3.0
 
 dependencies:
   '@babel/core': 7.15.0
@@ -48,12 +59,18 @@ dependencies:
   '@rush-temp/config-eslint': file:projects/config-eslint.tgz
   '@rush-temp/config-lib-rig': file:projects/config-lib-rig.tgz
   '@rush-temp/console-simulator': file:projects/console-simulator.tgz_@babel+core@7.15.0
+  '@rush-temp/doodle-client': file:projects/doodle-client.tgz
+  '@rush-temp/doodle-common': file:projects/doodle-common.tgz
+  '@rush-temp/doodle-server': file:projects/doodle-server.tgz
   '@rush-temp/dork': file:projects/dork.tgz_@babel+core@7.15.0
   '@rush-temp/example-lib-lib': file:projects/example-lib-lib.tgz
   '@rush-temp/example-node-lib': file:projects/example-node-lib.tgz
   '@rush-temp/example-web-lib': file:projects/example-web-lib.tgz
+  '@rush-temp/react-controls': file:projects/react-controls.tgz_@babel+core@7.15.0
+  '@rush-temp/react-native-lite': file:projects/react-native-lite.tgz_@babel+core@7.15.0
   '@rush-temp/ricklove_me': file:projects/ricklove_me.tgz
   '@rush-temp/ricklove_me-content': file:projects/ricklove_me-content.tgz_f0b419a7e119055c71dcaf6063a7ba7a
+  '@rush-temp/themes': file:projects/themes.tgz
   '@rush-temp/typescript-type-system-adventure': file:projects/typescript-type-system-adventure.tgz
   '@rush-temp/utils-core': file:projects/utils-core.tgz
   '@rush-temp/utils-files': file:projects/utils-files.tgz
@@ -61,11 +78,14 @@ dependencies:
   '@rushstack/eslint-config': 2.4.0_eslint@7.32.0+typescript@4.3.5
   '@rushstack/heft': 0.36.3
   '@rushstack/heft-web-rig': 0.4.4_@rushstack+heft@0.36.3
+  '@types/aws-sdk': 2.7.0
   '@types/heft-jest': 1.0.2
   '@types/loadable__component': 5.13.4
   '@types/node': 12.12.6
   '@types/react': 17.0.19
   '@types/react-helmet': 6.1.2
+  '@types/uuid': 8.3.1
+  aws-sdk: 2.980.0
   copyfiles: 2.4.1
   eslint: 7.32.0
   eslint-plugin-import-quotes: 0.0.1
@@ -76,11 +96,13 @@ dependencies:
   react: 17.0.2
   react-dom: 17.0.2_react@17.0.2
   react-helmet: 6.1.0_react@17.0.2
+  react-icons: 3.11.0_react@17.0.2
   react-lowlight: 2.0.0_highlight.js@9.1.0+react@17.0.2
   react-markdown: 6.0.3_4cd822c6044f4c1a7e1f1fea0e728f12
   rimraf: 3.0.2
   ts-node: 10.2.1_70d6492c0feb1eb5d83e62cce7c43fd5
   typescript: 4.3.5
+  uuid: 8.3.2
 
 packages:
 
@@ -1163,6 +1185,13 @@ packages:
     resolution: {integrity: sha512-ebDJ9b0e702Yr7pWgB0jzm+CX4Srzz8RcXtLJDJB+BSccqMa36uyH/zUsSYao5+BD1ytv3k3rPYCq4mAE1hsXA==}
     dev: false
 
+  /@types/aws-sdk/2.7.0:
+    resolution: {integrity: sha1-g1iLPRTr3KHUzl4CM4dXdWjOgvM=}
+    deprecated: This is a stub types definition for aws-sdk (https://github.com/aws/aws-sdk-js). aws-sdk provides its own type definitions, so you don't need @types/aws-sdk installed!
+    dependencies:
+      aws-sdk: 2.980.0
+    dev: false
+
   /@types/babel__core/7.1.15:
     resolution: {integrity: sha512-bxlMKPDbY8x5h6HBwVzEOk2C8fb6SLfYQ5Jw3uBYuYF1lfWk/kbLd81la82vrIkBb0l+JdmrZaDikPrNxpS/Ew==}
     dependencies:
@@ -1323,6 +1352,10 @@ packages:
 
   /@types/unist/2.0.6:
     resolution: {integrity: sha512-PBjIUxZHOuj0R15/xuwJYjFi+KZdNFrehocChv4g5hu6aFroHue8m0lBP0POdK2nKzbw0cgV1mws8+V/JAcEkQ==}
+    dev: false
+
+  /@types/uuid/8.3.1:
+    resolution: {integrity: sha512-Y2mHTRAbqfFkpjldbkHGY8JIzRN6XqYRliG8/24FcHm2D2PwW24fl5xMRTVGdrb7iMrwCaIEbLWerGIkXuFWVg==}
     dev: false
 
   /@types/yargs-parser/20.2.1:
@@ -1943,6 +1976,22 @@ packages:
   /available-typed-arrays/1.0.4:
     resolution: {integrity: sha512-SA5mXJWrId1TaQjfxUYghbqQ/hYioKmLJvPJyDuYRtXXenFNMjj4hSSt1Cf1xsuXSXrtxrVC5Ot4eU6cOtBDdA==}
     engines: {node: '>= 0.4'}
+    dev: false
+
+  /aws-sdk/2.980.0:
+    resolution: {integrity: sha512-jPtCZngNOW4+rE9mPQd4fp2bU1c2mkRRrZcpa6jaSDo/WtjnfR7wtIrjKZYfyR2s0LNFqZRJadblYlroT3o8ww==}
+    engines: {node: '>= 0.8.0'}
+    requiresBuild: true
+    dependencies:
+      buffer: 4.9.2
+      events: 1.1.1
+      ieee754: 1.1.13
+      jmespath: 0.15.0
+      querystring: 0.2.0
+      sax: 1.2.1
+      url: 0.10.3
+      uuid: 3.3.2
+      xml2js: 0.4.19
     dev: false
 
   /aws-sign2/0.7.0:
@@ -3549,6 +3598,11 @@ packages:
     resolution: {integrity: sha512-8guHBZCwKnFhYdHr2ysuRWErTwhoN2X8XELRlrRwpmfeY2jjuUN4taQMsULKUVo1K4DvZl+0pgfyoysHxvmvEw==}
     dev: false
 
+  /events/1.1.1:
+    resolution: {integrity: sha1-nr23Y1rQmccNzEwqH1AEKI6L2SQ=}
+    engines: {node: '>=0.4.x'}
+    dev: false
+
   /events/3.3.0:
     resolution: {integrity: sha512-mQw+2fkQbALzQ7V0MY0IqdnXNOeTtP4r0lN9z7AAawCXgqea7bDii20AYrIBrFd/Hx0M2Ocz6S111CaFkUcb0Q==}
     engines: {node: '>=0.8.x'}
@@ -4439,6 +4493,10 @@ packages:
 
   /icss-replace-symbols/1.1.0:
     resolution: {integrity: sha1-Bupvg2ead0njhs/h/oEq5dsiPe0=}
+    dev: false
+
+  /ieee754/1.1.13:
+    resolution: {integrity: sha512-4vf7I2LYV/HaWerSo3XmlMkp5eZ83i+/CDluXi/IGTs/O1sejBNhTtnxzmRZfvOUqj7lZjqHkeTvpgSFDlWZTg==}
     dev: false
 
   /ieee754/1.2.1:
@@ -5422,6 +5480,11 @@ packages:
 
   /jju/1.4.0:
     resolution: {integrity: sha1-o6vicYryQaKykE+EpiWXDzia4yo=}
+    dev: false
+
+  /jmespath/0.15.0:
+    resolution: {integrity: sha1-o/Iiqarp+Wb10nx5ZRDigJF2Qhc=}
+    engines: {node: '>= 0.6.0'}
     dev: false
 
   /js-base64/2.6.4:
@@ -7113,6 +7176,15 @@ packages:
       react-side-effect: 2.1.1_react@17.0.2
     dev: false
 
+  /react-icons/3.11.0_react@17.0.2:
+    resolution: {integrity: sha512-JRgiI/vdF6uyBgyZhVyYJUZAop95Sy4XDe/jmT3R/bKliFWpO/uZBwvSjWEdxwzec7SYbEPNPck0Kff2tUGM2Q==}
+    peerDependencies:
+      react: '*'
+    dependencies:
+      camelcase: 5.3.1
+      react: 17.0.2
+    dev: false
+
   /react-is/16.13.1:
     resolution: {integrity: sha512-24e6ynE2H+OKt4kqsOvNd8kBpV65zoxbA4BVsEOB3ARVWQki/DHzaUoC5KuON/BiccDaCCTZBuOcfZs70kR8bQ==}
     dev: false
@@ -7554,6 +7626,10 @@ packages:
       lodash: 4.17.21
       scss-tokenizer: 0.2.3
       yargs: 13.3.2
+    dev: false
+
+  /sax/1.2.1:
+    resolution: {integrity: sha1-e45lYZCyKOgaZq6nSEgNgozS03o=}
     dev: false
 
   /saxes/3.1.11:
@@ -8736,6 +8812,13 @@ packages:
       requires-port: 1.0.0
     dev: false
 
+  /url/0.10.3:
+    resolution: {integrity: sha1-Ah5NnHcF8hu/N9A861h2dAJ3TGQ=}
+    dependencies:
+      punycode: 1.3.2
+      querystring: 0.2.0
+    dev: false
+
   /url/0.11.0:
     resolution: {integrity: sha1-ODjpfPxgUh63PFJajlW/3Z4uKPE=}
     dependencies:
@@ -8789,9 +8872,20 @@ packages:
     engines: {node: '>= 0.4.0'}
     dev: false
 
+  /uuid/3.3.2:
+    resolution: {integrity: sha512-yXJmeNaw3DnnKAOKJE51sL/ZaYfWJRl1pK9dr19YFCu0ObS231AB1/LbqTKRAQ5kw8A90rA6fr4riOUpTZvQZA==}
+    deprecated: Please upgrade  to version 7 or higher.  Older versions may use Math.random() in certain circumstances, which is known to be problematic.  See https://v8.dev/blog/math-random for details.
+    hasBin: true
+    dev: false
+
   /uuid/3.4.0:
     resolution: {integrity: sha512-HjSDRw6gZE5JMggctHBcjVak08+KEVhSIiDzFnT9S9aegmp85S/bReBVTb4QTFaRNptJ9kuYaNhnbNEOkbKb/A==}
     deprecated: Please upgrade  to version 7 or higher.  Older versions may use Math.random() in certain circumstances, which is known to be problematic.  See https://v8.dev/blog/math-random for details.
+    hasBin: true
+    dev: false
+
+  /uuid/8.3.2:
+    resolution: {integrity: sha512-+NYs2QeMWy+GWFOEm9xnn6HCDp0l7QBD7ml8zLUmJ+93Q5NF0NocErnwkTkXVFNiX3/fpC6afS8Dhb/gz7R7eg==}
     hasBin: true
     dev: false
 
@@ -9176,6 +9270,18 @@ packages:
     resolution: {integrity: sha512-A5CUptxDsvxKJEU3yO6DuWBSJz/qizqzJKOMIfUJHETbBw/sFaDxgd6fxm1ewUaM0jZ444Fc5vC5ROYurg/4Pw==}
     dev: false
 
+  /xml2js/0.4.19:
+    resolution: {integrity: sha512-esZnJZJOiJR9wWKMyuvSE1y6Dq5LCuJanqhxslH2bxM6duahNZ+HMpCLhBQGZkbX6xRf8x1Y2eJlgt2q3qo49Q==}
+    dependencies:
+      sax: 1.2.1
+      xmlbuilder: 9.0.7
+    dev: false
+
+  /xmlbuilder/9.0.7:
+    resolution: {integrity: sha1-Ey7mPS7FVlxVfiD0wi35rKaGsQ0=}
+    engines: {node: '>=4.0'}
+    dev: false
+
   /xmlchars/2.2.0:
     resolution: {integrity: sha512-JZnDKK8B0RCDw84FNdDAIpZK+JuJw+s7Lz8nksI7SIuU3UXJJslUthsi+uWBUYOwPFwW7W7PRLRfUKpxjtjFCw==}
     dev: false
@@ -9345,6 +9451,33 @@ packages:
       - '@babel/core'
     dev: false
 
+  file:projects/doodle-client.tgz:
+    resolution: {integrity: sha512-RopfAwNThhQ01eoUODFyCh+DIJXCSB5J4ytBo7ugmdOS/7Z9pcM0WrpQB5le+eAiBttps6UD2gg63AhCqqTK0w==, tarball: file:projects/doodle-client.tgz}
+    name: '@rush-temp/doodle-client'
+    version: 0.0.0
+    dependencies:
+      '@types/react': 17.0.19
+      react: 17.0.2
+    dev: false
+
+  file:projects/doodle-common.tgz:
+    resolution: {integrity: sha512-l0OcEUjvIa4AfMSkbiTB0yl5PrxOwCJ+WAz/SZBj0O2UQgBBFlptz0acsuSjdddLkDeg3hLYHE8EOrWlfNVnHg==, tarball: file:projects/doodle-common.tgz}
+    name: '@rush-temp/doodle-common'
+    version: 0.0.0
+    dev: false
+
+  file:projects/doodle-server.tgz:
+    resolution: {integrity: sha512-ZopCMZ7JELOyyZXxzUd1c2yXEAdPtaHAa1wEmUEAJA7Xe5ThI6Q5x29ckE+E0SCpmSKfx6SqYoJJzgMx/CKTTQ==, tarball: file:projects/doodle-server.tgz}
+    name: '@rush-temp/doodle-server'
+    version: 0.0.0
+    dependencies:
+      '@types/aws-sdk': 2.7.0
+      '@types/node': 12.12.6
+      '@types/uuid': 8.3.1
+      aws-sdk: 2.980.0
+      uuid: 8.3.2
+    dev: false
+
   file:projects/dork.tgz_@babel+core@7.15.0:
     resolution: {integrity: sha512-Oo84hGnbqWNcgOONRB0Y3HOuAa4PFVvSfsFciSpqwWt4zaVRUErlDQB3PVJ5JxIZ8nqQFPNewUaoPhw3fC9xAA==, tarball: file:projects/dork.tgz}
     id: file:projects/dork.tgz
@@ -9376,6 +9509,33 @@ packages:
     resolution: {integrity: sha512-QJM4MoxmSXYVZRk7V3F1ELTMCD2l4veF/rsjamzcxukn5brWfid+YFWqrlqpFzBHJxHmu7NhEJ4f8BylunAoyQ==, tarball: file:projects/example-web-lib.tgz}
     name: '@rush-temp/example-web-lib'
     version: 0.0.0
+    dev: false
+
+  file:projects/react-controls.tgz_@babel+core@7.15.0:
+    resolution: {integrity: sha512-xHfKIZ45OXvejhLQT15ZQOtBFfrpd6AcJUPYttxXffGKcmyQl8Ad4weLMGBRT88Mk/D0hiGesi1HMo4Q06LNhA==, tarball: file:projects/react-controls.tgz}
+    id: file:projects/react-controls.tgz
+    name: '@rush-temp/react-controls'
+    version: 0.0.0
+    dependencies:
+      '@emotion/react': 11.4.1_56f22c50b68024c6e259393098372ce5
+      '@types/react': 17.0.19
+      react: 17.0.2
+      react-icons: 3.11.0_react@17.0.2
+    transitivePeerDependencies:
+      - '@babel/core'
+    dev: false
+
+  file:projects/react-native-lite.tgz_@babel+core@7.15.0:
+    resolution: {integrity: sha512-EdQdaXc+PrGflwVsfmfu9C0mF7i3/CRMnZQgAXd8Wjpb4bh0dWgc8DVTjvkkY+DKePThj8HTDM0yzzDWBYgomg==, tarball: file:projects/react-native-lite.tgz}
+    id: file:projects/react-native-lite.tgz
+    name: '@rush-temp/react-native-lite'
+    version: 0.0.0
+    dependencies:
+      '@emotion/react': 11.4.1_56f22c50b68024c6e259393098372ce5
+      '@types/react': 17.0.19
+      react: 17.0.2
+    transitivePeerDependencies:
+      - '@babel/core'
     dev: false
 
   file:projects/ricklove_me-content.tgz_f0b419a7e119055c71dcaf6063a7ba7a:
@@ -9422,6 +9582,15 @@ packages:
       - sass
       - supports-color
       - webpack
+    dev: false
+
+  file:projects/themes.tgz:
+    resolution: {integrity: sha512-1CYHXa6WfcX504xvEsPEc5mULBFrqMJF8k+57u5RxfPiUbOgZ8ZgB+HyExIg8ZXAWwIORXgWlkA7lt0BGhV7kg==, tarball: file:projects/themes.tgz}
+    name: '@rush-temp/themes'
+    version: 0.0.0
+    dependencies:
+      '@types/react': 17.0.19
+      react: 17.0.2
     dev: false
 
   file:projects/typescript-type-system-adventure.tgz:

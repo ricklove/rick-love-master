@@ -164,7 +164,7 @@
    * and set projectFolderMaxDepth to a large number.
    */
   "projectFolderMinDepth": 2,
-  "projectFolderMaxDepth": 3,
+  "projectFolderMaxDepth": 4,
   /**
    * Today the npmjs.com registry enforces fairly strict naming rules for packages, but in the early
    * days there was no standard and hardly any enforcement.  A few large legacy projects are still using
@@ -423,6 +423,7 @@
     //   "reviewCategory": "production"
     // },
     //
+    // Config ---
     {
       "packageName": "@ricklove/config-eslint",
       "projectFolder": "config/eslint"
@@ -431,18 +432,7 @@
       "packageName": "@ricklove/config-lib-rig",
       "projectFolder": "config/lib-rig"
     },
-    {
-      "packageName": "@ricklove/utils-core",
-      "projectFolder": "features/_utils/core"
-    },
-    {
-      "packageName": "@ricklove/utils-files",
-      "projectFolder": "features/_utils/files"
-    },
-    {
-      "packageName": "@ricklove/utils-react",
-      "projectFolder": "features/_utils/react"
-    },
+    // Examples ---
     {
       "packageName": "@ricklove/example-lib-lib",
       "projectFolder": "features/experimental/example-lib-lib"
@@ -455,6 +445,33 @@
       "packageName": "@ricklove/example-web-lib",
       "projectFolder": "features/experimental/example-web-lib"
     },
+    // Utils ---
+    {
+      "packageName": "@ricklove/utils-core",
+      "projectFolder": "features/_utils/core"
+    },
+    {
+      "packageName": "@ricklove/utils-files",
+      "projectFolder": "features/_utils/files"
+    },
+    {
+      "packageName": "@ricklove/utils-react",
+      "projectFolder": "features/_utils/react"
+    },
+    // UI ---
+    {
+      "packageName": "@ricklove/themes",
+      "projectFolder": "features/ui/themes"
+    },
+    {
+      "packageName": "@ricklove/react-native-lite",
+      "projectFolder": "features/ui/react-native-lite"
+    },
+    {
+      "packageName": "@ricklove/react-controls",
+      "projectFolder": "features/ui/react-controls"
+    },
+    // Games ---
     {
       "packageName": "@ricklove/console-simulator",
       "projectFolder": "projects/games/console-simulator"
@@ -463,6 +480,27 @@
       "packageName": "@ricklove/dork",
       "projectFolder": "projects/games/dork"
     },
+
+    {
+      "packageName": "@ricklove/doodle-common",
+      "projectFolder": "projects/games/doodle/common"
+    },
+    {
+      "packageName": "@ricklove/doodle-client",
+      "projectFolder": "projects/games/doodle/client"
+    },
+    {
+      "packageName": "@ricklove/doodle-server",
+      "projectFolder": "projects/games/doodle/server"
+    },
+
+    // Misc ---
+    {
+      "packageName": "@ricklove/typescript-type-system-adventure",
+      "projectFolder": "projects/coding/typescript-type-system-adventure"
+    },
+
+    // Web ---
     {
       "packageName": "@ricklove/ricklove_me",
       "projectFolder": "projects/web/ricklove_me"
@@ -470,10 +508,6 @@
     {
       "packageName": "@ricklove/ricklove_me-content",
       "projectFolder": "projects/web/ricklove_me-content"
-    },
-    {
-      "packageName": "@ricklove/typescript-type-system-adventure",
-      "projectFolder": "projects/coding/typescript-type-system-adventure"
     }
   ]
 }

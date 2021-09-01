@@ -1,0 +1,26 @@
+{
+  "name": "@ricklove/doodle-client",
+  "version": "1.0.0",
+  "main": "./lib/index.js",
+  "scripts": {
+    "build": "heft test --clean",
+    "build:watch": "heft build"
+  },
+  "dependencies": {
+    "@ricklove/doodle-common": "*",
+    "@ricklove/utils-core": "*",
+    "@ricklove/utils-react": "*",
+    "react": "17.0.2"
+  },
+  "dependencies-old": {
+    "@ricklove/controls-react": "*",
+    "@ricklove/react-native-lite": "*",
+    "@ricklove/upload-api": "*",
+    "@ricklove/web-mesh": "*",
+    "@ricklove/websockets-api": "*"
+  },
+  "devDependencies": {
+    "@ricklove/config-lib-rig": "*",
+    "@types/react": "~17.0.19"
+  }
+}

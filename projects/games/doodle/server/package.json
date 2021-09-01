@@ -1,0 +1,29 @@
+{
+  "name": "@ricklove/doodle-server",
+  "version": "1.0.0",
+  "main": "./lib/index.js",
+  "scripts": {
+    "build": "heft test --clean",
+    "build:watch": "heft build"
+  },
+  "dependencies": {
+    "@ricklove/doodle-common": "*",
+    "@ricklove/utils-core": "*",
+    "aws-sdk": "^2.749.0",
+    "uuid": "^8.3.0"
+  },
+  "dependencies-old": {
+    "@ricklove/utils-core": "*",
+    "@ricklove/upload-api": "*",
+    "@ricklove/web-mesh": "*",
+    "@ricklove/websockets-api": "*",
+    "aws-sdk": "^2.749.0",
+    "uuid": "^8.3.0"
+  },
+  "devDependencies": {
+    "@ricklove/config-lib-rig": "*",
+    "@types/aws-sdk": "^2.7.0",
+    "@types/node": "12.12.6",
+    "@types/uuid": "^8.3.0"
+  }
+}
