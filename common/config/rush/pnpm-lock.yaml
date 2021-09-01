@@ -20,9 +20,14 @@ specifiers:
   '@rush-temp/ricklove_me-content': file:./projects/ricklove_me-content.tgz
   '@rush-temp/themes': file:./projects/themes.tgz
   '@rush-temp/typescript-type-system-adventure': file:./projects/typescript-type-system-adventure.tgz
+  '@rush-temp/upload-api-client': file:./projects/upload-api-client.tgz
+  '@rush-temp/upload-api-common': file:./projects/upload-api-common.tgz
+  '@rush-temp/upload-api-server': file:./projects/upload-api-server.tgz
   '@rush-temp/utils-core': file:./projects/utils-core.tgz
   '@rush-temp/utils-files': file:./projects/utils-files.tgz
+  '@rush-temp/utils-node': file:./projects/utils-node.tgz
   '@rush-temp/utils-react': file:./projects/utils-react.tgz
+  '@rush-temp/utils-web': file:./projects/utils-web.tgz
   '@rushstack/eslint-config': ^2.3.4
   '@rushstack/heft': ^0.36.3
   '@rushstack/heft-web-rig': ^0.4.4
@@ -72,9 +77,14 @@ dependencies:
   '@rush-temp/ricklove_me-content': file:projects/ricklove_me-content.tgz_f0b419a7e119055c71dcaf6063a7ba7a
   '@rush-temp/themes': file:projects/themes.tgz
   '@rush-temp/typescript-type-system-adventure': file:projects/typescript-type-system-adventure.tgz
+  '@rush-temp/upload-api-client': file:projects/upload-api-client.tgz_@babel+core@7.15.0
+  '@rush-temp/upload-api-common': file:projects/upload-api-common.tgz
+  '@rush-temp/upload-api-server': file:projects/upload-api-server.tgz
   '@rush-temp/utils-core': file:projects/utils-core.tgz
   '@rush-temp/utils-files': file:projects/utils-files.tgz
+  '@rush-temp/utils-node': file:projects/utils-node.tgz
   '@rush-temp/utils-react': file:projects/utils-react.tgz
+  '@rush-temp/utils-web': file:projects/utils-web.tgz
   '@rushstack/eslint-config': 2.4.0_eslint@7.32.0+typescript@4.3.5
   '@rushstack/heft': 0.36.3
   '@rushstack/heft-web-rig': 0.4.4_@rushstack+heft@0.36.3
@@ -9452,7 +9462,7 @@ packages:
     dev: false
 
   file:projects/doodle-client.tgz:
-    resolution: {integrity: sha512-RopfAwNThhQ01eoUODFyCh+DIJXCSB5J4ytBo7ugmdOS/7Z9pcM0WrpQB5le+eAiBttps6UD2gg63AhCqqTK0w==, tarball: file:projects/doodle-client.tgz}
+    resolution: {integrity: sha512-a1KxgDNhsdvTvgBgaCFTqSH3+wjbtqYznlykUyO0P1yr52BfQQgbhi5OCFIl3aPL0ct2wFdYkOMnY2UEZRUQPg==, tarball: file:projects/doodle-client.tgz}
     name: '@rush-temp/doodle-client'
     version: 0.0.0
     dependencies:
@@ -9599,6 +9609,37 @@ packages:
     version: 0.0.0
     dev: false
 
+  file:projects/upload-api-client.tgz_@babel+core@7.15.0:
+    resolution: {integrity: sha512-FeP7CxbJCuth1fQIOC0uWI8aEGz4/XgbOc3wnxgnuTKS/RQDwu68RHjQ3qUpPqxSi97LNoQfdhqwOoLAWMnZTA==, tarball: file:projects/upload-api-client.tgz}
+    id: file:projects/upload-api-client.tgz
+    name: '@rush-temp/upload-api-client'
+    version: 0.0.0
+    dependencies:
+      '@emotion/react': 11.4.1_56f22c50b68024c6e259393098372ce5
+      '@types/react': 17.0.19
+      react: 17.0.2
+    transitivePeerDependencies:
+      - '@babel/core'
+    dev: false
+
+  file:projects/upload-api-common.tgz:
+    resolution: {integrity: sha512-1J4+tyUMGKtv4L5GNkQD2kEEgKlnx3VXjFla6BrmnRc9nbqDx3VkTrY+rovMKBLdhSEkuTa/YUXd0sIqi+JGyg==, tarball: file:projects/upload-api-common.tgz}
+    name: '@rush-temp/upload-api-common'
+    version: 0.0.0
+    dev: false
+
+  file:projects/upload-api-server.tgz:
+    resolution: {integrity: sha512-dmTqOdxwBP35oxQRqcf0RtzwndcKdrqpbzu1HkbXyMBYNS9PhlzYbfC9bra6a9mVOqMY/RPZzSrvOOiQPCIIQg==, tarball: file:projects/upload-api-server.tgz}
+    name: '@rush-temp/upload-api-server'
+    version: 0.0.0
+    dependencies:
+      '@types/aws-sdk': 2.7.0
+      '@types/node': 12.12.6
+      '@types/uuid': 8.3.1
+      aws-sdk: 2.980.0
+      uuid: 8.3.2
+    dev: false
+
   file:projects/utils-core.tgz:
     resolution: {integrity: sha512-cEtPsCmZu/LjaGIm5b34vAstU79Rarmb5hXV8eiBYh3/or2wxSipwQBOXRcCSnuN1OuM3HogKdYFJABiahXkAQ==, tarball: file:projects/utils-core.tgz}
     name: '@rush-temp/utils-core'
@@ -9613,6 +9654,14 @@ packages:
       '@types/node': 12.12.6
     dev: false
 
+  file:projects/utils-node.tgz:
+    resolution: {integrity: sha512-bgBM8KIW2m6M2eylv9IDN4Pavpc3dh+9TKAeY/1D3Wl6UIWWgJByVKin1hKTSYQcndq94XV9JCAveIj4OV+NtQ==, tarball: file:projects/utils-node.tgz}
+    name: '@rush-temp/utils-node'
+    version: 0.0.0
+    dependencies:
+      '@types/node': 12.12.6
+    dev: false
+
   file:projects/utils-react.tgz:
     resolution: {integrity: sha512-zSZv/nkiyVHP/wInFR9lstH+gcAkfpfV6kSToUgsmCP3Jm00h3umiBiF+L9aLFDqIzSkdTCaSPICUl8zEmjfEA==, tarball: file:projects/utils-react.tgz}
     name: '@rush-temp/utils-react'
@@ -9622,4 +9671,10 @@ packages:
       '@types/loadable__component': 5.13.4
       '@types/react': 17.0.19
       react: 17.0.2
+    dev: false
+
+  file:projects/utils-web.tgz:
+    resolution: {integrity: sha512-uX9yYBsInsPgWHCi5gNZdhUQ91cBNR0WfU5/io7mtLdtEPxiOYS3pc4ozwhbgT/UDpEo1kAxh2bjyAZrxLqw/Q==, tarball: file:projects/utils-web.tgz}
+    name: '@rush-temp/utils-web'
+    version: 0.0.0
     dev: false

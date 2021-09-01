@@ -7,3 +7,5 @@ export * from './src/random';
 
 export * from './src/email-address';
 export * from './src/phone-number';
+
+export * from './src/secure-token-type';

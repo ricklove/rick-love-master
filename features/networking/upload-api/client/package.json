@@ -1,5 +1,5 @@
 {
-  "name": "@ricklove/doodle-client",
+  "name": "@ricklove/upload-api-client",
   "version": "1.0.0",
   "main": "./lib/index.js",
   "scripts": {
@@ -7,17 +7,12 @@
     "build:watch": "heft build"
   },
   "dependencies": {
-    "@ricklove/doodle-common": "*",
-    "@ricklove/react-controls": "*",
+    "@emotion/react": "~11.4.1",
     "@ricklove/react-native-lite": "*",
-    "@ricklove/upload-api-client": "*",
+    "@ricklove/upload-api-common": "*",
     "@ricklove/utils-core": "*",
-    "@ricklove/utils-react": "*",
+    "@ricklove/utils-web": "*",
     "react": "17.0.2"
-  },
-  "dependencies-old": {
-    "@ricklove/web-mesh": "*",
-    "@ricklove/websockets-api": "*"
   },
   "devDependencies": {
     "@ricklove/config-lib-rig": "*",
