@@ -9,6 +9,7 @@
   "dependencies": {
     "@emotion/react": "~11.4.1",
     "@ricklove/console-simulator": "*",
+    "@ricklove/games-list": "*",
     "@ricklove/utils-core": "*",
     "react": "17.0.2",
     "react-markdown": "~6.0.3",

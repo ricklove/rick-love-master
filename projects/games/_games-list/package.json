@@ -1,0 +1,17 @@
+{
+  "name": "@ricklove/games-list",
+  "version": "1.0.0",
+  "main": "./lib/index.js",
+  "scripts": {
+    "build": "heft test --clean",
+    "build:watch": "heft build"
+  },
+  "dependencies": {
+    "@ricklove/doodle-client": "*",
+    "react": "17.0.2"
+  },
+  "devDependencies": {
+    "@ricklove/config-lib-rig": "*",
+    "@types/react": "~17.0.19"
+  }
+}

@@ -1,0 +1,7 @@
+{
+  "extends": "@ricklove/config-lib-rig/profiles/default/tsconfig-base.json",
+  "compilerOptions": {
+    "lib": ["DOM", "ES2020"]
+  },
+  "include": ["index.ts"]
+}

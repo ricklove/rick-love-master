@@ -1,14 +1,14 @@
-import React, { useEffect, useState } from 'react';
-import { educationalGamesList, educationalGameUtils } from '@ricklove/educational-games';
-import { useLoadable } from '@ricklove/utils-react';
+import React, { useState } from 'react';
+import { gamesList } from '@ricklove/games-list';
+import { AppComponentLoader } from '../app-component-loader';
 import { Layout } from '../layout/layout';
 import { SEO } from '../layout/seo';
 
-export const componentGamesList = [...educationalGamesList];
+export const componentGamesList = [...gamesList];
 
-export const componentGameUtils = {
-  ...educationalGameUtils,
-};
+// export const componentGameUtils = {
+//   ...educationalGameUtils,
+// };
 
 export type ComponentGamesPageData = {
   gameName?: string;
@@ -50,7 +50,7 @@ const ComponentGamesListPage = (props: {}) => {
           { name: `mobile-web-app-capable`, content: `yes` },
         ]}
       />
-      <HostComponentAsync component={componentGameUtils.progressGame} />
+      {/* <HostComponentAsync component={componentGameUtils.progressGame} /> */}
       {!game && (
         <div style={{ margin: 16 }}>
           <div>Games</div>
@@ -73,7 +73,7 @@ const ComponentGamesListPage = (props: {}) => {
   );
 };
 
-const HostComponentAuto = (props: { data: ComponentGamesPageData }) => {
+export const HostComponentAuto = (props: { data: ComponentGamesPageData }) => {
   const { gameName } = props.data;
   const game = componentGamesList.find((x) => x.name === gameName);
 
@@ -86,19 +86,5 @@ const HostComponentAuto = (props: { data: ComponentGamesPageData }) => {
     );
   }
 
-  return <HostComponentAsync component={game} />;
-};
-
-const HostComponentAsync = ({
-  component,
-}: {
-  component: { name: string; load: () => Promise<(props: {}) => JSX.Element> };
-}) => {
-  const { LoadedComponent, load } = useLoadable(
-    component?.load ?? (async () => (await import(`./component-tests-not-found`)).EmptyComponent),
-  );
-  useEffect(() => {
-    (async () => await load())();
-  }, [load]);
-  return <div>{LoadedComponent && <LoadedComponent />}</div>;
+  return <AppComponentLoader component={game} />;
 };

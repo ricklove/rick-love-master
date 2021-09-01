@@ -514,6 +514,10 @@
     },
     // Games ---
     {
+      "packageName": "@ricklove/games-list",
+      "projectFolder": "projects/games/_games-list"
+    },
+    {
       "packageName": "@ricklove/console-simulator",
       "projectFolder": "projects/games/console-simulator"
     },
