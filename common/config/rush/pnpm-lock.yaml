@@ -4,6 +4,7 @@ specifiers:
   '@babel/core': ^7.0.0
   '@emotion/react': ~11.4.1
   '@loadable/component': ^5.12.0
+  '@next/bundle-analyzer': ~11.1.2
   '@rush-temp/config-eslint': file:./projects/config-eslint.tgz
   '@rush-temp/config-lib-rig': file:./projects/config-lib-rig.tgz
   '@rush-temp/console-simulator': file:./projects/console-simulator.tgz
@@ -67,6 +68,7 @@ dependencies:
   '@babel/core': 7.15.0
   '@emotion/react': 11.4.1_56f22c50b68024c6e259393098372ce5
   '@loadable/component': 5.15.0_react@17.0.2
+  '@next/bundle-analyzer': 11.1.2
   '@rush-temp/config-eslint': file:projects/config-eslint.tgz
   '@rush-temp/config-lib-rig': file:projects/config-lib-rig.tgz
   '@rush-temp/console-simulator': file:projects/console-simulator.tgz_@babel+core@7.15.0
@@ -3292,6 +3294,14 @@ packages:
       tapable: 1.1.3
     dev: false
 
+  /enhanced-resolve/5.8.2:
+    resolution: {integrity: sha512-F27oB3WuHDzvR2DOGNTaYy0D5o0cnrv8TeI482VM4kYgQd/FT9lUQwuNsJ0oOHtBUq7eiW5ytqzp7nBFknL+GA==}
+    engines: {node: '>=10.13.0'}
+    dependencies:
+      graceful-fs: 4.2.8
+      tapable: 2.2.0
+    dev: false
+
   /enquirer/2.3.6:
     resolution: {integrity: sha512-yjNnPr315/FjS4zIsUxYguYUPP2e1NK4d7E7ZOLiyYCcbFBiTMyID+2wvm2w6+pZ/odMA7cRkjhsPbltwBOrLg==}
     engines: {node: '>=8.6'}
@@ -6226,6 +6236,13 @@ packages:
     resolution: {integrity: sha512-Yd3UES5mWCSqR+qNT93S3UoYUkqAZ9lLg8a7g9rimsWmYGK8cVToA4/sF3RrshdyV3sAGMXVUmpMYOw+dLpOuw==}
     dev: false
 
+  /next-transpile-modules/8.0.0:
+    resolution: {integrity: sha512-Q2f2yB0zMJ8KJbIYAeZoIxG6cSfVk813zr6B5HzsLMBVcJ3FaF8lKr7WG66n0KlHCwjLSmf/6EkgI6QQVWHrDw==}
+    dependencies:
+      enhanced-resolve: 5.8.2
+      escalade: 3.1.1
+    dev: false
+
   /next/11.1.0_d656e95d5564dbefda9f605dfed71e60:
     resolution: {integrity: sha512-GHBk/c7Wyr6YbFRFZF37I0X7HKzkHHI8pur/loyXo5AIE8wdkbGPGO0ds3vNAO6f8AxZAKGCRYtAzoGlVLoifA==}
     engines: {node: '>=12.0.0'}
@@ -8432,6 +8449,11 @@ packages:
     engines: {node: '>=6'}
     dev: false
 
+  /tapable/2.2.0:
+    resolution: {integrity: sha512-FBk4IesMV1rBxX2tfiK8RAmogtWn53puLOQlvO8XuwlgxcYbP4mVPS9Ph4aeamSyyVjOl24aYWAuc8U5kCVwMw==}
+    engines: {node: '>=6'}
+    dev: false
+
   /tar/6.1.10:
     resolution: {integrity: sha512-kvvfiVvjGMxeUNB6MyYv5z7vhfFRwbwCXJAeL0/lnbrttBVqcMOnpHUf0X42LrPMR8mMpgapkJMchFH4FSHzNA==}
     engines: {node: '>= 10'}
@@ -9669,7 +9691,7 @@ packages:
     dev: false
 
   file:projects/ricklove_me.tgz:
-    resolution: {integrity: sha512-ikK9oXMqKtxqq8IbQG+xRPIM6N3crtkSTvwaoGJbOnkxk9BRIdZsPpaF33Zi+YXYViD09EHp0JxFkwC6qIjExQ==, tarball: file:projects/ricklove_me.tgz}
+    resolution: {integrity: sha512-V1IRZshFKHpI/5QCswV6CkVlXJFuQkesbEKA5OM+8rCOQoGcVX4Vns2L6gVxnXDJf68j4Ud4bRFNADf5vYRlrw==, tarball: file:projects/ricklove_me.tgz}
     name: '@rush-temp/ricklove_me'
     version: 0.0.0
     dependencies:
@@ -9679,6 +9701,7 @@ packages:
       '@types/react': 17.0.19
       copyfiles: 2.4.1
       next: 11.1.0_d656e95d5564dbefda9f605dfed71e60
+      next-transpile-modules: 8.0.0
       react: 17.0.2
       react-dom: 17.0.2_react@17.0.2
       rimraf: 3.0.2
