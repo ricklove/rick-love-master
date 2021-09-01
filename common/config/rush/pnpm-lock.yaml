@@ -29,6 +29,7 @@ specifiers:
   '@rush-temp/utils-node': file:./projects/utils-node.tgz
   '@rush-temp/utils-react': file:./projects/utils-react.tgz
   '@rush-temp/utils-web': file:./projects/utils-web.tgz
+  '@rush-temp/web-mesh': file:./projects/web-mesh.tgz
   '@rush-temp/websockets-api-client': file:./projects/websockets-api-client.tgz
   '@rush-temp/websockets-api-common': file:./projects/websockets-api-common.tgz
   '@rush-temp/websockets-api-server': file:./projects/websockets-api-server.tgz
@@ -90,6 +91,7 @@ dependencies:
   '@rush-temp/utils-node': file:projects/utils-node.tgz
   '@rush-temp/utils-react': file:projects/utils-react.tgz
   '@rush-temp/utils-web': file:projects/utils-web.tgz
+  '@rush-temp/web-mesh': file:projects/web-mesh.tgz_@babel+core@7.15.0
   '@rush-temp/websockets-api-client': file:projects/websockets-api-client.tgz_@babel+core@7.15.0
   '@rush-temp/websockets-api-common': file:projects/websockets-api-common.tgz
   '@rush-temp/websockets-api-server': file:projects/websockets-api-server.tgz
@@ -9698,6 +9700,19 @@ packages:
     resolution: {integrity: sha512-uX9yYBsInsPgWHCi5gNZdhUQ91cBNR0WfU5/io7mtLdtEPxiOYS3pc4ozwhbgT/UDpEo1kAxh2bjyAZrxLqw/Q==, tarball: file:projects/utils-web.tgz}
     name: '@rush-temp/utils-web'
     version: 0.0.0
+    dev: false
+
+  file:projects/web-mesh.tgz_@babel+core@7.15.0:
+    resolution: {integrity: sha512-g1WNVLFLHiCorZRY8nAcvxzSgJo2CvRFRqQd0o12BWuiNtLSLAc0CPVCPZYebHt9uX0hNCBPdAXXLzceDhTJ2w==, tarball: file:projects/web-mesh.tgz}
+    id: file:projects/web-mesh.tgz
+    name: '@rush-temp/web-mesh'
+    version: 0.0.0
+    dependencies:
+      '@emotion/react': 11.4.1_56f22c50b68024c6e259393098372ce5
+      '@types/react': 17.0.19
+      react: 17.0.2
+    transitivePeerDependencies:
+      - '@babel/core'
     dev: false
 
   file:projects/websockets-api-client.tgz_@babel+core@7.15.0:

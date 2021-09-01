@@ -484,6 +484,10 @@
       "projectFolder": "features/networking/user-data-service"
     },
     {
+      "packageName": "@ricklove/web-mesh",
+      "projectFolder": "features/networking/web-mesh"
+    },
+    {
       "packageName": "@ricklove/websockets-api-common",
       "projectFolder": "features/networking/websockets-api/common"
     },

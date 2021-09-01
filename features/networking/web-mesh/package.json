@@ -1,19 +1,22 @@
 {
-    "name": "web-mesh",
-    "version": "1.0.0",
-    "dependencies": {
-        "utils": "*",
-        "utils-react": "*",
-        "controls-react": "*",
-        "react-native-lite": "*",
-        "upload-api": "*",
-        "websockets-api": "*",
-        "aws-sdk": "^2.749.0",
-        "react": "^16.12.0",
-        "uuid": "^8.3.0"
-    },
-    "devDependencies": {
-        "@types/aws-sdk": "^2.7.0",
-        "@types/uuid": "^8.3.0"
-    }
+  "name": "@ricklove/web-mesh",
+  "version": "1.0.0",
+  "main": "./lib/index.js",
+  "scripts": {
+    "build": "heft test --clean",
+    "build:watch": "heft build"
+  },
+  "dependencies": {
+    "@emotion/react": "~11.4.1",
+    "@ricklove/react-controls": "*",
+    "@ricklove/react-native-lite": "*",
+    "@ricklove/utils-core": "*",
+    "@ricklove/utils-react": "*",
+    "@ricklove/websockets-api-client": "*",
+    "react": "17.0.2"
+  },
+  "devDependencies": {
+    "@ricklove/config-lib-rig": "*",
+    "@types/react": "~17.0.19"
+  }
 }
