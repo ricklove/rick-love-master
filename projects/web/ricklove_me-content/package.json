@@ -4,8 +4,9 @@
   "type": "module",
   "main": "./lib/index.js",
   "scripts": {
-    "build": "heft test --clean && ts-node ./scripts/build.ts",
-    "build:watch": "heft build && ts-node ./scripts/build.ts"
+    "build:script": "node --experimental-specifier-resolution=node --loader ts-node/esm ./scripts/build.ts",
+    "build": "heft test --clean && npm run build:script",
+    "build:watch": "heft build && npm run build:script"
   },
   "dependencies": {
     "@emotion/react": "~11.4.1",
@@ -24,7 +25,7 @@
     "@ricklove/utils-react": "*",
     "@types/node": "12.12.6",
     "@types/react": "~17.0.19",
-    "ts-node": "~10.2.1",
-    "@types/react-helmet": "~6.1.2"
+    "@types/react-helmet": "~6.1.2",
+    "ts-node": "~10.2.1"
   }
 }

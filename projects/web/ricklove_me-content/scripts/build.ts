@@ -1,9 +1,12 @@
+import path from 'path';
 import { joinPathNormalized } from '@ricklove/utils-files';
 import { copyAssetsToLib } from './copy-assets';
 import { createIndex, createStaticIndex } from './create-index';
 import { copyNextJsPublicFiles, createNextJsAppJs, createNextJsWebPages } from './create-nextjs-pages';
 import { getPageFiles } from './get-page-files';
 
+// eslint-disable-next-line @typescript-eslint/naming-convention
+const __dirname = path.resolve(`./scripts`);
 const sourcePath = joinPathNormalized(__dirname, `../src`);
 const sourcePagesPath = joinPathNormalized(sourcePath, `./pages`);
 const indexFilePath = joinPathNormalized(sourcePath, `../index.ts`);
