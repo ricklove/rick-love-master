@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import {
   defaultDoodleDrawing,
-  DoodleApiConfig,
+  DoodleConfig,
   DoodleDataWithScore,
   DoodleDrawing,
   DoodleSegment,
@@ -352,7 +352,7 @@ const DoodleDisplayView_Inner = ({
   );
 };
 
-export const DoodleBrowser = ({ config }: { config: DoodleApiConfig }) => {
+export const DoodleBrowser = ({ config }: { config: DoodleConfig }) => {
   const { loading, error, doWork } = useAsyncWorker();
   const [doodles, setDoodles] = useState([] as DoodleDataWithScore[]);
   useEffect(() => {

@@ -1,3 +1,3 @@
 export * from './src/doodle-view';
 export * from './src/doodle-party';
-export { DoodleApiConfig } from '@ricklove/doodle-common';
+export { DoodleConfig } from '@ricklove/doodle-common';

@@ -1,10 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
-import {
-  decodeDoodleDrawing,
-  DoodleApiConfig,
-  DoodleDrawingEncoded,
-  doodleStoragePaths,
-} from '@ricklove/doodle-common';
+import { decodeDoodleDrawing, DoodleConfig, DoodleDrawingEncoded, doodleStoragePaths } from '@ricklove/doodle-common';
 import { createUploadApiWebClient, createUploader } from '@ricklove/upload-api-client';
 import { distinct, groupItems } from '@ricklove/utils-core';
 import { toKeyValueArray } from '@ricklove/utils-core';
@@ -188,7 +183,7 @@ const createPlayerAssignment = (meshState: MeshState, playerClientKey: string, p
 };
 
 const sendNewAssignmentsIfReady = (
-  config: DoodleApiConfig,
+  config: DoodleConfig,
   meshState: MeshState,
   send: (message: DoodlePartyMessage) => void,
 ) => {
@@ -346,7 +341,7 @@ const reduceClientsState = (
   return previousState;
 };
 
-export const useDoodlePartyController = (config: DoodleApiConfig) => {
+export const useDoodlePartyController = (config: DoodleConfig) => {
   const clientStateRef = useRef(createClientState());
   const clientState = clientStateRef.current;
 

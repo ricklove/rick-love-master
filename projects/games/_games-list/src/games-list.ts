@@ -1,7 +1,7 @@
-import { DoodleApiConfig } from '@ricklove/doodle-client';
+import { DoodleConfig } from '@ricklove/doodle-client';
 
-export type GameApiConfig = DoodleApiConfig;
-export type GameComponent = (props: { config: GameApiConfig }) => JSX.Element;
+export type GameConfig = DoodleConfig;
+export type GameComponent = (props: { config: GameConfig }) => JSX.Element;
 export const gamesList: { name: string; load: () => Promise<GameComponent> }[] = [
   // { name: `multiples-counting`, load: async () => (await import(`./multiples-counting`)).EducationalGame_MultiplesCounting },
   // { name: `multiples-counting-words`, load: async () => (await import(`./multiples-counting-words`)).EducationalGame_MultiplesCountingWords },

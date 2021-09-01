@@ -19,7 +19,9 @@ This is where I put all the cool stuff.
 
 ## Dev features
 
-- [x] Refactoring across packages
+- [NO] Refactoring across packages
+  - [ ] Renaming across packages is not working
+  - [x] Navigation across packages works great
 - [x] Shared configuration
 - Dependencies
   - [x] Single declaration of dependencies
