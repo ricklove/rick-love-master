@@ -1,7 +1,11 @@
-// require('crypto').randomBytes = () => 'FIXED_PREVIEW_MODE_ID';
+// Bundle anayzer
+const withBundleAnalyzer = require('@next/bundle-analyzer')({
+  //enabled: process.env.ANALYZE === 'true',
+  enabled: true,
+});
 
-// Deterministict build
-module.exports = {
+module.exports = withBundleAnalyzer({
+  // Deterministict build
   generateBuildId: async () => {
     const gitHash = require('child_process').execSync('git rev-parse HEAD').toString().trim();
     console.log('nextjs generateBuildId - using git commit hash', { gitHash });
@@ -10,4 +14,4 @@ module.exports = {
   optimization: {
     moduleIds: 'deterministic',
   },
-};
+});
