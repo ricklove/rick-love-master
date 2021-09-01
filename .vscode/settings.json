@@ -13,7 +13,7 @@
     "**/CVS": false,
     "**/.git": true,
     "**/node_modules": true,
-    "**/lib": true,
+    // "**/lib": true,
     "**/.heft": true,
     "**/.rush": true,
     // "**/config": true,
