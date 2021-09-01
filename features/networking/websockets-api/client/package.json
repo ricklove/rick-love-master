@@ -1,0 +1,21 @@
+{
+  "name": "@ricklove/websockets-api-client",
+  "version": "1.0.0",
+  "main": "./lib/index.js",
+  "scripts": {
+    "build": "heft test --clean",
+    "build:watch": "heft build"
+  },
+  "dependencies": {
+    "@emotion/react": "~11.4.1",
+    "@ricklove/react-native-lite": "*",
+    "@ricklove/websockets-api-common": "*",
+    "@ricklove/utils-core": "*",
+    "@ricklove/utils-web": "*",
+    "react": "17.0.2"
+  },
+  "devDependencies": {
+    "@ricklove/config-lib-rig": "*",
+    "@types/react": "~17.0.19"
+  }
+}

@@ -29,6 +29,9 @@ specifiers:
   '@rush-temp/utils-node': file:./projects/utils-node.tgz
   '@rush-temp/utils-react': file:./projects/utils-react.tgz
   '@rush-temp/utils-web': file:./projects/utils-web.tgz
+  '@rush-temp/websockets-api-client': file:./projects/websockets-api-client.tgz
+  '@rush-temp/websockets-api-common': file:./projects/websockets-api-common.tgz
+  '@rush-temp/websockets-api-server': file:./projects/websockets-api-server.tgz
   '@rushstack/eslint-config': ^2.3.4
   '@rushstack/heft': ^0.36.3
   '@rushstack/heft-web-rig': ^0.4.4
@@ -87,6 +90,9 @@ dependencies:
   '@rush-temp/utils-node': file:projects/utils-node.tgz
   '@rush-temp/utils-react': file:projects/utils-react.tgz
   '@rush-temp/utils-web': file:projects/utils-web.tgz
+  '@rush-temp/websockets-api-client': file:projects/websockets-api-client.tgz_@babel+core@7.15.0
+  '@rush-temp/websockets-api-common': file:projects/websockets-api-common.tgz
+  '@rush-temp/websockets-api-server': file:projects/websockets-api-server.tgz
   '@rushstack/eslint-config': 2.4.0_eslint@7.32.0+typescript@4.3.5
   '@rushstack/heft': 0.36.3
   '@rushstack/heft-web-rig': 0.4.4_@rushstack+heft@0.36.3
@@ -9692,4 +9698,35 @@ packages:
     resolution: {integrity: sha512-uX9yYBsInsPgWHCi5gNZdhUQ91cBNR0WfU5/io7mtLdtEPxiOYS3pc4ozwhbgT/UDpEo1kAxh2bjyAZrxLqw/Q==, tarball: file:projects/utils-web.tgz}
     name: '@rush-temp/utils-web'
     version: 0.0.0
+    dev: false
+
+  file:projects/websockets-api-client.tgz_@babel+core@7.15.0:
+    resolution: {integrity: sha512-uisRST4BMo4wp34K5mzXiBt43fRSO2F9YoQusH4RV9AOhewLYFHiAIwTEYnHHEZJLax2mS0kgMcsW18XjbfK3Q==, tarball: file:projects/websockets-api-client.tgz}
+    id: file:projects/websockets-api-client.tgz
+    name: '@rush-temp/websockets-api-client'
+    version: 0.0.0
+    dependencies:
+      '@emotion/react': 11.4.1_56f22c50b68024c6e259393098372ce5
+      '@types/react': 17.0.19
+      react: 17.0.2
+    transitivePeerDependencies:
+      - '@babel/core'
+    dev: false
+
+  file:projects/websockets-api-common.tgz:
+    resolution: {integrity: sha512-klDQ/CBxDPqiMr1OqnEUp0bkyYB3iqMfzv372uBvx0B3PfTLhhDsSKvm8mi1kfFCBvpSUpqYs8XJh4ZJ3U7MmA==, tarball: file:projects/websockets-api-common.tgz}
+    name: '@rush-temp/websockets-api-common'
+    version: 0.0.0
+    dev: false
+
+  file:projects/websockets-api-server.tgz:
+    resolution: {integrity: sha512-DI4wcTQfj2GoN5HAI49nDCH16V6DKx7zxH6qbjcpyyA2tu7Z/8H1Vu6gp+anzI2X55Aop8ZpaCWZv1q85JU+IQ==, tarball: file:projects/websockets-api-server.tgz}
+    name: '@rush-temp/websockets-api-server'
+    version: 0.0.0
+    dependencies:
+      '@types/aws-sdk': 2.7.0
+      '@types/node': 12.12.6
+      '@types/uuid': 8.3.1
+      aws-sdk: 2.980.0
+      uuid: 8.3.2
     dev: false

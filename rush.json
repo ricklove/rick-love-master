@@ -483,6 +483,18 @@
       "packageName": "@ricklove/user-data-service",
       "projectFolder": "features/networking/user-data-service"
     },
+    {
+      "packageName": "@ricklove/websockets-api-common",
+      "projectFolder": "features/networking/websockets-api/common"
+    },
+    {
+      "packageName": "@ricklove/websockets-api-client",
+      "projectFolder": "features/networking/websockets-api/client"
+    },
+    {
+      "packageName": "@ricklove/websockets-api-server",
+      "projectFolder": "features/networking/websockets-api/server"
+    },
     // UI ---
     {
       "packageName": "@ricklove/themes",

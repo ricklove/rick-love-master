@@ -1,5 +1,4 @@
-import { Subscription } from 'utils/subscribable';
-import { ErrorState } from 'utils/error';
+import { ErrorState, Subscription } from '@ricklove/utils-core';
 
 export type WebsocketApi = {
     connect: <T>(data: WebsocketConnectionData) => {
@@ -11,5 +10,5 @@ export type WebsocketApi = {
     };
 };
 
-export type WebsocketConnectionEvent = { connectionStatus: 'opened' | 'closed' | 'error', error?: ErrorState };
+export type WebsocketConnectionEvent = { connectionStatus: 'opened' | 'closed' | 'error'; error?: ErrorState };
 export type WebsocketConnectionData = { channelKey: string };
