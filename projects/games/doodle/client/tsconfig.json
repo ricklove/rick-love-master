@@ -1,4 +1,7 @@
 {
   "extends": "@ricklove/config-lib-rig/profiles/default/tsconfig-base.json",
-  "include": ["index.ts"]
+  "compilerOptions": {
+    "lib": ["DOM", "ES2019"]
+  },
+  "include": ["index.ts", "src"]
 }

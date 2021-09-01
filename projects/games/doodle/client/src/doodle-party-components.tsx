@@ -1,7 +1,7 @@
 /* eslint-disable react/no-array-index-key */
 import React, { useEffect, useState } from 'react';
-import { C } from '@ricklove/controls-react';
 import { decodeDoodleDrawing, encodeDoodleDrawing } from '@ricklove/doodle-common';
+import { C } from '@ricklove/react-controls';
 import { ActivityIndicator, Text, View } from '@ricklove/react-native-lite';
 import { groupItems, toKeyValueArray } from '@ricklove/utils-core';
 import { DoodleGameView_DrawWord } from './doodle-components';
@@ -72,11 +72,11 @@ export const PartyViewer = (props: { controller: DoodlePartyController }) => {
       <Text>Chains</Text>
       <View>
         {chains.map((x, i) => (
-          <View style={{ margin: 4, padding: 4, background: `#444444` }}>
-            <View key={`${i}`} style={{ flexDirection: `row`, alignItems: `center`, flexWrap: `wrap` }}>
+          <View key={`${i}`} style={{ margin: 4, padding: 4, background: `#444444` }}>
+            <View style={{ flexDirection: `row`, alignItems: `center`, flexWrap: `wrap` }}>
               {x.items.map((p) => (
-                <View style={{ padding: 4 }}>
-                  <AssignmentView key={p.item.clientKey} player={p.item} />
+                <View key={p.item.clientKey} style={{ padding: 4 }}>
+                  <AssignmentView player={p.item} />
                 </View>
               ))}
             </View>

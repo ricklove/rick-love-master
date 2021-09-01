@@ -21,7 +21,7 @@ export const createWebsocketClient = (config: { websocketsApiUrl: string }): Web
         const socket = new WebSocket(`${config.websocketsApiUrl}`);
 
         // Connection opened
-        socket.addEventListener(`open`, (event) => {
+        socket.addEventListener(`open`, (_event) => {
           if (socket !== activeSocket) {
             socket.close();
             return;
@@ -36,7 +36,7 @@ export const createWebsocketClient = (config: { websocketsApiUrl: string }): Web
           };
           socket.send(JSON.stringify(messageContainer));
         });
-        socket.addEventListener(`close`, (event) => {
+        socket.addEventListener(`close`, (_event) => {
           if (socket !== activeSocket) {
             socket.close();
             return;

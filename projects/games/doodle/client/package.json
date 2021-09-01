@@ -11,13 +11,13 @@
     "@ricklove/react-controls": "*",
     "@ricklove/react-native-lite": "*",
     "@ricklove/upload-api-client": "*",
+    "@ricklove/web-mesh": "*",
+    "@ricklove/websockets-api-common": "*",
+    "@ricklove/websockets-api-client": "*",
     "@ricklove/utils-core": "*",
     "@ricklove/utils-react": "*",
+    "@ricklove/utils-web": "*",
     "react": "17.0.2"
-  },
-  "dependencies-old": {
-    "@ricklove/web-mesh": "*",
-    "@ricklove/websockets-api": "*"
   },
   "devDependencies": {
     "@ricklove/config-lib-rig": "*",
