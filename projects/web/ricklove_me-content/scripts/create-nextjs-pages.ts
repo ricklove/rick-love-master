@@ -57,6 +57,16 @@ export const getStaticPaths = async () => {
  * 1. setupNavigation for nextjs using Link component
  */
 export const createNextJsAppJs = async (destPath: string) => {
+  /*
+      <Head>
+        <meta
+          name='viewport'
+          content='width=device-width, initial-scale=1, shrink-to-fit=no'
+          data-react-helmet='true'
+        />
+      </Head>
+*/
+
   await fs.writeFile(
     joinPathNormalized(destPath, `_app.tsx`),
     `
@@ -72,13 +82,7 @@ setupNavigation({
 const CustomApp = ({ Component, pageProps }: { Component: (props: unknown) => JSX.Element; pageProps: unknown }) => {
   return (
     <>
-      <Head>
-        <meta
-          name='viewport'
-          content='width=device-width, initial-scale=1, shrink-to-fit=no'
-          data-react-helmet='true'
-        />
-      </Head>
+
       <Component {...pageProps} />
     </>
   );
