@@ -34,6 +34,11 @@ export const GamesListPage = (_props: {}) => {
   const [game, setGame] = useState(null as null | string);
   const openLinkInSameView = (e: React.MouseEvent, gameName: string) => {
     setGame(gameName);
+    // window.history.pushState({}, gameName);
+  };
+  const backToList = () => {
+    setGame(null);
+    // window.history.back();
   };
   return (
     <Layout gameMode>
@@ -50,7 +55,7 @@ export const GamesListPage = (_props: {}) => {
         <div style={{ margin: 16 }}>
           <div>Games</div>
           {gamesList.map((x) => (
-            <div key={x.name} style={{ padding: 4 }} onClick={(e) => openLinkInSameView(e, x.name)}>
+            <div key={x.name} className={`link`} style={{ padding: 4 }} onClick={(e) => openLinkInSameView(e, x.name)}>
               <span>🎮 {x.name}</span>
             </div>
           ))}
@@ -59,7 +64,7 @@ export const GamesListPage = (_props: {}) => {
       {!!game && (
         <>
           <HostComponentAuto data={{ gameName: game }} />
-          <div style={{ display: `inline-block`, padding: 4 }} onClick={() => setGame(null)}>
+          <div className={`link`} style={{ display: `inline-block`, padding: 4 }} onClick={() => backToList()}>
             <span>🎮 Games</span>
           </div>
         </>

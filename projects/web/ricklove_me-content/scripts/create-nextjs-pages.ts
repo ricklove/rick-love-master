@@ -58,6 +58,8 @@ export const getStaticPaths = async () => {
  */
 export const createNextJsAppJs = async (destPath: string) => {
   /*
+import Head from 'next/head';
+
       <Head>
         <meta
           name='viewport'
@@ -71,7 +73,6 @@ export const createNextJsAppJs = async (destPath: string) => {
     joinPathNormalized(destPath, `_app.tsx`),
     `
 import React from 'react';
-import Head from 'next/head';
 import Link from 'next/link';
 import { setupNavigation } from '@ricklove/ricklove_me-content/lib/src/components/site';
 
