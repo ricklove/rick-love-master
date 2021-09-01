@@ -4,22 +4,17 @@ import { AppComponentLoader } from '../app-component-loader';
 import { Layout } from '../layout/layout';
 import { SEO } from '../layout/seo';
 
-export const componentGamesList = [...gamesList];
+export const gamesListData = [...gamesList.map((x) => ({ name: x.name }))];
 
 // export const componentGameUtils = {
 //   ...educationalGameUtils,
 // };
 
-export type ComponentGamesPageData = {
-  gameName?: string;
-  showList?: boolean;
+export type GamePageData = {
+  gameName: string;
 };
 
-export const ComponentGamesPage = (props: { data: ComponentGamesPageData }) => {
-  if (props.data.showList) {
-    return <ComponentGamesListPage />;
-  }
-
+export const GamePage = (props: { data: GamePageData }) => {
   return (
     <Layout gameMode>
       <SEO
@@ -35,7 +30,7 @@ export const ComponentGamesPage = (props: { data: ComponentGamesPageData }) => {
   );
 };
 
-const ComponentGamesListPage = (props: {}) => {
+export const GamesListPage = (_props: {}) => {
   const [game, setGame] = useState(null as null | string);
   const openLinkInSameView = (e: React.MouseEvent, gameName: string) => {
     setGame(gameName);
@@ -54,7 +49,7 @@ const ComponentGamesListPage = (props: {}) => {
       {!game && (
         <div style={{ margin: 16 }}>
           <div>Games</div>
-          {componentGamesList.map((x) => (
+          {gamesList.map((x) => (
             <div key={x.name} style={{ padding: 4 }} onClick={(e) => openLinkInSameView(e, x.name)}>
               <span>🎮 {x.name}</span>
             </div>
@@ -73,9 +68,9 @@ const ComponentGamesListPage = (props: {}) => {
   );
 };
 
-export const HostComponentAuto = (props: { data: ComponentGamesPageData }) => {
+export const HostComponentAuto = (props: { data: GamePageData }) => {
   const { gameName } = props.data;
-  const game = componentGamesList.find((x) => x.name === gameName);
+  const game = gamesList.find((x) => x.name === gameName);
 
   if (!game) {
     return (
