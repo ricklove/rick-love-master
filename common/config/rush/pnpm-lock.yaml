@@ -23,6 +23,7 @@ specifiers:
   '@rush-temp/upload-api-client': file:./projects/upload-api-client.tgz
   '@rush-temp/upload-api-common': file:./projects/upload-api-common.tgz
   '@rush-temp/upload-api-server': file:./projects/upload-api-server.tgz
+  '@rush-temp/user-data-service': file:./projects/user-data-service.tgz
   '@rush-temp/utils-core': file:./projects/utils-core.tgz
   '@rush-temp/utils-files': file:./projects/utils-files.tgz
   '@rush-temp/utils-node': file:./projects/utils-node.tgz
@@ -80,6 +81,7 @@ dependencies:
   '@rush-temp/upload-api-client': file:projects/upload-api-client.tgz_@babel+core@7.15.0
   '@rush-temp/upload-api-common': file:projects/upload-api-common.tgz
   '@rush-temp/upload-api-server': file:projects/upload-api-server.tgz
+  '@rush-temp/user-data-service': file:projects/user-data-service.tgz_@babel+core@7.15.0
   '@rush-temp/utils-core': file:projects/utils-core.tgz
   '@rush-temp/utils-files': file:projects/utils-files.tgz
   '@rush-temp/utils-node': file:projects/utils-node.tgz
@@ -9610,7 +9612,7 @@ packages:
     dev: false
 
   file:projects/upload-api-client.tgz_@babel+core@7.15.0:
-    resolution: {integrity: sha512-FeP7CxbJCuth1fQIOC0uWI8aEGz4/XgbOc3wnxgnuTKS/RQDwu68RHjQ3qUpPqxSi97LNoQfdhqwOoLAWMnZTA==, tarball: file:projects/upload-api-client.tgz}
+    resolution: {integrity: sha512-Laz3gZx7TAUoBzE85EJZz0w6xPpKS5OJH1zEahpT0GBym5SsiqNSu1RT5zoOoBFE4MaWBiTq0BP5VGfwc9An/g==, tarball: file:projects/upload-api-client.tgz}
     id: file:projects/upload-api-client.tgz
     name: '@rush-temp/upload-api-client'
     version: 0.0.0
@@ -9638,6 +9640,19 @@ packages:
       '@types/uuid': 8.3.1
       aws-sdk: 2.980.0
       uuid: 8.3.2
+    dev: false
+
+  file:projects/user-data-service.tgz_@babel+core@7.15.0:
+    resolution: {integrity: sha512-hMSVpdamIh/8Vk0Da4nbnlBB7e6NpdcqjTj/ZVBKridGAiGkV38BgLQ/qI0NZFqZoJtF0+/o51Wp8ARdT1E67g==, tarball: file:projects/user-data-service.tgz}
+    id: file:projects/user-data-service.tgz
+    name: '@rush-temp/user-data-service'
+    version: 0.0.0
+    dependencies:
+      '@emotion/react': 11.4.1_56f22c50b68024c6e259393098372ce5
+      '@types/react': 17.0.19
+      react: 17.0.2
+    transitivePeerDependencies:
+      - '@babel/core'
     dev: false
 
   file:projects/utils-core.tgz:

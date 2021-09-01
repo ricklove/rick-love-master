@@ -3,16 +3,19 @@ import { Text, View } from '@ricklove/react-native-lite';
 import { theme } from '@ricklove/themes';
 import { Button } from './button';
 import { ErrorBox, ErrorMessage } from './error-box';
+import { Icon } from './icon';
 import { Input_Currency, Input_Email, Input_Password, Input_Phone, Input_Text, Input_Username } from './inputs';
 import { Loading, LoadingInline } from './loading';
 
 type PropsOf<T> = T extends (props: infer P) => JSX.Element ? P : never;
 
+export { IconKind } from './icon-kind';
 export const C = {
   Loading,
   LoadingInline,
   ErrorBox,
   ErrorMessage,
+  Icon,
   View_Panel: (props: PropsOf<typeof View>) => <View style={theme.view_panel} {...props} />,
   View_Form: (props: PropsOf<typeof View>) => <View style={theme.view_form} {...props} />,
   View_FormFields: (props: PropsOf<typeof View>) => <View style={theme.view_formFields} {...props} />,

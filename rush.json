@@ -479,6 +479,10 @@
       "packageName": "@ricklove/upload-api-server",
       "projectFolder": "features/networking/upload-api/server"
     },
+    {
+      "packageName": "@ricklove/user-data-service",
+      "projectFolder": "features/networking/user-data-service"
+    },
     // UI ---
     {
       "packageName": "@ricklove/themes",
