@@ -63,15 +63,24 @@ This is where I put all the cool stuff.
     - build scripts per project
 - Worse than typescript paths
   - cross-project rename
-  - find all references worked better (sometimes)
+    - scopes to current project only
+  - find all references
+    - does not find references in unloaded files
   - much more project boilerplate:
-    - config/rig.json
-    - src
-    - .eslintrc.cjs
-    - index.ts
-    - package.json
-    - tsconfig.json
+    - required files:
+      - config/rig.json
+      - src
+      - .eslintrc.cjs
+      - index.ts
+      - package.json
+      - tsconfig.json
+    - [WORKAROUND] vscode hidden files can hide these
+    - [ ] tool to create new module
+      - Copy template
+      - Register in rush.json
   - auto imports doesn't work (unless already imported)
+    - [FIXED] Created `tools/vscode/auto-imports-fix`
+      - Still uses good scope (only package.json dependencies)
 
 ## File Structure
 
