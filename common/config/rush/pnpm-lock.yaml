@@ -21,6 +21,7 @@ specifiers:
   '@rush-temp/ricklove-vscode-auto-imports-fix': file:./projects/ricklove-vscode-auto-imports-fix.tgz
   '@rush-temp/ricklove_me': file:./projects/ricklove_me.tgz
   '@rush-temp/ricklove_me-content': file:./projects/ricklove_me-content.tgz
+  '@rush-temp/rush-packages': file:./projects/rush-packages.tgz
   '@rush-temp/themes': file:./projects/themes.tgz
   '@rush-temp/typescript-type-system-adventure': file:./projects/typescript-type-system-adventure.tgz
   '@rush-temp/upload-api-client': file:./projects/upload-api-client.tgz
@@ -59,7 +60,6 @@ specifiers:
   eslint-plugin-unused-imports: ^1.1.4
   glob: ^7.1.7
   highlight.js: ~9.1.0
-  jsonc: ~2.0.0
   mocha: ^8.4.0
   next: ^11.0.0
   next-transpile-modules: ~8.0.0
@@ -96,6 +96,7 @@ dependencies:
   '@rush-temp/ricklove-vscode-auto-imports-fix': file:projects/ricklove-vscode-auto-imports-fix.tgz
   '@rush-temp/ricklove_me': file:projects/ricklove_me.tgz_typescript@4.3.5
   '@rush-temp/ricklove_me-content': file:projects/ricklove_me-content.tgz_f0b419a7e119055c71dcaf6063a7ba7a
+  '@rush-temp/rush-packages': file:projects/rush-packages.tgz
   '@rush-temp/themes': file:projects/themes.tgz
   '@rush-temp/typescript-type-system-adventure': file:projects/typescript-type-system-adventure.tgz
   '@rush-temp/upload-api-client': file:projects/upload-api-client.tgz_@babel+core@7.15.0
@@ -134,7 +135,6 @@ dependencies:
   eslint-plugin-unused-imports: 1.1.4_75abe9ce172664f7305719cb0438fdf7
   glob: 7.1.7
   highlight.js: 9.1.0
-  jsonc: 2.0.0
   mocha: 8.4.0
   next: 11.1.0_d656e95d5564dbefda9f605dfed71e60
   next-transpile-modules: 8.0.0
@@ -10005,7 +10005,7 @@ packages:
     dev: false
 
   file:projects/ricklove-vscode-auto-imports-fix.tgz:
-    resolution: {integrity: sha512-ZCRtufoAnclAMmp932oUOkPaMvI7YISFMv/VtjJEDNEOVhzkD79oV1RUhazLD9QgK5CWc3+tb8Po4IZkhYBJng==, tarball: file:projects/ricklove-vscode-auto-imports-fix.tgz}
+    resolution: {integrity: sha512-MDRjmv42YhorcYPdO4B0Q7Pf2BVexM2CDtV93W+NNtanVyC+4oXeacCLf46lb5nZzwwm0YGwzSkJIZyR1TZSNg==, tarball: file:projects/ricklove-vscode-auto-imports-fix.tgz}
     name: '@rush-temp/ricklove-vscode-auto-imports-fix'
     version: 0.0.0
     dependencies:
@@ -10074,6 +10074,14 @@ packages:
       - typescript
       - utf-8-validate
       - webpack
+    dev: false
+
+  file:projects/rush-packages.tgz:
+    resolution: {integrity: sha512-lq8J+PWFAEgdgdSIwQ8m3+BkdY68WSAMf2B/Lvdo5vP8h4NuAvQr3VhW7tXVXkzMxMRLZSBMcy5MJaysXTKQcQ==, tarball: file:projects/rush-packages.tgz}
+    name: '@rush-temp/rush-packages'
+    version: 0.0.0
+    dependencies:
+      '@types/node': 12.12.6
     dev: false
 
   file:projects/themes.tgz:

@@ -36,9 +36,9 @@
     "lint": "eslint src --ext ts",
     "test": "node ./out/test/runTest.js"
   },
-  "dependencies": {},
   "devDependencies": {
     "@ricklove/config-lib-rig": "*",
+    "@ricklove/rush-packages": "*",
     "@types/glob": "^7.1.3",
     "@types/mocha": "^8.2.2",
     "@types/node": "12.12.6",

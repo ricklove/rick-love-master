@@ -557,6 +557,10 @@
 
     // Tools --
     {
+      "packageName": "@ricklove/rush-packages",
+      "projectFolder": "tools/rush-packages"
+    },
+    {
       "packageName": "ricklove-vscode-auto-imports-fix",
       "projectFolder": "tools/vscode/auto-imports-fix"
     }
