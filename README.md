@@ -79,7 +79,7 @@ This is where I put all the cool stuff.
       - package.json
       - tsconfig.json
     - [WORKAROUND] vscode hidden files can hide these
-    - [ ] tool to create new module
+    - [x] tool to create new module
       - Copy template
       - Register in rush.json
   - auto imports doesn't work (unless already imported)
