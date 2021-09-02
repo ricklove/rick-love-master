@@ -26,6 +26,7 @@
   "scripts": {
     "build": "npm run compile && vsce package",
     "build:watch": "npm run watch",
+    "install": "code --install-extension ricklove-vscode-auto-imports-fix-0.0.1.vsix",
     "vscode:prepublish": "npm run compile",
     "compile": "tsc -p ./",
     "watch": "tsc -watch -p ./",
