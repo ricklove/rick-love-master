@@ -3,11 +3,15 @@ This is where I put all the cool stuff.
 ## Commands
 
 - develop blog
+
   - Tab1 - Run rush build watch
-    - `rush build:watch --to-except blog-nextjs`
+    - `rush build:watch --to-except ricklove_me`
   - Tab2 - Run nextjs dev
-    - `cd \projects\blog-nextjs`
+    - `cd \projects\ricklove_me`
     - `npx next dev`
+
+- create project
+  - `npm --prefix tools\rush-packages run cli -- --d tools/test --p @ricklove/tools-test --t node`
 
 ## Tech Stack
 
