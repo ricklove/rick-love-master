@@ -21,7 +21,7 @@ This is where I put all the cool stuff.
 
 - [Partial] Refactoring across packages
   - [x] F12 Navigation to definition works
-  - [ ] Find all references only works inside module
+  - [ ] Find all references only works inside module and down into dependencies
   - [ ] Renaming across packages is not working, but possibly ok
 - [x] Shared configuration
 - Dependencies
@@ -32,9 +32,46 @@ This is where I put all the cool stuff.
     - rush requires listing packages in rush.json
     - [x] Single registration of packages
       - No need to register typescript registrations
-- [ ] Typescript stress test
+- [x] Typescript stress test
   - [x] Typescript uses .d.ts files instead of reanalyzing all code
   - [x] Typescript uses independent typescript.json settings for each package's code
+
+## Comparison with typescript paths
+
+- Better than typescript paths
+  - Editor Performance
+    - rush build:watch updates are detected by vscode in a few seconds
+    - F12 navigation is very reliable
+    - Formatting is quick and reliable
+    - Editor is stable, not requiring many reloads
+    - typescript paths would often overload tsserver and break, had to manually disable some paths, etc.
+  - Targetted Builds (only build specific projects)
+    - rush makes it possible to build:watch only specific targets with the `rush build:watch --to project-name`
+  - Targetted Includes (only include specific ts files)
+    - It is possible to only include specific files for a project
+  - Specific project dependencies
+    - It is possible to define specific environment targets and libraries (node vs dom, etc.)
+  - Enforced separation of environments
+    - This leads to smaller more precise modules
+  - Many small modules
+    - Modules are more likely to be small and include separate modules for each environment target:
+      - feature-common (types and config)
+      - feature-client
+      - feature-server
+    - This forces the module to be at a more granular level (at the level where multiple enviroments are needed)
+  - Custom build scripts
+    - build scripts per project
+- Worse than typescript paths
+  - cross-project rename
+  - find all references worked better (sometimes)
+  - much more project boilerplate:
+    - config/rig.json
+    - src
+    - .eslintrc.cjs
+    - index.ts
+    - package.json
+    - tsconfig.json
+  - auto imports doesn't work (unless already imported)
 
 ## File Structure
 
