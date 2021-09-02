@@ -31,7 +31,7 @@ export const cli = async () => {
         // return { packageName: argPackageName, destDirPath: process.cwd() };
       }
       if (!argPackageName) {
-        return { packageName: path.basename(argDestDir), destDirPath: path.dirname(argDestDir) };
+        return { packageName: path.basename(argDestDir), destDirPath: argDestDir };
         // return { packageName: path.basename(process.cwd()), destDirPath: path.dirname(process.cwd()) };
       }
       return { packageName: argPackageName, destDirPath: argDestDir };

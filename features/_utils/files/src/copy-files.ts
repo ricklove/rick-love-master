@@ -9,6 +9,7 @@ export const copyFiles = async ({ destPath, sourcePath }: { destPath: string; so
     const relFilePath = path.relative(sourcePath, sourceFilePath);
     const destFilePath = path.resolve(destPath, relFilePath);
 
+    await fs.mkdir(path.dirname(destFilePath), { recursive: true });
     await fs.copyFile(sourceFilePath, destFilePath);
   }
 };

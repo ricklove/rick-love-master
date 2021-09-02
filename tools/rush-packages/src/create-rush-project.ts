@@ -31,16 +31,11 @@ export const createRushProject = async ({
   }
 
   console.log(`createRushProject`, {
-    currentDirPath,
     destDirPath,
     packageName,
     templatesDirPath,
     templateName,
   });
-
-  if (1 + 0 === 1) {
-    return;
-  }
 
   await createProjectFromTemplate({ destDirPath, packageName, templatesDirPath, templateName });
   await addRushJsonProject({ destDirPath, packageName });
@@ -65,8 +60,10 @@ const createProjectFromTemplate = async ({
     throw new AppError(`Cannot find template`, { templateDirNames, templateName });
   }
 
+  const templateDirPath = path.join(templatesDirPath, template.name);
+
   // Copy template
-  await copyFiles({ destPath: destDirPath, sourcePath: template.name });
+  await copyFiles({ destPath: destDirPath, sourcePath: templateDirPath });
 
   // Fix package.json
   const packageJsonFilePath = path.join(destDirPath, `package.json`);
@@ -89,13 +86,18 @@ const addRushJsonProject = async ({ destDirPath, packageName }: { destDirPath: s
   const projectFolder = path
     .resolve(destDirPath)
     .replace(path.dirname(result.rushJsonFilePath), ``)
-    .replace(/\\/g, `/`);
+    .replace(/\\/g, `/`)
+    .replace(/^\//, ``);
 
   const projectsBefore = result.rushProjects.filter((p) => p.projectFolder < projectFolder);
   const projectBefore = projectsBefore[projectsBefore.length - 1] ?? result.rushProjects[0];
 
   if (!projectBefore) {
     throw new AppError(`Cannot find any project in rush.json`, { destDirPath });
+  }
+
+  if (projectBefore.packageName === packageName) {
+    throw new AppError(`The package already exists in rush.json`, { packageName });
   }
 
   const rushJsonContent = await fs.readFile(result.rushJsonFilePath, { encoding: `utf-8` });
@@ -105,12 +107,11 @@ const addRushJsonProject = async ({ destDirPath, packageName }: { destDirPath: s
   const iBraceClose = rushJsonContent.indexOf(`}`, iProjectBefore);
   const iInsert = iBraceClose + 1;
 
-  const newRushJsonProject = `
-  {
-    "packageName": "${packageName}",
-    "projectFolder": "${projectFolder}"
-  },
-`;
+  const newRushJsonProject = `,
+    {
+      "packageName": "${packageName}",
+      "projectFolder": "${projectFolder}"
+    }`;
   const rushJsonContent_after =
     rushJsonContent.substr(0, iInsert) + newRushJsonProject + rushJsonContent.substr(iInsert);
 
