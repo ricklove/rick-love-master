@@ -1,8 +1,10 @@
 {
-  "name": "@ricklove/vscode-auto-imports",
+  "name": "ricklove-vscode-auto-imports-fix",
+  "publisher": "RickLove",
   "displayName": "auto-imports-fix",
-  "description": "",
+  "description": "Fix auto imports to use package name",
   "version": "0.0.1",
+  "repository": "github:ricklove/rick-love-master",
   "engines": {
     "vscode": "^1.59.0"
   },
@@ -22,7 +24,7 @@
     ]
   },
   "scripts": {
-    "build": "npm run compile",
+    "build": "npm run compile && vsce package",
     "build:watch": "npm run watch",
     "vscode:prepublish": "npm run compile",
     "compile": "tsc -p ./",

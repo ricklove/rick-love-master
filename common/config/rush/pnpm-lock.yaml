@@ -31,7 +31,7 @@ specifiers:
   '@rush-temp/utils-node': file:./projects/utils-node.tgz
   '@rush-temp/utils-react': file:./projects/utils-react.tgz
   '@rush-temp/utils-web': file:./projects/utils-web.tgz
-  '@rush-temp/vscode-auto-imports': file:./projects/vscode-auto-imports.tgz
+  '@rush-temp/vscode-auto-imports-fix': file:./projects/vscode-auto-imports-fix.tgz
   '@rush-temp/web-mesh': file:./projects/web-mesh.tgz
   '@rush-temp/websockets-api-client': file:./projects/websockets-api-client.tgz
   '@rush-temp/websockets-api-common': file:./projects/websockets-api-common.tgz
@@ -105,7 +105,7 @@ dependencies:
   '@rush-temp/utils-node': file:projects/utils-node.tgz
   '@rush-temp/utils-react': file:projects/utils-react.tgz
   '@rush-temp/utils-web': file:projects/utils-web.tgz
-  '@rush-temp/vscode-auto-imports': file:projects/vscode-auto-imports.tgz
+  '@rush-temp/vscode-auto-imports-fix': file:projects/vscode-auto-imports-fix.tgz
   '@rush-temp/web-mesh': file:projects/web-mesh.tgz_@babel+core@7.15.0
   '@rush-temp/websockets-api-client': file:projects/websockets-api-client.tgz_@babel+core@7.15.0
   '@rush-temp/websockets-api-common': file:projects/websockets-api-common.tgz
@@ -10122,9 +10122,9 @@ packages:
     version: 0.0.0
     dev: false
 
-  file:projects/vscode-auto-imports.tgz:
-    resolution: {integrity: sha512-RUrbDq+n36djfPNvYSZQTbDM2HPQXo3LTqhCNtEWTzJnRIRS31PDrbuhuT4P9c5QQmX89e8vfiIG6TfQzDJqWQ==, tarball: file:projects/vscode-auto-imports.tgz}
-    name: '@rush-temp/vscode-auto-imports'
+  file:projects/vscode-auto-imports-fix.tgz:
+    resolution: {integrity: sha512-W2ABiep78Lzi9+ckMTfaJl/5N443TQSUPZwxzOpewN5Eblh9kTOqVWbw32709zCaMEDw8cNi/CUhxZraSP2dkw==, tarball: file:projects/vscode-auto-imports-fix.tgz}
+    name: '@rush-temp/vscode-auto-imports-fix'
     version: 0.0.0
     dependencies:
       '@types/glob': 7.1.4

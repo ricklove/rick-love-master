@@ -557,8 +557,8 @@
 
     // Tools --
     {
-      "packageName": "@ricklove/vscode-auto-imports",
-      "projectFolder": "tools/vscode-auto-imports"
+      "packageName": "ricklove-vscode-auto-imports-fix",
+      "projectFolder": "tools/vscode/auto-imports-fix"
     }
   ]
 }

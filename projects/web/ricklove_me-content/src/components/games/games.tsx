@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { gamesList } from '@ricklove/games-list';
+import { ApiError } from '../../../../../../features/_utils/core/lib';
 import { AppComponentLoader } from '../app-component-loader';
 import { Layout } from '../layout/layout';
 import { SEO } from '../layout/seo';
@@ -13,6 +14,8 @@ export const gamesListData = [...gamesList.map((x) => ({ name: x.name }))];
 export type GamePageData = {
   gameName: string;
 };
+
+const e = new ApiError(``);
 
 export const GamePage = (props: { data: GamePageData }) => {
   return (
