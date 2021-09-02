@@ -3,9 +3,10 @@ import { AppError } from '@ricklove/utils-core';
 import { createRushProject } from './create-rush-project';
 
 export const cli = async () => {
-  console.log(`rush-packages`);
-
   const argv = process.argv;
+
+  console.log(`rush-packages`, { argv });
+
   // const argFull = argv.includes(`--f`) || argv.includes(`--full`);
   // const argCoverage = (argv.includes(`--c`) || argv.includes(`--coverage`));
   const argDestDir =
@@ -33,15 +34,19 @@ export const cli = async () => {
         return { packageName: path.basename(argDestDir), destDirPath: path.dirname(argDestDir) };
         // return { packageName: path.basename(process.cwd()), destDirPath: path.dirname(process.cwd()) };
       }
-      return { packageName: argPackageName, destDirPath: path.resolve(argDestDir) };
+      return { packageName: argPackageName, destDirPath: argDestDir };
     };
     const { packageName, destDirPath } = getDestArgs();
     const templateName = argTemplateName || `lib`;
 
     await createRushProject({
+      currentDirPath: process.cwd(),
       destDirPath,
       packageName,
       templateName,
     });
   }
 };
+
+// eslint-disable-next-line @typescript-eslint/no-floating-promises
+cli();

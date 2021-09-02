@@ -96,7 +96,7 @@ dependencies:
   '@rush-temp/ricklove-vscode-auto-imports-fix': file:projects/ricklove-vscode-auto-imports-fix.tgz
   '@rush-temp/ricklove_me': file:projects/ricklove_me.tgz_typescript@4.3.5
   '@rush-temp/ricklove_me-content': file:projects/ricklove_me-content.tgz_f0b419a7e119055c71dcaf6063a7ba7a
-  '@rush-temp/rush-packages': file:projects/rush-packages.tgz
+  '@rush-temp/rush-packages': file:projects/rush-packages.tgz_typescript@4.3.5
   '@rush-temp/themes': file:projects/themes.tgz
   '@rush-temp/typescript-type-system-adventure': file:projects/typescript-type-system-adventure.tgz
   '@rush-temp/upload-api-client': file:projects/upload-api-client.tgz_@babel+core@7.15.0
@@ -10005,7 +10005,7 @@ packages:
     dev: false
 
   file:projects/ricklove-vscode-auto-imports-fix.tgz:
-    resolution: {integrity: sha512-MDRjmv42YhorcYPdO4B0Q7Pf2BVexM2CDtV93W+NNtanVyC+4oXeacCLf46lb5nZzwwm0YGwzSkJIZyR1TZSNg==, tarball: file:projects/ricklove-vscode-auto-imports-fix.tgz}
+    resolution: {integrity: sha512-d5Wq+50mPYqbInzFXumLLP/ke11z5EpnGMPpygvuQLqM4KUIK62sIdzgo/UWWcg23GtNIpHIU8FWX9AYOXb85w==, tarball: file:projects/ricklove-vscode-auto-imports-fix.tgz}
     name: '@rush-temp/ricklove-vscode-auto-imports-fix'
     version: 0.0.0
     dependencies:
@@ -10076,12 +10076,18 @@ packages:
       - webpack
     dev: false
 
-  file:projects/rush-packages.tgz:
-    resolution: {integrity: sha512-lq8J+PWFAEgdgdSIwQ8m3+BkdY68WSAMf2B/Lvdo5vP8h4NuAvQr3VhW7tXVXkzMxMRLZSBMcy5MJaysXTKQcQ==, tarball: file:projects/rush-packages.tgz}
+  file:projects/rush-packages.tgz_typescript@4.3.5:
+    resolution: {integrity: sha512-8TlUuo5L6IzAR9/eZHwLHu5Kxo/RPoUNf00J4fenb5/Gn1dMUQn63bwMvPEwYFwH88n1RLE7rH5R+bTvry4SMw==, tarball: file:projects/rush-packages.tgz}
+    id: file:projects/rush-packages.tgz
     name: '@rush-temp/rush-packages'
     version: 0.0.0
     dependencies:
       '@types/node': 12.12.6
+      ts-node: 10.2.1_70d6492c0feb1eb5d83e62cce7c43fd5
+    transitivePeerDependencies:
+      - '@swc/core'
+      - '@swc/wasm'
+      - typescript
     dev: false
 
   file:projects/themes.tgz:

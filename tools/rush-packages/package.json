@@ -4,6 +4,7 @@
   "type": "module",
   "main": "./lib/index.js",
   "scripts": {
+    "cli": "node --experimental-specifier-resolution=node --loader ts-node/esm ./src/cli.ts",
     "build": "heft test --clean",
     "build:watch": "heft build"
   },
@@ -11,6 +12,7 @@
     "@ricklove/config-lib-rig": "*",
     "@ricklove/utils-core": "*",
     "@ricklove/utils-files": "*",
-    "@types/node": "12.12.6"
+    "@types/node": "12.12.6",
+    "ts-node": "~10.2.1"
   }
 }

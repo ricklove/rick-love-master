@@ -16,13 +16,14 @@
     "**/node_modules": true,
 
     // build artifacts
-    "**/lib": true,
     "**/.heft": true,
     "**/.rush": true,
     "**/*.build.log": true,
     "**/*.build.error.log": true,
     "**/.next": true,
     "**/temp": true
+
+    //"**/lib": true,
 
     // required boilerplate
     // "**/config": true,

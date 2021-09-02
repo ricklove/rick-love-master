@@ -5,23 +5,41 @@ import { copyFiles } from '@ricklove/utils-files';
 import { loadRushJson as loadRushJson, loadRushJsonProjects } from './rush-json';
 
 export const createRushProject = async ({
+  currentDirPath,
   destDirPath,
   packageName,
   templatesDirPath,
   templateName,
 }: {
+  currentDirPath: string;
   destDirPath: string;
   packageName: string;
   templatesDirPath?: string;
   templateName: string;
 }) => {
-  if (!templatesDirPath) {
-    const rushJsonPath = await loadRushJson(destDirPath);
-    if (!rushJsonPath) {
-      throw new AppError(`Cannot find rush.json`, { destDirPath });
-    }
+  const rushJsonPath = await loadRushJson(currentDirPath);
+  if (!rushJsonPath) {
+    console.error(`Cannot find rush.json`, { destDirPath, rushJsonPath });
+    throw new AppError(`Cannot find rush.json`, { destDirPath, rushJsonPath });
+  }
 
-    templatesDirPath = path.join(path.dirname(rushJsonPath.filePath), `./config/_templates`);
+  const rootPath = path.dirname(rushJsonPath.filePath);
+
+  destDirPath = path.resolve(rootPath, destDirPath);
+  if (!templatesDirPath) {
+    templatesDirPath = path.join(rootPath, `./config/_templates`);
+  }
+
+  console.log(`createRushProject`, {
+    currentDirPath,
+    destDirPath,
+    packageName,
+    templatesDirPath,
+    templateName,
+  });
+
+  if (1 + 0 === 1) {
+    return;
   }
 
   await createProjectFromTemplate({ destDirPath, packageName, templatesDirPath, templateName });
