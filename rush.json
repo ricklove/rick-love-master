@@ -553,6 +553,12 @@
     {
       "packageName": "@ricklove/ricklove_me-content",
       "projectFolder": "projects/web/ricklove_me-content"
+    },
+
+    // Tools --
+    {
+      "packageName": "@ricklove/vscode-auto-imports",
+      "projectFolder": "tools/vscode-auto-imports"
     }
   ]
 }
