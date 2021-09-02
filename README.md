@@ -19,9 +19,10 @@ This is where I put all the cool stuff.
 
 ## Dev features
 
-- [NO] Refactoring across packages
-  - [ ] Renaming across packages is not working
-  - [x] Navigation across packages works great
+- [Partial] Refactoring across packages
+  - [x] F12 Navigation to definition works
+  - [ ] Find all references only works inside module
+  - [ ] Renaming across packages is not working, but possibly ok
 - [x] Shared configuration
 - Dependencies
   - [x] Single declaration of dependencies
@@ -32,7 +33,7 @@ This is where I put all the cool stuff.
     - [x] Single registration of packages
       - No need to register typescript registrations
 - [ ] Typescript stress test
-  - [ ] Typescript uses .d.ts files instead of reanalyzing all code imported code
+  - [x] Typescript uses .d.ts files instead of reanalyzing all code
   - [x] Typescript uses independent typescript.json settings for each package's code
 
 ## File Structure
