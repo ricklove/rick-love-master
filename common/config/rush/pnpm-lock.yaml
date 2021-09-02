@@ -18,6 +18,7 @@ specifiers:
   '@rush-temp/games-list': file:./projects/games-list.tgz
   '@rush-temp/react-controls': file:./projects/react-controls.tgz
   '@rush-temp/react-native-lite': file:./projects/react-native-lite.tgz
+  '@rush-temp/ricklove-vscode-auto-imports-fix': file:./projects/ricklove-vscode-auto-imports-fix.tgz
   '@rush-temp/ricklove_me': file:./projects/ricklove_me.tgz
   '@rush-temp/ricklove_me-content': file:./projects/ricklove_me-content.tgz
   '@rush-temp/themes': file:./projects/themes.tgz
@@ -31,7 +32,6 @@ specifiers:
   '@rush-temp/utils-node': file:./projects/utils-node.tgz
   '@rush-temp/utils-react': file:./projects/utils-react.tgz
   '@rush-temp/utils-web': file:./projects/utils-web.tgz
-  '@rush-temp/vscode-auto-imports-fix': file:./projects/vscode-auto-imports-fix.tgz
   '@rush-temp/web-mesh': file:./projects/web-mesh.tgz
   '@rush-temp/websockets-api-client': file:./projects/websockets-api-client.tgz
   '@rush-temp/websockets-api-common': file:./projects/websockets-api-common.tgz
@@ -59,6 +59,7 @@ specifiers:
   eslint-plugin-unused-imports: ^1.1.4
   glob: ^7.1.7
   highlight.js: ~9.1.0
+  jsonc: ~2.0.0
   mocha: ^8.4.0
   next: ^11.0.0
   next-transpile-modules: ~8.0.0
@@ -92,6 +93,7 @@ dependencies:
   '@rush-temp/games-list': file:projects/games-list.tgz
   '@rush-temp/react-controls': file:projects/react-controls.tgz_@babel+core@7.15.0
   '@rush-temp/react-native-lite': file:projects/react-native-lite.tgz_@babel+core@7.15.0
+  '@rush-temp/ricklove-vscode-auto-imports-fix': file:projects/ricklove-vscode-auto-imports-fix.tgz
   '@rush-temp/ricklove_me': file:projects/ricklove_me.tgz_typescript@4.3.5
   '@rush-temp/ricklove_me-content': file:projects/ricklove_me-content.tgz_f0b419a7e119055c71dcaf6063a7ba7a
   '@rush-temp/themes': file:projects/themes.tgz
@@ -105,7 +107,6 @@ dependencies:
   '@rush-temp/utils-node': file:projects/utils-node.tgz
   '@rush-temp/utils-react': file:projects/utils-react.tgz
   '@rush-temp/utils-web': file:projects/utils-web.tgz
-  '@rush-temp/vscode-auto-imports-fix': file:projects/vscode-auto-imports-fix.tgz
   '@rush-temp/web-mesh': file:projects/web-mesh.tgz_@babel+core@7.15.0
   '@rush-temp/websockets-api-client': file:projects/websockets-api-client.tgz_@babel+core@7.15.0
   '@rush-temp/websockets-api-common': file:projects/websockets-api-common.tgz
@@ -133,6 +134,7 @@ dependencies:
   eslint-plugin-unused-imports: 1.1.4_75abe9ce172664f7305719cb0438fdf7
   glob: 7.1.7
   highlight.js: 9.1.0
+  jsonc: 2.0.0
   mocha: 8.4.0
   next: 11.1.0_d656e95d5564dbefda9f605dfed71e60
   next-transpile-modules: 8.0.0
@@ -3961,6 +3963,10 @@ packages:
     resolution: {integrity: sha1-PYpcZog6FqMMqGQ+hR8Zuqd5eRc=}
     dev: false
 
+  /fast-safe-stringify/2.0.8:
+    resolution: {integrity: sha512-lXatBjf3WPjmWD6DpIZxkeSsCOwqI0maYMpgDlx8g4U2qi4lbjA9oH/HD2a87G+KfsUmo5WbJFmqBZlPxtptag==}
+    dev: false
+
   /fastparse/1.1.2:
     resolution: {integrity: sha512-483XLLxTVIwWK3QTrMGRqUfUpoOs/0hbQrl2oz4J0pAcm3A3bu84wxTFqGqkJzewCLdME38xJLJAxBABfQT8sQ==}
     dev: false
@@ -5853,6 +5859,22 @@ packages:
       minimist: 1.2.5
     dev: false
 
+  /jsonc-parser/3.0.0:
+    resolution: {integrity: sha512-fQzRfAbIBnR0IQvftw9FJveWiHp72Fg20giDrHz6TdfB12UH/uue0D3hm57UB5KgAVuniLMCaS8P1IMj9NR7cA==}
+    dev: false
+
+  /jsonc/2.0.0:
+    resolution: {integrity: sha512-B281bLCT2TRMQa+AQUQY5AGcqSOXBOKaYGP4wDzoA/+QswUfN8sODektbPEs9Baq7LGKun5jQbNFpzwGuVYKhw==}
+    engines: {node: '>=8'}
+    dependencies:
+      fast-safe-stringify: 2.0.8
+      graceful-fs: 4.2.8
+      mkdirp: 0.5.5
+      parse-json: 4.0.0
+      strip-bom: 4.0.0
+      strip-json-comments: 3.1.1
+    dev: false
+
   /jsonfile/4.0.0:
     resolution: {integrity: sha1-h3Gq4HmbZAdrdmQPygWPnBDjPss=}
     optionalDependencies:
@@ -7018,6 +7040,14 @@ packages:
     engines: {node: '>=0.10.0'}
     dependencies:
       error-ex: 1.3.2
+    dev: false
+
+  /parse-json/4.0.0:
+    resolution: {integrity: sha1-vjX1Qlvh9/bHRxhPmKeIy5lHfuA=}
+    engines: {node: '>=4'}
+    dependencies:
+      error-ex: 1.3.2
+      json-parse-better-errors: 1.0.2
     dev: false
 
   /parse-json/5.2.0:
@@ -9974,6 +10004,28 @@ packages:
       - '@babel/core'
     dev: false
 
+  file:projects/ricklove-vscode-auto-imports-fix.tgz:
+    resolution: {integrity: sha512-ZCRtufoAnclAMmp932oUOkPaMvI7YISFMv/VtjJEDNEOVhzkD79oV1RUhazLD9QgK5CWc3+tb8Po4IZkhYBJng==, tarball: file:projects/ricklove-vscode-auto-imports-fix.tgz}
+    name: '@rush-temp/ricklove-vscode-auto-imports-fix'
+    version: 0.0.0
+    dependencies:
+      '@types/glob': 7.1.4
+      '@types/mocha': 8.2.3
+      '@types/node': 12.12.6
+      '@types/vscode': 1.59.0
+      '@typescript-eslint/eslint-plugin': 4.28.5_a8e83fcad666e1ba86be4b2e27a20aea
+      '@typescript-eslint/parser': 4.28.5_eslint@7.32.0+typescript@4.3.5
+      eslint: 7.32.0
+      glob: 7.1.7
+      jsonc: 2.0.0
+      jsonc-parser: 3.0.0
+      mocha: 8.4.0
+      typescript: 4.3.5
+      vscode-test: 1.6.1
+    transitivePeerDependencies:
+      - supports-color
+    dev: false
+
   file:projects/ricklove_me-content.tgz_f0b419a7e119055c71dcaf6063a7ba7a:
     resolution: {integrity: sha512-xHWQfvJbowrvNXTyNfqs9YSDAGsMnaEVo8GLIC0jy3bAdTEii4FrsCAs3wtZ2KT+f2FTQOmFuKz/1CGB+VqMDw==, tarball: file:projects/ricklove_me-content.tgz}
     id: file:projects/ricklove_me-content.tgz
@@ -10120,26 +10172,6 @@ packages:
     resolution: {integrity: sha512-uX9yYBsInsPgWHCi5gNZdhUQ91cBNR0WfU5/io7mtLdtEPxiOYS3pc4ozwhbgT/UDpEo1kAxh2bjyAZrxLqw/Q==, tarball: file:projects/utils-web.tgz}
     name: '@rush-temp/utils-web'
     version: 0.0.0
-    dev: false
-
-  file:projects/vscode-auto-imports-fix.tgz:
-    resolution: {integrity: sha512-W2ABiep78Lzi9+ckMTfaJl/5N443TQSUPZwxzOpewN5Eblh9kTOqVWbw32709zCaMEDw8cNi/CUhxZraSP2dkw==, tarball: file:projects/vscode-auto-imports-fix.tgz}
-    name: '@rush-temp/vscode-auto-imports-fix'
-    version: 0.0.0
-    dependencies:
-      '@types/glob': 7.1.4
-      '@types/mocha': 8.2.3
-      '@types/node': 12.12.6
-      '@types/vscode': 1.59.0
-      '@typescript-eslint/eslint-plugin': 4.28.5_a8e83fcad666e1ba86be4b2e27a20aea
-      '@typescript-eslint/parser': 4.28.5_eslint@7.32.0+typescript@4.3.5
-      eslint: 7.32.0
-      glob: 7.1.7
-      mocha: 8.4.0
-      typescript: 4.3.5
-      vscode-test: 1.6.1
-    transitivePeerDependencies:
-      - supports-color
     dev: false
 
   file:projects/web-mesh.tgz_@babel+core@7.15.0:

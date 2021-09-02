@@ -12,19 +12,19 @@
     "Other"
   ],
   "activationEvents": [
-    "onCommand:auto-imports-fix.helloWorld"
+    "onCommand:auto-imports-fix.fixAutoImports"
   ],
   "main": "./out/extension.js",
   "contributes": {
     "commands": [
       {
-        "command": "auto-imports-fix.helloWorld",
-        "title": "Hello World"
+        "command": "auto-imports-fix.fixAutoImports",
+        "title": "auto-imports-fix: Fix Auto Imports"
       }
     ]
   },
   "scripts": {
-    "build": "npm run compile && vsce package",
+    "build": "npm run compile && vsce package && npm run install",
     "build:watch": "npm run watch",
     "install": "code --install-extension ricklove-vscode-auto-imports-fix-0.0.1.vsix",
     "vscode:prepublish": "npm run compile",
@@ -34,6 +34,7 @@
     "lint": "eslint src --ext ts",
     "test": "node ./out/test/runTest.js"
   },
+  "dependencies": {},
   "devDependencies": {
     "@ricklove/config-lib-rig": "*",
     "@types/glob": "^7.1.3",
