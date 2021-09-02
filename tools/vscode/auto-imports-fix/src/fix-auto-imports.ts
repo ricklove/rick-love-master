@@ -32,7 +32,7 @@ export const fixAutoImports_doc = async (doc: vscode.TextDocument) => {
 
   const isSupported = [`typescript`, `typescriptreact`].includes(doc.languageId);
   if (!isSupported) {
-    showMessage(`Languange not supported: ${doc.languageId}`);
+    // showMessage(`Languange not supported: ${doc.languageId}`);
     return;
   }
 
