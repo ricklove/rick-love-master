@@ -12,7 +12,9 @@
     "Other"
   ],
   "activationEvents": [
-    "onCommand:auto-imports-fix.fixAutoImports"
+    "onCommand:auto-imports-fix.fixAutoImports",
+    "onLanguage:typescript",
+    "onLanguage:typescriptreact"
   ],
   "main": "./out/extension.js",
   "contributes": {

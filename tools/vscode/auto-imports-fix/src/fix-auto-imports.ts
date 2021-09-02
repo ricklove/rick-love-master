@@ -21,8 +21,8 @@ export const fixAutoImports = async (_context: vscode.ExtensionContext) => {
   }
 };
 
-const fixAutoImports_doc = async (doc: vscode.TextDocument) => {
-  console.log(`fixAutoImports_doc - START`);
+export const fixAutoImports_doc = async (doc: vscode.TextDocument) => {
+  // showMessage(`fixAutoImports_doc - START doc: ${doc.fileName}`);
 
   const editor = vscode.window.activeTextEditor;
   if (editor?.document !== doc) {
@@ -71,13 +71,19 @@ const fixAutoImports_doc = async (doc: vscode.TextDocument) => {
     .filter((x) => x)
     .map((x) => x!);
 
+  if (!corrections.length) {
+    return;
+  }
+
   // Make corrections (in reverse so index doesn't change)
   for (const c of corrections.reverse()) {
-    showMessage(`DEBUG: correction: ${c.from} => ${c.to}`);
+    // showMessage(`DEBUG: correction: ${c.from} => ${c.to}`);
     await editor.edit((b) => {
       b.replace(new vscode.Range(doc.positionAt(c.index), doc.positionAt(c.index + c.from.length)), c.to);
     });
   }
+
+  await editor.document.save();
 };
 
 type PackageRegistration = { packageName: string; packagePath: string };

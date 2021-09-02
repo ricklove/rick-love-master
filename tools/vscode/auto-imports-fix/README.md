@@ -1,11 +1,12 @@
 # auto-imports-fix README
 
-Fix auto imports for mono repos. vscode will auto import using relative path, change it to the correct package import name (and add it to package.json).
+Fix auto imports for mono repos. vscode will auto import using relative path, change it to the correct package import name.
 
 ## Features
 
 - Fix auto import path
-- Add package name to package.json with `*` version
+- monorepos:
+  - Rush (rush.json at root)
 
 ## Requirements
 
