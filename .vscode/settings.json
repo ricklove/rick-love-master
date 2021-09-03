@@ -18,16 +18,16 @@
     // build artifacts
     "**/.heft": true,
     "**/.rush": true,
-    //"**/*.build.log": true,
-    //"**/*.build.error.log": true,
+    "**/*.build.log": true,
+    "**/*.build.error.log": true,
     "**/.next": true,
-    "**/temp": true
+    "**/temp": true,
 
-    //"**/lib": true,
+    "**/lib": true,
 
     // required boilerplate
-    // "**/config": true,
-    // "**/.eslintrc.cjs": true,
-    // "**/tsconfig.json": true
+    "**/config": true,
+    "**/.eslintrc.cjs": true,
+    "**/tsconfig.json": true
   }
 }
