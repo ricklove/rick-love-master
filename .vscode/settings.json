@@ -27,7 +27,7 @@
 
     // required boilerplate
     "**/config": true,
-    "**/.eslintrc.cjs": true,
-    "**/tsconfig.json": true
+    "**/.eslintrc.cjs": true
+    //"**/tsconfig.json": true
   }
 }

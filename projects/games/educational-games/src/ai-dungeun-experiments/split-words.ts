@@ -1,8 +1,11 @@
 export const groupWords = () => {
-    const w = wordList.split(`\n`).map(x => x.trim()).filter(x => x);
+  const w = wordList
+    .split(`\n`)
+    .map((x) => x.trim())
+    .filter((x) => x);
 
-    const text = w.map((x, i) => `${x}${(i + 1) % 8 === 0 ? `:\n` : `, `}`).join(``);
-    return text;
+  const text = w.map((x, i) => `${x}${(i + 1) % 8 === 0 ? `:\n` : `, `}`).join(``);
+  return text;
 };
 setTimeout(groupWords);
 

@@ -525,6 +525,10 @@
       "packageName": "@ricklove/dork",
       "projectFolder": "projects/games/dork"
     },
+    {
+      "packageName": "@ricklove/educational-games",
+      "projectFolder": "projects/games/educational-games"
+    },
 
     {
       "packageName": "@ricklove/doodle-common",

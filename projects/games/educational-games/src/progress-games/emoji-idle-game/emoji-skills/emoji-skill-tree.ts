@@ -1,120 +1,149 @@
+/* eslint-disable @typescript-eslint/naming-convention */
 export type EmojiSkillNode = {
-    emoji: string;
-    name: string;
-    gender: `baby` | `male` | `female`;
-    pay: number;
-    startEmoji: null | string;
-    requirementEmojis: string[];
-    debug_totalRequirementsCost?: string;
+  emoji: string;
+  name: string;
+  gender: `baby` | `male` | `female`;
+  pay: number;
+  startEmoji: null | string;
+  requirementEmojis: string[];
+  // eslint-disable-next-line @typescript-eslint/naming-convention
+  debug_totalRequirementsCost?: string;
 
-    parent: null | EmojiSkillNode;
-    children: EmojiSkillNode[];
+  parent: null | EmojiSkillNode;
+  children: EmojiSkillNode[];
 };
 export type EmojiSkillRequirement = {
-    emoji: string;
-    cost: number;
+  emoji: string;
+  cost: number;
 };
 export type EmojiSkillTree = {
-    allNodes: EmojiSkillNode[];
-    allRequirements: EmojiSkillRequirement[];
-    root: EmojiSkillNode;
+  allNodes: EmojiSkillNode[];
+  allRequirements: EmojiSkillRequirement[];
+  root: EmojiSkillNode;
 };
 
-
 export const buildEmojiSkillTree = (): EmojiSkillTree => {
-    const maleSkillDoc = `${child_male}\n${student_male}\n${skillDoc}`;
-    const femaleSkillDoc = `${child_female}\n${student_female}\n\n${getFemaleVariant(skillDoc)}`;
-    const maleNodes = parseSkillDoc(maleSkillDoc, `male`);
-    const femaleNodes = parseSkillDoc(femaleSkillDoc, `female`);
-    const babyNode: EmojiSkillNode = {
-        emoji: babyEmoji,
-        name: `baby`,
-        gender: `baby`,
-        pay: 0,
-        requirementEmojis: [],
-        startEmoji: null,
-        parent: null,
-        children: [],
-    };
-    const allNodes = [babyNode, ...maleNodes, ...femaleNodes];
-    const root = babyNode;
+  const maleSkillDoc = `${child_male}\n${student_male}\n${skillDoc}`;
+  const femaleSkillDoc = `${child_female}\n${student_female}\n\n${getFemaleVariant(skillDoc)}`;
+  const maleNodes = parseSkillDoc(maleSkillDoc, `male`);
+  const femaleNodes = parseSkillDoc(femaleSkillDoc, `female`);
+  const babyNode: EmojiSkillNode = {
+    emoji: babyEmoji,
+    name: `baby`,
+    gender: `baby`,
+    pay: 0,
+    requirementEmojis: [],
+    startEmoji: null,
+    parent: null,
+    children: [],
+  };
+  const allNodes = [babyNode, ...maleNodes, ...femaleNodes];
+  const root = babyNode;
 
-    allNodes.forEach(child => {
-        const parent = allNodes.find(x => child.startEmoji === x.emoji);
-        if (!parent) { return; }
+  allNodes.forEach((child) => {
+    const parent = allNodes.find((x) => child.startEmoji === x.emoji);
+    if (!parent) {
+      return;
+    }
 
-        parent.children.push(child);
-        child.parent = parent;
-    });
+    parent.children.push(child);
+    child.parent = parent;
+  });
 
-    const allRequirements = parseRequirementsDoc(requirementsDoc);
+  const allRequirements = parseRequirementsDoc(requirementsDoc);
 
-    allNodes.forEach(node => {
-        const allCosts = node.requirementEmojis
-            .map(r => allRequirements.find(x => x.emoji === r) ?? { emoji: r, cost: 0 });
+  allNodes.forEach((node) => {
+    const allCosts = node.requirementEmojis.map(
+      (r) => allRequirements.find((x) => x.emoji === r) ?? { emoji: r, cost: 0 },
+    );
 
-        const summary = allCosts
-            .map(x => `${x.emoji} = ${x.cost}`)
-            .join(`\n`);
+    const summary = allCosts.map((x) => `${x.emoji} = ${x.cost}`).join(`\n`);
 
-        // eslint-disable-next-line unicorn/no-reduce
-        const totalCost = allCosts.reduce((out, x) => { out += x.cost; return out; }, 0);
-        node.debug_totalRequirementsCost = `${totalCost} =\n${summary}`;
-    });
+    const totalCost = allCosts.reduce((out, x) => {
+      out += x.cost;
+      return out;
+    }, 0);
+    node.debug_totalRequirementsCost = `${totalCost} =\n${summary}`;
+  });
 
-    const tree: EmojiSkillTree = {
-        allNodes,
-        root,
-        allRequirements,
-    };
+  const tree: EmojiSkillTree = {
+    allNodes,
+    root,
+    allRequirements,
+  };
 
-    // const allRequirements = distinct(allNodes.flatMap(x => x.requirementEmojis));
-    // const allRequirementsDoc = allRequirements.map(x => `${x} = 0`).join(`\n`);
+  // const allRequirements = distinct(allNodes.flatMap(x => x.requirementEmojis));
+  // const allRequirementsDoc = allRequirements.map(x => `${x} = 0`).join(`\n`);
 
-    // console.log(`buildSkillTree`, { tree, maleSkillDoc, femaleSkillDoc });
-    return tree;
+  // console.log(`buildSkillTree`, { tree, maleSkillDoc, femaleSkillDoc });
+  return tree;
 };
 // setTimeout(buildEmojiSkillTree);
 
 const parseRequirementsDoc = (doc: string) => {
-    const lines = doc.split(`\n`).map(x => x.trim()).filter(x => x);
-    const nodes = lines.map(line => {
-        const parts = line.split(`=`).map(x => x.trim()).filter(x => x);
-        const r: EmojiSkillRequirement = {
-            emoji: parts[0],
-            cost: Number.parseInt(parts[1], 10),
-        };
-        return r;
-    });
-    return nodes;
+  const lines = doc
+    .split(`\n`)
+    .map((x) => x.trim())
+    .filter((x) => x);
+  const nodes = lines.map((line) => {
+    const parts = line
+      .split(`=`)
+      .map((x) => x.trim())
+      .filter((x) => x);
+    const r: EmojiSkillRequirement = {
+      emoji: parts[0],
+      cost: Number.parseInt(parts[1], 10),
+    };
+    return r;
+  });
+  return nodes;
 };
 
 const parseSkillDoc = (doc: string, gender: 'male' | 'female') => {
-    const lines = doc.split(`\n`).map(x => x.trim()).filter(x => x);
-    const nodes = lines.map(x => parseSkillLine(x, gender));
-    return nodes;
+  const lines = doc
+    .split(`\n`)
+    .map((x) => x.trim())
+    .filter((x) => x);
+  const nodes = lines.map((x) => parseSkillLine(x, gender));
+  return nodes;
 };
 
 const parseSkillLine = (skillLine: string, gender: 'male' | 'female'): EmojiSkillNode => {
-    const [name, payText, p1] = skillLine.split(`:`).map(x => x.trim());
-    const pay = Number.parseInt(payText, 10);
-    const [end, p2] = p1.split(`=`).map(x => x.trim());
-    const [start, requirementsStr] = p2.split(`+`).map(x => x.trim());
-    const requirements = requirementsStr.split(` `).map(x => x.trim()).filter(x => x);
-    return { name, pay, emoji: end, startEmoji: start, requirementEmojis: requirements, children: [], parent: null, gender };
+  const [name, payText, p1] = skillLine.split(`:`).map((x) => x.trim());
+  const pay = Number.parseInt(payText, 10);
+  const [end, p2] = p1.split(`=`).map((x) => x.trim());
+  const [start, requirementsStr] = p2.split(`+`).map((x) => x.trim());
+  const requirements = requirementsStr
+    .split(` `)
+    .map((x) => x.trim())
+    .filter((x) => x);
+  return {
+    name,
+    pay,
+    emoji: end,
+    startEmoji: start,
+    requirementEmojis: requirements,
+    children: [],
+    parent: null,
+    gender,
+  };
 };
 
 const getFemaleVariant = (emoji: string) => {
-    return emoji
-        .replace(new RegExp(genderCharCodes.male, `g`), genderCharCodes.female)
-        .replace(new RegExp(genderCharCodes.man, `g`), genderCharCodes.woman);
+  return (
+    emoji
+      // eslint-disable-next-line @rushstack/security/no-unsafe-regexp
+      .replace(new RegExp(genderCharCodes.male, `g`), genderCharCodes.female)
+      // eslint-disable-next-line @rushstack/security/no-unsafe-regexp
+      .replace(new RegExp(genderCharCodes.man, `g`), genderCharCodes.woman)
+  );
 };
 
 const genderCharCodes = {
-    man: String.fromCodePoint(0x1F468),
-    woman: String.fromCodePoint(0x1F469),
-    male: String.fromCodePoint(0x1F469),
-    female: String.fromCodePoint(0x1F469),
+  man: String.fromCodePoint(0x1f468),
+  woman: String.fromCodePoint(0x1f469),
+  male: String.fromCodePoint(0x1f469),
+  female: String.fromCodePoint(0x1f469),
 };
 
 const babyEmoji = `👶`;

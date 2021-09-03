@@ -4,7 +4,7 @@ import { Text, TouchableOpacity, View } from '@ricklove/react-native-lite';
 import { DoodleDisplayView, DoodleDrawerView } from './doodle-view';
 import { KeyboardSimplified } from './keyboard-simplified';
 
-export const styles = {
+const styles = {
   container: {
     alignItems: `center`,
   },

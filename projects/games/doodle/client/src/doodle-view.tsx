@@ -14,7 +14,7 @@ import { groupItems } from '@ricklove/utils-core';
 import { useAsyncWorker } from '@ricklove/utils-react';
 import { createDoodleDrawingStorageService } from './doodle-storage';
 
-export const styles = {
+const styles = {
   drawing: {
     width: 312,
     height: 312,

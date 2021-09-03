@@ -12,6 +12,7 @@ specifiers:
   '@rush-temp/doodle-common': file:./projects/doodle-common.tgz
   '@rush-temp/doodle-server': file:./projects/doodle-server.tgz
   '@rush-temp/dork': file:./projects/dork.tgz
+  '@rush-temp/educational-games': file:./projects/educational-games.tgz
   '@rush-temp/example-lib-lib': file:./projects/example-lib-lib.tgz
   '@rush-temp/example-node-lib': file:./projects/example-node-lib.tgz
   '@rush-temp/example-web-lib': file:./projects/example-web-lib.tgz
@@ -88,6 +89,7 @@ dependencies:
   '@rush-temp/doodle-common': file:projects/doodle-common.tgz
   '@rush-temp/doodle-server': file:projects/doodle-server.tgz
   '@rush-temp/dork': file:projects/dork.tgz_@babel+core@7.15.0
+  '@rush-temp/educational-games': file:projects/educational-games.tgz
   '@rush-temp/example-lib-lib': file:projects/example-lib-lib.tgz
   '@rush-temp/example-node-lib': file:projects/example-node-lib.tgz
   '@rush-temp/example-web-lib': file:projects/example-web-lib.tgz
@@ -9956,6 +9958,15 @@ packages:
       - '@babel/core'
     dev: false
 
+  file:projects/educational-games.tgz:
+    resolution: {integrity: sha512-lQXCFvY4IjDRQiFAdGWC2QXi1gbqaY0iZjHBS/uiduvE9XSXl/dXN2XzcbWOBf6ks/uoUtrDob7pRVqa9xi3bA==, tarball: file:projects/educational-games.tgz}
+    name: '@rush-temp/educational-games'
+    version: 0.0.0
+    dependencies:
+      '@types/react': 17.0.19
+      react: 17.0.2
+    dev: false
+
   file:projects/example-lib-lib.tgz:
     resolution: {integrity: sha512-vpuU1yObiATxZgHGposm8JI+XYXsmVl+Eh2Ss0+OXjysu2IXcfWrLhLuldLQjTbvXOmXfixaQAUr9OrG6qAZMg==, tarball: file:projects/example-lib-lib.tgz}
     name: '@rush-temp/example-lib-lib'
@@ -10013,7 +10024,7 @@ packages:
     dev: false
 
   file:projects/ricklove-vscode-auto-imports-fix.tgz:
-    resolution: {integrity: sha512-hkBcn8pePGZdM/rmNi8NukVXaDMw5PmEdou7sz13rlgWiznBBgrYcnTqBWaj6BZPYT9MsVj3eyB1FERziYul2w==, tarball: file:projects/ricklove-vscode-auto-imports-fix.tgz}
+    resolution: {integrity: sha512-URT61sCOwp8cAGu2n8jvMt1rQ+U2EyDvdufq+u21nxP06MqPLM4UVZjACQOCQ7SFknVVgqHjdIqTcZcFhfpR8w==, tarball: file:projects/ricklove-vscode-auto-imports-fix.tgz}
     name: '@rush-temp/ricklove-vscode-auto-imports-fix'
     version: 0.0.0
     dependencies:

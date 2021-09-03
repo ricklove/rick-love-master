@@ -1,3 +1,5 @@
+export * from './src/doodle-components';
 export * from './src/doodle-view';
 export * from './src/doodle-party';
-export { DoodleConfig } from '@ricklove/doodle-common';
+export * from './src/doodle-storage';
+export * from '@ricklove/doodle-common';
