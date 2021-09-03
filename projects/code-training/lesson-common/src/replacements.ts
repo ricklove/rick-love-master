@@ -1,51 +1,62 @@
 import { diff } from './diff';
 import { calculateFilesHashCode } from './lesson-hash';
-import { LessonProjectState, LessonExperimentReplacement } from './lesson-types';
+import { LessonExperimentReplacement, LessonProjectState } from './lesson-types';
 
-export const lessonExperiments_createReplacementProjectState = (projectState: LessonProjectState, replacements: LessonExperimentReplacement[]): LessonProjectState => {
-    const files = projectState.files.map(x => {
-        const file = { ...x };
-        replacements
-            .filter(r => r.selection.filePath === x.path)
-            // Apply replacements from end so the index will be valid
-            .sort((a, b) => - (a.selection.index - b.selection.index))
-            .forEach(r => { file.content = `${file.content.substr(0, r.selection.index)}${r.content}${file.content.substr(r.selection.index + r.selection.length)}`; });
-        return file;
-    });
+export const lessonExperiments_createReplacementProjectState = (
+  projectState: LessonProjectState,
+  replacements: LessonExperimentReplacement[],
+): LessonProjectState => {
+  const files = projectState.files.map((x) => {
+    const file = { ...x };
+    replacements
+      .filter((r) => r.selection.filePath === x.path)
+      // Apply replacements from end so the index will be valid
+      .sort((a, b) => -(a.selection.index - b.selection.index))
+      .forEach((r) => {
+        file.content = `${file.content.substr(0, r.selection.index)}${r.content}${file.content.substr(
+          r.selection.index + r.selection.length,
+        )}`;
+      });
+    return file;
+  });
 
-    const finalProjectState: LessonProjectState = {
-        files,
-        filesHashCode: calculateFilesHashCode(files),
-    };
+  const finalProjectState: LessonProjectState = {
+    files,
+    filesHashCode: calculateFilesHashCode(files),
+  };
 
-    console.log(`lessonExperiments_createReplacementProjectState`, finalProjectState, projectState, replacements);
-    return finalProjectState;
+  // console.log(`lessonExperiments_createReplacementProjectState`, finalProjectState, projectState, replacements);
+  return finalProjectState;
 };
-export const lessonExperiments_calculateProjectStateReplacements = (projectState: LessonProjectState, newProjectState: LessonProjectState): { replacements: LessonExperimentReplacement[] } => {
-
-    const replacements = projectState.files.map(x => ({
-        oldFile: x,
-        newFile: newProjectState.files.find(f => f.path === x.path),
+export const lessonExperiments_calculateProjectStateReplacements = (
+  projectState: LessonProjectState,
+  newProjectState: LessonProjectState,
+): { replacements: LessonExperimentReplacement[] } => {
+  const replacements = projectState.files
+    .map((x) => ({
+      oldFile: x,
+      newFile: newProjectState.files.find((f) => f.path === x.path),
     }))
-        .filter(x => x.newFile)
-        .map(x => ({
-            filePath: x.oldFile.path,
-            changes: diff(x.oldFile.content, x.newFile?.content ?? ``).changes,
-        }))
-        .flatMap(x => x.changes.map(c => ({
-            filePath: x.filePath,
-            change: c,
-        })))
-        .map(x => ({
-            // _change: x.change,
-            selection: { filePath: x.filePath, index: x.change.a.change.start, length: x.change.a.change.length },
-            content: (x.change.b?.change.length ?? 0) === 0 ? `` : x.change.b?.change.toText() ?? ``,
-        }));
+    .filter((x) => x.newFile)
+    .map((x) => ({
+      filePath: x.oldFile.path,
+      changes: diff(x.oldFile.content, x.newFile?.content ?? ``).changes,
+    }))
+    .flatMap((x) =>
+      x.changes.map((c) => ({
+        filePath: x.filePath,
+        change: c,
+      })),
+    )
+    .map((x) => ({
+      // _change: x.change,
+      selection: { filePath: x.filePath, index: x.change.a.change.start, length: x.change.a.change.length },
+      content: (x.change.b?.change.length ?? 0) === 0 ? `` : x.change.b?.change.toText() ?? ``,
+    }));
 
-    console.log(`lessonExperiments_calculateProjectStateReplacements`, replacements, projectState, newProjectState);
-    return { replacements };
+  // console.log(`lessonExperiments_calculateProjectStateReplacements`, replacements, projectState, newProjectState);
+  return { replacements };
 };
-
 
 // const runTests = () => {
 //     const testRoundTrip = (fileStart: string, fileEnd: string) => {
