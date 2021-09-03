@@ -8,9 +8,9 @@
   },
   "dependencies": {
     "@ricklove/config-eslint": "*",
-    "@rushstack/eslint-config": "^2.3.4",
-    "@rushstack/heft": "^0.36.3",
-    "@rushstack/heft-web-rig": "^0.4.4",
+    "@rushstack/eslint-config": "^2.4.0",
+    "@rushstack/heft": "^0.37.0",
+    "@rushstack/heft-web-rig": "^0.4.6",
     "@types/heft-jest": "1.0.2",
     "eslint": "~7.32.0",
     "typescript": "~4.3.5"

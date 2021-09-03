@@ -3,11 +3,15 @@ This is where I put all the cool stuff.
 ## Commands
 
 - develop blog
+
   - Tab1 - Run rush build watch
-    - `rush build:watch --to-except blog-nextjs`
+    - `rush build:watch --to-except ricklove_me`
   - Tab2 - Run nextjs dev
-    - `cd \projects\blog-nextjs`
+    - `cd \projects\ricklove_me`
     - `npx next dev`
+
+- create project
+  - `npm --prefix tools\rush-packages run cli -- --d tools/test --p @ricklove/tools-test --t node`
 
 ## Tech Stack
 
@@ -19,7 +23,10 @@ This is where I put all the cool stuff.
 
 ## Dev features
 
-- [x] Refactoring across packages
+- [Partial] Refactoring across packages
+  - [x] F12 Navigation to definition works
+  - [ ] Find all references only works inside module and down into dependencies
+  - [ ] Renaming across packages is not working, but possibly ok
 - [x] Shared configuration
 - Dependencies
   - [x] Single declaration of dependencies
@@ -29,9 +36,55 @@ This is where I put all the cool stuff.
     - rush requires listing packages in rush.json
     - [x] Single registration of packages
       - No need to register typescript registrations
-- [ ] Typescript stress test
-  - [ ] Typescript uses .d.ts files instead of reanalyzing all code imported code
+- [x] Typescript stress test
+  - [x] Typescript uses .d.ts files instead of reanalyzing all code
   - [x] Typescript uses independent typescript.json settings for each package's code
+
+## Comparison with typescript paths
+
+- Better than typescript paths
+  - Editor Performance
+    - rush build:watch updates are detected by vscode in a few seconds
+    - F12 navigation is very reliable
+    - Formatting is quick and reliable
+    - Editor is stable, not requiring many reloads
+    - typescript paths would often overload tsserver and break, had to manually disable some paths, etc.
+  - Targetted Builds (only build specific projects)
+    - rush makes it possible to build:watch only specific targets with the `rush build:watch --to project-name`
+  - Targetted Includes (only include specific ts files)
+    - It is possible to only include specific files for a project
+  - Specific project dependencies
+    - It is possible to define specific environment targets and libraries (node vs dom, etc.)
+  - Enforced separation of environments
+    - This leads to smaller more precise modules
+  - Many small modules
+    - Modules are more likely to be small and include separate modules for each environment target:
+      - feature-common (types and config)
+      - feature-client
+      - feature-server
+    - This forces the module to be at a more granular level (at the level where multiple enviroments are needed)
+  - Custom build scripts
+    - build scripts per project
+- Worse than typescript paths
+  - cross-project rename
+    - scopes to current project only
+  - find all references
+    - does not find references in unloaded files
+  - much more project boilerplate:
+    - required files:
+      - config/rig.json
+      - src
+      - .eslintrc.cjs
+      - index.ts
+      - package.json
+      - tsconfig.json
+    - [WORKAROUND] vscode hidden files can hide these
+    - [x] tool to create new module
+      - Copy template
+      - Register in rush.json
+  - auto imports doesn't work (unless already imported)
+    - [FIXED] Created `tools/vscode/auto-imports-fix`
+      - Still uses good scope (only package.json dependencies)
 
 ## File Structure
 

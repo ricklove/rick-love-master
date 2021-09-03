@@ -17,9 +17,10 @@
     "noEmitOnError": false,
     "allowUnreachableCode": false,
 
-    "module": "commonjs",
-    "target": "es2017",
-    "lib": ["es2019"]
+    "module": "ES2020",
+    "moduleResolution": "node",
+    "target": "ES2017",
+    "lib": ["ES2020"]
   },
   "include": ["../../../../../index.ts"]
 }

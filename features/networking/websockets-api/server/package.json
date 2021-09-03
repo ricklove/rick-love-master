@@ -1,0 +1,23 @@
+{
+  "name": "@ricklove/websockets-api-server",
+  "version": "1.0.0",
+  "type": "module",
+  "main": "./lib/index.js",
+  "scripts": {
+    "build": "heft test --clean",
+    "build:watch": "heft build"
+  },
+  "dependencies": {
+    "@ricklove/websockets-api-common": "*",
+    "@ricklove/utils-core": "*",
+    "@ricklove/utils-node": "*",
+    "aws-sdk": "^2.749.0",
+    "uuid": "^8.3.0"
+  },
+  "devDependencies": {
+    "@ricklove/config-lib-rig": "*",
+    "@types/aws-sdk": "^2.7.0",
+    "@types/node": "12.12.6",
+    "@types/uuid": "^8.3.0"
+  }
+}
