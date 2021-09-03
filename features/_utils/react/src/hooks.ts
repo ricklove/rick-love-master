@@ -23,7 +23,7 @@ export function useMounted() {
  * @return The { loading, error, doWork } values
  * @example
  *
- *      const { loading, error, doWork } = ChatHooks.useAutoLoadingError();
+ *      const { loading, error, doWork } = ChatHooks.useAsyncWorker();
  *      ...
  *          doWork(async (stopIfObsolete) => {
  *              ...

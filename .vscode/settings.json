@@ -26,7 +26,7 @@
     "**/lib": true,
 
     // required boilerplate
-    //"**/config": true,
+    "**/config": true,
     "**/.eslintrc.cjs": true
     //"**/tsconfig.json": true
   }
