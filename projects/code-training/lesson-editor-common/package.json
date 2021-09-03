@@ -7,6 +7,10 @@
     "build": "heft test --clean",
     "build:watch": "heft build"
   },
+  "dependencies": {
+    "@ricklove/utils-core": "*",
+    "@ricklove/code-training-lesson-common": "*"
+  },
   "devDependencies": {
     "@ricklove/config-lib-rig": "*"
   }

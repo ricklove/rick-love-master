@@ -1,4 +1,4 @@
-import { ApiError } from '@ricklove/utils-core';
+import { ApiError, WebRequestType } from '@ricklove/utils-core';
 
 export function fetchWithTimeout(url: string, options: RequestInit, timeoutMs: number = 10000): Promise<Response> {
   return Promise.race([
@@ -9,14 +9,14 @@ export function fetchWithTimeout(url: string, options: RequestInit, timeoutMs: n
   ]);
 }
 
-export async function webRequest(
+export const webRequest: WebRequestType = async <TJson, TResponse>(
   url: string,
-  data: unknown,
-  options?: { method?: 'POST' | 'PUT'; timeoutMs?: number },
-) {
+  data: TJson,
+  options: { method: 'GET' | 'POST' | 'PUT'; timeoutMs?: number },
+): Promise<TResponse> => {
   const body = JSON.stringify(data);
   const reqData: RequestInit = {
-    method: options?.method ?? `POST`,
+    method: options.method,
     headers: {
       Accept: `application/json`,
       'Content-Type': `application/json`,
@@ -30,7 +30,7 @@ export async function webRequest(
   if (!result.ok) {
     throw new ApiError(`Api Error`, {
       data:
-        (await result.json().catch((error) => {
+        (await result.json().catch((_error) => {
           /* Ignore Parse Error */
         })) ?? {},
       responseStatus: result.status,
@@ -41,4 +41,4 @@ export async function webRequest(
     throw new ApiError(`Request Parse Failure`, { url, data, error });
   });
   return resultObj;
-}
+};

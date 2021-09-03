@@ -12,3 +12,4 @@ export * from './src/email-address';
 export * from './src/phone-number';
 
 export * from './src/secure-token-type';
+export * from './src/web-request-type';

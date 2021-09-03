@@ -10,7 +10,7 @@ export const createUploadApiWebClient = (config: { uploadApiUrl: string }): Uplo
       data,
     };
 
-    const resultObj = (await webRequest(url, requestData)) as { data: T };
+    const resultObj = (await webRequest(url, requestData, { method: `POST` })) as { data: T };
 
     return resultObj.data;
   }
