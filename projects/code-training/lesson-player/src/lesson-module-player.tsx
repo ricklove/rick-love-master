@@ -1,14 +1,14 @@
 /* eslint-disable react/no-array-index-key */
 import React, { ReactNode, useEffect, useRef, useState } from 'react';
-import { Utterances } from 'comments/utterances';
-import { Text, TouchableOpacity, View } from '@ricklove/react-native-lite';
+import { LessonModule, SetProjectState } from '@ricklove/code-training-lesson-common';
 import {
   LessonView_ConstructCode,
   LessonView_ExperimentCode,
   LessonView_PreviewResult,
   LessonView_UnderstandCode,
-} from '../common/components/lesson-view';
-import { LessonModule, SetProjectState } from '../common/lesson-types';
+} from '@ricklove/code-training-lesson-components';
+import { Utterances } from '@ricklove/github-comments';
+import { Text, TouchableOpacity, View } from '@ricklove/react-native-lite';
 
 const styles = {
   container: {

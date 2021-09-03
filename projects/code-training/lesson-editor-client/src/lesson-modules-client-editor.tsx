@@ -1,14 +1,14 @@
 /* eslint-disable react/no-array-index-key */
-import React, { useEffect, useState } from 'react';
-import { ErrorBox } from '@ricklove/react-controls';
-import { Loading } from '@ricklove/react-controls';
+import React, { useEffect, useRef, useState } from 'react';
+import { LessonModule, LessonProjectState, SetProjectState } from '@ricklove/code-training-lesson-common';
+import { TabsComponent } from '@ricklove/code-training-lesson-components';
+import { LessonApiConfig, LessonModuleMeta } from '@ricklove/code-training-lesson-editor-common';
+import { createLessonApiClient } from '@ricklove/code-training-lesson-editor-common';
+import { LessonModulePlayer } from '@ricklove/code-training-lesson-player';
+import { C } from '@ricklove/react-controls';
 import { Text, TouchableOpacity, View } from '@ricklove/react-native-lite';
 import { useAsyncWorker } from '@ricklove/utils-react';
-import { TabsComponent } from '../common/components/tabs';
-import { LessonModule, LessonProjectState, SetProjectState } from '../common/lesson-types';
-import { LessonModulePlayer } from '../lesson-player/lesson-module-player';
-import { createLessonApiClient } from '../lesson-server/client/lesson-api-client';
-import { LessonModuleMeta } from '../lesson-server/lesson-api-types';
+import { webRequest } from '@ricklove/utils-web';
 import { createDefaultLessonModule } from './lesson-defaults';
 import { LessonModuleEditor } from './lesson-module-editor';
 
@@ -31,8 +31,10 @@ const styles = {
   },
 } as const;
 
-const apiClient = createLessonApiClient({});
-export const LessonModulesClientEditor = (props: {}) => {
+export const LessonModulesClientEditor = ({ config }: { config: LessonApiConfig }) => {
+  const apiClientRef = useRef(createLessonApiClient({ webRequest, config }));
+  const apiClient = apiClientRef.current;
+
   const [mode, setMode] = useState(`edit` as 'edit' | 'play');
   const modes = [
     { value: `edit` as const, label: `Edit` },
@@ -123,8 +125,8 @@ export const LessonModulesClientEditor = (props: {}) => {
 
   return (
     <>
-      <Loading loading={loading} />
-      <ErrorBox error={error} />
+      <C.Loading loading={loading} />
+      <C.ErrorBox error={error} />
       <View style={styles.container}>
         <TabsComponent
           style={{ selectedTabText: { color: `#8888FF` } }}

@@ -1,8 +1,8 @@
 /* eslint-disable react/no-array-index-key */
 import React, { useState } from 'react';
+import { LessonData, LessonModule, SetProjectState } from '@ricklove/code-training-lesson-common';
+import { TabsComponent, TabsListEditorComponent } from '@ricklove/code-training-lesson-components';
 import { Text, TextInput, View } from '@ricklove/react-native-lite';
-import { TabsComponent, TabsListEditorComponent } from '../common/components/tabs';
-import { LessonData, LessonModule, SetProjectState } from '../common/lesson-types';
 import { cloneLesson, createDefaultLesson, createDefaultLessonModule } from './lesson-defaults';
 import { LessonEditor } from './lesson-editor';
 

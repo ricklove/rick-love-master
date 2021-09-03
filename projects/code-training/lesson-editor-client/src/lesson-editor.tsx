@@ -1,31 +1,27 @@
 /* eslint-disable react/no-array-index-key */
 import React, { useEffect, useState } from 'react';
-import { Text, TextInput, TouchableOpacity, View } from '@ricklove/react-native-lite';
 import {
-  LessonFileEditorMode,
-  LessonProjectEditorMode,
-  LessonProjectFilesEditor,
-} from '../common/components/lesson-file-editor';
-import { LessonProjectStatePreview } from '../common/components/lesson-render-view';
-import {
-  LessonView_ConstructCode,
-  LessonView_ExperimentCode,
-  LessonView_UnderstandCode,
-} from '../common/components/lesson-view';
-import { calculateFilesHashCode } from '../common/lesson-hash';
-import {
+  calculateFilesHashCode,
   LessonData,
   LessonExperiment,
+  lessonExperiments_calculateProjectStateReplacements,
+  lessonExperiments_createReplacementProjectState,
   LessonProjectFileSelection,
   LessonProjectState,
   LessonStep_ConstructCode,
   LessonStep_UnderstandCode,
   SetProjectState,
-} from '../common/lesson-types';
+} from '@ricklove/code-training-lesson-common';
 import {
-  lessonExperiments_calculateProjectStateReplacements,
-  lessonExperiments_createReplacementProjectState,
-} from '../common/replacements';
+  LessonFileEditorMode,
+  LessonProjectEditorMode,
+  LessonProjectFilesEditor,
+  LessonProjectStatePreview,
+  LessonView_ConstructCode,
+  LessonView_ExperimentCode,
+  LessonView_UnderstandCode,
+} from '@ricklove/code-training-lesson-components';
+import { Text, TextInput, TouchableOpacity, View } from '@ricklove/react-native-lite';
 
 const styles = {
   container: {

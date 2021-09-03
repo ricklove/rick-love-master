@@ -1,9 +1,8 @@
 import React, { useEffect, useState } from 'react';
-import { ErrorBox } from '@ricklove/react-controls';
-import { Loading } from '@ricklove/react-controls';
+import { LessonModule, LessonProjectState, SetProjectState } from '@ricklove/code-training-lesson-common';
+import { C } from '@ricklove/react-controls';
 import { View } from '@ricklove/react-native-lite';
 import { useAsyncWorker } from '@ricklove/utils-react';
-import { LessonModule, LessonProjectState, SetProjectState } from '../common/lesson-types';
 import { LessonModulePlayer } from './lesson-module-player';
 
 const styles = {
@@ -35,6 +34,7 @@ export const LessonModulePlayerLoader = (props: { lesson: LessonInfo }) => {
   useEffect(() => {
     doWork(async (stopIfObsolete) => {
       const lessonModuleResult = (await (await fetch(props.lesson.lessonJsonUrl)).json()) as LessonModule;
+      stopIfObsolete();
       setLessonModule(lessonModuleResult);
     });
   }, [props.lesson]);
@@ -46,8 +46,8 @@ export const LessonModulePlayerLoader = (props: { lesson: LessonInfo }) => {
   return (
     <>
       <View style={styles.container}>
-        <Loading loading={loading} />
-        <ErrorBox error={error} />
+        <C.Loading loading={loading} />
+        <C.ErrorBox error={error} />
         {lessonModule && <LessonModulePlayer module={lessonModule} setProjectState={setProjectState} />}
       </View>
     </>

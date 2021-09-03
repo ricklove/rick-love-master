@@ -1,1 +1,1 @@
-export * from './src/placeholder';
+export * from './src/lesson-editor';

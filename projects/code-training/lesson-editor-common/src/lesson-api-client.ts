@@ -1,15 +1,16 @@
 import { WebRequestType } from '@ricklove/utils-core';
+import { LessonApiConfig } from './lesson-api-config';
 import { LessonServerApi } from './lesson-api-types';
 
 export const createLessonApiClient = ({
-  serverUrl = `http://localhost:3042/api/`,
+  config,
   webRequest,
 }: {
-  serverUrl?: string;
+  config: LessonApiConfig;
   webRequest: WebRequestType;
 }): LessonServerApi => {
   const request = async <T, TResponse>(endpoint: string, data: T): Promise<TResponse> => {
-    return await webRequest(serverUrl, { endpoint, data }, { method: `POST`, timeoutMs: 30000 });
+    return await webRequest(config.lessonApiUrl, { endpoint, data }, { method: `POST`, timeoutMs: 30000 });
   };
 
   const client: LessonServerApi = {
