@@ -54,6 +54,7 @@ specifiers:
   '@typescript-eslint/parser': ^4.26.0
   aws-sdk: ^2.749.0
   copyfiles: ~2.4.1
+  esbuild: ~0.12.25
   eslint: ~7.32.0
   eslint-plugin-import-quotes: ~0.0.1
   eslint-plugin-simple-import-sort: ^7.0.0
@@ -129,6 +130,7 @@ dependencies:
   '@typescript-eslint/parser': 4.28.5_eslint@7.32.0+typescript@4.3.5
   aws-sdk: 2.980.0
   copyfiles: 2.4.1
+  esbuild: 0.12.25
   eslint: 7.32.0
   eslint-plugin-import-quotes: 0.0.1
   eslint-plugin-simple-import-sort: 7.0.0_eslint@7.32.0
@@ -3479,6 +3481,12 @@ packages:
 
   /es6-object-assign/1.1.0:
     resolution: {integrity: sha1-wsNYJlYkfDnqEHyx5mUrb58kUjw=}
+    dev: false
+
+  /esbuild/0.12.25:
+    resolution: {integrity: sha512-woie0PosbRSoN8gQytrdCzUbS2ByKgO8nD1xCZkEup3D9q92miCze4PqEI9TZDYAuwn6CruEnQpJxgTRWdooAg==}
+    hasBin: true
+    requiresBuild: true
     dev: false
 
   /escalade/3.1.1:
@@ -10005,7 +10013,7 @@ packages:
     dev: false
 
   file:projects/ricklove-vscode-auto-imports-fix.tgz:
-    resolution: {integrity: sha512-d5Wq+50mPYqbInzFXumLLP/ke11z5EpnGMPpygvuQLqM4KUIK62sIdzgo/UWWcg23GtNIpHIU8FWX9AYOXb85w==, tarball: file:projects/ricklove-vscode-auto-imports-fix.tgz}
+    resolution: {integrity: sha512-hkBcn8pePGZdM/rmNi8NukVXaDMw5PmEdou7sz13rlgWiznBBgrYcnTqBWaj6BZPYT9MsVj3eyB1FERziYul2w==, tarball: file:projects/ricklove-vscode-auto-imports-fix.tgz}
     name: '@rush-temp/ricklove-vscode-auto-imports-fix'
     version: 0.0.0
     dependencies:
@@ -10015,11 +10023,13 @@ packages:
       '@types/vscode': 1.59.0
       '@typescript-eslint/eslint-plugin': 4.28.5_a8e83fcad666e1ba86be4b2e27a20aea
       '@typescript-eslint/parser': 4.28.5_eslint@7.32.0+typescript@4.3.5
+      esbuild: 0.12.25
       eslint: 7.32.0
       glob: 7.1.7
       jsonc: 2.0.0
       jsonc-parser: 3.0.0
       mocha: 8.4.0
+      rimraf: 3.0.2
       typescript: 4.3.5
       vscode-test: 1.6.1
     transitivePeerDependencies:

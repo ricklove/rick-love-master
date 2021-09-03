@@ -18,8 +18,8 @@
     // build artifacts
     "**/.heft": true,
     "**/.rush": true,
-    "**/*.build.log": true,
-    "**/*.build.error.log": true,
+    //"**/*.build.log": true,
+    //"**/*.build.error.log": true,
     "**/.next": true,
     "**/temp": true
 

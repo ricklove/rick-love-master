@@ -8,10 +8,12 @@
     "build": "heft test --clean",
     "build:watch": "heft build"
   },
+  "dependencies": {
+    "@ricklove/utils-core": "*",
+    "@ricklove/utils-files": "*"
+  },
   "devDependencies": {
     "@ricklove/config-lib-rig": "*",
-    "@ricklove/utils-core": "*",
-    "@ricklove/utils-files": "*",
     "@types/node": "12.12.6",
     "ts-node": "~10.2.1"
   }
