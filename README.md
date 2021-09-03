@@ -11,7 +11,13 @@ This is where I put all the cool stuff.
     - `npx next dev`
 
 - create project
-  - `npm --prefix tools\rush-packages run cli -- --d tools/test --p @ricklove/tools-test --t node`
+  - `npm --prefix tools\rush-packages run cli -- --d projects/code-training/lessons/modules --p @ricklove/code-training-lesson-modules --t lib`
+  - `npm --prefix tools\rush-packages run cli -- --d projects/code-training/lessons/templates/cra --p @ricklove/code-training-lesson-templates-cra --t react`
+  - `npm --prefix tools\rush-packages run cli -- --d projects/code-training/lesson-components --p @ricklove/code-training-lesson-components --t react`
+  - `npm --prefix tools\rush-packages run cli -- --d projects/code-training/lesson-editor-common --p @ricklove/code-training-lesson-editor-common --t lib`
+  - `npm --prefix tools\rush-packages run cli -- --d projects/code-training/lesson-editor-client --p @ricklove/code-training-lesson-editor-client --t react`
+  - `npm --prefix tools\rush-packages run cli -- --d projects/code-training/lesson-editor-local-server --p @ricklove/code-training-lesson-editor-local-server --t node`
+  - `npm --prefix tools\rush-packages run cli -- --d projects/code-training/lesson-viewer --p @ricklove/code-training-lesson-viewer --t react`
 
 ## Tech Stack
 

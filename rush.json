@@ -512,6 +512,34 @@
       "packageName": "@ricklove/react-controls",
       "projectFolder": "features/ui/react-controls"
     },
+    {
+      "packageName": "@ricklove/code-training-lesson-components",
+      "projectFolder": "projects/code-training/lesson-components"
+    },
+    {
+      "packageName": "@ricklove/code-training-lesson-editor-client",
+      "projectFolder": "projects/code-training/lesson-editor-client"
+    },
+    {
+      "packageName": "@ricklove/code-training-lesson-editor-common",
+      "projectFolder": "projects/code-training/lesson-editor-common"
+    },
+    {
+      "packageName": "@ricklove/code-training-lesson-editor-local-server",
+      "projectFolder": "projects/code-training/lesson-editor-local-server"
+    },
+    {
+      "packageName": "@ricklove/code-training-lesson-viewer",
+      "projectFolder": "projects/code-training/lesson-viewer"
+    },
+    {
+      "packageName": "@ricklove/code-training-lesson-modules",
+      "projectFolder": "projects/code-training/lessons/modules"
+    },
+    {
+      "packageName": "@ricklove/code-training-lesson-templates-cra",
+      "projectFolder": "projects/code-training/lessons/templates/cra"
+    },
     // Games ---
     {
       "packageName": "@ricklove/games-list",
