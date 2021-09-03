@@ -1,4 +1,0 @@
-{
-  "extends": "@ricklove/config-lib-rig/profiles/default/tsconfig-web.json",
-  "include": ["index.ts"]
-}

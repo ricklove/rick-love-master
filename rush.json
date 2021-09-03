@@ -499,6 +499,10 @@
       "packageName": "@ricklove/websockets-api-server",
       "projectFolder": "features/networking/websockets-api/server"
     },
+    {
+      "packageName": "@ricklove/github-comments",
+      "projectFolder": "features/ui/github-comments"
+    },
     // UI ---
     {
       "packageName": "@ricklove/themes",
@@ -511,6 +515,10 @@
     {
       "packageName": "@ricklove/react-controls",
       "projectFolder": "features/ui/react-controls"
+    },
+    {
+      "packageName": "@ricklove/code-training-lesson-common",
+      "projectFolder": "projects/code-training/lesson-common"
     },
     {
       "packageName": "@ricklove/code-training-lesson-components",
@@ -529,16 +537,8 @@
       "projectFolder": "projects/code-training/lesson-editor-local-server"
     },
     {
-      "packageName": "@ricklove/code-training-lesson-viewer",
-      "projectFolder": "projects/code-training/lesson-viewer"
-    },
-    {
-      "packageName": "@ricklove/code-training-lesson-modules",
-      "projectFolder": "projects/code-training/lessons/modules"
-    },
-    {
-      "packageName": "@ricklove/code-training-lesson-templates-cra",
-      "projectFolder": "projects/code-training/lessons/templates/cra"
+      "packageName": "@ricklove/code-training-lesson-player",
+      "projectFolder": "projects/code-training/lesson-player"
     },
     // Games ---
     {

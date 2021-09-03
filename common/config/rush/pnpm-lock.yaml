@@ -5,6 +5,12 @@ specifiers:
   '@emotion/react': ~11.4.1
   '@loadable/component': ^5.12.0
   '@next/bundle-analyzer': ~11.1.2
+  '@rush-temp/code-training-lesson-common': file:./projects/code-training-lesson-common.tgz
+  '@rush-temp/code-training-lesson-components': file:./projects/code-training-lesson-components.tgz
+  '@rush-temp/code-training-lesson-editor-client': file:./projects/code-training-lesson-editor-client.tgz
+  '@rush-temp/code-training-lesson-editor-common': file:./projects/code-training-lesson-editor-common.tgz
+  '@rush-temp/code-training-lesson-editor-local-server': file:./projects/code-training-lesson-editor-local-server.tgz
+  '@rush-temp/code-training-lesson-player': file:./projects/code-training-lesson-player.tgz
   '@rush-temp/config-eslint': file:./projects/config-eslint.tgz
   '@rush-temp/config-lib-rig': file:./projects/config-lib-rig.tgz
   '@rush-temp/console-simulator': file:./projects/console-simulator.tgz
@@ -17,6 +23,7 @@ specifiers:
   '@rush-temp/example-node-lib': file:./projects/example-node-lib.tgz
   '@rush-temp/example-web-lib': file:./projects/example-web-lib.tgz
   '@rush-temp/games-list': file:./projects/games-list.tgz
+  '@rush-temp/github-comments': file:./projects/github-comments.tgz
   '@rush-temp/react-controls': file:./projects/react-controls.tgz
   '@rush-temp/react-native-lite': file:./projects/react-native-lite.tgz
   '@rush-temp/ricklove-vscode-auto-imports-fix': file:./projects/ricklove-vscode-auto-imports-fix.tgz
@@ -42,11 +49,13 @@ specifiers:
   '@rushstack/heft': ^0.37.0
   '@rushstack/heft-web-rig': ^0.4.6
   '@types/aws-sdk': ^2.7.0
+  '@types/express': ^4.17.8
   '@types/glob': ^7.1.3
   '@types/heft-jest': 1.0.2
   '@types/loadable__component': ^5.10.0
   '@types/mocha': ^8.2.2
   '@types/node': 12.12.6
+  '@types/prismjs': ^1.16.1
   '@types/react': ~17.0.19
   '@types/react-helmet': ~6.1.2
   '@types/uuid': ^8.3.0
@@ -60,11 +69,14 @@ specifiers:
   eslint-plugin-import-quotes: ~0.0.1
   eslint-plugin-simple-import-sort: ^7.0.0
   eslint-plugin-unused-imports: ^1.1.4
+  express: ^4.17.1
   glob: ^7.1.7
   highlight.js: ~9.1.0
   mocha: ^8.4.0
   next: ^11.0.0
   next-transpile-modules: ~8.0.0
+  prism-themes: ^1.4.0
+  prismjs: ^1.21.0
   react: 17.0.2
   react-dom: 17.0.2
   react-helmet: ~6.1.0
@@ -75,6 +87,7 @@ specifiers:
   ts-node: ~10.2.1
   typescript: ~4.3.5
   uuid: ^8.3.0
+  vscode-diff: ~2.0.1
   vscode-test: ^1.5.2
 
 dependencies:
@@ -82,6 +95,12 @@ dependencies:
   '@emotion/react': 11.4.1_56f22c50b68024c6e259393098372ce5
   '@loadable/component': 5.15.0_react@17.0.2
   '@next/bundle-analyzer': 11.1.2
+  '@rush-temp/code-training-lesson-common': file:projects/code-training-lesson-common.tgz
+  '@rush-temp/code-training-lesson-components': file:projects/code-training-lesson-components.tgz_@babel+core@7.15.0
+  '@rush-temp/code-training-lesson-editor-client': file:projects/code-training-lesson-editor-client.tgz_@babel+core@7.15.0
+  '@rush-temp/code-training-lesson-editor-common': file:projects/code-training-lesson-editor-common.tgz
+  '@rush-temp/code-training-lesson-editor-local-server': file:projects/code-training-lesson-editor-local-server.tgz
+  '@rush-temp/code-training-lesson-player': file:projects/code-training-lesson-player.tgz_@babel+core@7.15.0
   '@rush-temp/config-eslint': file:projects/config-eslint.tgz_be7b77a647b35db76da699504abffefa
   '@rush-temp/config-lib-rig': file:projects/config-lib-rig.tgz
   '@rush-temp/console-simulator': file:projects/console-simulator.tgz_@babel+core@7.15.0
@@ -94,6 +113,7 @@ dependencies:
   '@rush-temp/example-node-lib': file:projects/example-node-lib.tgz
   '@rush-temp/example-web-lib': file:projects/example-web-lib.tgz
   '@rush-temp/games-list': file:projects/games-list.tgz
+  '@rush-temp/github-comments': file:projects/github-comments.tgz_@babel+core@7.15.0
   '@rush-temp/react-controls': file:projects/react-controls.tgz_@babel+core@7.15.0
   '@rush-temp/react-native-lite': file:projects/react-native-lite.tgz_@babel+core@7.15.0
   '@rush-temp/ricklove-vscode-auto-imports-fix': file:projects/ricklove-vscode-auto-imports-fix.tgz
@@ -119,11 +139,13 @@ dependencies:
   '@rushstack/heft': 0.37.0
   '@rushstack/heft-web-rig': 0.4.6_@rushstack+heft@0.37.0
   '@types/aws-sdk': 2.7.0
+  '@types/express': 4.17.13
   '@types/glob': 7.1.4
   '@types/heft-jest': 1.0.2
   '@types/loadable__component': 5.13.4
   '@types/mocha': 8.2.3
   '@types/node': 12.12.6
+  '@types/prismjs': 1.16.6
   '@types/react': 17.0.19
   '@types/react-helmet': 6.1.2
   '@types/uuid': 8.3.1
@@ -137,11 +159,14 @@ dependencies:
   eslint-plugin-import-quotes: 0.0.1
   eslint-plugin-simple-import-sort: 7.0.0_eslint@7.32.0
   eslint-plugin-unused-imports: 1.1.4_75abe9ce172664f7305719cb0438fdf7
+  express: 4.17.1
   glob: 7.1.7
   highlight.js: 9.1.0
   mocha: 8.4.0
   next: 11.1.0_d656e95d5564dbefda9f605dfed71e60
   next-transpile-modules: 8.0.0
+  prism-themes: 1.8.0
+  prismjs: 1.24.1
   react: 17.0.2
   react-dom: 17.0.2_react@17.0.2
   react-helmet: 6.1.0_react@17.0.2
@@ -152,6 +177,7 @@ dependencies:
   ts-node: 10.2.1_70d6492c0feb1eb5d83e62cce7c43fd5
   typescript: 4.3.5
   uuid: 8.3.2
+  vscode-diff: 2.0.1
   vscode-test: 1.6.1
 
 packages:
@@ -1289,6 +1315,36 @@ packages:
       '@babel/types': 7.15.0
     dev: false
 
+  /@types/body-parser/1.19.1:
+    resolution: {integrity: sha512-a6bTJ21vFOGIkwM0kzh9Yr89ziVxq4vYH2fQ6N8AeipEzai/cFK6aGMArIkUeIdRIgpwQa+2bXiLuUJCpSf2Cg==}
+    dependencies:
+      '@types/connect': 3.4.35
+      '@types/node': 16.7.1
+    dev: false
+
+  /@types/connect/3.4.35:
+    resolution: {integrity: sha512-cdeYyv4KWoEgpBISTxWvqYsVy444DOqehiF3fM3ne10AmJ62RSyNkUnxMJXHQWRQQX2eR94m5y1IZyDwBjV9FQ==}
+    dependencies:
+      '@types/node': 16.7.1
+    dev: false
+
+  /@types/express-serve-static-core/4.17.24:
+    resolution: {integrity: sha512-3UJuW+Qxhzwjq3xhwXm2onQcFHn76frIYVbTu+kn24LFxI+dEhdfISDFovPB8VpEgW8oQCTpRuCe+0zJxB7NEA==}
+    dependencies:
+      '@types/node': 16.7.1
+      '@types/qs': 6.9.7
+      '@types/range-parser': 1.2.4
+    dev: false
+
+  /@types/express/4.17.13:
+    resolution: {integrity: sha512-6bSZTPaTIACxn48l50SR+axgrqm6qXFIxrdAKaG6PaJk3+zuUr35hBlgT7vOmJcum+OEaIBLtHV/qloEAFITeA==}
+    dependencies:
+      '@types/body-parser': 1.19.1
+      '@types/express-serve-static-core': 4.17.24
+      '@types/qs': 6.9.7
+      '@types/serve-static': 1.13.10
+    dev: false
+
   /@types/glob/7.1.4:
     resolution: {integrity: sha512-w+LsMxKyYQm347Otw+IfBXOv9UWVjpHpCDdbBMt8Kz/xbvCYNjP+0qPh91Km3iKfSRLBB0P7fAMf0KHrPu+MyA==}
     dependencies:
@@ -1360,6 +1416,10 @@ packages:
       '@types/unist': 2.0.6
     dev: false
 
+  /@types/mime/1.3.2:
+    resolution: {integrity: sha512-YATxVxgRqNH6nHEIsvg6k2Boc1JHI9ZbH5iWFFv/MTkchz3b1ieGDa5T0a9RznNdI0KhVbdbWSN+KWWrQZRxTw==}
+    dev: false
+
   /@types/minimatch/3.0.5:
     resolution: {integrity: sha512-Klz949h02Gz2uZCMGwDUSDS1YBlTdDDgbWHi+81l29tQALUtvz4rAYi5uoVhE5Lagoq6DeqAUlbrHvW/mXDgdQ==}
     dev: false
@@ -1388,8 +1448,20 @@ packages:
     resolution: {integrity: sha512-5qOlnZscTn4xxM5MeGXAMOsIOIKIbh9e85zJWfBRVPlRMEVawzoPhINYbRGkBZCI8LxvBe7tJCdWiarA99OZfQ==}
     dev: false
 
+  /@types/prismjs/1.16.6:
+    resolution: {integrity: sha512-dTvnamRITNqNkqhlBd235kZl3KfVJQQoT5jkXeiWSBK7i4/TLKBNLV0S1wOt8gy4E2TY722KLtdmv2xc6+Wevg==}
+    dev: false
+
   /@types/prop-types/15.7.4:
     resolution: {integrity: sha512-rZ5drC/jWjrArrS8BR6SIr4cWpW09RNTYt9AMZo3Jwwif+iacXAqgVjm0B0Bv/S1jhDXKHqRVNCbACkJ89RAnQ==}
+    dev: false
+
+  /@types/qs/6.9.7:
+    resolution: {integrity: sha512-FGa1F62FT09qcrueBA6qYTrJPVDzah9a+493+o2PCXsesWHIn27G98TsSMs3WPNbZIEj4+VJf6saSFpvD+3Zsw==}
+    dev: false
+
+  /@types/range-parser/1.2.4:
+    resolution: {integrity: sha512-EEhsLsD6UsDM1yFhAvy0Cjr6VwmpMWqFBCb9w07wVugF7w9nfajxLuVmngTIpgS6svCnm6Vaw+MZhoDCKnOfsw==}
     dev: false
 
   /@types/react-helmet/6.1.2:
@@ -1408,6 +1480,13 @@ packages:
 
   /@types/scheduler/0.16.2:
     resolution: {integrity: sha512-hppQEBDmlwhFAXKJX2KnWLYu5yMfi91yazPb2l+lbJiwW+wdo1gNeRA+3RgNSO39WYX2euey41KEwnqesU2Jew==}
+    dev: false
+
+  /@types/serve-static/1.13.10:
+    resolution: {integrity: sha512-nCkHGI4w7ZgAdNkrEu0bv+4xNV/XDqW+DydknebMOQwkpDGx8G+HTlj7R7ABI8i8nKxVw0wtKPi1D+lPOkh4YQ==}
+    dependencies:
+      '@types/mime': 1.3.2
+      '@types/node': 16.7.1
     dev: false
 
   /@types/stack-utils/1.0.1:
@@ -7348,6 +7427,14 @@ packages:
       react-is: 17.0.2
     dev: false
 
+  /prism-themes/1.8.0:
+    resolution: {integrity: sha512-pj7A7C9C8juQRFkZHYeApQHdUiak5nkKYlHyWwh7n/b6WjI9KzGtqaGhxUZAIaV1PZ9Z1epJwe41Px3TUGsNJw==}
+    dev: false
+
+  /prismjs/1.24.1:
+    resolution: {integrity: sha512-mNPsedLuk90RVJioIky8ANZEwYm5w9LcvCXrxHlwf4fNVSn8jEipMybMkWUyyF0JhnC+C4VcOVSBuHRKs1L5Ow==}
+    dev: false
+
   /process-nextick-args/2.0.1:
     resolution: {integrity: sha512-3ouUOpQhtgrbOa17J7+uxOTpITYWaGP7/AhoR3+A+/1e9skrzelGi/dXzEYyvbxubEF6Wn2ypscTKiKJFFn1ag==}
     dev: false
@@ -9364,6 +9451,10 @@ packages:
     resolution: {integrity: sha512-2ham8XPWTONajOR0ohOKOHXkm3+gaBmGut3SRuu75xLd/RRaY6vqgh8NBYYk7+RW3u5AtzPQZG8F10LHkl0lAQ==}
     dev: false
 
+  /vscode-diff/2.0.1:
+    resolution: {integrity: sha512-QLo/WxZW9fxawzPGwdMsDSab9qwW+AQYaVtrgeF9GHT60kYi6k2qfmNG93l8hlzAwqBTm+HzcY3t3L1eokq2jQ==}
+    dev: false
+
   /vscode-test/1.6.1:
     resolution: {integrity: sha512-086q88T2ca1k95mUzffvbzb7esqQNvJgiwY4h29ukPhFo8u+vXOOmelUoU5EQUHs3Of8+JuQ3oGdbVCqaxuTXA==}
     engines: {node: '>=8.9.3'}
@@ -9860,6 +9951,73 @@ packages:
       commander: 2.20.3
     dev: false
 
+  file:projects/code-training-lesson-common.tgz:
+    resolution: {integrity: sha512-aOPycB1L5xSoMyqPU4ipAoCE8zBTKBhE5HIPtJyzbwIMNZNAtnG6YbEISre7laugKVQYVZKRFmWEdCkHJ8cZiA==, tarball: file:projects/code-training-lesson-common.tgz}
+    name: '@rush-temp/code-training-lesson-common'
+    version: 0.0.0
+    dependencies:
+      vscode-diff: 2.0.1
+    dev: false
+
+  file:projects/code-training-lesson-components.tgz_@babel+core@7.15.0:
+    resolution: {integrity: sha512-+Purwqx+ac36b6GtS0oS5eqONga1mmYpK8/kUhHthRZTMF+8xJ1qULcS1qhtCm1MShkOrSqSWCuLlwpjgiydcg==, tarball: file:projects/code-training-lesson-components.tgz}
+    id: file:projects/code-training-lesson-components.tgz
+    name: '@rush-temp/code-training-lesson-components'
+    version: 0.0.0
+    dependencies:
+      '@emotion/react': 11.4.1_56f22c50b68024c6e259393098372ce5
+      '@types/prismjs': 1.16.6
+      '@types/react': 17.0.19
+      prism-themes: 1.8.0
+      prismjs: 1.24.1
+      react: 17.0.2
+      react-icons: 3.11.0_react@17.0.2
+    transitivePeerDependencies:
+      - '@babel/core'
+    dev: false
+
+  file:projects/code-training-lesson-editor-client.tgz_@babel+core@7.15.0:
+    resolution: {integrity: sha512-PaIuPD1z0EM0mdOqgcd8+PGHK+XgBaawMByv4Bze7Mc7bQnu0aENxVTXD4CmVDtTlm3zli5rpj7kGs0v3XWunw==, tarball: file:projects/code-training-lesson-editor-client.tgz}
+    id: file:projects/code-training-lesson-editor-client.tgz
+    name: '@rush-temp/code-training-lesson-editor-client'
+    version: 0.0.0
+    dependencies:
+      '@emotion/react': 11.4.1_56f22c50b68024c6e259393098372ce5
+      '@types/react': 17.0.19
+      react: 17.0.2
+    transitivePeerDependencies:
+      - '@babel/core'
+    dev: false
+
+  file:projects/code-training-lesson-editor-common.tgz:
+    resolution: {integrity: sha512-sBo3LfJ0gXjGi8dbHjLcIBjVX+yE5LMeaKlS32XAAvB1YXMop383ezsZE+BntbJbHIZQDIciJcVa3feVpo+Aug==, tarball: file:projects/code-training-lesson-editor-common.tgz}
+    name: '@rush-temp/code-training-lesson-editor-common'
+    version: 0.0.0
+    dev: false
+
+  file:projects/code-training-lesson-editor-local-server.tgz:
+    resolution: {integrity: sha512-+m5jxITX0LZrha1xZabY7OI4XKTsEYiZfvXnzWGrEPjXKorMC04DmmXyApAZ6B10oanMvXAiSzrE+c8kt02fng==, tarball: file:projects/code-training-lesson-editor-local-server.tgz}
+    name: '@rush-temp/code-training-lesson-editor-local-server'
+    version: 0.0.0
+    dependencies:
+      '@types/express': 4.17.13
+      '@types/node': 12.12.6
+      express: 4.17.1
+    dev: false
+
+  file:projects/code-training-lesson-player.tgz_@babel+core@7.15.0:
+    resolution: {integrity: sha512-49FLxDXB3tpG4LnXeMeaeyTqLxQixLgdIgnJKH0hSYA+E8NeCWjEl5oXGtWZGFEUqcvS0JYNYDi0CoJWaWWzRA==, tarball: file:projects/code-training-lesson-player.tgz}
+    id: file:projects/code-training-lesson-player.tgz
+    name: '@rush-temp/code-training-lesson-player'
+    version: 0.0.0
+    dependencies:
+      '@emotion/react': 11.4.1_56f22c50b68024c6e259393098372ce5
+      '@types/react': 17.0.19
+      react: 17.0.2
+    transitivePeerDependencies:
+      - '@babel/core'
+    dev: false
+
   file:projects/config-eslint.tgz_be7b77a647b35db76da699504abffefa:
     resolution: {integrity: sha512-z6PAKeyjC1O8ZS0mUPiaUWMD0AQpr0itbZWQFhLT4vhCEOoYpNiGcw5lypN2BSAxMC1XRfgzLusuHh49bZXSfg==, tarball: file:projects/config-eslint.tgz}
     id: file:projects/config-eslint.tgz
@@ -9988,12 +10146,25 @@ packages:
     dev: false
 
   file:projects/games-list.tgz:
-    resolution: {integrity: sha512-+6oKAbHCmWu2TvdLOeCobd6P99+SxWLtAz/gZ0K7515nqB9yvzizFf4RHQBEljMNKfehPvSHk12rx0Eb3CR4kw==, tarball: file:projects/games-list.tgz}
+    resolution: {integrity: sha512-pm4jsaKJVDFk8x9ytQ8UtLjD1Nt6/LqMFpc0IFk6BL5cbfA2xoo5jCd/deDXK44valR5ahz6mEApi2zIpJOrHQ==, tarball: file:projects/games-list.tgz}
     name: '@rush-temp/games-list'
     version: 0.0.0
     dependencies:
       '@types/react': 17.0.19
       react: 17.0.2
+    dev: false
+
+  file:projects/github-comments.tgz_@babel+core@7.15.0:
+    resolution: {integrity: sha512-uHbc9z7Sh3s/GDh8V3RBamNOQFWU9nUHtR7CANxIDgQxge9AUkH+174RWhL+Hl8duxhkeKiOKK6zFESEJsusdw==, tarball: file:projects/github-comments.tgz}
+    id: file:projects/github-comments.tgz
+    name: '@rush-temp/github-comments'
+    version: 0.0.0
+    dependencies:
+      '@emotion/react': 11.4.1_56f22c50b68024c6e259393098372ce5
+      '@types/react': 17.0.19
+      react: 17.0.2
+    transitivePeerDependencies:
+      - '@babel/core'
     dev: false
 
   file:projects/react-controls.tgz_@babel+core@7.15.0:

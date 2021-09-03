@@ -1,10 +1,10 @@
 import React from 'react';
+import { Utterances } from '@ricklove/github-comments';
 import { Layout } from '../layout/layout';
 import { SEO } from '../layout/seo';
 import { Markdown } from '../markdown/markdown';
 import { getNavigation } from '../site';
 import { PostCss } from './post-css';
-import { Utterances } from './utterances';
 
 export type PostPageData = {
   headers: { key: string; value: string }[];
