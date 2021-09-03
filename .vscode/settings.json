@@ -1,4 +1,5 @@
 {
+  "typescript.tsdk": "./common/temp/node_modules/typescript/lib",
   "editor.formatOnSave": true,
   "editor.defaultFormatter": "esbenp.prettier-vscode",
   "[typescript]": {
@@ -13,13 +14,20 @@
     "**/CVS": false,
     "**/.git": true,
     "**/node_modules": true,
-    // "**/lib": true,
+
+    // build artifacts
     "**/.heft": true,
     "**/.rush": true,
-    // "**/config": true,
     "**/*.build.log": true,
     "**/*.build.error.log": true,
     "**/.next": true,
-    "**/temp": true
+    "**/temp": true,
+
+    "**/lib": true,
+
+    // required boilerplate
+    "**/config": true,
+    "**/.eslintrc.cjs": true
+    //"**/tsconfig.json": true
   }
 }

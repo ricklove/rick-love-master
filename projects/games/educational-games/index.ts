@@ -1,1 +1,1 @@
-export * from './src/placeholder';
+export * from './src/_games-list';

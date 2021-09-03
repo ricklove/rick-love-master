@@ -1,13 +1,18 @@
+/* eslint-disable no-tabs */
 import { SpeechService } from '../utils/speech';
 import { createDefinitionProblemService, parseDefinitionDocument } from './definition-problem-service';
 
 export const createSpanishProblemService = ({ speechService }: { speechService: SpeechService }) => {
-    const subject = parseDefinitionDocument(document, `Spanish`);
-    return createDefinitionProblemService({
-        subject,
-        onQuestion: (q) => { speechService.speak(q, `es`); },
-        onQuestionReverse: (q) => { speechService.speak(q, `en`); },
-    });
+  const subject = parseDefinitionDocument(document, `Spanish`);
+  return createDefinitionProblemService({
+    subject,
+    onQuestion: (q) => {
+      speechService.speak(q, `es`);
+    },
+    onQuestionReverse: (q) => {
+      speechService.speak(q, `en`);
+    },
+  });
 };
 
 const document = `

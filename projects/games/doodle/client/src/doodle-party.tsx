@@ -1,12 +1,12 @@
 /* eslint-disable react/no-array-index-key */
 import React, { useEffect, useState } from 'react';
-import { DoodleApiConfig } from '@ricklove/doodle-common';
+import { DoodleConfig } from '@ricklove/doodle-common';
 import { ActivityIndicator, Text, View } from '@ricklove/react-native-lite';
 import { DoodlePartyPlayView, DoodlePartyStatusBar, PartyViewer } from './doodle-party-components';
 import { DoodlePartyController, useDoodlePartyController } from './doodle-party-state';
 import { DoodlePartyProfileView } from './doodle-party-user-profile';
 
-export const DoodlePartyView = ({ config }: { config: DoodleApiConfig }) => {
+export const DoodlePartyView = ({ config }: { config: DoodleConfig }) => {
   const controller = useDoodlePartyController(config);
   return (
     <>

@@ -1,7 +1,0 @@
-{
-  "extends": "@ricklove/config-lib-rig/profiles/default/tsconfig-base.json",
-  "compilerOptions": {
-    "lib": ["DOM", "ES2017"]
-  },
-  "include": ["index.ts"]
-}

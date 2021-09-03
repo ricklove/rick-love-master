@@ -9,6 +9,7 @@
   },
   "dependencies": {
     "@ricklove/doodle-client": "*",
+    "@ricklove/educational-games": "*",
     "react": "17.0.2"
   },
   "devDependencies": {

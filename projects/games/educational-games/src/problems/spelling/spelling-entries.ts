@@ -1,29 +1,39 @@
+export const getSpellingEntries = (): { word: string; mispellings: string[]; wordGroup: { words: string[] } }[] => {
+  const wordGroups = getWordGroups();
 
-export const getSpellingEntries = (): { word: string, mispellings: string[], wordGroup: { words: string[] } }[] => {
+  const doc = spellingDoc;
+  const lines = doc
+    .split(`\n`)
+    .map((x) => x.trim())
+    .filter((x) => x);
+  const problems = lines.map((line) => {
+    const parts = line.split(`=`);
+    const word = parts[0].trim();
+    const mispellings = parts[1]
+      .split(` `)
+      .map((x) => x.trim())
+      .filter((x) => x);
 
-    const wordGroups = getWordGroups();
-
-    const doc = spellingDoc;
-    const lines = doc.split(`\n`).map(x => x.trim()).filter(x => x);
-    const problems = lines.map(line => {
-        const parts = line.split(`=`);
-        const word = parts[0].trim();
-        const mispellings = parts[1].split(` `).map(x => x.trim()).filter(x => x);
-
-        const wordGroup = wordGroups.find(x => x.words.some(w => w === word)) ?? { words: [] };
-        return { word, mispellings, wordGroup };
-    });
-    return problems;
+    const wordGroup = wordGroups.find((x) => x.words.some((w) => w === word)) ?? { words: [] };
+    return { word, mispellings, wordGroup };
+  });
+  return problems;
 };
 
 const getWordGroups = (): { words: string[] }[] => {
-    const doc = wordGroupsDoc;
-    const lines = doc.split(`\n`).map(x => x.trim()).filter(x => x);
-    const wordGroups = lines.map(line => {
-        const words = line.split(` `).map(x => x.trim()).filter(x => x);
-        return { words };
-    });
-    return wordGroups;
+  const doc = wordGroupsDoc;
+  const lines = doc
+    .split(`\n`)
+    .map((x) => x.trim())
+    .filter((x) => x);
+  const wordGroups = lines.map((line) => {
+    const words = line
+      .split(` `)
+      .map((x) => x.trim())
+      .filter((x) => x);
+    return { words };
+  });
+  return wordGroups;
 };
 
 const spellingDoc = `

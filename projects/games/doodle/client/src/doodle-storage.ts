@@ -1,6 +1,6 @@
 import {
   decodeDoodleDrawing,
-  DoodleApiConfig,
+  DoodleConfig,
   DoodleData,
   DoodleDrawingStorageService,
   DoodleScore,
@@ -32,7 +32,7 @@ const storageAccess = {
   },
 };
 
-export const createDoodleDrawingStorageService = async (config: DoodleApiConfig) => {
+export const createDoodleDrawingStorageService = async (config: DoodleConfig) => {
   const remoteDoodle = createSmartUploader<DoodleUserDrawingDataJson>({
     getUploadUrl: async () => storageAccess.load()?.doodleUploadUrl ?? null,
     setUploadUrl: async (x) => storageAccess.save({ ...(storageAccess.load() ?? {}), doodleUploadUrl: x }),

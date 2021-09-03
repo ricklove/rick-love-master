@@ -13,14 +13,14 @@
     "react": "17.0.2",
     "react-dom": "17.0.2",
     "@ricklove/example-node-lib": "*",
-    "@ricklove/ricklove_me-content": "*"
+    "@ricklove/ricklove_me-content": "*",
+    "next-transpile-modules": "~8.0.0"
   },
   "devDependencies": {
     "@babel/core": "^7.0.0",
     "@ricklove/config-lib-rig": "*",
     "@types/react": "~17.0.19",
     "copyfiles": "~2.4.1",
-    "typescript": "~4.3.5",
     "rimraf": "~3.0.2",
     "@next/bundle-analyzer": "~11.1.2"
   }

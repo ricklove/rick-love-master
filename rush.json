@@ -525,6 +525,10 @@
       "packageName": "@ricklove/dork",
       "projectFolder": "projects/games/dork"
     },
+    {
+      "packageName": "@ricklove/educational-games",
+      "projectFolder": "projects/games/educational-games"
+    },
 
     {
       "packageName": "@ricklove/doodle-common",
@@ -553,6 +557,16 @@
     {
       "packageName": "@ricklove/ricklove_me-content",
       "projectFolder": "projects/web/ricklove_me-content"
+    },
+
+    // Tools --
+    {
+      "packageName": "@ricklove/rush-packages",
+      "projectFolder": "tools/rush-packages"
+    },
+    {
+      "packageName": "ricklove-vscode-auto-imports-fix",
+      "projectFolder": "tools/vscode/auto-imports-fix"
     }
   ]
 }

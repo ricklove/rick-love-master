@@ -8,8 +8,8 @@
     "build:watch": "heft build"
   },
   "dependencies": {
-    "@ricklove/doodle": "*",
-    "@ricklove/utils": "*",
+    "@ricklove/doodle-client": "*",
+    "@ricklove/utils-core": "*",
     "@ricklove/utils-react": "*",
     "@ricklove/user-data-service": "*",
     "@ricklove/react-native-lite": "*",

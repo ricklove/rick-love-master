@@ -1,6 +1,6 @@
 import { ApiError } from '@ricklove/utils-core';
 
-export function fetchWithTimeout(url: string, options: RequestInit, timeoutMs = 10000): Promise<Response> {
+export function fetchWithTimeout(url: string, options: RequestInit, timeoutMs: number = 10000): Promise<Response> {
   return Promise.race([
     fetch(url, options),
     new Promise((resolve, reject) =>
