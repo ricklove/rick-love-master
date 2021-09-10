@@ -8,6 +8,10 @@
     "build:watch": "heft build"
   },
   "dependencies": {
+    "@ricklove/code-training-lesson-common": "*",
+    "@ricklove/code-training-lesson-editor-common": "*",
+    "@ricklove/utils-core": "*",
+    "@ricklove/utils-files": "*",
     "express": "^4.17.1"
   },
   "devDependencies": {
