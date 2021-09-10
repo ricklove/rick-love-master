@@ -11,6 +11,7 @@
   "dependencies": {
     "@emotion/react": "~11.4.1",
     "@ricklove/console-simulator": "*",
+    "@ricklove/code-training-lesson-player": "*",
     "@ricklove/games-list": "*",
     "@ricklove/github-comments": "*",
     "@ricklove/utils-core": "*",
@@ -21,6 +22,7 @@
     "react-helmet": "~6.1.0"
   },
   "devDependencies": {
+    "@ricklove/code-training-lesson-build": "*",
     "@ricklove/config-lib-rig": "*",
     "@ricklove/utils-files": "*",
     "@ricklove/utils-react": "*",

@@ -20,6 +20,7 @@ This is where I put all the cool stuff.
   - `npm --prefix tools\rush-packages run cli -- --d projects/code-training/lesson-editor-client --p @ricklove/code-training-lesson-editor-client --t react`
   - `npm --prefix tools\rush-packages run cli -- --d projects/code-training/lesson-editor-local-server --p @ricklove/code-training-lesson-editor-local-server --t node`
   - `npm --prefix tools\rush-packages run cli -- --d projects/code-training/lesson-viewer --p @ricklove/code-training-lesson-viewer --t react`
+  - `npm --prefix tools\rush-packages run cli -- --d projects/code-training/_lesson-build --p @ricklove/code-training-lesson-build --t node`
 
 ## Tech Stack
 

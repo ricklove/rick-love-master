@@ -5,6 +5,7 @@ specifiers:
   '@emotion/react': ~11.4.1
   '@loadable/component': ^5.12.0
   '@next/bundle-analyzer': ~11.1.2
+  '@rush-temp/code-training-lesson-build': file:./projects/code-training-lesson-build.tgz
   '@rush-temp/code-training-lesson-common': file:./projects/code-training-lesson-common.tgz
   '@rush-temp/code-training-lesson-components': file:./projects/code-training-lesson-components.tgz
   '@rush-temp/code-training-lesson-editor-client': file:./projects/code-training-lesson-editor-client.tgz
@@ -95,6 +96,7 @@ dependencies:
   '@emotion/react': 11.4.1_56f22c50b68024c6e259393098372ce5
   '@loadable/component': 5.15.0_react@17.0.2
   '@next/bundle-analyzer': 11.1.2
+  '@rush-temp/code-training-lesson-build': file:projects/code-training-lesson-build.tgz
   '@rush-temp/code-training-lesson-common': file:projects/code-training-lesson-common.tgz
   '@rush-temp/code-training-lesson-components': file:projects/code-training-lesson-components.tgz_@babel+core@7.15.0
   '@rush-temp/code-training-lesson-editor-client': file:projects/code-training-lesson-editor-client.tgz_@babel+core@7.15.0
@@ -9951,8 +9953,16 @@ packages:
       commander: 2.20.3
     dev: false
 
+  file:projects/code-training-lesson-build.tgz:
+    resolution: {integrity: sha512-u1CM61/epbl42pAShUT6m8sDWqLfRWYRWzPcvaxpSGfBnX0qWDUI3J1Lvzo6xtQQ/beNUBwq88Ub+xmoGWzIWg==, tarball: file:projects/code-training-lesson-build.tgz}
+    name: '@rush-temp/code-training-lesson-build'
+    version: 0.0.0
+    dependencies:
+      '@types/node': 12.12.6
+    dev: false
+
   file:projects/code-training-lesson-common.tgz:
-    resolution: {integrity: sha512-aOPycB1L5xSoMyqPU4ipAoCE8zBTKBhE5HIPtJyzbwIMNZNAtnG6YbEISre7laugKVQYVZKRFmWEdCkHJ8cZiA==, tarball: file:projects/code-training-lesson-common.tgz}
+    resolution: {integrity: sha512-/FkO7fscw8BISZZ965OcbfxV0mxmGWzoWCeEzs7ju0/SJrWtE8gmLiTPOR1HzD+22u11NXItmGTePbxAL6hPmg==, tarball: file:projects/code-training-lesson-common.tgz}
     name: '@rush-temp/code-training-lesson-common'
     version: 0.0.0
     dependencies:
@@ -9977,7 +9987,7 @@ packages:
     dev: false
 
   file:projects/code-training-lesson-editor-client.tgz_@babel+core@7.15.0:
-    resolution: {integrity: sha512-PaIuPD1z0EM0mdOqgcd8+PGHK+XgBaawMByv4Bze7Mc7bQnu0aENxVTXD4CmVDtTlm3zli5rpj7kGs0v3XWunw==, tarball: file:projects/code-training-lesson-editor-client.tgz}
+    resolution: {integrity: sha512-z+f+qajdXFmLlSexPxo+Zoi/V24sO25oAX4ZfOXPHFcfDyGVbcQXf02gC3GW5c9kblaLuxq6jIdXCU7oL2mlow==, tarball: file:projects/code-training-lesson-editor-client.tgz}
     id: file:projects/code-training-lesson-editor-client.tgz
     name: '@rush-temp/code-training-lesson-editor-client'
     version: 0.0.0
@@ -9990,13 +10000,13 @@ packages:
     dev: false
 
   file:projects/code-training-lesson-editor-common.tgz:
-    resolution: {integrity: sha512-sBo3LfJ0gXjGi8dbHjLcIBjVX+yE5LMeaKlS32XAAvB1YXMop383ezsZE+BntbJbHIZQDIciJcVa3feVpo+Aug==, tarball: file:projects/code-training-lesson-editor-common.tgz}
+    resolution: {integrity: sha512-4o1DDGp3PlZp6x0jkM8ckfoDhVUGf+xbO8uiQ5shioibBW6KNB1gK8+fsttF+sfmgccWBdLIuwsgpBsZK+/jEw==, tarball: file:projects/code-training-lesson-editor-common.tgz}
     name: '@rush-temp/code-training-lesson-editor-common'
     version: 0.0.0
     dev: false
 
   file:projects/code-training-lesson-editor-local-server.tgz:
-    resolution: {integrity: sha512-+m5jxITX0LZrha1xZabY7OI4XKTsEYiZfvXnzWGrEPjXKorMC04DmmXyApAZ6B10oanMvXAiSzrE+c8kt02fng==, tarball: file:projects/code-training-lesson-editor-local-server.tgz}
+    resolution: {integrity: sha512-aAUEGup2OOFq3AMxLf67CZFdI3vL2Ora9f7HzGewo4C1ZSMoGk3+02gmj7zJlwVYLm28fh4OuRhoqCoQp2lPCA==, tarball: file:projects/code-training-lesson-editor-local-server.tgz}
     name: '@rush-temp/code-training-lesson-editor-local-server'
     version: 0.0.0
     dependencies:
@@ -10006,7 +10016,7 @@ packages:
     dev: false
 
   file:projects/code-training-lesson-player.tgz_@babel+core@7.15.0:
-    resolution: {integrity: sha512-49FLxDXB3tpG4LnXeMeaeyTqLxQixLgdIgnJKH0hSYA+E8NeCWjEl5oXGtWZGFEUqcvS0JYNYDi0CoJWaWWzRA==, tarball: file:projects/code-training-lesson-player.tgz}
+    resolution: {integrity: sha512-7dhNJld32vFRXTH1kVGgXbYeEiL8GS1bSrnuhMt8yboCd09JHpXe6jYbbZgBVI673Y/Sp/SvCztuYIXejdZMPQ==, tarball: file:projects/code-training-lesson-player.tgz}
     id: file:projects/code-training-lesson-player.tgz
     name: '@rush-temp/code-training-lesson-player'
     version: 0.0.0
@@ -10219,7 +10229,7 @@ packages:
     dev: false
 
   file:projects/ricklove_me-content.tgz_f0b419a7e119055c71dcaf6063a7ba7a:
-    resolution: {integrity: sha512-xHWQfvJbowrvNXTyNfqs9YSDAGsMnaEVo8GLIC0jy3bAdTEii4FrsCAs3wtZ2KT+f2FTQOmFuKz/1CGB+VqMDw==, tarball: file:projects/ricklove_me-content.tgz}
+    resolution: {integrity: sha512-nWEgvVr/l6HuTByNMGAqAdEld1JVbB2l4cVihAGhx04E13kL0qdrxm7KVscz/3gX0UkRywJLPlHEvuZdMiIcsA==, tarball: file:projects/ricklove_me-content.tgz}
     id: file:projects/ricklove_me-content.tgz
     name: '@rush-temp/ricklove_me-content'
     version: 0.0.0

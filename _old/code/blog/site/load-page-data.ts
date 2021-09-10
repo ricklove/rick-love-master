@@ -347,10 +347,8 @@ const createLessonModules = async (pages: SitePageInfo<PageData>[]) => {
     });
 
     // Add index
-    lessonModuleList.forEach(x => {
-        pages.push({
-            sitePath: `/lessons`,
-            data: { componentLessonListPage: { lessons: lessonModuleList.map(p => ({ sitePath: `/lessons/${p.key}`, lessonModuleKey: p.key, lessonModuleTitle: p.title })) } },
-        });
+    pages.push({
+        sitePath: `/lessons`,
+        data: { componentLessonListPage: { lessons: lessonModuleList.map(p => ({ sitePath: `/lessons/${p.key}`, lessonModuleKey: p.key, lessonModuleTitle: p.title })) } },
     });
 };

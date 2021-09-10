@@ -517,6 +517,10 @@
       "projectFolder": "features/ui/react-controls"
     },
     {
+      "packageName": "@ricklove/code-training-lesson-build",
+      "projectFolder": "projects/code-training/_lesson-build"
+    },
+    {
       "packageName": "@ricklove/code-training-lesson-common",
       "projectFolder": "projects/code-training/lesson-common"
     },
