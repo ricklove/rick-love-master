@@ -8,6 +8,7 @@ const getLessonModulesSourceDir = () =>
 const getPublicPath = () => joinPathNormalized(getWebProjectPath(), `./public`);
 const publicLessonsRelativePath = `lessons`;
 const publicLessonFilesRelativePath = `media/lessons`;
+const getPublicLesosnFilesPath = () => joinPathNormalized(getPublicPath(), publicLessonFilesRelativePath);
 
 const cache = {
   data: null as null | {
@@ -22,7 +23,7 @@ export const getLessonsData_cached = async (): Promise<{ lessons: LessonWebData[
 
   const result = await generateLessonFiles({
     lessonModulesSourceDir: getLessonModulesSourceDir(),
-    publicDestDir: getPublicPath(),
+    publicDestDir: getPublicLesosnFilesPath(),
     webRoute: publicLessonFilesRelativePath,
   });
 
