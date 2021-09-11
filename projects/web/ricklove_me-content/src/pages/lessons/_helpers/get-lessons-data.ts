@@ -1,15 +1,15 @@
 import { generateLessonFiles } from '@ricklove/code-training-lesson-build';
 import { delay } from '@ricklove/utils-core';
 import { joinPathNormalized } from '@ricklove/utils-files';
+import { getMonoRepoRoot, getWebProjectPath } from '../../../components/paths';
 import { LessonWebData } from './types';
 
-const getWebProjectPath = () => process.cwd();
-const getLessonModulesSourceDir = () =>
-  joinPathNormalized(getWebProjectPath(), `../../../projects/code-training/lessons/lesson-modules`);
-const getPublicPath = () => joinPathNormalized(getWebProjectPath(), `./public`);
+const getLessonModulesSourceDir = async () =>
+  joinPathNormalized(await getMonoRepoRoot(), `./projects/code-training/lessons/lesson-modules`);
+const getPublicPath = async () => joinPathNormalized(await getWebProjectPath(), `./public`);
 const publicLessonsRelativePath = `lessons`;
 const publicLessonFilesRelativePath = `_media/lessons`;
-const getPublicLesosnFilesPath = () => joinPathNormalized(getPublicPath(), publicLessonFilesRelativePath);
+const getPublicLesosnFilesPath = async () => joinPathNormalized(await getPublicPath(), publicLessonFilesRelativePath);
 
 const cache = {
   working: false,
@@ -30,8 +30,8 @@ export const getLessonsData_cached = async (): Promise<{ lessons: LessonWebData[
     }
 
     const result = await generateLessonFiles({
-      lessonModulesSourceDir: getLessonModulesSourceDir(),
-      publicDestDir: getPublicLesosnFilesPath(),
+      lessonModulesSourceDir: await getLessonModulesSourceDir(),
+      publicDestDir: await getPublicLesosnFilesPath(),
       webRoute: publicLessonFilesRelativePath,
     });
 
