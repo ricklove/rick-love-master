@@ -1,5 +1,5 @@
-import { getLessonsData_cached } from '../../components/lessons/get-lessons-data';
 import { createPage } from '../../types';
+import { getLessonsData_cached } from './_helpers/get-lessons-data';
 import { PageProps } from './[name]';
 
 export const page = createPage<PageProps>({

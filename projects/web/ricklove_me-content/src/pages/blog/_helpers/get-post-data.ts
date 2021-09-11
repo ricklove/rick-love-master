@@ -3,7 +3,7 @@ import { promises as fs } from 'fs';
 import path from 'path';
 import { groupItems } from '@ricklove/utils-core';
 import { getAllFiles, joinPathNormalized } from '@ricklove/utils-files';
-import { PostPageData } from '../../components/post/post';
+import { PostPageData } from './post';
 
 const getWebProjectPath = () => process.cwd();
 const getBlogContentPath = () => joinPathNormalized(getWebProjectPath(), `../../../_old/code/blog-content`);

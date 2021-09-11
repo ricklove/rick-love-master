@@ -1,6 +1,6 @@
 import { createPage } from '../../types';
+import { getPostDataCached, getPostSitePath } from './_helpers/get-post-data';
 import { PageProps } from './[...slug]';
-import { getPostDataCached, getPostSitePath } from './get-post-data';
 
 export const page = createPage<PageProps>({
   getStaticPaths: async () => {

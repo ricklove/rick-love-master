@@ -1,8 +1,8 @@
 import React, { useEffect } from 'react';
 import { useLoadable } from '@ricklove/utils-react';
-import { Layout } from '../layout/layout';
-import { SEO } from '../layout/seo';
-import { getNavigation } from '../site';
+import { Layout } from '../../../components/layout/layout';
+import { SEO } from '../../../components/layout/seo';
+import { getNavigation } from '../../../components/site';
 import { LessonWebData } from './types';
 
 export type LessonPageData = {

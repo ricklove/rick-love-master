@@ -1,5 +1,5 @@
 import React from 'react';
-import { GamePage, GamePageData } from '../../components/games/games';
+import { GamePage, GamePageData } from './_helpers/games';
 
 export type PageProps = {
   params: { name: string };

@@ -5,6 +5,7 @@ export const getPageFiles = async (sourcePath: string) => {
 
   return pageFiles
     .filter((f) => f.endsWith(`.tsx`))
+    .filter((f) => !f.includes(`_helpers`))
     .map((f) => {
       const relativePathRaw = f.replace(sourcePath, ``).replace(/\\/g, `/`).replace(/^\//, ``);
       const relativePath = relativePathRaw.replace(/.tsx?$/, ``);

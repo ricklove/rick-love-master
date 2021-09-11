@@ -1,8 +1,8 @@
 import React from 'react';
 import { Layout } from '../components/layout/layout';
 import { Markdown } from '../components/markdown/markdown';
-import { PostCss } from '../components/post/post-css';
 import { getNavigation } from '../components/site';
+import { PostCss } from './blog/_helpers/post-css';
 
 export type PageProps = {};
 export const Page = (_props: PageProps) => {

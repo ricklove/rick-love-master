@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
 import { gamesList } from '@ricklove/games-list';
-import { AppComponentLoader } from '../app-component-loader';
-import { Layout } from '../layout/layout';
-import { SEO } from '../layout/seo';
+import { AppComponentLoader } from '../../../components/app-component-loader';
+import { Layout } from '../../../components/layout/layout';
+import { SEO } from '../../../components/layout/seo';
 
 export const gamesListData = [...gamesList.map((x) => ({ name: x.name }))];
 
