@@ -11,7 +11,7 @@ const getPostsPath = () => joinPathNormalized(getBlogContentPath(), `./posts`);
 const getPostsIgnorePath = () => joinPathNormalized(getBlogContentPath(), `./posts/future`);
 const getCachePath = () => joinPathNormalized(getWebProjectPath(), `./cache/markdownCache.json`);
 const getPublicPath = () => joinPathNormalized(getWebProjectPath(), `./public`);
-const publicBlogContentRelativePath = `/media/blog-content`;
+const publicBlogContentRelativePath = `/_media/blog-content`;
 
 export const getPostSitePath = (slug: string[]) => `/blog/${slug.join(`/`)}`;
 

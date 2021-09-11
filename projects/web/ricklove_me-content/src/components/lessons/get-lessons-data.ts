@@ -8,7 +8,7 @@ const getLessonModulesSourceDir = () =>
   joinPathNormalized(getWebProjectPath(), `../../../projects/code-training/lessons/lesson-modules`);
 const getPublicPath = () => joinPathNormalized(getWebProjectPath(), `./public`);
 const publicLessonsRelativePath = `lessons`;
-const publicLessonFilesRelativePath = `media/lessons`;
+const publicLessonFilesRelativePath = `_media/lessons`;
 const getPublicLesosnFilesPath = () => joinPathNormalized(getPublicPath(), publicLessonFilesRelativePath);
 
 const cache = {

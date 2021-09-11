@@ -70,9 +70,9 @@ export const SEO = ({
         .concat(imageMeta)
         .concat(meta)}
       link={[
-        { rel: `icon`, type: `image/png`, sizes: `16x16`, href: `/media/favicon16.png` },
-        { rel: `icon`, type: `image/png`, sizes: `32x32`, href: `/media/favicon32.png` },
-        { rel: `shortcut icon`, type: `image/png`, href: `/media/favicon64.png` },
+        { rel: `icon`, type: `image/png`, sizes: `16x16`, href: `/_media/favicon16.png` },
+        { rel: `icon`, type: `image/png`, sizes: `32x32`, href: `/_media/favicon32.png` },
+        { rel: `shortcut icon`, type: `image/png`, href: `/_media/favicon64.png` },
       ]}
     />
   );
