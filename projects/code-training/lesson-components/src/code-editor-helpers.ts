@@ -1,7 +1,9 @@
+import 'prismjs';
 import 'prismjs/components/prism-typescript';
 import 'prismjs/components/prism-jsx';
 import 'prismjs/components/prism-tsx';
-import 'prism-themes/themes/prism-vsc-dark-plus.css';
+// TEMP disable css import
+// import 'prism-themes/themes/prism-vsc-dark-plus.css';
 import { highlight, languages } from 'prismjs';
 import { LessonProjectFileSelection } from '@ricklove/code-training-lesson-common';
 import { distinct, shuffle } from '@ricklove/utils-core';

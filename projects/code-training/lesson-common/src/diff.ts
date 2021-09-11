@@ -1,5 +1,6 @@
-import { DiffComputer, IDiffComputerOpts } from 'vscode-diff';
+import vscodeDiff, { IDiffComputerOpts } from 'vscode-diff';
 import { distinct_key, StringSpan } from '@ricklove/utils-core';
+const { DiffComputer } = vscodeDiff;
 
 const getSpanRange = (v: {
   span: StringSpan;

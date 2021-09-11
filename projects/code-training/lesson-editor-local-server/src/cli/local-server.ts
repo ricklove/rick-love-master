@@ -1,14 +1,20 @@
 /* eslint-disable @typescript-eslint/no-misused-promises */
 import express from 'express';
+import path from 'path';
 import { joinPathNormalized } from '@ricklove/utils-files';
 import { createLessonApiServer_localFileServer } from '../lesson-api-local-file-server';
+
+const projectDir = path.resolve(`.`);
+const lessonModuleFileRootPath = joinPathNormalized(projectDir, `../lessons/lesson-modules/`);
+const projectStateRootPath = joinPathNormalized(projectDir, `../lessons/templates/cra-template/src/project/`);
+const renderProjectRootPath = joinPathNormalized(projectDir, `../lessons/templates/cra-template`);
 
 export const runLocalServer = ({ port = 3042 }: { port?: number }) => {
   const app = express();
   const server = createLessonApiServer_localFileServer({
-    lessonModuleFileRootPath: joinPathNormalized(__dirname, `../../../data/lesson-modules/`),
-    projectStateRootPath: joinPathNormalized(__dirname, `../templates/cra-template/src/project/`),
-    renderProjectRootPath: joinPathNormalized(__dirname, `../templates/cra-template`),
+    lessonModuleFileRootPath,
+    projectStateRootPath,
+    renderProjectRootPath,
   });
   app.use(`/`, express.static(`../templates/cra-template/build`));
   app.use(express.json());

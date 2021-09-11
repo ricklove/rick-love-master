@@ -10,6 +10,12 @@ This is where I put all the cool stuff.
     - `cd \projects\ricklove_me`
     - `npx next dev`
 
+- run lesson-editor
+
+  - Tab1 - Run server
+    - `npm --prefix projects/code-training/lesson-editor-local-server run serve`
+  - Tab2 - Run client
+
 - create project
   - `npm --prefix tools\rush-packages run cli -- --d features/ui/github-comments --p @ricklove/github-comments --t react`
   - `npm --prefix tools\rush-packages run cli -- --d projects/code-training/lessons/modules --p @ricklove/code-training-lesson-modules --t lib`

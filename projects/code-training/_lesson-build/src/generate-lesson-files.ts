@@ -17,7 +17,6 @@ export const generateLessonFiles = async ({
 
   const server = createLessonApiServer_localFileServer({
     lessonModuleFileRootPath: lessonModulesSourceDir,
-    // Not used:
     projectStateRootPath: joinPathNormalized(lessonModulesSourceDir, `../templates/cra-template/src/project/`),
     renderProjectRootPath: joinPathNormalized(lessonModulesSourceDir, `../templates/cra-template`),
   });
