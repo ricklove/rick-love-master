@@ -98,8 +98,9 @@ export const copyNextJsPublicFiles = async (destPath: string, sourcePath: string
   const publicFiles = await getAllFiles(sourcePath);
   await Promise.all(
     publicFiles.map(async (f) => {
-      await fs.mkdir(path.dirname(f), { recursive: true });
-      await fs.copyFile(f, joinPathNormalized(f).replace(sourcePath, destPath));
+      const sourceFileName = joinPathNormalized(f).replace(sourcePath, destPath);
+      await fs.mkdir(path.dirname(sourceFileName), { recursive: true });
+      await fs.copyFile(f, sourceFileName);
     }),
   );
 };
