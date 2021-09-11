@@ -1,4 +1,5 @@
 import { generateLessonFiles } from '@ricklove/code-training-lesson-build';
+import { delay } from '@ricklove/utils-core';
 import { joinPathNormalized } from '@ricklove/utils-files';
 import { LessonWebData } from './types';
 
@@ -11,39 +12,50 @@ const publicLessonFilesRelativePath = `media/lessons`;
 const getPublicLesosnFilesPath = () => joinPathNormalized(getPublicPath(), publicLessonFilesRelativePath);
 
 const cache = {
+  working: false,
   data: null as null | {
     lessons: LessonWebData[];
   },
 };
 
 export const getLessonsData_cached = async (): Promise<{ lessons: LessonWebData[] }> => {
-  if (cache.data) {
-    return cache.data;
+  while (cache.working) {
+    await delay(10);
   }
+  cache.working = true;
 
-  const result = await generateLessonFiles({
-    lessonModulesSourceDir: getLessonModulesSourceDir(),
-    publicDestDir: getPublicLesosnFilesPath(),
-    webRoute: publicLessonFilesRelativePath,
-  });
+  try {
+    if (cache.data) {
+      return cache.data;
+    }
 
-  const data = {
-    lessons: result.lessonModules
-      .map((x) => ({
-        key: x.key,
-        title: x.title,
+    const result = await generateLessonFiles({
+      lessonModulesSourceDir: getLessonModulesSourceDir(),
+      publicDestDir: getPublicLesosnFilesPath(),
+      webRoute: publicLessonFilesRelativePath,
+    });
 
-        pageUrl: `/${publicLessonsRelativePath}/${x.key}`,
-        filesRootUrl: `/${publicLessonFilesRelativePath}/${x.key}`,
-      }))
-      .map((x) => ({
-        ...x,
-        jsonUrl: `${x.filesRootUrl}/${x.key}.code-lesson.json`,
-        buildRootUrl: `${x.filesRootUrl}/build`,
-      })),
-  };
+    const data = {
+      lessons: result.lessonModules
+        .map((x) => ({
+          key: x.key,
+          title: x.title,
 
-  // eslint-disable-next-line require-atomic-updates
-  cache.data = data;
-  return data;
+          pageUrl: `/${publicLessonsRelativePath}/${x.key}`,
+          filesRootUrl: `/${publicLessonFilesRelativePath}/${x.key}`,
+        }))
+        .map((x) => ({
+          ...x,
+          jsonUrl: `${x.filesRootUrl}/${x.key}.code-lesson.json`,
+          buildRootUrl: `${x.filesRootUrl}/build`,
+        })),
+    };
+
+    // eslint-disable-next-line require-atomic-updates
+    cache.data = data;
+    return data;
+  } finally {
+    // eslint-disable-next-line require-atomic-updates
+    cache.working = false;
+  }
 };
