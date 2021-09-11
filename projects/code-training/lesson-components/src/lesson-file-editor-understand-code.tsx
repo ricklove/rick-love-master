@@ -72,7 +72,12 @@ export const LessonFileContentEditor_UnderstandCode = ({
       return;
     }
 
-    setFeedback({ emoji: randomItem(goodEmojis), message: `✔`, timestamp: Date.now(), timeoutMs: 1000 });
+    setFeedback({
+      emoji: randomItem(goodEmojis),
+      message: `${nextWithBlanks}\r\n\r\n✔`,
+      timestamp: Date.now(),
+      timeoutMs: 1000,
+    });
 
     if (!nextWithBlanks.includes(`___`)) {
       // Done
