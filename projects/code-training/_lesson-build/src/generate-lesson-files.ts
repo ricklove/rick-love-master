@@ -1,4 +1,4 @@
-import { promises as fs } from 'fs';
+import fsRaw, { promises as fs } from 'fs';
 import { createLessonApiServer_localFileServer } from '@ricklove/code-training-lesson-editor-local-server';
 import { copyFiles, getAllFiles, joinPathNormalized } from '@ricklove/utils-files';
 
@@ -13,8 +13,6 @@ export const generateLessonFiles = async ({
 }) => {
   console.log(`createLessonModules`);
 
-  await copyFiles({ sourcePath: lessonModulesSourceDir, destPath: publicDestDir });
-
   const server = createLessonApiServer_localFileServer({
     lessonModuleFileRootPath: lessonModulesSourceDir,
     projectStateRootPath: joinPathNormalized(lessonModulesSourceDir, `../templates/cra-template/src/project/`),
@@ -22,7 +20,24 @@ export const generateLessonFiles = async ({
   });
   const lessonModules = await server.getLessonModules({});
 
-  // FIX /APP_ROOT_PATH
+  // Build lesson modules
+  for (const l of lessonModules.data) {
+    const lessonRelativePath = `${l.key}/build`;
+    const lessonSourceBuildDir = joinPathNormalized(lessonModulesSourceDir, lessonRelativePath);
+
+    // Skip build if it already exists
+    if (fsRaw.existsSync(lessonSourceBuildDir)) {
+      continue;
+    }
+
+    console.log(`createLessonModules - Build lesson module`, { lessonBuildDir: lessonSourceBuildDir, l });
+    await server.buildLessonModule(l);
+  }
+
+  // Copy lesson modules
+  await copyFiles({ sourcePath: lessonModulesSourceDir, destPath: publicDestDir });
+
+  // Replace /APP_ROOT_PATH
   for (const l of lessonModules.data) {
     const lessonRelativePath = `${l.key}/build`;
     const webPath = `${webRoute}/${lessonRelativePath}`;

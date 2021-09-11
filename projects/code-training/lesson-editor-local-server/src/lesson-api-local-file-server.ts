@@ -1,6 +1,7 @@
 /* eslint-disable no-await-in-loop */
 import { exec as execRaw } from 'child_process';
 import { promises as fs } from 'fs';
+import path from 'path';
 import { promisify } from 'util';
 import {
   calculateFilesHashCode,
@@ -68,12 +69,15 @@ export const createLessonApiServer_localFileServer = ({
     if (!projectStateRootPath) {
       throw new ApiError(`projectStateRootPath not setup`, {});
     }
+    await fs.mkdir(projectStateRootPath, { recursive: true });
 
     const projectStatePath = joinPathNormalized(projectStateRootPath, projectState.filesHashCode);
 
     await Promise.all(
       projectState.files.map(async (x) => {
-        await writeFile(joinPathNormalized(projectStatePath, `${x.path}`), x.content, { overwrite: true });
+        const filePath = joinPathNormalized(projectStatePath, `${x.path}`);
+        await fs.mkdir(path.dirname(filePath), { recursive: true });
+        await writeFile(filePath, x.content, { overwrite: true });
       }),
     );
   };
@@ -82,6 +86,7 @@ export const createLessonApiServer_localFileServer = ({
     if (!projectStateRootPath) {
       throw new ApiError(`projectStateRootPath not setup`, {});
     }
+    await fs.mkdir(projectStateRootPath, { recursive: true });
 
     // Remove existing project files
     const files = await getFiles(projectStateRootPath, (x) => true);
@@ -97,6 +102,8 @@ export const createLessonApiServer_localFileServer = ({
     }
 
     // Build
+    console.log(`buildLessonRender - RUNNING yarn`, { cwd: renderProjectRootPath });
+    await exec(`yarn`, { cwd: renderProjectRootPath });
     console.log(`buildLessonRender - BUILDING yarn build`, { cwd: renderProjectRootPath });
     await exec(`yarn build`, { cwd: renderProjectRootPath });
 
