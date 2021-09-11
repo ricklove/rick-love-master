@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/naming-convention */
 import React, { useEffect, useMemo, useState } from 'react';
 import { TouchableOpacity, View } from '@ricklove/react-native-lite';
-import { CodePart } from './code-editor-helpers';
+import { CodeEditorStyles, CodePart } from './code-editor-helpers';
 
 export type CodeDisplayPart = CodePart;
 export type CodeDisplayInputOptions = {
@@ -31,6 +31,7 @@ export const CodeDisplay = ({
   console.log(`CodeDisplay`, { inputOptions, codeParts });
   return (
     <View>
+      <CodeEditorStyles />
       <pre style={{ margin: 0, paddingBottom: inputOptions ? 100 : 0 }} className={`language-${language}`}>
         <code className={`language-${language}`}>
           <CodeSpan

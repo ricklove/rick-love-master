@@ -2,12 +2,11 @@ import 'prismjs';
 import 'prismjs/components/prism-typescript';
 import 'prismjs/components/prism-jsx';
 import 'prismjs/components/prism-tsx';
-// TEMP disable css import
-// import 'prism-themes/themes/prism-vsc-dark-plus.css';
 import { highlight, languages } from 'prismjs';
 import { LessonProjectFileSelection } from '@ricklove/code-training-lesson-common';
 import { distinct, shuffle } from '@ricklove/utils-core';
 import { StringSpan } from '@ricklove/utils-core';
+export { CodeEditorStyles } from './code-editor-styles';
 
 export const isSimilarCodeToken = (a: string, b: string) => {
   if (/^\d+$/g.test(a) && /^\d+$/g.test(b)) {
