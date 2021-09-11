@@ -40,7 +40,7 @@ export const LessonModulePlayerLoader = (props: { lesson: LessonInfo }) => {
   }, [props.lesson]);
 
   const setProjectState: SetProjectState = async (projectState: LessonProjectState) => {
-    return { iFrameUrl: `${props.lesson.lessonBuildRootUrl}?filesHashCode=${projectState.filesHashCode}` };
+    return { iFrameUrl: `${props.lesson.lessonBuildRootUrl}/index.html?filesHashCode=${projectState.filesHashCode}` };
   };
 
   return (
