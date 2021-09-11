@@ -1,0 +1,1 @@
+{"version":3,"sources":["project/6296808902455123/app.tsx"],"names":["App"],"mappings":"oHAAA,+DAEaA,EAAM,kBAAM","file":"static/js/12.c79bc54c.chunk.js","sourcesContent":["import React from 'react';\n\nexport const App = () => <span>Hello World!</span>\n"],"sourceRoot":""}

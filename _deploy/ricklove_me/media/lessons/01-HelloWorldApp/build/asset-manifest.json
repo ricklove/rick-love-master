@@ -1,0 +1,39 @@
+{
+  "files": {
+    "main.js": "/media/lessons/01-HelloWorldApp/build/static/js/main.ffb16fde.chunk.js",
+    "main.js.map": "/media/lessons/01-HelloWorldApp/build/static/js/main.ffb16fde.chunk.js.map",
+    "runtime-main.js": "/media/lessons/01-HelloWorldApp/build/static/js/runtime-main.92101e10.js",
+    "runtime-main.js.map": "/media/lessons/01-HelloWorldApp/build/static/js/runtime-main.92101e10.js.map",
+    "static/js/2.0b349d4d.chunk.js": "/media/lessons/01-HelloWorldApp/build/static/js/2.0b349d4d.chunk.js",
+    "static/js/2.0b349d4d.chunk.js.map": "/media/lessons/01-HelloWorldApp/build/static/js/2.0b349d4d.chunk.js.map",
+    "static/js/3.71f0bf33.chunk.js": "/media/lessons/01-HelloWorldApp/build/static/js/3.71f0bf33.chunk.js",
+    "static/js/3.71f0bf33.chunk.js.map": "/media/lessons/01-HelloWorldApp/build/static/js/3.71f0bf33.chunk.js.map",
+    "static/js/4.a03ebb26.chunk.js": "/media/lessons/01-HelloWorldApp/build/static/js/4.a03ebb26.chunk.js",
+    "static/js/4.a03ebb26.chunk.js.map": "/media/lessons/01-HelloWorldApp/build/static/js/4.a03ebb26.chunk.js.map",
+    "static/js/5.9871c3d2.chunk.js": "/media/lessons/01-HelloWorldApp/build/static/js/5.9871c3d2.chunk.js",
+    "static/js/5.9871c3d2.chunk.js.map": "/media/lessons/01-HelloWorldApp/build/static/js/5.9871c3d2.chunk.js.map",
+    "static/js/6.a2985292.chunk.js": "/media/lessons/01-HelloWorldApp/build/static/js/6.a2985292.chunk.js",
+    "static/js/6.a2985292.chunk.js.map": "/media/lessons/01-HelloWorldApp/build/static/js/6.a2985292.chunk.js.map",
+    "static/js/7.1ef9f4e0.chunk.js": "/media/lessons/01-HelloWorldApp/build/static/js/7.1ef9f4e0.chunk.js",
+    "static/js/7.1ef9f4e0.chunk.js.map": "/media/lessons/01-HelloWorldApp/build/static/js/7.1ef9f4e0.chunk.js.map",
+    "static/js/8.0932be7d.chunk.js": "/media/lessons/01-HelloWorldApp/build/static/js/8.0932be7d.chunk.js",
+    "static/js/8.0932be7d.chunk.js.map": "/media/lessons/01-HelloWorldApp/build/static/js/8.0932be7d.chunk.js.map",
+    "static/js/9.78ca9db9.chunk.js": "/media/lessons/01-HelloWorldApp/build/static/js/9.78ca9db9.chunk.js",
+    "static/js/9.78ca9db9.chunk.js.map": "/media/lessons/01-HelloWorldApp/build/static/js/9.78ca9db9.chunk.js.map",
+    "static/js/10.708bf507.chunk.js": "/media/lessons/01-HelloWorldApp/build/static/js/10.708bf507.chunk.js",
+    "static/js/10.708bf507.chunk.js.map": "/media/lessons/01-HelloWorldApp/build/static/js/10.708bf507.chunk.js.map",
+    "static/js/11.f31c355e.chunk.js": "/media/lessons/01-HelloWorldApp/build/static/js/11.f31c355e.chunk.js",
+    "static/js/11.f31c355e.chunk.js.map": "/media/lessons/01-HelloWorldApp/build/static/js/11.f31c355e.chunk.js.map",
+    "static/js/12.c79bc54c.chunk.js": "/media/lessons/01-HelloWorldApp/build/static/js/12.c79bc54c.chunk.js",
+    "static/js/12.c79bc54c.chunk.js.map": "/media/lessons/01-HelloWorldApp/build/static/js/12.c79bc54c.chunk.js.map",
+    "index.html": "/media/lessons/01-HelloWorldApp/build/index.html",
+    "precache-manifest.28077fd3604beb27ec486e12daf6d1f5.js": "/media/lessons/01-HelloWorldApp/build/precache-manifest.28077fd3604beb27ec486e12daf6d1f5.js",
+    "service-worker.js": "/media/lessons/01-HelloWorldApp/build/service-worker.js",
+    "static/js/2.0b349d4d.chunk.js.LICENSE.txt": "/media/lessons/01-HelloWorldApp/build/static/js/2.0b349d4d.chunk.js.LICENSE.txt"
+  },
+  "entrypoints": [
+    "static/js/runtime-main.92101e10.js",
+    "static/js/2.0b349d4d.chunk.js",
+    "static/js/main.ffb16fde.chunk.js"
+  ]
+}
