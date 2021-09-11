@@ -1,5 +1,5 @@
 import React from 'react';
-import { GamesListPage } from '../../components/games/games';
+import { GamesListPage } from './_helpers/games';
 
 export type PageProps = {};
 

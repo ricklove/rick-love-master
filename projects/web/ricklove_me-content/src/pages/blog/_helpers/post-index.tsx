@@ -1,8 +1,8 @@
 import React from 'react';
-import { Layout } from '../layout/layout';
-import { SEO } from '../layout/seo';
-import { Markdown } from '../markdown/markdown';
-import { getNavigation } from '../site';
+import { Layout } from '../../../components/layout/layout';
+import { SEO } from '../../../components/layout/seo';
+import { Markdown } from '../../../components/markdown/markdown';
+import { getNavigation } from '../../../components/site';
 import { PostCss } from './post-css';
 
 export type PostIndexPageData = {

@@ -1,15 +1,27 @@
 import { generateLessonFiles } from '@ricklove/code-training-lesson-build';
 import { delay } from '@ricklove/utils-core';
 import { joinPathNormalized } from '@ricklove/utils-files';
+import { getMonoRepoRoot, getWebProjectPath } from '../../../components/paths';
 import { LessonWebData } from './types';
 
-const getWebProjectPath = () => process.cwd();
-const getLessonModulesSourceDir = () =>
-  joinPathNormalized(getWebProjectPath(), `../../../projects/code-training/lessons/lesson-modules`);
-const getPublicPath = () => joinPathNormalized(getWebProjectPath(), `./public`);
-const publicLessonsRelativePath = `lessons`;
-const publicLessonFilesRelativePath = `_media/lessons`;
-const getPublicLesosnFilesPath = () => joinPathNormalized(getPublicPath(), publicLessonFilesRelativePath);
+const getPaths = async () => {
+  const monoRepoRoot = await getMonoRepoRoot();
+  const webProjectPath = await getWebProjectPath();
+
+  const lessonModulesSourceDir = joinPathNormalized(monoRepoRoot, `./projects/code-training/lessons/lesson-modules`);
+  const publicPath = joinPathNormalized(webProjectPath, `./public`);
+  const publicLessonsRelativePath = `lessons`;
+  const publicLessonFilesRelativePath = `_media/lessons`;
+  const publicLesosnFilesPath = joinPathNormalized(publicPath, publicLessonFilesRelativePath);
+
+  return {
+    lessonModulesSourceDir,
+    publicPath,
+    publicLessonsRelativePath,
+    publicLessonFilesRelativePath,
+    publicLesosnFilesPath,
+  };
+};
 
 const cache = {
   working: false,
@@ -29,9 +41,12 @@ export const getLessonsData_cached = async (): Promise<{ lessons: LessonWebData[
       return cache.data;
     }
 
+    const { lessonModulesSourceDir, publicLessonsRelativePath, publicLessonFilesRelativePath, publicLesosnFilesPath } =
+      await getPaths();
+
     const result = await generateLessonFiles({
-      lessonModulesSourceDir: getLessonModulesSourceDir(),
-      publicDestDir: getPublicLesosnFilesPath(),
+      lessonModulesSourceDir: lessonModulesSourceDir,
+      publicDestDir: publicLesosnFilesPath,
       webRoute: publicLessonFilesRelativePath,
     });
 

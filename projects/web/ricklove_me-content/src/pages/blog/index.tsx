@@ -1,5 +1,5 @@
 import React from 'react';
-import { PostIndexPage, PostIndexPageData } from '../../components/post/post-index';
+import { PostIndexPage, PostIndexPageData } from './_helpers/post-index';
 
 export type PageProps = {
   posts: PostIndexPageData['posts'];

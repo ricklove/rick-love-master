@@ -1,5 +1,5 @@
 import React from 'react';
-import { LessonPage, LessonPageData } from '../../components/lessons/lessons';
+import { LessonPage, LessonPageData } from './_helpers/lessons';
 
 export type PageProps = {
   params: { name: string };

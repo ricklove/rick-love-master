@@ -1,5 +1,5 @@
-import { gamesListData } from '../../components/games/games';
 import { createPage } from '../../types';
+import { gamesListData } from './_helpers/games';
 import { PageProps } from './[name]';
 
 export const page = createPage<PageProps>({

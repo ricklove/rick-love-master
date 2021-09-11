@@ -3,21 +3,36 @@ import { promises as fs } from 'fs';
 import path from 'path';
 import { groupItems } from '@ricklove/utils-core';
 import { getAllFiles, joinPathNormalized } from '@ricklove/utils-files';
-import { PostPageData } from '../../components/post/post';
+import { getMonoRepoRoot, getWebProjectPath } from '../../../components/paths';
+import { PostPageData } from './post';
 
-const getWebProjectPath = () => process.cwd();
-const getBlogContentPath = () => joinPathNormalized(getWebProjectPath(), `../../../_old/code/blog-content`);
-const getPostsPath = () => joinPathNormalized(getBlogContentPath(), `./posts`);
-const getPostsIgnorePath = () => joinPathNormalized(getBlogContentPath(), `./posts/future`);
-const getCachePath = () => joinPathNormalized(getWebProjectPath(), `./cache/markdownCache.json`);
-const getPublicPath = () => joinPathNormalized(getWebProjectPath(), `./public`);
-const publicBlogContentRelativePath = `/_media/blog-content`;
+const getPaths = async () => {
+  const monoRepoRoot = await getMonoRepoRoot();
+
+  const blogContentPath = joinPathNormalized(monoRepoRoot, `./_old/code/blog-content`);
+  const postsPath = joinPathNormalized(blogContentPath, `./posts`);
+  const postsIgnorePath = joinPathNormalized(blogContentPath, `./posts/future`);
+  const cachePath = joinPathNormalized(await getWebProjectPath(), `./cache/markdownCache.json`);
+  const publicPath = joinPathNormalized(await getWebProjectPath(), `./public`);
+  const publicBlogContentRelativePath = `/_media/blog-content`;
+
+  return {
+    blogContentPath,
+    postsPath,
+    postsIgnorePath,
+    cachePath,
+    publicPath,
+    publicBlogContentRelativePath,
+  };
+};
 
 export const getPostSitePath = (slug: string[]) => `/blog/${slug.join(`/`)}`;
 
-const calculateBlogContentSitePath = (sourceFilePath: string, mediaPath: string) => {
-  const blogContentSourceDir = joinPathNormalized(getBlogContentPath());
-  const blogContentDestDir = joinPathNormalized(getPublicPath(), publicBlogContentRelativePath);
+const calculateBlogContentSitePath = async (sourceFilePath: string, mediaPath: string) => {
+  const { blogContentPath, publicPath, publicBlogContentRelativePath } = await getPaths();
+
+  const blogContentSourceDir = joinPathNormalized(blogContentPath);
+  const blogContentDestDir = joinPathNormalized(publicPath, publicBlogContentRelativePath);
 
   const sourceFileRelPath = joinPathNormalized(sourceFilePath).replace(blogContentSourceDir, ``);
   const sourceFileRelDir = path.dirname(sourceFileRelPath);
@@ -38,8 +53,10 @@ type PostData = {
 };
 
 export const getPostDataCached = async (): Promise<PostData[]> => {
-  const allFiles = await getAllFiles(getPostsPath());
-  const ignorePostsPath = joinPathNormalized(getPostsIgnorePath());
+  const { postsPath, postsIgnorePath, cachePath } = await getPaths();
+
+  const allFiles = await getAllFiles(postsPath);
+  const ignorePostsPath = joinPathNormalized(postsIgnorePath);
   const markdownFilePaths = allFiles
     .filter((x) => x.endsWith(`.md`))
     .map((x) => joinPathNormalized(x))
@@ -51,15 +68,15 @@ export const getPostDataCached = async (): Promise<PostData[]> => {
       return fStat.ctimeMs;
     }),
   );
-  const cacheChangeTimeMs = fsRaw.existsSync(getCachePath())
-    ? (await fs.stat(getCachePath()).catch(() => ({ ctimeMs: 0 }))).ctimeMs
+  const cacheChangeTimeMs = fsRaw.existsSync(cachePath)
+    ? (await fs.stat(cachePath).catch(() => ({ ctimeMs: 0 }))).ctimeMs
     : 0;
 
   if (fileChangeTimesMs.every((t) => cacheChangeTimeMs > t)) {
     // Use cache file if newer
     console.log(`getMarkdownFileInfosCached - using cache`, { cacheChangeTimeMs });
 
-    const cacheContent = await fs.readFile(getCachePath(), { encoding: `utf-8` });
+    const cacheContent = await fs.readFile(cachePath, { encoding: `utf-8` });
     return JSON.parse(cacheContent) as PostData[];
   }
 
@@ -104,8 +121,8 @@ export const getPostDataCached = async (): Promise<PostData[]> => {
   });
 
   // Save cache file
-  await fs.mkdir(path.dirname(getCachePath()), { recursive: true });
-  await fs.writeFile(getCachePath(), JSON.stringify(items));
+  await fs.mkdir(path.dirname(cachePath), { recursive: true });
+  await fs.writeFile(cachePath, JSON.stringify(items));
 
   return items;
 };
@@ -128,7 +145,7 @@ const parseMarkdownFile = async (filePath: string, content: string): Promise<Pos
 
   // Copy media files to public
   const contentCleaned = await handleMediaFiles(filePath, contentWithoutHeader, async (sourceFilePath, mediaPath) => {
-    const { webPath, oldPathFull, newPathFull } = calculateBlogContentSitePath(sourceFilePath, mediaPath);
+    const { webPath, oldPathFull, newPathFull } = await calculateBlogContentSitePath(sourceFilePath, mediaPath);
     await fs.mkdir(path.dirname(newPathFull), { recursive: true });
     await fs.copyFile(oldPathFull, newPathFull);
     return { newPath: webPath };
@@ -136,7 +153,7 @@ const parseMarkdownFile = async (filePath: string, content: string): Promise<Pos
 
   const excerpt = headerValues.find((x) => x.key === `excerpt`)?.value;
   const imageUrlRaw = headerValues.find((x) => x.key === `image`)?.value;
-  const imageUrl = !imageUrlRaw ? undefined : calculateBlogContentSitePath(filePath, imageUrlRaw).webPath;
+  const imageUrl = !imageUrlRaw ? undefined : (await calculateBlogContentSitePath(filePath, imageUrlRaw)).webPath;
 
   const sitePath = `/${
     headerValues.find((x) => x.key === `path`)?.value.replace(/^\//g, ``) ??
