@@ -4,12 +4,24 @@ import { joinPathNormalized } from '@ricklove/utils-files';
 import { getMonoRepoRoot, getWebProjectPath } from '../../../components/paths';
 import { LessonWebData } from './types';
 
-const getLessonModulesSourceDir = async () =>
-  joinPathNormalized(await getMonoRepoRoot(), `./projects/code-training/lessons/lesson-modules`);
-const getPublicPath = async () => joinPathNormalized(await getWebProjectPath(), `./public`);
-const publicLessonsRelativePath = `lessons`;
-const publicLessonFilesRelativePath = `_media/lessons`;
-const getPublicLesosnFilesPath = async () => joinPathNormalized(await getPublicPath(), publicLessonFilesRelativePath);
+const getPaths = async () => {
+  const monoRepoRoot = await getMonoRepoRoot();
+  const webProjectPath = await getWebProjectPath();
+
+  const lessonModulesSourceDir = joinPathNormalized(monoRepoRoot, `./projects/code-training/lessons/lesson-modules`);
+  const publicPath = joinPathNormalized(webProjectPath, `./public`);
+  const publicLessonsRelativePath = `lessons`;
+  const publicLessonFilesRelativePath = `_media/lessons`;
+  const publicLesosnFilesPath = joinPathNormalized(publicPath, publicLessonFilesRelativePath);
+
+  return {
+    lessonModulesSourceDir,
+    publicPath,
+    publicLessonsRelativePath,
+    publicLessonFilesRelativePath,
+    publicLesosnFilesPath,
+  };
+};
 
 const cache = {
   working: false,
@@ -29,9 +41,12 @@ export const getLessonsData_cached = async (): Promise<{ lessons: LessonWebData[
       return cache.data;
     }
 
+    const { lessonModulesSourceDir, publicLessonsRelativePath, publicLessonFilesRelativePath, publicLesosnFilesPath } =
+      await getPaths();
+
     const result = await generateLessonFiles({
-      lessonModulesSourceDir: await getLessonModulesSourceDir(),
-      publicDestDir: await getPublicLesosnFilesPath(),
+      lessonModulesSourceDir: lessonModulesSourceDir,
+      publicDestDir: publicLesosnFilesPath,
       webRoute: publicLessonFilesRelativePath,
     });
 

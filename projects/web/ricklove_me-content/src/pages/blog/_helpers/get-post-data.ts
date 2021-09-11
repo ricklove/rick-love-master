@@ -6,18 +6,33 @@ import { getAllFiles, joinPathNormalized } from '@ricklove/utils-files';
 import { getMonoRepoRoot, getWebProjectPath } from '../../../components/paths';
 import { PostPageData } from './post';
 
-const getBlogContentPath = async () => joinPathNormalized(await getMonoRepoRoot(), `./_old/code/blog-content`);
-const getPostsPath = async () => joinPathNormalized(await getBlogContentPath(), `./posts`);
-const getPostsIgnorePath = async () => joinPathNormalized(await getBlogContentPath(), `./posts/future`);
-const getCachePath = async () => joinPathNormalized(await getWebProjectPath(), `./cache/markdownCache.json`);
-const getPublicPath = async () => joinPathNormalized(await getWebProjectPath(), `./public`);
-const publicBlogContentRelativePath = `/_media/blog-content`;
+const getPaths = async () => {
+  const monoRepoRoot = await getMonoRepoRoot();
+
+  const blogContentPath = joinPathNormalized(monoRepoRoot, `./_old/code/blog-content`);
+  const postsPath = joinPathNormalized(blogContentPath, `./posts`);
+  const postsIgnorePath = joinPathNormalized(blogContentPath, `./posts/future`);
+  const cachePath = joinPathNormalized(await getWebProjectPath(), `./cache/markdownCache.json`);
+  const publicPath = joinPathNormalized(await getWebProjectPath(), `./public`);
+  const publicBlogContentRelativePath = `/_media/blog-content`;
+
+  return {
+    blogContentPath,
+    postsPath,
+    postsIgnorePath,
+    cachePath,
+    publicPath,
+    publicBlogContentRelativePath,
+  };
+};
 
 export const getPostSitePath = (slug: string[]) => `/blog/${slug.join(`/`)}`;
 
 const calculateBlogContentSitePath = async (sourceFilePath: string, mediaPath: string) => {
-  const blogContentSourceDir = joinPathNormalized(await getBlogContentPath());
-  const blogContentDestDir = joinPathNormalized(await getPublicPath(), publicBlogContentRelativePath);
+  const { blogContentPath, publicPath, publicBlogContentRelativePath } = await getPaths();
+
+  const blogContentSourceDir = joinPathNormalized(blogContentPath);
+  const blogContentDestDir = joinPathNormalized(publicPath, publicBlogContentRelativePath);
 
   const sourceFileRelPath = joinPathNormalized(sourceFilePath).replace(blogContentSourceDir, ``);
   const sourceFileRelDir = path.dirname(sourceFileRelPath);
@@ -38,8 +53,10 @@ type PostData = {
 };
 
 export const getPostDataCached = async (): Promise<PostData[]> => {
-  const allFiles = await getAllFiles(await getPostsPath());
-  const ignorePostsPath = joinPathNormalized(await getPostsIgnorePath());
+  const { postsPath, postsIgnorePath, cachePath } = await getPaths();
+
+  const allFiles = await getAllFiles(postsPath);
+  const ignorePostsPath = joinPathNormalized(postsIgnorePath);
   const markdownFilePaths = allFiles
     .filter((x) => x.endsWith(`.md`))
     .map((x) => joinPathNormalized(x))
@@ -51,15 +68,15 @@ export const getPostDataCached = async (): Promise<PostData[]> => {
       return fStat.ctimeMs;
     }),
   );
-  const cacheChangeTimeMs = fsRaw.existsSync(await getCachePath())
-    ? (await fs.stat(await getCachePath()).catch(() => ({ ctimeMs: 0 }))).ctimeMs
+  const cacheChangeTimeMs = fsRaw.existsSync(cachePath)
+    ? (await fs.stat(cachePath).catch(() => ({ ctimeMs: 0 }))).ctimeMs
     : 0;
 
   if (fileChangeTimesMs.every((t) => cacheChangeTimeMs > t)) {
     // Use cache file if newer
     console.log(`getMarkdownFileInfosCached - using cache`, { cacheChangeTimeMs });
 
-    const cacheContent = await fs.readFile(await getCachePath(), { encoding: `utf-8` });
+    const cacheContent = await fs.readFile(cachePath, { encoding: `utf-8` });
     return JSON.parse(cacheContent) as PostData[];
   }
 
@@ -104,8 +121,8 @@ export const getPostDataCached = async (): Promise<PostData[]> => {
   });
 
   // Save cache file
-  await fs.mkdir(path.dirname(await getCachePath()), { recursive: true });
-  await fs.writeFile(await getCachePath(), JSON.stringify(items));
+  await fs.mkdir(path.dirname(cachePath), { recursive: true });
+  await fs.writeFile(cachePath, JSON.stringify(items));
 
   return items;
 };
