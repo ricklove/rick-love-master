@@ -1,0 +1,15 @@
+{
+  "name": "@ricklove/art-build",
+  "version": "1.0.0",
+  "type": "module",
+  "main": "./lib/index.js",
+  "scripts": {
+    "build": "heft test --clean",
+    "build:watch": "heft build"
+  },
+  "dependencies": {},
+  "devDependencies": {
+    "@ricklove/config-lib-rig": "*",
+    "@types/node": "12.12.6"
+  }
+}

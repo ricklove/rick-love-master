@@ -517,6 +517,34 @@
       "projectFolder": "features/ui/react-controls"
     },
     {
+      "packageName": "@ricklove/art-build",
+      "projectFolder": "projects/art/_build"
+    },
+    {
+      "packageName": "@ricklove/artwork-circles",
+      "projectFolder": "projects/art/artwork/circles"
+    },
+    {
+      "packageName": "@ricklove/artwork-hodlers-quest",
+      "projectFolder": "projects/art/artwork/hodlers-quest"
+    },
+    {
+      "packageName": "@ricklove/art-common",
+      "projectFolder": "projects/art/common"
+    },
+    {
+      "packageName": "@ricklove/art-components",
+      "projectFolder": "projects/art/components"
+    },
+    {
+      "packageName": "@ricklove/art-contract",
+      "projectFolder": "projects/art/contract"
+    },
+    {
+      "packageName": "@ricklove/art-renderer",
+      "projectFolder": "projects/art/renderer"
+    },
+    {
       "packageName": "@ricklove/code-training-lesson-build",
       "projectFolder": "projects/code-training/_lesson-build"
     },
