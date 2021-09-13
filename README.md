@@ -17,6 +17,7 @@ This is where I put all the cool stuff.
   - Tab2 - Run client
 
 - create project
+
   - `npm --prefix tools\rush-packages run cli -- --d features/ui/github-comments --p @ricklove/github-comments --t react`
   - `npm --prefix tools\rush-packages run cli -- --d projects/code-training/lessons/modules --p @ricklove/code-training-lesson-modules --t lib`
   - `npm --prefix tools\rush-packages run cli -- --d projects/code-training/lessons/templates/cra --p @ricklove/code-training-lesson-templates-cra --t react`
@@ -27,6 +28,22 @@ This is where I put all the cool stuff.
   - `npm --prefix tools\rush-packages run cli -- --d projects/code-training/lesson-editor-local-server --p @ricklove/code-training-lesson-editor-local-server --t node`
   - `npm --prefix tools\rush-packages run cli -- --d projects/code-training/lesson-viewer --p @ricklove/code-training-lesson-viewer --t react`
   - `npm --prefix tools\rush-packages run cli -- --d projects/code-training/_lesson-build --p @ricklove/code-training-lesson-build --t node`
+
+  - `npm --prefix tools\rush-packages run cli -- --d projects/art/_build --p @ricklove/art-build --t node`
+  - `npm --prefix tools\rush-packages run cli -- --d projects/art/common --p @ricklove/art-common --t lib`
+  - `npm --prefix tools\rush-packages run cli -- --d projects/art/components --p @ricklove/art-components --t react`
+  - `npm --prefix tools\rush-packages run cli -- --d projects/art/contract --p @ricklove/art-contract --t node`
+  - `npm --prefix tools\rush-packages run cli -- --d projects/art/renderer --p @ricklove/art-renderer --t node`
+  - `npm --prefix tools\rush-packages run cli -- --d projects/art/artwork/circles --p @ricklove/artwork-circles --t lib`
+  - `npm --prefix tools\rush-packages run cli -- --d projects/art/artwork/hodlers-quest --p @ricklove/artwork-hodlers-quest --t lib`
+
+  - `npm --prefix tools\rush-packages run cli -- --d projects/art/artwork/gears --p @ricklove/artwork-gears --t lib`
+  - `npm --prefix tools\rush-packages run cli -- --d projects/art/artwork/onion --p @ricklove/artwork-onion --t lib`
+  - `npm --prefix tools\rush-packages run cli -- --d projects/art/artwork/clock-121 --p @ricklove/artwork-clock-121 --t lib`
+  - `npm --prefix tools\rush-packages run cli -- --d projects/art/artwork/gpu-01 --p @ricklove/artwork-gpu-01 --t lib`
+  - `npm --prefix tools\rush-packages run cli -- --d projects/art/artwork/flying-colors --p @ricklove/artwork-flying-colors --t lib`
+  - `npm --prefix tools\rush-packages run cli -- --d projects/art/artwork/fluid-snake-game --p @ricklove/artwork-fluid-snake-game --t lib`
+  - `npm --prefix tools\rush-packages run cli -- --d projects/art/artwork/example-fluid-simulator --p @ricklove/artwork-example-fluid-simulator --t lib`
 
 ## Tech Stack
 
