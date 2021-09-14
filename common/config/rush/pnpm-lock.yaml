@@ -9997,13 +9997,15 @@ packages:
     dev: false
 
   file:projects/art-components.tgz_@babel+core@7.15.0:
-    resolution: {integrity: sha512-l2IieyM+UyefK2RcnwySka2A5dH9bOXRBVwrq/kk+aB9WQG0YUreRwsJ+M4fp+hI8Mii/t6bHOOh4LZuLEtU4w==, tarball: file:projects/art-components.tgz}
+    resolution: {integrity: sha512-iQ2A/auI4y5Qs+zeYTjYRbe3JNgzMe3ThbkZder8ghxLAMisdlonUglUCCb+6Pw0OROT61VODQWHOJ0AS7oRqg==, tarball: file:projects/art-components.tgz}
     id: file:projects/art-components.tgz
     name: '@rush-temp/art-components'
     version: 0.0.0
     dependencies:
       '@emotion/react': 11.4.1_56f22c50b68024c6e259393098372ce5
+      '@types/p5': 1.3.1
       '@types/react': 17.0.19
+      p5: 1.4.0
       react: 17.0.2
     transitivePeerDependencies:
       - '@babel/core'
