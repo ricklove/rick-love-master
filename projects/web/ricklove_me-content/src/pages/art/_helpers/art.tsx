@@ -93,11 +93,15 @@ export const HostComponentAuto = (props: { data: ArtworkPageData }) => {
           // Get tokenId
           const tokenId =
             window.document.location.search
-              .split(`;`)
+              .split(`&`)
               .find((x) => x.includes(`tokenId=`))
               ?.split(`=`)?.[1] ?? `0`;
 
-          return await artwork.load(tokenId);
+          const options = {
+            isPaused: window.document.location.search.includes(`pause`),
+          };
+
+          return await artwork.load(tokenId, options);
         },
       }}
     />

@@ -3,27 +3,32 @@ import { Artwork, GlobalArtController } from '@ricklove/art-common';
 import { createArtRenderer } from './art-renderer';
 import { ArtRenderer } from './types';
 
-export const createArtworkComponentLoader = async (artwork: Artwork, tokenId: string) => {
+export type ArtworkComponentOptions = { isPaused?: boolean };
+export const createArtworkComponentLoader = async (
+  artwork: Artwork,
+  tokenId: string,
+  options?: ArtworkComponentOptions,
+) => {
   const renderer = await createArtRenderer(artwork, tokenId);
 
   return (props: { config: {} }) => {
-    return <ArtworkComponent {...props} renderer={renderer} />;
+    return <ArtworkComponent {...props} renderer={renderer} options={options ?? {}} />;
   };
 };
 
-export const ArtworkComponent = (props: { config: {}; renderer: ArtRenderer }) => {
+export const ArtworkComponent = (props: { config: {}; renderer: ArtRenderer; options: ArtworkComponentOptions }) => {
   const size = Math.min(1000, Math.min(window.innerWidth, window.innerHeight));
 
   return (
     <>
       <div style={{ width: size, height: size, margin: `auto` }}>
-        <DivHost artRenderer={props.renderer} />
+        <DivHost {...props} />
       </div>
     </>
   );
 };
 
-const DivHost = (props: { artRenderer: ArtRenderer }) => {
+const DivHost = (props: { renderer: ArtRenderer; options: ArtworkComponentOptions }) => {
   const hostElementRef = useRef(null as null | HTMLDivElement);
   const HostElement = useRef({
     Component: () => <div style={{ width: `100%`, height: `100%` }} ref={hostElementRef} />,
@@ -36,7 +41,7 @@ const DivHost = (props: { artRenderer: ArtRenderer }) => {
 
     // console.log(`DivHost - renderArt`, { hostElementRef: hostElementRef.current, renderArt: props.renderArt });
     hostElementRef.current.innerHTML = ``;
-    const r = props.artRenderer.setup(hostElementRef.current, { shouldPlay: false });
+    const r = props.renderer.setup(hostElementRef.current, { shouldPlay: !props.options.isPaused });
 
     // Global controls
     const globalRemove = GlobalArtController.setup({
@@ -49,7 +54,7 @@ const DivHost = (props: { artRenderer: ArtRenderer }) => {
       globalRemove.remove();
       r.destroy();
     };
-  }, [hostElementRef.current, props.artRenderer.setup]);
+  }, [hostElementRef.current, props.renderer.setup]);
 
   return (
     <>

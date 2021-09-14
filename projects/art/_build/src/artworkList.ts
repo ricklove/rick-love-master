@@ -1,5 +1,5 @@
 import { Artwork, ArtworkMetadata } from '@ricklove/art-common';
-import { createArtworkComponentLoader } from '@ricklove/art-components';
+import { ArtworkComponentOptions, createArtworkComponentLoader } from '@ricklove/art-components';
 import { metadata as metadata_circles } from '@ricklove/artwork-circles';
 
 const _artworkList: { metadata: ArtworkMetadata; loadArtwork: () => Promise<Artwork> }[] = [
@@ -9,5 +9,6 @@ const _artworkList: { metadata: ArtworkMetadata; loadArtwork: () => Promise<Artw
 export const artworkList = _artworkList.map((x) => ({
   key: x.metadata.key,
   metadata: x.metadata,
-  load: async (tokenId: string) => await createArtworkComponentLoader(await x.loadArtwork(), tokenId),
+  load: async (tokenId: string, options?: ArtworkComponentOptions) =>
+    await createArtworkComponentLoader(await x.loadArtwork(), tokenId, options),
 }));

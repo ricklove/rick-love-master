@@ -4,13 +4,15 @@ import { createScreenshots } from './create-screenshot';
 export const run = async () => {
   const destDir = `./screenshots/test/${Date.now()}`;
   const framesPerSecond = 10;
+  const lengthSec = 5;
+  const frames = framesPerSecond * lengthSec;
 
   console.log(`# Capture frames`, { destDir });
   await createScreenshots({
-    url: `http://localhost:3042/art/circles?tokenId=42`,
+    url: `http://localhost:3042/art/circles?tokenId=Rick&pause`,
     destDir,
     framesPerSecond,
-    frames: 5 * 60,
+    frames,
     size: {
       width: 600,
       height: 600,
