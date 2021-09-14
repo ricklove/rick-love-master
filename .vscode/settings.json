@@ -14,7 +14,6 @@
     "**/CVS": false,
     "**/.git": true,
     "**/node_modules": true,
-
     // build artifacts
     "**/.heft": true,
     "**/.rush": true,
@@ -22,11 +21,9 @@
     "**/*.build.error.log": true,
     "**/.next": true,
     "**/temp": true,
-
     "**/lib": true,
-
     // required boilerplate
-    "**/config": true,
+    // "**/config": true,
     "**/.eslintrc.cjs": true
     //"**/tsconfig.json": true
   }

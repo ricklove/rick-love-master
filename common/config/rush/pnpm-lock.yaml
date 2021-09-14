@@ -5,6 +5,13 @@ specifiers:
   '@emotion/react': ~11.4.1
   '@loadable/component': ^5.12.0
   '@next/bundle-analyzer': ~11.1.2
+  '@rush-temp/art-build': file:./projects/art-build.tgz
+  '@rush-temp/art-common': file:./projects/art-common.tgz
+  '@rush-temp/art-components': file:./projects/art-components.tgz
+  '@rush-temp/art-contract': file:./projects/art-contract.tgz
+  '@rush-temp/art-renderer': file:./projects/art-renderer.tgz
+  '@rush-temp/artwork-circles': file:./projects/artwork-circles.tgz
+  '@rush-temp/artwork-hodlers-quest': file:./projects/artwork-hodlers-quest.tgz
   '@rush-temp/code-training-lesson-build': file:./projects/code-training-lesson-build.tgz
   '@rush-temp/code-training-lesson-common': file:./projects/code-training-lesson-common.tgz
   '@rush-temp/code-training-lesson-components': file:./projects/code-training-lesson-components.tgz
@@ -56,6 +63,7 @@ specifiers:
   '@types/loadable__component': ^5.10.0
   '@types/mocha': ^8.2.2
   '@types/node': 12.12.6
+  '@types/p5': 1.3.1
   '@types/prismjs': ^1.16.1
   '@types/react': ~17.0.19
   '@types/react-helmet': ~6.1.2
@@ -76,6 +84,7 @@ specifiers:
   mocha: ^8.4.0
   next: ^11.0.0
   next-transpile-modules: ~8.0.0
+  p5: 1.4.0
   prism-themes: ^1.4.0
   prismjs: ^1.21.0
   react: 17.0.2
@@ -96,6 +105,13 @@ dependencies:
   '@emotion/react': 11.4.1_56f22c50b68024c6e259393098372ce5
   '@loadable/component': 5.15.0_react@17.0.2
   '@next/bundle-analyzer': 11.1.2
+  '@rush-temp/art-build': file:projects/art-build.tgz
+  '@rush-temp/art-common': file:projects/art-common.tgz
+  '@rush-temp/art-components': file:projects/art-components.tgz_@babel+core@7.15.0
+  '@rush-temp/art-contract': file:projects/art-contract.tgz
+  '@rush-temp/art-renderer': file:projects/art-renderer.tgz
+  '@rush-temp/artwork-circles': file:projects/artwork-circles.tgz
+  '@rush-temp/artwork-hodlers-quest': file:projects/artwork-hodlers-quest.tgz
   '@rush-temp/code-training-lesson-build': file:projects/code-training-lesson-build.tgz
   '@rush-temp/code-training-lesson-common': file:projects/code-training-lesson-common.tgz
   '@rush-temp/code-training-lesson-components': file:projects/code-training-lesson-components.tgz_@babel+core@7.15.0
@@ -147,6 +163,7 @@ dependencies:
   '@types/loadable__component': 5.13.4
   '@types/mocha': 8.2.3
   '@types/node': 12.12.6
+  '@types/p5': 1.3.1
   '@types/prismjs': 1.16.6
   '@types/react': 17.0.19
   '@types/react-helmet': 6.1.2
@@ -167,6 +184,7 @@ dependencies:
   mocha: 8.4.0
   next: 11.1.0_d656e95d5564dbefda9f605dfed71e60
   next-transpile-modules: 8.0.0
+  p5: 1.4.0
   prism-themes: 1.8.0
   prismjs: 1.24.1
   react: 17.0.2
@@ -1444,6 +1462,10 @@ packages:
 
   /@types/normalize-package-data/2.4.1:
     resolution: {integrity: sha512-Gj7cI7z+98M282Tqmp2K5EIsoouUEzbBJhQQzDE3jSIRk6r9gsz0oUokqIUR4u1R3dMHo0pDHM7sNOHyhulypw==}
+    dev: false
+
+  /@types/p5/1.3.1:
+    resolution: {integrity: sha512-Z/rBqimKVE4u2H+BDLxocBBMhufJiUYcC5IMcSRTfwhu5bf5ImUZHlFQUSDa2EMlB08wtk2DGijU4BmILk0w+A==}
     dev: false
 
   /@types/prettier/1.19.1:
@@ -7086,6 +7108,10 @@ packages:
     engines: {node: '>=6'}
     dev: false
 
+  /p5/1.4.0:
+    resolution: {integrity: sha512-U888W2ChcIzPhRhnv4FkNhaa4f5BDIWZfLhzvx9ZrQ5KtkZr/+o1UPIicV3yWTRy0HEG23NviHyDR3kgjaJ9wA==}
+    dev: false
+
   /pako/1.0.11:
     resolution: {integrity: sha512-4hLB8Py4zZce5s4yd9XzopqwVv/yGNhV1Bl8NTmCq1763HeK2+EwVTv+leGeL13Dnh2wfbqowVPXCIO0z4taYw==}
     dev: false
@@ -9951,6 +9977,64 @@ packages:
       validator: 8.2.0
     optionalDependencies:
       commander: 2.20.3
+    dev: false
+
+  file:projects/art-build.tgz:
+    resolution: {integrity: sha512-vUORAbc+7N5a9At74XP/PA+4yBaHcN4o+DEjFSel/Py8yHKmgff7p8XKlmfn5CQvMngElM+7cOtLbzx0UP64Tw==, tarball: file:projects/art-build.tgz}
+    name: '@rush-temp/art-build'
+    version: 0.0.0
+    dependencies:
+      '@types/node': 12.12.6
+    dev: false
+
+  file:projects/art-common.tgz:
+    resolution: {integrity: sha512-caCqfIzNKV8RyIueBl1NNjqTDtTcjEVfpQVwgoszLkp280o7g+KsHSBt6TWUm5foG/vs3ckfE4Oe+gUNAw+KHA==, tarball: file:projects/art-common.tgz}
+    name: '@rush-temp/art-common'
+    version: 0.0.0
+    dependencies:
+      '@types/p5': 1.3.1
+      p5: 1.4.0
+    dev: false
+
+  file:projects/art-components.tgz_@babel+core@7.15.0:
+    resolution: {integrity: sha512-l2IieyM+UyefK2RcnwySka2A5dH9bOXRBVwrq/kk+aB9WQG0YUreRwsJ+M4fp+hI8Mii/t6bHOOh4LZuLEtU4w==, tarball: file:projects/art-components.tgz}
+    id: file:projects/art-components.tgz
+    name: '@rush-temp/art-components'
+    version: 0.0.0
+    dependencies:
+      '@emotion/react': 11.4.1_56f22c50b68024c6e259393098372ce5
+      '@types/react': 17.0.19
+      react: 17.0.2
+    transitivePeerDependencies:
+      - '@babel/core'
+    dev: false
+
+  file:projects/art-contract.tgz:
+    resolution: {integrity: sha512-8143DVwBgARBjgTGr4o6qtNr8B0VG4lpo3SenRprAEB/tfetZXJ4kObyMViW6rhCW6w7BsA9FjPQGGuzkmLsEA==, tarball: file:projects/art-contract.tgz}
+    name: '@rush-temp/art-contract'
+    version: 0.0.0
+    dependencies:
+      '@types/node': 12.12.6
+    dev: false
+
+  file:projects/art-renderer.tgz:
+    resolution: {integrity: sha512-BDO6Rt4MaUI4iXThCsYvxrAsLuvsbk4Gpy/HwussYYDK1w5vk74JbmI0Lds0AaSHcGSd/Pb0L/4k5OM88dknpg==, tarball: file:projects/art-renderer.tgz}
+    name: '@rush-temp/art-renderer'
+    version: 0.0.0
+    dependencies:
+      '@types/node': 12.12.6
+    dev: false
+
+  file:projects/artwork-circles.tgz:
+    resolution: {integrity: sha512-ov47c9WsDRHZE5/DXgfzrKNYRn+6IT1WLaRFGaE02UR89i9apl4us2G8gcSkzfRQUIO/GWRk2pivUwiV30TKTQ==, tarball: file:projects/artwork-circles.tgz}
+    name: '@rush-temp/artwork-circles'
+    version: 0.0.0
+    dev: false
+
+  file:projects/artwork-hodlers-quest.tgz:
+    resolution: {integrity: sha512-upA/P2v+9VEKH0/5aEfUTZBKsrGPZIx7Wmw7Ft2w5j8dj2DPAbY3bZkdmU9UsG2imaviwNfNYgZCvij+7wgSkg==, tarball: file:projects/artwork-hodlers-quest.tgz}
+    name: '@rush-temp/artwork-hodlers-quest'
+    version: 0.0.0
     dev: false
 
   file:projects/code-training-lesson-build.tgz:
