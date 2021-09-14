@@ -5,12 +5,13 @@ import { Layout } from '../../../components/layout/layout';
 import { SEO } from '../../../components/layout/seo';
 
 export const artworkList: ArtworkPageData[] = [
-  ...artworkListRaw.map((x) => ({ key: x.key, title: x.metadata.projectMetadata.title })),
+  ...artworkListRaw.map((x) => ({ key: x.key, title: x.metadata.projectMetadata.title, tokenId: null })),
 ];
 
 export type ArtworkPageData = {
   key: string;
   title: string;
+  tokenId: null | string;
 };
 
 export const ArtworkPage = (props: { data: ArtworkPageData }) => {
