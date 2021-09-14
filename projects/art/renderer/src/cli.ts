@@ -19,7 +19,10 @@ export const run = async () => {
 
   // Create movie with ffmpeg
   console.log(`# Create movie`);
-  await exec(`ffmpeg -framerate ${framesPerSecond} -i %06d.png -pix_fmt yuv420p _output.mp4`, {
+  // const command = `ffmpeg -framerate ${framesPerSecond} -i %06d.png -pix_fmt yuv420p -vb 20M _output.mp4`;
+  const command = `ffmpeg -framerate ${framesPerSecond} -i %06d.png -pix_fmt yuv420p -c:v libx264 -preset slow -crf 22 -movflags +faststart _output.mp4`;
+  // const command = `ffmpeg -framerate 10 -i %06d.png -pix_fmt yuv420p -c:v libx264 -preset slow -crf 22 -movflags +faststart _output.mp4`;
+  await exec(command, {
     cwd: destDir,
   });
 };
