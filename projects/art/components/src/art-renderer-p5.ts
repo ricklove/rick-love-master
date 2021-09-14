@@ -87,11 +87,13 @@ export const createArtRenderer_p5 = (artwork: ArtWork_p5, tokenId: string): ArtR
       },
       nextFrame: (framesPerSecond: number) => {
         if (isPlaying) {
-          return;
+          return { isDone: false };
         }
 
-        timeMsElapsed += 1 / framesPerSecond;
+        timeMsElapsed += 1000 / framesPerSecond;
         p5Instance.redraw();
+
+        return { isDone: false };
       },
       getCanvas: () => canvas,
       destroy,

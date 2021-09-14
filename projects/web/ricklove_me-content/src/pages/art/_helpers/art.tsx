@@ -86,22 +86,20 @@ export const HostComponentAuto = (props: { data: ArtworkPageData }) => {
   }
 
   return (
-    <div style={{ width: 600, height: 600 }}>
-      <AppComponentLoader
-        component={{
-          name: artwork.key,
-          load: async () => {
-            // Get tokenId
-            const tokenId =
-              window.document.location.search
-                .split(`;`)
-                .find((x) => x.includes(`tokenId=`))
-                ?.split(`=`)?.[1] ?? `0`;
+    <AppComponentLoader
+      component={{
+        name: artwork.key,
+        load: async () => {
+          // Get tokenId
+          const tokenId =
+            window.document.location.search
+              .split(`;`)
+              .find((x) => x.includes(`tokenId=`))
+              ?.split(`=`)?.[1] ?? `0`;
 
-            return artwork.load(tokenId);
-          },
-        }}
-      />
-    </div>
+          return await artwork.load(tokenId);
+        },
+      }}
+    />
   );
 };

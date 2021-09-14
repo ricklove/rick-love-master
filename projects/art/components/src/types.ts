@@ -5,7 +5,7 @@ export type ArtRenderer = {
 export type ArtRendererInstance = {
   play: () => void;
   pause: () => void;
-  nextFrame: (framesPerSecond: number) => void;
+  nextFrame: (framesPerSecond: number) => { isDone: boolean };
   getCanvas: () => null | HTMLCanvasElement;
   destroy: () => void;
 };
