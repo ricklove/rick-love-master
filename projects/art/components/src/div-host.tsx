@@ -14,7 +14,8 @@ export const DivHost = (props: { artRenderer: ArtRenderer }) => {
 
     // console.log(`DivHost - renderArt`, { hostElementRef: hostElementRef.current, renderArt: props.renderArt });
     hostElementRef.current.innerHTML = ``;
-    const { destroy } = props.artRenderer.setup(hostElementRef.current);
+    const { destroy } = props.artRenderer.setup(hostElementRef.current, { shouldPlay: true });
+
     return () => {
       destroy();
     };

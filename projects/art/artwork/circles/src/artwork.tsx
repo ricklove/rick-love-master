@@ -22,7 +22,7 @@ export const artwork: ArtWork_p5 = {
     return {
       draw: (p5, { time, canvasSize }) => {
         const h = 200;
-        const scale = canvasSize.x / 600;
+        const scale = canvasSize.x / 400;
 
         p5.background(0);
         p5.scale(scale);
@@ -35,7 +35,7 @@ export const artwork: ArtWork_p5 = {
             p5.circle(h - a / 2 + (j % a), h - b / 2 + (j % b), h * 1.35 - ((i * 5) % c));
           }
           p5.translate(h, h);
-          p5.rotate(a + b + c + (time / 60 + i) * 0.0005);
+          p5.rotate(a + b + c + (time * 600 + i) * 0.0005);
           p5.translate(-h, -h);
         }
       },

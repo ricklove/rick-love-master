@@ -1,9 +1,11 @@
 import p5 from 'p5';
 import { ArtWork_p5, Vector2 } from '@ricklove/art-common';
-import { ArtRenderer } from './types';
+import { ArtRenderer, ArtRendererInstance } from './types';
 
 export const createArtRenderer_p5 = (artwork: ArtWork_p5, tokenId: string): ArtRenderer => ({
-  setup: (host: HTMLDivElement) => {
+  setup: (host, options) => {
+    console.log(`createArtRenderer_p5 setup`, { artwork: artwork.key, tokenId });
+
     const artworkInstance = artwork.render(tokenId);
     const { targetCanvasSize, targetFramesPerSecond } = artworkInstance.options ?? {};
     const actualCanvasSize = calculateActualCanvasSize(host, targetCanvasSize);
@@ -15,6 +17,8 @@ export const createArtRenderer_p5 = (artwork: ArtWork_p5, tokenId: string): ArtR
 
     const p5Instance = new p5((p: p5) => {
       p.setup = () => {
+        console.log(`createArtRenderer_p5 p5Instance.setup`, { artwork: artwork.key, tokenId });
+
         const result = p.createCanvas(actualCanvasSize.size.x, actualCanvasSize.size.y);
         const canvasId = `${Math.random()}`;
         result.id(canvasId);
@@ -27,6 +31,13 @@ export const createArtRenderer_p5 = (artwork: ArtWork_p5, tokenId: string): ArtR
 
         // Start paused
         p.noLoop();
+
+        // Auto play once created
+        if (options.shouldPlay) {
+          setTimeout(() => {
+            renderer.play();
+          });
+        }
       };
       p.draw = () => {
         // p.frameCount
@@ -34,6 +45,16 @@ export const createArtRenderer_p5 = (artwork: ArtWork_p5, tokenId: string): ArtR
           timeMsElapsed += Date.now() - timeMsAtLastFrame;
           timeMsAtLastFrame = Date.now();
         }
+
+        // console.log(`createArtRenderer_p5 p5Instance.draw`, {
+        //   artwork: artwork.key,
+        //   tokenId,
+        //   isPlaying,
+        //   timeMsElapsed,
+        //   canvasSize: actualCanvasSize.size,
+        //   framesPerSecond: p.frameRate(),
+        //   time: timeMsElapsed / 1000.0,
+        // });
 
         artworkInstance.draw(p, {
           canvasSize: actualCanvasSize.size,
@@ -53,8 +74,8 @@ export const createArtRenderer_p5 = (artwork: ArtWork_p5, tokenId: string): ArtR
       canvas = null;
     };
 
-    return {
-      options: artworkInstance.options,
+    const renderer: ArtRendererInstance = {
+      // options: artworkInstance.options,
       play: () => {
         timeMsAtLastFrame = Date.now();
         isPlaying = true;
@@ -75,6 +96,8 @@ export const createArtRenderer_p5 = (artwork: ArtWork_p5, tokenId: string): ArtR
       getCanvas: () => canvas,
       destroy,
     };
+
+    return renderer;
   },
 });
 
