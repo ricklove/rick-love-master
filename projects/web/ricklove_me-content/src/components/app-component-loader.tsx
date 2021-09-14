@@ -12,7 +12,7 @@ export const AppComponentLoader = ({
   useEffect(() => {
     (async () => await load())();
   }, [load]);
-  return <div>{LoadedComponent && <LoadedComponent config={appConfig} />}</div>;
+  return <>{LoadedComponent && <LoadedComponent config={appConfig} />}</>;
 };
 
 export const EmptyComponent = (_props: {}) => {

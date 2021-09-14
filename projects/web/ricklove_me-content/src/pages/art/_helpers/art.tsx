@@ -1,24 +1,23 @@
 import React, { useState } from 'react';
-import { artworkComponentList } from '@ricklove/art-build';
+import { artworkList as artworkListRaw } from '@ricklove/art-build';
 import { AppComponentLoader } from '../../../components/app-component-loader';
 import { Layout } from '../../../components/layout/layout';
 import { SEO } from '../../../components/layout/seo';
 
-export const artworkList = [...artworkComponentList.map((x) => ({ name: x.name }))];
-
-// export const componentGameUtils = {
-//   ...educationalGameUtils,
-// };
+export const artworkList: ArtworkPageData[] = [
+  ...artworkListRaw.map((x) => ({ key: x.key, title: x.metadata.projectMetadata.title })),
+];
 
 export type ArtworkPageData = {
-  artworkName: string;
+  key: string;
+  title: string;
 };
 
 export const ArtworkPage = (props: { data: ArtworkPageData }) => {
   return (
     <Layout gameMode>
       <SEO
-        title={`Art: ${props.data.artworkName}`}
+        title={`Art: ${props.data.title}`}
         meta={[
           { name: `viewport`, content: `width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no` },
           { name: `apple-mobile-web-app-capable`, content: `yes` },
@@ -31,19 +30,19 @@ export const ArtworkPage = (props: { data: ArtworkPageData }) => {
 };
 
 export const ArtworkListPage = (_props: {}) => {
-  const [artworkKey, setArtworkKey] = useState(null as null | string);
-  const openLinkInSameView = (e: React.MouseEvent, gameName: string) => {
-    setArtworkKey(gameName);
+  const [artworkItem, setArtworkItem] = useState(null as null | ArtworkPageData);
+  const openLinkInSameView = (e: React.MouseEvent, artworkKey: ArtworkPageData) => {
+    setArtworkItem(artworkKey);
     // window.history.pushState({}, gameName);
   };
   const backToList = () => {
-    setArtworkKey(null);
+    setArtworkItem(null);
     // window.history.back();
   };
   return (
     <Layout gameMode>
       <SEO
-        title='Artworks'
+        title='Art Gallery'
         meta={[
           { name: `viewport`, content: `width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no` },
           { name: `apple-mobile-web-app-capable`, content: `yes` },
@@ -51,21 +50,21 @@ export const ArtworkListPage = (_props: {}) => {
         ]}
       />
       {/* <HostComponentAsync component={componentGameUtils.progressGame} /> */}
-      {!artworkKey && (
+      {!artworkItem && (
         <div style={{ margin: 16 }}>
-          <div>Games</div>
+          <div>Art Gallery</div>
           {artworkList.map((x) => (
-            <div key={x.name} className={`link`} style={{ padding: 4 }} onClick={(e) => openLinkInSameView(e, x.name)}>
-              <span>🎮 {x.name}</span>
+            <div key={x.key} className={`link`} style={{ padding: 4 }} onClick={(e) => openLinkInSameView(e, x)}>
+              <span>🎨 {x.title}</span>
             </div>
           ))}
         </div>
       )}
-      {!!artworkKey && (
+      {!!artworkItem && (
         <>
-          <HostComponentAuto data={{ artworkName: artworkKey }} />
+          <HostComponentAuto data={artworkItem} />
           <div className={`link`} style={{ display: `inline-block`, padding: 4 }} onClick={() => backToList()}>
-            <span>🎮 Games</span>
+            <span>🎨 Back to Gallery</span>
           </div>
         </>
       )}
@@ -74,17 +73,21 @@ export const ArtworkListPage = (_props: {}) => {
 };
 
 export const HostComponentAuto = (props: { data: ArtworkPageData }) => {
-  const { artworkName: artworkKey } = props.data;
-  const artwork = artworkComponentList.find((x) => x.name === artworkKey);
+  const artworkItem = props.data;
+  const artwork = artworkListRaw.find((x) => x.key === artworkItem.key);
 
   if (!artwork) {
     return (
       <div>
         <h1>ARTWORK NOT FOUND</h1>
-        <p>artworkKey: {props.data.artworkName}</p>
+        <p>title: {artworkItem.title}</p>
       </div>
     );
   }
 
-  return <AppComponentLoader component={artwork} />;
+  return (
+    <div style={{ width: 600, height: 600 }}>
+      <AppComponentLoader component={{ name: artwork.key, load: artwork.load }} />
+    </div>
+  );
 };

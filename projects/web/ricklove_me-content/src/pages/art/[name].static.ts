@@ -8,7 +8,7 @@ export const page = createPage<PageProps>({
 
     return {
       fallback: false,
-      paths: [...artworks.map((x) => ({ params: { name: x.name } }))],
+      paths: [...artworks.map((x) => ({ params: { name: x.key } }))],
     };
   },
   getStaticProps: async ({ params }) => {
@@ -18,7 +18,8 @@ export const page = createPage<PageProps>({
       props: {
         params: { name },
         pageData: {
-          artworkName: name,
+          key: name,
+          title: artworkList.find((x) => x.key === name)?.title ?? ``,
         },
       },
     };
