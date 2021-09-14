@@ -1,1 +1,2 @@
-export * from './src/circles';
+export * from './src/artwork';
+export * from './src/metadata';

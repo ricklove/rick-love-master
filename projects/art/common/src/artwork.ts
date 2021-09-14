@@ -4,7 +4,7 @@ import { Vector2 } from './vectors';
 
 // export type P5Constructor = ((sketch: (p5: p5) => void, hostElement: HTMLElement) => { remove: () => void });
 
-export type ArtWork_p5 = {
+export type ArtworkMetadata = {
     key: string;
     projectMetadata: {
         title: string;
@@ -20,6 +20,10 @@ export type ArtWork_p5 = {
             value: string;
         }[];
     };
+};
+
+export type ArtWork_p5 = ArtworkMetadata & {
+    kind: 'p5';
     render: (tokenId: string) => {
         options?: {
             targetFramesPerSecond?: number;
@@ -30,3 +34,6 @@ export type ArtWork_p5 = {
         destroy?: () => void;
     };
 };
+
+export type Artwork =
+| ArtWork_p5;

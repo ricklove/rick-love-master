@@ -22,6 +22,7 @@
     "react-helmet": "~6.1.0"
   },
   "devDependencies": {
+    "@ricklove/art-build": "*",
     "@ricklove/code-training-lesson-build": "*",
     "@ricklove/config-lib-rig": "*",
     "@ricklove/utils-files": "*",

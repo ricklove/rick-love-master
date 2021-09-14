@@ -1,17 +1,9 @@
 import { ArtWork_p5, createRandomGenerator } from '@ricklove/art-common';
+import { metadata } from './metadata';
 
 export const artwork: ArtWork_p5 = {
-  key: `circles`,
-  projectMetadata: {
-    title: `Circles`,
-    description: `The circles we travel in life always bring us back home.`,
-    artist: `Rick Love`,
-  },
-  getTokenMetadata: (tokenId) => {
-    return {
-      tokenId,
-    };
-  },
+  ...metadata,
+  kind: `p5`,
   render: (tokenId) => {
     const { random } = createRandomGenerator(tokenId);
 
