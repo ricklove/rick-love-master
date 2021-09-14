@@ -1,9 +1,9 @@
 import { Artwork } from '@ricklove/art-common';
 import { AppError } from '@ricklove/utils-core';
-import { createArtRenderer_p5 } from './art-renderer-p5';
 
-export const createArtRenderer = (artwork: Artwork, tokenId: string) => {
+export const createArtRenderer = async (artwork: Artwork, tokenId: string) => {
   if (artwork.kind === `p5`) {
+    const { createArtRenderer_p5 } = await import(`./art-renderer-p5`);
     return createArtRenderer_p5(artwork, tokenId);
   }
 

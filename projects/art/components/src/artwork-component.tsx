@@ -4,8 +4,8 @@ import { createArtRenderer } from './art-renderer';
 import { DivHost } from './div-host';
 import { ArtRenderer } from './types';
 
-export const createArtworkComponentLoader = (artwork: Artwork, tokenId: string) => {
-  const renderer = createArtRenderer(artwork, tokenId);
+export const createArtworkComponentLoader = async (artwork: Artwork, tokenId: string) => {
+  const renderer = await createArtRenderer(artwork, tokenId);
 
   return (props: { config: {} }) => {
     return <ArtworkComponent {...props} renderer={renderer} />;

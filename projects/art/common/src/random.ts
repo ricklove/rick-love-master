@@ -1,8 +1,4 @@
-/* eslint-disable no-return-assign */
-/* eslint-disable no-multi-assign */
-/* eslint-disable @typescript-eslint/no-unused-expressions */
 /* eslint-disable no-bitwise */
-
 // FROM: https://stackoverflow.com/a/47593316/567524
 
 function xmur3(str: string) {

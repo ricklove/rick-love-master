@@ -8,5 +8,5 @@ export const artworkList: { metadata: ArtworkMetadata; loadArtwork: () => Promis
 
 export const artworkComponentList = artworkList.map((x) => ({
   name: x.metadata.key,
-  load: async () => createArtworkComponentLoader(await x.loadArtwork(), `0`),
+  load: async () => await createArtworkComponentLoader(await x.loadArtwork(), `0`),
 }));
