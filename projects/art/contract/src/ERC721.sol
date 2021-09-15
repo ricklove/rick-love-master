@@ -39,7 +39,7 @@ contract ERC721 is IERC165
     /**
      * @dev See {IERC165-supportsInterface}.
      */
-    function supportsInterface(bytes4 interfaceId) public view override(IERC165) returns (bool) {
+    function supportsInterface(bytes4 interfaceId) public pure override(IERC165) returns (bool) {
         return
             interfaceId == type(IERC165).interfaceId ||
             interfaceId == type(IERC721).interfaceId ||
@@ -71,13 +71,18 @@ contract ERC721 is IERC165
 
 
     // Transfers ---
-    function safeTransferFrom(address from, address to, uint256 tokenId) public  override(IERC721) {
+    function safeTransferFrom(address from, address to, uint256 tokenId) public override(IERC721) {
         safeTransferFrom(from, to, tokenId, "");
     }
-    function safeTransferFrom(address from, address to, uint256 tokenId, bytes memory _data) public  override(IERC721) {
+    function safeTransferFrom(address from, address to, uint256 tokenId, bytes memory _data) public override(IERC721) {
         require(_isApprovedOrOwner(tokenId), "!owner");
         _safeTransfer(from, to, tokenId, _data);
     }
+    function transferFrom(address from, address to, uint256 tokenId) public virtual override {
+        require(_isApprovedOrOwner(tokenId), "!owner");
+        _transfer(from, to, tokenId);
+    }
+
     function _safeTransfer(address from, address to, uint256 tokenId, bytes memory _data) internal  {
         _transfer(from, to, tokenId);
         require(_checkOnERC721Received(from, to, tokenId, _data), "!ERC721Receiver");
@@ -133,7 +138,7 @@ contract ERC721 is IERC165
     }
     function _approve(address to, uint256 tokenId) internal  {
         _tokenApprovals[tokenId] = to;
-        emit Approval(ERC721.ownerOf(tokenId), to, tokenId);
+        emit Approval(ownerOf(tokenId), to, tokenId);
     }
 
     function getApproved(uint256 tokenId) public view override(IERC721) returns (address) {
