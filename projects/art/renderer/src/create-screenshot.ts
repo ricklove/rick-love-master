@@ -24,8 +24,12 @@ export const createScreenshots = async ({
   const destPath = path.resolve(destDir);
   await fs.mkdir(destPath, { recursive: true });
 
+  const filePaths = [] as string[];
+
   for (let i = 0; i < frames; i++) {
-    await page.screenshot({ path: path.join(destPath, `${i}.png`.padStart(10, `0`)) });
+    const filePath = path.join(destPath, `${i}.png`.padStart(10, `0`));
+    filePaths.push(filePath);
+    await page.screenshot({ path: filePath });
 
     const evaluateArgs = {
       globalArtControllerKey: GlobalArtController.key,
@@ -40,15 +44,7 @@ export const createScreenshots = async ({
     }, evaluateArgs);
   }
 
-  // // Get the "viewport" of the page, as reported by the page.
-  // const dimensions = await page.evaluate(() => {
-  //   return {
-  //     width: document.documentElement.clientWidth,
-  //     height: document.documentElement.clientHeight,
-  //     deviceScaleFactor: window.devicePixelRatio,
-  //   };
-  // });
-  // console.log(`Dimensions:`, dimensions);
-
   await browser.close();
+
+  return { filePaths };
 };
