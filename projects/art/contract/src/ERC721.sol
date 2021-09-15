@@ -27,7 +27,7 @@ contract ERC721 is IERC165
 
     // Permissions ---
     address private _artist;
-    function artist() public view virtual returns (address) {
+    function artist() public view  returns (address) {
         return _artist;
     }
     modifier onlyArtist() {
@@ -51,7 +51,7 @@ contract ERC721 is IERC165
 
     /** tokenId => owner */ 
     mapping (uint256 => address) private _owners;
-    function ownerOf(uint256 tokenId) public view virtual override returns (address) {
+    function ownerOf(uint256 tokenId) public view override(IERC721) returns (address) {
         address owner = _owners[tokenId];
         
         // TODO: If no owner & in valid project tokenId => owner is artist?
@@ -64,29 +64,27 @@ contract ERC721 is IERC165
      * PERFORMANCE: Why not just iterate over the contract data, instead of storing this and updating manually?
      */
     mapping(address => uint256) private _balances;
-    function balanceOf(address user) public view virtual override(IERC721) returns (uint256) {
+    function balanceOf(address user) public view override(IERC721) returns (uint256) {
         require(user != address(0), "!user");
         return _balances[user];
     }
 
 
     // Transfers ---
-    function safeTransferFrom(address from, address to, uint256 tokenId) public virtual override {
+    function safeTransferFrom(address from, address to, uint256 tokenId) public  override(IERC721) {
         safeTransferFrom(from, to, tokenId, "");
     }
-    function safeTransferFrom(address from, address to, uint256 tokenId, bytes memory _data) public virtual override {
+    function safeTransferFrom(address from, address to, uint256 tokenId, bytes memory _data) public  override(IERC721) {
         require(_isApprovedOrOwner(tokenId), "!owner");
         _safeTransfer(from, to, tokenId, _data);
     }
-    function _safeTransfer(address from, address to, uint256 tokenId, bytes memory _data) internal virtual {
+    function _safeTransfer(address from, address to, uint256 tokenId, bytes memory _data) internal  {
         _transfer(from, to, tokenId);
         require(_checkOnERC721Received(from, to, tokenId, _data), "!ERC721Receiver");
     }
-    function _transfer(address from, address to, uint256 tokenId) internal virtual {
-        require(ERC721.ownerOf(tokenId) == from, "ERC721: transfer of token that is not own");
-        require(to != address(0), "ERC721: transfer to the zero address");
-
-        _beforeTokenTransfer(from, to, tokenId);
+    function _transfer(address from, address to, uint256 tokenId) internal  {
+        require(ownerOf(tokenId) == from, "!owner");
+        require(to != address(0), "!to");
 
         // Clear approvals from the previous owner
         _approve(address(0), tokenId);
@@ -100,14 +98,13 @@ contract ERC721 is IERC165
     function _checkOnERC721Received(address from, address to, uint256 tokenId, bytes memory _data)
         private returns (bool)
     {
-        if (to.isContract()) {
+        if (_isContract(to)) {
             try IERC721Receiver(to).onERC721Received(msg.sender, from, tokenId, _data) returns (bytes4 retval) {
                 return retval == IERC721Receiver(to).onERC721Received.selector;
             } catch (bytes memory reason) {
                 if (reason.length == 0) {
-                    revert("ERC721: transfer to non ERC721Receiver implementer");
+                    revert("!ERC721Receiver");
                 } else {
-                    // solhint-disable-next-line no-inline-assembly
                     assembly {
                         revert(add(32, reason), mload(reason))
                     }
@@ -117,34 +114,45 @@ contract ERC721 is IERC165
             return true;
         }
     }
+    function _isContract(address account) internal view returns (bool) {
+        uint256 size;
+        assembly { size := extcodesize(account) }
+        return size > 0;
+    }
 
     // Approvals ---
     /** Temporary approval during token transfer */ 
     mapping (uint256 => address) private _tokenApprovals;
 
-    /** Approval for all (operators approved to transfer tokens on behalf of an owner) */
-    mapping (address => mapping (address => bool)) private _operatorApprovals;
-
-    function approve(address to, uint256 tokenId) public virtual override {
+    function approve(address to, uint256 tokenId) public override(IERC721) {
         address owner = ownerOf(tokenId);
         require(to != owner, "!to");
         require(owner == msg.sender || isApprovedForAll(owner, msg.sender), "!owner");
 
         _approve(to, tokenId);
     }
-    function _approve(address to, uint256 tokenId) internal virtual {
+    function _approve(address to, uint256 tokenId) internal  {
         _tokenApprovals[tokenId] = to;
         emit Approval(ERC721.ownerOf(tokenId), to, tokenId);
     }
 
-    function getApproved(uint256 tokenId) public view virtual override returns (address) {
+    function getApproved(uint256 tokenId) public view override(IERC721) returns (address) {
         return _tokenApprovals[tokenId];
     }
 
-    function isApprovedForAll(address owner, address operator) public view virtual override returns (bool) {
+    /** Approval for all (operators approved to transfer tokens on behalf of an owner) */
+    mapping (address => mapping (address => bool)) private _operatorApprovals;
+
+    function setApprovalForAll(address operator, bool approved) public virtual override {
+        require(operator != msg.sender, "!operator");
+
+        _operatorApprovals[msg.sender][operator] = approved;
+        emit ApprovalForAll(msg.sender, operator, approved);
+    }
+    function isApprovedForAll(address owner, address operator) public view override(IERC721) returns (bool) {
         return _operatorApprovals[owner][operator];
     }
-    function _isApprovedOrOwner(uint256 tokenId) internal view virtual returns (bool) {
+    function _isApprovedOrOwner(uint256 tokenId) internal view  returns (bool) {
         address owner = ownerOf(tokenId);
         return (owner == msg.sender || getApproved(tokenId) == msg.sender || isApprovedForAll(owner, msg.sender));
     }
@@ -174,9 +182,4 @@ contract ERC721 is IERC165
             ? string(abi.encodePacked(baseURI, tokenId.toString(), json))
             : '';
     }
-
-    
-
-
-
 }
