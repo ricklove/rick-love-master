@@ -11,11 +11,11 @@ export const run = async () => {
   const artworkDir = joinPathNormalized(monoRepoRoot.dirPath, `./projects/art/artwork/`);
   const artworkProjectPath = joinPathNormalized(artworkDir, `./circles`);
 
-  await createStaticHtmlPage(
-    artworkProjectPath,
-    joinPathNormalized(artworkProjectPath, `./.art-cache/`),
-    joinPathNormalized(artworkProjectPath, `./.art-build/index.html`),
-  );
+  await createStaticHtmlPage({
+    projectPath: artworkProjectPath,
+    workingDirPath: joinPathNormalized(artworkProjectPath, `./.art-cache/`),
+    destHtmlFilePath: joinPathNormalized(artworkProjectPath, `./.art-build/index.html`),
+  });
 };
 
 // eslint-disable-next-line @typescript-eslint/no-floating-promises

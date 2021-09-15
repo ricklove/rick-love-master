@@ -5,7 +5,6 @@ specifiers:
   '@emotion/react': ~11.4.1
   '@loadable/component': ^5.12.0
   '@next/bundle-analyzer': ~11.1.2
-  '@rollup/plugin-typescript': ~8.2.5
   '@rush-temp/art-build': file:./projects/art-build.tgz
   '@rush-temp/art-common': file:./projects/art-common.tgz
   '@rush-temp/art-components': file:./projects/art-components.tgz
@@ -97,9 +96,7 @@ specifiers:
   react-lowlight: ~2.0.0
   react-markdown: ~6.0.3
   rimraf: ~3.0.2
-  rollup: ~2.56.3
   ts-node: ~10.2.1
-  tslib: ~2.3.1
   typescript: ~4.3.5
   uuid: ^8.3.0
   vscode-diff: ~2.0.1
@@ -110,7 +107,6 @@ dependencies:
   '@emotion/react': 11.4.1_56f22c50b68024c6e259393098372ce5
   '@loadable/component': 5.15.0_react@17.0.2
   '@next/bundle-analyzer': 11.1.2
-  '@rollup/plugin-typescript': 8.2.5_fb60d1099d0f1062e1f455c5bc85cce0
   '@rush-temp/art-build': file:projects/art-build.tgz
   '@rush-temp/art-common': file:projects/art-common.tgz
   '@rush-temp/art-components': file:projects/art-components.tgz_@babel+core@7.15.0
@@ -202,9 +198,7 @@ dependencies:
   react-lowlight: 2.0.0_highlight.js@9.1.0+react@17.0.2
   react-markdown: 6.0.3_4cd822c6044f4c1a7e1f1fea0e728f12
   rimraf: 3.0.2
-  rollup: 2.56.3
   ts-node: 10.2.1_70d6492c0feb1eb5d83e62cce7c43fd5
-  tslib: 2.3.1
   typescript: 4.3.5
   uuid: 8.3.2
   vscode-diff: 2.0.1
@@ -1068,6 +1062,21 @@ packages:
     resolution: {integrity: sha512-88p7+M0QGxKpmnkfXjS4V26AnoC/eiqZutE8GLdaI5X12NY75bXSdTY9NkmYb2Xyk1O+MmkuO6Frmsj84V6I8Q==}
     dev: false
 
+  /@rollup/plugin-node-resolve/13.0.4_rollup@2.56.3:
+    resolution: {integrity: sha512-eYq4TFy40O8hjeDs+sIxEH/jc9lyuI2k9DM557WN6rO5OpnC2qXMBNj4IKH1oHrnAazL49C5p0tgP0/VpqJ+/w==}
+    engines: {node: '>= 10.0.0'}
+    peerDependencies:
+      rollup: ^2.42.0
+    dependencies:
+      '@rollup/pluginutils': 3.1.0_rollup@2.56.3
+      '@types/resolve': 1.17.1
+      builtin-modules: 3.2.0
+      deepmerge: 4.2.2
+      is-module: 1.0.0
+      resolve: 1.20.0
+      rollup: 2.56.3
+    dev: false
+
   /@rollup/plugin-typescript/8.2.5_fb60d1099d0f1062e1f455c5bc85cce0:
     resolution: {integrity: sha512-QL/LvDol/PAGB2O0S7/+q2HpSUNodpw7z6nGn9BfoVCPOZ0r4EALrojFU29Bkoi2Hr2jgTocTejJ5GGWZfOxbQ==}
     engines: {node: '>=8.0.0'}
@@ -1547,6 +1556,12 @@ packages:
       '@types/prop-types': 15.7.4
       '@types/scheduler': 0.16.2
       csstype: 3.0.8
+    dev: false
+
+  /@types/resolve/1.17.1:
+    resolution: {integrity: sha512-yy7HuzQhj0dhGpD8RLXSZWEkLsV9ibvxvi6EiJ3bkqLAO1RGo0WbkWQiwpRlSFymTJRz0d3k5LM3kkx8ArDbLw==}
+    dependencies:
+      '@types/node': 16.7.1
     dev: false
 
   /@types/scheduler/0.16.2:
@@ -2610,6 +2625,11 @@ packages:
   /buffers/0.1.1:
     resolution: {integrity: sha1-skV5w77U1tOWru5tmorn9Ugqt7s=}
     engines: {node: '>=0.2.0'}
+    dev: false
+
+  /builtin-modules/3.2.0:
+    resolution: {integrity: sha512-lGzLKcioL90C7wMczpkY0n/oART3MbBa8R9OFGE1rJxoVI86u4WAGfEk8Wjv10eKSyTHVGkSo3bvBylCEtk7LA==}
+    engines: {node: '>=6'}
     dev: false
 
   /builtin-status-codes/3.0.0:
@@ -5306,6 +5326,10 @@ packages:
 
   /is-hexadecimal/1.0.4:
     resolution: {integrity: sha512-gyPJuv83bHMpocVYoqof5VDiZveEoGoFL8m3BXNb2VW8Xs+rz9kqO8LOQ5DH6EsuvilT1ApazU0pyl+ytbPtlw==}
+    dev: false
+
+  /is-module/1.0.0:
+    resolution: {integrity: sha1-Mlj7afeMFNW4FdZkM2tM/7ZEFZE=}
     dev: false
 
   /is-nan/1.3.2:
@@ -10229,13 +10253,15 @@ packages:
     dev: false
 
   file:projects/art-renderer.tgz:
-    resolution: {integrity: sha512-WaR1Em/6+ey2EVNthl3Hsgoza8sdVZZ7+vMIioaKyu/D7eQc33mKSepJClIavS5dWFczJn76WaceDEq5akOkcw==, tarball: file:projects/art-renderer.tgz}
+    resolution: {integrity: sha512-vwxMHwSTX26UqClGVGja9kmDCr3LmY5dXZCAMZdqkf2SIfC2bBia8g8VGv/iJtBrnxaiEYq4kbsyVzmpGw0gQQ==, tarball: file:projects/art-renderer.tgz}
     name: '@rush-temp/art-renderer'
     version: 0.0.0
     dependencies:
+      '@rollup/plugin-node-resolve': 13.0.4_rollup@2.56.3
       '@rollup/plugin-typescript': 8.2.5_fb60d1099d0f1062e1f455c5bc85cce0
       '@types/node': 12.12.6
       '@types/puppeteer': 5.4.4
+      esbuild: 0.12.25
       puppeteer: 10.2.0
       rollup: 2.56.3
       ts-node: 10.2.1_70d6492c0feb1eb5d83e62cce7c43fd5
