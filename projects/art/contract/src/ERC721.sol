@@ -7,6 +7,7 @@ import "./IERC165.sol";
 import "./IERC721.sol";
 import "./IERC721Metadata.sol";
 import "./IERC721Receiver.sol";
+import "./OpenSeaProxy.sol";
 import "./Utils.sol";
 
 /**
@@ -18,11 +19,12 @@ contract ERC721 is IERC165
 {
     using Utils for uint256;
 
-    constructor (string memory name_, string memory symbol_, string memory baseURI) {
+    constructor (string memory name_, string memory symbol_, string memory baseURI, address openSeaProxyRegistryAddress) {
         _artist = msg.sender;
         _name = name_;
         _symbol = symbol_;
         _baseURI = baseURI;
+        _openSeaProxyRegistryAddress = openSeaProxyRegistryAddress;
     }
 
     // Permissions ---
@@ -147,6 +149,7 @@ contract ERC721 is IERC165
 
     /** Approval for all (operators approved to transfer tokens on behalf of an owner) */
     mapping (address => mapping (address => bool)) private _operatorApprovals;
+    address _openSeaProxyRegistryAddress;
 
     function setApprovalForAll(address operator, bool approved) public virtual override {
         require(operator != msg.sender, "!operator");
@@ -155,6 +158,13 @@ contract ERC721 is IERC165
         emit ApprovalForAll(msg.sender, operator, approved);
     }
     function isApprovedForAll(address owner, address operator) public view override(IERC721) returns (bool) {
+
+        // Approve open sea proxies to allow gasless trading
+        OpenSeaProxyRegistry proxyRegistry = OpenSeaProxyRegistry(_openSeaProxyRegistryAddress);
+        if (address(proxyRegistry.proxies(owner)) == operator) {
+            return true;
+        }
+
         return _operatorApprovals[owner][operator];
     }
     function _isApprovedOrOwner(uint256 tokenId) internal view  returns (bool) {
