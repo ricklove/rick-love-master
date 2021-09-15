@@ -6,24 +6,177 @@ pragma solidity ^0.8.0;
 import "./IERC165.sol";
 import "./IERC721.sol";
 import "./IERC721Metadata.sol";
-import "./IERC721Enumerable.sol";
+import "./IERC721Receiver.sol";
+import "./Utils.sol";
 
 /**
- * @dev Implementation of https://eips.ethereum.org/EIPS/eip-721[ERC721] Non-Fungible Token Standard, including
- * the Metadata extension, but not including the Enumerable extension, which is available separately as
- * {ERC721Enumerable}.
+ * @dev Minimal ERC721
  */
-contract ERC721 is IERC165, IERC721, IERC721Metadata, IERC721Enumerable {
+contract ERC721 is IERC165 
+, IERC721
+, IERC721Metadata
+{
+    using Utils for uint256;
 
+    constructor (string memory name_, string memory symbol_, string memory baseURI) {
+        _artist = msg.sender;
+        _name = name_;
+        _symbol = symbol_;
+        _baseURI = baseURI;
+    }
+
+    // Permissions ---
+    address private _artist;
+    function artist() public view virtual returns (address) {
+        return _artist;
+    }
+    modifier onlyArtist() {
+        require(artist() == msg.sender, "!artist");
+        _;
+    }
+
+    // Interfaces ---
     /**
      * @dev See {IERC165-supportsInterface}.
      */
-    function supportsInterface(bytes4 interfaceId) public view virtual override(IERC165) returns (bool) {
+    function supportsInterface(bytes4 interfaceId) public view override(IERC165) returns (bool) {
         return
             interfaceId == type(IERC165).interfaceId ||
             interfaceId == type(IERC721).interfaceId ||
-            interfaceId == type(IERC721Metadata).interfaceId ||
-            interfaceId == type(IERC721Enumerable).interfaceId;
+            interfaceId == type(IERC721Metadata).interfaceId;
     }
+
+    // Token Ownership ---
+    // uint256 private _projectCount;
+
+    /** tokenId => owner */ 
+    mapping (uint256 => address) private _owners;
+    function ownerOf(uint256 tokenId) public view virtual override returns (address) {
+        address owner = _owners[tokenId];
+        
+        // TODO: If no owner & in valid project tokenId => owner is artist?
+        require(owner != address(0), "!owner");
+        return owner;
+    }
+
+    /** Owner balances
+     * 
+     * PERFORMANCE: Why not just iterate over the contract data, instead of storing this and updating manually?
+     */
+    mapping(address => uint256) private _balances;
+    function balanceOf(address user) public view virtual override(IERC721) returns (uint256) {
+        require(user != address(0), "!user");
+        return _balances[user];
+    }
+
+
+    // Transfers ---
+    function safeTransferFrom(address from, address to, uint256 tokenId) public virtual override {
+        safeTransferFrom(from, to, tokenId, "");
+    }
+    function safeTransferFrom(address from, address to, uint256 tokenId, bytes memory _data) public virtual override {
+        require(_isApprovedOrOwner(tokenId), "!owner");
+        _safeTransfer(from, to, tokenId, _data);
+    }
+    function _safeTransfer(address from, address to, uint256 tokenId, bytes memory _data) internal virtual {
+        _transfer(from, to, tokenId);
+        require(_checkOnERC721Received(from, to, tokenId, _data), "!ERC721Receiver");
+    }
+    function _transfer(address from, address to, uint256 tokenId) internal virtual {
+        require(ERC721.ownerOf(tokenId) == from, "ERC721: transfer of token that is not own");
+        require(to != address(0), "ERC721: transfer to the zero address");
+
+        _beforeTokenTransfer(from, to, tokenId);
+
+        // Clear approvals from the previous owner
+        _approve(address(0), tokenId);
+
+        _balances[from] -= 1;
+        _balances[to] += 1;
+        _owners[tokenId] = to;
+
+        emit Transfer(from, to, tokenId);
+    }
+    function _checkOnERC721Received(address from, address to, uint256 tokenId, bytes memory _data)
+        private returns (bool)
+    {
+        if (to.isContract()) {
+            try IERC721Receiver(to).onERC721Received(msg.sender, from, tokenId, _data) returns (bytes4 retval) {
+                return retval == IERC721Receiver(to).onERC721Received.selector;
+            } catch (bytes memory reason) {
+                if (reason.length == 0) {
+                    revert("ERC721: transfer to non ERC721Receiver implementer");
+                } else {
+                    // solhint-disable-next-line no-inline-assembly
+                    assembly {
+                        revert(add(32, reason), mload(reason))
+                    }
+                }
+            }
+        } else {
+            return true;
+        }
+    }
+
+    // Approvals ---
+    /** Temporary approval during token transfer */ 
+    mapping (uint256 => address) private _tokenApprovals;
+
+    /** Approval for all (operators approved to transfer tokens on behalf of an owner) */
+    mapping (address => mapping (address => bool)) private _operatorApprovals;
+
+    function approve(address to, uint256 tokenId) public virtual override {
+        address owner = ownerOf(tokenId);
+        require(to != owner, "!to");
+        require(owner == msg.sender || isApprovedForAll(owner, msg.sender), "!owner");
+
+        _approve(to, tokenId);
+    }
+    function _approve(address to, uint256 tokenId) internal virtual {
+        _tokenApprovals[tokenId] = to;
+        emit Approval(ERC721.ownerOf(tokenId), to, tokenId);
+    }
+
+    function getApproved(uint256 tokenId) public view virtual override returns (address) {
+        return _tokenApprovals[tokenId];
+    }
+
+    function isApprovedForAll(address owner, address operator) public view virtual override returns (bool) {
+        return _operatorApprovals[owner][operator];
+    }
+    function _isApprovedOrOwner(uint256 tokenId) internal view virtual returns (bool) {
+        address owner = ownerOf(tokenId);
+        return (owner == msg.sender || getApproved(tokenId) == msg.sender || isApprovedForAll(owner, msg.sender));
+    }
+     
+
+
+    // Metadata ---
+    string private _name;
+    function name() public view override(IERC721Metadata) returns (string memory) {
+        return _name;
+    }
+
+    string private _symbol;
+    function symbol() public view override(IERC721Metadata) returns (string memory) {
+        return _symbol;
+    }
+
+    string private _baseURI;
+    function setBaseURI(string memory baseURI) public onlyArtist {
+        _baseURI = baseURI;
+    }
+
+    function tokenURI(uint256 tokenId) public view override(IERC721Metadata) returns (string memory) {
+        string memory baseURI = _baseURI;
+        string memory json = ".json";
+        return bytes(baseURI).length > 0
+            ? string(abi.encodePacked(baseURI, tokenId.toString(), json))
+            : '';
+    }
+
+    
+
+
 
 }
