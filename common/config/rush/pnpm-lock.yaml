@@ -5,6 +5,7 @@ specifiers:
   '@emotion/react': ~11.4.1
   '@loadable/component': ^5.12.0
   '@next/bundle-analyzer': ~11.1.2
+  '@rollup/plugin-typescript': ~8.2.5
   '@rush-temp/art-build': file:./projects/art-build.tgz
   '@rush-temp/art-common': file:./projects/art-common.tgz
   '@rush-temp/art-components': file:./projects/art-components.tgz
@@ -96,7 +97,9 @@ specifiers:
   react-lowlight: ~2.0.0
   react-markdown: ~6.0.3
   rimraf: ~3.0.2
+  rollup: ~2.56.3
   ts-node: ~10.2.1
+  tslib: ~2.3.1
   typescript: ~4.3.5
   uuid: ^8.3.0
   vscode-diff: ~2.0.1
@@ -107,11 +110,12 @@ dependencies:
   '@emotion/react': 11.4.1_56f22c50b68024c6e259393098372ce5
   '@loadable/component': 5.15.0_react@17.0.2
   '@next/bundle-analyzer': 11.1.2
+  '@rollup/plugin-typescript': 8.2.5_fb60d1099d0f1062e1f455c5bc85cce0
   '@rush-temp/art-build': file:projects/art-build.tgz
   '@rush-temp/art-common': file:projects/art-common.tgz
   '@rush-temp/art-components': file:projects/art-components.tgz_@babel+core@7.15.0
   '@rush-temp/art-contract': file:projects/art-contract.tgz
-  '@rush-temp/art-renderer': file:projects/art-renderer.tgz_typescript@4.3.5
+  '@rush-temp/art-renderer': file:projects/art-renderer.tgz
   '@rush-temp/artwork-circles': file:projects/artwork-circles.tgz
   '@rush-temp/artwork-hodlers-quest': file:projects/artwork-hodlers-quest.tgz
   '@rush-temp/code-training-lesson-build': file:projects/code-training-lesson-build.tgz
@@ -198,7 +202,9 @@ dependencies:
   react-lowlight: 2.0.0_highlight.js@9.1.0+react@17.0.2
   react-markdown: 6.0.3_4cd822c6044f4c1a7e1f1fea0e728f12
   rimraf: 3.0.2
+  rollup: 2.56.3
   ts-node: 10.2.1_70d6492c0feb1eb5d83e62cce7c43fd5
+  tslib: 2.3.1
   typescript: 4.3.5
   uuid: 8.3.2
   vscode-diff: 2.0.1
@@ -1062,6 +1068,33 @@ packages:
     resolution: {integrity: sha512-88p7+M0QGxKpmnkfXjS4V26AnoC/eiqZutE8GLdaI5X12NY75bXSdTY9NkmYb2Xyk1O+MmkuO6Frmsj84V6I8Q==}
     dev: false
 
+  /@rollup/plugin-typescript/8.2.5_fb60d1099d0f1062e1f455c5bc85cce0:
+    resolution: {integrity: sha512-QL/LvDol/PAGB2O0S7/+q2HpSUNodpw7z6nGn9BfoVCPOZ0r4EALrojFU29Bkoi2Hr2jgTocTejJ5GGWZfOxbQ==}
+    engines: {node: '>=8.0.0'}
+    peerDependencies:
+      rollup: ^2.14.0
+      tslib: '*'
+      typescript: '>=3.7.0'
+    dependencies:
+      '@rollup/pluginutils': 3.1.0_rollup@2.56.3
+      resolve: 1.20.0
+      rollup: 2.56.3
+      tslib: 2.3.1
+      typescript: 4.3.5
+    dev: false
+
+  /@rollup/pluginutils/3.1.0_rollup@2.56.3:
+    resolution: {integrity: sha512-GksZ6pr6TpIjHm8h9lSQ8pi8BE9VeubNT0OMJ3B5uZJ8pz73NPiqOtCog/x2/QzM1ENChPKxMDhiQuRHsqc+lg==}
+    engines: {node: '>= 8.0.0'}
+    peerDependencies:
+      rollup: ^1.20.0||^2.0.0
+    dependencies:
+      '@types/estree': 0.0.39
+      estree-walker: 1.0.1
+      picomatch: 2.3.0
+      rollup: 2.56.3
+    dev: false
+
   /@rushstack/eslint-config/2.4.0_eslint@7.32.0+typescript@4.3.5:
     resolution: {integrity: sha512-qH3Q++hoELDgmOV8Hh0h804TBeRSOFv/I2kI6V3qOJEy+reKneyIHAraZrBwFDvMHdBUbXWkWsR/gEpG2sq6QQ==}
     peerDependencies:
@@ -1350,6 +1383,10 @@ packages:
     resolution: {integrity: sha512-cdeYyv4KWoEgpBISTxWvqYsVy444DOqehiF3fM3ne10AmJ62RSyNkUnxMJXHQWRQQX2eR94m5y1IZyDwBjV9FQ==}
     dependencies:
       '@types/node': 16.7.1
+    dev: false
+
+  /@types/estree/0.0.39:
+    resolution: {integrity: sha512-EYNwp3bU+98cpU4lAWYYL7Zz+2gryWH1qbdDTidVd6hkiR6weksdbMadyXKXNPEkQFhXM+hVO9ZygomHXp+AIw==}
     dev: false
 
   /@types/express-serve-static-core/4.17.24:
@@ -3923,6 +3960,10 @@ packages:
     engines: {node: '>=4.0'}
     dev: false
 
+  /estree-walker/1.0.1:
+    resolution: {integrity: sha512-1fMXF3YP4pZZVozF8j/ZLfvnR8NSIljt56UhbZ5PeeDmmGHpgpdwQt7ITlGvYaQukCvuBRMLEiKiYC+oeIg4cg==}
+    dev: false
+
   /esutils/2.0.3:
     resolution: {integrity: sha512-kVscqXk4OCp68SZ0dkgEKVi6/8ij300KBWTJq32P/dYeWTSwK41WyTxalN1eRmA5Z9UU/LX9D7FWSmV9SAYx6g==}
     engines: {node: '>=0.10.0'}
@@ -4172,12 +4213,6 @@ packages:
     resolution: {integrity: sha1-JcfInLH5B3+IkbvmHY85Dq4lbx4=}
     dependencies:
       pend: 1.2.0
-    dev: false
-
-  /ffmpeg/0.0.4:
-    resolution: {integrity: sha1-HEYN+OfaUSf2LO70v6BsWciWMMs=}
-    dependencies:
-      when: 3.7.8
     dev: false
 
   /figgy-pudding/3.5.2:
@@ -8164,6 +8199,14 @@ packages:
       inherits: 2.0.4
     dev: false
 
+  /rollup/2.56.3:
+    resolution: {integrity: sha512-Au92NuznFklgQCUcV96iXlxUbHuB1vQMaH76DHl5M11TotjOHwqk9CwcrT78+Tnv4FN9uTBxq6p4EJoYkpyekg==}
+    engines: {node: '>=10.0.0'}
+    hasBin: true
+    optionalDependencies:
+      fsevents: 2.3.2
+    dev: false
+
   /rsvp/4.8.5:
     resolution: {integrity: sha512-nfMOlASu9OnRJo1mbEk2cz0D56a1MBNrJ7orjRZQG10XDyuvwksKbuXNp6qa+kbn839HwjwhBzhFmdsaEAfauA==}
     engines: {node: 6.* || >= 7.*}
@@ -9236,6 +9279,10 @@ packages:
     resolution: {integrity: sha512-Xni35NKzjgMrwevysHTCArtLDpPvye8zV/0E4EyYn43P7/7qvQwPh9BGkHewbMulVntbigmcT7rdX3BNo9wRJg==}
     dev: false
 
+  /tslib/2.3.1:
+    resolution: {integrity: sha512-77EbyPPpMz+FRFRuAFlWMtmgUWGe9UOG2Z25NqCwiIjRhOf5iKGuzSe5P2w1laq+FkRy4p+PCuVkJSGkzTEKVw==}
+    dev: false
+
   /tsutils/3.21.0_typescript@4.3.5:
     resolution: {integrity: sha512-mHKK3iUXL+3UF6xL5k0PEhKRUBKPBCv/+RkEOpjRWxxx27KKRBmmA60A9pgOUvMi8GKhRMPEmjBRPzs2W7O1OA==}
     engines: {node: '>= 6'}
@@ -9857,10 +9904,6 @@ packages:
       webidl-conversions: 4.0.2
     dev: false
 
-  /when/3.7.8:
-    resolution: {integrity: sha1-xxMLan6gRpPoQs3J56Hyqjmjn4I=}
-    dev: false
-
   /which-boxed-primitive/1.0.2:
     resolution: {integrity: sha512-bwZdv0AKLpplFY2KZRX6TvyuN7ojjr7lwkg6ml0roIy9YeuSr7JS372qlNW18UQYzgYK9ziGcerWqZOmEn9VNg==}
     dependencies:
@@ -10185,23 +10228,24 @@ packages:
       '@types/node': 12.12.6
     dev: false
 
-  file:projects/art-renderer.tgz_typescript@4.3.5:
-    resolution: {integrity: sha512-lvvO5bRtUsgbjLFu0CA+MAP5ta74aGbkaS97nMqjCpQrGdEZ5vV/5PDnyQNHg4PitacSm9xtQqux68cibMaESw==, tarball: file:projects/art-renderer.tgz}
-    id: file:projects/art-renderer.tgz
+  file:projects/art-renderer.tgz:
+    resolution: {integrity: sha512-WaR1Em/6+ey2EVNthl3Hsgoza8sdVZZ7+vMIioaKyu/D7eQc33mKSepJClIavS5dWFczJn76WaceDEq5akOkcw==, tarball: file:projects/art-renderer.tgz}
     name: '@rush-temp/art-renderer'
     version: 0.0.0
     dependencies:
+      '@rollup/plugin-typescript': 8.2.5_fb60d1099d0f1062e1f455c5bc85cce0
       '@types/node': 12.12.6
       '@types/puppeteer': 5.4.4
-      ffmpeg: 0.0.4
       puppeteer: 10.2.0
+      rollup: 2.56.3
       ts-node: 10.2.1_70d6492c0feb1eb5d83e62cce7c43fd5
+      tslib: 2.3.1
+      typescript: 4.3.5
     transitivePeerDependencies:
       - '@swc/core'
       - '@swc/wasm'
       - bufferutil
       - supports-color
-      - typescript
       - utf-8-validate
     dev: false
 

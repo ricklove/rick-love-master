@@ -1,32 +1,21 @@
-import { exec } from 'child_process';
-import { createScreenshots } from './create-screenshot';
+import { AppError } from '@ricklove/utils-core';
+import { findInParentPath, joinPathNormalized } from '@ricklove/utils-files';
+import { createStaticHtmlPage } from './create-static-html-page';
 
 export const run = async () => {
-  const destDir = `./screenshots/test/${Date.now()}`;
-  const framesPerSecond = 10;
-  const lengthSec = 5;
-  const frames = framesPerSecond * lengthSec;
+  const monoRepoRoot = await findInParentPath(process.cwd(), `projects`);
+  if (!monoRepoRoot) {
+    throw new AppError(`Could not find mono repo root`);
+  }
 
-  console.log(`# Capture frames`, { destDir });
-  await createScreenshots({
-    url: `http://localhost:3042/art/circles?tokenId=Rick&pause`,
-    destDir,
-    framesPerSecond,
-    frames,
-    size: {
-      width: 600,
-      height: 600,
-    },
-  });
+  const artworkDir = joinPathNormalized(monoRepoRoot.dirPath, `./projects/art/artwork/`);
+  const artworkProjectPath = joinPathNormalized(artworkDir, `./circles`);
 
-  // Create movie with ffmpeg
-  console.log(`# Create movie`);
-  // const command = `ffmpeg -framerate ${framesPerSecond} -i %06d.png -pix_fmt yuv420p -vb 20M _output.mp4`;
-  const command = `ffmpeg -framerate ${framesPerSecond} -i %06d.png -pix_fmt yuv420p -c:v libx264 -preset slow -crf 22 -movflags +faststart _output.mp4`;
-  // const command = `ffmpeg -framerate 10 -i %06d.png -pix_fmt yuv420p -c:v libx264 -preset slow -crf 22 -movflags +faststart _output.mp4`;
-  await exec(command, {
-    cwd: destDir,
-  });
+  await createStaticHtmlPage(
+    artworkProjectPath,
+    joinPathNormalized(artworkProjectPath, `./.art-cache/`),
+    joinPathNormalized(artworkProjectPath, `./.art-build/index.html`),
+  );
 };
 
 // eslint-disable-next-line @typescript-eslint/no-floating-promises

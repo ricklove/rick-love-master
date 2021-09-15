@@ -10,7 +10,12 @@
   },
   "dependencies": {
     "@ricklove/art-common": "*",
-    "puppeteer": "~10.2.0"
+    "@ricklove/utils-core": "*",
+    "@ricklove/utils-files": "*",
+    "puppeteer": "~10.2.0",
+    "@rollup/plugin-typescript": "~8.2.5",
+    "rollup": "~2.56.3",
+    "typescript": "~4.3.5"
   },
   "devDependencies": {
     "@ricklove/config-lib-rig": "*",
