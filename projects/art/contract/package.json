@@ -7,9 +7,12 @@
     "build": "heft test --clean",
     "build:watch": "heft build"
   },
-  "dependencies": {},
+  "dependencies": {
+    "@truffle/hdwallet-provider": "^1.2.1",
+    "solc": "0.6.12",
+    "truffle": "~5.4.10"
+  },
   "devDependencies": {
-    "@ricklove/config-lib-rig": "*",
     "@types/node": "12.12.6"
   }
 }

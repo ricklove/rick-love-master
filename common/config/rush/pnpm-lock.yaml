@@ -8,7 +8,6 @@ specifiers:
   '@rush-temp/art-build': file:./projects/art-build.tgz
   '@rush-temp/art-common': file:./projects/art-common.tgz
   '@rush-temp/art-components': file:./projects/art-components.tgz
-  '@rush-temp/art-contract': file:./projects/art-contract.tgz
   '@rush-temp/art-renderer': file:./projects/art-renderer.tgz
   '@rush-temp/artwork-circles': file:./projects/artwork-circles.tgz
   '@rush-temp/artwork-hodlers-quest': file:./projects/artwork-hodlers-quest.tgz
@@ -110,7 +109,6 @@ dependencies:
   '@rush-temp/art-build': file:projects/art-build.tgz
   '@rush-temp/art-common': file:projects/art-common.tgz
   '@rush-temp/art-components': file:projects/art-components.tgz_@babel+core@7.15.0
-  '@rush-temp/art-contract': file:projects/art-contract.tgz
   '@rush-temp/art-renderer': file:projects/art-renderer.tgz
   '@rush-temp/artwork-circles': file:projects/artwork-circles.tgz
   '@rush-temp/artwork-hodlers-quest': file:projects/artwork-hodlers-quest.tgz
@@ -10242,14 +10240,6 @@ packages:
       react: 17.0.2
     transitivePeerDependencies:
       - '@babel/core'
-    dev: false
-
-  file:projects/art-contract.tgz:
-    resolution: {integrity: sha512-8143DVwBgARBjgTGr4o6qtNr8B0VG4lpo3SenRprAEB/tfetZXJ4kObyMViW6rhCW6w7BsA9FjPQGGuzkmLsEA==, tarball: file:projects/art-contract.tgz}
-    name: '@rush-temp/art-contract'
-    version: 0.0.0
-    dependencies:
-      '@types/node': 12.12.6
     dev: false
 
   file:projects/art-renderer.tgz:

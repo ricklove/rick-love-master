@@ -536,10 +536,10 @@
       "packageName": "@ricklove/art-components",
       "projectFolder": "projects/art/components"
     },
-    {
-      "packageName": "@ricklove/art-contract",
-      "projectFolder": "projects/art/contract"
-    },
+    // {
+    //   "packageName": "@ricklove/art-contract",
+    //   "projectFolder": "projects/art/contract"
+    // },
     {
       "packageName": "@ricklove/art-renderer",
       "projectFolder": "projects/art/renderer"
@@ -589,7 +589,6 @@
       "packageName": "@ricklove/educational-games",
       "projectFolder": "projects/games/educational-games"
     },
-
     {
       "packageName": "@ricklove/doodle-common",
       "projectFolder": "projects/games/doodle/common"
@@ -602,13 +601,11 @@
       "packageName": "@ricklove/doodle-server",
       "projectFolder": "projects/games/doodle/server"
     },
-
     // Misc ---
     {
       "packageName": "@ricklove/typescript-type-system-adventure",
       "projectFolder": "projects/coding/typescript-type-system-adventure"
     },
-
     // Web ---
     {
       "packageName": "@ricklove/ricklove_me",
@@ -618,7 +615,6 @@
       "packageName": "@ricklove/ricklove_me-content",
       "projectFolder": "projects/web/ricklove_me-content"
     },
-
     // Tools --
     {
       "packageName": "@ricklove/rush-packages",
