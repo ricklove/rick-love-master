@@ -8,6 +8,7 @@
     "deploy:testnet": "env-cmd -f .env truffle deploy --network rinkeby"
   },
   "dependencies": {
+    "@openzeppelin/contracts": "^4.3.2",
     "@truffle/hdwallet-provider": "^1.2.1",
     "solc": "^0.8.7-fixed",
     "truffle": "~5.4.10"

@@ -15,3 +15,9 @@
 - Test 04
   - Simplify safe transfer
   - gas used: 1896857
+- Test 05 - OpenZeppelin
+  - gas used: 2039423
+- Test 06 - OpenZeppelin 721 Contract Builder
+  - gas used: 2923007
+- Test 06b - OpenZeppelin 1155 Contract Builder
+  - gas used: 2891451
