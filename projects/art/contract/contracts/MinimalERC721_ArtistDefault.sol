@@ -56,6 +56,8 @@ contract MinimalERC721_ArtistDefault is IERC165
     /** tokenId => owner */ 
     mapping (uint256 => address) private _owners;
     function ownerOf(uint256 tokenId) public view override(IERC721) returns (address) {
+        require(tokenId < _totalCount, "!owner");
+
         address owner = _owners[tokenId];
         
         // Artist is default owner
