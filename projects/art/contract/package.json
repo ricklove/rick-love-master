@@ -1,7 +1,6 @@
 {
   "name": "@ricklove/art-contract",
   "version": "1.0.0",
-  "type": "module",
   "main": "./lib/index.js",
   "scripts": {
     "build": "heft test --clean",
@@ -9,7 +8,7 @@
   },
   "dependencies": {
     "@truffle/hdwallet-provider": "^1.2.1",
-    "solc": "0.6.12",
+    "solc": "^0.8.7-fixed",
     "truffle": "~5.4.10"
   },
   "devDependencies": {

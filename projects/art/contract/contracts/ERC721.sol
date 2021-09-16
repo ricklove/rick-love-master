@@ -8,7 +8,7 @@ import "./IERC721.sol";
 import "./IERC721Metadata.sol";
 import "./IERC721Receiver.sol";
 import "./OpenSeaProxy.sol";
-import "./Utils.sol";
+import "./StringUtils.sol";
 
 /**
  * @dev Minimal ERC721
@@ -17,7 +17,7 @@ contract ERC721 is IERC165
 , IERC721
 , IERC721Metadata
 {
-    using Utils for uint256;
+    using StringUtils for uint256;
 
     constructor (string memory name_, string memory symbol_, string memory baseURI, address openSeaProxyRegistryAddress) {
         _artist = msg.sender;

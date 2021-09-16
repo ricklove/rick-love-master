@@ -4,7 +4,7 @@ pragma solidity ^0.8.0;
 /**
  * @dev String operations.
  */
-library Utils {
+library StringUtils {
 
     /**
      * @dev Converts a `uint256` to its ASCII `string` decimal representation.
