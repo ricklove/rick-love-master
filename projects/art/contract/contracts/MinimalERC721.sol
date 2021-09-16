@@ -29,6 +29,13 @@ contract MinimalERC721 is IERC165
 
     // Permissions ---
     address private _artist;
+    function artist() public view  returns (address) {
+        return _artist;
+    }
+    modifier onlyArtist() {
+        require(artist() == msg.sender, "a");
+        _;
+    }
 
     // Interfaces ---
     /**
@@ -50,7 +57,7 @@ contract MinimalERC721 is IERC165
         address owner = _owners[tokenId];
         
         // TODO: If no owner & in valid project tokenId => owner is artist?
-        require(owner != address(0), "!owner");
+        require(owner != address(0), "o");
         return owner;
     }
 
@@ -60,7 +67,7 @@ contract MinimalERC721 is IERC165
      */
     mapping(address => uint256) private _balances;
     function balanceOf(address user) public view override(IERC721) returns (uint256) {
-        require(user != address(0), "!user");
+        require(user != address(0), "u");
         return _balances[user];
     }
 
@@ -70,11 +77,11 @@ contract MinimalERC721 is IERC165
         safeTransferFrom(from, to, tokenId, "");
     }
     function safeTransferFrom(address from, address to, uint256 tokenId, bytes memory _data) public override(IERC721) {
-        require(_isApprovedOrOwner(tokenId), "!approved");
+        require(_isApprovedOrOwner(tokenId), "o");
         _safeTransfer(from, to, tokenId, _data);
     }
     function transferFrom(address from, address to, uint256 tokenId) public virtual override(IERC721) {
-        require(_isApprovedOrOwner(tokenId), "!approved");
+        require(_isApprovedOrOwner(tokenId), "o");
         _transfer(from, to, tokenId);
     }
 
@@ -93,8 +100,8 @@ contract MinimalERC721 is IERC165
     }
 
     function _transfer(address from, address to, uint256 tokenId) internal  {
-        require(ownerOf(tokenId) == from, "!owner");
-        require(to != address(0), "!to");
+        require(ownerOf(tokenId) == from, "o");
+        require(to != address(0), "t");
 
         // Clear approvals from the previous owner
         _approve(address(0), tokenId);
@@ -113,8 +120,8 @@ contract MinimalERC721 is IERC165
 
     function approve(address to, uint256 tokenId) public override(IERC721) {
         address owner = ownerOf(tokenId);
-        require(to != owner, "!to");
-        require(owner == msg.sender || isApprovedForAll(owner, msg.sender), "!owner");
+        require(to != owner, "t");
+        require(owner == msg.sender || isApprovedForAll(owner, msg.sender), "o");
 
         _approve(to, tokenId);
     }
@@ -131,7 +138,7 @@ contract MinimalERC721 is IERC165
     mapping (address => mapping (address => bool)) private _operatorApprovals;
 
     function setApprovalForAll(address operator, bool approved) public virtual override(IERC721) {
-        require(operator != msg.sender, "!operator");
+        require(operator != msg.sender, "p");
 
         _operatorApprovals[msg.sender][operator] = approved;
         emit ApprovalForAll(msg.sender, operator, approved);
@@ -163,8 +170,7 @@ contract MinimalERC721 is IERC165
     }
 
     string private _baseURI = 'https://ricklove.me/art/test/';
-    function setBaseURI(string memory baseURI) public {
-        require(_artist == msg.sender, "!artist");
+    function setBaseURI(string memory baseURI) public onlyArtist {
         _baseURI = baseURI;
     }
 
