@@ -29,13 +29,6 @@ contract MinimalERC721 is IERC165
 
     // Permissions ---
     address private _artist;
-    function artist() public view  returns (address) {
-        return _artist;
-    }
-    modifier onlyArtist() {
-        require(artist() == msg.sender, "a");
-        _;
-    }
 
     // Interfaces ---
     /**
@@ -170,7 +163,8 @@ contract MinimalERC721 is IERC165
     }
 
     string private _baseURI = 'https://ricklove.me/art/test/';
-    function setBaseURI(string memory baseURI) public onlyArtist {
+    function setBaseURI(string memory baseURI) public {
+        require(_artist == msg.sender, "a");
         _baseURI = baseURI;
     }
 
