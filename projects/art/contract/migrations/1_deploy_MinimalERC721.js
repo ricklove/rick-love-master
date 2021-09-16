@@ -1,4 +1,4 @@
-const ERC721 = artifacts.require('ERC721');
+const contract = artifacts.require('MinimalERC721');
 
 module.exports = async (deployer, network, addresses) => {
   // OpenSea proxy registry addresses for rinkeby and mainnet.
@@ -19,7 +19,7 @@ module.exports = async (deployer, network, addresses) => {
   //   gas: 5000000,
   // });
 
-  await deployer.deploy(ERC721, {
+  await deployer.deploy(contract, {
     gas: 5000000,
   });
 };

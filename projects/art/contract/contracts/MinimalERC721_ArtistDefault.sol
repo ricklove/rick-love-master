@@ -8,19 +8,18 @@ import "./IERC721.sol";
 import "./IERC721Metadata.sol";
 import "./IERC721Receiver.sol";
 import "./OpenSeaProxy.sol";
-import "./StringUtils.sol";
 
 /**
  * @dev Minimal ERC721
  */
-contract ERC721 is IERC165 
+contract MinimalERC721_ArtistDefault is IERC165 
 , IERC721
 , IERC721Metadata
 {
-    using StringUtils for uint256;
-
     constructor () {
         _artist = msg.sender;
+        _totalCount = 10000;
+        _balances[_artist] = 10000;
     }
 
     // constructor (string memory name_, string memory symbol_, string memory baseURI, address openSeaProxyRegistryAddress) {
@@ -52,28 +51,27 @@ contract ERC721 is IERC165
     }
 
     // Token Ownership ---
-    // uint256 private _projectCount;
+    uint256 private _totalCount;
 
     /** tokenId => owner */ 
     mapping (uint256 => address) private _owners;
     function ownerOf(uint256 tokenId) public view override(IERC721) returns (address) {
         address owner = _owners[tokenId];
         
-        // TODO: If no owner & in valid project tokenId => owner is artist?
-        require(owner != address(0), "!owner");
+        // Artist is default owner
+        if(owner == address(0)){ return _artist; }
+
         return owner;
     }
 
     /** Owner balances
      * 
-     * PERFORMANCE: Why not just iterate over the contract data, instead of storing this and updating manually?
      */
     mapping(address => uint256) private _balances;
     function balanceOf(address user) public view override(IERC721) returns (uint256) {
         require(user != address(0), "!user");
         return _balances[user];
     }
-
 
     // Transfers ---
     function safeTransferFrom(address from, address to, uint256 tokenId) public override(IERC721) {
@@ -88,7 +86,7 @@ contract ERC721 is IERC165
         _transfer(from, to, tokenId);
     }
 
-    function _safeTransfer(address from, address to, uint256 tokenId, bytes memory _data) internal  {
+    function _safeTransfer(address from, address to, uint256 tokenId, bytes memory _data) internal {
         _transfer(from, to, tokenId);
         // require(_checkOnERC721Received(from, to, tokenId, _data), "!ERC721Receiver");
 
@@ -102,7 +100,7 @@ contract ERC721 is IERC165
         }
     }
 
-    function _transfer(address from, address to, uint256 tokenId) internal  {
+    function _transfer(address from, address to, uint256 tokenId) internal {
         require(ownerOf(tokenId) == from, "!owner");
         require(to != address(0), "!to");
 
@@ -127,7 +125,7 @@ contract ERC721 is IERC165
 
         _approve(to, tokenId);
     }
-    function _approve(address to, uint256 tokenId) internal  {
+    function _approve(address to, uint256 tokenId) internal {
         _tokenApprovals[tokenId] = to;
         emit Approval(ownerOf(tokenId), to, tokenId);
     }
@@ -155,7 +153,7 @@ contract ERC721 is IERC165
 
         return _operatorApprovals[owner][operator];
     }
-    function _isApprovedOrOwner(uint256 tokenId) internal view  returns (bool) {
+    function _isApprovedOrOwner(uint256 tokenId) internal view returns (bool) {
         address owner = ownerOf(tokenId);
         return (owner == msg.sender || getApproved(tokenId) == msg.sender || isApprovedForAll(owner, msg.sender));
     }
@@ -180,7 +178,25 @@ contract ERC721 is IERC165
         string memory baseURI = _baseURI;
         string memory json = ".json";
         return bytes(baseURI).length > 0
-            ? string(abi.encodePacked(baseURI, tokenId.toString(), json))
+            ? string(abi.encodePacked(baseURI, uint2str(tokenId), json))
             : '';
+    }
+    function uint2str(uint256 _i) internal pure returns (string memory _uintAsString) {
+        if (_i == 0) {
+            return "0";
+        }
+        uint256 temp = _i;
+        uint256 digits;
+        while (temp != 0) {
+            digits++;
+            temp /= 10;
+        }
+        bytes memory buffer = new bytes(digits);
+        while (_i != 0) {
+            digits -= 1;
+            buffer[digits] = bytes1(uint8(48 + uint256(_i % 10)));
+            _i /= 10;
+        }
+        return string(buffer);
     }
 }

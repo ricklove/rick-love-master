@@ -4,6 +4,7 @@
   "main": "./lib/index.js",
   "scripts": {
     "compile": "truffle compile",
+    "size": "npm run compile && env-cmd -f .env truffle run contract-size",
     "deploy:dryrun": "env-cmd -f .env truffle deploy --network rinkeby --dry-run",
     "deploy:testnet": "env-cmd -f .env truffle deploy --network rinkeby"
   },
@@ -16,6 +17,7 @@
   "devDependencies": {
     "@types/node": "12.12.6",
     "dotenv": "^8.2.0",
-    "env-cmd": "^10.1.0"
+    "env-cmd": "^10.1.0",
+    "truffle-contract-size": "^2.0.1"
   }
 }
