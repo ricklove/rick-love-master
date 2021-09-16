@@ -9,3 +9,9 @@
 - Test 02
   - Constant strings hardcoded in constructor
   - gas used: 1995305
+- Test 03
+  - Constrant strings hardcoded at usage
+  - gas used: 1933348
+- Test 04
+  - Simplify safe transfer
+  - gas used: 1896857

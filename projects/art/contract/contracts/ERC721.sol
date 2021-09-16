@@ -21,10 +21,6 @@ contract ERC721 is IERC165
 
     constructor () {
         _artist = msg.sender;
-        _name = 'TestArt';
-        _symbol = 'TA';
-        _baseURI = 'https://ricklove.me/art/test/';
-        _openSeaProxyRegistryAddress = 0xF57B2c51dED3A29e6891aba85459d600256Cf317;
     }
 
     // constructor (string memory name_, string memory symbol_, string memory baseURI, address openSeaProxyRegistryAddress) {
@@ -94,8 +90,18 @@ contract ERC721 is IERC165
 
     function _safeTransfer(address from, address to, uint256 tokenId, bytes memory _data) internal  {
         _transfer(from, to, tokenId);
-        require(_checkOnERC721Received(from, to, tokenId, _data), "!ERC721Receiver");
+        // require(_checkOnERC721Received(from, to, tokenId, _data), "!ERC721Receiver");
+
+        // If contract, confirm is receiver
+        uint256 size; 
+        assembly { size := extcodesize(to) }
+        if (size > 0)
+        {
+            bytes4 retval = IERC721Receiver(to).onERC721Received(msg.sender, from, tokenId, _data);
+            require(retval == IERC721Receiver(to).onERC721Received.selector, '!receiver');
+        }
     }
+
     function _transfer(address from, address to, uint256 tokenId) internal  {
         require(ownerOf(tokenId) == from, "!owner");
         require(to != address(0), "!to");
@@ -108,30 +114,6 @@ contract ERC721 is IERC165
         _owners[tokenId] = to;
 
         emit Transfer(from, to, tokenId);
-    }
-    function _checkOnERC721Received(address from, address to, uint256 tokenId, bytes memory _data)
-        private returns (bool)
-    {
-        if (_isContract(to)) {
-            try IERC721Receiver(to).onERC721Received(msg.sender, from, tokenId, _data) returns (bytes4 retval) {
-                return retval == IERC721Receiver(to).onERC721Received.selector;
-            } catch (bytes memory reason) {
-                if (reason.length == 0) {
-                    revert("!ERC721Receiver");
-                } else {
-                    assembly {
-                        revert(add(32, reason), mload(reason))
-                    }
-                }
-            }
-        } else {
-            return true;
-        }
-    }
-    function _isContract(address account) internal view returns (bool) {
-        uint256 size;
-        assembly { size := extcodesize(account) }
-        return size > 0;
     }
 
     // Approvals ---
@@ -156,9 +138,8 @@ contract ERC721 is IERC165
 
     /** Approval for all (operators approved to transfer tokens on behalf of an owner) */
     mapping (address => mapping (address => bool)) private _operatorApprovals;
-    address _openSeaProxyRegistryAddress;
 
-    function setApprovalForAll(address operator, bool approved) public virtual override {
+    function setApprovalForAll(address operator, bool approved) public virtual override(IERC721) {
         require(operator != msg.sender, "!operator");
 
         _operatorApprovals[msg.sender][operator] = approved;
@@ -167,7 +148,7 @@ contract ERC721 is IERC165
     function isApprovedForAll(address owner, address operator) public view override(IERC721) returns (bool) {
 
         // Approve open sea proxies to allow gasless trading
-        OpenSeaProxyRegistry proxyRegistry = OpenSeaProxyRegistry(_openSeaProxyRegistryAddress);
+        OpenSeaProxyRegistry proxyRegistry = OpenSeaProxyRegistry(0xF57B2c51dED3A29e6891aba85459d600256Cf317);
         if (address(proxyRegistry.proxies(owner)) == operator) {
             return true;
         }
@@ -182,17 +163,15 @@ contract ERC721 is IERC165
 
 
     // Metadata ---
-    string private _name;
-    function name() public view override(IERC721Metadata) returns (string memory) {
-        return _name;
+    function name() public pure override(IERC721Metadata) returns (string memory) {
+        return 'TestArt';
     }
 
-    string private _symbol;
-    function symbol() public view override(IERC721Metadata) returns (string memory) {
-        return _symbol;
+    function symbol() public pure override(IERC721Metadata) returns (string memory) {
+        return 'TA';
     }
 
-    string private _baseURI;
+    string private _baseURI = 'https://ricklove.me/art/test/';
     function setBaseURI(string memory baseURI) public onlyArtist {
         _baseURI = baseURI;
     }
