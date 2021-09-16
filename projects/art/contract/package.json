@@ -4,7 +4,7 @@
   "main": "./lib/index.js",
   "scripts": {
     "compile": "truffle compile",
-    "deploy:dryrun": "env-cmd -f .env truffle deploy --network rinkeby --dryrun",
+    "deploy:dryrun": "env-cmd -f .env truffle deploy --network rinkeby --dry-run",
     "deploy:testnet": "env-cmd -f .env truffle deploy --network rinkeby"
   },
   "dependencies": {
