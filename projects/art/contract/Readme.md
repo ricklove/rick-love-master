@@ -1,5 +1,10 @@
 # Deployments
 
+## Accounts
+
+- Test Rinkerby: 0x604D995eD90C2A8CD2d1baD491c198b56f12E0eB
+- Main Rinkerby: 0xc9b981461552989700b2d52eac6d2733192c79c2
+
 ## Testing
 
 - Test 01
@@ -18,6 +23,9 @@
 - Test 05
   - Move function
   - gas used: 1896857
+- Test 06
+  - Enumerable with 10k artist owned
+  - Rinkerby: 0x3ed0bC6379B8c03148d1CEE7Cfc04671c2323406
 
 ## Open Zeppelin Testing
 

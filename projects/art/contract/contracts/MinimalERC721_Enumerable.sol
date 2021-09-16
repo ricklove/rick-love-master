@@ -42,7 +42,9 @@ contract MinimalERC721_Enumerable is IERC165
         return
             interfaceId == type(IERC165).interfaceId ||
             interfaceId == type(IERC721).interfaceId ||
-            interfaceId == type(IERC721Metadata).interfaceId;
+            interfaceId == type(IERC721Metadata).interfaceId ||
+            interfaceId == type(IERC721Enumerable).interfaceId 
+            ;
     }
 
     // Token Ownership ---
@@ -55,7 +57,7 @@ contract MinimalERC721_Enumerable is IERC165
         return index;
     }
     function tokenOfOwnerByIndex(address user, uint256 _index) public view override(IERC721Enumerable) returns (uint256) {
-        // Is a loop ok on user nodes?
+        // Is a loop ok on user nodes? - Runs fine on etherscan
         uint iSoFar = 0;
         for(uint i = 0; i < _totalSupply; i++){
             if(_ownerOf(i) != user){ continue; }
