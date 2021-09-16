@@ -172,10 +172,10 @@ contract MinimalERC721 is IERC165
         string memory baseURI = _baseURI;
         string memory json = ".json";
         return bytes(baseURI).length > 0
-            ? string(abi.encodePacked(baseURI, uint2str(tokenId), json))
+            ? string(abi.encodePacked(baseURI, _uint2str(tokenId), json))
             : '';
     }
-    function uint2str(uint256 _i) internal pure returns (string memory _uintAsString) {
+    function _uint2str(uint256 _i) internal pure returns (string memory _uintAsString) {
         if (_i == 0) {
             return "0";
         }
