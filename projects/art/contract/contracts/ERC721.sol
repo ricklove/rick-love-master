@@ -19,13 +19,20 @@ contract ERC721 is IERC165
 {
     using StringUtils for uint256;
 
-    constructor (string memory name_, string memory symbol_, string memory baseURI, address openSeaProxyRegistryAddress) {
+    constructor () {
         _artist = msg.sender;
-        _name = name_;
-        _symbol = symbol_;
-        _baseURI = baseURI;
-        _openSeaProxyRegistryAddress = openSeaProxyRegistryAddress;
+        _name = 'TestArt';
+        _symbol = 'TA';
+        _baseURI = 'https://ricklove.me/art/test/';
+        _openSeaProxyRegistryAddress = 0xF57B2c51dED3A29e6891aba85459d600256Cf317;
     }
+
+    // constructor (string memory name_, string memory symbol_, string memory baseURI, address openSeaProxyRegistryAddress) {
+    //     _name = name_;
+    //     _symbol = symbol_;
+    //     _baseURI = baseURI;
+    //     _openSeaProxyRegistryAddress = openSeaProxyRegistryAddress;
+    // }
 
     // Permissions ---
     address private _artist;

@@ -9,13 +9,17 @@ module.exports = async (deployer, network, addresses) => {
     openSeaProxyRegistryAddress = '0xa5409ec958c83c3f309868babaca7c86dcb077c1';
   }
 
-  // Deploy Artwork
-  // string memory name_, string memory symbol_, string memory baseURI, address openSeaProxyRegistryAddress
-  const name = 'TestArt';
-  const symbol = 'TA';
-  const baseURI = 'https://ricklove.me/art/test/';
+  // // Deploy Artwork
+  // // string memory name_, string memory symbol_, string memory baseURI, address openSeaProxyRegistryAddress
+  // const name = 'TestArt';
+  // const symbol = 'TA';
+  // const baseURI = 'https://ricklove.me/art/test/';
 
-  await deployer.deploy(ERC721, name, symbol, baseURI, openSeaProxyRegistryAddress, {
+  // await deployer.deploy(ERC721, name, symbol, baseURI, openSeaProxyRegistryAddress, {
+  //   gas: 5000000,
+  // });
+
+  await deployer.deploy(ERC721, {
     gas: 5000000,
   });
 };
