@@ -99,11 +99,26 @@ contract MinimalERC721 is IERC165
         emit Transfer(from, to, tokenId);
     }
 
-    // Minting --- 
-    uint256 private _projectCount;
-    function addProjects(uint256 countToAdd) public {
+    // Minting (with projects) --- 
+    uint24 constant PROJECT_BUCKET_SIZE = 1000000;
+    mapping (uint256 => uint24) private _projectTokenSupply;
+    mapping (uint256 => uint24) private _projectTokenCount;
+     
+    function project(uint256 projectId) view public returns (uint24 projectTokenSupply, uint24 projectTokenCount) {
+        projectTokenSupply = _projectTokenSupply[projectId];
+        projectTokenCount = _projectTokenCount[projectId];
+    }
+
+    /** set project size (Control mintability)
+     *
+     * - Enable minting (drop):  (setProject(newProjectId, projectTokenSupply))
+     * - Disable minting (pause): (setProject(newProjectId, currentMaxProjectTokenIndex))
+     */
+    function setProject(uint256 projectId, uint24 projectTokenSupply) public {
         require(_artist == msg.sender, 'a');
-        _projectCount += countToAdd;
+        require(projectTokenSupply <= PROJECT_BUCKET_SIZE, 'S');
+        _totalSupply = projectTokenSupply - _projectTokenSupply[projectId];
+        _projectTokenSupply[projectId] = projectTokenSupply;
     }
 
     function mint(uint256 tokenId) public payable {
@@ -114,12 +129,14 @@ contract MinimalERC721 is IERC165
         // Pay up
         require(payable(_artist).send(msg.value), 'F');
 
-        // Does project exist
-        require(tokenId < _projectCount * 10000 /* PROJECT_SIZE */, 'P' );
+        // Does project exist & has tokens left
+        uint256 projectId = tokenId / PROJECT_BUCKET_SIZE;
+        uint256 projectTokenIndex = tokenId % PROJECT_BUCKET_SIZE;
+        require(projectTokenIndex < _projectTokenSupply[projectId], 'P' );
 
         _balances[msg.sender] += 1;
         _owners[tokenId] = msg.sender;
-        _totalSupply++;
+        _projectTokenCount[projectId]++;
 
         emit Transfer(address(0), msg.sender, tokenId);
     }
