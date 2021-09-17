@@ -36,7 +36,12 @@
   - `tokenOfOwnerByIndex` Runs out of user-node gas on etherscan at around 100,000
 - Test 09
   - Add Minting
-  - gas used: 2296770
+  - gas used: 2362170
+  - Rinkerby: 0x893b51A1139B4e4636decE7aB6D1C421e30BB4F3
+- Test 10
+  - FIX Minting
+  - gas used: 2447110
+  - Rinkerby: 0x41fa31B6c64Cd74af0B1c4761004eaE79Ff9BcD2
 
 ## Open Zeppelin Testing
 

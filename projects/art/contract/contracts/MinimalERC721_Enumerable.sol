@@ -233,23 +233,25 @@ contract MinimalERC721_Enumerable is IERC165
     // Minting --- 
     uint256 private _nextTokenId;
     function mint() public payable {
+        // Don't buy yourself
+        require(msg.sender != _artist, "a");
         // Got any left?
         require(_totalSupply > _nextTokenId, "#" );
         // Show me da money
         require(msg.value >= 0.1 ether, "$" );
         // Pay up
-        require(payable(_artist).send(msg.value));
+        require(payable(_artist).send(msg.value), "F");
+      
 
-        _transfer(address(0), msg.sender, _nextTokenId);
-        // _safeTransfer(address(0), msg.sender, _nextTokenId, "");
+        _transfer(_artist, msg.sender, _nextTokenId);
         _nextTokenId++;
     }
     function safeMint() public payable {
         mint();
-        _checkReceiver(address(0), msg.sender, _nextTokenId, "");
+        _checkReceiver(_artist, msg.sender, _nextTokenId, "");
     }
      function safeMint(bytes memory data_) public payable {
         mint();
-        _checkReceiver(address(0), msg.sender, _nextTokenId, data_);
+        _checkReceiver(_artist, msg.sender, _nextTokenId, data_);
     }
 }
