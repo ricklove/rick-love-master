@@ -3,12 +3,12 @@
 
 pragma solidity ^0.8.0;
 
-import '../IERC165.sol';
-import '../IERC721.sol';
-import '../IERC721Enumerable.sol';
-import '../IERC721Metadata.sol';
-import '../IERC721Receiver.sol';
-import '../OpenSeaProxy.sol';
+import '../utils/IERC165.sol';
+import '../utils/IERC721.sol';
+import '../utils/IERC721Enumerable.sol';
+import '../utils/IERC721Metadata.sol';
+import '../utils/IERC721Receiver.sol';
+import '../utils/OpenSeaProxy.sol';
 
 /**
  * @dev Minimal ERC721

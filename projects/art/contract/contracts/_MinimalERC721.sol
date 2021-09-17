@@ -3,10 +3,10 @@
 
 pragma solidity ^0.8.0;
 
-import './IERC165.sol';
-import './IERC721.sol';
-import './IERC721Metadata.sol';
-import './IERC721Receiver.sol';
+import './utils/IERC165.sol';
+import './utils/IERC721.sol';
+import './utils/IERC721Metadata.sol';
+import './utils/IERC721Receiver.sol';
 
 /**
  * @dev Minimal ERC721 with projects
