@@ -117,17 +117,17 @@ contract MinimalERC721 is IERC165
     function projectCount() view public returns (uint256) {
         return _projectCount;
     } 
-    function project(uint256 projectId) view public returns (uint32 projectTokenSupply, uint32 projectTokenCount, uint256 projectMintPrice) {
+    function projectDetails(uint256 projectId) view public returns (uint32 projectTokenSupply, uint32 projectTokenCount, uint256 projectMintPrice) {
         projectTokenSupply = _projectTokenSupply[projectId];
         projectTokenCount = _projectTokenCount[projectId];
         projectMintPrice = _projectMintPrice[projectId];
     }
 
-    /** set project size (Control mintability)
+    /** set project data (Control mintability)
      *
      * - newProjectId = projectCount()
-     * - Enable minting (drop):  (setProject(projectId, projectTokenSupply))
-     * - Disable minting (pause): (setProject(projectId, project(projectId).projectTokenCount))
+     * - Enable minting (drop):  (setProject(projectId, projectTokenSupply, 0.1 ether))
+     * - Disable minting (pause): (setProject(projectId, project(projectId).projectTokenCount, 0.1 ether))
      *
      * Avoid skipping projectIds for new projects - since projectCount = max(projectIds)
      * 
@@ -143,8 +143,14 @@ contract MinimalERC721 is IERC165
         _projectCount = projectId > _projectCount ? projectId : _projectCount;
     }
 
+
+    uint256 private _mintLock = 1;
     function mint(uint256 tokenId) public payable {
-        // Unowned
+        // Prevent reentry
+        require(_mintLock != 1, 'R');
+        _mintLock = 2;
+
+        // Unowned tokenId
         require(_owners[tokenId] == address(0), 'O' );
 
         // Does project exist & has tokens left
@@ -152,16 +158,21 @@ contract MinimalERC721 is IERC165
         uint256 projectTokenIndex = tokenId % PROJECT_BUCKET_SIZE;
         require(projectTokenIndex < _projectTokenSupply[projectId], 'P' );
 
-        // Show me da money
+        // Did caller send enough money?
         require(msg.value >= _projectMintPrice[projectId], '$' );
-        // Pay up
-        require(payable(_artist).send(msg.value), 'F');
-
+        
         _balances[msg.sender] += 1;
         _owners[tokenId] = msg.sender;
         _projectTokenCount[projectId]++;
 
         emit Transfer(address(0), msg.sender, tokenId);
+
+        // Pay Artist
+        // https://consensys.net/diligence/blog/2019/09/stop-using-soliditys-transfer-now/
+        (bool success, ) = _artist.call{ value: msg.value }("");
+        require(success, 'F');
+
+        _mintLock = 1;
     }
 
     // Approvals ---

@@ -26,5 +26,6 @@
     // "**/config": true,
     "**/.eslintrc.cjs": true
     //"**/tsconfig.json": true
-  }
+  },
+  "python.linting.enabled": true
 }
