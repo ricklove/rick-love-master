@@ -56,9 +56,13 @@
 - Test 13
   - Minimal Mintable ERC721
   - estimate gas used: 2089031
-- Test 13
+- Test 14
   - Remove open sea
   - estimate gas used: 2017572
+- Test 15
+  - Add Projects
+  - Add Reentracy guarded minting and better fee transfer
+  - estimate gas used: 2510565
 
 ## Open Zeppelin Testing
 

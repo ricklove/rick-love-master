@@ -13,7 +13,8 @@ import './IERC721Receiver.sol';
  * 
  * Does not implement enumerable to reduce gas cost and since Transfer events are used everywhere anyway to calculate ownership
  * 
- * It is also possible to iterate ownerOf for all tokenIds by using projectCount() & project(projectId).projectTokenSupply
+ * It is also possible to iterate ownerOf for all tokenIds by using projectCount() & project(projectId).projectTokenCount
+ * projectTokenIDs = projectId * PROJECT_BUCKET_SIZE + [0..projectTokenCount]
  */
 contract MinimalERC721 is IERC165 
 , IERC721
@@ -123,34 +124,82 @@ contract MinimalERC721 is IERC165
         projectMintPrice = _projectMintPrice[projectId];
     }
 
+
     /** set project data (Control mintability)
      *
-     * - newProjectId = projectCount()
-     * - Enable minting (drop):  (setProject(projectId, projectTokenSupply, 0.1 ether))
-     * - Disable minting (pause): (setProject(projectId, project(projectId).projectTokenCount, 0.1 ether))
-     *
      * Avoid skipping projectIds for new projects - since projectCount = max(projectIds)
+     *
+     * - newProjectId = projectCount()
      * 
      */
-    function setProject(uint256 projectId, uint32 projectTokenSupply, uint256 projectMintPrice) public onlyArtist {
+    function createProject(uint256 projectId, uint32 reserveTokenCount, uint256 projectMintPrice) public onlyArtist {
+        // Don't break math (could be ignored if careful externally)
+        require(reserveTokenCount <= PROJECT_BUCKET_SIZE, 'S');
+ 
+        // Ensure project has no tokens
+        require(_projectTokenCount[projectId] == 0, 'b');
+ 
+
+        _projectCount = projectId > _projectCount ? projectId : _projectCount;
+
+        _totalSupply += reserveTokenCount;
+        _projectTokenSupply[projectId] = reserveTokenCount;
+        _projectTokenCount[projectId] = reserveTokenCount;
+        _projectMintPrice[projectId] = projectMintPrice;
+
+        // Transfer each token to _artist
+        _balances[_artist] += 1;
+
+        for(uint32 i = 0; i < reserveTokenCount; i++){
+            uint256 tokenId = projectId * PROJECT_BUCKET_SIZE + i;
+            _owners[tokenId] = _artist;
+            _projectTokenCount[projectId]++;
+            emit Transfer(address(0), _artist, tokenId);
+        }
+    }
+
+    /** Enable/Disable minting
+     *
+     * - Enable minting (drop):  (setProjectTokenSupply(projectId, projectTokenSupply))
+     * - Disable minting (pause): (setProjectTokenSupply(projectId, project(projectId).projectTokenCount))
+     *
+     */
+    function setProjectTokenSupply(uint256 projectId, uint32 projectTokenSupply) public onlyArtist {
+        // Don't break math (could be ignored if careful externally)
         require(projectTokenSupply <= PROJECT_BUCKET_SIZE, 'S');
+        // Don't hide existing tokens
         require(projectTokenSupply >= _projectTokenCount[projectId], 's');
+
+        // Make sure project was created first (it should have a price)
+        require(_projectMintPrice[projectId] > 0, 's');
 
         _totalSupply = projectTokenSupply - _projectTokenSupply[projectId];
         _projectTokenSupply[projectId] = projectTokenSupply;
-        _projectMintPrice[projectId] = projectMintPrice;
-
-        _projectCount = projectId > _projectCount ? projectId : _projectCount;
     }
 
+    // In urgent pausing - just change price to 1000 ether +
+    // /** Pause minting (by setting supply to current count)
+    //  */
+    // function pauseProject(uint256 projectId) public onlyArtist {
+    //     _totalSupply = _projectTokenCount[projectId] - _projectTokenSupply[projectId];
+    //     _projectTokenSupply[projectId] = _projectTokenCount[projectId];
+    // }
 
-    uint256 private _mintLock = 1;
+    /** Change the project mint price
+     *
+     * This enables manually changing price after createProject:
+     * 
+     * - Auctions?
+     * - Reverse Auctions - Increase Price, etc.
+     * - Pause minting (change price to 1000 ether)
+     */
+    function setProjectMintPrice(uint256 projectId, uint32 projectMintPrice) public onlyArtist {
+        _projectMintPrice[projectId] = projectMintPrice;
+    }
+
+    /** Ideas: What about restricting the gas price */
     function mint(uint256 tokenId) public payable {
-        // Prevent reentry
-        require(_mintLock != 1, 'R');
-        _mintLock = 2;
-
-        // Unowned tokenId
+         // Unowned tokenId
         require(_owners[tokenId] == address(0), 'O' );
 
         // Does project exist & has tokens left
@@ -160,19 +209,17 @@ contract MinimalERC721 is IERC165
 
         // Did caller send enough money?
         require(msg.value >= _projectMintPrice[projectId], '$' );
-        
-        _balances[msg.sender] += 1;
-        _owners[tokenId] = msg.sender;
-        _projectTokenCount[projectId]++;
 
-        emit Transfer(address(0), msg.sender, tokenId);
-
-        // Pay Artist
+        // Pay Artist (no reentry vulnerability since _artist is trusted and using exactly msg.value)
         // https://consensys.net/diligence/blog/2019/09/stop-using-soliditys-transfer-now/
         (bool success, ) = _artist.call{ value: msg.value }("");
         require(success, 'F');
 
-        _mintLock = 1;
+        _balances[msg.sender] += 1;
+        _owners[tokenId] = msg.sender;
+        _projectTokenCount[projectId]++;
+    
+        emit Transfer(address(0), msg.sender, tokenId);
     }
 
     // Approvals ---
