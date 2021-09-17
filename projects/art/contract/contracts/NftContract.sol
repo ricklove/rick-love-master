@@ -182,14 +182,16 @@ contract NftContract is IERC165
      * 
      * - Auctions?
      * - Reverse Auctions - Increase Price, etc.
-     * - Pause minting (change price to 1000 ether)
      */
     function setProjectMintPrice(uint256 projectId, uint32 projectMintPrice) public onlyArtist {
         _projectMintPrice[projectId] = projectMintPrice;
     }
 
-    /** Gas limit to prevent gas war */
-    uint256 private _gasPriceMax;
+    /** Gas limit to prevent gas war 
+     *
+     * - Also useful to pause minting (set gas price max to 0)
+     */
+    uint256 private _gasPriceMax = 100 gwei;
     function getGasPriceMax() public view returns(uint256) {
         return _gasPriceMax;
     }
