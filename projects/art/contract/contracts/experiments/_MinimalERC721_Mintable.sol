@@ -7,7 +7,6 @@ import '../IERC165.sol';
 import '../IERC721.sol';
 import '../IERC721Metadata.sol';
 import '../IERC721Receiver.sol';
-import '../OpenSeaProxy.sol';
 
 /**
  * @dev Minimal ERC721
@@ -144,13 +143,6 @@ contract MinimalERC721_Mintable is IERC165
         emit ApprovalForAll(msg.sender, operator, approved);
     }
     function isApprovedForAll(address owner, address operator) public view override(IERC721) returns (bool) {
-
-        // Approve open sea proxies to allow gasless trading
-        OpenSeaProxyRegistry proxyRegistry = OpenSeaProxyRegistry(0xF57B2c51dED3A29e6891aba85459d600256Cf317);
-        if (address(proxyRegistry.proxies(owner)) == operator) {
-            return true;
-        }
-
         return _operatorApprovals[owner][operator];
     }
     function _isApprovedOrOwner(uint256 tokenId) internal view  returns (bool) {
