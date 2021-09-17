@@ -1,3 +1,19 @@
+# Basic Sample Hardhat Project
+
+This project demonstrates a basic Hardhat use case. It comes with a sample contract, a test for that contract, a sample script that deploys that contract, and an example of a task implementation, which simply lists the available accounts.
+
+Try running some of the following tasks:
+
+```shell
+npx hardhat accounts
+npx hardhat compile
+npx hardhat clean
+npx hardhat test
+npx hardhat node
+node scripts/sample-script.js
+npx hardhat help
+```
+
 # Deployments
 
 ## Accounts
@@ -21,10 +37,16 @@
 - Test 04
   - Simplify safe transfer
   - gas used: 1896857
-- Test 05
+- Test 05a - OpenZeppelin Base 721
+  - gas used: 2039423
+- Test 05b - OpenZeppelin 721 Contract Builder
+  - gas used: 2923007
+- Test 05c - OpenZeppelin 1155 Contract Builder
+  - gas used: 2891451
+- Test 06a
   - Move function
   - gas used: 1896857
-- Test 06
+- Test 06b
   - Enumerable with 10k artist owned
   - Rinkerby: 0x3ed0bC6379B8c03148d1CEE7Cfc04671c2323406
 - Test 07
@@ -69,12 +91,3 @@
 - Test 17
   - Add gas price limit
   - estimate gas used: 2907122
-
-## Open Zeppelin Testing
-
-- Test 05 - OpenZeppelin Base 721
-  - gas used: 2039423
-- Test 06 - OpenZeppelin 721 Contract Builder
-  - gas used: 2923007
-- Test 06b - OpenZeppelin 1155 Contract Builder
-  - gas used: 2891451
