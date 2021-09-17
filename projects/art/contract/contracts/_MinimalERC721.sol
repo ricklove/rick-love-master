@@ -197,8 +197,20 @@ contract MinimalERC721 is IERC165
         _projectMintPrice[projectId] = projectMintPrice;
     }
 
+    /** Gas limit to prevent gas war */
+    uint256 private _gasPriceMax;
+    function getGasPriceMax() public view returns(uint256) {
+        return _gasPriceMax;
+    }
+    function setGasPriceMax(uint256 gasPriceMax) public onlyArtist {
+        _gasPriceMax = gasPriceMax;
+    }
+
     /** Ideas: What about restricting the gas price */
     function mint(uint256 tokenId) public payable {
+        // Prevent gas war
+        require(tx.gasprice <= _gasPriceMax, '~');
+
          // Unowned tokenId
         require(_owners[tokenId] == address(0), 'O' );
 

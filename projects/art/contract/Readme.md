@@ -66,6 +66,9 @@
 - Test 16
   - Add createProject
   - estimate gas used: 2812079
+- Test 17
+  - Add gas price limit
+  - estimate gas used: 2907122
 
 ## Open Zeppelin Testing
 
