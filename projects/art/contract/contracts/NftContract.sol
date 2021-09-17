@@ -13,10 +13,10 @@ import './utils/IERC721Receiver.sol';
  * 
  * Does not implement enumerable to reduce gas cost and since Transfer events are used everywhere anyway to calculate ownership
  * 
- * It is also possible to iterate ownerOf for all tokenIds by using projectCount() & project(projectId).projectTokenCount
+ * It is also possible to iterate ownerOf for all tokenIds by using projectIdLast() & project(projectId).projectTokenCount
  * projectTokenIDs = projectId * PROJECT_BUCKET_SIZE + [0..projectTokenCount]
  */
-contract MinimalERC721 is IERC165 
+contract NftContract is IERC165 
 , IERC721
 , IERC721Metadata
 {
@@ -49,7 +49,7 @@ contract MinimalERC721 is IERC165
         return _totalSupply;
     }
 
-    // uint256 private _projectCount;
+    // uint256 private _projectIdLast;
 
     /** tokenId => owner */ 
     mapping (uint256 => address) private _owners;
@@ -110,13 +110,13 @@ contract MinimalERC721 is IERC165
 
     // Minting (with projects) --- 
     uint32 constant PROJECT_BUCKET_SIZE = 1000000;
-    uint256 private _projectCount;
+    uint256 private _projectIdLast;
     mapping (uint256 => uint32) private _projectTokenSupply;
     mapping (uint256 => uint32) private _projectTokenCount;
     mapping (uint256 => uint256) private _projectMintPrice;
 
-    function projectCount() view public returns (uint256) {
-        return _projectCount;
+    function projectIdLast() view public returns (uint256) {
+        return _projectIdLast;
     } 
     function projectDetails(uint256 projectId) view public returns (uint32 projectTokenSupply, uint32 projectTokenCount, uint256 projectMintPrice) {
         projectTokenSupply = _projectTokenSupply[projectId];
@@ -127,9 +127,9 @@ contract MinimalERC721 is IERC165
 
     /** set project data (Control mintability)
      *
-     * Avoid skipping projectIds for new projects - since projectCount = max(projectIds)
+     * Avoid skipping projectIds for new projects - since projectIdLast = max(projectIds)
      *
-     * - newProjectId = projectCount()
+     * - newProjectId = projectIdLast()
      * 
      */
     function createProject(uint256 projectId, uint32 reserveTokenCount, uint256 projectMintPrice) public onlyArtist {
@@ -140,7 +140,7 @@ contract MinimalERC721 is IERC165
         require(_projectTokenCount[projectId] == 0, 'b');
  
 
-        _projectCount = projectId > _projectCount ? projectId : _projectCount;
+        _projectIdLast = projectId > _projectIdLast ? projectId : _projectIdLast;
 
         _totalSupply += reserveTokenCount;
         _projectTokenSupply[projectId] = reserveTokenCount;
@@ -148,12 +148,11 @@ contract MinimalERC721 is IERC165
         _projectMintPrice[projectId] = projectMintPrice;
 
         // Transfer each token to _artist
-        _balances[_artist] += 1;
+        _balances[_artist] += reserveTokenCount;
 
         for(uint32 i = 0; i < reserveTokenCount; i++){
             uint256 tokenId = projectId * PROJECT_BUCKET_SIZE + i;
             _owners[tokenId] = _artist;
-            _projectTokenCount[projectId]++;
             emit Transfer(address(0), _artist, tokenId);
         }
     }
@@ -168,22 +167,14 @@ contract MinimalERC721 is IERC165
         // Don't break math (could be ignored if careful externally)
         require(projectTokenSupply <= PROJECT_BUCKET_SIZE, 'S');
         // Don't hide existing tokens
-        require(projectTokenSupply >= _projectTokenCount[projectId], 's');
+        require(projectTokenSupply > _projectTokenCount[projectId], 's');
 
         // Make sure project was created first (it should have a price)
         require(_projectMintPrice[projectId] > 0, 's');
 
-        _totalSupply = projectTokenSupply - _projectTokenSupply[projectId];
+        _totalSupply += projectTokenSupply - _projectTokenSupply[projectId];
         _projectTokenSupply[projectId] = projectTokenSupply;
     }
-
-    // In urgent pausing - just change price to 1000 ether +
-    // /** Pause minting (by setting supply to current count)
-    //  */
-    // function pauseProject(uint256 projectId) public onlyArtist {
-    //     _totalSupply = _projectTokenCount[projectId] - _projectTokenSupply[projectId];
-    //     _projectTokenSupply[projectId] = _projectTokenCount[projectId];
-    // }
 
     /** Change the project mint price
      *
@@ -283,7 +274,7 @@ contract MinimalERC721 is IERC165
         return 'RICKLOVE';
     }
 
-    string private _baseURI = 'https://ricklove.me/art/_metadata/main';
+    string private _baseURI = 'https://ricklove.me/art/_metadata/main/';
     function setBaseURI(string memory baseURI) public onlyArtist {
         _baseURI = baseURI;
     }

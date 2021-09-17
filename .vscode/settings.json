@@ -13,7 +13,7 @@
     "**/.DS_Store": false,
     "**/CVS": false,
     "**/.git": true,
-    "**/node_modules": true,
+    //"**/node_modules": true,
     // build artifacts
     "**/.heft": true,
     "**/.rush": true,
