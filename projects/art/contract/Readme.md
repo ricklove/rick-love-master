@@ -63,6 +63,9 @@
   - Add Projects
   - Add Reentracy guarded minting and better fee transfer
   - estimate gas used: 2510565
+- Test 16
+  - Add createProject
+  - estimate gas used: 2812079
 
 ## Open Zeppelin Testing
 
