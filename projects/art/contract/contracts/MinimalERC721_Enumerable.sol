@@ -130,12 +130,17 @@ contract MinimalERC721_Enumerable is IERC165
         require(to != address(0), "t");
 
         // Clear approvals from the previous owner
-        _approve(address(0), tokenId);
+        if(_tokenApprovals[tokenId] != address(0)){
+            _approve(address(0), tokenId);
+        }
 
         _balances[from] -= 1;
         _balances[to] += 1;
         _owners[tokenId] = to;
 
+        if(from == _artist){
+            from = address(0);
+        }
         emit Transfer(from, to, tokenId);
     }
 
