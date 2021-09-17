@@ -8,10 +8,10 @@
     "deploy:dryrun": "env-cmd -f .env truffle deploy --network rinkeby --dry-run",
     "deploy:testnet": "env-cmd -f .env truffle deploy --network rinkeby"
   },
-  "dependencies": {},
   "devDependencies": {
     "@types/node": "12.12.6",
     "dotenv": "^8.2.0",
-    "env-cmd": "^10.1.0"
+    "env-cmd": "^10.1.0",
+    "hardhat": "^2.6.4"
   }
 }
