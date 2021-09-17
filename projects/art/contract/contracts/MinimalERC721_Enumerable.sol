@@ -20,7 +20,7 @@ contract MinimalERC721_Enumerable is IERC165
 {
     constructor () {
         _artist = msg.sender;
-        _totalSupply = 10000;
+        _totalSupply = 1000000000;
         _balances[_artist] = _totalSupply;
     }
 

@@ -2,8 +2,9 @@
 
 ## Accounts
 
-- Test Rinkerby: 0x604D995eD90C2A8CD2d1baD491c198b56f12E0eB
-- Main Rinkerby: 0xc9b981461552989700b2d52eac6d2733192c79c2
+- Test (Chrome) Rinkerby: 0x604D995eD90C2A8CD2d1baD491c198b56f12E0eB
+- Main (Edge ) Rinkerby: 0xc9b981461552989700b2d52eac6d2733192c79c2
+- Test Account(Edge ) Rinkerby: 0xD402f87A6F27f7ed5e85B23E57c3bEe48B374C93
 
 ## Testing
 
@@ -26,6 +27,13 @@
 - Test 06
   - Enumerable with 10k artist owned
   - Rinkerby: 0x3ed0bC6379B8c03148d1CEE7Cfc04671c2323406
+- Test 07
+  - FIX Missing supportsInterface for Enumerable
+  - Rinkerby: 0x5Ff9cC66b6762aCc9c9999aABa02752946CcA5D4
+- Test 08
+  - Test 1Billion `_totalSupply` with for loop in `tokenOfOwnerByIndex`
+  - Rinkerby: 0x725f2612531848AaE639bAdED92f1d312Ac5Ea1B
+  - `tokenOfOwnerByIndex` Runs out of user-node gas on etherscan at around 100,000
 
 ## Open Zeppelin Testing
 
