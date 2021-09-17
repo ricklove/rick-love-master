@@ -276,14 +276,14 @@ contract MinimalERC721 is IERC165
 
     // Metadata ---
     function name() public pure override(IERC721Metadata) returns (string memory) {
-        return 'TestArt';
+        return 'RickLove';
     }
 
     function symbol() public pure override(IERC721Metadata) returns (string memory) {
-        return 'TA';
+        return 'RICKLOVE';
     }
 
-    string private _baseURI = 'https://ricklove.me/art/test/';
+    string private _baseURI = 'https://ricklove.me/art/_metadata/main';
     function setBaseURI(string memory baseURI) public onlyArtist {
         _baseURI = baseURI;
     }
