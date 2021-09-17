@@ -20,7 +20,7 @@ contract MinimalERC721_Enumerable is IERC165
 {
     constructor () {
         _artist = msg.sender;
-        _totalSupply = 1000000000;
+        _totalSupply = 100000;
         _balances[_artist] = _totalSupply;
     }
 
@@ -199,12 +199,15 @@ contract MinimalERC721_Enumerable is IERC165
         _baseURI = baseURI;
     }
 
+    // Open sea contractURI to get open sea metadata
+    // https://docs.opensea.io/docs/contract-level-metadata
+    function contractURI() public view returns (string memory) {
+        return string(abi.encodePacked(_baseURI, 'contract.json'));
+    }
+    // Token Metadata:
+    // https://docs.opensea.io/docs/metadata-standards
     function tokenURI(uint256 tokenId) public view override(IERC721Metadata) returns (string memory) {
-        string memory baseURI = _baseURI;
-        string memory json = ".json";
-        return bytes(baseURI).length > 0
-            ? string(abi.encodePacked(baseURI, _uint2str(tokenId), json))
-            : '';
+        return string(abi.encodePacked(_baseURI, _uint2str(tokenId), ".json"));
     }
     function _uint2str(uint256 _i) internal pure returns (string memory _uintAsString) {
         if (_i == 0) {
