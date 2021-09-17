@@ -9,7 +9,11 @@ import './IERC721Metadata.sol';
 import './IERC721Receiver.sol';
 
 /**
- * @dev Minimal ERC721
+ * @dev Minimal ERC721 with projects
+ * 
+ * Does not implement enumerable to reduce gas cost and since Transfer events are used everywhere anyway to calculate ownership
+ * 
+ * It is also possible to iterate ownerOf for all tokenIds by using projectCount() & project(projectId).projectTokenSupply
  */
 contract MinimalERC721 is IERC165 
 , IERC721
@@ -21,6 +25,10 @@ contract MinimalERC721 is IERC165
 
     // Permissions ---
     address private _artist;
+    modifier onlyArtist(){
+        require(_artist == msg.sender, 'a');
+        _;
+    }
 
     // Interfaces ---
     /**
@@ -100,25 +108,35 @@ contract MinimalERC721 is IERC165
     }
 
     // Minting (with projects) --- 
-    uint24 constant PROJECT_BUCKET_SIZE = 1000000;
-    mapping (uint256 => uint24) private _projectTokenSupply;
-    mapping (uint256 => uint24) private _projectTokenCount;
-     
-    function project(uint256 projectId) view public returns (uint24 projectTokenSupply, uint24 projectTokenCount) {
+    uint32 constant PROJECT_BUCKET_SIZE = 1000000;
+    uint256 private _projectCount;
+    mapping (uint256 => uint32) private _projectTokenSupply;
+    mapping (uint256 => uint32) private _projectTokenCount;
+
+    function projectCount() view public returns (uint256) {
+        return _projectCount;
+    } 
+    function project(uint256 projectId) view public returns (uint32 projectTokenSupply, uint32 projectTokenCount) {
         projectTokenSupply = _projectTokenSupply[projectId];
         projectTokenCount = _projectTokenCount[projectId];
     }
 
     /** set project size (Control mintability)
      *
-     * - Enable minting (drop):  (setProject(newProjectId, projectTokenSupply))
-     * - Disable minting (pause): (setProject(newProjectId, currentMaxProjectTokenIndex))
+     * - newProjectId = projectCount()
+     * - Enable minting (drop):  (setProject(projectId, projectTokenSupply))
+     * - Disable minting (pause): (setProject(projectId, project(projectId).projectTokenCount))
+     *
+     * Avoid skipping projectIds for new projects - since projectCount = max(projectIds)
+     * 
      */
-    function setProject(uint256 projectId, uint24 projectTokenSupply) public {
-        require(_artist == msg.sender, 'a');
+    function setProject(uint256 projectId, uint32 projectTokenSupply) public onlyArtist {
         require(projectTokenSupply <= PROJECT_BUCKET_SIZE, 'S');
+        require(projectTokenSupply >= _projectTokenCount[projectId], 's');
+
         _totalSupply = projectTokenSupply - _projectTokenSupply[projectId];
         _projectTokenSupply[projectId] = projectTokenSupply;
+        _projectCount = projectId > _projectCount ? projectId : _projectCount;
     }
 
     function mint(uint256 tokenId) public payable {
@@ -191,8 +209,7 @@ contract MinimalERC721 is IERC165
     }
 
     string private _baseURI = 'https://ricklove.me/art/test/';
-    function setBaseURI(string memory baseURI) public {
-        require(_artist == msg.sender, 'a');
+    function setBaseURI(string memory baseURI) public onlyArtist {
         _baseURI = baseURI;
     }
 
