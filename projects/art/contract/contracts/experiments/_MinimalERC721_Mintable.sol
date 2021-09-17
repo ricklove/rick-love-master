@@ -108,6 +108,7 @@ contract MinimalERC721_Mintable is IERC165
       
         _balances[msg.sender] += 1;
         _owners[tokenId] = msg.sender;
+        _totalSupply++;
 
         emit Transfer(address(0), msg.sender, tokenId);
     }
