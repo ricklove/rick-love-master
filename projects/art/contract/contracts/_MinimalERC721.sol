@@ -112,13 +112,15 @@ contract MinimalERC721 is IERC165
     uint256 private _projectCount;
     mapping (uint256 => uint32) private _projectTokenSupply;
     mapping (uint256 => uint32) private _projectTokenCount;
+    mapping (uint256 => uint256) private _projectMintPrice;
 
     function projectCount() view public returns (uint256) {
         return _projectCount;
     } 
-    function project(uint256 projectId) view public returns (uint32 projectTokenSupply, uint32 projectTokenCount) {
+    function project(uint256 projectId) view public returns (uint32 projectTokenSupply, uint32 projectTokenCount, uint256 projectMintPrice) {
         projectTokenSupply = _projectTokenSupply[projectId];
         projectTokenCount = _projectTokenCount[projectId];
+        projectMintPrice = _projectMintPrice[projectId];
     }
 
     /** set project size (Control mintability)
@@ -130,27 +132,30 @@ contract MinimalERC721 is IERC165
      * Avoid skipping projectIds for new projects - since projectCount = max(projectIds)
      * 
      */
-    function setProject(uint256 projectId, uint32 projectTokenSupply) public onlyArtist {
+    function setProject(uint256 projectId, uint32 projectTokenSupply, uint256 projectMintPrice) public onlyArtist {
         require(projectTokenSupply <= PROJECT_BUCKET_SIZE, 'S');
         require(projectTokenSupply >= _projectTokenCount[projectId], 's');
 
         _totalSupply = projectTokenSupply - _projectTokenSupply[projectId];
         _projectTokenSupply[projectId] = projectTokenSupply;
+        _projectMintPrice[projectId] = projectMintPrice;
+
         _projectCount = projectId > _projectCount ? projectId : _projectCount;
     }
 
     function mint(uint256 tokenId) public payable {
         // Unowned
         require(_owners[tokenId] == address(0), 'O' );
-        // Show me da money
-        require(msg.value >= 0.1 ether /* MINT_COST */, '$' );
-        // Pay up
-        require(payable(_artist).send(msg.value), 'F');
 
         // Does project exist & has tokens left
         uint256 projectId = tokenId / PROJECT_BUCKET_SIZE;
         uint256 projectTokenIndex = tokenId % PROJECT_BUCKET_SIZE;
         require(projectTokenIndex < _projectTokenSupply[projectId], 'P' );
+
+        // Show me da money
+        require(msg.value >= _projectMintPrice[projectId], '$' );
+        // Pay up
+        require(payable(_artist).send(msg.value), 'F');
 
         _balances[msg.sender] += 1;
         _owners[tokenId] = msg.sender;
