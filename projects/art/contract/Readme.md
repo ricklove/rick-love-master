@@ -46,6 +46,13 @@
   - Mint as transfer from null
   - gas used: 2488770
   - Rinkerby: 0x1860B49936f99e4Bc5fFE551b70E61F500570941
+  - mint gas used: 112,773
+- Test 12
+  - TransferForMint
+  - gas used: 2523102
+  - Rinkerby: 0x922b56Bf702351C1ff87B9559355e8b1475b195A
+  - mint gas used: 109,652
+  - trans gas used: 60,755
 
 ## Open Zeppelin Testing
 

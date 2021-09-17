@@ -138,10 +138,14 @@ contract MinimalERC721 is IERC165
         _balances[to] += 1;
         _owners[tokenId] = to;
 
-        if(from == _artist){
-            from = address(0);
-        }
         emit Transfer(from, to, tokenId);
+    }
+    function _transferForMint(address to, uint256 tokenId) internal  {
+        _balances[_artist] -= 1;
+        _balances[to] += 1;
+        _owners[tokenId] = to;
+
+        emit Transfer(address(0), to, tokenId);
     }
 
     // Approvals ---
@@ -248,7 +252,7 @@ contract MinimalERC721 is IERC165
         require(payable(_artist).send(msg.value), "F");
       
 
-        _transfer(_artist, msg.sender, _nextTokenId);
+        _transferForMint(msg.sender, _nextTokenId);
         _nextTokenId++;
     }
     function safeMint() public payable {
