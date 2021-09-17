@@ -42,6 +42,10 @@
   - FIX Minting
   - gas used: 2447110
   - Rinkerby: 0x41fa31B6c64Cd74af0B1c4761004eaE79Ff9BcD2
+- Test 11
+  - Mint as transfer from null
+  - gas used: 2488770
+  - Rinkerby: 0x1860B49936f99e4Bc5fFE551b70E61F500570941
 
 ## Open Zeppelin Testing
 
