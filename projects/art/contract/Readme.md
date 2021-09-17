@@ -53,6 +53,12 @@
   - Rinkerby: 0x922b56Bf702351C1ff87B9559355e8b1475b195A
   - mint gas used: 109,652
   - trans gas used: 60,755
+- Test 13
+  - Minimal Mintable ERC721
+  - estimate gas used: 2089031
+- Test 13
+  - Remove open sea
+  - estimate gas used: 2017572
 
 ## Open Zeppelin Testing
 
