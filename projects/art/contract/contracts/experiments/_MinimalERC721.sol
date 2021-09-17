@@ -3,22 +3,33 @@
 
 pragma solidity ^0.8.0;
 
-import "./IERC165.sol";
-import "./IERC721.sol";
-import "./IERC721Metadata.sol";
-import "./IERC721Receiver.sol";
-import "./OpenSeaProxy.sol";
+import "../IERC165.sol";
+import "../IERC721.sol";
+import "../IERC721Enumerable.sol";
+import "../IERC721Metadata.sol";
+import "../IERC721Receiver.sol";
+import "../OpenSeaProxy.sol";
 
 /**
  * @dev Minimal ERC721
  */
-contract MinimalERC721 is IERC165 
+contract MinimalERC721_Enumerable is IERC165 
 , IERC721
 , IERC721Metadata
+, IERC721Enumerable
 {
     constructor () {
         _artist = msg.sender;
+        _totalSupply = 100000;
+        _balances[_artist] = _totalSupply;
     }
+
+    // constructor (string memory name_, string memory symbol_, string memory baseURI, address openSeaProxyRegistryAddress) {
+    //     _name = name_;
+    //     _symbol = symbol_;
+    //     _baseURI = baseURI;
+    //     _openSeaProxyRegistryAddress = openSeaProxyRegistryAddress;
+    // }
 
     // Permissions ---
     address private _artist;
@@ -31,14 +42,30 @@ contract MinimalERC721 is IERC165
         return
             interfaceId == type(IERC165).interfaceId ||
             interfaceId == type(IERC721).interfaceId ||
-            interfaceId == type(IERC721Metadata).interfaceId
+            interfaceId == type(IERC721Metadata).interfaceId ||
+            interfaceId == type(IERC721Enumerable).interfaceId 
             ;
     }
 
     // Token Ownership ---
     uint256 private _totalSupply;
-    function totalSupply() public view returns (uint256) {
+    function totalSupply() public view override(IERC721Enumerable) returns (uint256) {
         return _totalSupply;
+    }
+    function tokenByIndex(uint256 index) public view override(IERC721Enumerable) returns (uint256) {
+        require(index < _totalSupply, "!");
+        return index;
+    }
+    function tokenOfOwnerByIndex(address user, uint256 _index) public view override(IERC721Enumerable) returns (uint256) {
+        // Is a loop ok on user nodes? - Runs fine on etherscan
+        uint iSoFar = 0;
+        for(uint i = 0; i < _totalSupply; i++){
+            if(_ownerOf(i) != user){ continue; }
+            if(iSoFar == _index){ return i; }
+            iSoFar++;
+        }
+
+        revert('!');
     }
 
     // uint256 private _projectCount;
@@ -46,14 +73,28 @@ contract MinimalERC721 is IERC165
     /** tokenId => owner */ 
     mapping (uint256 => address) private _owners;
     function ownerOf(uint256 tokenId) public view override(IERC721) returns (address) {
-        return _owners[tokenId];
+        require(tokenId < _totalSupply, "!");
+        return _ownerOf(tokenId);
+    }
+    function _ownerOf(uint256 tokenId) internal view returns (address) {
+        address owner = _owners[tokenId];
+        
+        // Artist is default owner
+        if(owner == address(0)){ return _artist; }
+
+        return owner;
     }
 
-    /** Owner balances */
+    /** Owner balances
+     * 
+     * PERFORMANCE: Why not just iterate over the contract data, instead of storing this and updating manually?
+     */
     mapping(address => uint256) private _balances;
     function balanceOf(address user) public view override(IERC721) returns (uint256) {
+        require(user != address(0), "u");
         return _balances[user];
     }
+
 
     // Transfers ---
     function safeTransferFrom(address from, address to, uint256 tokenId) public override(IERC721) {
@@ -99,18 +140,12 @@ contract MinimalERC721 is IERC165
 
         emit Transfer(from, to, tokenId);
     }
+    function _transferForMint(address to, uint256 tokenId) internal  {
+        _balances[_artist] -= 1;
+        _balances[to] += 1;
+        _owners[tokenId] = to;
 
-    // Minting --- 
-    function mint(uint256 tokenId) public payable {
-        // Show me da money
-        require(msg.value >= 0.1 ether, "$" );
-        // Pay up
-        require(payable(_artist).send(msg.value), "F");
-      
-        _balances[msg.sender] += 1;
-        _owners[tokenId] = msg.sender;
-
-        emit Transfer(address(0), msg.sender, tokenId);
+        emit Transfer(address(0), to, tokenId);
     }
 
     // Approvals ---
@@ -202,5 +237,30 @@ contract MinimalERC721 is IERC165
             _i /= 10;
         }
         return string(buffer);
+    }
+
+    // Minting --- 
+    uint256 private _nextTokenId;
+    function mint() public payable {
+        // Don't buy yourself
+        require(msg.sender != _artist, "a");
+        // Got any left?
+        require(_totalSupply > _nextTokenId, "#" );
+        // Show me da money
+        require(msg.value >= 0.1 ether, "$" );
+        // Pay up
+        require(payable(_artist).send(msg.value), "F");
+      
+
+        _transferForMint(msg.sender, _nextTokenId);
+        _nextTokenId++;
+    }
+    function safeMint() public payable {
+        mint();
+        _checkReceiver(_artist, msg.sender, _nextTokenId, "");
+    }
+     function safeMint(bytes memory data_) public payable {
+        mint();
+        _checkReceiver(_artist, msg.sender, _nextTokenId, data_);
     }
 }
