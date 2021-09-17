@@ -100,12 +100,23 @@ contract MinimalERC721 is IERC165
     }
 
     // Minting --- 
+    uint256 private _projectCount;
+    function addProjects(uint256 countToAdd) public {
+        require(_artist == msg.sender, 'a');
+        _projectCount += countToAdd;
+    }
+
     function mint(uint256 tokenId) public payable {
+        // Unowned
+        require(_owners[tokenId] == address(0), 'O' );
         // Show me da money
-        require(msg.value >= 0.1 ether, '$' );
+        require(msg.value >= 0.1 ether /* MINT_COST */, '$' );
         // Pay up
         require(payable(_artist).send(msg.value), 'F');
-      
+
+        // Does project exist
+        require(tokenId < _projectCount * 10000 /* PROJECT_SIZE */, 'P' );
+
         _balances[msg.sender] += 1;
         _owners[tokenId] = msg.sender;
         _totalSupply++;

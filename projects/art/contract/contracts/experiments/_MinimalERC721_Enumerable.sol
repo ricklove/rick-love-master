@@ -244,6 +244,8 @@ contract MinimalERC721_Enumerable is IERC165
     function mint() public payable {
         // Don't buy yourself
         require(msg.sender != _artist, 'a');
+        // Unowned
+        require(_owners[_nextTokenId] == address(0), 'O' );
         // Got any left?
         require(_totalSupply > _nextTokenId, '#' );
         // Show me da money

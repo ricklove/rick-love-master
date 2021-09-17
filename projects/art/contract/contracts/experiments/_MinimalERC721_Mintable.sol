@@ -101,6 +101,8 @@ contract MinimalERC721_Mintable is IERC165
 
     // Minting --- 
     function mint(uint256 tokenId) public payable {
+        // Unowned
+        require(_owners[tokenId] == address(0), 'O' );
         // Show me da money
         require(msg.value >= 0.1 ether, '$' );
         // Pay up
