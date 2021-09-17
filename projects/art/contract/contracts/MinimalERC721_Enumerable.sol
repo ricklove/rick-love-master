@@ -100,25 +100,27 @@ contract MinimalERC721_Enumerable is IERC165
     function safeTransferFrom(address from, address to, uint256 tokenId) public override(IERC721) {
         safeTransferFrom(from, to, tokenId, "");
     }
-    function safeTransferFrom(address from, address to, uint256 tokenId, bytes memory _data) public override(IERC721) {
+    function safeTransferFrom(address from, address to, uint256 tokenId, bytes memory data_) public override(IERC721) {
         require(_isApprovedOrOwner(tokenId), "o");
-        _safeTransfer(from, to, tokenId, _data);
+        _safeTransfer(from, to, tokenId, data_);
     }
     function transferFrom(address from, address to, uint256 tokenId) public virtual override(IERC721) {
         require(_isApprovedOrOwner(tokenId), "o");
         _transfer(from, to, tokenId);
     }
 
-    function _safeTransfer(address from, address to, uint256 tokenId, bytes memory _data) internal  {
+    function _safeTransfer(address from, address to, uint256 tokenId, bytes memory data_) internal  {
         _transfer(from, to, tokenId);
-        // require(_checkOnERC721Received(from, to, tokenId, _data), "!ERC721Receiver");
-
+        _checkReceiver(from, to, tokenId, data_);
+    }
+    function _checkReceiver(address from, address to, uint256 tokenId, bytes memory data_) internal  {
+        
         // If contract, confirm is receiver
         uint256 size; 
         assembly { size := extcodesize(to) }
         if (size > 0)
         {
-            bytes4 retval = IERC721Receiver(to).onERC721Received(msg.sender, from, tokenId, _data);
+            bytes4 retval = IERC721Receiver(to).onERC721Received(msg.sender, from, tokenId, data_);
             require(retval == IERC721Receiver(to).onERC721Received.selector, '!receiver');
         }
     }
@@ -226,5 +228,28 @@ contract MinimalERC721_Enumerable is IERC165
             _i /= 10;
         }
         return string(buffer);
+    }
+
+    // Minting --- 
+    uint256 private _nextTokenId;
+    function mint() public payable {
+        // Got any left?
+        require(_totalSupply > _nextTokenId, "#" );
+        // Show me da money
+        require(msg.value >= 0.1 ether, "$" );
+        // Pay up
+        require(payable(_artist).send(msg.value));
+
+        _transfer(address(0), msg.sender, _nextTokenId);
+        // _safeTransfer(address(0), msg.sender, _nextTokenId, "");
+        _nextTokenId++;
+    }
+    function safeMint() public payable {
+        mint();
+        _checkReceiver(address(0), msg.sender, _nextTokenId, "");
+    }
+     function safeMint(bytes memory data_) public payable {
+        mint();
+        _checkReceiver(address(0), msg.sender, _nextTokenId, data_);
     }
 }

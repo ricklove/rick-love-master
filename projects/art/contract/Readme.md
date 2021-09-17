@@ -34,6 +34,9 @@
   - Test 1Billion `_totalSupply` with for loop in `tokenOfOwnerByIndex`
   - Rinkerby: 0x725f2612531848AaE639bAdED92f1d312Ac5Ea1B
   - `tokenOfOwnerByIndex` Runs out of user-node gas on etherscan at around 100,000
+- Test 09
+  - Add Minting
+  - gas used: 2296770
 
 ## Open Zeppelin Testing
 
