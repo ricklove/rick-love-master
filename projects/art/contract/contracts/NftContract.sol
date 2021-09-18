@@ -225,6 +225,52 @@ contract NftContract is IERC165
         emit Transfer(address(0), msg.sender, tokenId);
     }
 
+    // Transfers ---
+    
+    function _transfer(address from, address to, uint256 tokenId) internal  {
+        // Does msg.sender have authority over this token
+        require(_isApprovedOrOwner(tokenId), 'A');
+        // Is the from the real owner
+        require(_owners[tokenId] == from, 'o');
+        // Prevent sending to 0
+        require(to != address(0), 't');
+
+        // Clear approvals from the previous owner
+        if(_tokenApprovals[tokenId] != address(0)){
+            _approve(address(0), tokenId);
+        }
+
+        _balances[from] -= 1;
+        _balances[to] += 1;
+        _owners[tokenId] = to;
+
+        emit Transfer(from, to, tokenId);
+    }
+
+    function safeTransferFrom(address from, address to, uint256 tokenId) public override(IERC721) {
+        _transfer(from, to, tokenId);
+        _checkReceiver(from, to, tokenId, '');
+    }
+    function safeTransferFrom(address from, address to, uint256 tokenId, bytes memory data_) public override(IERC721) {
+        _transfer(from, to, tokenId);
+        _checkReceiver(from, to, tokenId, data_);
+    }
+    function transferFrom(address from, address to, uint256 tokenId) public virtual override(IERC721) {
+        _transfer(from, to, tokenId);
+    }
+
+    function _checkReceiver(address from, address to, uint256 tokenId, bytes memory data_) internal  {
+        
+        // If contract, confirm is receiver
+        uint256 size; 
+        assembly { size := extcodesize(to) }
+        if (size > 0)
+        {
+            bytes4 retval = IERC721Receiver(to).onERC721Received(msg.sender, from, tokenId, data_);
+            require(retval == IERC721Receiver(to).onERC721Received.selector, 'z');
+        }
+    }
+
     // Approvals ---
 
     /** Temporary approval during token transfer */ 
@@ -262,49 +308,5 @@ contract NftContract is IERC165
         address owner = ownerOf(tokenId);
         return (owner == msg.sender || getApproved(tokenId) == msg.sender || isApprovedForAll(owner, msg.sender));
     }
-     
-// Transfers ---
-    function safeTransferFrom(address from, address to, uint256 tokenId) public override(IERC721) {
-        safeTransferFrom(from, to, tokenId, '');
-    }
-    function safeTransferFrom(address from, address to, uint256 tokenId, bytes memory data_) public override(IERC721) {
-        require(_isApprovedOrOwner(tokenId), 'o');
-        _safeTransfer(from, to, tokenId, data_);
-    }
-    function transferFrom(address from, address to, uint256 tokenId) public virtual override(IERC721) {
-        require(_isApprovedOrOwner(tokenId), 'o');
-        _transfer(from, to, tokenId);
-    }
 
-    function _safeTransfer(address from, address to, uint256 tokenId, bytes memory data_) internal  {
-        _transfer(from, to, tokenId);
-        _checkReceiver(from, to, tokenId, data_);
-    }
-    function _checkReceiver(address from, address to, uint256 tokenId, bytes memory data_) internal  {
-        
-        // If contract, confirm is receiver
-        uint256 size; 
-        assembly { size := extcodesize(to) }
-        if (size > 0)
-        {
-            bytes4 retval = IERC721Receiver(to).onERC721Received(msg.sender, from, tokenId, data_);
-            require(retval == IERC721Receiver(to).onERC721Received.selector, '!receiver');
-        }
-    }
-
-    function _transfer(address from, address to, uint256 tokenId) internal  {
-        require(ownerOf(tokenId) == from, 'o');
-        require(to != address(0), 't');
-
-        // Clear approvals from the previous owner
-        if(_tokenApprovals[tokenId] != address(0)){
-            _approve(address(0), tokenId);
-        }
-
-        _balances[from] -= 1;
-        _balances[to] += 1;
-        _owners[tokenId] = to;
-
-        emit Transfer(from, to, tokenId);
-    }
 }

@@ -17,6 +17,7 @@ describe(`NftContract`, async () => {
     accounts = {artist, other1};
 
     // FIX gas price for code coverage to work
+    const defaultGasPrice = await contract.connect(accounts.artist).getGasPriceMax();
     const actualGasPrice = (await contract.connect(accounts.artist).setGasPriceMax(1)).gasPrice;
     if(actualGasPrice){
       console.log('actualGasPrice', {
@@ -189,7 +190,7 @@ describe(`NftContract`, async () => {
 
     it(`Should FAIL to set project supply - if not created`, async () => {
       await expect(
-        contract.connect(accounts.artist).setProjectTokenSupply(PROJ_ID,PROJ_BUCKET_SIZE+1)
+        contract.connect(accounts.artist).setProjectTokenSupply(PROJ_ID,10)
       ).reverted;
     });
 
@@ -273,38 +274,61 @@ describe(`NftContract`, async () => {
       await contract.connect(accounts.artist).createProject(PROJ_ID, RES_COUNT, MINT_PRICE);
       await contract.connect(accounts.artist).setProjectTokenSupply(PROJ_ID, RES_COUNT + 100);
       
-      const tokenId = getTokenId(PROJ_ID, RES_COUNT + 1);
+      const tokenId = getTokenId(PROJ_ID, RES_COUNT);
       await contract.connect(accounts.other1).mint(tokenId, { value: MINT_PRICE * 1000 });
     });
 
   });
 
-//   describe(`transfers`, () => {
+  describe(`transfers`, () => {
 
-//     it(`Should FAIL to transfer unknown token`, async ()=>{
-//       await expect(
-//         contract.connect(accounts.artist).transferFrom(accounts.artist.address, accounts.other1.address, reserveCount)
-//       ).reverted;
-//     });
+    it(`Should transfer reserved project token`, async () => {
+      await contract.connect(accounts.artist).createProject(PROJ_ID, RES_COUNT, MINT_PRICE);
+      await contract.connect(accounts.artist).transferFrom(
+        accounts.artist.address, accounts.other1.address, getTokenId(PROJ_ID, RES_COUNT-1));
+    });
+    
+    it(`Should transfer reserved project token (safe)`, async () => {
+      await contract.connect(accounts.artist).createProject(PROJ_ID, RES_COUNT, MINT_PRICE);
+      await contract.connect(accounts.artist)['safeTransferFrom(address,address,uint256)'](
+        accounts.artist.address, accounts.other1.address, getTokenId(PROJ_ID, RES_COUNT-1));
+    });
 
-//     it(`Should transfer reserved project token`, async () => {
-//       await contract.connect(accounts.artist).createProject(7, reserveCount, mintPrice);
-//       await contract.connect(accounts.artist).transferFrom(accounts.artist.address, accounts.other1.address, 7000000 + 41);
-//     });
+    it(`Should transfer reserved project token (safe data)`, async () => {
+      await contract.connect(accounts.artist).createProject(PROJ_ID, RES_COUNT, MINT_PRICE);
+      await contract.connect(accounts.artist)['safeTransferFrom(address,address,uint256,bytes)'](
+        accounts.artist.address, accounts.other1.address, getTokenId(PROJ_ID, RES_COUNT-1),[]);
+    });
 
-//     it(`Should FAIL to create project twice`, async () => {
-//       await contract.connect(accounts.artist).createProject(8, reserveCount, mintPrice);
-//       await expect(
-//         contract.connect(accounts.artist).transferFrom(accounts.artist.address, accounts.other1.address, 8000000 + 41)
-//       ).reverted;
-//     });
+    it(`Should FAIL to transfer null token (safe)`, async ()=>{
+      await expect(
+        contract.connect(accounts.artist)['safeTransferFrom(address,address,uint256)'](
+          accounts.artist.address, accounts.artist.address, getTokenId(PROJ_ID+1, 0))
+      ).reverted;
+    });
 
-//     it(`Should FAIL to transfer project token past reserved`, async () => {
-//       await contract.connect(accounts.artist).createProject(8, reserveCount, mintPrice);
-//       await expect(
-//         contract.connect(accounts.artist).transferFrom(accounts.artist.address, accounts.other1.address, 8000000 + 41)
-//       ).reverted;
-//     });
+    it(`Should FAIL to transfer unowned token`, async () => {
+      await contract.connect(accounts.artist).createProject(PROJ_ID, RES_COUNT, MINT_PRICE);
+      await expect(
+        contract.connect(accounts.other1).transferFrom(
+          accounts.artist.address, accounts.other1.address, getTokenId(PROJ_ID, RES_COUNT-1))
+      ).reverted;
+    });
+    it(`Should FAIL to transfer unowned token (safe)`, async () => {
+      await contract.connect(accounts.artist).createProject(PROJ_ID, RES_COUNT, MINT_PRICE);
+      await expect(
+        contract.connect(accounts.other1)['safeTransferFrom(address,address,uint256)'](
+          accounts.artist.address, accounts.other1.address, getTokenId(PROJ_ID, RES_COUNT-1))
+      ).reverted;
+    });
 
-//   });
+    it(`Should FAIL to transfer to null address (safe)`, async () => {
+      await contract.connect(accounts.artist).createProject(PROJ_ID, RES_COUNT, MINT_PRICE);
+      await expect(
+        contract.connect(accounts.other1)['safeTransferFrom(address,address,uint256)'](
+          accounts.artist.address, ethers.constants.AddressZero, getTokenId(PROJ_ID, RES_COUNT-1))
+      ).reverted;
+    });
+
+  });
 });
