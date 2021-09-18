@@ -1,7 +1,5 @@
 import { SignerWithAddress } from '@nomiclabs/hardhat-ethers/signers';
-import { fail } from 'assert';
 import { expect } from 'chai';
-import { BigNumber } from 'ethers';
 import { ethers } from 'hardhat';
 import { NftContract } from '../typechain/NftContract'
 
@@ -36,6 +34,9 @@ describe(`NftContract`, async () => {
     lastBalance_artist = (await contract.connect(accounts.artist).balanceOf(accounts.artist.address)).toNumber();
     lastBalance_other1 = (await contract.connect(accounts.artist).balanceOf(accounts.other1.address)).toNumber();
   });
+
+
+  const getTokenId = (projectId:number, projectTokenIndex:number) => projectId * 1000000 + projectTokenIndex;
 
 
   describe(`metadata`, ()=>{
@@ -79,6 +80,15 @@ describe(`NftContract`, async () => {
       expect(projectTokenSupply,'projectTokenSupply').equal(RES_COUNT);
       expect(projectTokenCount,'projectTokenCount').equal(RES_COUNT);
       expect(projectMintPrice,'projectMintPrice').equal(MINT_PRICE);
+    });
+
+    it(`Should create project with reserves owned by artist`, async () => {
+      await contract.connect(accounts.artist).createProject(PROJ_ID, RES_COUNT, MINT_PRICE);
+
+      for(let i = 0; i<RES_COUNT; i++){
+        const tokenOwner = await contract.connect(accounts.other1).ownerOf(getTokenId(PROJ_ID,i));
+        expect(tokenOwner,'tokenOwner').equal(accounts.artist.address);
+      }
     });
 
     it(`Should FAIL to create project twice`, async () => {
@@ -134,13 +144,14 @@ describe(`NftContract`, async () => {
       await contract.connect(accounts.artist).setProjectTokenSupply(PROJ_ID, RES_COUNT + 100);
       await contract.connect(accounts.artist).setGasPriceMax(GAS_PRICE_MAX);
       
-      const tokenID = PROJ_ID * 1000000 + RES_COUNT + 10;
-      await contract.connect(accounts.other1).mint(tokenID, { gasPrice: GAS_PRICE_MAX, value: MINT_PRICE });
+      const tokenId = getTokenId(PROJ_ID, RES_COUNT + 10);
+      await contract.connect(accounts.other1).mint(tokenId, { gasPrice: GAS_PRICE_MAX, value: MINT_PRICE });
 
       const projectIdLast = await contract.connect(accounts.other1).projectIdLast();
       const {projectTokenCount, projectTokenSupply, projectMintPrice} = await contract.connect(accounts.other1).projectDetails(PROJ_ID);
       const totalSupply = await contract.connect(accounts.other1).totalSupply();
       const balance = await contract.connect(accounts.other1).balanceOf(accounts.other1.address);
+      const tokenOwner = await contract.connect(accounts.other1).ownerOf(tokenId);
 
       expect(projectIdLast,'projectIdLast').equal(PROJ_ID);
       expect(totalSupply,'totalSupply').equal(lastTotalSupply + RES_COUNT + 100);
@@ -148,6 +159,7 @@ describe(`NftContract`, async () => {
       expect(projectTokenSupply,'projectTokenSupply').equal(RES_COUNT + 100);
       expect(projectTokenCount,'projectTokenCount').equal(RES_COUNT + 1);
       expect(projectMintPrice,'projectMintPrice').equal(MINT_PRICE);
+      expect(tokenOwner,'tokenOwner').equal(accounts.other1.address);
     });
 
   });
