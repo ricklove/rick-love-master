@@ -536,10 +536,10 @@
       "packageName": "@ricklove/art-components",
       "projectFolder": "projects/art/components"
     },
-    // {
-    //   "packageName": "@ricklove/art-contract",
-    //   "projectFolder": "projects/art/contract"
-    // },
+    {
+      "packageName": "@ricklove/art-contract",
+      "projectFolder": "projects/art/contract"
+    },
     {
       "packageName": "@ricklove/art-renderer",
       "projectFolder": "projects/art/renderer"
