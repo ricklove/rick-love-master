@@ -16,8 +16,20 @@ describe(`NftContract`, async () => {
     const [artist, other1] = await ethers.getSigners();
     accounts = {artist, other1};
 
-  });
+    // FIX gas price for code coverage to work
+    const actualGasPrice = (await contract.connect(accounts.artist).setGasPriceMax(1)).gasPrice;
+    if(actualGasPrice){
+      console.log('actualGasPrice', {
+        actualGasPrice_gwei: actualGasPrice.div(1000000).toNumber()/1000, 
+        GAS_PRICE_MAX_gwei: GAS_PRICE_MAX.div(1000000).toNumber()/1000,
+        actualGasPrice,
+        GAS_PRICE_MAX,
+      });
+      GAS_PRICE_MAX = actualGasPrice??GAS_PRICE_MAX
+    }
 
+    await contract.connect(accounts.artist).setGasPriceMax(GAS_PRICE_MAX);
+  });
 
   const PROJ_BUCKET_SIZE = 1000000;
   
@@ -33,6 +45,7 @@ describe(`NftContract`, async () => {
   beforeEach(async () => {
     PROJ_ID++;
     RES_COUNT++;
+
     lastTotalSupply = (await contract.connect(accounts.artist).totalSupply()).toNumber();
     lastBalance_artist = (await contract.connect(accounts.artist).balanceOf(accounts.artist.address)).toNumber();
     lastBalance_other1 = (await contract.connect(accounts.artist).balanceOf(accounts.other1.address)).toNumber();
@@ -123,9 +136,16 @@ describe(`NftContract`, async () => {
       ).reverted;
     });
 
+    // Reserve size cannot be whole project - too much gas since reserves are minted
+    // it(`Should create project at max size`, async () => {
+    //   await contract.connect(accounts.artist).createProject(PROJ_ID, PROJ_BUCKET_SIZE, MINT_PRICE)
+    // });
+    it(`Should create project with 1000 reserves minted`, async () => {
+      await contract.connect(accounts.artist).createProject(PROJ_ID, 1000, MINT_PRICE)
+    });
     it(`Should FAIL to create project too large`, async () => {
       await expect(
-        contract.connect(accounts.artist).createProject(PROJ_ID, 1000001, MINT_PRICE)
+        contract.connect(accounts.artist).createProject(PROJ_ID, PROJ_BUCKET_SIZE+1, MINT_PRICE)
       ).reverted;
     });
 
@@ -156,6 +176,23 @@ describe(`NftContract`, async () => {
       ).reverted;
     });
 
+    it(`Should set project supply at max size`, async () => {
+      await contract.connect(accounts.artist).createProject(PROJ_ID, RES_COUNT, MINT_PRICE);
+      await contract.connect(accounts.artist).setProjectTokenSupply(PROJ_ID,PROJ_BUCKET_SIZE);
+    });
+    it(`Should FAIL to set project supply too large`, async () => {
+      await contract.connect(accounts.artist).createProject(PROJ_ID, RES_COUNT, MINT_PRICE);
+      await expect(
+        contract.connect(accounts.artist).setProjectTokenSupply(PROJ_ID,PROJ_BUCKET_SIZE+1)
+      ).reverted;
+    });
+
+    it(`Should FAIL to set project supply - if not created`, async () => {
+      await expect(
+        contract.connect(accounts.artist).setProjectTokenSupply(PROJ_ID,PROJ_BUCKET_SIZE+1)
+      ).reverted;
+    });
+
     it(`Should set project mint price`, async () => {
       await contract.connect(accounts.artist).createProject(PROJ_ID, RES_COUNT, MINT_PRICE);
       await contract.connect(accounts.artist).setProjectMintPrice(PROJ_ID, MINT_PRICE + 100);
@@ -164,7 +201,6 @@ describe(`NftContract`, async () => {
       expect(projectMintPrice,'projectMintPrice').equal(MINT_PRICE + 100);
     });
 
-
   });
 
 
@@ -172,10 +208,9 @@ describe(`NftContract`, async () => {
     it(`Should mint by other`, async () => {
       await contract.connect(accounts.artist).createProject(PROJ_ID, RES_COUNT, MINT_PRICE);
       await contract.connect(accounts.artist).setProjectTokenSupply(PROJ_ID, RES_COUNT + 100);
-      await contract.connect(accounts.artist).setGasPriceMax(GAS_PRICE_MAX);
       
       const tokenId = getTokenId(PROJ_ID, RES_COUNT + 10);
-      await contract.connect(accounts.other1).mint(tokenId, { gasPrice: GAS_PRICE_MAX, value: MINT_PRICE });
+      await contract.connect(accounts.other1).mint(tokenId, { value: MINT_PRICE });
 
       const projectIdLast = await contract.connect(accounts.other1).projectIdLast();
       const {projectTokenCount, projectTokenSupply, projectMintPrice} = await contract.connect(accounts.other1).projectDetails(PROJ_ID);
@@ -190,6 +225,56 @@ describe(`NftContract`, async () => {
       expect(projectTokenCount,'projectTokenCount').equal(RES_COUNT + 1);
       expect(projectMintPrice,'projectMintPrice').equal(MINT_PRICE);
       expect(tokenOwner,'tokenOwner').equal(accounts.other1.address);
+    });
+
+    it(`Should FAIL to mint - if 10x gas`, async () => {
+      await contract.connect(accounts.artist).createProject(PROJ_ID, RES_COUNT, MINT_PRICE);
+      await contract.connect(accounts.artist).setProjectTokenSupply(PROJ_ID, RES_COUNT + 100);
+      await contract.connect(accounts.artist).setGasPriceMax(GAS_PRICE_MAX);
+      
+      const tokenId = getTokenId(PROJ_ID, RES_COUNT + 10);
+      await expect(
+        contract.connect(accounts.other1).mint(tokenId, { gasPrice: GAS_PRICE_MAX.mul(10), value: MINT_PRICE })
+      ).reverted;
+    });
+    
+    it(`Should FAIL to mint - if owned (mint twice)`, async () => {
+      await contract.connect(accounts.artist).createProject(PROJ_ID, RES_COUNT, MINT_PRICE);
+      await contract.connect(accounts.artist).setProjectTokenSupply(PROJ_ID, RES_COUNT + 100);
+      
+      const tokenId = getTokenId(PROJ_ID, RES_COUNT + 10);
+      contract.connect(accounts.other1).mint(tokenId, { value: MINT_PRICE });
+
+      await expect(
+        contract.connect(accounts.other1).mint(tokenId, { value: MINT_PRICE })
+      ).reverted;
+    });
+
+    it(`Should FAIL to mint - if beyond supply`, async () => {
+      await contract.connect(accounts.artist).createProject(PROJ_ID, RES_COUNT, MINT_PRICE);
+      await contract.connect(accounts.artist).setProjectTokenSupply(PROJ_ID, RES_COUNT + 100);
+      
+      const tokenId = getTokenId(PROJ_ID, RES_COUNT + 101);
+      await expect(
+        contract.connect(accounts.other1).mint(tokenId, { value: MINT_PRICE })
+      ).reverted;
+    });
+
+    it(`Should FAIL to mint - if not enough money`, async () => {
+      await contract.connect(accounts.artist).createProject(PROJ_ID, RES_COUNT, MINT_PRICE);
+      await contract.connect(accounts.artist).setProjectTokenSupply(PROJ_ID, RES_COUNT + 100);
+      
+      const tokenId = getTokenId(PROJ_ID, RES_COUNT + 1);
+      await expect(
+        contract.connect(accounts.other1).mint(tokenId, { value: MINT_PRICE - 1 })
+      ).reverted;
+    });
+    it(`Should still mint - if too much money`, async () => {
+      await contract.connect(accounts.artist).createProject(PROJ_ID, RES_COUNT, MINT_PRICE);
+      await contract.connect(accounts.artist).setProjectTokenSupply(PROJ_ID, RES_COUNT + 100);
+      
+      const tokenId = getTokenId(PROJ_ID, RES_COUNT + 1);
+      await contract.connect(accounts.other1).mint(tokenId, { value: MINT_PRICE * 1000 });
     });
 
   });
