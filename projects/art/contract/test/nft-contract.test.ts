@@ -7,14 +7,19 @@ import { NftContract } from '../typechain/NftContract'
 describe(`NftContract`, async () => {
 
   let contract = null as unknown as NftContract;
-  let accounts = null as unknown as {artist:SignerWithAddress, other1:SignerWithAddress};
+  let accounts = null as unknown as {
+    artist:SignerWithAddress, 
+    other1:SignerWithAddress,
+    other2:SignerWithAddress,
+    other3:SignerWithAddress,
+  };
   
   before(async ()=>{
     const NftProjects = await ethers.getContractFactory('NftContract');
     contract = await NftProjects.deploy() as NftContract;
     await contract.deployed();
-    const [artist, other1] = await ethers.getSigners();
-    accounts = {artist, other1};
+    const [artist, other1, other2, other3] = await ethers.getSigners();
+    accounts = {artist, other1, other2,other3};
 
     // FIX gas price for code coverage to work
     const defaultGasPrice = await contract.connect(accounts.artist).getGasPriceMax();
@@ -300,33 +305,106 @@ describe(`NftContract`, async () => {
         accounts.artist.address, accounts.other1.address, getTokenId(PROJ_ID, RES_COUNT-1),[]);
     });
 
-    it(`Should FAIL to transfer null token (safe)`, async ()=>{
+    it(`Should FAIL to transfer unminted token (safe)`, async ()=>{
       await expect(
         contract.connect(accounts.artist)['safeTransferFrom(address,address,uint256)'](
           accounts.artist.address, accounts.artist.address, getTokenId(PROJ_ID+1, 0))
       ).reverted;
     });
 
-    it(`Should FAIL to transfer unowned token`, async () => {
+    it(`Should FAIL to transfer unowned token - from real owner`, async () => {
       await contract.connect(accounts.artist).createProject(PROJ_ID, RES_COUNT, MINT_PRICE);
       await expect(
         contract.connect(accounts.other1).transferFrom(
           accounts.artist.address, accounts.other1.address, getTokenId(PROJ_ID, RES_COUNT-1))
       ).reverted;
     });
-    it(`Should FAIL to transfer unowned token (safe)`, async () => {
+    it(`Should FAIL to transfer unowned token - from self`, async () => {
       await contract.connect(accounts.artist).createProject(PROJ_ID, RES_COUNT, MINT_PRICE);
       await expect(
-        contract.connect(accounts.other1)['safeTransferFrom(address,address,uint256)'](
-          accounts.artist.address, accounts.other1.address, getTokenId(PROJ_ID, RES_COUNT-1))
+        contract.connect(accounts.other1).transferFrom(
+          accounts.other1.address, accounts.other2.address, getTokenId(PROJ_ID, RES_COUNT-1))
+      ).reverted;
+    });
+    
+    it(`Should FAIL to transfer to null address`, async () => {
+      await contract.connect(accounts.artist).createProject(PROJ_ID, RES_COUNT, MINT_PRICE);
+      await expect(
+        contract.connect(accounts.artist).transferFrom(
+          accounts.artist.address, ethers.constants.AddressZero, getTokenId(PROJ_ID, RES_COUNT-1))
       ).reverted;
     });
 
-    it(`Should FAIL to transfer to null address (safe)`, async () => {
+  });
+
+  describe(`approvals`, () => {
+
+    it(`Should approve other account - single`, async () => {
       await contract.connect(accounts.artist).createProject(PROJ_ID, RES_COUNT, MINT_PRICE);
+
+      const tokenId = getTokenId(PROJ_ID, RES_COUNT-1);
+      await contract.connect(accounts.artist).transferFrom(accounts.artist.address, accounts.other1.address, tokenId);
+      await contract.connect(accounts.other1).approve(accounts.other2.address, tokenId);
+
+      const tokenApprovedAccount = await contract.connect(accounts.other1).getApproved(tokenId);
+
+      expect(tokenApprovedAccount,'tokenApprovedAccount').equal(accounts.other2.address);
+    });
+
+    it(`Should FAIL to approve unowned token`, async () => {
+      await contract.connect(accounts.artist).createProject(PROJ_ID, RES_COUNT, MINT_PRICE);
+
+      const tokenId = getTokenId(PROJ_ID, RES_COUNT-1);
       await expect(
-        contract.connect(accounts.other1)['safeTransferFrom(address,address,uint256)'](
-          accounts.artist.address, ethers.constants.AddressZero, getTokenId(PROJ_ID, RES_COUNT-1))
+        contract.connect(accounts.other1).approve(accounts.other2.address, tokenId)
+      ).reverted;
+    });
+
+    it(`Should approve other account - for all`, async () => {
+      await contract.connect(accounts.artist).createProject(PROJ_ID, RES_COUNT, MINT_PRICE);
+
+      const tokenId = getTokenId(PROJ_ID, RES_COUNT-1);
+      await contract.connect(accounts.artist).transferFrom(accounts.artist.address, accounts.other1.address, tokenId);
+      await contract.connect(accounts.other1).setApprovalForAll(accounts.other2.address, true);
+
+      const isApprovedForAll = await contract.connect(accounts.other1)
+        .isApprovedForAll(accounts.other1.address,accounts.other2.address);
+
+      expect(isApprovedForAll,'isApprovedForAll').equal(true);
+    });
+
+    it(`Should approve other account - for all - that approves other`, async () => {
+      await contract.connect(accounts.artist).createProject(PROJ_ID, RES_COUNT, MINT_PRICE);
+
+      const tokenId = getTokenId(PROJ_ID, RES_COUNT-1);
+      await contract.connect(accounts.artist).transferFrom(accounts.artist.address, accounts.other1.address, tokenId);
+      await contract.connect(accounts.other1).setApprovalForAll(accounts.other2.address, true);
+      await contract.connect(accounts.other2).approve(accounts.other3.address, tokenId);
+
+      const tokenApprovedAccount = await contract.connect(accounts.other1).getApproved(tokenId);
+      expect(tokenApprovedAccount,'tokenApprovedAccount').equal(accounts.other3.address);
+    });
+
+    it(`Should reset approval after used (other1 gives from artist to other 2)`, async () => {
+      await contract.connect(accounts.artist).createProject(PROJ_ID, RES_COUNT, MINT_PRICE);
+
+      const tokenId = getTokenId(PROJ_ID, RES_COUNT-1);
+      await contract.connect(accounts.artist).approve(accounts.other1.address, tokenId);
+      await contract.connect(accounts.other1).transferFrom(accounts.artist.address, accounts.other2.address, tokenId);
+
+      const tokenApprovedAccount = await contract.connect(accounts.other1).getApproved(tokenId);
+      expect(tokenApprovedAccount,'tokenApprovedAccount').equal(ethers.constants.AddressZero);
+    });
+
+    it(`Should FAIL to use approval after transfer (other1 gives from artist to other 2, then FAILS)`, async () => {
+      await contract.connect(accounts.artist).createProject(PROJ_ID, RES_COUNT, MINT_PRICE);
+
+      const tokenId = getTokenId(PROJ_ID, RES_COUNT-1);
+      await contract.connect(accounts.artist).approve(accounts.other1.address, tokenId);
+      await contract.connect(accounts.other1).transferFrom(accounts.artist.address, accounts.other2.address, tokenId);
+
+      await expect(
+        contract.connect(accounts.other1).transferFrom(accounts.other2.address, accounts.other1.address, tokenId)
       ).reverted;
     });
 

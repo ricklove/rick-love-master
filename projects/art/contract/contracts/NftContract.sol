@@ -226,12 +226,12 @@ contract NftContract is IERC165
     }
 
     // Transfers ---
-    
+
     function _transfer(address from, address to, uint256 tokenId) internal  {
+        // Is the from the real owner
+        require(ownerOf(tokenId) == from, 'o');
         // Does msg.sender have authority over this token
         require(_isApprovedOrOwner(tokenId), 'A');
-        // Is the from the real owner
-        require(_owners[tokenId] == from, 'o');
         // Prevent sending to 0
         require(to != address(0), 't');
 
@@ -278,7 +278,6 @@ contract NftContract is IERC165
 
     function approve(address to, uint256 tokenId) public override(IERC721) {
         address owner = ownerOf(tokenId);
-        require(to != owner, 't');
         require(owner == msg.sender || isApprovedForAll(owner, msg.sender), 'o');
 
         _approve(to, tokenId);
@@ -296,8 +295,6 @@ contract NftContract is IERC165
     mapping (address => mapping (address => bool)) private _operatorApprovals;
 
     function setApprovalForAll(address operator, bool approved) public virtual override(IERC721) {
-        require(operator != msg.sender, 'p');
-
         _operatorApprovals[msg.sender][operator] = approved;
         emit ApprovalForAll(msg.sender, operator, approved);
     }
@@ -306,7 +303,9 @@ contract NftContract is IERC165
     }
     function _isApprovedOrOwner(uint256 tokenId) internal view  returns (bool) {
         address owner = ownerOf(tokenId);
-        return (owner == msg.sender || getApproved(tokenId) == msg.sender || isApprovedForAll(owner, msg.sender));
+        return (owner == msg.sender 
+            || getApproved(tokenId) == msg.sender 
+            || isApprovedForAll(owner, msg.sender));
     }
 
 }
