@@ -108,6 +108,10 @@ contract NftContract is IERC165
 
     // Minting (with projects) --- 
     uint32 constant PROJECT_BUCKET_SIZE = 1000000;
+    function projectBucketSize() pure public returns (uint32) {
+        return PROJECT_BUCKET_SIZE;
+    } 
+
     uint256 private _projectIdLast;
     mapping (uint256 => uint32) private _projectTokenSupply;
     mapping (uint256 => uint32) private _projectTokenCount;
@@ -117,8 +121,11 @@ contract NftContract is IERC165
         return _projectIdLast;
     } 
     function projectDetails(uint256 projectId) view public returns (uint32 projectTokenSupply, uint32 projectTokenCount, uint256 projectMintPrice) {
+        // Allowed to mint
         projectTokenSupply = _projectTokenSupply[projectId];
+        // Minted (and also the projectTokenIndex of the next to mint for this project)
         projectTokenCount = _projectTokenCount[projectId];
+        
         projectMintPrice = _projectMintPrice[projectId];
     }
 
@@ -197,7 +204,10 @@ contract NftContract is IERC165
         _gasPriceMax = gasPriceMax;
     }
 
-    /** Ideas: What about restricting the gas price */
+    /** Mint a new nft - must be next in sequence for project
+     *
+     * - next tokenId = projectId * projectBucketSize() + _projectTokenCount[projectId]
+     */
     function mint(uint256 tokenId) public payable {
         // Prevent gas war
         require(tx.gasprice <= _gasPriceMax, '~');
@@ -209,6 +219,9 @@ contract NftContract is IERC165
         uint256 projectId = tokenId / PROJECT_BUCKET_SIZE;
         uint256 projectTokenIndex = tokenId % PROJECT_BUCKET_SIZE;
         require(projectTokenIndex < _projectTokenSupply[projectId], 'P' );
+
+        // Require sequential minting (no skipping tokenIds)
+        require(projectTokenIndex == _projectTokenCount[projectId], 'N' );
 
         // Did caller send enough money?
         require(msg.value >= _projectMintPrice[projectId], '$' );

@@ -91,3 +91,13 @@ npx hardhat help
 - Test 17
   - Add gas price limit
   - estimate gas used: 2907122
+
+## Testing 02 - Hardhat
+- Test 01
+  - Tested and debugged
+  - Optimization - 200
+  - Gas Used: 1,541,147
+- Test 02
+  - Optimization - 10
+  - Gas Used: 1,519,347
+
