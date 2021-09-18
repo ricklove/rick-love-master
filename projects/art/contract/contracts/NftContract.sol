@@ -43,6 +43,49 @@ contract NftContract is IERC165
             ;
     }
 
+    // Metadata ---
+    function name() public pure override(IERC721Metadata) returns (string memory) {
+        return 'RickLove';
+    }
+
+    function symbol() public pure override(IERC721Metadata) returns (string memory) {
+        return 'RICKLOVE';
+    }
+
+    string private _baseURI = 'https://ricklove.me/art/_metadata/main/';
+    function setBaseURI(string memory baseURI) public onlyArtist {
+        _baseURI = baseURI;
+    }
+
+    // Open sea contractURI to get open sea metadata
+    // https://docs.opensea.io/docs/contract-level-metadata
+    function contractURI() public view returns (string memory) {
+        return string(abi.encodePacked(_baseURI, 'contract.json'));
+    }
+    // Token Metadata:
+    // https://docs.opensea.io/docs/metadata-standards
+    function tokenURI(uint256 tokenId) public view override(IERC721Metadata) returns (string memory) {
+        return string(abi.encodePacked(_baseURI, _uint2str(tokenId), '.json'));
+    }
+    function _uint2str(uint256 _i) internal pure returns (string memory _uintAsString) {
+        if (_i == 0) {
+            return '0';
+        }
+        uint256 temp = _i;
+        uint256 digits;
+        while (temp != 0) {
+            digits++;
+            temp /= 10;
+        }
+        bytes memory buffer = new bytes(digits);
+        while (_i != 0) {
+            digits -= 1;
+            buffer[digits] = bytes1(uint8(48 + uint256(_i % 10)));
+            _i /= 10;
+        }
+        return string(buffer);
+    }
+
     // Token Ownership ---
     uint256 private _totalSupply;
     function totalSupply() public view returns (uint256) {
@@ -61,51 +104,6 @@ contract NftContract is IERC165
     mapping(address => uint256) private _balances;
     function balanceOf(address user) public view override(IERC721) returns (uint256) {
         return _balances[user];
-    }
-
-    // Transfers ---
-    function safeTransferFrom(address from, address to, uint256 tokenId) public override(IERC721) {
-        safeTransferFrom(from, to, tokenId, '');
-    }
-    function safeTransferFrom(address from, address to, uint256 tokenId, bytes memory data_) public override(IERC721) {
-        require(_isApprovedOrOwner(tokenId), 'o');
-        _safeTransfer(from, to, tokenId, data_);
-    }
-    function transferFrom(address from, address to, uint256 tokenId) public virtual override(IERC721) {
-        require(_isApprovedOrOwner(tokenId), 'o');
-        _transfer(from, to, tokenId);
-    }
-
-    function _safeTransfer(address from, address to, uint256 tokenId, bytes memory data_) internal  {
-        _transfer(from, to, tokenId);
-        _checkReceiver(from, to, tokenId, data_);
-    }
-    function _checkReceiver(address from, address to, uint256 tokenId, bytes memory data_) internal  {
-        
-        // If contract, confirm is receiver
-        uint256 size; 
-        assembly { size := extcodesize(to) }
-        if (size > 0)
-        {
-            bytes4 retval = IERC721Receiver(to).onERC721Received(msg.sender, from, tokenId, data_);
-            require(retval == IERC721Receiver(to).onERC721Received.selector, '!receiver');
-        }
-    }
-
-    function _transfer(address from, address to, uint256 tokenId) internal  {
-        require(ownerOf(tokenId) == from, 'o');
-        require(to != address(0), 't');
-
-        // Clear approvals from the previous owner
-        if(_tokenApprovals[tokenId] != address(0)){
-            _approve(address(0), tokenId);
-        }
-
-        _balances[from] -= 1;
-        _balances[to] += 1;
-        _owners[tokenId] = to;
-
-        emit Transfer(from, to, tokenId);
     }
 
     // Minting (with projects) --- 
@@ -265,48 +263,48 @@ contract NftContract is IERC165
         return (owner == msg.sender || getApproved(tokenId) == msg.sender || isApprovedForAll(owner, msg.sender));
     }
      
-
-
-    // Metadata ---
-    function name() public pure override(IERC721Metadata) returns (string memory) {
-        return 'RickLove';
+// Transfers ---
+    function safeTransferFrom(address from, address to, uint256 tokenId) public override(IERC721) {
+        safeTransferFrom(from, to, tokenId, '');
+    }
+    function safeTransferFrom(address from, address to, uint256 tokenId, bytes memory data_) public override(IERC721) {
+        require(_isApprovedOrOwner(tokenId), 'o');
+        _safeTransfer(from, to, tokenId, data_);
+    }
+    function transferFrom(address from, address to, uint256 tokenId) public virtual override(IERC721) {
+        require(_isApprovedOrOwner(tokenId), 'o');
+        _transfer(from, to, tokenId);
     }
 
-    function symbol() public pure override(IERC721Metadata) returns (string memory) {
-        return 'RICKLOVE';
+    function _safeTransfer(address from, address to, uint256 tokenId, bytes memory data_) internal  {
+        _transfer(from, to, tokenId);
+        _checkReceiver(from, to, tokenId, data_);
     }
-
-    string private _baseURI = 'https://ricklove.me/art/_metadata/main/';
-    function setBaseURI(string memory baseURI) public onlyArtist {
-        _baseURI = baseURI;
-    }
-
-    // Open sea contractURI to get open sea metadata
-    // https://docs.opensea.io/docs/contract-level-metadata
-    function contractURI() public view returns (string memory) {
-        return string(abi.encodePacked(_baseURI, 'contract.json'));
-    }
-    // Token Metadata:
-    // https://docs.opensea.io/docs/metadata-standards
-    function tokenURI(uint256 tokenId) public view override(IERC721Metadata) returns (string memory) {
-        return string(abi.encodePacked(_baseURI, _uint2str(tokenId), '.json'));
-    }
-    function _uint2str(uint256 _i) internal pure returns (string memory _uintAsString) {
-        if (_i == 0) {
-            return '0';
+    function _checkReceiver(address from, address to, uint256 tokenId, bytes memory data_) internal  {
+        
+        // If contract, confirm is receiver
+        uint256 size; 
+        assembly { size := extcodesize(to) }
+        if (size > 0)
+        {
+            bytes4 retval = IERC721Receiver(to).onERC721Received(msg.sender, from, tokenId, data_);
+            require(retval == IERC721Receiver(to).onERC721Received.selector, '!receiver');
         }
-        uint256 temp = _i;
-        uint256 digits;
-        while (temp != 0) {
-            digits++;
-            temp /= 10;
+    }
+
+    function _transfer(address from, address to, uint256 tokenId) internal  {
+        require(ownerOf(tokenId) == from, 'o');
+        require(to != address(0), 't');
+
+        // Clear approvals from the previous owner
+        if(_tokenApprovals[tokenId] != address(0)){
+            _approve(address(0), tokenId);
         }
-        bytes memory buffer = new bytes(digits);
-        while (_i != 0) {
-            digits -= 1;
-            buffer[digits] = bytes1(uint8(48 + uint256(_i % 10)));
-            _i /= 10;
-        }
-        return string(buffer);
+
+        _balances[from] -= 1;
+        _balances[to] += 1;
+        _owners[tokenId] = to;
+
+        emit Transfer(from, to, tokenId);
     }
 }
