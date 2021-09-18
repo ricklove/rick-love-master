@@ -1,3 +1,4 @@
+import { BigNumber } from '@ethersproject/bignumber';
 import { SignerWithAddress } from '@nomiclabs/hardhat-ethers/signers';
 import { expect } from 'chai';
 import { ethers } from 'hardhat';
@@ -17,6 +18,8 @@ describe(`NftContract`, async () => {
 
   });
 
+
+  const PROJ_BUCKET_SIZE = 1000000;
   
   let PROJ_ID = 3;
   let RES_COUNT = 7;
@@ -36,7 +39,7 @@ describe(`NftContract`, async () => {
   });
 
 
-  const getTokenId = (projectId:number, projectTokenIndex:number) => projectId * 1000000 + projectTokenIndex;
+  const getTokenId = (projectId:number, projectTokenIndex:number) => BigNumber.from(projectId).mul(PROJ_BUCKET_SIZE).add(projectTokenIndex);
 
 
   describe(`metadata`, ()=>{
@@ -46,9 +49,30 @@ describe(`NftContract`, async () => {
       expect(contractURI).contain('/contract.json');
     });
 
-    it(`Should return tokenURI`, async ()=>{
-      const tokenURI = await contract.connect(accounts.artist).tokenURI(42)
-      expect(tokenURI).contain('/42.json');
+    it(`Should return tokenURI project 0, first token`, async ()=>{
+        const tokenId = getTokenId(0,0);
+        const tokenURI = await contract.connect(accounts.artist).tokenURI(tokenId)
+        expect(tokenURI).contain(`/${tokenId}.json`);
+    });
+    it(`Should return tokenURI project 0, last token`, async ()=>{
+        const tokenId = getTokenId(0,PROJ_BUCKET_SIZE-1);
+        const tokenURI = await contract.connect(accounts.artist).tokenURI(tokenId)
+        expect(tokenURI).contain(`/${tokenId}.json`);
+    });
+    it(`Should return tokenURI project 1000000, last token`, async ()=>{
+        const tokenId = getTokenId(1000000,PROJ_BUCKET_SIZE-1);
+        const tokenURI = await contract.connect(accounts.artist).tokenURI(tokenId)
+        expect(tokenURI).contain(`/${tokenId}.json`);
+    });
+
+    it(`Should return tokenURIs`, async ()=>{
+      for( let p = 0; p <= 10000; p += 2500 * Math.random()){
+        for( let t = 0; t <= 1000000; t += 250000 * Math.random()){
+          const tokenId = getTokenId(p|0,t|0);
+          const tokenURI = await contract.connect(accounts.artist).tokenURI(tokenId)
+          expect(tokenURI, `tokenId:${tokenId}`).contain(`/${tokenId}.json`);
+        }
+      }
     });
 
     it(`Should change baseURI`, async ()=>{
@@ -96,6 +120,12 @@ describe(`NftContract`, async () => {
 
       await expect(
         contract.connect(accounts.artist).createProject(PROJ_ID, RES_COUNT, MINT_PRICE)
+      ).reverted;
+    });
+
+    it(`Should FAIL to create project too large`, async () => {
+      await expect(
+        contract.connect(accounts.artist).createProject(PROJ_ID, 1000001, MINT_PRICE)
       ).reverted;
     });
 
