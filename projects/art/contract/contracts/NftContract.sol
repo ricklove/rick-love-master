@@ -139,7 +139,7 @@ contract NftContract is IERC165
      */
     function createProject(uint256 projectId, uint32 reserveTokenCount, uint256 projectMintPrice) public onlyArtist {
         // Don't break math (could be ignored if careful externally)
-        require(reserveTokenCount <= PROJECT_BUCKET_SIZE, 'S');
+        require(reserveTokenCount <= PROJECT_BUCKET_SIZE, 'P');
  
         // Ensure project has no tokens
         require(_projectTokenCount[projectId] == 0, 'b');
@@ -175,7 +175,7 @@ contract NftContract is IERC165
         require(projectTokenSupply > _projectTokenCount[projectId], 's');
 
         // Make sure project was created first (it should have a price)
-        require(_projectMintPrice[projectId] > 0, 's');
+        require(_projectMintPrice[projectId] > 0, 'n');
 
         _totalSupply += projectTokenSupply - _projectTokenSupply[projectId];
         _projectTokenSupply[projectId] = projectTokenSupply;
@@ -218,10 +218,10 @@ contract NftContract is IERC165
         // Does project exist & has tokens left
         uint256 projectId = tokenId / PROJECT_BUCKET_SIZE;
         uint256 projectTokenIndex = tokenId % PROJECT_BUCKET_SIZE;
-        require(projectTokenIndex < _projectTokenSupply[projectId], 'P' );
+        require(projectTokenIndex < _projectTokenSupply[projectId], 'c' );
 
         // Require sequential minting (no skipping tokenIds)
-        require(projectTokenIndex == _projectTokenCount[projectId], 'N' );
+        require(projectTokenIndex == _projectTokenCount[projectId], 'i' );
 
         // Did caller send enough money?
         require(msg.value >= _projectMintPrice[projectId], '$' );

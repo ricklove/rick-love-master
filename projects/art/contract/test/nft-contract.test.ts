@@ -105,7 +105,7 @@ describe(`NftContract`, async () => {
     it(`!onlyArtist: Should FAIL to change baseURI`, async () => {
       await expect(
         contract.connect(accounts.other1).setBaseURI('https://test.com/')
-      ).reverted;
+      ).revertedWith('a');
     });
 
   });
@@ -141,7 +141,7 @@ describe(`NftContract`, async () => {
 
       await expect(
         contract.connect(accounts.artist).createProject(PROJ_ID, RES_COUNT, MINT_PRICE)
-      ).reverted;
+      ).revertedWith('b');
     });
 
     // Reserve size cannot be whole project - too much gas since reserves are minted
@@ -154,7 +154,7 @@ describe(`NftContract`, async () => {
     it(`Should FAIL to create project too large`, async () => {
       await expect(
         contract.connect(accounts.artist).createProject(PROJ_ID, PROJ_BUCKET_SIZE+1, MINT_PRICE)
-      ).reverted;
+      ).revertedWith('P');
     });
 
     it(`Should set project supply`, async () => {
@@ -181,7 +181,7 @@ describe(`NftContract`, async () => {
       await contract.connect(accounts.artist).createProject(PROJ_ID, RES_COUNT, MINT_PRICE);
       await expect(
         contract.connect(accounts.artist).setProjectTokenSupply(PROJ_ID,RES_COUNT)
-      ).reverted;
+      ).revertedWith('s');
     });
 
     it(`Should set project supply at max size`, async () => {
@@ -192,13 +192,13 @@ describe(`NftContract`, async () => {
       await contract.connect(accounts.artist).createProject(PROJ_ID, RES_COUNT, MINT_PRICE);
       await expect(
         contract.connect(accounts.artist).setProjectTokenSupply(PROJ_ID,PROJ_BUCKET_SIZE+1)
-      ).reverted;
+      ).revertedWith('S');
     });
 
     it(`Should FAIL to set project supply - if not created`, async () => {
       await expect(
         contract.connect(accounts.artist).setProjectTokenSupply(PROJ_ID,10)
-      ).reverted;
+      ).revertedWith('n');
     });
 
     it(`Should set project mint price`, async () => {
@@ -243,7 +243,7 @@ describe(`NftContract`, async () => {
       const tokenId = getTokenId(PROJ_ID, RES_COUNT + 10);
       await expect(
         contract.connect(accounts.other1).mint(tokenId, { gasPrice: GAS_PRICE_MAX.mul(10), value: MINT_PRICE })
-      ).reverted;
+      ).revertedWith('~');
     });
     
     it(`Should FAIL to mint - if owned (mint twice)`, async () => {
@@ -255,7 +255,7 @@ describe(`NftContract`, async () => {
 
       await expect(
         contract.connect(accounts.other1).mint(tokenId, { value: MINT_PRICE })
-      ).reverted;
+      ).revertedWith('O');
     });
 
     it(`Should FAIL to mint - if not sequential`, async () => {
@@ -265,7 +265,7 @@ describe(`NftContract`, async () => {
       const tokenId = getTokenId(PROJ_ID, RES_COUNT + 1);
       await expect(
         contract.connect(accounts.other1).mint(tokenId, { value: MINT_PRICE })
-      ).reverted;
+      ).revertedWith('i');
     });
 
     it(`Should FAIL to mint - if beyond supply`, async () => {
@@ -277,7 +277,7 @@ describe(`NftContract`, async () => {
       await expect(
         // Can't mint
         contract.connect(accounts.other1).mint(getTokenId(PROJ_ID, RES_COUNT + 1), { value: MINT_PRICE })
-      ).reverted;
+      ).revertedWith('c');
     });
 
     it(`Should FAIL to mint - if not enough money`, async () => {
@@ -287,7 +287,7 @@ describe(`NftContract`, async () => {
       const tokenId = getTokenId(PROJ_ID, RES_COUNT);
       await expect(
         contract.connect(accounts.other1).mint(tokenId, { value: MINT_PRICE - 1 })
-      ).reverted;
+      ).revertedWith('$');
     });
     it(`Should still mint - if too much money`, async () => {
       await contract.connect(accounts.artist).createProject(PROJ_ID, RES_COUNT, MINT_PRICE);
@@ -323,7 +323,7 @@ describe(`NftContract`, async () => {
       await expect(
         contract.connect(accounts.artist)['safeTransferFrom(address,address,uint256)'](
           accounts.artist.address, accounts.artist.address, getTokenId(PROJ_ID+1, 0))
-      ).reverted;
+      ).revertedWith('o');
     });
 
     it(`Should FAIL to transfer unowned token - from real owner`, async () => {
@@ -331,14 +331,14 @@ describe(`NftContract`, async () => {
       await expect(
         contract.connect(accounts.other1).transferFrom(
           accounts.artist.address, accounts.other1.address, getTokenId(PROJ_ID, RES_COUNT-1))
-      ).reverted;
+      ).revertedWith('o');
     });
     it(`Should FAIL to transfer unowned token - from self`, async () => {
       await contract.connect(accounts.artist).createProject(PROJ_ID, RES_COUNT, MINT_PRICE);
       await expect(
         contract.connect(accounts.other1).transferFrom(
           accounts.other1.address, accounts.other2.address, getTokenId(PROJ_ID, RES_COUNT-1))
-      ).reverted;
+      ).revertedWith('o');
     });
     
     it(`Should FAIL to transfer to null address`, async () => {
@@ -346,7 +346,7 @@ describe(`NftContract`, async () => {
       await expect(
         contract.connect(accounts.artist).transferFrom(
           accounts.artist.address, ethers.constants.AddressZero, getTokenId(PROJ_ID, RES_COUNT-1))
-      ).reverted;
+      ).revertedWith('t');
     });
 
   });
@@ -371,7 +371,7 @@ describe(`NftContract`, async () => {
       const tokenId = getTokenId(PROJ_ID, RES_COUNT-1);
       await expect(
         contract.connect(accounts.other1).approve(accounts.other2.address, tokenId)
-      ).reverted;
+      ).revertedWith('o');
     });
 
     it(`Should approve other account - for all`, async () => {
@@ -419,7 +419,7 @@ describe(`NftContract`, async () => {
 
       await expect(
         contract.connect(accounts.other1).transferFrom(accounts.other2.address, accounts.other1.address, tokenId)
-      ).reverted;
+      ).revertedWith('A');
     });
 
   });
