@@ -4,7 +4,7 @@ import { createArtRenderer } from './art-renderer';
 import { ArtRenderer } from './types';
 
 export type ArtworkComponentOptions = { isPaused?: boolean };
-export const createArtworkComponentLoader = async (
+export const createArtworkLiveViewLoader = async (
   artwork: Artwork,
   tokenId: string,
   options?: ArtworkComponentOptions,
@@ -12,11 +12,11 @@ export const createArtworkComponentLoader = async (
   const renderer = await createArtRenderer(artwork, tokenId);
 
   return (props: { config: {} }) => {
-    return <ArtworkComponent {...props} renderer={renderer} options={options ?? {}} />;
+    return <ArtworkLiveView {...props} renderer={renderer} options={options ?? {}} />;
   };
 };
 
-export const ArtworkComponent = (props: { config: {}; renderer: ArtRenderer; options: ArtworkComponentOptions }) => {
+export const ArtworkLiveView = (props: { config: {}; renderer: ArtRenderer; options: ArtworkComponentOptions }) => {
   const size = Math.min(1000, Math.min(window.innerWidth, window.innerHeight));
 
   return (
