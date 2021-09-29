@@ -2,13 +2,14 @@ import React from 'react';
 import { css, Global } from '@emotion/react';
 import { ArtworkMetadata, createRandomGenerator } from '@ricklove/art-common';
 import { ArtworkCard } from './artwork-card';
+import { ArtworkMetadataWithExtra } from './types-components';
 
 // https://jsfiddle.net/6sjkvxgq/
 
 const styles = css`
   .art-gallery {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
     grid-gap: 1em 1em;
     grid-auto-flow: row dense;
   }
@@ -26,7 +27,7 @@ const styles = css`
   }
 `;
 
-export const ArtworkGallery = ({ artworkItems }: { artworkItems: { metadata: ArtworkMetadata }[] }) => {
+export const ArtworkGallery = ({ artworkItems }: { artworkItems: { metadata: ArtworkMetadataWithExtra }[] }) => {
   // TESTING
   const { random } = createRandomGenerator(`42`);
   const artworkItemsSamples = [...new Array(10)].flatMap((_) =>
@@ -39,9 +40,30 @@ export const ArtworkGallery = ({ artworkItems }: { artworkItems: { metadata: Art
       <div className='art-gallery'>
         {artworkItemsSamples.map((x, i) => (
           <React.Fragment key={x.artwork.metadata.key}>
-            <ArtworkCard artwork={x.artwork.metadata} tokenId={x.tokenId} index={i} />
+            <ArtworkTile artwork={x.artwork.metadata} tokenId={x.tokenId} index={i} />
           </React.Fragment>
         ))}
+      </div>
+    </>
+  );
+};
+
+export const ArtworkTile = ({
+  artwork,
+  tokenId,
+  index,
+}: {
+  artwork: ArtworkMetadata;
+  tokenId?: string;
+  index: number;
+}) => {
+  const { random } = createRandomGenerator(artwork.key + tokenId);
+  const styleClass = ([`art-item-wide`, `art-item-tall`] as const)[Math.floor(2 * random())];
+
+  return (
+    <>
+      <div className={`art-item ${styleClass}`}>
+        <ArtworkCard artwork={artwork} tokenId={tokenId} index={index} />
       </div>
     </>
   );
