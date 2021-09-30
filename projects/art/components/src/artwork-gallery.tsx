@@ -1,6 +1,6 @@
 import React from 'react';
 import { css, Global } from '@emotion/react';
-import { ArtworkMetadata, createRandomGenerator } from '@ricklove/art-common';
+import { createRandomGenerator } from '@ricklove/art-common';
 import { ArtworkCard } from './artwork-card';
 import { ArtworkMetadataWithExtra } from './types-components';
 
@@ -53,7 +53,7 @@ export const ArtworkTile = ({
   tokenId,
   index,
 }: {
-  artwork: ArtworkMetadata;
+  artwork: ArtworkMetadataWithExtra;
   tokenId?: string;
   index: number;
 }) => {
