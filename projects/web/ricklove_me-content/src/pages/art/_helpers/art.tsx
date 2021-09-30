@@ -10,7 +10,10 @@ export const artworkList: ArtworkPageData[] = [
   ...artworkListRaw.map((x) => ({ key: x.key, title: x.metadata.projectMetadata.title })),
 ];
 
-const artworkListWithExtra: ArtworkMetadataWithExtra = artworkListRaw.map((x) => ({ ...x, previewImageUrl: `` }));
+const artworkListWithExtra = artworkListRaw.map((x) => ({
+  ...x,
+  metadata: { ...x.metadata, previewImageUrl: `` } as ArtworkMetadataWithExtra,
+}));
 
 export type ArtworkPageData = {
   key: string;
