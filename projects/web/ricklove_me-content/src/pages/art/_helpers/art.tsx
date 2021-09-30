@@ -1,5 +1,7 @@
 import React, { useState } from 'react';
 import { artworkList as artworkListRaw } from '@ricklove/art-build';
+import { ArtworkGallery } from '@ricklove/art-components';
+import { ArtworkMetadataWithExtra } from '@ricklove/art-components';
 import { AppComponentLoader } from '../../../components/app-component-loader';
 import { Layout } from '../../../components/layout/layout';
 import { SEO } from '../../../components/layout/seo';
@@ -7,6 +9,8 @@ import { SEO } from '../../../components/layout/seo';
 export const artworkList: ArtworkPageData[] = [
   ...artworkListRaw.map((x) => ({ key: x.key, title: x.metadata.projectMetadata.title })),
 ];
+
+const artworkListWithExtra: ArtworkMetadataWithExtra = artworkListRaw.map((x) => ({ ...x, previewImageUrl: `` }));
 
 export type ArtworkPageData = {
   key: string;
@@ -53,11 +57,7 @@ export const ArtworkListPage = (_props: {}) => {
       {!artworkItem && (
         <div style={{ margin: 16 }}>
           <div>Art Gallery</div>
-          {artworkList.map((x) => (
-            <div key={x.key} className={`link`} style={{ padding: 4 }} onClick={(e) => openLinkInSameView(e, x)}>
-              <span>🎨 {x.title}</span>
-            </div>
-          ))}
+          <ArtworkGallery artworkItems={artworkListWithExtra} />
         </div>
       )}
       {!!artworkItem && (

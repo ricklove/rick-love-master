@@ -1,5 +1,5 @@
 import { Artwork, ArtworkMetadata } from '@ricklove/art-common';
-import { ArtworkComponentOptions, createArtworkComponentLoader } from '@ricklove/art-components';
+import { ArtworkComponentOptions, createArtworkLiveViewLoader } from '@ricklove/art-components';
 import { metadata as metadata_circles } from '@ricklove/artwork-circles';
 export { ArtworkMetadata } from '@ricklove/art-common';
 
@@ -23,5 +23,5 @@ export const artworkList: ArtworkItem[] = _artworkList
     metadata: x.metadata,
     importModule: x.importModule,
     load: async (tokenId: string, options?: ArtworkComponentOptions) =>
-      await createArtworkComponentLoader(await x.loadArtwork(), tokenId, options),
+      await createArtworkLiveViewLoader(await x.loadArtwork(), tokenId, options),
   }));

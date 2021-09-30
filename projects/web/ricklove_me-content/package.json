@@ -10,6 +10,7 @@
   },
   "dependencies": {
     "@emotion/react": "~11.4.1",
+    "@ricklove/art-components": "*",
     "@ricklove/console-simulator": "*",
     "@ricklove/code-training-lesson-player": "*",
     "@ricklove/games-list": "*",
