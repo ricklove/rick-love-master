@@ -12,6 +12,7 @@ export const artworkList: ArtworkPageData[] = [
 
 const artworkListWithExtra = artworkListRaw.map((x) => ({
   ...x,
+  // TODO: Copy the .art-output preview images to the web and use that image path
   metadata: { ...x.metadata, previewImageUrl: `` } as ArtworkMetadataWithExtra,
 }));
 
