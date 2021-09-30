@@ -525,6 +525,10 @@
       "projectFolder": "projects/art/artwork/circles"
     },
     {
+      "packageName": "@ricklove/artwork-hashing",
+      "projectFolder": "projects/art/artwork/hashing"
+    },
+    {
       "packageName": "@ricklove/artwork-hodlers-quest",
       "projectFolder": "projects/art/artwork/hodlers-quest"
     },

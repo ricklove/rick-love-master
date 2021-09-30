@@ -37,6 +37,8 @@ This is where I put all the cool stuff.
   - `npm --prefix tools\rush-packages run cli -- --d projects/art/artwork/circles --p @ricklove/artwork-circles --t lib`
   - `npm --prefix tools\rush-packages run cli -- --d projects/art/artwork/hodlers-quest --p @ricklove/artwork-hodlers-quest --t lib`
 
+  - `npm --prefix tools\rush-packages run cli -- --d projects/art/artwork/hashing --p @ricklove/artwork-hashing --t lib`
+
   - `npm --prefix tools\rush-packages run cli -- --d projects/art/artwork/gears --p @ricklove/artwork-gears --t lib`
   - `npm --prefix tools\rush-packages run cli -- --d projects/art/artwork/onion --p @ricklove/artwork-onion --t lib`
   - `npm --prefix tools\rush-packages run cli -- --d projects/art/artwork/clock-121 --p @ricklove/artwork-clock-121 --t lib`
