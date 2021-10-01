@@ -610,6 +610,10 @@
       "packageName": "@ricklove/typescript-type-system-adventure",
       "projectFolder": "projects/coding/typescript-type-system-adventure"
     },
+    {
+      "packageName": "@ricklove/brute-force",
+      "projectFolder": "projects/experiments/brute-force"
+    },
     // Web ---
     {
       "packageName": "@ricklove/ricklove_me",
