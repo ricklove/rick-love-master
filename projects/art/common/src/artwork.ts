@@ -24,6 +24,9 @@ export type ArtworkMetadata = {
 
 export type ArtWork_p5 = ArtworkMetadata & {
     kind: 'p5';
+    config?: {
+        webgl?: boolean;
+    };
     render: (tokenId: string) => {
         options?: {
             targetFramesPerSecond?: number;

@@ -10,7 +10,8 @@
   "dependencies": {
     "@ricklove/art-common": "*",
     "@ricklove/art-components": "*",
-    "@ricklove/artwork-circles": "*"
+    "@ricklove/artwork-circles": "*",
+    "@ricklove/artwork-hashing": "*"
   },
   "devDependencies": {
     "@ricklove/config-lib-rig": "*",

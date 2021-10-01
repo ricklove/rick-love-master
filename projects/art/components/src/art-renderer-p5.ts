@@ -19,7 +19,11 @@ export const createArtRenderer_p5 = (artwork: ArtWork_p5, tokenId: string): ArtR
       p.setup = () => {
         console.log(`createArtRenderer_p5 p5Instance.setup`, { artwork: artwork.key, tokenId });
 
-        const result = p.createCanvas(actualCanvasSize.size.x, actualCanvasSize.size.y);
+        const result = p.createCanvas(
+          actualCanvasSize.size.x,
+          actualCanvasSize.size.y,
+          artwork.config?.webgl ? `webgl` : `p2d`,
+        );
         const canvasId = `${Math.random()}`;
         result.id(canvasId);
         canvas = document.getElementById(canvasId) as HTMLCanvasElement;
