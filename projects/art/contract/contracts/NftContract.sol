@@ -194,13 +194,15 @@ contract NftContract is IERC165
 
     /** Gas limit to prevent gas war 
      *
-     * - Also useful to pause minting (set gas price max to 0)
+     * - Also useful to pause all minting (set gas price min > max)
      */
+    uint256 private _gasPriceMin = 10 gwei;
     uint256 private _gasPriceMax = 100 gwei;
-    function getGasPriceMax() public view returns(uint256) {
-        return _gasPriceMax;
+    function getGasPrice() public view returns(uint256, uint256) {
+        return (_gasPriceMin,_gasPriceMax);
     }
-    function setGasPriceMax(uint256 gasPriceMax) public onlyArtist {
+    function setGasPrice(uint256 gasPriceMin, uint256 gasPriceMax) public onlyArtist {
+        _gasPriceMin = gasPriceMin;
         _gasPriceMax = gasPriceMax;
     }
 
@@ -211,6 +213,7 @@ contract NftContract is IERC165
     function mint(uint256 tokenId) public payable {
         // Prevent gas war
         require(tx.gasprice <= _gasPriceMax, '~');
+        require(tx.gasprice >= _gasPriceMin, '~');
 
          // Unowned tokenId
         require(_owners[tokenId] == address(0), 'O' );
