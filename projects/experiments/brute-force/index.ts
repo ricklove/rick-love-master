@@ -1,1 +1,1 @@
-export * from './src/the-greats-answer01.secret';
+export * from './src/cli';

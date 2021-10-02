@@ -141,21 +141,20 @@ yellow: something to do with bullfighting
   const TARGET = `f8eec0d6db1f110801e2771e5effbb2d209720f67e5608d521f96d516387e65b`;
   // const TARGET = TEST_WORDS_HASH;
   const words = `
-TheOldGuitarist             // 💯 | OldGuitarist
-banderillas                 // NOT?!?  | Muleta|espada   |sword|gloves |Descabello | cape
-nobody                      // 💯 | MonaLisa
-TheNewYorkSun|NewYorkSon    // sensationalism  | PennyPress      |TheNewYorkSun|NewYorkSun  // ???
-2019     // ? Maybe         // | 1988 NOT             //   |1515|1964
-time                        // | Narcissus          |daffodil|SeventhStreetBridge|love|flower|swan
-Holland|AubergeRavoux       // ??? 😎🤯🤓 💯 |Helvoirt           |AubergeRavoux      // |Auvers-sur-Oise
-Impressionists              // ! Not ???💯 |Impressionists|Impressionist|AnonymousSociety|LadiesAndGentlemen 
+TheOldGuitarist    // <-- ACTUAL --- PROGRESS: TheOldGuitarist             // 💯 | OldGuitarist
+lance              // <-- ACTUAL --- PROGRESS: banderillas                 // NOT?!?  | Muleta|espada   |sword|gloves |Descabello | cape
+nobody             // <-- ACTUAL --- PROGRESS: nobody                      // 💯 | MonaLisa
+TheNewYorkSun      // <-- ACTUAL --- PROGRESS: TheNewYorkSun|NewYorkSon    // sensationalism  | PennyPress      |TheNewYorkSun|NewYorkSun  // ???
+1518               // <-- ACTUAL --- PROGRESS: 2019     // ? Maybe         // | 1988 NOT             //   |1515|1964
+Rhinoceros horn    // <-- ACTUAL --- PROGRESS: time                        // | Narcissus          |daffodil|SeventhStreetBridge|love|flower|swan
+Auberge Ravoux     // <-- ACTUAL --- PROGRESS: Holland|AubergeRavoux       // ??? 😎🤯🤓 💯 |Helvoirt           |AubergeRavoux      // |Auvers-sur-Oise
+Guerrilla Girls    // <-- ACTUAL --- PROGRESS: Impressionists              // ! Not ???💯 |Impressionists|Impressionist|AnonymousSociety|LadiesAndGentlemen 
 `
     .toLowerCase()
     .trim()
     .split(`\n`)
-    .map((x) => x.trim())
+    .map((x) => x.trim().replace(/\s/g, ``))
     .filter((x) => x)
-    .reverse()
     .map((x) =>
       x
         .split(`//`)[0]
