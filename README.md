@@ -39,6 +39,7 @@ This is where I put all the cool stuff.
 
   - `npm --prefix tools\rush-packages run cli -- --d projects/art/artwork/hashing --p @ricklove/artwork-hashing --t lib`
   - `npm --prefix tools\rush-packages run cli -- --d projects/experiments/brute-force --p @ricklove/brute-force --t node`
+  - `npm --prefix tools\rush-packages run cli -- --d tools/glsl-file-to-string --p @ricklove/glsl-file-to-string --t node`
 
   - `npm --prefix tools\rush-packages run cli -- --d projects/art/artwork/gears --p @ricklove/artwork-gears --t lib`
   - `npm --prefix tools\rush-packages run cli -- --d projects/art/artwork/onion --p @ricklove/artwork-onion --t lib`

@@ -4,8 +4,9 @@
   "type": "module",
   "main": "./lib/index.js",
   "scripts": {
-    "build": "heft test --clean",
-    "build:watch": "heft build"
+    "build": "npm run build:shaders && heft test --clean",
+    "build:watch": "npm run build:shaders && heft build",
+    "build:shaders": "npm --prefix ../../../../tools/glsl-file-to-string run cli -- --d ../../projects/art/artwork/hashing/src/"
   },
   "dependencies": {
     "@ricklove/art-common": "*"

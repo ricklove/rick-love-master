@@ -1,4 +1,6 @@
 import { ArtWork_p5, p5Types } from '@ricklove/art-common';
+import { glsl as glsl_frag } from './example.frag';
+import { glsl as glsl_vert } from './example.vert';
 import { metadata } from './metadata';
 
 export const artwork: ArtWork_p5 = {
@@ -26,36 +28,11 @@ export const artwork: ArtWork_p5 = {
     //   ca: Math.floor(25 + 25 * random()),
     // };
 
-    // the 'varying's are shared between both vertex & fragment shaders
-    const varying = `precision highp float; varying vec2 vPos;`;
-
-    // the vertex shader is called for each vertex
-    const vs = varying + `attribute vec3 aPosition;` + `void main() { vPos = (gl_Position = vec4(aPosition,1.0)).xy; }`;
-
-    // the fragment shader is called for each pixel
-    const fs =
-      varying +
-      `uniform vec2 p;` +
-      `uniform float r;` +
-      `const int I = 500;` +
-      `void main() {` +
-      `  vec2 c = p + vPos * r, z = c;` +
-      `  float n = 0.0;` +
-      `  for (int i = I; i > 0; i --) {` +
-      `    if(z.x*z.x+z.y*z.y > 4.0) {` +
-      `      n = float(i)/float(I);` +
-      `      break;` +
-      `    }` +
-      `    z = vec2(z.x*z.x-z.y*z.y, 2.0*z.x*z.y) + c;` +
-      `  }` +
-      `  gl_FragColor = vec4(0.5-cos(n*17.0)/2.0,0.5-cos(n*13.0)/2.0,0.5-cos(n*23.0)/2.0,1.0);` +
-      `}`;
-
     let mandel = null as null | p5Types.Shader;
 
     return {
       setup: (p5) => {
-        mandel = p5.createShader(vs, fs);
+        mandel = p5.createShader(glsl_vert, glsl_frag);
         p5.shader(mandel);
         p5.noStroke();
         // 'p' is the center point of the Mandelbrot image
