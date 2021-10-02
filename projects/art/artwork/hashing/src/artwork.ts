@@ -1,7 +1,7 @@
 import { ArtWork_p5, p5Types } from '@ricklove/art-common';
-import { glsl as glsl_frag } from './example.frag';
-import { glsl as glsl_vert } from './example.vert';
 import { metadata } from './metadata';
+import { glsl as glsl_vert } from './shaders/identity.vert';
+import { glsl as glsl_frag } from './shaders/xor.frag';
 
 export const artwork: ArtWork_p5 = {
   ...metadata,
@@ -44,7 +44,9 @@ export const artwork: ArtWork_p5 = {
         }
 
         // 'r' is the size of the image in Mandelbrot-space
-        mandel.setUniform(`r`, 1.5 * p5.exp(-6.5 * (1 + p5.sin(p5.millis() / 2000))));
+        // mandel.setUniform(`r`, 1.5 * p5.exp(-6.5 * (1 + p5.sin(p5.millis() / 2000))));
+
+        // Drawing surface
         p5.quad(-1, -1, 1, -1, 1, 1, -1, 1);
       },
     };
