@@ -28,7 +28,7 @@ export const artwork: ArtWork_p5 = {
     //   ca: Math.floor(25 + 25 * random()),
     // };
 
-    const SIZE = 1024;
+    const SIZE = 256;
     let inputImage = null as null | p5Types.Image;
     let spongeGraphics = null as null | p5Types.Graphics;
     let spongeShader = null as null | p5Types.Shader;

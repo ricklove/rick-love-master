@@ -18,8 +18,8 @@ float modI(float a, float b) {
 
 void main() {
   // vec2 st = gl_FragCoord.xy / uResolution.xy;
-  vec2 xy = gl_FragCoord.xy;
-  // vec2 xy = vTextureCoord.xy;
+  // vec2 xy = gl_FragCoord.xy;
+  vec2 xy = vTextureCoord.xy * uResolution.xy;
 
   // vec2 c = p + vPos * r, z = c;
   // float n = 0.0;
@@ -38,7 +38,7 @@ void main() {
   //float r = modI(x, 4.0) <= 0.1 ? 0.5 : 0.0;
   float r = modI(xy.x, 64.) / 64.0;
   float g = modI(xy.y, 64.) / 64.0;
-  float b = 1.0;
+  float b = modI(xy.y, 256.) / 256.0;
 
   gl_FragColor = vec4(r, g, b, 1);
   // gl_FragColor = vec4(1.0, 0.0, 0.0, 1.0);

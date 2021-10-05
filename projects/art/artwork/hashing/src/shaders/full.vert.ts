@@ -1,6 +1,7 @@
 export const glsl = `precision highp float;
 
 attribute highp vec3 aPosition;
+varying highp vec2 vTextureCoord;
 
 void main() {
 
@@ -12,4 +13,7 @@ void main() {
 
     // Send the vertex information on to the fragment shader
     gl_Position = positionVec4;
+
+    // vTextureCoord as topLeft:0 to bottomRight:1
+    vTextureCoord = positionVec4.xy / 2.0;
 }`;
