@@ -41,6 +41,7 @@ specifiers:
   '@rush-temp/example-web-lib': file:./projects/example-web-lib.tgz
   '@rush-temp/games-list': file:./projects/games-list.tgz
   '@rush-temp/github-comments': file:./projects/github-comments.tgz
+  '@rush-temp/glsl-file-to-string': file:./projects/glsl-file-to-string.tgz
   '@rush-temp/react-controls': file:./projects/react-controls.tgz
   '@rush-temp/react-native-lite': file:./projects/react-native-lite.tgz
   '@rush-temp/ricklove-vscode-auto-imports-fix': file:./projects/ricklove-vscode-auto-imports-fix.tgz
@@ -99,6 +100,7 @@ specifiers:
   express: ^4.17.1
   glob: ^7.1.7
   hardhat: ^2.6.4
+  hash-wasm: ~4.9.0
   highlight.js: ~9.1.0
   lodash: ~4.17.21
   mocha: ^8.4.0
@@ -115,7 +117,6 @@ specifiers:
   react-lowlight: ~2.0.0
   react-markdown: ~6.0.3
   rimraf: ~3.0.2
-  sha3: ~2.1.4
   solidity-coverage: ^0.7.17
   ts-node: ~10.2.1
   typechain: ^5.1.2
@@ -165,6 +166,7 @@ dependencies:
   '@rush-temp/example-web-lib': file:projects/example-web-lib.tgz
   '@rush-temp/games-list': file:projects/games-list.tgz
   '@rush-temp/github-comments': file:projects/github-comments.tgz_@babel+core@7.15.0
+  '@rush-temp/glsl-file-to-string': file:projects/glsl-file-to-string.tgz_typescript@4.3.5
   '@rush-temp/react-controls': file:projects/react-controls.tgz_@babel+core@7.15.0
   '@rush-temp/react-native-lite': file:projects/react-native-lite.tgz_@babel+core@7.15.0
   '@rush-temp/ricklove-vscode-auto-imports-fix': file:projects/ricklove-vscode-auto-imports-fix.tgz
@@ -223,6 +225,7 @@ dependencies:
   express: 4.17.1
   glob: 7.1.7
   hardhat: 2.6.4
+  hash-wasm: 4.9.0
   highlight.js: 9.1.0
   lodash: 4.17.21
   mocha: 8.4.0
@@ -239,7 +242,6 @@ dependencies:
   react-lowlight: 2.0.0_highlight.js@9.1.0+react@17.0.2
   react-markdown: 6.0.3_4cd822c6044f4c1a7e1f1fea0e728f12
   rimraf: 3.0.2
-  sha3: 2.1.4
   solidity-coverage: 0.7.17
   ts-node: 10.2.1_70d6492c0feb1eb5d83e62cce7c43fd5
   typechain: 5.1.2_typescript@4.3.5
@@ -15379,7 +15381,7 @@ packages:
     dev: false
 
   file:projects/brute-force.tgz_typescript@4.3.5:
-    resolution: {integrity: sha512-idy6wh2vEAPX7TgM7oyzRNYqc/fVxPkKHkxxQvRfaETN5VOzhvfCLf10pMcVpjgJ20xBpxXUtJWBGSD3lWhAlw==, tarball: file:projects/brute-force.tgz}
+    resolution: {integrity: sha512-ALlrZL80MOlfHRAFyT8aovaml4fh+4Rc9ipfcBmSa08kimXLoyfh86KBAJbr53rIj5hh4N+kW8i8XxPXJwVu3g==, tarball: file:projects/brute-force.tgz}
     id: file:projects/brute-force.tgz
     name: '@rush-temp/brute-force'
     version: 0.0.0
@@ -15622,6 +15624,20 @@ packages:
       react: 17.0.2
     transitivePeerDependencies:
       - '@babel/core'
+    dev: false
+
+  file:projects/glsl-file-to-string.tgz_typescript@4.3.5:
+    resolution: {integrity: sha512-vK8DhV5VFEhMJQTe0oCVeSO6yeD1XmUtLP27k3XVitXTmlBSuotkfGsbYYK9PCHfJ8Mk4+r0fKV7CMYV7r0HOg==, tarball: file:projects/glsl-file-to-string.tgz}
+    id: file:projects/glsl-file-to-string.tgz
+    name: '@rush-temp/glsl-file-to-string'
+    version: 0.0.0
+    dependencies:
+      '@types/node': 12.12.6
+      ts-node: 10.2.1_70d6492c0feb1eb5d83e62cce7c43fd5
+    transitivePeerDependencies:
+      - '@swc/core'
+      - '@swc/wasm'
+      - typescript
     dev: false
 
   file:projects/react-controls.tgz_@babel+core@7.15.0:

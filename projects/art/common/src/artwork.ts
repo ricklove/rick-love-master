@@ -32,6 +32,7 @@ export type ArtWork_p5 = ArtworkMetadata & {
             targetFramesPerSecond?: number;
             targetCanvasSize?: Vector2;
         };
+        preload?: (p5: p5) => void;
         setup?: (p5: p5, args: { canvasSize: Vector2 }) => void;
         draw: (p5: p5, args: { time: number; framesPerSecond: number; canvasSize: Vector2 }) => void;
         destroy?: () => void;

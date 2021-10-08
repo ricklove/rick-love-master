@@ -27,5 +27,8 @@
     "**/.eslintrc.cjs": true
     //"**/tsconfig.json": true
   },
-  "python.linting.enabled": true
+  "python.linting.enabled": true,
+  "[glsl]": {
+    "editor.defaultFormatter": "raczzalan.webgl-glsl-editor"
+  }
 }

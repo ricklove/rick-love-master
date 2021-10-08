@@ -623,6 +623,10 @@
       "packageName": "@ricklove/ricklove_me-content",
       "projectFolder": "projects/web/ricklove_me-content"
     },
+    {
+      "packageName": "@ricklove/glsl-file-to-string",
+      "projectFolder": "tools/glsl-file-to-string"
+    },
     // Tools --
     {
       "packageName": "@ricklove/rush-packages",
