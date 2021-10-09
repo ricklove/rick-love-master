@@ -1,5 +1,6 @@
 import { promises as fs } from 'fs';
 import hash from 'hash-wasm';
+import { portraitsMen } from './research/works/portraits-men';
 const { keccak } = hash;
 
 const getHash = async (value: string) => {
@@ -283,18 +284,17 @@ She hates the games, how many exits from the arena? (Orange)
   const TARGET = `ed04e577862ee91805cfdc2a1eafa3f0030edc74fbcc49100aee05a6ca8f32ab`;
   // const TARGET = TEST_WORDS_HASH;
 
+  const allPortaitsMen = portraitsMen.join(`|`);
   // 5/8 known
   const words = `
-aa|48|57 // 💯💯💯💯💯
-bbbbbbbbbbbb|DoctorGachet|DrGachet|Dr.Gachet|DoctorPaulGachet|PaulGachet|Dickens|CharlesDickens|VanGogh|myself|Corot|FelixRey|CarelFabritius|JosephRoulin|PereTanguy|EugeneBoch // 💯
-cccccccccccc|Vauvenargues|Amboise|Auvers-sur-Oise // Probably 💯 
-dddddddddddddddd|TimesSquareMural|42|TimesSquare|MONA|MuseumOfNewArt // ? 💯
-eee|-26|-100|-5460 |${[...new Array(300)].map((_, i) => `${i - 150}`).join(`|`)}
-fffff|amiga|Amiga1000|MarilynMonroe // 💯💯💯💯💯 |amigaComputer|commodore|commodoreAmiga|amiga1000|A1000|amigaComputer 
-ggggggg|poplars // 💯💯💯 |poplarTrees|figures|magi|PortLligat|tonalities|light|rays|shadows|lines|clouds|eye|eyes|rocks|tesseract|prayingMantis|mantis|farmers|desire|dream|dreams|atoms|time|memory|cubes|clocks|crows|poplars|willows|trees|park|SquareSaint-Pierre|SquareSaintPierre|garrigue|ruins|MontmajourAbbey|henriRousseau // probably not henriRousseau (so was not 5/8)
-hh|27|26|25|24|1|0 //|28|29|30|54|56|58|60|1|death|0|zero|none|${[...new Array(200)]
-    .map((_, i) => `${i}`)
-    .join(`|`)} // ? 💯💯
+48|57 //|${[...new Array(200)].map((_, i) => `${i}`).join(`|`)} // 💯💯💯💯💯
+JozefBlok|Jeanne d’Arc|Michelet|Renan|Weissenbruch|Johan van Gogh|Michelet|Calvin|Leonardo da Vinci|Roy Lichtenstein|Andy Warhol|Salvador Dalí|Vincent Van Gogh|Johan van Gogh|De Ruyter|Rev. Heldring|Weissenbruch|Corot|Millet|Pa|Van der W.|Shakespeare|Victor Hugo|Kee Vos|Frans Hals|M. de Vos|Rembrand|Delaroche|Portaels|Edmond de Goncourt|JanSix|Six|Tanguy|Roulin|Milliet|Seurat|Bruyas|Gauguin|Boch|Besnard|Mathey|Laval|Hetzel|Rotterdam|Russell|Bruyas |Puvis de Chavannes|Rembrandt|Bracquemond|Delacroix|Lautrec|Hirschig|Jesus|Elijah|Dickens|PuvisDeChavannes|Guillaumin|Jo|Arlesienne|Arlésienne|Comte|GeorgeSand|DoctorGachet|DrGachet|Dr.Gachet|DoctorPaulGachet|PaulGachet|Dickens|CharlesDickens|VanGogh|myself|Corot|FelixRey|CarelFabritius|JosephRoulin|PereTanguy|EugeneBoch|GinevraBenci|${allPortaitsMen} // 💯
+Vauvenargues|Amboise|Auvers-sur-Oise|FIGUERES // Probably 💯 
+TimesSquareMural|TimesSquare // |42|MONA|MuseumOfNewArt // ? 💯
+-26|-100|-5460|${[...new Array(200)].map((_, i) => `${i - 100}`).join(`|`)}
+amiga|Amiga1000|MarilynMonroe // 💯💯💯💯💯 |amigaComputer|commodore|commodoreAmiga|amiga1000|A1000|amigaComputer 
+poplars // 💯💯💯 |poplarTrees|figures|magi|PortLligat|tonalities|light|rays|shadows|lines|clouds|eye|eyes|rocks|tesseract|prayingMantis|mantis|farmers|desire|dream|dreams|atoms|time|memory|cubes|clocks|crows|poplars|willows|trees|park|SquareSaint-Pierre|SquareSaintPierre|garrigue|ruins|MontmajourAbbey|henriRousseau // probably not henriRousseau (so was not 5/8)
+27|26|25|24|1|0 //|${[...new Array(200)].map((_, i) => `${i}`).join(`|`)} // ? 💯💯
 `
     .toLowerCase()
     .trim()
@@ -345,8 +345,11 @@ ${[...allWordsCountMap.entries()]
   .map(([value, count]) => `${`${count}`.padStart(6, `0`)}: ${value}`)
   .sort()
   .join(`\n`)}
-${hashAnalysis.sort().join(`\n`)}
+
   `;
+
+  // ${hashAnalysis.sort().join(`\n`)}
+
   await fs.writeFile(`./hash-analysis.txt`, report);
 };
 
@@ -484,7 +487,7 @@ const findHash = async (words: string[][], TARGET: string, indexArray: number[])
         return hash[i];
       }).join(``);
 
-      if (countSame > 12){
+      if (countSame > 1){
         //console.log(`${bytesSame} ${input}`);
         const inputWithSpaces = [
             words[i0][j0],
