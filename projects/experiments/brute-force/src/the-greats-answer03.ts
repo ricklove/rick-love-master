@@ -291,10 +291,10 @@ She hates the games, how many exits from the arena? (Orange)
 JozefBlok|Jeanne d’Arc|Michelet|Renan|Weissenbruch|Johan van Gogh|Michelet|Calvin|Leonardo da Vinci|Roy Lichtenstein|Andy Warhol|Salvador Dalí|Vincent Van Gogh|Johan van Gogh|De Ruyter|Rev. Heldring|Weissenbruch|Corot|Millet|Pa|Van der W.|Shakespeare|Victor Hugo|Kee Vos|Frans Hals|M. de Vos|Rembrand|Delaroche|Portaels|Edmond de Goncourt|JanSix|Six|Tanguy|Roulin|Milliet|Seurat|Bruyas|Gauguin|Boch|Besnard|Mathey|Laval|Hetzel|Rotterdam|Russell|Bruyas |Puvis de Chavannes|Rembrandt|Bracquemond|Delacroix|Lautrec|Hirschig|Jesus|Elijah|Dickens|PuvisDeChavannes|Guillaumin|Jo|Arlesienne|Arlésienne|Comte|GeorgeSand|DoctorGachet|DrGachet|Dr.Gachet|DoctorPaulGachet|PaulGachet|Dickens|CharlesDickens|VanGogh|myself|Corot|FelixRey|CarelFabritius|JosephRoulin|PereTanguy|EugeneBoch|GinevraBenci|${allPortaitsMen} // 💯
 Vauvenargues|Amboise|Auvers-sur-Oise|FIGUERES // Probably 💯 
 TimesSquareMural|TimesSquare // |42|MONA|MuseumOfNewArt // ? 💯
--26|-100|-5460|${[...new Array(200)].map((_, i) => `${i - 100}`).join(`|`)}
-amiga|Amiga1000|MarilynMonroe // 💯💯💯💯💯 |amigaComputer|commodore|commodoreAmiga|amiga1000|A1000|amigaComputer 
+78|-26|-100|-5460|${[...new Array(200)].map((_, i) => `${i - 100}`).join(`|`)}
+Amiga1000|amiga|MarilynMonroe // 💯💯💯💯💯 |amigaComputer|commodore|commodoreAmiga|amiga1000|A1000|amigaComputer 
 poplars // 💯💯💯 |poplarTrees|figures|magi|PortLligat|tonalities|light|rays|shadows|lines|clouds|eye|eyes|rocks|tesseract|prayingMantis|mantis|farmers|desire|dream|dreams|atoms|time|memory|cubes|clocks|crows|poplars|willows|trees|park|SquareSaint-Pierre|SquareSaintPierre|garrigue|ruins|MontmajourAbbey|henriRousseau // probably not henriRousseau (so was not 5/8)
-27|26|25|24|1|0 //|${[...new Array(200)].map((_, i) => `${i}`).join(`|`)} // ? 💯💯
+24|27|26|25|1|0 //|${[...new Array(200)].map((_, i) => `${i}`).join(`|`)} // ? 💯💯
 `
     .toLowerCase()
     .trim()
@@ -317,6 +317,7 @@ poplars // 💯💯💯 |poplarTrees|figures|magi|PortLligat|tonalities|light|ra
       words.map((w) => [...w.slice(0, 6)]),
       TARGET,
       indexArray,
+      true,
     )
   ) {
     log(`WOW!!!!!`);
@@ -324,7 +325,7 @@ poplars // 💯💯💯 |poplarTrees|figures|magi|PortLligat|tonalities|light|ra
   }
 
   // Full check
-  if (await findHash(words, TARGET, indexArray)) {
+  if (await findHash(words, TARGET, indexArray, false)) {
     log(`WOW!!!!!`);
     return;
   }
@@ -354,7 +355,7 @@ ${[...allWordsCountMap.entries()]
 };
 
 const hashAnalysis = [] as string[];
-const findHash = async (words: string[][], TARGET: string, indexArray: number[]) => {
+const findHash = async (words: string[][], TARGET: string, indexArray: number[], enableAnalysis: boolean) => {
   log(`words`, words.join(` `));
 
   let i = 0;
@@ -466,40 +467,42 @@ const findHash = async (words: string[][], TARGET: string, indexArray: number[])
         log(`TARGET`, TARGET);
       }
 
-      let countSame = 0;
-      let countSameInRow = 0;
-      let maxCountSameInRow = 0;
-      let iCountSameInRow = 0;
-      let iMaxCountSameInRow = 0;
-      const bytesSame = indexArray.map(i => {
-        if (hash[i] !== TARGET[i]){
-          countSameInRow = 0;
-          iCountSameInRow = i + 1;
-          return `_`;
-        }
+      if (enableAnalysis){
+        let countSame = 0;
+        let countSameInRow = 0;
+        let maxCountSameInRow = 0;
+        let iCountSameInRow = 0;
+        let iMaxCountSameInRow = 0;
+        const bytesSame = indexArray.map(i => {
+          if (hash[i] !== TARGET[i]){
+            countSameInRow = 0;
+            iCountSameInRow = i + 1;
+            return `_`;
+          }
 
-        countSameInRow++;
-        if (countSameInRow > maxCountSameInRow){
-          maxCountSameInRow = countSameInRow;
-          iMaxCountSameInRow = iCountSameInRow;
-        }
-        countSame++;
-        return hash[i];
-      }).join(``);
+          countSameInRow++;
+          if (countSameInRow > maxCountSameInRow){
+            maxCountSameInRow = countSameInRow;
+            iMaxCountSameInRow = iCountSameInRow;
+          }
+          countSame++;
+          return hash[i];
+        }).join(``);
 
-      if (countSame > 1){
-        //console.log(`${bytesSame} ${input}`);
-        const inputWithSpaces = [
-            words[i0][j0],
-            words[i1][j1],
-            words[i2][j2],
-            words[i3][j3],
-            words[i4][j4],
-            words[i5][j5],
-            words[i6][j6],
-            words[i7][j7],
-        ].join(` `);
-        hashAnalysis.push(`${`${countSame}`.padStart(5, `0`)} ${bytesSame} ${inputWithSpaces}`);
+        if (countSame > 1){
+          //console.log(`${bytesSame} ${input}`);
+          const inputWithSpaces = [
+              words[i0][j0],
+              words[i1][j1],
+              words[i2][j2],
+              words[i3][j3],
+              words[i4][j4],
+              words[i5][j5],
+              words[i6][j6],
+              words[i7][j7],
+          ].join(` `);
+          hashAnalysis.push(`${`${countSame}`.padStart(5, `0`)} ${bytesSame} ${inputWithSpaces}`);
+        }
       }
 
       if (hash === TARGET){
