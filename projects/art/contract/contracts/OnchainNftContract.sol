@@ -192,28 +192,11 @@ contract OnchainNftContract is IERC165
         _projectMintPrice[projectId] = projectMintPrice;
     }
 
-    /** Gas limit to prevent gas war 
-     *
-     * - Also useful to pause all minting (set gas price min > max)
-     */
-    uint256 private _gasPriceMin = 10 gwei;
-    uint256 private _gasPriceMax = 100 gwei;
-    function getGasPrice() public view returns(uint256, uint256) {
-        return (_gasPriceMin,_gasPriceMax);
-    }
-    function setGasPrice(uint256 gasPriceMin, uint256 gasPriceMax) public onlyArtist {
-        _gasPriceMin = gasPriceMin;
-        _gasPriceMax = gasPriceMax;
-    }
-
     /** Mint a new nft - must be next in sequence for project
      *
      * - next tokenId = projectId * projectBucketSize() + _projectTokenCount[projectId]
      */
     function mint(uint256 tokenId) public payable {
-        // Prevent gas war
-        require(tx.gasprice <= _gasPriceMax, '~');
-        require(tx.gasprice >= _gasPriceMin, '~');
 
          // Unowned tokenId
         require(_owners[tokenId] == address(0), 'O' );

@@ -27,7 +27,6 @@ interface OnchainNftContractInterface extends ethers.utils.Interface {
     "contractURI()": FunctionFragment;
     "createProject(uint256,uint32,uint256)": FunctionFragment;
     "getApproved(uint256)": FunctionFragment;
-    "getGasPrice()": FunctionFragment;
     "isApprovedForAll(address,address)": FunctionFragment;
     "mint(uint256)": FunctionFragment;
     "name()": FunctionFragment;
@@ -38,7 +37,6 @@ interface OnchainNftContractInterface extends ethers.utils.Interface {
     "safeTransferFrom(address,address,uint256)": FunctionFragment;
     "setApprovalForAll(address,bool)": FunctionFragment;
     "setBaseURI(string)": FunctionFragment;
-    "setGasPrice(uint256,uint256)": FunctionFragment;
     "setProjectMintPrice(uint256,uint32)": FunctionFragment;
     "setProjectTokenSupply(uint256,uint32)": FunctionFragment;
     "supportsInterface(bytes4)": FunctionFragment;
@@ -64,10 +62,6 @@ interface OnchainNftContractInterface extends ethers.utils.Interface {
   encodeFunctionData(
     functionFragment: "getApproved",
     values: [BigNumberish]
-  ): string;
-  encodeFunctionData(
-    functionFragment: "getGasPrice",
-    values?: undefined
   ): string;
   encodeFunctionData(
     functionFragment: "isApprovedForAll",
@@ -100,10 +94,6 @@ interface OnchainNftContractInterface extends ethers.utils.Interface {
     values: [string, boolean]
   ): string;
   encodeFunctionData(functionFragment: "setBaseURI", values: [string]): string;
-  encodeFunctionData(
-    functionFragment: "setGasPrice",
-    values: [BigNumberish, BigNumberish]
-  ): string;
   encodeFunctionData(
     functionFragment: "setProjectMintPrice",
     values: [BigNumberish, BigNumberish]
@@ -145,10 +135,6 @@ interface OnchainNftContractInterface extends ethers.utils.Interface {
     data: BytesLike
   ): Result;
   decodeFunctionResult(
-    functionFragment: "getGasPrice",
-    data: BytesLike
-  ): Result;
-  decodeFunctionResult(
     functionFragment: "isApprovedForAll",
     data: BytesLike
   ): Result;
@@ -176,10 +162,6 @@ interface OnchainNftContractInterface extends ethers.utils.Interface {
     data: BytesLike
   ): Result;
   decodeFunctionResult(functionFragment: "setBaseURI", data: BytesLike): Result;
-  decodeFunctionResult(
-    functionFragment: "setGasPrice",
-    data: BytesLike
-  ): Result;
   decodeFunctionResult(
     functionFragment: "setProjectMintPrice",
     data: BytesLike
@@ -300,8 +282,6 @@ export class OnchainNftContract extends BaseContract {
       overrides?: CallOverrides
     ): Promise<[string]>;
 
-    getGasPrice(overrides?: CallOverrides): Promise<[BigNumber, BigNumber]>;
-
     isApprovedForAll(
       owner: string,
       operator: string,
@@ -361,12 +341,6 @@ export class OnchainNftContract extends BaseContract {
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
 
-    setGasPrice(
-      gasPriceMin: BigNumberish,
-      gasPriceMax: BigNumberish,
-      overrides?: Overrides & { from?: string | Promise<string> }
-    ): Promise<ContractTransaction>;
-
     setProjectMintPrice(
       projectId: BigNumberish,
       projectMintPrice: BigNumberish,
@@ -422,8 +396,6 @@ export class OnchainNftContract extends BaseContract {
     tokenId: BigNumberish,
     overrides?: CallOverrides
   ): Promise<string>;
-
-  getGasPrice(overrides?: CallOverrides): Promise<[BigNumber, BigNumber]>;
 
   isApprovedForAll(
     owner: string,
@@ -481,12 +453,6 @@ export class OnchainNftContract extends BaseContract {
     overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
 
-  setGasPrice(
-    gasPriceMin: BigNumberish,
-    gasPriceMax: BigNumberish,
-    overrides?: Overrides & { from?: string | Promise<string> }
-  ): Promise<ContractTransaction>;
-
   setProjectMintPrice(
     projectId: BigNumberish,
     projectMintPrice: BigNumberish,
@@ -540,8 +506,6 @@ export class OnchainNftContract extends BaseContract {
       overrides?: CallOverrides
     ): Promise<string>;
 
-    getGasPrice(overrides?: CallOverrides): Promise<[BigNumber, BigNumber]>;
-
     isApprovedForAll(
       owner: string,
       operator: string,
@@ -591,12 +555,6 @@ export class OnchainNftContract extends BaseContract {
     ): Promise<void>;
 
     setBaseURI(baseURI: string, overrides?: CallOverrides): Promise<void>;
-
-    setGasPrice(
-      gasPriceMin: BigNumberish,
-      gasPriceMax: BigNumberish,
-      overrides?: CallOverrides
-    ): Promise<void>;
 
     setProjectMintPrice(
       projectId: BigNumberish,
@@ -708,8 +666,6 @@ export class OnchainNftContract extends BaseContract {
       overrides?: CallOverrides
     ): Promise<BigNumber>;
 
-    getGasPrice(overrides?: CallOverrides): Promise<BigNumber>;
-
     isApprovedForAll(
       owner: string,
       operator: string,
@@ -760,12 +716,6 @@ export class OnchainNftContract extends BaseContract {
 
     setBaseURI(
       baseURI: string,
-      overrides?: Overrides & { from?: string | Promise<string> }
-    ): Promise<BigNumber>;
-
-    setGasPrice(
-      gasPriceMin: BigNumberish,
-      gasPriceMax: BigNumberish,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
 
@@ -829,8 +779,6 @@ export class OnchainNftContract extends BaseContract {
       overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
 
-    getGasPrice(overrides?: CallOverrides): Promise<PopulatedTransaction>;
-
     isApprovedForAll(
       owner: string,
       operator: string,
@@ -881,12 +829,6 @@ export class OnchainNftContract extends BaseContract {
 
     setBaseURI(
       baseURI: string,
-      overrides?: Overrides & { from?: string | Promise<string> }
-    ): Promise<PopulatedTransaction>;
-
-    setGasPrice(
-      gasPriceMin: BigNumberish,
-      gasPriceMax: BigNumberish,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
 
