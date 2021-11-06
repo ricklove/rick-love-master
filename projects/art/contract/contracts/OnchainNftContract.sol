@@ -44,46 +44,53 @@ contract OnchainNftContract is IERC165
     }
 
     // Metadata ---
-    function name() public pure override(IERC721Metadata) returns (string memory) {
-        return 'RickLove';
+    string private _name;
+    string private _symbol;
+    string private _contractJson;
+    string private _tokenJson_beforeName;
+    string private _tokenJson_afterNameBeforeImage;
+    string private _tokenJson_afterImage;
+
+    function setupProject(
+        string memory name_,
+        string memory symbol_, 
+        string memory contractJson, 
+        string memory tokenJson_beforeName,
+        string memory tokenJson_afterNameBeforeImage,
+        string memory tokenJson_afterImage
+    ) public payable onlyArtist {
+        _name= name_;
+        _symbol= symbol_;
+        _contractJson= contractJson;
+        _tokenJson_beforeName= tokenJson_beforeName;
+        _tokenJson_afterNameBeforeImage= tokenJson_afterNameBeforeImage;
+        _tokenJson_afterImage= tokenJson_afterImage;
     }
 
-    function symbol() public pure override(IERC721Metadata) returns (string memory) {
-        return 'RICKLOVE';
+    function name() public view override(IERC721Metadata) returns (string memory) {
+        return _name;
     }
 
-    string private _baseURI = 'https://ricklove.me/art/_metadata/main/';
-    function setBaseURI(string memory baseURI) public onlyArtist {
-        _baseURI = baseURI;
+    function symbol() public view override(IERC721Metadata) returns (string memory) {
+        return _symbol;
     }
 
     // Open sea contractURI to get open sea metadata
     // https://docs.opensea.io/docs/contract-level-metadata
     function contractURI() public view returns (string memory) {
-        return string(abi.encodePacked(_baseURI, 'contract.json'));
+        return _contractJson;
     }
+
     // Token Metadata:
     // https://docs.opensea.io/docs/metadata-standards
     function tokenURI(uint256 tokenId) public view override(IERC721Metadata) returns (string memory) {
-        return string(abi.encodePacked(_baseURI, _uint2str(tokenId), '.json'));
-    }
-    function _uint2str(uint256 _i) internal pure returns (string memory _uintAsString) {
-        if (_i == 0) {
-            return '0';
-        }
-        uint256 temp = _i;
-        uint256 digits;
-        while (temp != 0) {
-            digits++;
-            temp /= 10;
-        }
-        bytes memory buffer = new bytes(digits);
-        while (_i != 0) {
-            digits -= 1;
-            buffer[digits] = bytes1(uint8(48 + uint256(_i % 10)));
-            _i /= 10;
-        }
-        return string(buffer);
+        return string(abi.encodePacked(
+            _tokenJson_beforeName, 
+            _tokenName[tokenId], 
+            _tokenJson_afterNameBeforeImage,
+            _tokenImageData[tokenId], 
+            _tokenJson_afterImage
+        ));
     }
 
     // Token Ownership ---
@@ -106,120 +113,29 @@ contract OnchainNftContract is IERC165
         return _balances[user];
     }
 
-    // Minting (with projects) --- 
-    uint32 constant PROJECT_BUCKET_SIZE = 1000000;
-    function projectBucketSize() pure public returns (uint32) {
-        return PROJECT_BUCKET_SIZE;
-    } 
-
-    uint256 private _projectIdLast;
-    mapping (uint256 => uint32) private _projectTokenSupply;
-    mapping (uint256 => uint32) private _projectTokenCount;
-    mapping (uint256 => uint256) private _projectMintPrice;
-
-    function projectIdLast() view public returns (uint256) {
-        return _projectIdLast;
-    } 
-    function projectDetails(uint256 projectId) view public returns (uint32 projectTokenSupply, uint32 projectTokenCount, uint256 projectMintPrice) {
-        // Allowed to mint
-        projectTokenSupply = _projectTokenSupply[projectId];
-        // Minted (and also the projectTokenIndex of the next to mint for this project)
-        projectTokenCount = _projectTokenCount[projectId];
-        
-        projectMintPrice = _projectMintPrice[projectId];
+    // Token Data --- 
+    mapping (uint256 => string) private _tokenName;
+    mapping (uint256 => string) private _tokenImageData;
+    function getTokenData(uint256 tokenId) public view returns (uint256, string memory, string memory) {
+        return (
+            tokenId, 
+            _tokenName[tokenId],
+            _tokenImageData[tokenId]
+        );
     }
 
-
-    /** set project data (Control mintability)
-     *
-     * Avoid skipping projectIds for new projects - since projectIdLast = max(projectIds)
-     *
-     * - newProjectId = projectIdLast()
-     * 
+    /** Create a new nft
      */
-    function createProject(uint256 projectId, uint32 reserveTokenCount, uint256 projectMintPrice) public onlyArtist {
-        // Don't break math (could be ignored if careful externally)
-        require(reserveTokenCount <= PROJECT_BUCKET_SIZE, 'P');
- 
-        // Ensure project has no tokens
-        require(_projectTokenCount[projectId] == 0, 'b');
- 
+    function createToken(uint256 tokenId, string memory tokenName, string memory tokenImageData ) public payable onlyArtist {
 
-        _projectIdLast = projectId > _projectIdLast ? projectId : _projectIdLast;
-
-        _totalSupply += reserveTokenCount;
-        _projectTokenSupply[projectId] = reserveTokenCount;
-        _projectTokenCount[projectId] = reserveTokenCount;
-        _projectMintPrice[projectId] = projectMintPrice;
-
-        // Transfer each token to _artist
-        _balances[_artist] += reserveTokenCount;
-
-        for(uint32 i = 0; i < reserveTokenCount; i++){
-            uint256 tokenId = projectId * PROJECT_BUCKET_SIZE + i;
-            _owners[tokenId] = _artist;
-            emit Transfer(address(0), _artist, tokenId);
-        }
-    }
-
-    /** Enable/Disable minting
-     *
-     * - Enable minting (drop):  (setProjectTokenSupply(projectId, projectTokenSupply))
-     * - Disable minting (pause): (setProjectTokenSupply(projectId, project(projectId).projectTokenCount))
-     *
-     */
-    function setProjectTokenSupply(uint256 projectId, uint32 projectTokenSupply) public onlyArtist {
-        // Don't break math (could be ignored if careful externally)
-        require(projectTokenSupply <= PROJECT_BUCKET_SIZE, 'S');
-        // Don't hide existing tokens
-        require(projectTokenSupply > _projectTokenCount[projectId], 's');
-
-        // Make sure project was created first (it should have a price)
-        require(_projectMintPrice[projectId] > 0, 'n');
-
-        _totalSupply += projectTokenSupply - _projectTokenSupply[projectId];
-        _projectTokenSupply[projectId] = projectTokenSupply;
-    }
-
-    /** Change the project mint price
-     *
-     * This enables manually changing price after createProject:
-     * 
-     * - Auctions?
-     * - Reverse Auctions - Increase Price, etc.
-     */
-    function setProjectMintPrice(uint256 projectId, uint32 projectMintPrice) public onlyArtist {
-        _projectMintPrice[projectId] = projectMintPrice;
-    }
-
-    /** Mint a new nft - must be next in sequence for project
-     *
-     * - next tokenId = projectId * projectBucketSize() + _projectTokenCount[projectId]
-     */
-    function mint(uint256 tokenId) public payable {
-
-         // Unowned tokenId
+        // Unowned tokenId
         require(_owners[tokenId] == address(0), 'O' );
 
-        // Does project exist & has tokens left
-        uint256 projectId = tokenId / PROJECT_BUCKET_SIZE;
-        uint256 projectTokenIndex = tokenId % PROJECT_BUCKET_SIZE;
-        require(projectTokenIndex < _projectTokenSupply[projectId], 'c' );
-
-        // Require sequential minting (no skipping tokenIds)
-        require(projectTokenIndex == _projectTokenCount[projectId], 'i' );
-
-        // Did caller send enough money?
-        require(msg.value >= _projectMintPrice[projectId], '$' );
-
-        // Pay Artist (no reentry vulnerability since _artist is trusted and using exactly msg.value)
-        // https://consensys.net/diligence/blog/2019/09/stop-using-soliditys-transfer-now/
-        (bool success, ) = _artist.call{ value: msg.value }("");
-        require(success, 'F');
+        _tokenName[tokenId] = tokenName;
+        _tokenImageData[tokenId] = tokenImageData;
 
         _balances[msg.sender] += 1;
         _owners[tokenId] = msg.sender;
-        _projectTokenCount[projectId]++;
     
         emit Transfer(address(0), msg.sender, tokenId);
     }
