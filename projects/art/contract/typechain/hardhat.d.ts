@@ -32,6 +32,10 @@ declare module "hardhat/types/runtime" {
       name: "NftContract",
       signerOrOptions?: ethers.Signer | FactoryOptions
     ): Promise<Contracts.NftContract__factory>;
+    getContractFactory(
+      name: "OnchainNftContract",
+      signerOrOptions?: ethers.Signer | FactoryOptions
+    ): Promise<Contracts.OnchainNftContract__factory>;
 
     // default types
     getContractFactory(

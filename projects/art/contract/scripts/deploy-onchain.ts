@@ -14,12 +14,12 @@ async function main() {
   // await hre.run('compile');
 
   // We get the contract to deploy
-  const NftContract = await hre.ethers.getContractFactory(`NftContract`);
+  const NftContract = await hre.ethers.getContractFactory(`OnchainNftContract`);
   const contract = await NftContract.deploy();
 
   const result = await contract.deployed();
 
-  console.log(`NftContract deployed to:`, { address: contract.address });
+  console.log(`Onchain NftContract deployed to:`, { address: contract.address });
 }
 
 // We recommend this pattern to be able to use async/await everywhere
