@@ -67,12 +67,12 @@ contract OnchainNftContract is IERC165
         string memory tokenJson_afterNameBeforeImage,
         string memory tokenJson_afterImage
     ) public payable onlyArtist {
-        _name= name_;
-        _symbol= symbol_;
-        _contractJson= contractJson;
-        _tokenJson_beforeName= tokenJson_beforeName;
-        _tokenJson_afterNameBeforeImage= tokenJson_afterNameBeforeImage;
-        _tokenJson_afterImage= tokenJson_afterImage;
+        _name = name_;
+        _symbol = symbol_;
+        _contractJson = contractJson;
+        _tokenJson_beforeName = tokenJson_beforeName;
+        _tokenJson_afterNameBeforeImage = tokenJson_afterNameBeforeImage;
+        _tokenJson_afterImage = tokenJson_afterImage;
     }
 
     function name() public view override(IERC721Metadata) returns (string memory) {
