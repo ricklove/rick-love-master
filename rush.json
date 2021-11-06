@@ -533,6 +533,10 @@
       "projectFolder": "projects/art/artwork/hodlers-quest"
     },
     {
+      "packageName": "@ricklove/punkscape-artathon",
+      "projectFolder": "projects/art/artwork/punkscape-artathon"
+    },
+    {
       "packageName": "@ricklove/art-common",
       "projectFolder": "projects/art/common"
     },
