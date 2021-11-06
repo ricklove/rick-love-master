@@ -47,6 +47,14 @@ contract OnchainNftContract is IERC165
     string private _name;
     string private _symbol;
     string private _contractJson;
+
+    /**
+{
+    "name": "{tokenName}",
+    "description": "This is some great art!", 
+    "image": "<svg width='100%' height='100%' viewBox='0 0 32 32' xmlns='http://www.w3.org/2000/svg' xmlns:svg='http://www.w3.org/2000/svg' xmlns:xlink='http://www.w3.org/1999/xlink'><image width='100%' height='100%' style='image-rendering:pixelated; image-rendering:crisp-edges' xlink:href='data:image/webp;base64,{tokenImage}'/></svg>", 
+}
+     */
     string private _tokenJson_beforeName;
     string private _tokenJson_afterNameBeforeImage;
     string private _tokenJson_afterImage;
@@ -114,8 +122,12 @@ contract OnchainNftContract is IERC165
     }
 
     // Token Data --- 
+
+    /** The token name */
     mapping (uint256 => string) private _tokenName;
+    /** The token image base 64 */
     mapping (uint256 => string) private _tokenImageData;
+
     function getTokenData(uint256 tokenId) public view returns (uint256, string memory, string memory) {
         return (
             tokenId, 
@@ -126,7 +138,7 @@ contract OnchainNftContract is IERC165
 
     /** Create a new nft
      */
-    function createToken(uint256 tokenId, string memory tokenName, string memory tokenImageData ) public payable onlyArtist {
+    function createToken(uint256 tokenId, string memory tokenName, string memory tokenImageData) public payable onlyArtist {
 
         // Unowned tokenId
         require(_owners[tokenId] == address(0), 'O' );
