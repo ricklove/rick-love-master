@@ -52,7 +52,7 @@ describe(`OnchainNftContract`, async () => {
       ;
     const json = Buffer.from(base64, 'base64').toString();
 
-    console.log(`json`, { base64, json });
+    // console.log(`json`, { base64, json });
     return JSON.parse(json) as TReturn;
   };
 
@@ -93,7 +93,8 @@ describe(`OnchainNftContract`, async () => {
       const contractURI = await contract.connect(accounts.artist).contractURI();
       const actualContractJson = parseBase64Json<typeof contractJsonObj>(contractURI);
 
-      expect(actualContractJson).contain(contractJson);
+      expect(actualContractJson.name).contain(contractJsonObj.name);
+      expect(actualContractJson.image).contain(contractJsonObj.image);
     });
   });
 
