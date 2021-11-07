@@ -38,7 +38,7 @@ describe(`NftContract`, async () => {
         GAS_PRICE_MIN,
       });
       GAS_PRICE_MAX = actualGasPrice ?? GAS_PRICE_MAX;
-      GAS_PRICE_MIN = actualGasPrice.sub(ethers.utils.parseUnits(`1`, 9)) ?? GAS_PRICE_MIN;
+      GAS_PRICE_MIN = actualGasPrice.div(2) ?? GAS_PRICE_MIN;
     }
 
     await contract.connect(accounts.artist).setGasPrice(GAS_PRICE_MIN, GAS_PRICE_MAX);

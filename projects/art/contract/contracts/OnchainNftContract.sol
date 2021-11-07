@@ -138,10 +138,11 @@ contract OnchainNftContract is IERC165
 
     /** Create a new nft
      */
-    function createToken(uint256 tokenId, string memory tokenName, string memory tokenImageData) public payable onlyArtist {
+    function createToken(uint256 tokenId, string memory tokenName, string memory tokenImageData) public payable onlyArtist returns (uint256) {
 
-        // Unowned tokenId
-        require(_owners[tokenId] == address(0), 'O' );
+        // nextTokenId = _totalSupply
+        require(_totalSupply == tokenId, 'n' );
+        _totalSupply++;
 
         _tokenName[tokenId] = tokenName;
         _tokenImageData[tokenId] = tokenImageData;
@@ -150,6 +151,8 @@ contract OnchainNftContract is IERC165
         _owners[tokenId] = msg.sender;
     
         emit Transfer(address(0), msg.sender, tokenId);
+
+        return tokenId;
     }
 
     // Transfers ---
