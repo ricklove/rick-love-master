@@ -93,19 +93,24 @@ contract OnchainNftContract is IERC165
         string memory jsonBase64 = Base64.encode(bytes(_contractJson));
         return string(abi.encodePacked('data:application/json;base64,', jsonBase64));
     }
+    function contractJson() public view returns (string memory) {
+        return _contractJson;
+    }
 
     // Token Metadata:
     // https://docs.opensea.io/docs/metadata-standards
     function tokenURI(uint256 tokenId) public view override(IERC721Metadata) returns (string memory) {
-
-        string memory jsonBase64 = Base64.encode(bytes(string(abi.encodePacked(
+        string memory jsonBase64 = Base64.encode(bytes(tokenJson(tokenId)));
+        return string(abi.encodePacked('data:application/json;base64,', jsonBase64));
+    }
+    function tokenJson(uint256 tokenId) public view returns (string memory) {
+        return string(abi.encodePacked(
             _tokenJson_beforeName, 
             _tokenName[tokenId], 
             _tokenJson_afterNameBeforeImage,
             _tokenImageData[tokenId], 
             _tokenJson_afterImage
-        ))));
-        return string(abi.encodePacked('data:application/json;base64,', jsonBase64));
+        ));
     }
 
     // Token Ownership ---

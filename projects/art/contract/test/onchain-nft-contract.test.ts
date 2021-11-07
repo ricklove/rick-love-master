@@ -90,6 +90,14 @@ describe(`OnchainNftContract`, async () => {
     });
 
     it(`Should return contractJson`, async () => {
+      const contractJsonText = await contract.connect(accounts.artist).contractJson();
+      const actualContractJson = JSON.parse(contractJsonText) as typeof contractJsonObj;
+
+      expect(actualContractJson.name).contain(contractJsonObj.name);
+      expect(actualContractJson.image).contain(contractJsonObj.image);
+    });
+
+    it(`Should return contractUri with json`, async () => {
       const contractURI = await contract.connect(accounts.artist).contractURI();
       const actualContractJson = parseBase64Json<typeof contractJsonObj>(contractURI);
 
@@ -108,7 +116,18 @@ describe(`OnchainNftContract`, async () => {
       await contract.connect(accounts.artist).createToken(tokenId, tokenName, tokenImageData);
 
       const tokenUri = await contract.connect(accounts.artist).tokenURI(tokenId);
-      const actualTokenJson =  parseBase64Json<typeof tokenJsonTemplateObj>(tokenUri);
+      const actualTokenJson = parseBase64Json<typeof tokenJsonTemplateObj>(tokenUri);
+
+      expect(actualTokenJson.name).contain(tokenName);
+    });
+
+    it(`Should get token json`, async () => {
+
+      const tokenId = await contract.connect(accounts.artist).totalSupply();
+      await contract.connect(accounts.artist).createToken(tokenId, tokenName, tokenImageData);
+
+      const tokenJsonText = await contract.connect(accounts.artist).tokenJson(tokenId);
+      const actualTokenJson = JSON.parse(tokenJsonText) as typeof tokenJsonTemplateObj;
 
       expect(actualTokenJson.name).contain(tokenName);
     });
