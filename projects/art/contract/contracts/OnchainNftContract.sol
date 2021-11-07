@@ -140,7 +140,7 @@ contract OnchainNftContract is IERC165
      *
      * tokenId should be totalSupply (nextTokenId = length, like a standard array index)
      */
-    function createToken(uint256 tokenId, string memory tokenName, string memory tokenImageData) public payable onlyArtist returns (uint256) {
+    function createToken(uint256 tokenId, string memory tokenName, string memory tokenImageData) public onlyArtist returns (uint256) {
 
         // nextTokenId = _totalSupply
         require(_totalSupply == tokenId, 'n' );
