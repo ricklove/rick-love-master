@@ -7,6 +7,7 @@ import './IERC165.sol';
 import './IERC721.sol';
 import './IERC721Metadata.sol';
 import './IERC721Receiver.sol';
+import './Base64.sol';
 
 /**
  * @dev Minimal ERC721 with projects
@@ -66,7 +67,7 @@ contract OnchainNftContract is IERC165
         string memory tokenJson_beforeName,
         string memory tokenJson_afterNameBeforeImage,
         string memory tokenJson_afterImage
-    ) public payable onlyArtist {
+    ) public onlyArtist {
         _name = name_;
         _symbol = symbol_;
         _contractJson = contractJson;
@@ -83,22 +84,28 @@ contract OnchainNftContract is IERC165
         return _symbol;
     }
 
+    // On-chain json must be wrapped in base64 dataUri also: 
+    // Reference: https://andyhartnett.medium.com/solidity-tutorial-how-to-store-nft-metadata-and-svgs-on-the-blockchain-6df44314406b
+
     // Open sea contractURI to get open sea metadata
     // https://docs.opensea.io/docs/contract-level-metadata
     function contractURI() public view returns (string memory) {
-        return _contractJson;
+        string memory jsonBase64 = Base64.encode(bytes(_contractJson));
+        return string(abi.encodePacked('data:application/json;base64,', jsonBase64));
     }
 
     // Token Metadata:
     // https://docs.opensea.io/docs/metadata-standards
     function tokenURI(uint256 tokenId) public view override(IERC721Metadata) returns (string memory) {
-        return string(abi.encodePacked(
+
+        string memory jsonBase64 = Base64.encode(bytes(string(abi.encodePacked(
             _tokenJson_beforeName, 
             _tokenName[tokenId], 
             _tokenJson_afterNameBeforeImage,
             _tokenImageData[tokenId], 
             _tokenJson_afterImage
-        ));
+        ))));
+        return string(abi.encodePacked('data:application/json;base64,', jsonBase64));
     }
 
     // Token Ownership ---

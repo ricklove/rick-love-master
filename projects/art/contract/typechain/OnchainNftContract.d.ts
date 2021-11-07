@@ -12,7 +12,6 @@ import {
   BaseContract,
   ContractTransaction,
   Overrides,
-  PayableOverrides,
   CallOverrides,
 } from "ethers";
 import { BytesLike } from "@ethersproject/bytes";
@@ -241,7 +240,7 @@ export class OnchainNftContract extends BaseContract {
       tokenId: BigNumberish,
       tokenName: string,
       tokenImageData: string,
-      overrides?: PayableOverrides & { from?: string | Promise<string> }
+      overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
 
     getApproved(
@@ -295,7 +294,7 @@ export class OnchainNftContract extends BaseContract {
       tokenJson_beforeName: string,
       tokenJson_afterNameBeforeImage: string,
       tokenJson_afterImage: string,
-      overrides?: PayableOverrides & { from?: string | Promise<string> }
+      overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
 
     supportsInterface(
@@ -334,7 +333,7 @@ export class OnchainNftContract extends BaseContract {
     tokenId: BigNumberish,
     tokenName: string,
     tokenImageData: string,
-    overrides?: PayableOverrides & { from?: string | Promise<string> }
+    overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
 
   getApproved(
@@ -385,7 +384,7 @@ export class OnchainNftContract extends BaseContract {
     tokenJson_beforeName: string,
     tokenJson_afterNameBeforeImage: string,
     tokenJson_afterImage: string,
-    overrides?: PayableOverrides & { from?: string | Promise<string> }
+    overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
 
   supportsInterface(
@@ -565,7 +564,7 @@ export class OnchainNftContract extends BaseContract {
       tokenId: BigNumberish,
       tokenName: string,
       tokenImageData: string,
-      overrides?: PayableOverrides & { from?: string | Promise<string> }
+      overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
 
     getApproved(
@@ -619,7 +618,7 @@ export class OnchainNftContract extends BaseContract {
       tokenJson_beforeName: string,
       tokenJson_afterNameBeforeImage: string,
       tokenJson_afterImage: string,
-      overrides?: PayableOverrides & { from?: string | Promise<string> }
+      overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
 
     supportsInterface(
@@ -662,7 +661,7 @@ export class OnchainNftContract extends BaseContract {
       tokenId: BigNumberish,
       tokenName: string,
       tokenImageData: string,
-      overrides?: PayableOverrides & { from?: string | Promise<string> }
+      overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
 
     getApproved(
@@ -716,7 +715,7 @@ export class OnchainNftContract extends BaseContract {
       tokenJson_beforeName: string,
       tokenJson_afterNameBeforeImage: string,
       tokenJson_afterImage: string,
-      overrides?: PayableOverrides & { from?: string | Promise<string> }
+      overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
 
     supportsInterface(
