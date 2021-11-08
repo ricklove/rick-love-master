@@ -76,11 +76,11 @@ contract OnchainNftContract is IERC165
     //     _tokenJson_afterImage = tokenJson_afterImage;
     // }
 
-    function name() public view override(IERC721Metadata) returns (string memory) {
+    function name() public pure override(IERC721Metadata) returns (string memory) {
         return _name;
     }
 
-    function symbol() public view override(IERC721Metadata) returns (string memory) {
+    function symbol() public pure override(IERC721Metadata) returns (string memory) {
         return _symbol;
     }
 
@@ -89,11 +89,11 @@ contract OnchainNftContract is IERC165
 
     // Open sea contractURI to get open sea metadata
     // https://docs.opensea.io/docs/contract-level-metadata
-    function contractURI() public view returns (string memory) {
+    function contractURI() public pure returns (string memory) {
         string memory jsonBase64 = Base64.encode(bytes(_contractJson));
         return string(abi.encodePacked('data:application/json;base64,', jsonBase64));
     }
-    function contractJson() public view returns (string memory) {
+    function contractJson() public pure returns (string memory) {
         return _contractJson;
     }
 
