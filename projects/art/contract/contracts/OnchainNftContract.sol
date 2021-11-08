@@ -49,33 +49,6 @@ contract OnchainNftContract is IERC165
     string private constant _symbol = 'TEST';
     string private constant _contractJson = "{\"name\":\"TestContract\",\"description\":\"Test Description\"}";
 
-    /**
-{
-    "name": "{tokenName}",
-    "description": "This is some great art!", 
-    "image": "<svg width='100%' height='100%' viewBox='0 0 32 32' xmlns='http://www.w3.org/2000/svg' xmlns:svg='http://www.w3.org/2000/svg' xmlns:xlink='http://www.w3.org/1999/xlink'><image width='100%' height='100%' style='image-rendering:pixelated; image-rendering:crisp-edges' xlink:href='data:image/webp;base64,{tokenImage}'/></svg>", 
-}
-     */
-    string private constant _tokenJson_beforeName = '{"name":"';
-    string private constant _tokenJson_afterNameBeforeImage = "\",\"image\":\"<svg width='100%' height='100%' viewBox='0 0 32 32' xmlns='http://www.w3.org/2000/svg' xmlns:svg='http://www.w3.org/2000/svg' xmlns:xlink='http://www.w3.org/1999/xlink'><image width='100%' height='100%' style='image-rendering:pixelated; image-rendering:crisp-edges' xlink:href='";
-    string private constant _tokenJson_afterImage = "'/></svg>\"}";
-
-    // function setupProject(
-    //     string memory name_,
-    //     string memory symbol_, 
-    //     string memory contractJson, 
-    //     string memory tokenJson_beforeName,
-    //     string memory tokenJson_afterNameBeforeImage,
-    //     string memory tokenJson_afterImage
-    // ) public onlyArtist {
-    //     _name = name_;
-    //     _symbol = symbol_;
-    //     _contractJson = contractJson;
-    //     _tokenJson_beforeName = tokenJson_beforeName;
-    //     _tokenJson_afterNameBeforeImage = tokenJson_afterNameBeforeImage;
-    //     _tokenJson_afterImage = tokenJson_afterImage;
-    // }
-
     function name() public pure override(IERC721Metadata) returns (string memory) {
         return _name;
     }
@@ -98,6 +71,16 @@ contract OnchainNftContract is IERC165
     }
 
     // Token Metadata:
+    /**
+    {
+        "name": "{tokenName}",
+        "image": "<svg width='100%' height='100%' viewBox='0 0 32 32' xmlns='http://www.w3.org/2000/svg' xmlns:svg='http://www.w3.org/2000/svg' xmlns:xlink='http://www.w3.org/1999/xlink'><image width='100%' height='100%' style='image-rendering:pixelated; image-rendering:crisp-edges' xlink:href='{tokenImage}'/></svg>", 
+    }
+     */
+    string private constant _tokenJson_a = '{"name":"';
+    string private constant _tokenJson_b = "\",\"image\":\"<svg width='100%' height='100%' viewBox='0 0 32 32' xmlns='http://www.w3.org/2000/svg' xmlns:svg='http://www.w3.org/2000/svg' xmlns:xlink='http://www.w3.org/1999/xlink'><image width='100%' height='100%' style='image-rendering:pixelated; image-rendering:crisp-edges' xlink:href='";
+    string private constant _tokenJson_c = "'/></svg>\"}";
+
     // https://docs.opensea.io/docs/metadata-standards
     function tokenURI(uint256 tokenId) public view override(IERC721Metadata) returns (string memory) {
         string memory jsonBase64 = Base64.encode(bytes(tokenJson(tokenId)));
@@ -105,11 +88,11 @@ contract OnchainNftContract is IERC165
     }
     function tokenJson(uint256 tokenId) public view returns (string memory) {
         return string(abi.encodePacked(
-            _tokenJson_beforeName, 
+            _tokenJson_a, 
             _tokenName[tokenId], 
-            _tokenJson_afterNameBeforeImage,
+            _tokenJson_b,
             _tokenImageData[tokenId], 
-            _tokenJson_afterImage
+            _tokenJson_c
         ));
     }
 
