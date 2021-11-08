@@ -147,12 +147,12 @@ describe(`OnchainNftContract`, async () => {
       expect(actualBalance.toNumber(), 'actualBalance').equals(beforeBalance.toNumber() + 1);
     });
 
-    it(`Should getTokenData`, async () => {
+    it(`Should get tokenData`, async () => {
 
       const tokenId = await contract.connect(accounts.artist).totalSupply();
       await contract.connect(accounts.artist).createToken(tokenId, tokenName, tokenImageData);
 
-      const [actualTokenId, actualTokenName, actualTokenImageData] = await contract.connect(accounts.artist).getTokenData(tokenId);
+      const [actualTokenId, actualTokenName, actualTokenImageData] = await contract.connect(accounts.artist).tokenData(tokenId);
 
       expect(actualTokenId).equals(tokenId);
       expect(actualTokenName).equals(tokenName);

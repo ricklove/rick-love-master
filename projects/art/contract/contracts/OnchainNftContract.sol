@@ -140,7 +140,7 @@ contract OnchainNftContract is IERC165
     /** The token image base 64 */
     mapping (uint256 => string) private _tokenImageData;
 
-    function getTokenData(uint256 tokenId) public view returns (uint256, string memory, string memory) {
+    function tokenData(uint256 tokenId) public view returns (uint256, string memory, string memory) {
         return (
             tokenId, 
             _tokenName[tokenId],
