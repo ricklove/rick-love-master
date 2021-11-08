@@ -45,9 +45,9 @@ contract OnchainNftContract is IERC165
     }
 
     // Metadata ---
-    string public constant _name = 'TestContract';
-    string public constant _symbol = 'TEST';
-    string public constant _contractJson = "{\"name\":\"TestContract\",\"description\":\"Test Description\"}";
+    string private constant _name = 'TestContract';
+    string private constant _symbol = 'TEST';
+    string private constant _contractJson = "{\"name\":\"TestContract\",\"description\":\"Test Description\"}";
 
     /**
 {
@@ -56,9 +56,9 @@ contract OnchainNftContract is IERC165
     "image": "<svg width='100%' height='100%' viewBox='0 0 32 32' xmlns='http://www.w3.org/2000/svg' xmlns:svg='http://www.w3.org/2000/svg' xmlns:xlink='http://www.w3.org/1999/xlink'><image width='100%' height='100%' style='image-rendering:pixelated; image-rendering:crisp-edges' xlink:href='data:image/webp;base64,{tokenImage}'/></svg>", 
 }
      */
-    string public constant _tokenJson_beforeName = '{"name":"';
-    string public constant _tokenJson_afterNameBeforeImage = "\",\"image\":\"<svg width='100%' height='100%' viewBox='0 0 32 32' xmlns='http://www.w3.org/2000/svg' xmlns:svg='http://www.w3.org/2000/svg' xmlns:xlink='http://www.w3.org/1999/xlink'><image width='100%' height='100%' style='image-rendering:pixelated; image-rendering:crisp-edges' xlink:href='";
-    string public constant _tokenJson_afterImage = "'/></svg>\"}";
+    string private constant _tokenJson_beforeName = '{"name":"';
+    string private constant _tokenJson_afterNameBeforeImage = "\",\"image\":\"<svg width='100%' height='100%' viewBox='0 0 32 32' xmlns='http://www.w3.org/2000/svg' xmlns:svg='http://www.w3.org/2000/svg' xmlns:xlink='http://www.w3.org/1999/xlink'><image width='100%' height='100%' style='image-rendering:pixelated; image-rendering:crisp-edges' xlink:href='";
+    string private constant _tokenJson_afterImage = "'/></svg>\"}";
 
     // function setupProject(
     //     string memory name_,
