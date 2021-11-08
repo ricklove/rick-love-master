@@ -107,17 +107,20 @@ describe(`OnchainNftContract`, async () => {
   });
 
   const tokenName = `Rick Love Borg`;
-  const tokenImageData = `data:image/png;base64,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`;
+  const tokenImageType = `png`;
+  const tokenImageDataBase64 = `iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAAWXSURBVFhH7ZZpbFRVFMf/s0/nzdLpApQyHVpKx0ILlmJDS62FAraYiEEJxS2SED+Y8EHU4BZTYtCoqAkBjGkioYYExDRQCcGKlEILoXSxC7X7xiylnaXTztrZvO8yEtAO8yAmfuGXvJy33HvP/5577rkPj3nM/w0vbB+VUNiyPNJYjyogpNPpkKEUwTdtoy/O9xqoDcN53IcVQGf80fbNGOIp4LVOwjXaSz/cS1gMp7H5YcuFUKkuGYULVeFHQK5OCN/dD9uOQMWWl5evYG0kuEYgxM66/koj5Ao5HDMOLCoqQ0LIAydPhHhiJQhg27MbaeP3vzgAvkgCuyoJGo2m4cSJE0/TD3PARcBd53HaJUjIyIbT5YTDNAZ5UgrclklYe/4IN70DQ97HpulIfAXg8XgKIsAR/vQvOAnYnJUKH5lpbGoGBDI5hAI+zM31YNKzyEylmDWb4J28k4RMaiZ4AiECwSDSlWJ8dfIs+zqin6gCSLaHcnJy6H2sXIZdpeuQMi8eXSN68Pk8HP31MmRSCfZsLUV1ww10jxmxdvlSVB/9ni5Vg9HOdo3oRxC2kQgVLlsCCEUQzHrw5VtvQMXI6Iebo3q4vbNIjFXC7nShbWCEZB0Pr6wvQH7mUtwyGDAyOoqxGS/bfB/tNAdRd4GQUcI7ZcH6zMXwuN0Y7O2D/tYY0tVyFGXpMDw+gSmHE7dtdsQzMahr6UDlud+xbNVTtP+9O2IuokWgIjVRjYDZgOL8Nag7ex4tTTfR3doMnlgAm9mCFzetR0NbJ5w+P57cUofmWj5snlkM3rbCHwwh5HZgwDLDjjVnFKJGYHp0gFqn1Y5tFQcxvPBblO75Bl3XWxEIBGA1W+HwB7C34iWkbBjHzv3Z8JHn7XnZUGhSyTL5aP9IREvCEFt42L1fVVkJ74wTgRgleA5SfsVCSKVS+EkeHPq5BhY/UPz6JLrPJWNqKoB3XtiE3RWf4uyNLnaciH44V8LPqo9gxD6NymPH0UNmHSOTIRgKQSAWITdRhZz0VHSeSYNUqMJrG4vg8/ngJ+dEuHJGzAFOAnIKSCa7+vDq3go4bDZcPXkaIbLP25uacO6nU1AnJKBs1TK8vbUMLo8XVRcaII2JwXJtStRtGFUAG3775Eqo40pQmJsLhdcLGZn9SP8AWhsaMa7Xo/9mF2QMQ9srSE1Qkt3gD5A14YAwbCNSlKHD8x8P4uJ1Dz7Z2Yua6rXo6pbDN6jHm++9S9uEyFKwFym7GBqfhJIIDJBE5AKnJTh2MBeHD5vxw6EtqPqxD23tHbjS1IIRqxe9Awb0D5ngcrgQJMuSo03G4vkJ8Hjc4d4PJpoA3oe/XITHakZcXBy6Ok+REjuBwoLVGDYNQZHvhGbdc1hUvBkm8zSt/93GCVolLRYrvq69RsegI0UgWiFi2RdQJVRsWBOLziERJmaUcDhUyMsrQVNNO+YH3TBdqoU2TUN2RgwmpqahN9ug9E7jzNUW2p+OEgFOS1CwWtMnEQMZJB+GhpairbcOwXmDmAkEcbW3B0/krQSjlNM8yExJRpKKQVdHR7j3g4kqgPzRFKuZWXfTnyJkJU1AMz8IRpgHQ/8CiEUi9Ohvg1EoyMnIp7G+0NwOEzkruISfJaoARuo/oJZ7NbW1tWjXL0D8pB4p5IfDPCiClRy3O9bl03ZejwcmcgIajQbY7FP0HReiKmTZsaPcrRA7pP5ZEdSMHe5xAzTpJTBOu1CStgB8sv1Y6usvkQQcowXoP4sAi0QUqC/KtoUaW7uRk2THri0BGHtOo7/xN1y5XE8dH6mquuv8YeAkgJH4r5lsMee1Wi3arotx/FQixEEtdcY6/dvxvc5r9n/AGvYMiHgOsHASYJmRpH/+XWuZTkj/bu7jn45ZnnmmGCte3o2RYSO9CBFEAH8BSYFCGlcqbEYAAAAASUVORK5CYII=`;
+  const tokenImageData = Buffer.from(tokenImageDataBase64,'base64');
 
-  const tokenName1kb = `1 kb`;
-  const tokenImageData1kb = `data:image/webp;base64,UklGRkYEAABXRUJQVlA4WAoAAAAgAAAAHwAAHwAASUNDUKACAAAAAAKgbGNtcwQwAABtbnRyUkdCIFhZWiAH5QALAAgAEAAFACJhY3NwTVNGVAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA9tYAAQAAAADTLWxjbXMAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA1kZXNjAAABIAAAAEBjcHJ0AAABYAAAADZ3dHB0AAABmAAAABRjaGFkAAABrAAAACxyWFlaAAAB2AAAABRiWFlaAAAB7AAAABRnWFlaAAACAAAAABRyVFJDAAACFAAAACBnVFJDAAACFAAAACBiVFJDAAACFAAAACBjaHJtAAACNAAAACRkbW5kAAACWAAAACRkbWRkAAACfAAAACRtbHVjAAAAAAAAAAEAAAAMZW5VUwAAACQAAAAcAEcASQBNAFAAIABiAHUAaQBsAHQALQBpAG4AIABzAFIARwBCbWx1YwAAAAAAAAABAAAADGVuVVMAAAAaAAAAHABQAHUAYgBsAGkAYwAgAEQAbwBtAGEAaQBuAABYWVogAAAAAAAA9tYAAQAAAADTLXNmMzIAAAAAAAEMQgAABd7///MlAAAHkwAA/ZD///uh///9ogAAA9wAAMBuWFlaIAAAAAAAAG+gAAA49QAAA5BYWVogAAAAAAAAJJ8AAA+EAAC2xFhZWiAAAAAAAABilwAAt4cAABjZcGFyYQAAAAAAAwAAAAJmZgAA8qcAAA1ZAAAT0AAACltjaHJtAAAAAAADAAAAAKPXAABUfAAATM0AAJmaAAAmZwAAD1xtbHVjAAAAAAAAAAEAAAAMZW5VUwAAAAgAAAAcAEcASQBNAFBtbHVjAAAAAAAAAAEAAAAMZW5VUwAAAAgAAAAcAHMAUgBHAEJWUDgggAEAADAMAJ0BKiAAIAA+MRiKQ6IhoRQEACADBLSACpANRQ9HckE9J/E3Pb/jp+QGYA/kX4x6gt+LuuA/gH4Z+wF+Z+Ax/ZvcG/hH8V/rP5e/2v//8pB+pKXtgWq2TAV6eATtF9RqPzYmbQt/oAAA/v8aef9rcrE8y89ZFNRBdXbMUYGPsksv/9/40/yw7nIZEPNx/qMmrDpGV15//xzeCES+f8zLhg3uS9N5Yhgf+yUR//3/i8Dt/AX706OWE58H4fsxfrFbv8WO5qlubmsiNLbq+2J/LBfhfttov/z0pvvn8Vlcv3C9xQiX/i+dp47vAd8CB6eySvkqj5LKoK9Vtcv65bXf//lLU+2GOdQxX+N4+LcK1ie264IxI8Cx7xouveeUrSC++jqdlIjPUzbpqze+7vHBbqbMaF1X30M/KJGu6VGTuUHlOAf2JyrpM/KABRWBFkyceYlQ/XwO2KK8oLL4T9Nvu8Km8rwg/MT//OdxW2pHqg8HNhZ/esIuYQ0vkAAAAA==`;
-
+  const tokenName_1kb = `1 kb`;
+  const tokenImageType_1kb = `webp`;
+  const tokenImageDataBase64_1kb = `UklGRkYEAABXRUJQVlA4WAoAAAAgAAAAHwAAHwAASUNDUKACAAAAAAKgbGNtcwQwAABtbnRyUkdCIFhZWiAH5QALAAgAEAAFACJhY3NwTVNGVAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA9tYAAQAAAADTLWxjbXMAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA1kZXNjAAABIAAAAEBjcHJ0AAABYAAAADZ3dHB0AAABmAAAABRjaGFkAAABrAAAACxyWFlaAAAB2AAAABRiWFlaAAAB7AAAABRnWFlaAAACAAAAABRyVFJDAAACFAAAACBnVFJDAAACFAAAACBiVFJDAAACFAAAACBjaHJtAAACNAAAACRkbW5kAAACWAAAACRkbWRkAAACfAAAACRtbHVjAAAAAAAAAAEAAAAMZW5VUwAAACQAAAAcAEcASQBNAFAAIABiAHUAaQBsAHQALQBpAG4AIABzAFIARwBCbWx1YwAAAAAAAAABAAAADGVuVVMAAAAaAAAAHABQAHUAYgBsAGkAYwAgAEQAbwBtAGEAaQBuAABYWVogAAAAAAAA9tYAAQAAAADTLXNmMzIAAAAAAAEMQgAABd7///MlAAAHkwAA/ZD///uh///9ogAAA9wAAMBuWFlaIAAAAAAAAG+gAAA49QAAA5BYWVogAAAAAAAAJJ8AAA+EAAC2xFhZWiAAAAAAAABilwAAt4cAABjZcGFyYQAAAAAAAwAAAAJmZgAA8qcAAA1ZAAAT0AAACltjaHJtAAAAAAADAAAAAKPXAABUfAAATM0AAJmaAAAmZwAAD1xtbHVjAAAAAAAAAAEAAAAMZW5VUwAAAAgAAAAcAEcASQBNAFBtbHVjAAAAAAAAAAEAAAAMZW5VUwAAAAgAAAAcAHMAUgBHAEJWUDgggAEAADAMAJ0BKiAAIAA+MRiKQ6IhoRQEACADBLSACpANRQ9HckE9J/E3Pb/jp+QGYA/kX4x6gt+LuuA/gH4Z+wF+Z+Ax/ZvcG/hH8V/rP5e/2v//8pB+pKXtgWq2TAV6eATtF9RqPzYmbQt/oAAA/v8aef9rcrE8y89ZFNRBdXbMUYGPsksv/9/40/yw7nIZEPNx/qMmrDpGV15//xzeCES+f8zLhg3uS9N5Yhgf+yUR//3/i8Dt/AX706OWE58H4fsxfrFbv8WO5qlubmsiNLbq+2J/LBfhfttov/z0pvvn8Vlcv3C9xQiX/i+dp47vAd8CB6eySvkqj5LKoK9Vtcv65bXf//lLU+2GOdQxX+N4+LcK1ie264IxI8Cx7xouveeUrSC++jqdlIjPUzbpqze+7vHBbqbMaF1X30M/KJGu6VGTuUHlOAf2JyrpM/KABRWBFkyceYlQ/XwO2KK8oLL4T9Nvu8Km8rwg/MT//OdxW2pHqg8HNhZ/esIuYQ0vkAAAAA==`;
+  const tokenImageData_1kb = Buffer.from(tokenImageDataBase64,'base64');
 
   describe(`token`, () => {
     it(`Should createToken`, async () => {
 
       const tokenId = await contract.connect(accounts.artist).totalSupply();
-      await contract.connect(accounts.artist).createToken(tokenId, tokenName, tokenImageData);
+      await contract.connect(accounts.artist).createToken(tokenId, tokenName, tokenImageType, tokenImageData);
 
       const tokenUri = await contract.connect(accounts.artist).tokenURI(tokenId);
       const actualTokenJson = parseBase64Json<typeof tokenJsonTemplateObj>(tokenUri);
@@ -128,7 +131,7 @@ describe(`OnchainNftContract`, async () => {
     it(`Should get token json`, async () => {
 
       const tokenId = await contract.connect(accounts.artist).totalSupply();
-      await contract.connect(accounts.artist).createToken(tokenId, tokenName, tokenImageData);
+      await contract.connect(accounts.artist).createToken(tokenId, tokenName, tokenImageType, tokenImageData);
 
       const tokenJsonText = await contract.connect(accounts.artist).tokenJson(tokenId);
       const actualTokenJson = JSON.parse(tokenJsonText) as typeof tokenJsonTemplateObj;
@@ -142,7 +145,7 @@ describe(`OnchainNftContract`, async () => {
       const beforeBalance = await contract.connect(accounts.artist).balanceOf(accounts.artist.address);
 
       const tokenId = beforeTotalSupply;
-      await contract.connect(accounts.artist).createToken(tokenId, tokenName, tokenImageData);
+      await contract.connect(accounts.artist).createToken(tokenId, tokenName, tokenImageType, tokenImageData);
 
       const actualTotalSupply = await contract.connect(accounts.artist).totalSupply();
       const actualBalance = await contract.connect(accounts.artist).balanceOf(accounts.artist.address);
@@ -154,13 +157,22 @@ describe(`OnchainNftContract`, async () => {
     it(`Should get tokenData`, async () => {
 
       const tokenId = await contract.connect(accounts.artist).totalSupply();
-      await contract.connect(accounts.artist).createToken(tokenId, tokenName, tokenImageData);
+      await contract.connect(accounts.artist).createToken(tokenId, tokenName, tokenImageType, tokenImageData);
 
-      const [actualTokenId, actualTokenName, actualTokenImageData] = await contract.connect(accounts.artist).tokenData(tokenId);
+      const [actualTokenId, actualTokenName, actualTokenImageType, actualTokenImageData] = await contract.connect(accounts.artist).tokenData(tokenId);
 
       expect(actualTokenId).equals(tokenId);
       expect(actualTokenName).equals(tokenName);
-      expect(actualTokenImageData).equals(tokenImageData);
+      expect(actualTokenImageType).equals(tokenImageType);
+    });
+
+    it(`Should get tokenImage`, async () => {
+
+      const tokenId = await contract.connect(accounts.artist).totalSupply();
+      await contract.connect(accounts.artist).createToken(tokenId, tokenName, tokenImageType, tokenImageData);
+
+      const actualTokenImageData = await contract.connect(accounts.artist).tokenImage(tokenId);
+      expect(actualTokenImageData).equals(`data:image/${tokenImageType};base64,${tokenImageDataBase64}`);
     });
   });
 
@@ -169,7 +181,7 @@ describe(`OnchainNftContract`, async () => {
     it(`Should transfer token`, async () => {
 
       const tokenId = await contract.connect(accounts.artist).totalSupply();
-      await contract.connect(accounts.artist).createToken(tokenId, tokenName, tokenImageData);
+      await contract.connect(accounts.artist).createToken(tokenId, tokenName, tokenImageType, tokenImageData);
 
       await contract
         .connect(accounts.artist)
@@ -179,7 +191,7 @@ describe(`OnchainNftContract`, async () => {
     it(`Should transfer token (safe)`, async () => {
 
       const tokenId = await contract.connect(accounts.artist).totalSupply();
-      await contract.connect(accounts.artist).createToken(tokenId, tokenName, tokenImageData);
+      await contract.connect(accounts.artist).createToken(tokenId, tokenName, tokenImageType, tokenImageData);
 
       await contract
         .connect(accounts.artist)
@@ -193,7 +205,7 @@ describe(`OnchainNftContract`, async () => {
     it(`Should transfer token (safe data)`, async () => {
 
       const tokenId = await contract.connect(accounts.artist).totalSupply();
-      await contract.connect(accounts.artist).createToken(tokenId, tokenName, tokenImageData);
+      await contract.connect(accounts.artist).createToken(tokenId, tokenName, tokenImageType, tokenImageData);
 
       await contract
         .connect(accounts.artist)
@@ -223,7 +235,7 @@ describe(`OnchainNftContract`, async () => {
     it(`Should FAIL to transfer unowned token - from real owner`, async () => {
 
       const tokenId = await contract.connect(accounts.artist).totalSupply();
-      await contract.connect(accounts.artist).createToken(tokenId, tokenName, tokenImageData);
+      await contract.connect(accounts.artist).createToken(tokenId, tokenName, tokenImageType, tokenImageData);
 
       await expect(
         contract
@@ -234,7 +246,7 @@ describe(`OnchainNftContract`, async () => {
     it(`Should FAIL to transfer unowned token - from self`, async () => {
 
       const tokenId = await contract.connect(accounts.artist).totalSupply();
-      await contract.connect(accounts.artist).createToken(tokenId, tokenName, tokenImageData);
+      await contract.connect(accounts.artist).createToken(tokenId, tokenName, tokenImageType, tokenImageData);
 
       await expect(
         contract
@@ -246,7 +258,7 @@ describe(`OnchainNftContract`, async () => {
     it(`Should FAIL to transfer to null address`, async () => {
 
       const tokenId = await contract.connect(accounts.artist).totalSupply();
-      await contract.connect(accounts.artist).createToken(tokenId, tokenName, tokenImageData);
+      await contract.connect(accounts.artist).createToken(tokenId, tokenName, tokenImageType, tokenImageData);
 
       await expect(
         contract
@@ -260,7 +272,7 @@ describe(`OnchainNftContract`, async () => {
     it(`Should approve other account - single`, async () => {
 
       const tokenId = await contract.connect(accounts.artist).totalSupply();
-      await contract.connect(accounts.artist).createToken(tokenId, tokenName, tokenImageData);
+      await contract.connect(accounts.artist).createToken(tokenId, tokenName, tokenImageType, tokenImageData);
 
 
       await contract.connect(accounts.artist).transferFrom(accounts.artist.address, accounts.other1.address, tokenId);
@@ -274,7 +286,7 @@ describe(`OnchainNftContract`, async () => {
     it(`Should FAIL to approve unowned token`, async () => {
 
       const tokenId = await contract.connect(accounts.artist).totalSupply();
-      await contract.connect(accounts.artist).createToken(tokenId, tokenName, tokenImageData);
+      await contract.connect(accounts.artist).createToken(tokenId, tokenName, tokenImageType, tokenImageData);
 
 
       await expect(contract.connect(accounts.other1).approve(accounts.other2.address, tokenId)).revertedWith(`o`);
@@ -283,7 +295,7 @@ describe(`OnchainNftContract`, async () => {
     it(`Should approve other account - for all`, async () => {
 
       const tokenId = await contract.connect(accounts.artist).totalSupply();
-      await contract.connect(accounts.artist).createToken(tokenId, tokenName, tokenImageData);
+      await contract.connect(accounts.artist).createToken(tokenId, tokenName, tokenImageType, tokenImageData);
 
 
       await contract.connect(accounts.artist).transferFrom(accounts.artist.address, accounts.other1.address, tokenId);
@@ -299,7 +311,7 @@ describe(`OnchainNftContract`, async () => {
     it(`Should approve other account - for all - that approves other`, async () => {
 
       const tokenId = await contract.connect(accounts.artist).totalSupply();
-      await contract.connect(accounts.artist).createToken(tokenId, tokenName, tokenImageData);
+      await contract.connect(accounts.artist).createToken(tokenId, tokenName, tokenImageType, tokenImageData);
 
 
       await contract.connect(accounts.artist).transferFrom(accounts.artist.address, accounts.other1.address, tokenId);
@@ -313,7 +325,7 @@ describe(`OnchainNftContract`, async () => {
     it(`Should reset approval after used (other1 gives from artist to other 2)`, async () => {
 
       const tokenId = await contract.connect(accounts.artist).totalSupply();
-      await contract.connect(accounts.artist).createToken(tokenId, tokenName, tokenImageData);
+      await contract.connect(accounts.artist).createToken(tokenId, tokenName, tokenImageType, tokenImageData);
 
 
       await contract.connect(accounts.artist).approve(accounts.other1.address, tokenId);
@@ -326,7 +338,7 @@ describe(`OnchainNftContract`, async () => {
     it(`Should FAIL to use approval after transfer (other1 gives from artist to other 2, then FAILS)`, async () => {
 
       const tokenId = await contract.connect(accounts.artist).totalSupply();
-      await contract.connect(accounts.artist).createToken(tokenId, tokenName, tokenImageData);
+      await contract.connect(accounts.artist).createToken(tokenId, tokenName, tokenImageType, tokenImageData);
 
 
       await contract.connect(accounts.artist).approve(accounts.other1.address, tokenId);

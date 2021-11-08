@@ -26,7 +26,7 @@ interface OnchainNftContractInterface extends ethers.utils.Interface {
     "c_0x6b16a3b8(bytes32)": FunctionFragment;
     "contractJson()": FunctionFragment;
     "contractURI()": FunctionFragment;
-    "createToken(uint256,string,string)": FunctionFragment;
+    "createToken(uint256,string,string,bytes)": FunctionFragment;
     "getApproved(uint256)": FunctionFragment;
     "isApprovedForAll(address,address)": FunctionFragment;
     "name()": FunctionFragment;
@@ -36,6 +36,7 @@ interface OnchainNftContractInterface extends ethers.utils.Interface {
     "supportsInterface(bytes4)": FunctionFragment;
     "symbol()": FunctionFragment;
     "tokenData(uint256)": FunctionFragment;
+    "tokenImage(uint256)": FunctionFragment;
     "tokenJson(uint256)": FunctionFragment;
     "tokenURI(uint256)": FunctionFragment;
     "totalSupply()": FunctionFragment;
@@ -61,7 +62,7 @@ interface OnchainNftContractInterface extends ethers.utils.Interface {
   ): string;
   encodeFunctionData(
     functionFragment: "createToken",
-    values: [BigNumberish, string, string]
+    values: [BigNumberish, string, string, BytesLike]
   ): string;
   encodeFunctionData(
     functionFragment: "getApproved",
@@ -91,6 +92,10 @@ interface OnchainNftContractInterface extends ethers.utils.Interface {
   encodeFunctionData(functionFragment: "symbol", values?: undefined): string;
   encodeFunctionData(
     functionFragment: "tokenData",
+    values: [BigNumberish]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "tokenImage",
     values: [BigNumberish]
   ): string;
   encodeFunctionData(
@@ -152,6 +157,7 @@ interface OnchainNftContractInterface extends ethers.utils.Interface {
   ): Result;
   decodeFunctionResult(functionFragment: "symbol", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "tokenData", data: BytesLike): Result;
+  decodeFunctionResult(functionFragment: "tokenImage", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "tokenJson", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "tokenURI", data: BytesLike): Result;
   decodeFunctionResult(
@@ -258,7 +264,8 @@ export class OnchainNftContract extends BaseContract {
     createToken(
       tokenId: BigNumberish,
       tokenName: string,
-      tokenImageData: string,
+      tokenImageType: string,
+      tokenImageData: BytesLike,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
 
@@ -311,7 +318,12 @@ export class OnchainNftContract extends BaseContract {
     tokenData(
       tokenId: BigNumberish,
       overrides?: CallOverrides
-    ): Promise<[BigNumber, string, string]>;
+    ): Promise<[BigNumber, string, string, string]>;
+
+    tokenImage(
+      tokenId: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<[string]>;
 
     tokenJson(
       tokenId: BigNumberish,
@@ -353,7 +365,8 @@ export class OnchainNftContract extends BaseContract {
   createToken(
     tokenId: BigNumberish,
     tokenName: string,
-    tokenImageData: string,
+    tokenImageType: string,
+    tokenImageData: BytesLike,
     overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
 
@@ -403,7 +416,9 @@ export class OnchainNftContract extends BaseContract {
   tokenData(
     tokenId: BigNumberish,
     overrides?: CallOverrides
-  ): Promise<[BigNumber, string, string]>;
+  ): Promise<[BigNumber, string, string, string]>;
+
+  tokenImage(tokenId: BigNumberish, overrides?: CallOverrides): Promise<string>;
 
   tokenJson(tokenId: BigNumberish, overrides?: CallOverrides): Promise<string>;
 
@@ -439,7 +454,8 @@ export class OnchainNftContract extends BaseContract {
     createToken(
       tokenId: BigNumberish,
       tokenName: string,
-      tokenImageData: string,
+      tokenImageType: string,
+      tokenImageData: BytesLike,
       overrides?: CallOverrides
     ): Promise<BigNumber>;
 
@@ -489,7 +505,12 @@ export class OnchainNftContract extends BaseContract {
     tokenData(
       tokenId: BigNumberish,
       overrides?: CallOverrides
-    ): Promise<[BigNumber, string, string]>;
+    ): Promise<[BigNumber, string, string, string]>;
+
+    tokenImage(
+      tokenId: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<string>;
 
     tokenJson(
       tokenId: BigNumberish,
@@ -585,7 +606,8 @@ export class OnchainNftContract extends BaseContract {
     createToken(
       tokenId: BigNumberish,
       tokenName: string,
-      tokenImageData: string,
+      tokenImageType: string,
+      tokenImageData: BytesLike,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
 
@@ -640,6 +662,11 @@ export class OnchainNftContract extends BaseContract {
       overrides?: CallOverrides
     ): Promise<BigNumber>;
 
+    tokenImage(
+      tokenId: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<BigNumber>;
+
     tokenJson(
       tokenId: BigNumberish,
       overrides?: CallOverrides
@@ -684,7 +711,8 @@ export class OnchainNftContract extends BaseContract {
     createToken(
       tokenId: BigNumberish,
       tokenName: string,
-      tokenImageData: string,
+      tokenImageType: string,
+      tokenImageData: BytesLike,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
 
@@ -735,6 +763,11 @@ export class OnchainNftContract extends BaseContract {
     symbol(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
     tokenData(
+      tokenId: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<PopulatedTransaction>;
+
+    tokenImage(
       tokenId: BigNumberish,
       overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;

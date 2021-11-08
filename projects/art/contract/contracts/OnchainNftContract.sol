@@ -86,8 +86,17 @@ contract OnchainNftContract is IERC165
             _tokenJson_a, 
             _tokenName[tokenId], 
             _tokenJson_b,
-            _tokenImageData[tokenId], 
+            tokenImage(tokenId),
             _tokenJson_c
+        ));
+    }
+    function tokenImage(uint256 tokenId) public view returns (string memory) {
+        string memory imageBase64 = Base64.encode(_tokenImageData[tokenId]);
+        return string(abi.encodePacked(
+            'data:image/',
+            _tokenImageType[tokenId],
+            ';base64,',
+            imageBase64
         ));
     }
 
@@ -115,13 +124,17 @@ contract OnchainNftContract is IERC165
 
     /** The token name */
     mapping (uint256 => string) private _tokenName;
-    /** The token image base 64 */
-    mapping (uint256 => string) private _tokenImageData;
+    /** The token image bytes */
+    mapping (uint256 => bytes) private _tokenImageData;
+    /** The token image type (png,webp,etc) */
+    mapping (uint256 => string) private _tokenImageType;
+    
 
-    function tokenData(uint256 tokenId) public view returns (uint256, string memory, string memory) {
+    function tokenData(uint256 tokenId) public view returns (uint256, string memory, string memory, bytes memory) {
         return (
             tokenId, 
             _tokenName[tokenId],
+            _tokenImageType[tokenId],
             _tokenImageData[tokenId]
         );
     }
@@ -130,13 +143,14 @@ contract OnchainNftContract is IERC165
      *
      * tokenId = totalSupply (i.e. new tokenId = length, like a standard array index, first tokenId=0)
      */
-    function createToken(uint256 tokenId, string memory tokenName, string memory tokenImageData) public onlyArtist returns (uint256) {
+    function createToken(uint256 tokenId, string memory tokenName, string memory tokenImageType, bytes memory tokenImageData) public onlyArtist returns (uint256) {
 
         // nextTokenId = _totalSupply
         require(_totalSupply == tokenId, 'n' );
         _totalSupply++;
 
         _tokenName[tokenId] = tokenName;
+        _tokenImageType[tokenId] = tokenImageType;
         _tokenImageData[tokenId] = tokenImageData;
 
         _balances[msg.sender] += 1;
