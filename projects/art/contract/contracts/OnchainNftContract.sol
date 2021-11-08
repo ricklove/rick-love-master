@@ -10,12 +10,7 @@ import './IERC721Receiver.sol';
 import './Base64.sol';
 
 /**
- * @dev Minimal ERC721 with projects
- * 
- * Does not implement enumerable to reduce gas cost and since Transfer events are used everywhere anyway to calculate ownership
- * 
- * It is also possible to iterate ownerOf for all tokenIds by using projectIdLast() & project(projectId).projectTokenCount
- * projectTokenIDs = projectId * PROJECT_BUCKET_SIZE + [0..projectTokenCount]
+ * @dev Minimal Purely On-chain ERC721
  */
 contract OnchainNftContract is IERC165 
 , IERC721
@@ -133,7 +128,7 @@ contract OnchainNftContract is IERC165
 
     /** Create a new nft
      *
-     * tokenId should be totalSupply (nextTokenId = length, like a standard array index)
+     * tokenId = totalSupply (i.e. new tokenId = length, like a standard array index, first tokenId=0)
      */
     function createToken(uint256 tokenId, string memory tokenName, string memory tokenImageData) public onlyArtist returns (uint256) {
 
@@ -155,7 +150,7 @@ contract OnchainNftContract is IERC165
     // Transfers ---
 
     function _transfer(address from, address to, uint256 tokenId) internal  {
-        // Is the from the real owner
+        // Is from actually the token owner
         require(ownerOf(tokenId) == from, 'o');
         // Does msg.sender have authority over this token
         require(_isApprovedOrOwner(tokenId), 'A');
