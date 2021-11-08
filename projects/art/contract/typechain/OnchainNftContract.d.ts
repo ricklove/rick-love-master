@@ -21,8 +21,15 @@ import { TypedEventFilter, TypedEvent, TypedListener } from "./commons";
 
 interface OnchainNftContractInterface extends ethers.utils.Interface {
   functions: {
+    "_contractJson()": FunctionFragment;
+    "_name()": FunctionFragment;
+    "_symbol()": FunctionFragment;
+    "_tokenJson_afterImage()": FunctionFragment;
+    "_tokenJson_afterNameBeforeImage()": FunctionFragment;
+    "_tokenJson_beforeName()": FunctionFragment;
     "approve(address,uint256)": FunctionFragment;
     "balanceOf(address)": FunctionFragment;
+    "c_0x6b16a3b8(bytes32)": FunctionFragment;
     "contractJson()": FunctionFragment;
     "contractURI()": FunctionFragment;
     "createToken(uint256,string,string)": FunctionFragment;
@@ -33,7 +40,6 @@ interface OnchainNftContractInterface extends ethers.utils.Interface {
     "ownerOf(uint256)": FunctionFragment;
     "safeTransferFrom(address,address,uint256)": FunctionFragment;
     "setApprovalForAll(address,bool)": FunctionFragment;
-    "setupProject(string,string,string,string,string,string)": FunctionFragment;
     "supportsInterface(bytes4)": FunctionFragment;
     "symbol()": FunctionFragment;
     "tokenJson(uint256)": FunctionFragment;
@@ -43,10 +49,32 @@ interface OnchainNftContractInterface extends ethers.utils.Interface {
   };
 
   encodeFunctionData(
+    functionFragment: "_contractJson",
+    values?: undefined
+  ): string;
+  encodeFunctionData(functionFragment: "_name", values?: undefined): string;
+  encodeFunctionData(functionFragment: "_symbol", values?: undefined): string;
+  encodeFunctionData(
+    functionFragment: "_tokenJson_afterImage",
+    values?: undefined
+  ): string;
+  encodeFunctionData(
+    functionFragment: "_tokenJson_afterNameBeforeImage",
+    values?: undefined
+  ): string;
+  encodeFunctionData(
+    functionFragment: "_tokenJson_beforeName",
+    values?: undefined
+  ): string;
+  encodeFunctionData(
     functionFragment: "approve",
     values: [string, BigNumberish]
   ): string;
   encodeFunctionData(functionFragment: "balanceOf", values: [string]): string;
+  encodeFunctionData(
+    functionFragment: "c_0x6b16a3b8",
+    values: [BytesLike]
+  ): string;
   encodeFunctionData(
     functionFragment: "contractJson",
     values?: undefined
@@ -85,10 +113,6 @@ interface OnchainNftContractInterface extends ethers.utils.Interface {
     values: [string, boolean]
   ): string;
   encodeFunctionData(
-    functionFragment: "setupProject",
-    values: [string, string, string, string, string, string]
-  ): string;
-  encodeFunctionData(
     functionFragment: "supportsInterface",
     values: [BytesLike]
   ): string;
@@ -110,8 +134,30 @@ interface OnchainNftContractInterface extends ethers.utils.Interface {
     values: [string, string, BigNumberish]
   ): string;
 
+  decodeFunctionResult(
+    functionFragment: "_contractJson",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(functionFragment: "_name", data: BytesLike): Result;
+  decodeFunctionResult(functionFragment: "_symbol", data: BytesLike): Result;
+  decodeFunctionResult(
+    functionFragment: "_tokenJson_afterImage",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "_tokenJson_afterNameBeforeImage",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "_tokenJson_beforeName",
+    data: BytesLike
+  ): Result;
   decodeFunctionResult(functionFragment: "approve", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "balanceOf", data: BytesLike): Result;
+  decodeFunctionResult(
+    functionFragment: "c_0x6b16a3b8",
+    data: BytesLike
+  ): Result;
   decodeFunctionResult(
     functionFragment: "contractJson",
     data: BytesLike
@@ -144,10 +190,6 @@ interface OnchainNftContractInterface extends ethers.utils.Interface {
   ): Result;
   decodeFunctionResult(
     functionFragment: "setApprovalForAll",
-    data: BytesLike
-  ): Result;
-  decodeFunctionResult(
-    functionFragment: "setupProject",
     data: BytesLike
   ): Result;
   decodeFunctionResult(
@@ -241,6 +283,20 @@ export class OnchainNftContract extends BaseContract {
   interface: OnchainNftContractInterface;
 
   functions: {
+    _contractJson(overrides?: CallOverrides): Promise<[string]>;
+
+    _name(overrides?: CallOverrides): Promise<[string]>;
+
+    _symbol(overrides?: CallOverrides): Promise<[string]>;
+
+    _tokenJson_afterImage(overrides?: CallOverrides): Promise<[string]>;
+
+    _tokenJson_afterNameBeforeImage(
+      overrides?: CallOverrides
+    ): Promise<[string]>;
+
+    _tokenJson_beforeName(overrides?: CallOverrides): Promise<[string]>;
+
     approve(
       to: string,
       tokenId: BigNumberish,
@@ -248,6 +304,11 @@ export class OnchainNftContract extends BaseContract {
     ): Promise<ContractTransaction>;
 
     balanceOf(user: string, overrides?: CallOverrides): Promise<[BigNumber]>;
+
+    c_0x6b16a3b8(
+      c__0x6b16a3b8: BytesLike,
+      overrides?: CallOverrides
+    ): Promise<[void]>;
 
     contractJson(overrides?: CallOverrides): Promise<[string]>;
 
@@ -304,16 +365,6 @@ export class OnchainNftContract extends BaseContract {
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
 
-    setupProject(
-      name_: string,
-      symbol_: string,
-      contractJson: string,
-      tokenJson_beforeName: string,
-      tokenJson_afterNameBeforeImage: string,
-      tokenJson_afterImage: string,
-      overrides?: Overrides & { from?: string | Promise<string> }
-    ): Promise<ContractTransaction>;
-
     supportsInterface(
       interfaceId: BytesLike,
       overrides?: CallOverrides
@@ -341,6 +392,18 @@ export class OnchainNftContract extends BaseContract {
     ): Promise<ContractTransaction>;
   };
 
+  _contractJson(overrides?: CallOverrides): Promise<string>;
+
+  _name(overrides?: CallOverrides): Promise<string>;
+
+  _symbol(overrides?: CallOverrides): Promise<string>;
+
+  _tokenJson_afterImage(overrides?: CallOverrides): Promise<string>;
+
+  _tokenJson_afterNameBeforeImage(overrides?: CallOverrides): Promise<string>;
+
+  _tokenJson_beforeName(overrides?: CallOverrides): Promise<string>;
+
   approve(
     to: string,
     tokenId: BigNumberish,
@@ -348,6 +411,11 @@ export class OnchainNftContract extends BaseContract {
   ): Promise<ContractTransaction>;
 
   balanceOf(user: string, overrides?: CallOverrides): Promise<BigNumber>;
+
+  c_0x6b16a3b8(
+    c__0x6b16a3b8: BytesLike,
+    overrides?: CallOverrides
+  ): Promise<void>;
 
   contractJson(overrides?: CallOverrides): Promise<string>;
 
@@ -401,16 +469,6 @@ export class OnchainNftContract extends BaseContract {
     overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
 
-  setupProject(
-    name_: string,
-    symbol_: string,
-    contractJson: string,
-    tokenJson_beforeName: string,
-    tokenJson_afterNameBeforeImage: string,
-    tokenJson_afterImage: string,
-    overrides?: Overrides & { from?: string | Promise<string> }
-  ): Promise<ContractTransaction>;
-
   supportsInterface(
     interfaceId: BytesLike,
     overrides?: CallOverrides
@@ -432,6 +490,18 @@ export class OnchainNftContract extends BaseContract {
   ): Promise<ContractTransaction>;
 
   callStatic: {
+    _contractJson(overrides?: CallOverrides): Promise<string>;
+
+    _name(overrides?: CallOverrides): Promise<string>;
+
+    _symbol(overrides?: CallOverrides): Promise<string>;
+
+    _tokenJson_afterImage(overrides?: CallOverrides): Promise<string>;
+
+    _tokenJson_afterNameBeforeImage(overrides?: CallOverrides): Promise<string>;
+
+    _tokenJson_beforeName(overrides?: CallOverrides): Promise<string>;
+
     approve(
       to: string,
       tokenId: BigNumberish,
@@ -439,6 +509,11 @@ export class OnchainNftContract extends BaseContract {
     ): Promise<void>;
 
     balanceOf(user: string, overrides?: CallOverrides): Promise<BigNumber>;
+
+    c_0x6b16a3b8(
+      c__0x6b16a3b8: BytesLike,
+      overrides?: CallOverrides
+    ): Promise<void>;
 
     contractJson(overrides?: CallOverrides): Promise<string>;
 
@@ -489,16 +564,6 @@ export class OnchainNftContract extends BaseContract {
     setApprovalForAll(
       operator: string,
       approved: boolean,
-      overrides?: CallOverrides
-    ): Promise<void>;
-
-    setupProject(
-      name_: string,
-      symbol_: string,
-      contractJson: string,
-      tokenJson_beforeName: string,
-      tokenJson_afterNameBeforeImage: string,
-      tokenJson_afterImage: string,
       overrides?: CallOverrides
     ): Promise<void>;
 
@@ -583,6 +648,20 @@ export class OnchainNftContract extends BaseContract {
   };
 
   estimateGas: {
+    _contractJson(overrides?: CallOverrides): Promise<BigNumber>;
+
+    _name(overrides?: CallOverrides): Promise<BigNumber>;
+
+    _symbol(overrides?: CallOverrides): Promise<BigNumber>;
+
+    _tokenJson_afterImage(overrides?: CallOverrides): Promise<BigNumber>;
+
+    _tokenJson_afterNameBeforeImage(
+      overrides?: CallOverrides
+    ): Promise<BigNumber>;
+
+    _tokenJson_beforeName(overrides?: CallOverrides): Promise<BigNumber>;
+
     approve(
       to: string,
       tokenId: BigNumberish,
@@ -590,6 +669,11 @@ export class OnchainNftContract extends BaseContract {
     ): Promise<BigNumber>;
 
     balanceOf(user: string, overrides?: CallOverrides): Promise<BigNumber>;
+
+    c_0x6b16a3b8(
+      c__0x6b16a3b8: BytesLike,
+      overrides?: CallOverrides
+    ): Promise<BigNumber>;
 
     contractJson(overrides?: CallOverrides): Promise<BigNumber>;
 
@@ -646,16 +730,6 @@ export class OnchainNftContract extends BaseContract {
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
 
-    setupProject(
-      name_: string,
-      symbol_: string,
-      contractJson: string,
-      tokenJson_beforeName: string,
-      tokenJson_afterNameBeforeImage: string,
-      tokenJson_afterImage: string,
-      overrides?: Overrides & { from?: string | Promise<string> }
-    ): Promise<BigNumber>;
-
     supportsInterface(
       interfaceId: BytesLike,
       overrides?: CallOverrides
@@ -684,6 +758,24 @@ export class OnchainNftContract extends BaseContract {
   };
 
   populateTransaction: {
+    _contractJson(overrides?: CallOverrides): Promise<PopulatedTransaction>;
+
+    _name(overrides?: CallOverrides): Promise<PopulatedTransaction>;
+
+    _symbol(overrides?: CallOverrides): Promise<PopulatedTransaction>;
+
+    _tokenJson_afterImage(
+      overrides?: CallOverrides
+    ): Promise<PopulatedTransaction>;
+
+    _tokenJson_afterNameBeforeImage(
+      overrides?: CallOverrides
+    ): Promise<PopulatedTransaction>;
+
+    _tokenJson_beforeName(
+      overrides?: CallOverrides
+    ): Promise<PopulatedTransaction>;
+
     approve(
       to: string,
       tokenId: BigNumberish,
@@ -692,6 +784,11 @@ export class OnchainNftContract extends BaseContract {
 
     balanceOf(
       user: string,
+      overrides?: CallOverrides
+    ): Promise<PopulatedTransaction>;
+
+    c_0x6b16a3b8(
+      c__0x6b16a3b8: BytesLike,
       overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
 
@@ -747,16 +844,6 @@ export class OnchainNftContract extends BaseContract {
     setApprovalForAll(
       operator: string,
       approved: boolean,
-      overrides?: Overrides & { from?: string | Promise<string> }
-    ): Promise<PopulatedTransaction>;
-
-    setupProject(
-      name_: string,
-      symbol_: string,
-      contractJson: string,
-      tokenJson_beforeName: string,
-      tokenJson_afterNameBeforeImage: string,
-      tokenJson_afterImage: string,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
 

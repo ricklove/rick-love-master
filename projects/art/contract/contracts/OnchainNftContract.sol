@@ -45,9 +45,9 @@ contract OnchainNftContract is IERC165
     }
 
     // Metadata ---
-    string private _name;
-    string private _symbol;
-    string private _contractJson;
+    string public constant _name = 'TestContract';
+    string public constant _symbol = 'TEST';
+    string public constant _contractJson = "{\"name\":\"TestContract\",\"description\":\"Test Description\"}";
 
     /**
 {
@@ -56,25 +56,25 @@ contract OnchainNftContract is IERC165
     "image": "<svg width='100%' height='100%' viewBox='0 0 32 32' xmlns='http://www.w3.org/2000/svg' xmlns:svg='http://www.w3.org/2000/svg' xmlns:xlink='http://www.w3.org/1999/xlink'><image width='100%' height='100%' style='image-rendering:pixelated; image-rendering:crisp-edges' xlink:href='data:image/webp;base64,{tokenImage}'/></svg>", 
 }
      */
-    string private _tokenJson_beforeName;
-    string private _tokenJson_afterNameBeforeImage;
-    string private _tokenJson_afterImage;
+    string public constant _tokenJson_beforeName = '{"name":"';
+    string public constant _tokenJson_afterNameBeforeImage = "\",\"image\":\"<svg width='100%' height='100%' viewBox='0 0 32 32' xmlns='http://www.w3.org/2000/svg' xmlns:svg='http://www.w3.org/2000/svg' xmlns:xlink='http://www.w3.org/1999/xlink'><image width='100%' height='100%' style='image-rendering:pixelated; image-rendering:crisp-edges' xlink:href='";
+    string public constant _tokenJson_afterImage = "'/></svg>\"}";
 
-    function setupProject(
-        string memory name_,
-        string memory symbol_, 
-        string memory contractJson, 
-        string memory tokenJson_beforeName,
-        string memory tokenJson_afterNameBeforeImage,
-        string memory tokenJson_afterImage
-    ) public onlyArtist {
-        _name = name_;
-        _symbol = symbol_;
-        _contractJson = contractJson;
-        _tokenJson_beforeName = tokenJson_beforeName;
-        _tokenJson_afterNameBeforeImage = tokenJson_afterNameBeforeImage;
-        _tokenJson_afterImage = tokenJson_afterImage;
-    }
+    // function setupProject(
+    //     string memory name_,
+    //     string memory symbol_, 
+    //     string memory contractJson, 
+    //     string memory tokenJson_beforeName,
+    //     string memory tokenJson_afterNameBeforeImage,
+    //     string memory tokenJson_afterImage
+    // ) public onlyArtist {
+    //     _name = name_;
+    //     _symbol = symbol_;
+    //     _contractJson = contractJson;
+    //     _tokenJson_beforeName = tokenJson_beforeName;
+    //     _tokenJson_afterNameBeforeImage = tokenJson_afterNameBeforeImage;
+    //     _tokenJson_afterImage = tokenJson_afterImage;
+    // }
 
     function name() public view override(IERC721Metadata) returns (string memory) {
         return _name;
