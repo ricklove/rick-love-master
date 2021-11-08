@@ -23,7 +23,6 @@ interface OnchainNftContractInterface extends ethers.utils.Interface {
   functions: {
     "approve(address,uint256)": FunctionFragment;
     "balanceOf(address)": FunctionFragment;
-    "c_0x6b16a3b8(bytes32)": FunctionFragment;
     "contractJson()": FunctionFragment;
     "contractURI()": FunctionFragment;
     "createToken(uint256,string,string,bytes)": FunctionFragment;
@@ -48,10 +47,6 @@ interface OnchainNftContractInterface extends ethers.utils.Interface {
     values: [string, BigNumberish]
   ): string;
   encodeFunctionData(functionFragment: "balanceOf", values: [string]): string;
-  encodeFunctionData(
-    functionFragment: "c_0x6b16a3b8",
-    values: [BytesLike]
-  ): string;
   encodeFunctionData(
     functionFragment: "contractJson",
     values?: undefined
@@ -117,10 +112,6 @@ interface OnchainNftContractInterface extends ethers.utils.Interface {
 
   decodeFunctionResult(functionFragment: "approve", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "balanceOf", data: BytesLike): Result;
-  decodeFunctionResult(
-    functionFragment: "c_0x6b16a3b8",
-    data: BytesLike
-  ): Result;
   decodeFunctionResult(
     functionFragment: "contractJson",
     data: BytesLike
@@ -252,11 +243,6 @@ export class OnchainNftContract extends BaseContract {
 
     balanceOf(user: string, overrides?: CallOverrides): Promise<[BigNumber]>;
 
-    c_0x6b16a3b8(
-      c__0x6b16a3b8: BytesLike,
-      overrides?: CallOverrides
-    ): Promise<[void]>;
-
     contractJson(overrides?: CallOverrides): Promise<[string]>;
 
     contractURI(overrides?: CallOverrides): Promise<[string]>;
@@ -353,11 +339,6 @@ export class OnchainNftContract extends BaseContract {
 
   balanceOf(user: string, overrides?: CallOverrides): Promise<BigNumber>;
 
-  c_0x6b16a3b8(
-    c__0x6b16a3b8: BytesLike,
-    overrides?: CallOverrides
-  ): Promise<void>;
-
   contractJson(overrides?: CallOverrides): Promise<string>;
 
   contractURI(overrides?: CallOverrides): Promise<string>;
@@ -441,11 +422,6 @@ export class OnchainNftContract extends BaseContract {
     ): Promise<void>;
 
     balanceOf(user: string, overrides?: CallOverrides): Promise<BigNumber>;
-
-    c_0x6b16a3b8(
-      c__0x6b16a3b8: BytesLike,
-      overrides?: CallOverrides
-    ): Promise<void>;
 
     contractJson(overrides?: CallOverrides): Promise<string>;
 
@@ -594,11 +570,6 @@ export class OnchainNftContract extends BaseContract {
 
     balanceOf(user: string, overrides?: CallOverrides): Promise<BigNumber>;
 
-    c_0x6b16a3b8(
-      c__0x6b16a3b8: BytesLike,
-      overrides?: CallOverrides
-    ): Promise<BigNumber>;
-
     contractJson(overrides?: CallOverrides): Promise<BigNumber>;
 
     contractURI(overrides?: CallOverrides): Promise<BigNumber>;
@@ -696,11 +667,6 @@ export class OnchainNftContract extends BaseContract {
 
     balanceOf(
       user: string,
-      overrides?: CallOverrides
-    ): Promise<PopulatedTransaction>;
-
-    c_0x6b16a3b8(
-      c__0x6b16a3b8: BytesLike,
       overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
 
