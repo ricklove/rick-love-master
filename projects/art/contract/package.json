@@ -10,7 +10,8 @@
     "coverage": "npx hardhat coverage",
     "compile": "npx hardhat compile",
     "deploy:testnet": "npx hardhat run --network rinkeby scripts/deploy.ts",
-    "deploy-onchain:testnet": "npx hardhat run --network rinkeby scripts/deploy-onchain.ts"
+    "deploy-onchain:testnet": "npx hardhat run --network rinkeby scripts/deploy-onchain.ts",
+    "deploy-onchain-svg:testnet": "npx hardhat run --network rinkeby scripts/deploy-onchain-svg.ts"
   },
   "devDependencies": {
     "@ricklove/config-lib-rig": "*",
