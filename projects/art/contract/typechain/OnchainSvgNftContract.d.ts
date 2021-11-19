@@ -12,7 +12,6 @@ import {
   BaseContract,
   ContractTransaction,
   Overrides,
-  PayableOverrides,
   CallOverrides,
 } from "ethers";
 import { BytesLike } from "@ethersproject/bytes";
@@ -20,30 +19,25 @@ import { Listener, Provider } from "@ethersproject/providers";
 import { FunctionFragment, EventFragment, Result } from "@ethersproject/abi";
 import { TypedEventFilter, TypedEvent, TypedListener } from "./commons";
 
-interface NftContractInterface extends ethers.utils.Interface {
+interface OnchainSvgNftContractInterface extends ethers.utils.Interface {
   functions: {
     "approve(address,uint256)": FunctionFragment;
     "balanceOf(address)": FunctionFragment;
-    "c_0x733469c6(bytes32)": FunctionFragment;
+    "c_0x5c93afcd(bytes32)": FunctionFragment;
+    "contractJson()": FunctionFragment;
     "contractURI()": FunctionFragment;
-    "createProject(uint256,uint32,uint256)": FunctionFragment;
+    "createToken(uint256,string,string)": FunctionFragment;
     "getApproved(uint256)": FunctionFragment;
-    "getGasPrice()": FunctionFragment;
     "isApprovedForAll(address,address)": FunctionFragment;
-    "mint(uint256)": FunctionFragment;
     "name()": FunctionFragment;
     "ownerOf(uint256)": FunctionFragment;
-    "projectBucketSize()": FunctionFragment;
-    "projectDetails(uint256)": FunctionFragment;
-    "projectIdLast()": FunctionFragment;
     "safeTransferFrom(address,address,uint256)": FunctionFragment;
     "setApprovalForAll(address,bool)": FunctionFragment;
-    "setBaseURI(string)": FunctionFragment;
-    "setGasPrice(uint256,uint256)": FunctionFragment;
-    "setProjectMintPrice(uint256,uint32)": FunctionFragment;
-    "setProjectTokenSupply(uint256,uint32)": FunctionFragment;
     "supportsInterface(bytes4)": FunctionFragment;
     "symbol()": FunctionFragment;
+    "tokenData(uint256)": FunctionFragment;
+    "tokenImage(uint256)": FunctionFragment;
+    "tokenJson(uint256)": FunctionFragment;
     "tokenURI(uint256)": FunctionFragment;
     "totalSupply()": FunctionFragment;
     "transferFrom(address,address,uint256)": FunctionFragment;
@@ -55,46 +49,33 @@ interface NftContractInterface extends ethers.utils.Interface {
   ): string;
   encodeFunctionData(functionFragment: "balanceOf", values: [string]): string;
   encodeFunctionData(
-    functionFragment: "c_0x733469c6",
+    functionFragment: "c_0x5c93afcd",
     values: [BytesLike]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "contractJson",
+    values?: undefined
   ): string;
   encodeFunctionData(
     functionFragment: "contractURI",
     values?: undefined
   ): string;
   encodeFunctionData(
-    functionFragment: "createProject",
-    values: [BigNumberish, BigNumberish, BigNumberish]
+    functionFragment: "createToken",
+    values: [BigNumberish, string, string]
   ): string;
   encodeFunctionData(
     functionFragment: "getApproved",
     values: [BigNumberish]
   ): string;
   encodeFunctionData(
-    functionFragment: "getGasPrice",
-    values?: undefined
-  ): string;
-  encodeFunctionData(
     functionFragment: "isApprovedForAll",
     values: [string, string]
   ): string;
-  encodeFunctionData(functionFragment: "mint", values: [BigNumberish]): string;
   encodeFunctionData(functionFragment: "name", values?: undefined): string;
   encodeFunctionData(
     functionFragment: "ownerOf",
     values: [BigNumberish]
-  ): string;
-  encodeFunctionData(
-    functionFragment: "projectBucketSize",
-    values?: undefined
-  ): string;
-  encodeFunctionData(
-    functionFragment: "projectDetails",
-    values: [BigNumberish]
-  ): string;
-  encodeFunctionData(
-    functionFragment: "projectIdLast",
-    values?: undefined
   ): string;
   encodeFunctionData(
     functionFragment: "safeTransferFrom",
@@ -104,24 +85,23 @@ interface NftContractInterface extends ethers.utils.Interface {
     functionFragment: "setApprovalForAll",
     values: [string, boolean]
   ): string;
-  encodeFunctionData(functionFragment: "setBaseURI", values: [string]): string;
-  encodeFunctionData(
-    functionFragment: "setGasPrice",
-    values: [BigNumberish, BigNumberish]
-  ): string;
-  encodeFunctionData(
-    functionFragment: "setProjectMintPrice",
-    values: [BigNumberish, BigNumberish]
-  ): string;
-  encodeFunctionData(
-    functionFragment: "setProjectTokenSupply",
-    values: [BigNumberish, BigNumberish]
-  ): string;
   encodeFunctionData(
     functionFragment: "supportsInterface",
     values: [BytesLike]
   ): string;
   encodeFunctionData(functionFragment: "symbol", values?: undefined): string;
+  encodeFunctionData(
+    functionFragment: "tokenData",
+    values: [BigNumberish]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "tokenImage",
+    values: [BigNumberish]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "tokenJson",
+    values: [BigNumberish]
+  ): string;
   encodeFunctionData(
     functionFragment: "tokenURI",
     values: [BigNumberish]
@@ -138,7 +118,11 @@ interface NftContractInterface extends ethers.utils.Interface {
   decodeFunctionResult(functionFragment: "approve", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "balanceOf", data: BytesLike): Result;
   decodeFunctionResult(
-    functionFragment: "c_0x733469c6",
+    functionFragment: "c_0x5c93afcd",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "contractJson",
     data: BytesLike
   ): Result;
   decodeFunctionResult(
@@ -146,7 +130,7 @@ interface NftContractInterface extends ethers.utils.Interface {
     data: BytesLike
   ): Result;
   decodeFunctionResult(
-    functionFragment: "createProject",
+    functionFragment: "createToken",
     data: BytesLike
   ): Result;
   decodeFunctionResult(
@@ -154,28 +138,11 @@ interface NftContractInterface extends ethers.utils.Interface {
     data: BytesLike
   ): Result;
   decodeFunctionResult(
-    functionFragment: "getGasPrice",
-    data: BytesLike
-  ): Result;
-  decodeFunctionResult(
     functionFragment: "isApprovedForAll",
     data: BytesLike
   ): Result;
-  decodeFunctionResult(functionFragment: "mint", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "name", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "ownerOf", data: BytesLike): Result;
-  decodeFunctionResult(
-    functionFragment: "projectBucketSize",
-    data: BytesLike
-  ): Result;
-  decodeFunctionResult(
-    functionFragment: "projectDetails",
-    data: BytesLike
-  ): Result;
-  decodeFunctionResult(
-    functionFragment: "projectIdLast",
-    data: BytesLike
-  ): Result;
   decodeFunctionResult(
     functionFragment: "safeTransferFrom",
     data: BytesLike
@@ -184,24 +151,14 @@ interface NftContractInterface extends ethers.utils.Interface {
     functionFragment: "setApprovalForAll",
     data: BytesLike
   ): Result;
-  decodeFunctionResult(functionFragment: "setBaseURI", data: BytesLike): Result;
-  decodeFunctionResult(
-    functionFragment: "setGasPrice",
-    data: BytesLike
-  ): Result;
-  decodeFunctionResult(
-    functionFragment: "setProjectMintPrice",
-    data: BytesLike
-  ): Result;
-  decodeFunctionResult(
-    functionFragment: "setProjectTokenSupply",
-    data: BytesLike
-  ): Result;
   decodeFunctionResult(
     functionFragment: "supportsInterface",
     data: BytesLike
   ): Result;
   decodeFunctionResult(functionFragment: "symbol", data: BytesLike): Result;
+  decodeFunctionResult(functionFragment: "tokenData", data: BytesLike): Result;
+  decodeFunctionResult(functionFragment: "tokenImage", data: BytesLike): Result;
+  decodeFunctionResult(functionFragment: "tokenJson", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "tokenURI", data: BytesLike): Result;
   decodeFunctionResult(
     functionFragment: "totalSupply",
@@ -243,7 +200,7 @@ export type TransferEvent = TypedEvent<
   [string, string, BigNumber] & { from: string; to: string; tokenId: BigNumber }
 >;
 
-export class NftContract extends BaseContract {
+export class OnchainSvgNftContract extends BaseContract {
   connect(signerOrProvider: Signer | Provider | string): this;
   attach(addressOrName: string): this;
   deployed(): Promise<this>;
@@ -284,7 +241,7 @@ export class NftContract extends BaseContract {
     toBlock?: string | number | undefined
   ): Promise<Array<TypedEvent<EventArgsArray & EventArgsObject>>>;
 
-  interface: NftContractInterface;
+  interface: OnchainSvgNftContractInterface;
 
   functions: {
     approve(
@@ -295,17 +252,19 @@ export class NftContract extends BaseContract {
 
     balanceOf(user: string, overrides?: CallOverrides): Promise<[BigNumber]>;
 
-    c_0x733469c6(
-      c__0x733469c6: BytesLike,
+    c_0x5c93afcd(
+      c__0x5c93afcd: BytesLike,
       overrides?: CallOverrides
     ): Promise<[void]>;
 
+    contractJson(overrides?: CallOverrides): Promise<[string]>;
+
     contractURI(overrides?: CallOverrides): Promise<[string]>;
 
-    createProject(
-      projectId: BigNumberish,
-      reserveTokenCount: BigNumberish,
-      projectMintPrice: BigNumberish,
+    createToken(
+      tokenId: BigNumberish,
+      tokenName: string,
+      tokenImageSvg: string,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
 
@@ -314,18 +273,11 @@ export class NftContract extends BaseContract {
       overrides?: CallOverrides
     ): Promise<[string]>;
 
-    getGasPrice(overrides?: CallOverrides): Promise<[BigNumber, BigNumber]>;
-
     isApprovedForAll(
       owner: string,
       operator: string,
       overrides?: CallOverrides
     ): Promise<[boolean]>;
-
-    mint(
-      tokenId: BigNumberish,
-      overrides?: PayableOverrides & { from?: string | Promise<string> }
-    ): Promise<ContractTransaction>;
 
     name(overrides?: CallOverrides): Promise<[string]>;
 
@@ -333,21 +285,6 @@ export class NftContract extends BaseContract {
       tokenId: BigNumberish,
       overrides?: CallOverrides
     ): Promise<[string]>;
-
-    projectBucketSize(overrides?: CallOverrides): Promise<[number]>;
-
-    projectDetails(
-      projectId: BigNumberish,
-      overrides?: CallOverrides
-    ): Promise<
-      [number, number, BigNumber] & {
-        projectTokenSupply: number;
-        projectTokenCount: number;
-        projectMintPrice: BigNumber;
-      }
-    >;
-
-    projectIdLast(overrides?: CallOverrides): Promise<[BigNumber]>;
 
     "safeTransferFrom(address,address,uint256)"(
       from: string,
@@ -370,35 +307,27 @@ export class NftContract extends BaseContract {
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
 
-    setBaseURI(
-      baseURI: string,
-      overrides?: Overrides & { from?: string | Promise<string> }
-    ): Promise<ContractTransaction>;
-
-    setGasPrice(
-      gasPriceMin: BigNumberish,
-      gasPriceMax: BigNumberish,
-      overrides?: Overrides & { from?: string | Promise<string> }
-    ): Promise<ContractTransaction>;
-
-    setProjectMintPrice(
-      projectId: BigNumberish,
-      projectMintPrice: BigNumberish,
-      overrides?: Overrides & { from?: string | Promise<string> }
-    ): Promise<ContractTransaction>;
-
-    setProjectTokenSupply(
-      projectId: BigNumberish,
-      projectTokenSupply: BigNumberish,
-      overrides?: Overrides & { from?: string | Promise<string> }
-    ): Promise<ContractTransaction>;
-
     supportsInterface(
       interfaceId: BytesLike,
       overrides?: CallOverrides
     ): Promise<[boolean]>;
 
     symbol(overrides?: CallOverrides): Promise<[string]>;
+
+    tokenData(
+      tokenId: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<[BigNumber, string, string]>;
+
+    tokenImage(
+      tokenId: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<[string]>;
+
+    tokenJson(
+      tokenId: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<[string]>;
 
     tokenURI(
       tokenId: BigNumberish,
@@ -423,17 +352,19 @@ export class NftContract extends BaseContract {
 
   balanceOf(user: string, overrides?: CallOverrides): Promise<BigNumber>;
 
-  c_0x733469c6(
-    c__0x733469c6: BytesLike,
+  c_0x5c93afcd(
+    c__0x5c93afcd: BytesLike,
     overrides?: CallOverrides
   ): Promise<void>;
 
+  contractJson(overrides?: CallOverrides): Promise<string>;
+
   contractURI(overrides?: CallOverrides): Promise<string>;
 
-  createProject(
-    projectId: BigNumberish,
-    reserveTokenCount: BigNumberish,
-    projectMintPrice: BigNumberish,
+  createToken(
+    tokenId: BigNumberish,
+    tokenName: string,
+    tokenImageSvg: string,
     overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
 
@@ -442,37 +373,15 @@ export class NftContract extends BaseContract {
     overrides?: CallOverrides
   ): Promise<string>;
 
-  getGasPrice(overrides?: CallOverrides): Promise<[BigNumber, BigNumber]>;
-
   isApprovedForAll(
     owner: string,
     operator: string,
     overrides?: CallOverrides
   ): Promise<boolean>;
 
-  mint(
-    tokenId: BigNumberish,
-    overrides?: PayableOverrides & { from?: string | Promise<string> }
-  ): Promise<ContractTransaction>;
-
   name(overrides?: CallOverrides): Promise<string>;
 
   ownerOf(tokenId: BigNumberish, overrides?: CallOverrides): Promise<string>;
-
-  projectBucketSize(overrides?: CallOverrides): Promise<number>;
-
-  projectDetails(
-    projectId: BigNumberish,
-    overrides?: CallOverrides
-  ): Promise<
-    [number, number, BigNumber] & {
-      projectTokenSupply: number;
-      projectTokenCount: number;
-      projectMintPrice: BigNumber;
-    }
-  >;
-
-  projectIdLast(overrides?: CallOverrides): Promise<BigNumber>;
 
   "safeTransferFrom(address,address,uint256)"(
     from: string,
@@ -495,35 +404,21 @@ export class NftContract extends BaseContract {
     overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
 
-  setBaseURI(
-    baseURI: string,
-    overrides?: Overrides & { from?: string | Promise<string> }
-  ): Promise<ContractTransaction>;
-
-  setGasPrice(
-    gasPriceMin: BigNumberish,
-    gasPriceMax: BigNumberish,
-    overrides?: Overrides & { from?: string | Promise<string> }
-  ): Promise<ContractTransaction>;
-
-  setProjectMintPrice(
-    projectId: BigNumberish,
-    projectMintPrice: BigNumberish,
-    overrides?: Overrides & { from?: string | Promise<string> }
-  ): Promise<ContractTransaction>;
-
-  setProjectTokenSupply(
-    projectId: BigNumberish,
-    projectTokenSupply: BigNumberish,
-    overrides?: Overrides & { from?: string | Promise<string> }
-  ): Promise<ContractTransaction>;
-
   supportsInterface(
     interfaceId: BytesLike,
     overrides?: CallOverrides
   ): Promise<boolean>;
 
   symbol(overrides?: CallOverrides): Promise<string>;
+
+  tokenData(
+    tokenId: BigNumberish,
+    overrides?: CallOverrides
+  ): Promise<[BigNumber, string, string]>;
+
+  tokenImage(tokenId: BigNumberish, overrides?: CallOverrides): Promise<string>;
+
+  tokenJson(tokenId: BigNumberish, overrides?: CallOverrides): Promise<string>;
 
   tokenURI(tokenId: BigNumberish, overrides?: CallOverrides): Promise<string>;
 
@@ -545,26 +440,26 @@ export class NftContract extends BaseContract {
 
     balanceOf(user: string, overrides?: CallOverrides): Promise<BigNumber>;
 
-    c_0x733469c6(
-      c__0x733469c6: BytesLike,
+    c_0x5c93afcd(
+      c__0x5c93afcd: BytesLike,
       overrides?: CallOverrides
     ): Promise<void>;
+
+    contractJson(overrides?: CallOverrides): Promise<string>;
 
     contractURI(overrides?: CallOverrides): Promise<string>;
 
-    createProject(
-      projectId: BigNumberish,
-      reserveTokenCount: BigNumberish,
-      projectMintPrice: BigNumberish,
+    createToken(
+      tokenId: BigNumberish,
+      tokenName: string,
+      tokenImageSvg: string,
       overrides?: CallOverrides
-    ): Promise<void>;
+    ): Promise<BigNumber>;
 
     getApproved(
       tokenId: BigNumberish,
       overrides?: CallOverrides
     ): Promise<string>;
-
-    getGasPrice(overrides?: CallOverrides): Promise<[BigNumber, BigNumber]>;
 
     isApprovedForAll(
       owner: string,
@@ -572,26 +467,9 @@ export class NftContract extends BaseContract {
       overrides?: CallOverrides
     ): Promise<boolean>;
 
-    mint(tokenId: BigNumberish, overrides?: CallOverrides): Promise<void>;
-
     name(overrides?: CallOverrides): Promise<string>;
 
     ownerOf(tokenId: BigNumberish, overrides?: CallOverrides): Promise<string>;
-
-    projectBucketSize(overrides?: CallOverrides): Promise<number>;
-
-    projectDetails(
-      projectId: BigNumberish,
-      overrides?: CallOverrides
-    ): Promise<
-      [number, number, BigNumber] & {
-        projectTokenSupply: number;
-        projectTokenCount: number;
-        projectMintPrice: BigNumber;
-      }
-    >;
-
-    projectIdLast(overrides?: CallOverrides): Promise<BigNumber>;
 
     "safeTransferFrom(address,address,uint256)"(
       from: string,
@@ -614,32 +492,27 @@ export class NftContract extends BaseContract {
       overrides?: CallOverrides
     ): Promise<void>;
 
-    setBaseURI(baseURI: string, overrides?: CallOverrides): Promise<void>;
-
-    setGasPrice(
-      gasPriceMin: BigNumberish,
-      gasPriceMax: BigNumberish,
-      overrides?: CallOverrides
-    ): Promise<void>;
-
-    setProjectMintPrice(
-      projectId: BigNumberish,
-      projectMintPrice: BigNumberish,
-      overrides?: CallOverrides
-    ): Promise<void>;
-
-    setProjectTokenSupply(
-      projectId: BigNumberish,
-      projectTokenSupply: BigNumberish,
-      overrides?: CallOverrides
-    ): Promise<void>;
-
     supportsInterface(
       interfaceId: BytesLike,
       overrides?: CallOverrides
     ): Promise<boolean>;
 
     symbol(overrides?: CallOverrides): Promise<string>;
+
+    tokenData(
+      tokenId: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<[BigNumber, string, string]>;
+
+    tokenImage(
+      tokenId: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<string>;
+
+    tokenJson(
+      tokenId: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<string>;
 
     tokenURI(tokenId: BigNumberish, overrides?: CallOverrides): Promise<string>;
 
@@ -718,17 +591,19 @@ export class NftContract extends BaseContract {
 
     balanceOf(user: string, overrides?: CallOverrides): Promise<BigNumber>;
 
-    c_0x733469c6(
-      c__0x733469c6: BytesLike,
+    c_0x5c93afcd(
+      c__0x5c93afcd: BytesLike,
       overrides?: CallOverrides
     ): Promise<BigNumber>;
 
+    contractJson(overrides?: CallOverrides): Promise<BigNumber>;
+
     contractURI(overrides?: CallOverrides): Promise<BigNumber>;
 
-    createProject(
-      projectId: BigNumberish,
-      reserveTokenCount: BigNumberish,
-      projectMintPrice: BigNumberish,
+    createToken(
+      tokenId: BigNumberish,
+      tokenName: string,
+      tokenImageSvg: string,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
 
@@ -737,17 +612,10 @@ export class NftContract extends BaseContract {
       overrides?: CallOverrides
     ): Promise<BigNumber>;
 
-    getGasPrice(overrides?: CallOverrides): Promise<BigNumber>;
-
     isApprovedForAll(
       owner: string,
       operator: string,
       overrides?: CallOverrides
-    ): Promise<BigNumber>;
-
-    mint(
-      tokenId: BigNumberish,
-      overrides?: PayableOverrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
 
     name(overrides?: CallOverrides): Promise<BigNumber>;
@@ -756,15 +624,6 @@ export class NftContract extends BaseContract {
       tokenId: BigNumberish,
       overrides?: CallOverrides
     ): Promise<BigNumber>;
-
-    projectBucketSize(overrides?: CallOverrides): Promise<BigNumber>;
-
-    projectDetails(
-      projectId: BigNumberish,
-      overrides?: CallOverrides
-    ): Promise<BigNumber>;
-
-    projectIdLast(overrides?: CallOverrides): Promise<BigNumber>;
 
     "safeTransferFrom(address,address,uint256)"(
       from: string,
@@ -787,35 +646,27 @@ export class NftContract extends BaseContract {
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
 
-    setBaseURI(
-      baseURI: string,
-      overrides?: Overrides & { from?: string | Promise<string> }
-    ): Promise<BigNumber>;
-
-    setGasPrice(
-      gasPriceMin: BigNumberish,
-      gasPriceMax: BigNumberish,
-      overrides?: Overrides & { from?: string | Promise<string> }
-    ): Promise<BigNumber>;
-
-    setProjectMintPrice(
-      projectId: BigNumberish,
-      projectMintPrice: BigNumberish,
-      overrides?: Overrides & { from?: string | Promise<string> }
-    ): Promise<BigNumber>;
-
-    setProjectTokenSupply(
-      projectId: BigNumberish,
-      projectTokenSupply: BigNumberish,
-      overrides?: Overrides & { from?: string | Promise<string> }
-    ): Promise<BigNumber>;
-
     supportsInterface(
       interfaceId: BytesLike,
       overrides?: CallOverrides
     ): Promise<BigNumber>;
 
     symbol(overrides?: CallOverrides): Promise<BigNumber>;
+
+    tokenData(
+      tokenId: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<BigNumber>;
+
+    tokenImage(
+      tokenId: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<BigNumber>;
+
+    tokenJson(
+      tokenId: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<BigNumber>;
 
     tokenURI(
       tokenId: BigNumberish,
@@ -844,17 +695,19 @@ export class NftContract extends BaseContract {
       overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
 
-    c_0x733469c6(
-      c__0x733469c6: BytesLike,
+    c_0x5c93afcd(
+      c__0x5c93afcd: BytesLike,
       overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
 
+    contractJson(overrides?: CallOverrides): Promise<PopulatedTransaction>;
+
     contractURI(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
-    createProject(
-      projectId: BigNumberish,
-      reserveTokenCount: BigNumberish,
-      projectMintPrice: BigNumberish,
+    createToken(
+      tokenId: BigNumberish,
+      tokenName: string,
+      tokenImageSvg: string,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
 
@@ -863,17 +716,10 @@ export class NftContract extends BaseContract {
       overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
 
-    getGasPrice(overrides?: CallOverrides): Promise<PopulatedTransaction>;
-
     isApprovedForAll(
       owner: string,
       operator: string,
       overrides?: CallOverrides
-    ): Promise<PopulatedTransaction>;
-
-    mint(
-      tokenId: BigNumberish,
-      overrides?: PayableOverrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
 
     name(overrides?: CallOverrides): Promise<PopulatedTransaction>;
@@ -882,15 +728,6 @@ export class NftContract extends BaseContract {
       tokenId: BigNumberish,
       overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
-
-    projectBucketSize(overrides?: CallOverrides): Promise<PopulatedTransaction>;
-
-    projectDetails(
-      projectId: BigNumberish,
-      overrides?: CallOverrides
-    ): Promise<PopulatedTransaction>;
-
-    projectIdLast(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
     "safeTransferFrom(address,address,uint256)"(
       from: string,
@@ -913,35 +750,27 @@ export class NftContract extends BaseContract {
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
 
-    setBaseURI(
-      baseURI: string,
-      overrides?: Overrides & { from?: string | Promise<string> }
-    ): Promise<PopulatedTransaction>;
-
-    setGasPrice(
-      gasPriceMin: BigNumberish,
-      gasPriceMax: BigNumberish,
-      overrides?: Overrides & { from?: string | Promise<string> }
-    ): Promise<PopulatedTransaction>;
-
-    setProjectMintPrice(
-      projectId: BigNumberish,
-      projectMintPrice: BigNumberish,
-      overrides?: Overrides & { from?: string | Promise<string> }
-    ): Promise<PopulatedTransaction>;
-
-    setProjectTokenSupply(
-      projectId: BigNumberish,
-      projectTokenSupply: BigNumberish,
-      overrides?: Overrides & { from?: string | Promise<string> }
-    ): Promise<PopulatedTransaction>;
-
     supportsInterface(
       interfaceId: BytesLike,
       overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
 
     symbol(overrides?: CallOverrides): Promise<PopulatedTransaction>;
+
+    tokenData(
+      tokenId: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<PopulatedTransaction>;
+
+    tokenImage(
+      tokenId: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<PopulatedTransaction>;
+
+    tokenJson(
+      tokenId: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<PopulatedTransaction>;
 
     tokenURI(
       tokenId: BigNumberish,
