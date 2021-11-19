@@ -35,6 +35,8 @@ interface OnchainSvgNftContractInterface extends ethers.utils.Interface {
     "supportsInterface(bytes4)": FunctionFragment;
     "symbol()": FunctionFragment;
     "tokenData(uint256)": FunctionFragment;
+    "tokenIframe(uint256)": FunctionFragment;
+    "tokenIframeBase64(uint256)": FunctionFragment;
     "tokenImage(uint256)": FunctionFragment;
     "tokenJson(uint256)": FunctionFragment;
     "tokenURI(uint256)": FunctionFragment;
@@ -87,6 +89,14 @@ interface OnchainSvgNftContractInterface extends ethers.utils.Interface {
   encodeFunctionData(functionFragment: "symbol", values?: undefined): string;
   encodeFunctionData(
     functionFragment: "tokenData",
+    values: [BigNumberish]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "tokenIframe",
+    values: [BigNumberish]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "tokenIframeBase64",
     values: [BigNumberish]
   ): string;
   encodeFunctionData(
@@ -148,6 +158,14 @@ interface OnchainSvgNftContractInterface extends ethers.utils.Interface {
   ): Result;
   decodeFunctionResult(functionFragment: "symbol", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "tokenData", data: BytesLike): Result;
+  decodeFunctionResult(
+    functionFragment: "tokenIframe",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "tokenIframeBase64",
+    data: BytesLike
+  ): Result;
   decodeFunctionResult(functionFragment: "tokenImage", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "tokenJson", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "tokenURI", data: BytesLike): Result;
@@ -305,6 +323,16 @@ export class OnchainSvgNftContract extends BaseContract {
       overrides?: CallOverrides
     ): Promise<[BigNumber, string, string]>;
 
+    tokenIframe(
+      tokenId: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<[string]>;
+
+    tokenIframeBase64(
+      tokenId: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<[string]>;
+
     tokenImage(
       tokenId: BigNumberish,
       overrides?: CallOverrides
@@ -397,6 +425,16 @@ export class OnchainSvgNftContract extends BaseContract {
     overrides?: CallOverrides
   ): Promise<[BigNumber, string, string]>;
 
+  tokenIframe(
+    tokenId: BigNumberish,
+    overrides?: CallOverrides
+  ): Promise<string>;
+
+  tokenIframeBase64(
+    tokenId: BigNumberish,
+    overrides?: CallOverrides
+  ): Promise<string>;
+
   tokenImage(tokenId: BigNumberish, overrides?: CallOverrides): Promise<string>;
 
   tokenJson(tokenId: BigNumberish, overrides?: CallOverrides): Promise<string>;
@@ -479,6 +517,16 @@ export class OnchainSvgNftContract extends BaseContract {
       tokenId: BigNumberish,
       overrides?: CallOverrides
     ): Promise<[BigNumber, string, string]>;
+
+    tokenIframe(
+      tokenId: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<string>;
+
+    tokenIframeBase64(
+      tokenId: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<string>;
 
     tokenImage(
       tokenId: BigNumberish,
@@ -629,6 +677,16 @@ export class OnchainSvgNftContract extends BaseContract {
       overrides?: CallOverrides
     ): Promise<BigNumber>;
 
+    tokenIframe(
+      tokenId: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<BigNumber>;
+
+    tokenIframeBase64(
+      tokenId: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<BigNumber>;
+
     tokenImage(
       tokenId: BigNumberish,
       overrides?: CallOverrides
@@ -724,6 +782,16 @@ export class OnchainSvgNftContract extends BaseContract {
     symbol(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
     tokenData(
+      tokenId: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<PopulatedTransaction>;
+
+    tokenIframe(
+      tokenId: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<PopulatedTransaction>;
+
+    tokenIframeBase64(
       tokenId: BigNumberish,
       overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;

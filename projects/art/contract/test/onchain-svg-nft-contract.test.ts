@@ -37,7 +37,8 @@ describe(`OnchainSvgNftContract`, async () => {
   const tokenJsonTemplateObj = {
     name: "{SPLIT}",
     description: "This is some great art!", 
-    image: "<svg width='100%' height='100%' viewBox='0 0 32 32' xmlns='http://www.w3.org/2000/svg' xmlns:svg='http://www.w3.org/2000/svg' xmlns:xlink='http://www.w3.org/1999/xlink'><image width='100%' height='100%' style='image-rendering:pixelated; image-rendering:crisp-edges' xlink:href='{SPLIT}'/></svg>", 
+    image: "<svg/></svg>", 
+    animation_url: "data:text/html;base64,", 
   } as const;
   const tokenJsonTemplate = JSON.stringify(tokenJsonTemplateObj);
 
@@ -54,6 +55,14 @@ describe(`OnchainSvgNftContract`, async () => {
 
     // console.log(`json`, { base64, json });
     return JSON.parse(json) as TReturn;
+  };
+
+  const parseBase64 = (base64: string)=>{
+    const base64NoPrefix = base64
+      .replace(/data\:\w+\/\w+\;base64,/g,'')
+      ;
+    const content = Buffer.from(base64NoPrefix, 'base64').toString();
+    return content;
   };
 
   before(async () => {
@@ -108,6 +117,7 @@ describe(`OnchainSvgNftContract`, async () => {
 
   const tokenName = `Empty Svg`;
   const tokenImageSvg = `<svg></svg>`;
+  const tokenIframeHtml = `<!DOCTYPE html><html><head><title>${tokenName}</title></head><body>${tokenImageSvg}</body></html>`;
 
   describe(`token`, () => {
     it(`Should createToken`, async () => {
@@ -130,6 +140,21 @@ describe(`OnchainSvgNftContract`, async () => {
       const actualTokenJson = JSON.parse(tokenJsonText) as typeof tokenJsonTemplateObj;
 
       expect(actualTokenJson.name).contain(tokenName);
+      expect(actualTokenJson.image).contain(tokenImageSvg);
+    });
+    it(`Should get token json - animation_url`, async () => {
+
+      const tokenId = await contract.connect(accounts.artist).totalSupply();
+      await contract.connect(accounts.artist).createToken(tokenId, tokenName, tokenImageSvg);
+
+      const tokenJsonText = await contract.connect(accounts.artist).tokenJson(tokenId);
+      const actualTokenJson = JSON.parse(tokenJsonText) as typeof tokenJsonTemplateObj;
+
+      const actualAnimationUrlIframeHtml = parseBase64(actualTokenJson.animation_url);
+
+      // console.log('actualAnimationUrlIframeHtml',{actualAnimationUrlIframeHtml})
+      expect(actualAnimationUrlIframeHtml).contain(tokenImageSvg);
+      expect(actualAnimationUrlIframeHtml).equals(tokenIframeHtml);
     });
 
     it(`Should get balance of and total supply`, async () => {

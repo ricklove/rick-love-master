@@ -74,7 +74,8 @@ contract OnchainSvgNftContract is IERC165
      */
     string private constant _tokenJson_a = '{"name":"';
     string private constant _tokenJson_b = "\",\"image\":\"";
-    string private constant _tokenJson_c = "\"}";
+    string private constant _tokenJson_c = "\",\"animation_url\":\"";
+    string private constant _tokenJson_d = "\"}";
 
     // https://docs.opensea.io/docs/metadata-standards
     function tokenURI(uint256 tokenId) public view override(IERC721Metadata) returns (string memory) {
@@ -87,11 +88,26 @@ contract OnchainSvgNftContract is IERC165
             _tokenName[tokenId], 
             _tokenJson_b,
             _tokenImageSvg[tokenId],
-            _tokenJson_c
+            _tokenJson_c,
+            tokenIframeBase64(tokenId),
+            _tokenJson_d
         ));
     }
     function tokenImage(uint256 tokenId) public view returns (string memory) {
         return _tokenImageSvg[tokenId];
+    }
+    function tokenIframeBase64(uint256 tokenId) public view returns (string memory) {
+        string memory jsonBase64 = Base64.encode(bytes(tokenIframe(tokenId)));
+        return string(abi.encodePacked('data:text/html;base64,', jsonBase64));
+    }
+    function tokenIframe(uint256 tokenId) public view returns (string memory) {
+        return string(abi.encodePacked(
+            '<!DOCTYPE html><html><head><title>',
+            _tokenName[tokenId],
+            '</title></head><body>',
+            _tokenImageSvg[tokenId],
+            '</body></html>'
+        ));
     }
 
     // Token Ownership ---
