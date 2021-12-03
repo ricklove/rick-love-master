@@ -2,6 +2,7 @@ import '@typechain/hardhat';
 import '@nomiclabs/hardhat-ethers';
 import '@nomiclabs/hardhat-waffle';
 import 'solidity-coverage';
+import 'hardhat-contract-sizer';
 import { HardhatUserConfig, task } from 'hardhat/config';
 
 // This is a sample Hardhat task. To learn how to create your own go to
@@ -48,6 +49,12 @@ const config: HardhatUserConfig = {
       gas: 2100000,
       gasPrice: 8000000000,
     },
+  },
+  contractSizer: {
+    alphaSort: true,
+    disambiguatePaths: false,
+    runOnCompile: true,
+    strict: true,
   },
 };
 

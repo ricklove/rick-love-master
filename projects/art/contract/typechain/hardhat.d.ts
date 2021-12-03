@@ -29,6 +29,10 @@ declare module "hardhat/types/runtime" {
       signerOrOptions?: ethers.Signer | FactoryOptions
     ): Promise<Contracts.IERC721Receiver__factory>;
     getContractFactory(
+      name: "KittenBlocksOnchainSvgNftContract",
+      signerOrOptions?: ethers.Signer | FactoryOptions
+    ): Promise<Contracts.KittenBlocksOnchainSvgNftContract__factory>;
+    getContractFactory(
       name: "NftContract",
       signerOrOptions?: ethers.Signer | FactoryOptions
     ): Promise<Contracts.NftContract__factory>;

@@ -42,6 +42,7 @@ specifiers:
   '@rush-temp/games-list': file:./projects/games-list.tgz
   '@rush-temp/github-comments': file:./projects/github-comments.tgz
   '@rush-temp/glsl-file-to-string': file:./projects/glsl-file-to-string.tgz
+  '@rush-temp/punkscape-artathon': file:./projects/punkscape-artathon.tgz
   '@rush-temp/react-controls': file:./projects/react-controls.tgz
   '@rush-temp/react-native-lite': file:./projects/react-native-lite.tgz
   '@rush-temp/ricklove-vscode-auto-imports-fix': file:./projects/ricklove-vscode-auto-imports-fix.tgz
@@ -167,6 +168,7 @@ dependencies:
   '@rush-temp/games-list': file:projects/games-list.tgz
   '@rush-temp/github-comments': file:projects/github-comments.tgz_@babel+core@7.15.0
   '@rush-temp/glsl-file-to-string': file:projects/glsl-file-to-string.tgz_typescript@4.3.5
+  '@rush-temp/punkscape-artathon': file:projects/punkscape-artathon.tgz
   '@rush-temp/react-controls': file:projects/react-controls.tgz_@babel+core@7.15.0
   '@rush-temp/react-native-lite': file:projects/react-native-lite.tgz_@babel+core@7.15.0
   '@rush-temp/ricklove-vscode-auto-imports-fix': file:projects/ricklove-vscode-auto-imports-fix.tgz
@@ -4555,6 +4557,16 @@ packages:
     resolution: {integrity: sha512-JR/iSQOSt+LQIWwrwEzJ9uk0xfN3mTVYMwt1Ir5mUcSN6pU+V4zQFFaJsclJbPuAUQH+yfWef6tm7l1quW3C8Q==}
     dev: false
 
+  /cli-table3/0.6.0:
+    resolution: {integrity: sha512-gnB85c3MGC7Nm9I/FkiasNBOKjOiO1RNuXXarQms37q4QMpWdlbBgD/VnOStA2faG1dpXMv31RFApjX1/QdgWQ==}
+    engines: {node: 10.* || >= 12.*}
+    dependencies:
+      object-assign: 4.1.1
+      string-width: 4.2.2
+    optionalDependencies:
+      colors: 1.4.0
+    dev: false
+
   /cliui/3.2.0:
     resolution: {integrity: sha1-EgYBU3qRbSmUD5NNo7SNWFo5IT0=}
     dependencies:
@@ -4647,6 +4659,11 @@ packages:
 
   /colors/1.2.5:
     resolution: {integrity: sha512-erNRLao/Y3Fv54qUa0LBB+//Uf3YwMUmdJinN20yMXm9zdKKqH9wt7R9IIVZ+K7ShzfpLV/Zg8+VyrBJYB4lpg==}
+    engines: {node: '>=0.1.90'}
+    dev: false
+
+  /colors/1.4.0:
+    resolution: {integrity: sha512-a+UqTh4kgZg/SlGvfbzDHpgRu7AAQOmmqRHJnxhRZICKFUT91brVhNNt58CMWU9PsBbv3PDCZUHbVxuDiH2mtA==}
     engines: {node: '>=0.1.90'}
     dev: false
 
@@ -7425,6 +7442,16 @@ packages:
     dependencies:
       ajv: 6.12.6
       har-schema: 2.0.0
+    dev: false
+
+  /hardhat-contract-sizer/2.1.1_hardhat@2.6.4:
+    resolution: {integrity: sha512-QgfuwdUkKT7Ugn6Zja26Eie7h6OLcBfWBewaaQtYMCzyglNafQPgUIznN2C42/iFmGrlqFPbqv4B98Iev89KSQ==}
+    peerDependencies:
+      hardhat: ^2.0.0
+    dependencies:
+      cli-table3: 0.6.0
+      colors: 1.4.0
+      hardhat: 2.6.4
     dev: false
 
   /hardhat/2.6.4:
@@ -15305,7 +15332,7 @@ packages:
     dev: false
 
   file:projects/art-contract.tgz:
-    resolution: {integrity: sha512-2SkBtKJG819aqPKin8TZsQU3hnVQQBs2vtfK8xBX6ZlMK441h5swPjhSz3ouk4SAOuElZG9qgUga10s9bbp7VQ==, tarball: file:projects/art-contract.tgz}
+    resolution: {integrity: sha512-aSPcXHf/BmIDaWcxBlZFEX9K/aTTmfwUvWZnmejmsHkMmgItVjARwuD+QOALiCHeaCM5Wax+MFK+hrjfL4NIfA==, tarball: file:projects/art-contract.tgz}
     name: '@rush-temp/art-contract'
     version: 0.0.0
     dependencies:
@@ -15326,6 +15353,7 @@ packages:
       ethereum-waffle: 3.4.0_typescript@4.3.5
       ethers: 5.4.7
       hardhat: 2.6.4
+      hardhat-contract-sizer: 2.1.1_hardhat@2.6.4
       lodash: 4.17.21
       solidity-coverage: 0.7.17
       ts-node: 10.2.1_70d6492c0feb1eb5d83e62cce7c43fd5
@@ -15638,6 +15666,12 @@ packages:
       - '@swc/core'
       - '@swc/wasm'
       - typescript
+    dev: false
+
+  file:projects/punkscape-artathon.tgz:
+    resolution: {integrity: sha512-43Tx6T/iAyadpWjGxZcj1sbn1L1t8IwGy12ywJq+q0ZP2KUEZaRU5uw/icUNx3+x05PsfxEW7tmQRU9Mkx/hnQ==, tarball: file:projects/punkscape-artathon.tgz}
+    name: '@rush-temp/punkscape-artathon'
+    version: 0.0.0
     dev: false
 
   file:projects/react-controls.tgz_@babel+core@7.15.0:
