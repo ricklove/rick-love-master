@@ -24,7 +24,7 @@
     "**/lib": true,
     // required boilerplate
     // "**/config": true,
-    "**/.eslintrc.cjs": true
+    // "**/.eslintrc.cjs": true
     //"**/tsconfig.json": true
   },
   "python.linting.enabled": true,
