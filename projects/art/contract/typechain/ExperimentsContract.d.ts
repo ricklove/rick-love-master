@@ -20,11 +20,20 @@ import { TypedEventFilter, TypedEvent, TypedListener } from "./commons";
 
 interface ExperimentsContractInterface extends ethers.utils.Interface {
   functions: {
+    "create256BitString()": FunctionFragment;
     "get16Bit(uint256)": FunctionFragment;
     "get256Bit(uint256)": FunctionFragment;
+    "get256Bit10k()": FunctionFragment;
+    "get256Bit10k_inline()": FunctionFragment;
+    "get256Bit10k_loopOnly()": FunctionFragment;
+    "get256Bit10k_unsafe()": FunctionFragment;
     "get8Bit(uint256)": FunctionFragment;
   };
 
+  encodeFunctionData(
+    functionFragment: "create256BitString",
+    values?: undefined
+  ): string;
   encodeFunctionData(
     functionFragment: "get16Bit",
     values: [BigNumberish]
@@ -34,12 +43,48 @@ interface ExperimentsContractInterface extends ethers.utils.Interface {
     values: [BigNumberish]
   ): string;
   encodeFunctionData(
+    functionFragment: "get256Bit10k",
+    values?: undefined
+  ): string;
+  encodeFunctionData(
+    functionFragment: "get256Bit10k_inline",
+    values?: undefined
+  ): string;
+  encodeFunctionData(
+    functionFragment: "get256Bit10k_loopOnly",
+    values?: undefined
+  ): string;
+  encodeFunctionData(
+    functionFragment: "get256Bit10k_unsafe",
+    values?: undefined
+  ): string;
+  encodeFunctionData(
     functionFragment: "get8Bit",
     values: [BigNumberish]
   ): string;
 
+  decodeFunctionResult(
+    functionFragment: "create256BitString",
+    data: BytesLike
+  ): Result;
   decodeFunctionResult(functionFragment: "get16Bit", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "get256Bit", data: BytesLike): Result;
+  decodeFunctionResult(
+    functionFragment: "get256Bit10k",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "get256Bit10k_inline",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "get256Bit10k_loopOnly",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "get256Bit10k_unsafe",
+    data: BytesLike
+  ): Result;
   decodeFunctionResult(functionFragment: "get8Bit", data: BytesLike): Result;
 
   events: {};
@@ -89,6 +134,8 @@ export class ExperimentsContract extends BaseContract {
   interface: ExperimentsContractInterface;
 
   functions: {
+    create256BitString(overrides?: CallOverrides): Promise<[string]>;
+
     get16Bit(
       offset: BigNumberish,
       overrides?: CallOverrides
@@ -99,11 +146,21 @@ export class ExperimentsContract extends BaseContract {
       overrides?: CallOverrides
     ): Promise<[BigNumber]>;
 
+    get256Bit10k(overrides?: CallOverrides): Promise<[BigNumber]>;
+
+    get256Bit10k_inline(overrides?: CallOverrides): Promise<[BigNumber]>;
+
+    get256Bit10k_loopOnly(overrides?: CallOverrides): Promise<[BigNumber]>;
+
+    get256Bit10k_unsafe(overrides?: CallOverrides): Promise<[BigNumber]>;
+
     get8Bit(
       offset: BigNumberish,
       overrides?: CallOverrides
     ): Promise<[BigNumber]>;
   };
+
+  create256BitString(overrides?: CallOverrides): Promise<string>;
 
   get16Bit(offset: BigNumberish, overrides?: CallOverrides): Promise<BigNumber>;
 
@@ -112,9 +169,19 @@ export class ExperimentsContract extends BaseContract {
     overrides?: CallOverrides
   ): Promise<BigNumber>;
 
+  get256Bit10k(overrides?: CallOverrides): Promise<BigNumber>;
+
+  get256Bit10k_inline(overrides?: CallOverrides): Promise<BigNumber>;
+
+  get256Bit10k_loopOnly(overrides?: CallOverrides): Promise<BigNumber>;
+
+  get256Bit10k_unsafe(overrides?: CallOverrides): Promise<BigNumber>;
+
   get8Bit(offset: BigNumberish, overrides?: CallOverrides): Promise<BigNumber>;
 
   callStatic: {
+    create256BitString(overrides?: CallOverrides): Promise<string>;
+
     get16Bit(
       offset: BigNumberish,
       overrides?: CallOverrides
@@ -124,6 +191,14 @@ export class ExperimentsContract extends BaseContract {
       offset: BigNumberish,
       overrides?: CallOverrides
     ): Promise<BigNumber>;
+
+    get256Bit10k(overrides?: CallOverrides): Promise<BigNumber>;
+
+    get256Bit10k_inline(overrides?: CallOverrides): Promise<BigNumber>;
+
+    get256Bit10k_loopOnly(overrides?: CallOverrides): Promise<BigNumber>;
+
+    get256Bit10k_unsafe(overrides?: CallOverrides): Promise<BigNumber>;
 
     get8Bit(
       offset: BigNumberish,
@@ -134,6 +209,8 @@ export class ExperimentsContract extends BaseContract {
   filters: {};
 
   estimateGas: {
+    create256BitString(overrides?: CallOverrides): Promise<BigNumber>;
+
     get16Bit(
       offset: BigNumberish,
       overrides?: CallOverrides
@@ -143,6 +220,14 @@ export class ExperimentsContract extends BaseContract {
       offset: BigNumberish,
       overrides?: CallOverrides
     ): Promise<BigNumber>;
+
+    get256Bit10k(overrides?: CallOverrides): Promise<BigNumber>;
+
+    get256Bit10k_inline(overrides?: CallOverrides): Promise<BigNumber>;
+
+    get256Bit10k_loopOnly(overrides?: CallOverrides): Promise<BigNumber>;
+
+    get256Bit10k_unsafe(overrides?: CallOverrides): Promise<BigNumber>;
 
     get8Bit(
       offset: BigNumberish,
@@ -151,6 +236,10 @@ export class ExperimentsContract extends BaseContract {
   };
 
   populateTransaction: {
+    create256BitString(
+      overrides?: CallOverrides
+    ): Promise<PopulatedTransaction>;
+
     get16Bit(
       offset: BigNumberish,
       overrides?: CallOverrides
@@ -158,6 +247,20 @@ export class ExperimentsContract extends BaseContract {
 
     get256Bit(
       offset: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<PopulatedTransaction>;
+
+    get256Bit10k(overrides?: CallOverrides): Promise<PopulatedTransaction>;
+
+    get256Bit10k_inline(
+      overrides?: CallOverrides
+    ): Promise<PopulatedTransaction>;
+
+    get256Bit10k_loopOnly(
+      overrides?: CallOverrides
+    ): Promise<PopulatedTransaction>;
+
+    get256Bit10k_unsafe(
       overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
 

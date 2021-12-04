@@ -27,6 +27,7 @@ interface KittenBlocksOnchainSvgNftContractInterface
     "contractJson()": FunctionFragment;
     "contractURI()": FunctionFragment;
     "createToken(uint256,string,string)": FunctionFragment;
+    "generateSvg(uint256)": FunctionFragment;
     "getApproved(uint256)": FunctionFragment;
     "isApprovedForAll(address,address)": FunctionFragment;
     "name()": FunctionFragment;
@@ -61,6 +62,10 @@ interface KittenBlocksOnchainSvgNftContractInterface
   encodeFunctionData(
     functionFragment: "createToken",
     values: [BigNumberish, string, string]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "generateSvg",
+    values: [BigNumberish]
   ): string;
   encodeFunctionData(
     functionFragment: "getApproved",
@@ -133,6 +138,10 @@ interface KittenBlocksOnchainSvgNftContractInterface
   ): Result;
   decodeFunctionResult(
     functionFragment: "createToken",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "generateSvg",
     data: BytesLike
   ): Result;
   decodeFunctionResult(
@@ -273,6 +282,11 @@ export class KittenBlocksOnchainSvgNftContract extends BaseContract {
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
 
+    generateSvg(
+      hashcode: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<[string]>;
+
     getApproved(
       tokenId: BigNumberish,
       overrides?: CallOverrides
@@ -378,6 +392,11 @@ export class KittenBlocksOnchainSvgNftContract extends BaseContract {
     overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
 
+  generateSvg(
+    hashcode: BigNumberish,
+    overrides?: CallOverrides
+  ): Promise<string>;
+
   getApproved(
     tokenId: BigNumberish,
     overrides?: CallOverrides
@@ -470,6 +489,11 @@ export class KittenBlocksOnchainSvgNftContract extends BaseContract {
       tokenImageSvg: string,
       overrides?: CallOverrides
     ): Promise<BigNumber>;
+
+    generateSvg(
+      hashcode: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<string>;
 
     getApproved(
       tokenId: BigNumberish,
@@ -627,6 +651,11 @@ export class KittenBlocksOnchainSvgNftContract extends BaseContract {
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
 
+    generateSvg(
+      hashcode: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<BigNumber>;
+
     getApproved(
       tokenId: BigNumberish,
       overrides?: CallOverrides
@@ -734,6 +763,11 @@ export class KittenBlocksOnchainSvgNftContract extends BaseContract {
       tokenName: string,
       tokenImageSvg: string,
       overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<PopulatedTransaction>;
+
+    generateSvg(
+      hashcode: BigNumberish,
+      overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
 
     getApproved(
