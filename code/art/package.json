@@ -4,7 +4,7 @@
     "dependencies": {
         "@ffmpeg/core": "^0.8.5",
         "@ffmpeg/ffmpeg": "^0.9.7",
-        "@openzeppelin/contracts": "^3.3.0",
+        "@openzeppelin/contracts": "^4.4.1",
         "@truffle/hdwallet-provider": "^1.2.1",
         "aws-sdk": "^2.749.0",
         "controls-react": "*",
