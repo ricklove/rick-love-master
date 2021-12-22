@@ -26,7 +26,7 @@ contract ExperimentsContract2 {
                 mstore(0xC5, add(p, 1))
             }
 
-            let a := add(0xA6,getNextData())
+            let a := add(0xA6,getNextData2())
             let b := getNextData2()
             let c := getNextData3()
             let d := add(a,add(b,add(c,getNextData())))
