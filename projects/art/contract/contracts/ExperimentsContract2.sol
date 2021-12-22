@@ -10,17 +10,11 @@ contract ExperimentsContract2 {
         uint output;
 
         assembly {
-            function getNextData() -> data { 
-                let p := mload(0xA3)
-                data := mload(p)
-                mstore(0xA3, add(p, 1))
-            }
-
-            let a := getNextData()
-            let b := getNextData()
-            let c := getNextData()
-            let d := getNextData()
-            let e := getNextData()
+            let a := mload(add(mload(0xA3),1))
+            let b := mload(add(mload(0xA3),2))
+            let c := mload(add(mload(0xA3),3))
+            let d := mload(add(mload(0xA3),4))
+            let e := mload(add(mload(0xA3),5))
 
             let x := d
             x := add(x,a)
