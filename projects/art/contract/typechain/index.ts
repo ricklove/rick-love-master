@@ -2,6 +2,7 @@
 /* tslint:disable */
 /* eslint-disable */
 export type { ExperimentsContract } from "./ExperimentsContract";
+export type { ExperimentsContract2 } from "./ExperimentsContract2";
 export type { IERC165 } from "./IERC165";
 export type { IERC721 } from "./IERC721";
 export type { IERC721Metadata } from "./IERC721Metadata";
@@ -12,6 +13,7 @@ export type { OnchainNftContract } from "./OnchainNftContract";
 export type { OnchainSvgNftContract } from "./OnchainSvgNftContract";
 
 export { ExperimentsContract__factory } from "./factories/ExperimentsContract__factory";
+export { ExperimentsContract2__factory } from "./factories/ExperimentsContract2__factory";
 export { IERC165__factory } from "./factories/IERC165__factory";
 export { IERC721__factory } from "./factories/IERC721__factory";
 export { IERC721Metadata__factory } from "./factories/IERC721Metadata__factory";

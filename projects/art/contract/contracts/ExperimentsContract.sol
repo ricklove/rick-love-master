@@ -56,7 +56,7 @@ contract ExperimentsContract {
     }
 
     function get8Bit(uint256 offset) public view returns (uint256) {
-        // hex'' are left to right - like strings
+        // hex'' are left to right bytes - like strings (but each hex pair is a single byte in normal hex endian 10=16)
         // [...new Array(32)].map((_,i)=> i.toString(16).padStart(2,'0')).join('')
         bytes memory data8 = hex'000102030405060708090a0b0c0d0e0f101112131415161718191a1b1c1d1e1f';
         return toUint8(data8, offset);
@@ -164,5 +164,4 @@ contract ExperimentsContract {
 
         return v;
     }
-
 }
