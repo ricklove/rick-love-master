@@ -23,6 +23,17 @@ contract ExperimentsContract2 {
             let i := mload(add(mem,0xA8))
             let j := mload(add(mem,0xA9))
 
+            a := add(a, mload(add(mem,0xB0)))
+            b := add(b, mload(add(mem,0xB1)))
+            c := add(c, mload(add(mem,0xB2)))
+            d := add(d, mload(add(mem,0xB3)))
+            e := add(e, mload(add(mem,0xB4)))
+            f := add(f, mload(add(mem,0xB5)))
+            g := add(g, mload(add(mem,0xB6)))
+            h := add(h, mload(add(mem,0xB7)))
+            i := add(i, mload(add(mem,0xB8)))
+            j := add(j, mload(add(mem,0xB9)))
+
             let x := d
             x := add(x,a)
             x := add(x,b)
