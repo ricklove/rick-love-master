@@ -36,7 +36,6 @@ contract ExperimentsContract2 {
             for { let i := 0 } lt(i, 0x100) { i := add(i, 0x20) } {
                 x := add(x, getNextData3())
                 x := add(x, 0xD3)
-                x := add(x, e)
             }
 
             output := x
