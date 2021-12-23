@@ -11,20 +11,32 @@ contract ExperimentsContract2 {
 
         assembly {
             let mem := mload(0x40)
-            
-            // Load mem var to stack
-            let a := mload(add(mem,0xA0))
-            let b := mload(add(mem,0xA1))
-            let c := mload(add(mem,0xA2))
-            let d := mload(add(mem,0xA3))
-            let e := mload(add(mem,0xA4))
-            let f := mload(add(mem,0xA5))
-            let g := mload(add(mem,0xA6))
-            let h := mload(add(mem,0xA7))
-            let i := mload(add(mem,0xA8))
-            let j := mload(add(mem,0xA9))
 
-            // Add memory var to stack var
+            // Load stack
+            let a := mload(add(mem,0x10))
+            let b := mload(add(mem,0x11))
+            let c := mload(add(mem,0x12))
+            let d := mload(add(mem,0x13))
+            let e := mload(add(mem,0x14))
+            let f := mload(add(mem,0x15))
+            let g := mload(add(mem,0x16))
+            let h := mload(add(mem,0x17))
+            let i := mload(add(mem,0x18))
+            let j := mload(add(mem,0x19))
+            
+            // Load mem var to stack (7 bytes per line)
+            a := mload(add(mem,0xA0))
+            b := mload(add(mem,0xA1))
+            c := mload(add(mem,0xA2))
+            d := mload(add(mem,0xA3))
+            e := mload(add(mem,0xA4))
+            f := mload(add(mem,0xA5))
+            g := mload(add(mem,0xA6))
+            h := mload(add(mem,0xA7))
+            i := mload(add(mem,0xA8))
+            j := mload(add(mem,0xA9))
+
+            // Add memory var to stack var (~20 bytes per line)
             a := add(a, mload(add(mem,0xB0)))
             b := add(b, mload(add(mem,0xB1)))
             c := add(c, mload(add(mem,0xB2)))
@@ -36,7 +48,7 @@ contract ExperimentsContract2 {
             i := add(i, mload(add(mem,0xB8)))
             j := add(j, mload(add(mem,0xB9)))
 
-            // Add Constant to stack var
+            // Add Constant to stack var (6 bytes per line)
             a := add(a, 0xC0)
             b := add(b, 0xC1)
             c := add(c, 0xC2)
@@ -48,7 +60,7 @@ contract ExperimentsContract2 {
             i := add(i, 0xC8)
             j := add(j, 0xC9)
 
-            // Add Constant to memory var and save to memory
+            // Add Constant to memory var and save to memory (13 bytes per line, 14 for 2byte constant or address)
             mstore(add(mem,0xD0), add(mload(add(mem,0xE0)), 0xF0))
             mstore(add(mem,0xD1), add(mload(add(mem,0xE1)), 0xF1))
             mstore(add(mem,0xD2), add(mload(add(mem,0xE2)), 0xF2))
@@ -59,6 +71,21 @@ contract ExperimentsContract2 {
             mstore(add(mem,0xD7), add(mload(add(mem,0xE7)), 0xF7))
             mstore(add(mem,0xD8), add(mload(add(mem,0xE8)), 0xF8))
             mstore(add(mem,0xD9), add(mload(add(mem,0xE9)), 0xF9))
+
+            // Add 2 memory var and save to memory (~22 bytes per line)
+            let mem2 := add(mem,0xFF00)
+            let mem3 := add(mem2,0xFF00)
+            mstore(add(mem3,0xD0), add(mload(add(mem2,0xE0)), mload(add(mem,0xF0))))
+            mstore(add(mem3,0xD1), add(mload(add(mem2,0xE1)), mload(add(mem,0xF1))))
+            mstore(add(mem3,0xD2), add(mload(add(mem2,0xE2)), mload(add(mem,0xF2))))
+            mstore(add(mem3,0xD3), add(mload(add(mem2,0xE3)), mload(add(mem,0xF3))))
+            mstore(add(mem3,0xD4), add(mload(add(mem2,0xE4)), mload(add(mem,0xF4))))
+            mstore(add(mem3,0xD5), add(mload(add(mem2,0xE5)), mload(add(mem,0xF5))))
+            mstore(add(mem3,0xD6), add(mload(add(mem2,0xE6)), mload(add(mem,0xF6))))
+            mstore(add(mem3,0xD7), add(mload(add(mem2,0xE7)), mload(add(mem,0xF7))))
+            mstore(add(mem3,0xD8), add(mload(add(mem2,0xE8)), mload(add(mem,0xF8))))
+            mstore(add(mem3,0xD9), add(mload(add(mem2,0xE9)), mload(add(mem,0xF9))))
+
 
             let x := d
             x := add(x,a)
