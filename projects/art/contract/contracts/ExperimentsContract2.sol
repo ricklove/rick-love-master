@@ -33,6 +33,17 @@ contract ExperimentsContract2 {
             i := add(i, mload(add(mem,0xB8)))
             j := add(j, mload(add(mem,0xB9)))
 
+            a := add(a, 0xC0)
+            b := add(b, 0xC1)
+            c := add(c, 0xC2)
+            d := add(d, 0xC3)
+            e := add(e, 0xC4)
+            f := add(f, 0xC5)
+            g := add(g, 0xC6)
+            h := add(h, 0xC7)
+            i := add(i, 0xC8)
+            j := add(j, 0xC9)
+
             let x := d
             x := add(x,a)
             x := add(x,b)
