@@ -115,7 +115,7 @@ contract ExperimentsContract2 {
             // ~140 bytes 
             function selectBitWithEmbeddedLength(bitArray, selector) -> iBit { 
                 // Max bitArray length = 13, so requires 4bits for length + 13 bits => at least 17 bits => 3 bytes
-                let length := mod(bitArray, 0xf)
+                let length := and(bitArray, 0xf)
                 let nBit1 := add(1,mod(selector, length))
 
                 bitArray := shr(4, bitArray)
@@ -156,6 +156,19 @@ contract ExperimentsContract2 {
             output := add(output, selectBitNoEmbeddedLength(mem, 7))
             output := add(output, selectBitNoEmbeddedLength(mem, 11))
             output := add(output, selectBitNoEmbeddedLength(mem, 13))
+
+
+            // ~80 bytes 
+            function selectByteArrayValue(byteArray, selector) -> bValue { 
+                // Max bitArray length = 13, so requires 14 bytes (length + 13 values)
+                let len := and(0xff, byteArray)
+                let nByte := add(1,mod(selector, len))
+                bValue := and(0xff, shr(mul(8,nByte), byteArray))
+            }
+            output := add(output, selectByteArrayValue(mem, 5))
+            output := add(output, selectByteArrayValue(mem, 7))
+            output := add(output, selectByteArrayValue(mem, 11))
+            output := add(output, selectByteArrayValue(mem, 13))
         }
 
         return output;
