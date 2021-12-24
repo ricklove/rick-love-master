@@ -20,14 +20,17 @@ import { TypedEventFilter, TypedEvent, TypedListener } from "./commons";
 
 interface ExperimentsContract2Interface extends ethers.utils.Interface {
   functions: {
+    "selectBit(bool)": FunctionFragment;
     "sequentialAccessA(bool)": FunctionFragment;
   };
 
+  encodeFunctionData(functionFragment: "selectBit", values: [boolean]): string;
   encodeFunctionData(
     functionFragment: "sequentialAccessA",
     values: [boolean]
   ): string;
 
+  decodeFunctionResult(functionFragment: "selectBit", data: BytesLike): Result;
   decodeFunctionResult(
     functionFragment: "sequentialAccessA",
     data: BytesLike
@@ -80,11 +83,15 @@ export class ExperimentsContract2 extends BaseContract {
   interface: ExperimentsContract2Interface;
 
   functions: {
+    selectBit(isTrue: boolean, overrides?: CallOverrides): Promise<[BigNumber]>;
+
     sequentialAccessA(
       isTrue: boolean,
       overrides?: CallOverrides
     ): Promise<[BigNumber]>;
   };
+
+  selectBit(isTrue: boolean, overrides?: CallOverrides): Promise<BigNumber>;
 
   sequentialAccessA(
     isTrue: boolean,
@@ -92,6 +99,8 @@ export class ExperimentsContract2 extends BaseContract {
   ): Promise<BigNumber>;
 
   callStatic: {
+    selectBit(isTrue: boolean, overrides?: CallOverrides): Promise<BigNumber>;
+
     sequentialAccessA(
       isTrue: boolean,
       overrides?: CallOverrides
@@ -101,6 +110,8 @@ export class ExperimentsContract2 extends BaseContract {
   filters: {};
 
   estimateGas: {
+    selectBit(isTrue: boolean, overrides?: CallOverrides): Promise<BigNumber>;
+
     sequentialAccessA(
       isTrue: boolean,
       overrides?: CallOverrides
@@ -108,6 +119,11 @@ export class ExperimentsContract2 extends BaseContract {
   };
 
   populateTransaction: {
+    selectBit(
+      isTrue: boolean,
+      overrides?: CallOverrides
+    ): Promise<PopulatedTransaction>;
+
     sequentialAccessA(
       isTrue: boolean,
       overrides?: CallOverrides

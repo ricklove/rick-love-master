@@ -86,7 +86,6 @@ contract ExperimentsContract2 {
             mstore(add(mem3,0xD8), add(mload(add(mem2,0xE8)), mload(add(mem,0xF8))))
             mstore(add(mem3,0xD9), add(mload(add(mem2,0xE9)), mload(add(mem,0xF9))))
 
-
             let x := d
             x := add(x,a)
             x := add(x,b)
@@ -100,6 +99,63 @@ contract ExperimentsContract2 {
             x := add(x,j)
 
             output := x
+        }
+
+        return output;
+    }
+
+    function selectBit(bool isTrue) public pure returns (uint) {
+        require(isTrue, "selectBit");
+        uint output;
+
+        assembly {
+            let mem := mload(0x40)
+            output := add(output, mem)
+
+            // ~140 bytes 
+            function selectBitWithEmbeddedLength(bitArray, selector) -> iBit { 
+                // Max bitArray length = 13, so requires 4bits for length + 13 bits => at least 17 bits => 3 bytes
+                let length := mod(bitArray, 0xf)
+                let nBit1 := add(1,mod(selector, length))
+
+                bitArray := shr(4, bitArray)
+
+                for { let i := 0 } lt(i, 13) { i := add(i, 1) } {
+                    if mod(shr(i,bitArray), 2) {
+                        nBit1 := sub(nBit1,1)
+                    }
+                    if iszero(nBit1) {
+                        iBit := i
+                        leave
+                    }
+                }
+            }
+            output := add(output, selectBitWithEmbeddedLength(mem, 5))
+            output := add(output, selectBitWithEmbeddedLength(mem, 7))
+            output := add(output, selectBitWithEmbeddedLength(mem, 11))
+            output := add(output, selectBitWithEmbeddedLength(mem, 13))
+
+            // ~140 bytes 
+            function selectBitNoEmbeddedLength(bitArray, selector) -> iBit { 
+                // Max bitArray length = 13, so requires 2 bytes
+                let nBit1 := add(1,selector)
+
+                for {} true {} {
+                    for { let i := 0 } lt(i, 13) { i := add(i, 1) } {
+                        if mod(shr(i,bitArray), 2) {
+                            nBit1 := sub(nBit1,1)
+                        }
+                        if iszero(nBit1) {
+                            iBit := i
+                            leave
+                        }
+                    }
+                }
+            }
+            output := add(output, selectBitNoEmbeddedLength(mem, 5))
+            output := add(output, selectBitNoEmbeddedLength(mem, 7))
+            output := add(output, selectBitNoEmbeddedLength(mem, 11))
+            output := add(output, selectBitNoEmbeddedLength(mem, 13))
         }
 
         return output;
