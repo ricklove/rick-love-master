@@ -21,16 +21,25 @@ import { TypedEventFilter, TypedEvent, TypedListener } from "./commons";
 interface ExperimentsContract2Interface extends ethers.utils.Interface {
   functions: {
     "selectBit(bool)": FunctionFragment;
+    "selectBreed(bool)": FunctionFragment;
     "sequentialAccessA(bool)": FunctionFragment;
   };
 
   encodeFunctionData(functionFragment: "selectBit", values: [boolean]): string;
+  encodeFunctionData(
+    functionFragment: "selectBreed",
+    values: [boolean]
+  ): string;
   encodeFunctionData(
     functionFragment: "sequentialAccessA",
     values: [boolean]
   ): string;
 
   decodeFunctionResult(functionFragment: "selectBit", data: BytesLike): Result;
+  decodeFunctionResult(
+    functionFragment: "selectBreed",
+    data: BytesLike
+  ): Result;
   decodeFunctionResult(
     functionFragment: "sequentialAccessA",
     data: BytesLike
@@ -85,6 +94,11 @@ export class ExperimentsContract2 extends BaseContract {
   functions: {
     selectBit(isTrue: boolean, overrides?: CallOverrides): Promise<[BigNumber]>;
 
+    selectBreed(
+      isTrue: boolean,
+      overrides?: CallOverrides
+    ): Promise<[BigNumber]>;
+
     sequentialAccessA(
       isTrue: boolean,
       overrides?: CallOverrides
@@ -93,6 +107,8 @@ export class ExperimentsContract2 extends BaseContract {
 
   selectBit(isTrue: boolean, overrides?: CallOverrides): Promise<BigNumber>;
 
+  selectBreed(isTrue: boolean, overrides?: CallOverrides): Promise<BigNumber>;
+
   sequentialAccessA(
     isTrue: boolean,
     overrides?: CallOverrides
@@ -100,6 +116,8 @@ export class ExperimentsContract2 extends BaseContract {
 
   callStatic: {
     selectBit(isTrue: boolean, overrides?: CallOverrides): Promise<BigNumber>;
+
+    selectBreed(isTrue: boolean, overrides?: CallOverrides): Promise<BigNumber>;
 
     sequentialAccessA(
       isTrue: boolean,
@@ -112,6 +130,8 @@ export class ExperimentsContract2 extends BaseContract {
   estimateGas: {
     selectBit(isTrue: boolean, overrides?: CallOverrides): Promise<BigNumber>;
 
+    selectBreed(isTrue: boolean, overrides?: CallOverrides): Promise<BigNumber>;
+
     sequentialAccessA(
       isTrue: boolean,
       overrides?: CallOverrides
@@ -120,6 +140,11 @@ export class ExperimentsContract2 extends BaseContract {
 
   populateTransaction: {
     selectBit(
+      isTrue: boolean,
+      overrides?: CallOverrides
+    ): Promise<PopulatedTransaction>;
+
+    selectBreed(
       isTrue: boolean,
       overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
