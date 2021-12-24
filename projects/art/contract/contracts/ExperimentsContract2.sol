@@ -169,6 +169,74 @@ contract ExperimentsContract2 {
             output := add(output, selectByteArrayValue(mem, 7))
             output := add(output, selectByteArrayValue(mem, 11))
             output := add(output, selectByteArrayValue(mem, 13))
+
+
+            // ~270 bytes 
+            function selectiPallete(rvs_breed, rvs_palette) -> iOutput { 
+                // s.breed_data = 
+                //       s.rvs_breed < 51 ? int(0x32104019876543210a654040000) /* black */
+                //     : s.rvs_breed < 77 ? int(0x210311cba046020001) /* white */
+                //     : s.rvs_breed < 177 ? int(0x2103432398765432197654321700f2) /* tabby */
+                //     : s.rvs_breed < 197 ? int(0x31518764106654040003) /* shorthair */
+                //     : s.rvs_breed < 214 ? int(0x210361c12610004) /* calico */
+                //     : s.rvs_breed < 224 ? int(0x2103718026020005) /* siamese */
+                //     : s.rvs_breed < 229 ? int(0x2103b10101bf06) /* sphynx */
+                //     : s.rvs_breed < 234 ? int(0x102c161832c01f7) /* sandcat */
+                //     : s.rvs_breed < 239 ? int(0x2103d161832d11f8) /* toyger */
+                //     : s.rvs_breed < 251 ? int(0x419829876543219865432170079) /* alien */
+                //     : int(0x51a19654326876543218007a) /* zombie */
+                //     ;
+
+                // b_palettes:[0],     
+                // b_palettes:[1],     
+                // b_palettes:[2,3,4], 
+                // b_palettes:[5],     
+                // b_palettes:[6],     
+                // b_palettes:[7],     
+                // b_palettes:[11],    
+                // b_palettes:[12],    
+                // b_palettes:[13],    
+                // b_palettes:[8,9],   
+                // b_palettes:[10],    
+
+                if lt(rvs_breed,  51) { iOutput := 0  leave }
+                if lt(rvs_breed,  77) { iOutput := 1  leave }
+                if lt(rvs_breed, 177) { 
+                    switch mod(rvs_palette, 3)
+                    case 0            { iOutput := 2  leave }  
+                    case 1            { iOutput := 3  leave }  
+                    default           { iOutput := 4  leave }  
+                }
+                if lt(rvs_breed, 197) { iOutput := 5  leave }
+                if lt(rvs_breed, 214) { iOutput := 6  leave }
+                if lt(rvs_breed, 224) { iOutput := 7  leave }
+                if lt(rvs_breed, 229) { iOutput := 11 leave }
+                if lt(rvs_breed, 234) { iOutput := 12 leave }
+                if lt(rvs_breed, 239) { iOutput := 13 leave }
+                if lt(rvs_breed, 251) { 
+                    switch mod(rvs_palette, 2)
+                    case 0            { iOutput := 8  leave }  
+                    default           { iOutput := 9  leave }  
+                }
+             /*if lt(rvs_breed, 251){*/ iOutput := 10 /*leave}*/
+            }
+            output := add(output, selectiPallete(mem, mem))
+
+            // ~300 bytes 
+            function selectBreedData(rvs_breed) -> iOutput { 
+                if lt(rvs_breed,  51) { iOutput := 0x32104019876543210a654040000     leave }
+                if lt(rvs_breed,  77) { iOutput := 0x210311cba046020001              leave }
+                if lt(rvs_breed, 177) { iOutput := 0x2103432398765432197654321700f2  leave }
+                if lt(rvs_breed, 197) { iOutput := 0x31518764106654040003            leave }
+                if lt(rvs_breed, 214) { iOutput := 0x210361c12610004                 leave }
+                if lt(rvs_breed, 224) { iOutput := 0x2103718026020005                leave }
+                if lt(rvs_breed, 229) { iOutput := 0x2103b10101bf06                  leave }
+                if lt(rvs_breed, 234) { iOutput := 0x102c161832c01f7                 leave }
+                if lt(rvs_breed, 239) { iOutput := 0x2103d161832d11f8                leave }
+                if lt(rvs_breed, 251) { iOutput := 0x419829876543219865432170079     leave }
+             /*if lt(rvs_breed, 251){*/ iOutput := 0x51a19654326876543218007a        /*leave}*/
+            }
+            output := add(output, selectBreedData(mem))
         }
 
         return output;
