@@ -164,4 +164,42 @@ contract ExperimentsContract {
 
         return v;
     }
+
+    function getData_01(uint _dataByteIndex) public pure returns (string memory) {
+        string memory output;
+        
+        // Test: 320 bytes => 351 bytes
+        string memory _data = "000102030405060708090a0b0c0d0e0f101112131415161718191a1b1c1d1e1f F-8' standalone='no'?><svg width='100%' height='100%' viewBox='0 0 300 300' version='1.1' xmlns:xlink='http://www.w3.org/1999/xlink' xmlns='http://www.w3.org/2000/svg' xmlns:svg='http://www.w3.org/2000/svg'><defs><linearGradient id='x1'><stop style='stop-";
+
+        assembly {
+            
+            function getData(pData, dataByteIndex) -> value {
+                value := mload(add(pData, dataByteIndex))
+                
+                // // 42.6 bytes per 32 byte value
+                // switch dataIndex
+                // case 0 { value := "<?xml version='1.0' encoding='UT" }
+                // case 1 { value := "F-8' standalone='no'?><svg width" }
+                // case 2 { value := "='100%' height='100%' viewBox='0" }
+                // case 3 { value := " 0 300 300' version='1.1' xmlns:" }
+                // case 4 { value := "xlink='http://www.w3.org/1999/xl" }
+                // case 5 { value := "ink' xmlns='http://www.w3.org/20" }
+                // case 6 { value := "00/svg' xmlns:svg='http://www.w3" }
+                // case 7 { value := ".org/2000/svg'><defs><linearGrad" }
+                // case 8 { value := "ient id='x1'><stop style='stop-c" }
+                // case 9 { value := "'/></linearGradient><linearGradi" }
+                // case 10{ value := "B'><feGaussianBlur stdDeviation=" }
+            }
+            output := mload(0x40)
+
+            let pData := add(_data,32)
+            let d := getData(pData, _dataByteIndex)
+            let len := 32
+            mstore(add(output, 32), d)
+            mstore(output, len)
+            mstore(0x40, add(output, add(32,len)))
+        }
+
+        return output;
+    }
 }

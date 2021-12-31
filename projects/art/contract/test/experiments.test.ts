@@ -22,6 +22,20 @@ describe(`ExperimentsContract`, async () => {
 
   });
 
+  describe('Get data', ()=>{
+    it(`Should get data 00`, async () => {
+      const actual00 = await contract.connect(accounts.artist).getData_01(0 * 32);
+      console.log('getData_01: actual',{ actual00 });
+      expect(actual00).eq("000102030405060708090a0b0c0d0e0f");
+    });
+
+    it(`Should get data 01`, async () => {
+      const actual01 = await contract.connect(accounts.artist).getData_01(1 * 32);
+      console.log('getData_01: actual',{ actual01 });
+      expect(actual01).eq("101112131415161718191a1b1c1d1e1f");
+    });
+  });
+
   describe(`bytes conversions`, () => {
     it(`Should read uint8`, async () => {
       const actual = await contract.connect(accounts.artist).get8Bit(3);
@@ -60,45 +74,45 @@ describe(`ExperimentsContract`, async () => {
       expect(actual.replace(/0123456789/g,'')).eq('');
     });
 
-    it(`Should read bytes - gas cost`, async () => {
-      console.log('getNBit estimateGas', {
-        gas8:   (await contract.estimateGas.get8Bit(7)).toNumber(),
-        gas16:  (await contract.estimateGas.get16Bit(7)).toNumber(),
-        gas256: (await contract.estimateGas.get256Bit(7)).toNumber(),
-        //   1618557/1k * 10 calls + for loop
-        //  - 286557/1k *  1 calls + for loop
-        // = 1332000/1k *  9 calls 
-        // =  148000/1k calls
-        // = 148 gas/call
-        gas256_10k: (await contract.estimateGas.get256Bit10k()).toNumber(),
-        gas256_10k_unsafe: (await contract.estimateGas.get256Bit10k_unsafe()).toNumber(),
-        gas256_10k_inline: (await contract.estimateGas.get256Bit10k_inline()).toNumber(),
-        gas256_10k_loopOnly: (await contract.estimateGas.get256Bit10k_loopOnly()).toNumber(),
-        create256BitString: (await contract.estimateGas.create256BitString()).toNumber(),
+    // it(`Should read bytes - gas cost`, async () => {
+    //   console.log('getNBit estimateGas', {
+    //     gas8:   (await contract.estimateGas.get8Bit(7)).toNumber(),
+    //     gas16:  (await contract.estimateGas.get16Bit(7)).toNumber(),
+    //     gas256: (await contract.estimateGas.get256Bit(7)).toNumber(),
+    //     //   1618557/1k * 10 calls + for loop
+    //     //  - 286557/1k *  1 calls + for loop
+    //     // = 1332000/1k *  9 calls 
+    //     // =  148000/1k calls
+    //     // = 148 gas/call
+    //     gas256_10k: (await contract.estimateGas.get256Bit10k()).toNumber(),
+    //     gas256_10k_unsafe: (await contract.estimateGas.get256Bit10k_unsafe()).toNumber(),
+    //     gas256_10k_inline: (await contract.estimateGas.get256Bit10k_inline()).toNumber(),
+    //     gas256_10k_loopOnly: (await contract.estimateGas.get256Bit10k_loopOnly()).toNumber(),
+    //     create256BitString: (await contract.estimateGas.create256BitString()).toNumber(),
 
-        /* Results:
-            gas256_10k:             1648602 - 146579 = 1,502,023  ~ 150 gas/call
-            gas256_10k_unsafe:       155558 - 146579 =     8,979  ~  <1 gas/call ??
-            gas256_10k_inline:       155557 - 146579 =     8,978  ~  <1 gas/call ??
-            gas256_10k_loopOnly:     146579   146579
+    //     /* Results:
+    //         gas256_10k:             1648602 - 146579 = 1,502,023  ~ 150 gas/call
+    //         gas256_10k_unsafe:       155558 - 146579 =     8,979  ~  <1 gas/call ??
+    //         gas256_10k_inline:       155557 - 146579 =     8,978  ~  <1 gas/call ??
+    //         gas256_10k_loopOnly:     146579   146579
 
-            155558 - unsafe 1k * 11 calls
-            155558 - unsafe 1k *  1 calls
+    //         155558 - unsafe 1k * 11 calls
+    //         155558 - unsafe 1k *  1 calls
 
 
-            // With sum
-            gas256_10k:             2348602 - 888579 = 1,460,023 ~ 146 gas/call
-            gas256_10k_unsafe:      1035558 - 888579 =   146,979 ~  15 gas/call
-            gas256_10k_inline:      1085565 - 888579 =   196,986 ~  20 gas/call
-            gas256_10k_loopOnly:              888579 
+    //         // With sum
+    //         gas256_10k:             2348602 - 888579 = 1,460,023 ~ 146 gas/call
+    //         gas256_10k_unsafe:      1035558 - 888579 =   146,979 ~  15 gas/call
+    //         gas256_10k_inline:      1085565 - 888579 =   196,986 ~  20 gas/call
+    //         gas256_10k_loopOnly:              888579 
 
-            // create256BitString - 10kb string:  5300317 gas
-            // create256BitString - 20kb string: 10580131 gas ~ 1058 gas/char
+    //         // create256BitString - 10kb string:  5300317 gas
+    //         // create256BitString - 20kb string: 10580131 gas ~ 1058 gas/char
             
-        */
-      });
+    //     */
+    //   });
 
-    });
+    // });
 
   });
 

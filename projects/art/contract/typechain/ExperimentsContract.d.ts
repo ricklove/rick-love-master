@@ -28,6 +28,7 @@ interface ExperimentsContractInterface extends ethers.utils.Interface {
     "get256Bit10k_loopOnly()": FunctionFragment;
     "get256Bit10k_unsafe()": FunctionFragment;
     "get8Bit(uint256)": FunctionFragment;
+    "getData_01(uint256)": FunctionFragment;
   };
 
   encodeFunctionData(
@@ -62,6 +63,10 @@ interface ExperimentsContractInterface extends ethers.utils.Interface {
     functionFragment: "get8Bit",
     values: [BigNumberish]
   ): string;
+  encodeFunctionData(
+    functionFragment: "getData_01",
+    values: [BigNumberish]
+  ): string;
 
   decodeFunctionResult(
     functionFragment: "create256BitString",
@@ -86,6 +91,7 @@ interface ExperimentsContractInterface extends ethers.utils.Interface {
     data: BytesLike
   ): Result;
   decodeFunctionResult(functionFragment: "get8Bit", data: BytesLike): Result;
+  decodeFunctionResult(functionFragment: "getData_01", data: BytesLike): Result;
 
   events: {};
 }
@@ -158,6 +164,11 @@ export class ExperimentsContract extends BaseContract {
       offset: BigNumberish,
       overrides?: CallOverrides
     ): Promise<[BigNumber]>;
+
+    getData_01(
+      _dataByteIndex: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<[string]>;
   };
 
   create256BitString(overrides?: CallOverrides): Promise<string>;
@@ -178,6 +189,11 @@ export class ExperimentsContract extends BaseContract {
   get256Bit10k_unsafe(overrides?: CallOverrides): Promise<BigNumber>;
 
   get8Bit(offset: BigNumberish, overrides?: CallOverrides): Promise<BigNumber>;
+
+  getData_01(
+    _dataByteIndex: BigNumberish,
+    overrides?: CallOverrides
+  ): Promise<string>;
 
   callStatic: {
     create256BitString(overrides?: CallOverrides): Promise<string>;
@@ -204,6 +220,11 @@ export class ExperimentsContract extends BaseContract {
       offset: BigNumberish,
       overrides?: CallOverrides
     ): Promise<BigNumber>;
+
+    getData_01(
+      _dataByteIndex: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<string>;
   };
 
   filters: {};
@@ -231,6 +252,11 @@ export class ExperimentsContract extends BaseContract {
 
     get8Bit(
       offset: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<BigNumber>;
+
+    getData_01(
+      _dataByteIndex: BigNumberish,
       overrides?: CallOverrides
     ): Promise<BigNumber>;
   };
@@ -266,6 +292,11 @@ export class ExperimentsContract extends BaseContract {
 
     get8Bit(
       offset: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<PopulatedTransaction>;
+
+    getData_01(
+      _dataByteIndex: BigNumberish,
       overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
   };
