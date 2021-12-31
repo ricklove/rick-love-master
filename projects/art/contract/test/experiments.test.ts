@@ -23,16 +23,22 @@ describe(`ExperimentsContract`, async () => {
   });
 
   describe('Get data', ()=>{
-    it(`Should get data 00`, async () => {
+    it(`Should get data byte 0-31`, async () => {
       const actual00 = await contract.connect(accounts.artist).getData_01(0 * 32);
-      console.log('getData_01: actual',{ actual00 });
+      // console.log('getData_01: actual',{ actual00 });
       expect(actual00).eq("000102030405060708090a0b0c0d0e0f");
     });
 
-    it(`Should get data 01`, async () => {
+    it(`Should get data bytes 32-63`, async () => {
       const actual01 = await contract.connect(accounts.artist).getData_01(1 * 32);
-      console.log('getData_01: actual',{ actual01 });
+      // console.log('getData_01: actual',{ actual01 });
       expect(actual01).eq("101112131415161718191a1b1c1d1e1f");
+    });
+
+    it(`Should get data bytes 16-47`, async () => {
+      const actual = await contract.connect(accounts.artist).getData_01(16);
+      // console.log('getData_01: actual',{ actual01: actual });
+      expect(actual).eq("08090a0b0c0d0e0f1011121314151617");
     });
   });
 
