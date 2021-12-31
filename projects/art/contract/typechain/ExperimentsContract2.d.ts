@@ -20,28 +20,16 @@ import { TypedEventFilter, TypedEvent, TypedListener } from "./commons";
 
 interface ExperimentsContract2Interface extends ethers.utils.Interface {
   functions: {
-    "selectBit(bool)": FunctionFragment;
-    "selectBreed(bool)": FunctionFragment;
-    "sequentialAccessA(bool)": FunctionFragment;
+    "generateSvg(uint256)": FunctionFragment;
   };
 
-  encodeFunctionData(functionFragment: "selectBit", values: [boolean]): string;
   encodeFunctionData(
-    functionFragment: "selectBreed",
-    values: [boolean]
-  ): string;
-  encodeFunctionData(
-    functionFragment: "sequentialAccessA",
-    values: [boolean]
+    functionFragment: "generateSvg",
+    values: [BigNumberish]
   ): string;
 
-  decodeFunctionResult(functionFragment: "selectBit", data: BytesLike): Result;
   decodeFunctionResult(
-    functionFragment: "selectBreed",
-    data: BytesLike
-  ): Result;
-  decodeFunctionResult(
-    functionFragment: "sequentialAccessA",
+    functionFragment: "generateSvg",
     data: BytesLike
   ): Result;
 
@@ -92,65 +80,30 @@ export class ExperimentsContract2 extends BaseContract {
   interface: ExperimentsContract2Interface;
 
   functions: {
-    selectBit(isTrue: boolean, overrides?: CallOverrides): Promise<[BigNumber]>;
-
-    selectBreed(
-      isTrue: boolean,
+    generateSvg(
+      _rvs: BigNumberish,
       overrides?: CallOverrides
-    ): Promise<[BigNumber]>;
-
-    sequentialAccessA(
-      isTrue: boolean,
-      overrides?: CallOverrides
-    ): Promise<[BigNumber]>;
+    ): Promise<[string]>;
   };
 
-  selectBit(isTrue: boolean, overrides?: CallOverrides): Promise<BigNumber>;
-
-  selectBreed(isTrue: boolean, overrides?: CallOverrides): Promise<BigNumber>;
-
-  sequentialAccessA(
-    isTrue: boolean,
-    overrides?: CallOverrides
-  ): Promise<BigNumber>;
+  generateSvg(_rvs: BigNumberish, overrides?: CallOverrides): Promise<string>;
 
   callStatic: {
-    selectBit(isTrue: boolean, overrides?: CallOverrides): Promise<BigNumber>;
-
-    selectBreed(isTrue: boolean, overrides?: CallOverrides): Promise<BigNumber>;
-
-    sequentialAccessA(
-      isTrue: boolean,
-      overrides?: CallOverrides
-    ): Promise<BigNumber>;
+    generateSvg(_rvs: BigNumberish, overrides?: CallOverrides): Promise<string>;
   };
 
   filters: {};
 
   estimateGas: {
-    selectBit(isTrue: boolean, overrides?: CallOverrides): Promise<BigNumber>;
-
-    selectBreed(isTrue: boolean, overrides?: CallOverrides): Promise<BigNumber>;
-
-    sequentialAccessA(
-      isTrue: boolean,
+    generateSvg(
+      _rvs: BigNumberish,
       overrides?: CallOverrides
     ): Promise<BigNumber>;
   };
 
   populateTransaction: {
-    selectBit(
-      isTrue: boolean,
-      overrides?: CallOverrides
-    ): Promise<PopulatedTransaction>;
-
-    selectBreed(
-      isTrue: boolean,
-      overrides?: CallOverrides
-    ): Promise<PopulatedTransaction>;
-
-    sequentialAccessA(
-      isTrue: boolean,
+    generateSvg(
+      _rvs: BigNumberish,
       overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
   };
