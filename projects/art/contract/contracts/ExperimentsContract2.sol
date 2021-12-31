@@ -608,6 +608,16 @@ contract ExperimentsContract2 {
                 
                 let rvs_head         := getBreedData_b_head(breedData) 
                 if not(rvs_head) { rvs_head := getRvsValue(rvs, 0x20) }
+
+                // data := mod(15, rvs_head)
+
+                // 215 bytes (uncompressed)
+                // ~11 bytes + 17 * 12 raw bytes/case
+                // let pVarHeadDataOffset = 0x42
+                // data := mload(add(mload(0x40),add(0x42,mod(15, rvs_head))))
+
+                // 503 bytes
+                // ~29.6 bytes per case (12 actual bytes of data per case)
                 switch mod(15, rvs_head)
                 
 
