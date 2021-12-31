@@ -3700,7 +3700,12 @@ mstore(add(pVars, 0x0140), selectData_bodyParts(getBreedData_i_body(mload(add(pV
 mstore(add(pVars, 0x100), getBreedData_f_useBodyColorForCorner(mload(add(pVars, 0x03e0))))
 mstore(add(pVars, 0xc0), and(slt(getRvsValue(rvs, 0x0b), 0x80), getBreedData_f_swapMarkColors(mload(add(pVars, 0x03e0)))))
 mstore(add(pVars, 0x0120), getFieldValue_bodyParts_bodyParts_corners(mload(add(pVars, 0x0140))))
+
+// 30 bytes (function + call)
+// getFieldValue_palette_c_prim : JUMPDEST PUSH1 0xFF PUSH1 0x20 DUP3 SWAP1 SHR AND PUSH2 0x1983 DUP2 PUSH2 0x637 JUMP 
+// call: JUMPDEST SWAP4 POP PUSH2 0x4CF3 PUSH1 0xA0 DUP8 ADD MLOAD PUSH2 0x19BC JUMP
 slot1 := getFieldValue_palette_c_prim(mload(add(pVars, 0xa0)))
+
 slot0 := getFieldValue_palette_c_sec(mload(add(pVars, 0xa0)))
 mstore(add(pVars, 0xe0), getFieldValue_palette_c_body(mload(add(pVars, 0xa0))))
 slot2 := ternary(mload(add(pVars, 0xc0)), slot1, slot0)
@@ -4201,8 +4206,12 @@ writeOutput_int(ternary(sgt(slot0, 0x03), 0, 0x1))
 writeOutput_text(92)
 writeOutput_int(sub(0, add(sdiv(mul(mul(0x39, 0x03), mload(add(pVars, 0xc0))), 0x64), 0x11)))
 writeOutput_text(70)
+
+// 50 bytes: JUMPDEST PUSH2 0x6FCD DUP3 PUSH1 0x64 PUSH1 0x4B DUP5 MUL SDIV DUP7 PUSH1 0x64 PUSH1 0x4B PUSH1 0xE0 DUP13 ADD MLOAD MUL SDIV PUSH2 0x100 DUP12 ADD MLOAD PUSH2 0x120 DUP13 ADD MLOAD PUSH1 0x0 PUSH1 0xA0 DUP15 ADD MLOAD PUSH2 0x1F60 JUMP 
 writeOutput_bezier(mload(add(pVars, 0xa0)), 0, mload(add(pVars, 0x0120)), mload(add(pVars, 0x100)), sdiv(mul(mload(add(pVars, 0xe0)), 0x4b), 0x64), slot1, sdiv(mul(slot4, 0x4b), 0x64), slot3)
+// 10 bytes: JUMPDEST PUSH2 0x6FD7 PUSH1 0x5D PUSH2 0x1FA9 JUMP
 writeOutput_text(93)
+
 writeOutput(vertex(0, mload(add(pVars, 0x0140))))
 slot4 := sub(0, 0x09)
 slot3 := sub(mload(add(pVars, 0x0140)), 0x0b)
