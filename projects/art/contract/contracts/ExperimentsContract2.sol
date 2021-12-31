@@ -446,6 +446,14 @@ contract ExperimentsContract2 {
             // Colors
             function getColor(index) -> color {
                 color := 0
+
+                // 460 bytes (uncompressed)
+                // ~40 bytes + 140 * 3 raw bytes/case (13 colors each case, with 1 byte index)
+                // let pVarPaletteDataOffset = 0x42
+                // color := mload(add(mload(0x40),add(0x42,index)))
+
+                // 2704 bytes (indexes only)
+                // ~19.3 bytes per case (3 actual bytes of data per case)
                 switch index
                 
                 case 0 { color := 0xb8deff }
@@ -2094,6 +2102,14 @@ contract ExperimentsContract2 {
 
                 
                 let rvs_palette      := getRvsValue(rvs, 0x18)
+
+                // 186 bytes (uncompressed)
+                // 17 bytes + 13 * 13 raw bytes/case (13 colors each case, with 1 byte index)
+                // let pVarPaletteDataOffset = 0x42
+                // data := mload(add(mload(0x40),add(0x42,mod(4, rvs_palette))))
+
+                // 434 bytes (indexes only)
+                // ~31.25 bytes per case (13 actual bytes of data per case)
                 switch mod(4, rvs_palette)
                 
 
@@ -2101,6 +2117,8 @@ contract ExperimentsContract2 {
                 // scale:    [1,1,1,1,1,1,1,1,1,1,1,1,1]
                 // decimal:  [1,1,1,1,1,1,1,1,1,1,1,1,1]
 
+                
+ 
                 
                 case 0 { 
                     // palette: black
