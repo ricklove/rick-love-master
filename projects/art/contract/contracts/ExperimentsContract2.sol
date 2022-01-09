@@ -9,7 +9,7 @@ contract ExperimentsContract2 {
         string memory output;
 
 // DataPack 
-string memory dataPack = "00372c00003d5b175601490000332300003f581c50014e05002f061a3f47561960064f0100342000003b562f5f054d03003214005f005a19640446050036307259634f265b054d0500342b400036582559034f00003831003f225c15630646080d3b25001a00541466194904003221b94c4850375b1156030038304000404f2159004b070035252e1e1f54295c0246050f38250000395418611d50060d37247264005529631446050f3728000078532758184a02003232b02b78531f440b4d0b002d1e64003b5128570b6201003220000040573562045003650a501957253117320734281b650a501e322e1000321446141d650d4d1e392c110132114500177d0a4c1e2c220a0e320035201d830a491e37320b0d340a32161e650a501e471c1d1d321132251c650651342c220a0e320027331900063f14003603167c3e4633190c0c3f2c3a0018173e323339195f064c402c220a0d0000332819650a502357251a0532053a281b480d501243362412910e542a19650a501e53202f08340a5019198906541a4d362e0e2d253725190a08043c12151404280c080414120f150528060805280712140528080d056411051501260908045a121015052811080600120a1408250b0a063211021404250c0d045a16001402280908002810111303280908043c0e101305280c080432120f15042800090432021615022806050446030f1408280c0001640f11160b281e0c1c151e1d160f0d0d1e07018a43080a0b00d5430a0508016243060f0c00d5160e050b0078000e0a0c012b03080b0d00d5260f0a0a01001303080d013258000e0d211e6404071204211e640407120300006604071404000066040714030a0908070605040303010201000d131211100f0e0d0c030a030b1f1e1d1c1b1a19181715161514101027262524232217202120000c3231302f2e2d2c2b292a29283d3c3b3a393837363533343328434241401b1a013f01173e17004b4a064849484647464445442857565554535251504f4d4e4d4c6261605f5e5d5c5b5a5859584c0a6c066b6a696867666465646377767574737271706f6d6e6d14807f067e7d7c7b7a1a7879782806068786068584834f8182811488898a8b068c000103050204081009000102060c10302024284080c0";
+string memory dataPack = "ffdeb81e1b1aded2cffafafa100f0f604f870000009d9df0161f2d6a6aa0ededede9928b121212050505f6f6f6d9b4f3383838d4c2ff7326822e253cb17b5d70aeffd5ddecfcfcfc4986e964a4f7e0edff0f408a5f5fce1f27321b294b2a3f6f9a847edbd2d26354557c6e6adfc7f53d3d3dd4b2f5573e70f0f0f0415d81c9d1decedff21c3040354e6e9797dd182c498e8ef0402f7523232f73635ed5d0cde7dcda6a514d685550c1a7dc2d24261c12135757571f1a19171617dee2e73c84e29696f3621e6b40406d262626c6d0e1ced6e320252e9ba8bf34455f2d35434459792929299a4c5eeeb8ffefdff1fef0ffbe73d3eab1fbbe6dd5522e5c944da829183e572960361b34fff4b8dfdccefff8ebc0a46df8eba0b19b59615538b191683f2224352a18231e158f6a5669a27cd6dece4171504558376a9a7a44573520231f313a341f2e24d8d8f3e9e9f2ebebffb6b6eccecef39788d37979b4a8a8f040405e7575a9f5f5f5b4c7e4d7e0ef8a9dc1a3b8d78288ba3e3e6056567b27273a58586f7594f0dccade1d24491f2538bb91d4151537808080fff9d6aee9f9a3faca669cff0209ef00372c00003d5b175601490000332300003f581c50014e05002f061a3f47561960064f0100342000003b562f5f054d03003214005f005a19640446050036307259634f265b054d0500342b400036582559034f00003831003f225c15630646080d3b25001a00541466194904003221b94c4850375b1156030038304000404f2159004b070035252e1e1f54295c0246050f38250000395418611d50060d37247264005529631446050f3728000078532758184a02003232b02b78531f440b4d0b002d1e64003b5128570b6201003220000040573562045003650a501957253117320734281b650a501e322e1000321446141d650d4d1e392c110132114500177d0a4c1e2c220a0e320035201d830a491e37320b0d340a32161e650a501e471c1d1d321132251c650651342c220a0e320027331900063f14003603167c3e4633190c0c3f2c3a0018173e323339195f064c402c220a0d0000332819650a502357251a0532053a281b480d501243362412910e542a19650a501e53202f08340a5019198906541a4d362e0e2d253725190a08043c12151404280c080414120f150528060805280712140528080d056411051501260908045a121015052811080600120a1408250b0a063211021404250c0d045a16001402280908002810111303280908043c0e101305280c080432120f15042800090432021615022806050446030f1408280c0001640f11160b281e0c1c151e1d160f0d0d1e07018a43080a0b00d5430a0508016243060f0c00d5160e050b0078000e0a0c012b03080b0d00d5260f0a0a01001303080d013258000e0d211e6404071204211e640407120300006604071404000066040714030a0908070605040303010201000d131211100f0e0d0c030a030b1f1e1d1c1b1a19181715161514101027262524232217202120000c3231302f2e2d2c2b292a29283d3c3b3a393837363533343328434241401b1a013f01173e17004b4a064849484647464445442857565554535251504f4d4e4d4c6261605f5e5d5c5b5a5859584c0a6c066b6a696867666465646377767574737271706f6d6e6d14807f067e7d7c7b7a1a7879782806068786068584834f8182811488898a8b068c000103050204081009000102060c10302024284080c0";
 
         assembly {
 // START ---    
@@ -445,156 +445,6 @@ string memory dataPack = "00372c00003d5b175601490000332300003f581c50014e05002f06
                 index := and(0x1, shr(0x4d, breedData))
             }
             
-    
-
-            // Colors
-            function getColor(index) -> color {
-                color := 0
-                switch index
-                
-                case 0 { color := 0xb8deff }
-                case 1 { color := 0x1a1b1e }
-                case 2 { color := 0xcfd2de }
-                case 3 { color := 0xfafafa }
-                case 4 { color := 0x0f0f10 }
-                case 5 { color := 0x874f60 }
-                case 6 { color := 0x000000 }
-                case 7 { color := 0xf09d9d }
-                case 8 { color := 0x2d1f16 }
-                case 9 { color := 0xa06a6a }
-                case 10 { color := 0xededed }
-                case 11 { color := 0x8b92e9 }
-                case 12 { color := 0x121212 }
-                case 13 { color := 0x050505 }
-                case 14 { color := 0xf6f6f6 }
-                case 15 { color := 0xf3b4d9 }
-                case 16 { color := 0x383838 }
-                case 17 { color := 0xffc2d4 }
-                case 18 { color := 0x822673 }
-                case 19 { color := 0x3c252e }
-                case 20 { color := 0x5d7bb1 }
-                case 21 { color := 0xffae70 }
-                case 22 { color := 0xecddd5 }
-                case 23 { color := 0xfcfcfc }
-                case 24 { color := 0xe98649 }
-                case 25 { color := 0xf7a464 }
-                case 26 { color := 0xffede0 }
-                case 27 { color := 0x8a400f }
-                case 28 { color := 0xce5f5f }
-                case 29 { color := 0x32271f }
-                case 30 { color := 0x4b291b }
-                case 31 { color := 0x6f3f2a }
-                case 32 { color := 0x7e849a }
-                case 33 { color := 0xd2d2db }
-                case 34 { color := 0x555463 }
-                case 35 { color := 0x6a6e7c }
-                case 36 { color := 0xf5c7df }
-                case 37 { color := 0x3d3d3d }
-                case 38 { color := 0xf5b2d4 }
-                case 39 { color := 0x703e57 }
-                case 40 { color := 0xf0f0f0 }
-                case 41 { color := 0x815d41 }
-                case 42 { color := 0xded1c9 }
-                case 43 { color := 0xf2dfce }
-                case 44 { color := 0x40301c }
-                case 45 { color := 0x6e4e35 }
-                case 46 { color := 0xdd9797 }
-                case 47 { color := 0x492c18 }
-                case 48 { color := 0xf08e8e }
-                case 49 { color := 0x752f40 }
-                case 50 { color := 0x2f2323 }
-                case 51 { color := 0x5e6373 }
-                case 52 { color := 0xcdd0d5 }
-                case 53 { color := 0xdadce7 }
-                case 54 { color := 0x4d516a }
-                case 55 { color := 0x505568 }
-                case 56 { color := 0xdca7c1 }
-                case 57 { color := 0x26242d }
-                case 58 { color := 0x13121c }
-                case 59 { color := 0x575757 }
-                case 60 { color := 0x191a1f }
-                case 61 { color := 0x171617 }
-                case 62 { color := 0xe7e2de }
-                case 63 { color := 0xe2843c }
-                case 64 { color := 0xf39696 }
-                case 65 { color := 0x6b1e62 }
-                case 66 { color := 0x6d4040 }
-                case 67 { color := 0x262626 }
-                case 68 { color := 0xe1d0c6 }
-                case 69 { color := 0xe3d6ce }
-                case 70 { color := 0x2e2520 }
-                case 71 { color := 0xbfa89b }
-                case 72 { color := 0x5f4534 }
-                case 73 { color := 0x43352d }
-                case 74 { color := 0x795944 }
-                case 75 { color := 0x292929 }
-                case 76 { color := 0x5e4c9a }
-                case 77 { color := 0xffb8ee }
-                case 78 { color := 0xf1dfef }
-                case 79 { color := 0xfff0fe }
-                case 80 { color := 0xd373be }
-                case 81 { color := 0xfbb1ea }
-                case 82 { color := 0xd56dbe }
-                case 83 { color := 0x5c2e52 }
-                case 84 { color := 0xa84d94 }
-                case 85 { color := 0x3e1829 }
-                case 86 { color := 0x602957 }
-                case 87 { color := 0x341b36 }
-                case 88 { color := 0xb8f4ff }
-                case 89 { color := 0xcedcdf }
-                case 90 { color := 0xebf8ff }
-                case 91 { color := 0x6da4c0 }
-                case 92 { color := 0xa0ebf8 }
-                case 93 { color := 0x599bb1 }
-                case 94 { color := 0x385561 }
-                case 95 { color := 0x6891b1 }
-                case 96 { color := 0x24223f }
-                case 97 { color := 0x182a35 }
-                case 98 { color := 0x151e23 }
-                case 99 { color := 0x566a8f }
-                case 100 { color := 0x7ca269 }
-                case 101 { color := 0xceded6 }
-                case 102 { color := 0x507141 }
-                case 103 { color := 0x375845 }
-                case 104 { color := 0x7a9a6a }
-                case 105 { color := 0x355744 }
-                case 106 { color := 0x1f2320 }
-                case 107 { color := 0x343a31 }
-                case 108 { color := 0x242e1f }
-                case 109 { color := 0xf3d8d8 }
-                case 110 { color := 0xf2e9e9 }
-                case 111 { color := 0xffebeb }
-                case 112 { color := 0xecb6b6 }
-                case 113 { color := 0xf3cece }
-                case 114 { color := 0xd38897 }
-                case 115 { color := 0xb47979 }
-                case 116 { color := 0xf0a8a8 }
-                case 117 { color := 0x5e4040 }
-                case 118 { color := 0xa97575 }
-                case 119 { color := 0xf5f5f5 }
-                case 120 { color := 0xe4c7b4 }
-                case 121 { color := 0xefe0d7 }
-                case 122 { color := 0xc19d8a }
-                case 123 { color := 0xd7b8a3 }
-                case 124 { color := 0xba8882 }
-                case 125 { color := 0x603e3e }
-                case 126 { color := 0x7b5656 }
-                case 127 { color := 0x3a2727 }
-                case 128 { color := 0x6f5858 }
-                case 129 { color := 0xf09475 }
-                case 130 { color := 0xdecadc }
-                case 131 { color := 0x49241d }
-                case 132 { color := 0x38251f }
-                case 133 { color := 0xd491bb }
-                case 134 { color := 0x371515 }
-                case 135 { color := 0x808080 }
-                case 136 { color := 0xd6f9ff }
-                case 137 { color := 0xf9e9ae }
-                case 138 { color := 0xcafaa3 }
-                case 139 { color := 0xff9c66 }
-                case 140 { color := 0xef0902 }
-            }
-
 // END Data Functions ---
 
 // Write Function ---
@@ -777,8 +627,17 @@ string memory dataPack = "00372c00003d5b175601490000332300003f581c50014e05002f06
 // --- ------------ ---
 
 // DataPack 
-// string memory dataPack = "00372c00003d5b175601490000332300003f581c50014e05002f061a3f47561960064f0100342000003b562f5f054d03003214005f005a19640446050036307259634f265b054d0500342b400036582559034f00003831003f225c15630646080d3b25001a00541466194904003221b94c4850375b1156030038304000404f2159004b070035252e1e1f54295c0246050f38250000395418611d50060d37247264005529631446050f3728000078532758184a02003232b02b78531f440b4d0b002d1e64003b5128570b6201003220000040573562045003650a501957253117320734281b650a501e322e1000321446141d650d4d1e392c110132114500177d0a4c1e2c220a0e320035201d830a491e37320b0d340a32161e650a501e471c1d1d321132251c650651342c220a0e320027331900063f14003603167c3e4633190c0c3f2c3a0018173e323339195f064c402c220a0d0000332819650a502357251a0532053a281b480d501243362412910e542a19650a501e53202f08340a5019198906541a4d362e0e2d253725190a08043c12151404280c080414120f150528060805280712140528080d056411051501260908045a121015052811080600120a1408250b0a063211021404250c0d045a16001402280908002810111303280908043c0e101305280c080432120f15042800090432021615022806050446030f1408280c0001640f11160b281e0c1c151e1d160f0d0d1e07018a43080a0b00d5430a0508016243060f0c00d5160e050b0078000e0a0c012b03080b0d00d5260f0a0a01001303080d013258000e0d211e6404071204211e640407120300006604071404000066040714030a0908070605040303010201000d131211100f0e0d0c030a030b1f1e1d1c1b1a19181715161514101027262524232217202120000c3231302f2e2d2c2b292a29283d3c3b3a393837363533343328434241401b1a013f01173e17004b4a064849484647464445442857565554535251504f4d4e4d4c6261605f5e5d5c5b5a5859584c0a6c066b6a696867666465646377767574737271706f6d6e6d14807f067e7d7c7b7a1a7879782806068786068584834f8182811488898a8b068c000103050204081009000102060c10302024284080c0";
+// string memory dataPack = "ffdeb81e1b1aded2cffafafa100f0f604f870000009d9df0161f2d6a6aa0ededede9928b121212050505f6f6f6d9b4f3383838d4c2ff7326822e253cb17b5d70aeffd5ddecfcfcfc4986e964a4f7e0edff0f408a5f5fce1f27321b294b2a3f6f9a847edbd2d26354557c6e6adfc7f53d3d3dd4b2f5573e70f0f0f0415d81c9d1decedff21c3040354e6e9797dd182c498e8ef0402f7523232f73635ed5d0cde7dcda6a514d685550c1a7dc2d24261c12135757571f1a19171617dee2e73c84e29696f3621e6b40406d262626c6d0e1ced6e320252e9ba8bf34455f2d35434459792929299a4c5eeeb8ffefdff1fef0ffbe73d3eab1fbbe6dd5522e5c944da829183e572960361b34fff4b8dfdccefff8ebc0a46df8eba0b19b59615538b191683f2224352a18231e158f6a5669a27cd6dece4171504558376a9a7a44573520231f313a341f2e24d8d8f3e9e9f2ebebffb6b6eccecef39788d37979b4a8a8f040405e7575a9f5f5f5b4c7e4d7e0ef8a9dc1a3b8d78288ba3e3e6056567b27273a58586f7594f0dccade1d24491f2538bb91d4151537808080fff9d6aee9f9a3faca669cff0209ef00372c00003d5b175601490000332300003f581c50014e05002f061a3f47561960064f0100342000003b562f5f054d03003214005f005a19640446050036307259634f265b054d0500342b400036582559034f00003831003f225c15630646080d3b25001a00541466194904003221b94c4850375b1156030038304000404f2159004b070035252e1e1f54295c0246050f38250000395418611d50060d37247264005529631446050f3728000078532758184a02003232b02b78531f440b4d0b002d1e64003b5128570b6201003220000040573562045003650a501957253117320734281b650a501e322e1000321446141d650d4d1e392c110132114500177d0a4c1e2c220a0e320035201d830a491e37320b0d340a32161e650a501e471c1d1d321132251c650651342c220a0e320027331900063f14003603167c3e4633190c0c3f2c3a0018173e323339195f064c402c220a0d0000332819650a502357251a0532053a281b480d501243362412910e542a19650a501e53202f08340a5019198906541a4d362e0e2d253725190a08043c12151404280c080414120f150528060805280712140528080d056411051501260908045a121015052811080600120a1408250b0a063211021404250c0d045a16001402280908002810111303280908043c0e101305280c080432120f15042800090432021615022806050446030f1408280c0001640f11160b281e0c1c151e1d160f0d0d1e07018a43080a0b00d5430a0508016243060f0c00d5160e050b0078000e0a0c012b03080b0d00d5260f0a0a01001303080d013258000e0d211e6404071204211e640407120300006604071404000066040714030a0908070605040303010201000d131211100f0e0d0c030a030b1f1e1d1c1b1a19181715161514101027262524232217202120000c3231302f2e2d2c2b292a29283d3c3b3a393837363533343328434241401b1a013f01173e17004b4a064849484647464445442857565554535251504f4d4e4d4c6261605f5e5d5c5b5a5859584c0a6c066b6a696867666465646377767574737271706f6d6e6d14807f067e7d7c7b7a1a7879782806068786068584834f8182811488898a8b068c000103050204081009000102060c10302024284080c0";
 // ^-- Move to Solidity Function
+
+        
+            // Colors
+            function getColor(iColor) -> color {
+                color := and(0xffffff, mload(add(
+                        mload(add(mload(0x40),0x60)), // DataPack[colors]
+                        mul(3,iColor))))
+            }
+    
 
 
             // head - Select Data
@@ -793,7 +652,8 @@ string memory dataPack = "00372c00003d5b175601490000332300003f581c50014e05002f06
                 data := mload(add(
                         add(mload(add(mload(0x40),0x40)), 0), // DataPack[head]
                         iValue))
-                data := and(0x80, data)
+                // Keep 96 bits (8 bits * 12 fields)
+                data := shr(160, shl(160, data))
 
                 
                 // [0]: 00372c00003d5b1756014900
@@ -1080,7 +940,8 @@ string memory dataPack = "00372c00003d5b175601490000332300003f581c50014e05002f06
                 data := mload(add(
                         add(mload(add(mload(0x40),0x40)), 432), // DataPack[ear]
                         iValue))
-                data := and(0x80, data)
+                // Keep 104 bits (8 bits * 13 fields)
+                data := shr(152, shl(152, data))
 
                 
                 // [0]: 650a501957253117320734281b
@@ -1320,7 +1181,8 @@ string memory dataPack = "00372c00003d5b175601490000332300003f581c50014e05002f06
                 data := mload(add(
                         add(mload(add(mload(0x40),0x40)), 796), // DataPack[eye]
                         iValue))
-                data := and(0x80, data)
+                // Keep 72 bits (8 bits * 9 fields)
+                data := shr(184, shl(184, data))
 
                 
                 // [0]: 0a08043c1215140428
@@ -1504,7 +1366,8 @@ string memory dataPack = "00372c00003d5b175601490000332300003f581c50014e05002f06
                 data := mload(add(
                         add(mload(add(mload(0x40),0x40)), 1048), // DataPack[pupil]
                         iValue))
-                data := and(0x80, data)
+                // Keep 16 bits (8 bits * 2 fields)
+                data := shr(240, shl(240, data))
 
                 
                 // [0]: 1e0c
@@ -1550,7 +1413,8 @@ string memory dataPack = "00372c00003d5b175601490000332300003f581c50014e05002f06
                 data := mload(add(
                         add(mload(add(mload(0x40),0x40)), 1072), // DataPack[mouth]
                         iValue))
-                data := and(0x80, data)
+                // Keep 48 bits (8 bits * 6 fields)
+                data := shr(208, shl(208, data))
 
                 
                 // [0]: 018a43080a0b
@@ -1647,7 +1511,8 @@ string memory dataPack = "00372c00003d5b175601490000332300003f581c50014e05002f06
                 data := mload(add(
                         add(mload(add(mload(0x40),0x40)), 1180), // DataPack[whisker]
                         iValue))
-                data := and(0x80, data)
+                // Keep 56 bits (8 bits * 7 fields)
+                data := shr(200, shl(200, data))
 
                 
                 // [0]: 211e6404071204
@@ -1703,7 +1568,8 @@ string memory dataPack = "00372c00003d5b175601490000332300003f581c50014e05002f06
                 data := mload(add(
                         add(mload(add(mload(0x40),0x40)), 1236), // DataPack[palette]
                         iValue))
-                data := and(0x80, data)
+                // Keep 104 bits (8 bits * 13 fields)
+                data := shr(152, shl(152, data))
 
                 
                 // [0]: 0a090807060504030301020100
@@ -1940,7 +1806,8 @@ string memory dataPack = "00372c00003d5b175601490000332300003f581c50014e05002f06
                 data := mload(add(
                         add(mload(add(mload(0x40),0x40)), 1600), // DataPack[eyeColor]
                         iValue))
-                data := and(0x80, data)
+                // Keep 8 bits (8 bits * 1 fields)
+                data := shr(248, shl(248, data))
 
                 
                 // [0]: 88
@@ -1977,7 +1844,8 @@ string memory dataPack = "00372c00003d5b175601490000332300003f581c50014e05002f06
                 data := mload(add(
                         add(mload(add(mload(0x40),0x40)), 1612), // DataPack[bodyParts]
                         iValue))
-                data := and(0x01, data)
+                // Keep 5 bits (1 bits * 5 fields)
+                data := shr(251, shl(251, data))
 
                 
                 // [0]: 00
@@ -2062,7 +1930,8 @@ string memory dataPack = "00372c00003d5b175601490000332300003f581c50014e05002f06
                 data := mload(add(
                         add(mload(add(mload(0x40),0x40)), 1630), // DataPack[faceParts]
                         iValue))
-                data := and(0x01, data)
+                // Keep 8 bits (1 bits * 8 fields)
+                data := shr(248, shl(248, data))
 
                 
                 // [0]: 00
@@ -2650,6 +2519,11 @@ string memory dataPack = "00372c00003d5b175601490000332300003f581c50014e05002f06
         mstore(add(mload(0x40),0x00), _rvs)
         // data memory address
         mstore(add(mload(0x40),0x20), dataPack)
+        
+        // Set Data Pack Address Values
+        mstore(add(mload(0x40),0x60), add(add(mload(0x40),0x20), 0))
+        mstore(add(mload(0x40),0x40), add(add(mload(0x40),0x20), 423))
+    
 
         // Setup pOutputNext - First 32bits is length
         mstore(0, add(0x20, add(mload(0x40),0x020000)))
@@ -2665,7 +2539,6 @@ string memory dataPack = "00372c00003d5b175601490000332300003f581c50014e05002f06
             let slot2 := 0
             let slot3 := 0
             let slot4 := 0
-            let slot5 := 0
             
             mstore(add(pVars, 0x0280), selectBreed())
             slot0 := selectData_head(mload(add(pVars, 0x0280)))
@@ -2680,10 +2553,10 @@ string memory dataPack = "00372c00003d5b175601490000332300003f581c50014e05002f06
             writeOutput_text(0)
             writeOutput_color(getColor(and(0xff, shr(0x00, mload(add(mload(0x40),0x0340)) ))))
             writeOutput_text(1)
-            slot5 := getBreedData_f_useBodyColorForCorner(mload(add(pVars, 0x0280)))
+            mstore(add(pVars, 0xa0), getBreedData_f_useBodyColorForCorner(mload(add(pVars, 0x0280))))
             slot0 := and(slt(getRvsValue(0x0b), 0x80), getBreedData_f_swapMarkColors(mload(add(pVars, 0x0280))))
             slot1 := ternary(slot0, getColor(and(0xff, shr(0x20, mload(add(mload(0x40),0x0340)) ))), getColor(and(0xff, shr(0x28, mload(add(mload(0x40),0x0340)) ))))
-            writeOutput_color(ternary(and(and(0x01, shr(0x03, mload(add(mload(0x40),0x0380)) )), not(slot5)), getColor(and(0xff, shr(0x08, mload(add(mload(0x40),0x0340)) ))), slot1))
+            writeOutput_color(ternary(and(and(0x01, shr(0x03, mload(add(mload(0x40),0x0380)) )), not(mload(add(pVars, 0xa0)))), getColor(and(0xff, shr(0x08, mload(add(mload(0x40),0x0340)) ))), slot1))
             writeOutput_text(2)
             slot2 := getBreedData_f_calico(mload(add(pVars, 0x0280)))
             writeOutput_color(ternary(and(and(0x01, shr(0x00, mload(add(mload(0x40),0x03a0)) )), not(slot2)), getColor(and(0xff, shr(0x18, mload(add(mload(0x40),0x0340)) ))), slot1))
@@ -2696,7 +2569,7 @@ string memory dataPack = "00372c00003d5b175601490000332300003f581c50014e05002f06
             slot4 := ternary(slot2, slot1, slot3)
             writeOutput_color(slot4)
             writeOutput_text(6)
-            slot0 := ternary(and(and(0x01, shr(0x03, mload(add(mload(0x40),0x0380)) )), slot5), getColor(and(0xff, shr(0x08, mload(add(mload(0x40),0x0340)) ))), slot1)
+            slot0 := ternary(and(and(0x01, shr(0x03, mload(add(mload(0x40),0x0380)) )), mload(add(pVars, 0xa0))), getColor(and(0xff, shr(0x08, mload(add(mload(0x40),0x0340)) ))), slot1)
             writeOutput_color(ternary(and(and(0x01, shr(0x03, mload(add(mload(0x40),0x0380)) )), slot2), slot0, slot3))
             writeOutput_text(7)
             writeOutput_color(slot0)
@@ -2749,8 +2622,8 @@ string memory dataPack = "00372c00003d5b175601490000332300003f581c50014e05002f06
             writeOutput_int(sub(0, add(slot3, 0x0a)))
             writeOutput_text(25)
             mstore(add(pVars, 0x02a0), average(and(0xff, shr(0x20, mload(add(mload(0x40),0x0280)) )), sub(slot1, mul(slot0, sub(0, and(0xff, shr(0x18, mload(add(mload(0x40),0x0280)) )))))))
-            slot5 := bezierPoint_100(and(0xff, shr(0x20, mload(add(mload(0x40),0x0280)) )), mload(add(pVars, 0x02a0)), and(0xff, shr(0x28, mload(add(mload(0x40),0x0280)) )), and(0xff, shr(0x28, mload(add(mload(0x40),0x0280)) )), and(0xff, shr(0x50, mload(add(mload(0x40),0x0280)) )))
-            slot0 := sub(slot5, 0x32)
+            mstore(add(pVars, 0xa0), bezierPoint_100(and(0xff, shr(0x20, mload(add(mload(0x40),0x0280)) )), mload(add(pVars, 0x02a0)), and(0xff, shr(0x28, mload(add(mload(0x40),0x0280)) )), and(0xff, shr(0x28, mload(add(mload(0x40),0x0280)) )), and(0xff, shr(0x50, mload(add(mload(0x40),0x0280)) ))))
+            slot0 := sub(mload(add(pVars, 0xa0)), 0x32)
             writeOutput_int(slot0)
             writeOutput_text(26)
             writeOutput_int(sub(slot3, 0x0a))
@@ -2759,7 +2632,7 @@ string memory dataPack = "00372c00003d5b175601490000332300003f581c50014e05002f06
             writeOutput_text(26)
             writeOutput_int(add(slot3, 0x1e))
             writeOutput_text(25)
-            slot0 := add(slot5, 0x96)
+            slot0 := add(mload(add(pVars, 0xa0)), 0x96)
             writeOutput_int(slot0)
             writeOutput_text(26)
             writeOutput_int(sub(0, sub(slot3, 0x1e)))
@@ -2770,7 +2643,7 @@ string memory dataPack = "00372c00003d5b175601490000332300003f581c50014e05002f06
             writeOutput_text(28)
             slot1 := lerp_100(0x32, 0, and(0xff, shr(0x50, mload(add(mload(0x40),0x0280)) )))
             slot2 := add(slot3, 0x1e)
-            slot0 := add(slot5, 0x07)
+            slot0 := add(mload(add(pVars, 0xa0)), 0x07)
             writeOutput_bezier(slot2, slot0, sdiv(mul(slot2, 0x04), 0x0a), add(slot0, mul(slot1, 0x02)), sdiv(mul(sub(0, slot2), 0x04), 0x0a), add(slot0, mul(slot1, 0x02)), sub(0, slot2), slot0)
             writeOutput_text(29)
             writeOutput_int(ternary(and(0x01, shr(0x03, mload(add(mload(0x40),0x0380)) )), 0, 0x01))
@@ -2778,7 +2651,7 @@ string memory dataPack = "00372c00003d5b175601490000332300003f581c50014e05002f06
             slot1 := lerp_100(slot3, add(slot3, 0x1e), lerp_100(0x28, 0x0a, and(0xff, shr(0x50, mload(add(mload(0x40),0x0280)) ))))
             writeOutput_int(sub(0, slot1))
             writeOutput_text(25)
-            slot0 := lerp_100(slot5, add(slot5, 0x96), lerp_100(0x28, 0x0a, and(0xff, shr(0x50, mload(add(mload(0x40),0x0280)) ))))
+            slot0 := lerp_100(mload(add(pVars, 0xa0)), add(mload(add(pVars, 0xa0)), 0x96), lerp_100(0x28, 0x0a, and(0xff, shr(0x50, mload(add(mload(0x40),0x0280)) ))))
             writeOutput_int(slot0)
             writeOutput_text(26)
             writeOutput_int(sub(0, add(slot1, 0x6e)))
@@ -2807,20 +2680,20 @@ string memory dataPack = "00372c00003d5b175601490000332300003f581c50014e05002f06
             writeOutput_text(33)
             writeOutput_int(sub(sub(0, add(slot3, sdiv(mul(mul(sub(0x01, sdiv(and(0xff, shr(0x50, mload(add(mload(0x40),0x0280)) )), 0x64)), 0x2a), 0x1e), 0x64))), 0x1a))
             writeOutput_text(25)
-            writeOutput_int(sub(add(slot5, sdiv(mul(mul(sub(0x01, sdiv(and(0xff, shr(0x50, mload(add(mload(0x40),0x0280)) )), 0x64)), 0x2a), 0x96), 0x64)), 0x14))
+            writeOutput_int(sub(add(mload(add(pVars, 0xa0)), sdiv(mul(mul(sub(0x01, sdiv(and(0xff, shr(0x50, mload(add(mload(0x40),0x0280)) )), 0x64)), 0x2a), 0x96), 0x64)), 0x14))
             writeOutput_text(34)
             writeOutput_int(ternary(and(0x01, shr(0x02, mload(add(mload(0x40),0x0380)) )), 0, 0x01))
             writeOutput_text(35)
             slot0 := lerp_100(0x46, 0, and(0xff, shr(0x50, mload(add(mload(0x40),0x0280)) )))
             writeOutput_int(sub(0, add(slot3, slot0)))
             writeOutput_text(25)
-            writeOutput_int(slot5)
+            writeOutput_int(mload(add(pVars, 0xa0)))
             writeOutput_text(36)
             writeOutput_int(sub(slot3, slot0))
             writeOutput_text(26)
             writeOutput_int(slot3)
             writeOutput_text(25)
-            writeOutput_int(add(slot5, mul(slot0, 0x05)))
+            writeOutput_int(add(mload(add(pVars, 0xa0)), mul(slot0, 0x05)))
             writeOutput_text(36)
             writeOutput_int(sub(0, slot3))
             writeOutput_text(32)
@@ -2842,34 +2715,34 @@ string memory dataPack = "00372c00003d5b175601490000332300003f581c50014e05002f06
             mstore(add(pVars, 0x0160), bezierPoint_100(sub(and(0xff, shr(0x10, mload(add(mload(0x40),0x0280)) )), 30), mload(add(pVars, 0x01e0)), sub(and(0xff, shr(0x00, mload(add(mload(0x40),0x0280)) )), 55), sub(and(0xff, shr(0x00, mload(add(mload(0x40),0x0280)) )), 55), and(0xff, shr(0x58, mload(add(mload(0x40),0x0280)) ))))
             mstore(add(pVars, 0xc0), add(mload(add(pVars, 0x0180)), sub(and(0xff, shr(0x08, mload(add(mload(0x40),0x02a0)) )), 41)))
             mstore(add(pVars, 0x0140), sub(mload(add(pVars, 0x0160)), and(0xff, shr(0x10, mload(add(mload(0x40),0x02a0)) ))))
-            slot5 := lerp_100(mload(add(pVars, 0xc0)), mload(add(pVars, 0x01c0)), add(and(0xff, shr(0x18, mload(add(mload(0x40),0x02a0)) )), sdiv(sdiv(mul(mul(ceil_100(and(0xff, shr(0x18, mload(add(mload(0x40),0x02a0)) ))), sub(0x50, and(0xff, shr(0x18, mload(add(mload(0x40),0x02a0)) )))), sub(0, constrain(sub(and(0xff, shr(0x20, mload(add(mload(0x40),0x02a0)) )), 50), sub(0, 0x64), 0))), 0x64), 0x64)))
+            mstore(add(pVars, 0xa0), lerp_100(mload(add(pVars, 0xc0)), mload(add(pVars, 0x01c0)), add(and(0xff, shr(0x18, mload(add(mload(0x40),0x02a0)) )), sdiv(sdiv(mul(mul(ceil_100(and(0xff, shr(0x18, mload(add(mload(0x40),0x02a0)) ))), sub(0x50, and(0xff, shr(0x18, mload(add(mload(0x40),0x02a0)) )))), sub(0, constrain(sub(and(0xff, shr(0x20, mload(add(mload(0x40),0x02a0)) )), 50), sub(0, 0x64), 0))), 0x64), 0x64))))
             slot2 := lerp_100(mload(add(pVars, 0x0140)), mload(add(pVars, 0x01a0)), add(and(0xff, shr(0x18, mload(add(mload(0x40),0x02a0)) )), sdiv(sdiv(mul(mul(ceil_100(and(0xff, shr(0x18, mload(add(mload(0x40),0x02a0)) ))), sub(0x50, and(0xff, shr(0x18, mload(add(mload(0x40),0x02a0)) )))), sub(0, constrain(sub(and(0xff, shr(0x20, mload(add(mload(0x40),0x02a0)) )), 50), sub(0, 0x64), 0))), 0x64), 0x64)))
-            slot1 := add(average(mload(add(pVars, 0x01c0)), slot5), sdiv(mul(sub(and(0xff, shr(0x28, mload(add(mload(0x40),0x02a0)) )), 4), sub(slot2, mload(add(pVars, 0x01a0)))), 0x64))
-            slot0 := sub(average(mload(add(pVars, 0x01a0)), slot2), sdiv(mul(sub(and(0xff, shr(0x28, mload(add(mload(0x40),0x02a0)) )), 4), sub(slot5, mload(add(pVars, 0x01c0)))), 0x64))
-            writeOutput(bezierVertex(average(mload(add(pVars, 0x01c0)), slot1), average(mload(add(pVars, 0x01a0)), slot0), average(slot5, slot1), average(slot2, slot0), slot5, slot2))
+            slot1 := add(average(mload(add(pVars, 0x01c0)), mload(add(pVars, 0xa0))), sdiv(mul(sub(and(0xff, shr(0x28, mload(add(mload(0x40),0x02a0)) )), 4), sub(slot2, mload(add(pVars, 0x01a0)))), 0x64))
+            slot0 := sub(average(mload(add(pVars, 0x01a0)), slot2), sdiv(mul(sub(and(0xff, shr(0x28, mload(add(mload(0x40),0x02a0)) )), 4), sub(mload(add(pVars, 0xa0)), mload(add(pVars, 0x01c0)))), 0x64))
+            writeOutput(bezierVertex(average(mload(add(pVars, 0x01c0)), slot1), average(mload(add(pVars, 0x01a0)), slot0), average(mload(add(pVars, 0xa0)), slot1), average(slot2, slot0), mload(add(pVars, 0xa0)), slot2))
             slot3 := lerp_100(mload(add(pVars, 0xc0)), mload(add(pVars, 0x0180)), add(and(0xff, shr(0x18, mload(add(mload(0x40),0x02a0)) )), sdiv(sdiv(mul(mul(ceil_100(and(0xff, shr(0x18, mload(add(mload(0x40),0x02a0)) ))), sub(0x50, and(0xff, shr(0x18, mload(add(mload(0x40),0x02a0)) )))), constrain(sub(and(0xff, shr(0x20, mload(add(mload(0x40),0x02a0)) )), 50), 0, 0x64)), 0x64), 0x64)))
             slot0 := lerp_100(mload(add(pVars, 0x0140)), mload(add(pVars, 0x0160)), add(and(0xff, shr(0x18, mload(add(mload(0x40),0x02a0)) )), sdiv(sdiv(mul(mul(ceil_100(and(0xff, shr(0x18, mload(add(mload(0x40),0x02a0)) ))), sub(0x50, and(0xff, shr(0x18, mload(add(mload(0x40),0x02a0)) )))), constrain(sub(and(0xff, shr(0x20, mload(add(mload(0x40),0x02a0)) )), 50), 0, 0x64)), 0x64), 0x64)))
-            slot4 := add(average(slot5, slot3), sdiv(mul(and(0xff, shr(0x30, mload(add(mload(0x40),0x02a0)) )), sub(slot0, slot2)), 0x64))
-            slot1 := sub(average(slot2, slot0), sdiv(mul(and(0xff, shr(0x30, mload(add(mload(0x40),0x02a0)) )), sub(slot3, slot5)), 0x64))
-            writeOutput(bezierVertex(average(slot5, slot4), average(slot2, slot1), average(slot3, slot4), average(slot0, slot1), slot3, slot0))
+            slot4 := add(average(mload(add(pVars, 0xa0)), slot3), sdiv(mul(and(0xff, shr(0x30, mload(add(mload(0x40),0x02a0)) )), sub(slot0, slot2)), 0x64))
+            slot1 := sub(average(slot2, slot0), sdiv(mul(and(0xff, shr(0x30, mload(add(mload(0x40),0x02a0)) )), sub(slot3, mload(add(pVars, 0xa0)))), 0x64))
+            writeOutput(bezierVertex(average(mload(add(pVars, 0xa0)), slot4), average(slot2, slot1), average(slot3, slot4), average(slot0, slot1), slot3, slot0))
             slot2 := add(average(slot3, mload(add(pVars, 0x0180))), sdiv(mul(sub(and(0xff, shr(0x38, mload(add(mload(0x40),0x02a0)) )), 24), sub(mload(add(pVars, 0x0160)), slot0)), 0x64))
             slot1 := sub(average(slot0, mload(add(pVars, 0x0160))), sdiv(mul(sub(and(0xff, shr(0x38, mload(add(mload(0x40),0x02a0)) )), 24), sub(mload(add(pVars, 0x0180)), slot3)), 0x64))
             writeOutput(bezierVertex(average(slot3, slot2), average(slot0, slot1), average(mload(add(pVars, 0x0180)), slot2), average(mload(add(pVars, 0x0160)), slot1), mload(add(pVars, 0x0180)), mload(add(pVars, 0x0160))))
             writeOutput_text(40)
-            slot5 := lerp_100(mload(add(pVars, 0x01c0)), mload(add(pVars, 0x0180)), and(0xff, shr(0x48, mload(add(mload(0x40),0x02a0)) )))
+            mstore(add(pVars, 0xa0), lerp_100(mload(add(pVars, 0x01c0)), mload(add(pVars, 0x0180)), and(0xff, shr(0x48, mload(add(mload(0x40),0x02a0)) ))))
             slot2 := lerp_100(mload(add(pVars, 0x01a0)), mload(add(pVars, 0x0160)), and(0xff, shr(0x48, mload(add(mload(0x40),0x02a0)) )))
-            writeOutput(vertex(slot5, slot2))
+            writeOutput(vertex(mload(add(pVars, 0xa0)), slot2))
             mstore(add(pVars, 0x0100), lerp_100(mload(add(pVars, 0x01c0)), mload(add(pVars, 0x0180)), sub(0x64, and(0xff, shr(0x58, mload(add(mload(0x40),0x02a0)) )))))
             mstore(add(pVars, 0xe0), lerp_100(mload(add(pVars, 0x01a0)), mload(add(pVars, 0x0160)), sub(0x64, and(0xff, shr(0x58, mload(add(mload(0x40),0x02a0)) )))))
-            mstore(add(pVars, 0x0260), average(slot5, mload(add(pVars, 0x0100))))
+            mstore(add(pVars, 0x0260), average(mload(add(pVars, 0xa0)), mload(add(pVars, 0x0100))))
             mstore(add(pVars, 0x0240), average(slot2, mload(add(pVars, 0xe0))))
             mstore(add(pVars, 0xc0), add(lerp_100(mload(add(pVars, 0x0260)), mload(add(pVars, 0xc0)), and(0xff, shr(0x50, mload(add(mload(0x40),0x02a0)) ))), sdiv(sub(mul(and(0xff, shr(0x60, mload(add(mload(0x40),0x02a0)) )), 4), 405), 0x64)))
             mstore(add(pVars, 0x0120), lerp_100(mload(add(pVars, 0x0240)), mload(add(pVars, 0x0140)), and(0xff, shr(0x50, mload(add(mload(0x40),0x02a0)) ))))
-            slot3 := lerp_100(mload(add(pVars, 0xc0)), slot5, add(and(0xff, shr(0x18, mload(add(mload(0x40),0x02a0)) )), sdiv(sdiv(mul(mul(ceil_100(and(0xff, shr(0x18, mload(add(mload(0x40),0x02a0)) ))), sub(0x50, and(0xff, shr(0x18, mload(add(mload(0x40),0x02a0)) )))), sub(0, constrain(sub(and(0xff, shr(0x20, mload(add(mload(0x40),0x02a0)) )), 50), sub(0, 0x64), 0))), 0x64), 0x64)))
+            slot3 := lerp_100(mload(add(pVars, 0xc0)), mload(add(pVars, 0xa0)), add(and(0xff, shr(0x18, mload(add(mload(0x40),0x02a0)) )), sdiv(sdiv(mul(mul(ceil_100(and(0xff, shr(0x18, mload(add(mload(0x40),0x02a0)) ))), sub(0x50, and(0xff, shr(0x18, mload(add(mload(0x40),0x02a0)) )))), sub(0, constrain(sub(and(0xff, shr(0x20, mload(add(mload(0x40),0x02a0)) )), 50), sub(0, 0x64), 0))), 0x64), 0x64)))
             slot4 := lerp_100(mload(add(pVars, 0x0120)), slot2, add(and(0xff, shr(0x18, mload(add(mload(0x40),0x02a0)) )), sdiv(sdiv(mul(mul(ceil_100(and(0xff, shr(0x18, mload(add(mload(0x40),0x02a0)) ))), sub(0x50, and(0xff, shr(0x18, mload(add(mload(0x40),0x02a0)) )))), sub(0, constrain(sub(and(0xff, shr(0x20, mload(add(mload(0x40),0x02a0)) )), 50), sub(0, 0x64), 0))), 0x64), 0x64)))
-            slot1 := add(average(slot5, slot3), sdiv(mul(sub(and(0xff, shr(0x28, mload(add(mload(0x40),0x02a0)) )), 4), sub(slot4, slot2)), 0x64))
-            slot0 := sub(average(slot2, slot4), sdiv(mul(sub(and(0xff, shr(0x28, mload(add(mload(0x40),0x02a0)) )), 4), sub(slot3, slot5)), 0x64))
-            writeOutput(bezierVertex(average(slot5, slot1), average(slot2, slot0), average(slot3, slot1), average(slot4, slot0), slot3, slot4))
+            slot1 := add(average(mload(add(pVars, 0xa0)), slot3), sdiv(mul(sub(and(0xff, shr(0x28, mload(add(mload(0x40),0x02a0)) )), 4), sub(slot4, slot2)), 0x64))
+            slot0 := sub(average(slot2, slot4), sdiv(mul(sub(and(0xff, shr(0x28, mload(add(mload(0x40),0x02a0)) )), 4), sub(slot3, mload(add(pVars, 0xa0)))), 0x64))
+            writeOutput(bezierVertex(average(mload(add(pVars, 0xa0)), slot1), average(slot2, slot0), average(slot3, slot1), average(slot4, slot0), slot3, slot4))
             slot2 := lerp_100(mload(add(pVars, 0xc0)), mload(add(pVars, 0x0100)), add(and(0xff, shr(0x18, mload(add(mload(0x40),0x02a0)) )), sdiv(sdiv(mul(mul(ceil_100(and(0xff, shr(0x18, mload(add(mload(0x40),0x02a0)) ))), sub(0x50, and(0xff, shr(0x18, mload(add(mload(0x40),0x02a0)) )))), constrain(sub(and(0xff, shr(0x20, mload(add(mload(0x40),0x02a0)) )), 50), 0, 0x64)), 0x64), 0x64)))
             slot0 := lerp_100(mload(add(pVars, 0x0120)), mload(add(pVars, 0xe0)), add(and(0xff, shr(0x18, mload(add(mload(0x40),0x02a0)) )), sdiv(sdiv(mul(mul(ceil_100(and(0xff, shr(0x18, mload(add(mload(0x40),0x02a0)) ))), sub(0x50, and(0xff, shr(0x18, mload(add(mload(0x40),0x02a0)) )))), constrain(sub(and(0xff, shr(0x20, mload(add(mload(0x40),0x02a0)) )), 50), 0, 0x64)), 0x64), 0x64)))
             mstore(add(pVars, 0xc0), add(average(slot3, slot2), sdiv(mul(sub(and(0xff, shr(0x40, mload(add(mload(0x40),0x02a0)) )), 34), sub(slot0, slot4)), 0x64)))
@@ -2888,14 +2761,14 @@ string memory dataPack = "00372c00003d5b175601490000332300003f581c50014e05002f06
             slot4 := sub(slot2, mul(slot0, sub(and(0xff, shr(0x18, mload(add(mload(0x40),0x0280)) )), and(0xff, shr(0x08, mload(add(mload(0x40),0x0280)) )))))
             slot1 := sub(slot1, mul(slot0, sub(and(0xff, shr(0x20, mload(add(mload(0x40),0x0280)) )), sub(and(0xff, shr(0x10, mload(add(mload(0x40),0x0280)) )), 30))))
             slot0 := add(slot2, mul(slot0, sub(and(0xff, shr(0x18, mload(add(mload(0x40),0x0280)) )), and(0xff, shr(0x08, mload(add(mload(0x40),0x0280)) )))))
-            slot5 := average(and(0xff, shr(0x08, mload(add(mload(0x40),0x0280)) )), lerp_100(slot3, slot1, and(0xff, shr(0x38, mload(add(mload(0x40),0x0280)) ))))
+            mstore(add(pVars, 0xa0), average(and(0xff, shr(0x08, mload(add(mload(0x40),0x0280)) )), lerp_100(slot3, slot1, and(0xff, shr(0x38, mload(add(mload(0x40),0x0280)) )))))
             slot2 := average(sub(and(0xff, shr(0x10, mload(add(mload(0x40),0x0280)) )), 30), lerp_100(slot4, slot0, and(0xff, shr(0x38, mload(add(mload(0x40),0x0280)) ))))
             slot1 := average(and(0xff, shr(0x18, mload(add(mload(0x40),0x0280)) )), lerp_100(slot1, slot3, 0x64))
             slot0 := average(and(0xff, shr(0x20, mload(add(mload(0x40),0x0280)) )), lerp_100(slot0, slot4, 0x64))
-            writeOutput(bezierVertex(slot5, slot2, slot1, slot0, and(0xff, shr(0x18, mload(add(mload(0x40),0x0280)) )), and(0xff, shr(0x20, mload(add(mload(0x40),0x0280)) ))))
+            writeOutput(bezierVertex(mload(add(pVars, 0xa0)), slot2, slot1, slot0, and(0xff, shr(0x18, mload(add(mload(0x40),0x0280)) )), and(0xff, shr(0x20, mload(add(mload(0x40),0x0280)) ))))
             writeOutput(bezierVertex(mload(add(pVars, 0x02e0)), mload(add(pVars, 0x02a0)), mload(add(pVars, 0x02c0)), and(0xff, shr(0x28, mload(add(mload(0x40),0x0280)) )), 0, and(0xff, shr(0x28, mload(add(mload(0x40),0x0280)) ))))
             writeOutput(bezierVertex(sub(0, mload(add(pVars, 0x02c0))), and(0xff, shr(0x28, mload(add(mload(0x40),0x0280)) )), sub(0, mload(add(pVars, 0x02e0))), mload(add(pVars, 0x02a0)), sub(0, and(0xff, shr(0x18, mload(add(mload(0x40),0x0280)) ))), and(0xff, shr(0x20, mload(add(mload(0x40),0x0280)) ))))
-            writeOutput(bezierVertex(sub(0, slot1), slot0, sub(0, slot5), slot2, sub(0, and(0xff, shr(0x08, mload(add(mload(0x40),0x0280)) ))), sub(and(0xff, shr(0x10, mload(add(mload(0x40),0x0280)) )), 30)))
+            writeOutput(bezierVertex(sub(0, slot1), slot0, sub(0, mload(add(pVars, 0xa0))), slot2, sub(0, and(0xff, shr(0x08, mload(add(mload(0x40),0x0280)) ))), sub(and(0xff, shr(0x10, mload(add(mload(0x40),0x0280)) )), 30)))
             writeOutput(bezierVertex(sub(0, mload(add(pVars, 0x0200))), mload(add(pVars, 0x01e0)), sub(0, mload(add(pVars, 0x0220))), sub(and(0xff, shr(0x00, mload(add(mload(0x40),0x0280)) )), 55), sub(0, 0), sub(and(0xff, shr(0x00, mload(add(mload(0x40),0x0280)) )), 55)))
             writeOutput_text(42)
             writeOutput_int(ternary(and(0x01, shr(0x01, mload(add(mload(0x40),0x03a0)) )), 0, 0x01))
@@ -2991,8 +2864,8 @@ string memory dataPack = "00372c00003d5b175601490000332300003f581c50014e05002f06
             writeOutput(mload(add(pVars, 0xc0)))
             mstore(add(pVars, 0xe0), lerp_100(sub(0, sub(and(0xff, shr(0x18, mload(add(mload(0x40),0x02c0)) )), 3)), and(0xff, shr(0x20, mload(add(mload(0x40),0x02c0)) )), mul(0, 0x64)))
             mstore(add(pVars, 0x01c0), sdiv(mul(0x32, slot0), 0x64))
-            slot5 := bezierVertex(slot0, sdiv(mul(0x32, mload(add(pVars, 0xe0))), 0x64), mload(add(pVars, 0x01c0)), mload(add(pVars, 0xe0)), 0, mload(add(pVars, 0xe0)))
-            writeOutput(slot5)
+            mstore(add(pVars, 0xa0), bezierVertex(slot0, sdiv(mul(0x32, mload(add(pVars, 0xe0))), 0x64), mload(add(pVars, 0x01c0)), mload(add(pVars, 0xe0)), 0, mload(add(pVars, 0xe0))))
+            writeOutput(mload(add(pVars, 0xa0)))
             mstore(add(pVars, 0x01a0), sdiv(mul(0x32, and(0xff, shr(0x10, mload(add(mload(0x40),0x02c0)) ))), 0x64))
             slot4 := bezierVertex(mload(add(pVars, 0x01a0)), mload(add(pVars, 0xe0)), and(0xff, shr(0x10, mload(add(mload(0x40),0x02c0)) )), sdiv(mul(0x32, mload(add(pVars, 0xe0))), 0x64), add(and(0xff, shr(0x10, mload(add(mload(0x40),0x02c0)) )), 0x04), 0)
             writeOutput(slot4)
@@ -3008,7 +2881,7 @@ string memory dataPack = "00372c00003d5b175601490000332300003f581c50014e05002f06
             writeOutput_text(71)
             writeOutput(mload(add(pVars, 0xc0)))
             writeOutput_text(72)
-            writeOutput(slot5)
+            writeOutput(mload(add(pVars, 0xa0)))
             writeOutput_text(72)
             writeOutput(slot4)
             writeOutput_text(72)
@@ -3018,7 +2891,7 @@ string memory dataPack = "00372c00003d5b175601490000332300003f581c50014e05002f06
             writeOutput_text(73)
             writeOutput(mload(add(pVars, 0xc0)))
             writeOutput_text(72)
-            writeOutput(slot5)
+            writeOutput(mload(add(pVars, 0xa0)))
             writeOutput_text(72)
             writeOutput(slot4)
             writeOutput_text(72)
@@ -3038,7 +2911,7 @@ string memory dataPack = "00372c00003d5b175601490000332300003f581c50014e05002f06
             writeOutput_text(73)
             writeOutput(mload(add(pVars, 0xc0)))
             writeOutput_text(72)
-            writeOutput(slot5)
+            writeOutput(mload(add(pVars, 0xa0)))
             writeOutput_text(72)
             writeOutput(slot4)
             writeOutput_text(72)
@@ -3048,7 +2921,7 @@ string memory dataPack = "00372c00003d5b175601490000332300003f581c50014e05002f06
             writeOutput_text(73)
             writeOutput(mload(add(pVars, 0xc0)))
             writeOutput_text(72)
-            writeOutput(slot5)
+            writeOutput(mload(add(pVars, 0xa0)))
             writeOutput_text(72)
             writeOutput(slot4)
             writeOutput_text(72)
@@ -3109,27 +2982,27 @@ string memory dataPack = "00372c00003d5b175601490000332300003f581c50014e05002f06
             slot2 := sdiv(mul(0x96, and(0xff, shr(0x10, mload(add(mload(0x40),0x0320)) ))), 0x64)
             slot0 := add(average(slot2, and(0xff, shr(0x20, mload(add(mload(0x40),0x0320)) ))), sdiv(mul(sub(and(0xff, shr(0x30, mload(add(mload(0x40),0x0320)) )), 18), sub(and(0xff, shr(0x28, mload(add(mload(0x40),0x0320)) )), 0)), 0x64))
             slot1 := sub(average(0, and(0xff, shr(0x28, mload(add(mload(0x40),0x0320)) ))), sdiv(mul(sub(and(0xff, shr(0x30, mload(add(mload(0x40),0x0320)) )), 18), sub(and(0xff, shr(0x20, mload(add(mload(0x40),0x0320)) )), slot2)), 0x64))
-            slot5 := average(slot2, slot0)
+            mstore(add(pVars, 0xa0), average(slot2, slot0))
             slot4 := average(0, slot1)
             slot3 := average(and(0xff, shr(0x20, mload(add(mload(0x40),0x0320)) )), slot0)
             slot0 := average(and(0xff, shr(0x28, mload(add(mload(0x40),0x0320)) )), slot1)
-            writeOutput_bezier(slot2, 0, slot5, slot4, slot3, slot0, and(0xff, shr(0x20, mload(add(mload(0x40),0x0320)) )), and(0xff, shr(0x28, mload(add(mload(0x40),0x0320)) )))
+            writeOutput_bezier(slot2, 0, mload(add(pVars, 0xa0)), slot4, slot3, slot0, and(0xff, shr(0x20, mload(add(mload(0x40),0x0320)) )), and(0xff, shr(0x28, mload(add(mload(0x40),0x0320)) )))
             writeOutput_text(90)
             writeOutput_int(sub(0, add(sdiv(mul(mul(0x39, 0x02), and(0xff, shr(0x08, mload(add(mload(0x40),0x0320)) ))), 0x64), 0x11)))
             writeOutput_text(70)
-            writeOutput_bezier(slot2, 0, slot5, slot4, sdiv(mul(slot3, 0x09), 0x0a), slot0, sdiv(mul(and(0xff, shr(0x20, mload(add(mload(0x40),0x0320)) )), 0x09), 0x0a), and(0xff, shr(0x28, mload(add(mload(0x40),0x0320)) )))
+            writeOutput_bezier(slot2, 0, mload(add(pVars, 0xa0)), slot4, sdiv(mul(slot3, 0x09), 0x0a), slot0, sdiv(mul(and(0xff, shr(0x20, mload(add(mload(0x40),0x0320)) )), 0x09), 0x0a), and(0xff, shr(0x28, mload(add(mload(0x40),0x0320)) )))
             writeOutput_text(91)
             writeOutput_int(ternary(sgt(and(0xff, shr(0x00, mload(add(mload(0x40),0x0320)) )), 0x02), 0, 0x01))
             writeOutput_text(92)
             writeOutput_int(sub(0, add(sdiv(mul(mul(0x39, 0x01), and(0xff, shr(0x08, mload(add(mload(0x40),0x0320)) ))), 0x64), 0x11)))
             writeOutput_text(70)
-            writeOutput_bezier(slot2, 0, slot5, slot4, slot3, slot0, and(0xff, shr(0x20, mload(add(mload(0x40),0x0320)) )), and(0xff, shr(0x28, mload(add(mload(0x40),0x0320)) )))
+            writeOutput_bezier(slot2, 0, mload(add(pVars, 0xa0)), slot4, slot3, slot0, and(0xff, shr(0x20, mload(add(mload(0x40),0x0320)) )), and(0xff, shr(0x28, mload(add(mload(0x40),0x0320)) )))
             writeOutput_text(91)
             writeOutput_int(ternary(sgt(and(0xff, shr(0x00, mload(add(mload(0x40),0x0320)) )), 0x03), 0, 0x01))
             writeOutput_text(92)
             writeOutput_int(sub(0, add(sdiv(mul(mul(0x39, 0x03), and(0xff, shr(0x08, mload(add(mload(0x40),0x0320)) ))), 0x64), 0x11)))
             writeOutput_text(70)
-            writeOutput_bezier(slot2, 0, slot5, slot4, sdiv(mul(slot3, 0x4b), 0x64), slot0, sdiv(mul(and(0xff, shr(0x20, mload(add(mload(0x40),0x0320)) )), 0x4b), 0x64), and(0xff, shr(0x28, mload(add(mload(0x40),0x0320)) )))
+            writeOutput_bezier(slot2, 0, mload(add(pVars, 0xa0)), slot4, sdiv(mul(slot3, 0x4b), 0x64), slot0, sdiv(mul(and(0xff, shr(0x20, mload(add(mload(0x40),0x0320)) )), 0x4b), 0x64), and(0xff, shr(0x28, mload(add(mload(0x40),0x0320)) )))
             writeOutput_text(93)
             writeOutput(vertex(0, mload(add(pVars, 0x0120))))
             slot4 := sub(0, 0x09)
@@ -3139,8 +3012,8 @@ string memory dataPack = "00372c00003d5b175601490000332300003f581c50014e05002f06
             mstore(add(pVars, 0x0100), average(0, slot0))
             mstore(add(pVars, 0xe0), average(mload(add(pVars, 0x0120)), slot1))
             mstore(add(pVars, 0xc0), average(slot4, slot0))
-            slot5 := average(slot3, slot1)
-            writeOutput(bezierVertex(mload(add(pVars, 0x0100)), mload(add(pVars, 0xe0)), mload(add(pVars, 0xc0)), slot5, slot4, slot3))
+            mstore(add(pVars, 0xa0), average(slot3, slot1))
+            writeOutput(bezierVertex(mload(add(pVars, 0x0100)), mload(add(pVars, 0xe0)), mload(add(pVars, 0xc0)), mload(add(pVars, 0xa0)), slot4, slot3))
             slot0 := sub(mload(add(pVars, 0x0120)), 0x0b)
             slot2 := add(average(slot4, 0x09), sdiv(mul(0x14, sub(slot0, slot3)), 0x64))
             slot1 := sub(average(slot3, slot0), sdiv(mul(0x14, sub(0x09, slot4)), 0x64))
@@ -3150,8 +3023,8 @@ string memory dataPack = "00372c00003d5b175601490000332300003f581c50014e05002f06
             writeOutput(bezierVertex(average(0x09, slot2), average(slot0, slot1), average(0, slot2), average(mload(add(pVars, 0x0120)), slot1), 0, mload(add(pVars, 0x0120))))
             writeOutput_text(94)
             slot0 := bezierPoint_100(0, mload(add(pVars, 0x0100)), mload(add(pVars, 0xc0)), slot4, 0x14)
-            slot1 := bezierPoint_100(mload(add(pVars, 0x0120)), mload(add(pVars, 0xe0)), slot5, slot3, 0x14)
-            writeOutput_bezier(slot0, slot1, add(slot0, 0x01), sub(slot1, sdiv(mul(0x28, 0x09), 0x64)), add(slot0, sdiv(mul(0x28, 0x09), 0x64)), sub(slot1, sdiv(mul(0x3c, 0x0b), 0x64)), bezierPoint_100(0, mload(add(pVars, 0x0100)), mload(add(pVars, 0xc0)), slot4, 0x50), bezierPoint_100(mload(add(pVars, 0x0120)), mload(add(pVars, 0xe0)), slot5, slot3, 0x50))
+            slot1 := bezierPoint_100(mload(add(pVars, 0x0120)), mload(add(pVars, 0xe0)), mload(add(pVars, 0xa0)), slot3, 0x14)
+            writeOutput_bezier(slot0, slot1, add(slot0, 0x01), sub(slot1, sdiv(mul(0x28, 0x09), 0x64)), add(slot0, sdiv(mul(0x28, 0x09), 0x64)), sub(slot1, sdiv(mul(0x3c, 0x0b), 0x64)), bezierPoint_100(0, mload(add(pVars, 0x0100)), mload(add(pVars, 0xc0)), slot4, 0x50), bezierPoint_100(mload(add(pVars, 0x0120)), mload(add(pVars, 0xe0)), mload(add(pVars, 0xa0)), slot3, 0x50))
             writeOutput_text(95)
         }
         generateSvgInner()
