@@ -15,18 +15,19 @@ string memory dataPack = "00372c00003d5b175601490000332300003f581c50014e05002f06
 // START ---    
 
 
-            function getRvsValue(rvs, bitShift) -> value {
+            function getRvsValue(bitShift) -> value {
+                let rvs := mload(add(mload(0x40),0x00))
                 value := and(0xff, shr(bitShift, rvs))
             }
     
 
             // Select Breed Data from rvs value
-            function selectBreed(rvs) -> breedData {
-                let rvs_breed        := getRvsValue(rvs, 0x00)
-                let rvs_body         := getRvsValue(rvs, 0x08)
-                let rvs_face         := getRvsValue(rvs, 0x10)
-                let rvs_palette      := getRvsValue(rvs, 0x18)
-                let rvs_eyeColor     := getRvsValue(rvs, 0x68)
+            function selectBreed() -> breedData {
+                let rvs_breed        := getRvsValue(0x00)
+                let rvs_body         := getRvsValue(0x08)
+                let rvs_face         := getRvsValue(0x10)
+                let rvs_palette      := getRvsValue(0x18)
+                let rvs_eyeColor     := getRvsValue(0x68)
 
                 
                 if lt(rvs_breed, 51) { 
@@ -781,10 +782,10 @@ string memory dataPack = "00372c00003d5b175601490000332300003f581c50014e05002f06
 
 
             // head - Select Data
-            function selectData_head(rvs, breedData) -> data {
+            function selectData_head(breedData) -> data {
                 
                 let rvs_head         := getBreedData_b_head(breedData) 
-                if not(rvs_head) { rvs_head := getRvsValue(rvs, 0x20) }
+                if not(rvs_head) { rvs_head := getRvsValue(0x20) }
                 let iValue := mod(15, rvs_head)
                 
 
@@ -1068,10 +1069,10 @@ string memory dataPack = "00372c00003d5b175601490000332300003f581c50014e05002f06
             }
             
             // ear - Select Data
-            function selectData_ear(rvs, breedData) -> data {
+            function selectData_ear(breedData) -> data {
                 
                 let rvs_ear          := getBreedData_b_ear(breedData) 
-                if not(rvs_ear) { rvs_ear := getRvsValue(rvs, 0x28) }
+                if not(rvs_ear) { rvs_ear := getRvsValue(0x28) }
                 let iValue := mod(11, rvs_ear)
                 
 
@@ -1309,9 +1310,9 @@ string memory dataPack = "00372c00003d5b175601490000332300003f581c50014e05002f06
             }
             
             // eye - Select Data
-            function selectData_eye(rvs, breedData) -> data {
+            function selectData_eye(breedData) -> data {
                 
-                let rvs_eye          := getRvsValue(rvs, 0x30)
+                let rvs_eye          := getRvsValue(0x30)
                 let iValue := mod(14, rvs_eye)
                 
 
@@ -1493,9 +1494,9 @@ string memory dataPack = "00372c00003d5b175601490000332300003f581c50014e05002f06
             }
             
             // pupil - Select Data
-            function selectData_pupil(rvs, breedData) -> data {
+            function selectData_pupil(breedData) -> data {
                 
-                let rvs_pupil        := getRvsValue(rvs, 0x38)
+                let rvs_pupil        := getRvsValue(0x38)
                 let iValue := mod(6, rvs_pupil)
                 
 
@@ -1539,9 +1540,9 @@ string memory dataPack = "00372c00003d5b175601490000332300003f581c50014e05002f06
             }
             
             // mouth - Select Data
-            function selectData_mouth(rvs, breedData) -> data {
+            function selectData_mouth(breedData) -> data {
                 
-                let rvs_mouth        := getRvsValue(rvs, 0x40)
+                let rvs_mouth        := getRvsValue(0x40)
                 let iValue := mod(9, rvs_mouth)
                 
 
@@ -1636,9 +1637,9 @@ string memory dataPack = "00372c00003d5b175601490000332300003f581c50014e05002f06
             }
             
             // whisker - Select Data
-            function selectData_whisker(rvs, breedData) -> data {
+            function selectData_whisker(breedData) -> data {
                 
-                let rvs_whisker      := getRvsValue(rvs, 0x48)
+                let rvs_whisker      := getRvsValue(0x48)
                 let iValue := mod(4, rvs_whisker)
                 
 
@@ -1692,9 +1693,9 @@ string memory dataPack = "00372c00003d5b175601490000332300003f581c50014e05002f06
             }
             
             // palette - Select Data
-            function selectData_palette(rvs, breedData) -> data {
+            function selectData_palette(breedData) -> data {
                 
-                let rvs_palette      := getRvsValue(rvs, 0x18)
+                let rvs_palette      := getRvsValue(0x18)
                 let iValue := mod(4, rvs_palette)
                 
 
@@ -2657,7 +2658,6 @@ string memory dataPack = "00372c00003d5b175601490000332300003f581c50014e05002f06
         function generateSvgInner() {
 
             // Place pVars after output (leaving plenty of space for max string length)
-            let rvs := mload(add(mload(0x40),0x00))
             let pVars := add(mload(0x40),0x1000)
             
             let slot0 := 0
@@ -2665,24 +2665,25 @@ string memory dataPack = "00372c00003d5b175601490000332300003f581c50014e05002f06
             let slot2 := 0
             let slot3 := 0
             let slot4 := 0
+            let slot5 := 0
             
-            mstore(add(pVars, 0x0280), selectBreed(rvs))
-            slot0 := selectData_head(rvs, mload(add(pVars, 0x0280)))
-            slot0 := selectData_ear(rvs, mload(add(pVars, 0x0280)))
-            slot0 := selectData_eye(rvs, mload(add(pVars, 0x0280)))
-            slot0 := selectData_pupil(rvs, mload(add(pVars, 0x0280)))
-            slot0 := selectData_mouth(rvs, mload(add(pVars, 0x0280)))
-            slot0 := selectData_whisker(rvs, mload(add(pVars, 0x0280)))
-            slot0 := selectData_palette(rvs, mload(add(pVars, 0x0280)))
+            mstore(add(pVars, 0x0280), selectBreed())
+            slot0 := selectData_head(mload(add(pVars, 0x0280)))
+            slot0 := selectData_ear(mload(add(pVars, 0x0280)))
+            slot0 := selectData_eye(mload(add(pVars, 0x0280)))
+            slot0 := selectData_pupil(mload(add(pVars, 0x0280)))
+            slot0 := selectData_mouth(mload(add(pVars, 0x0280)))
+            slot0 := selectData_whisker(mload(add(pVars, 0x0280)))
+            slot0 := selectData_palette(mload(add(pVars, 0x0280)))
             slot0 := selectData_bodyParts(getBreedData_i_body(mload(add(pVars, 0x0280))))
             slot0 := selectData_faceParts(getBreedData_i_face(mload(add(pVars, 0x0280))))
             writeOutput_text(0)
             writeOutput_color(getColor(and(0xff, shr(0x00, mload(add(mload(0x40),0x0340)) ))))
             writeOutput_text(1)
-            mstore(add(pVars, 0xa0), getBreedData_f_useBodyColorForCorner(mload(add(pVars, 0x0280))))
-            slot0 := and(slt(getRvsValue(rvs, 0x0b), 0x80), getBreedData_f_swapMarkColors(mload(add(pVars, 0x0280))))
+            slot5 := getBreedData_f_useBodyColorForCorner(mload(add(pVars, 0x0280)))
+            slot0 := and(slt(getRvsValue(0x0b), 0x80), getBreedData_f_swapMarkColors(mload(add(pVars, 0x0280))))
             slot1 := ternary(slot0, getColor(and(0xff, shr(0x20, mload(add(mload(0x40),0x0340)) ))), getColor(and(0xff, shr(0x28, mload(add(mload(0x40),0x0340)) ))))
-            writeOutput_color(ternary(and(and(0x01, shr(0x03, mload(add(mload(0x40),0x0380)) )), not(mload(add(pVars, 0xa0)))), getColor(and(0xff, shr(0x08, mload(add(mload(0x40),0x0340)) ))), slot1))
+            writeOutput_color(ternary(and(and(0x01, shr(0x03, mload(add(mload(0x40),0x0380)) )), not(slot5)), getColor(and(0xff, shr(0x08, mload(add(mload(0x40),0x0340)) ))), slot1))
             writeOutput_text(2)
             slot2 := getBreedData_f_calico(mload(add(pVars, 0x0280)))
             writeOutput_color(ternary(and(and(0x01, shr(0x00, mload(add(mload(0x40),0x03a0)) )), not(slot2)), getColor(and(0xff, shr(0x18, mload(add(mload(0x40),0x0340)) ))), slot1))
@@ -2695,7 +2696,7 @@ string memory dataPack = "00372c00003d5b175601490000332300003f581c50014e05002f06
             slot4 := ternary(slot2, slot1, slot3)
             writeOutput_color(slot4)
             writeOutput_text(6)
-            slot0 := ternary(and(and(0x01, shr(0x03, mload(add(mload(0x40),0x0380)) )), mload(add(pVars, 0xa0))), getColor(and(0xff, shr(0x08, mload(add(mload(0x40),0x0340)) ))), slot1)
+            slot0 := ternary(and(and(0x01, shr(0x03, mload(add(mload(0x40),0x0380)) )), slot5), getColor(and(0xff, shr(0x08, mload(add(mload(0x40),0x0340)) ))), slot1)
             writeOutput_color(ternary(and(and(0x01, shr(0x03, mload(add(mload(0x40),0x0380)) )), slot2), slot0, slot3))
             writeOutput_text(7)
             writeOutput_color(slot0)
@@ -2712,7 +2713,7 @@ string memory dataPack = "00372c00003d5b175601490000332300003f581c50014e05002f06
             writeOutput_text(13)
             writeOutput_color(getColor(and(0xff, shr(0x38, mload(add(mload(0x40),0x0340)) ))))
             writeOutput_text(14)
-            slot0 := slt(getRvsValue(rvs, 0x0e), 0x80)
+            slot0 := slt(getRvsValue(0x0e), 0x80)
             writeOutput_color(ternary(slot0, getColor(selectData_eyeColor(mload(add(mload(0x40),0x0360)))), getColor(selectData_eyeColor(mload(add(mload(0x40),0x0360))))))
             writeOutput_text(15)
             writeOutput_color(ternary(slot0, getColor(selectData_eyeColor(mload(add(mload(0x40),0x0360)))), getColor(selectData_eyeColor(mload(add(mload(0x40),0x0360))))))
@@ -2748,8 +2749,8 @@ string memory dataPack = "00372c00003d5b175601490000332300003f581c50014e05002f06
             writeOutput_int(sub(0, add(slot3, 0x0a)))
             writeOutput_text(25)
             mstore(add(pVars, 0x02a0), average(and(0xff, shr(0x20, mload(add(mload(0x40),0x0280)) )), sub(slot1, mul(slot0, sub(0, and(0xff, shr(0x18, mload(add(mload(0x40),0x0280)) )))))))
-            mstore(add(pVars, 0xa0), bezierPoint_100(and(0xff, shr(0x20, mload(add(mload(0x40),0x0280)) )), mload(add(pVars, 0x02a0)), and(0xff, shr(0x28, mload(add(mload(0x40),0x0280)) )), and(0xff, shr(0x28, mload(add(mload(0x40),0x0280)) )), and(0xff, shr(0x50, mload(add(mload(0x40),0x0280)) ))))
-            slot0 := sub(mload(add(pVars, 0xa0)), 0x32)
+            slot5 := bezierPoint_100(and(0xff, shr(0x20, mload(add(mload(0x40),0x0280)) )), mload(add(pVars, 0x02a0)), and(0xff, shr(0x28, mload(add(mload(0x40),0x0280)) )), and(0xff, shr(0x28, mload(add(mload(0x40),0x0280)) )), and(0xff, shr(0x50, mload(add(mload(0x40),0x0280)) )))
+            slot0 := sub(slot5, 0x32)
             writeOutput_int(slot0)
             writeOutput_text(26)
             writeOutput_int(sub(slot3, 0x0a))
@@ -2758,7 +2759,7 @@ string memory dataPack = "00372c00003d5b175601490000332300003f581c50014e05002f06
             writeOutput_text(26)
             writeOutput_int(add(slot3, 0x1e))
             writeOutput_text(25)
-            slot0 := add(mload(add(pVars, 0xa0)), 0x96)
+            slot0 := add(slot5, 0x96)
             writeOutput_int(slot0)
             writeOutput_text(26)
             writeOutput_int(sub(0, sub(slot3, 0x1e)))
@@ -2769,7 +2770,7 @@ string memory dataPack = "00372c00003d5b175601490000332300003f581c50014e05002f06
             writeOutput_text(28)
             slot1 := lerp_100(0x32, 0, and(0xff, shr(0x50, mload(add(mload(0x40),0x0280)) )))
             slot2 := add(slot3, 0x1e)
-            slot0 := add(mload(add(pVars, 0xa0)), 0x07)
+            slot0 := add(slot5, 0x07)
             writeOutput_bezier(slot2, slot0, sdiv(mul(slot2, 0x04), 0x0a), add(slot0, mul(slot1, 0x02)), sdiv(mul(sub(0, slot2), 0x04), 0x0a), add(slot0, mul(slot1, 0x02)), sub(0, slot2), slot0)
             writeOutput_text(29)
             writeOutput_int(ternary(and(0x01, shr(0x03, mload(add(mload(0x40),0x0380)) )), 0, 0x01))
@@ -2777,7 +2778,7 @@ string memory dataPack = "00372c00003d5b175601490000332300003f581c50014e05002f06
             slot1 := lerp_100(slot3, add(slot3, 0x1e), lerp_100(0x28, 0x0a, and(0xff, shr(0x50, mload(add(mload(0x40),0x0280)) ))))
             writeOutput_int(sub(0, slot1))
             writeOutput_text(25)
-            slot0 := lerp_100(mload(add(pVars, 0xa0)), add(mload(add(pVars, 0xa0)), 0x96), lerp_100(0x28, 0x0a, and(0xff, shr(0x50, mload(add(mload(0x40),0x0280)) ))))
+            slot0 := lerp_100(slot5, add(slot5, 0x96), lerp_100(0x28, 0x0a, and(0xff, shr(0x50, mload(add(mload(0x40),0x0280)) ))))
             writeOutput_int(slot0)
             writeOutput_text(26)
             writeOutput_int(sub(0, add(slot1, 0x6e)))
@@ -2806,20 +2807,20 @@ string memory dataPack = "00372c00003d5b175601490000332300003f581c50014e05002f06
             writeOutput_text(33)
             writeOutput_int(sub(sub(0, add(slot3, sdiv(mul(mul(sub(0x01, sdiv(and(0xff, shr(0x50, mload(add(mload(0x40),0x0280)) )), 0x64)), 0x2a), 0x1e), 0x64))), 0x1a))
             writeOutput_text(25)
-            writeOutput_int(sub(add(mload(add(pVars, 0xa0)), sdiv(mul(mul(sub(0x01, sdiv(and(0xff, shr(0x50, mload(add(mload(0x40),0x0280)) )), 0x64)), 0x2a), 0x96), 0x64)), 0x14))
+            writeOutput_int(sub(add(slot5, sdiv(mul(mul(sub(0x01, sdiv(and(0xff, shr(0x50, mload(add(mload(0x40),0x0280)) )), 0x64)), 0x2a), 0x96), 0x64)), 0x14))
             writeOutput_text(34)
             writeOutput_int(ternary(and(0x01, shr(0x02, mload(add(mload(0x40),0x0380)) )), 0, 0x01))
             writeOutput_text(35)
             slot0 := lerp_100(0x46, 0, and(0xff, shr(0x50, mload(add(mload(0x40),0x0280)) )))
             writeOutput_int(sub(0, add(slot3, slot0)))
             writeOutput_text(25)
-            writeOutput_int(mload(add(pVars, 0xa0)))
+            writeOutput_int(slot5)
             writeOutput_text(36)
             writeOutput_int(sub(slot3, slot0))
             writeOutput_text(26)
             writeOutput_int(slot3)
             writeOutput_text(25)
-            writeOutput_int(add(mload(add(pVars, 0xa0)), mul(slot0, 0x05)))
+            writeOutput_int(add(slot5, mul(slot0, 0x05)))
             writeOutput_text(36)
             writeOutput_int(sub(0, slot3))
             writeOutput_text(32)
@@ -2827,7 +2828,7 @@ string memory dataPack = "00372c00003d5b175601490000332300003f581c50014e05002f06
             writeOutput_text(37)
             writeOutput_int(sdiv(lerp_100(0x64, 0x32, and(0xff, shr(0x50, mload(add(mload(0x40),0x0280)) ))), 0x02))
             writeOutput_text(38)
-            writeOutput_int(ternary(slt(getRvsValue(rvs, 0x0a), 0x80), 0x01, sub(0, 0x01)))
+            writeOutput_int(ternary(slt(getRvsValue(0x0a), 0x80), 0x01, sub(0, 0x01)))
             writeOutput_text(39)
             slot1 := average(sub(and(0xff, shr(0x00, mload(add(mload(0x40),0x0280)) )), 55), sub(and(0xff, shr(0x10, mload(add(mload(0x40),0x0280)) )), 30))
             slot0 := sdiv(sub(slot1, sub(and(0xff, shr(0x00, mload(add(mload(0x40),0x0280)) )), 55)), sub(and(0xff, shr(0x08, mload(add(mload(0x40),0x0280)) )), 0))
@@ -2841,34 +2842,34 @@ string memory dataPack = "00372c00003d5b175601490000332300003f581c50014e05002f06
             mstore(add(pVars, 0x0160), bezierPoint_100(sub(and(0xff, shr(0x10, mload(add(mload(0x40),0x0280)) )), 30), mload(add(pVars, 0x01e0)), sub(and(0xff, shr(0x00, mload(add(mload(0x40),0x0280)) )), 55), sub(and(0xff, shr(0x00, mload(add(mload(0x40),0x0280)) )), 55), and(0xff, shr(0x58, mload(add(mload(0x40),0x0280)) ))))
             mstore(add(pVars, 0xc0), add(mload(add(pVars, 0x0180)), sub(and(0xff, shr(0x08, mload(add(mload(0x40),0x02a0)) )), 41)))
             mstore(add(pVars, 0x0140), sub(mload(add(pVars, 0x0160)), and(0xff, shr(0x10, mload(add(mload(0x40),0x02a0)) ))))
-            mstore(add(pVars, 0xa0), lerp_100(mload(add(pVars, 0xc0)), mload(add(pVars, 0x01c0)), add(and(0xff, shr(0x18, mload(add(mload(0x40),0x02a0)) )), sdiv(sdiv(mul(mul(ceil_100(and(0xff, shr(0x18, mload(add(mload(0x40),0x02a0)) ))), sub(0x50, and(0xff, shr(0x18, mload(add(mload(0x40),0x02a0)) )))), sub(0, constrain(sub(and(0xff, shr(0x20, mload(add(mload(0x40),0x02a0)) )), 50), sub(0, 0x64), 0))), 0x64), 0x64))))
+            slot5 := lerp_100(mload(add(pVars, 0xc0)), mload(add(pVars, 0x01c0)), add(and(0xff, shr(0x18, mload(add(mload(0x40),0x02a0)) )), sdiv(sdiv(mul(mul(ceil_100(and(0xff, shr(0x18, mload(add(mload(0x40),0x02a0)) ))), sub(0x50, and(0xff, shr(0x18, mload(add(mload(0x40),0x02a0)) )))), sub(0, constrain(sub(and(0xff, shr(0x20, mload(add(mload(0x40),0x02a0)) )), 50), sub(0, 0x64), 0))), 0x64), 0x64)))
             slot2 := lerp_100(mload(add(pVars, 0x0140)), mload(add(pVars, 0x01a0)), add(and(0xff, shr(0x18, mload(add(mload(0x40),0x02a0)) )), sdiv(sdiv(mul(mul(ceil_100(and(0xff, shr(0x18, mload(add(mload(0x40),0x02a0)) ))), sub(0x50, and(0xff, shr(0x18, mload(add(mload(0x40),0x02a0)) )))), sub(0, constrain(sub(and(0xff, shr(0x20, mload(add(mload(0x40),0x02a0)) )), 50), sub(0, 0x64), 0))), 0x64), 0x64)))
-            slot1 := add(average(mload(add(pVars, 0x01c0)), mload(add(pVars, 0xa0))), sdiv(mul(sub(and(0xff, shr(0x28, mload(add(mload(0x40),0x02a0)) )), 4), sub(slot2, mload(add(pVars, 0x01a0)))), 0x64))
-            slot0 := sub(average(mload(add(pVars, 0x01a0)), slot2), sdiv(mul(sub(and(0xff, shr(0x28, mload(add(mload(0x40),0x02a0)) )), 4), sub(mload(add(pVars, 0xa0)), mload(add(pVars, 0x01c0)))), 0x64))
-            writeOutput(bezierVertex(average(mload(add(pVars, 0x01c0)), slot1), average(mload(add(pVars, 0x01a0)), slot0), average(mload(add(pVars, 0xa0)), slot1), average(slot2, slot0), mload(add(pVars, 0xa0)), slot2))
+            slot1 := add(average(mload(add(pVars, 0x01c0)), slot5), sdiv(mul(sub(and(0xff, shr(0x28, mload(add(mload(0x40),0x02a0)) )), 4), sub(slot2, mload(add(pVars, 0x01a0)))), 0x64))
+            slot0 := sub(average(mload(add(pVars, 0x01a0)), slot2), sdiv(mul(sub(and(0xff, shr(0x28, mload(add(mload(0x40),0x02a0)) )), 4), sub(slot5, mload(add(pVars, 0x01c0)))), 0x64))
+            writeOutput(bezierVertex(average(mload(add(pVars, 0x01c0)), slot1), average(mload(add(pVars, 0x01a0)), slot0), average(slot5, slot1), average(slot2, slot0), slot5, slot2))
             slot3 := lerp_100(mload(add(pVars, 0xc0)), mload(add(pVars, 0x0180)), add(and(0xff, shr(0x18, mload(add(mload(0x40),0x02a0)) )), sdiv(sdiv(mul(mul(ceil_100(and(0xff, shr(0x18, mload(add(mload(0x40),0x02a0)) ))), sub(0x50, and(0xff, shr(0x18, mload(add(mload(0x40),0x02a0)) )))), constrain(sub(and(0xff, shr(0x20, mload(add(mload(0x40),0x02a0)) )), 50), 0, 0x64)), 0x64), 0x64)))
             slot0 := lerp_100(mload(add(pVars, 0x0140)), mload(add(pVars, 0x0160)), add(and(0xff, shr(0x18, mload(add(mload(0x40),0x02a0)) )), sdiv(sdiv(mul(mul(ceil_100(and(0xff, shr(0x18, mload(add(mload(0x40),0x02a0)) ))), sub(0x50, and(0xff, shr(0x18, mload(add(mload(0x40),0x02a0)) )))), constrain(sub(and(0xff, shr(0x20, mload(add(mload(0x40),0x02a0)) )), 50), 0, 0x64)), 0x64), 0x64)))
-            slot4 := add(average(mload(add(pVars, 0xa0)), slot3), sdiv(mul(and(0xff, shr(0x30, mload(add(mload(0x40),0x02a0)) )), sub(slot0, slot2)), 0x64))
-            slot1 := sub(average(slot2, slot0), sdiv(mul(and(0xff, shr(0x30, mload(add(mload(0x40),0x02a0)) )), sub(slot3, mload(add(pVars, 0xa0)))), 0x64))
-            writeOutput(bezierVertex(average(mload(add(pVars, 0xa0)), slot4), average(slot2, slot1), average(slot3, slot4), average(slot0, slot1), slot3, slot0))
+            slot4 := add(average(slot5, slot3), sdiv(mul(and(0xff, shr(0x30, mload(add(mload(0x40),0x02a0)) )), sub(slot0, slot2)), 0x64))
+            slot1 := sub(average(slot2, slot0), sdiv(mul(and(0xff, shr(0x30, mload(add(mload(0x40),0x02a0)) )), sub(slot3, slot5)), 0x64))
+            writeOutput(bezierVertex(average(slot5, slot4), average(slot2, slot1), average(slot3, slot4), average(slot0, slot1), slot3, slot0))
             slot2 := add(average(slot3, mload(add(pVars, 0x0180))), sdiv(mul(sub(and(0xff, shr(0x38, mload(add(mload(0x40),0x02a0)) )), 24), sub(mload(add(pVars, 0x0160)), slot0)), 0x64))
             slot1 := sub(average(slot0, mload(add(pVars, 0x0160))), sdiv(mul(sub(and(0xff, shr(0x38, mload(add(mload(0x40),0x02a0)) )), 24), sub(mload(add(pVars, 0x0180)), slot3)), 0x64))
             writeOutput(bezierVertex(average(slot3, slot2), average(slot0, slot1), average(mload(add(pVars, 0x0180)), slot2), average(mload(add(pVars, 0x0160)), slot1), mload(add(pVars, 0x0180)), mload(add(pVars, 0x0160))))
             writeOutput_text(40)
-            mstore(add(pVars, 0xa0), lerp_100(mload(add(pVars, 0x01c0)), mload(add(pVars, 0x0180)), and(0xff, shr(0x48, mload(add(mload(0x40),0x02a0)) ))))
+            slot5 := lerp_100(mload(add(pVars, 0x01c0)), mload(add(pVars, 0x0180)), and(0xff, shr(0x48, mload(add(mload(0x40),0x02a0)) )))
             slot2 := lerp_100(mload(add(pVars, 0x01a0)), mload(add(pVars, 0x0160)), and(0xff, shr(0x48, mload(add(mload(0x40),0x02a0)) )))
-            writeOutput(vertex(mload(add(pVars, 0xa0)), slot2))
+            writeOutput(vertex(slot5, slot2))
             mstore(add(pVars, 0x0100), lerp_100(mload(add(pVars, 0x01c0)), mload(add(pVars, 0x0180)), sub(0x64, and(0xff, shr(0x58, mload(add(mload(0x40),0x02a0)) )))))
             mstore(add(pVars, 0xe0), lerp_100(mload(add(pVars, 0x01a0)), mload(add(pVars, 0x0160)), sub(0x64, and(0xff, shr(0x58, mload(add(mload(0x40),0x02a0)) )))))
-            mstore(add(pVars, 0x0260), average(mload(add(pVars, 0xa0)), mload(add(pVars, 0x0100))))
+            mstore(add(pVars, 0x0260), average(slot5, mload(add(pVars, 0x0100))))
             mstore(add(pVars, 0x0240), average(slot2, mload(add(pVars, 0xe0))))
             mstore(add(pVars, 0xc0), add(lerp_100(mload(add(pVars, 0x0260)), mload(add(pVars, 0xc0)), and(0xff, shr(0x50, mload(add(mload(0x40),0x02a0)) ))), sdiv(sub(mul(and(0xff, shr(0x60, mload(add(mload(0x40),0x02a0)) )), 4), 405), 0x64)))
             mstore(add(pVars, 0x0120), lerp_100(mload(add(pVars, 0x0240)), mload(add(pVars, 0x0140)), and(0xff, shr(0x50, mload(add(mload(0x40),0x02a0)) ))))
-            slot3 := lerp_100(mload(add(pVars, 0xc0)), mload(add(pVars, 0xa0)), add(and(0xff, shr(0x18, mload(add(mload(0x40),0x02a0)) )), sdiv(sdiv(mul(mul(ceil_100(and(0xff, shr(0x18, mload(add(mload(0x40),0x02a0)) ))), sub(0x50, and(0xff, shr(0x18, mload(add(mload(0x40),0x02a0)) )))), sub(0, constrain(sub(and(0xff, shr(0x20, mload(add(mload(0x40),0x02a0)) )), 50), sub(0, 0x64), 0))), 0x64), 0x64)))
+            slot3 := lerp_100(mload(add(pVars, 0xc0)), slot5, add(and(0xff, shr(0x18, mload(add(mload(0x40),0x02a0)) )), sdiv(sdiv(mul(mul(ceil_100(and(0xff, shr(0x18, mload(add(mload(0x40),0x02a0)) ))), sub(0x50, and(0xff, shr(0x18, mload(add(mload(0x40),0x02a0)) )))), sub(0, constrain(sub(and(0xff, shr(0x20, mload(add(mload(0x40),0x02a0)) )), 50), sub(0, 0x64), 0))), 0x64), 0x64)))
             slot4 := lerp_100(mload(add(pVars, 0x0120)), slot2, add(and(0xff, shr(0x18, mload(add(mload(0x40),0x02a0)) )), sdiv(sdiv(mul(mul(ceil_100(and(0xff, shr(0x18, mload(add(mload(0x40),0x02a0)) ))), sub(0x50, and(0xff, shr(0x18, mload(add(mload(0x40),0x02a0)) )))), sub(0, constrain(sub(and(0xff, shr(0x20, mload(add(mload(0x40),0x02a0)) )), 50), sub(0, 0x64), 0))), 0x64), 0x64)))
-            slot1 := add(average(mload(add(pVars, 0xa0)), slot3), sdiv(mul(sub(and(0xff, shr(0x28, mload(add(mload(0x40),0x02a0)) )), 4), sub(slot4, slot2)), 0x64))
-            slot0 := sub(average(slot2, slot4), sdiv(mul(sub(and(0xff, shr(0x28, mload(add(mload(0x40),0x02a0)) )), 4), sub(slot3, mload(add(pVars, 0xa0)))), 0x64))
-            writeOutput(bezierVertex(average(mload(add(pVars, 0xa0)), slot1), average(slot2, slot0), average(slot3, slot1), average(slot4, slot0), slot3, slot4))
+            slot1 := add(average(slot5, slot3), sdiv(mul(sub(and(0xff, shr(0x28, mload(add(mload(0x40),0x02a0)) )), 4), sub(slot4, slot2)), 0x64))
+            slot0 := sub(average(slot2, slot4), sdiv(mul(sub(and(0xff, shr(0x28, mload(add(mload(0x40),0x02a0)) )), 4), sub(slot3, slot5)), 0x64))
+            writeOutput(bezierVertex(average(slot5, slot1), average(slot2, slot0), average(slot3, slot1), average(slot4, slot0), slot3, slot4))
             slot2 := lerp_100(mload(add(pVars, 0xc0)), mload(add(pVars, 0x0100)), add(and(0xff, shr(0x18, mload(add(mload(0x40),0x02a0)) )), sdiv(sdiv(mul(mul(ceil_100(and(0xff, shr(0x18, mload(add(mload(0x40),0x02a0)) ))), sub(0x50, and(0xff, shr(0x18, mload(add(mload(0x40),0x02a0)) )))), constrain(sub(and(0xff, shr(0x20, mload(add(mload(0x40),0x02a0)) )), 50), 0, 0x64)), 0x64), 0x64)))
             slot0 := lerp_100(mload(add(pVars, 0x0120)), mload(add(pVars, 0xe0)), add(and(0xff, shr(0x18, mload(add(mload(0x40),0x02a0)) )), sdiv(sdiv(mul(mul(ceil_100(and(0xff, shr(0x18, mload(add(mload(0x40),0x02a0)) ))), sub(0x50, and(0xff, shr(0x18, mload(add(mload(0x40),0x02a0)) )))), constrain(sub(and(0xff, shr(0x20, mload(add(mload(0x40),0x02a0)) )), 50), 0, 0x64)), 0x64), 0x64)))
             mstore(add(pVars, 0xc0), add(average(slot3, slot2), sdiv(mul(sub(and(0xff, shr(0x40, mload(add(mload(0x40),0x02a0)) )), 34), sub(slot0, slot4)), 0x64)))
@@ -2887,14 +2888,14 @@ string memory dataPack = "00372c00003d5b175601490000332300003f581c50014e05002f06
             slot4 := sub(slot2, mul(slot0, sub(and(0xff, shr(0x18, mload(add(mload(0x40),0x0280)) )), and(0xff, shr(0x08, mload(add(mload(0x40),0x0280)) )))))
             slot1 := sub(slot1, mul(slot0, sub(and(0xff, shr(0x20, mload(add(mload(0x40),0x0280)) )), sub(and(0xff, shr(0x10, mload(add(mload(0x40),0x0280)) )), 30))))
             slot0 := add(slot2, mul(slot0, sub(and(0xff, shr(0x18, mload(add(mload(0x40),0x0280)) )), and(0xff, shr(0x08, mload(add(mload(0x40),0x0280)) )))))
-            mstore(add(pVars, 0xa0), average(and(0xff, shr(0x08, mload(add(mload(0x40),0x0280)) )), lerp_100(slot3, slot1, and(0xff, shr(0x38, mload(add(mload(0x40),0x0280)) )))))
+            slot5 := average(and(0xff, shr(0x08, mload(add(mload(0x40),0x0280)) )), lerp_100(slot3, slot1, and(0xff, shr(0x38, mload(add(mload(0x40),0x0280)) ))))
             slot2 := average(sub(and(0xff, shr(0x10, mload(add(mload(0x40),0x0280)) )), 30), lerp_100(slot4, slot0, and(0xff, shr(0x38, mload(add(mload(0x40),0x0280)) ))))
             slot1 := average(and(0xff, shr(0x18, mload(add(mload(0x40),0x0280)) )), lerp_100(slot1, slot3, 0x64))
             slot0 := average(and(0xff, shr(0x20, mload(add(mload(0x40),0x0280)) )), lerp_100(slot0, slot4, 0x64))
-            writeOutput(bezierVertex(mload(add(pVars, 0xa0)), slot2, slot1, slot0, and(0xff, shr(0x18, mload(add(mload(0x40),0x0280)) )), and(0xff, shr(0x20, mload(add(mload(0x40),0x0280)) ))))
+            writeOutput(bezierVertex(slot5, slot2, slot1, slot0, and(0xff, shr(0x18, mload(add(mload(0x40),0x0280)) )), and(0xff, shr(0x20, mload(add(mload(0x40),0x0280)) ))))
             writeOutput(bezierVertex(mload(add(pVars, 0x02e0)), mload(add(pVars, 0x02a0)), mload(add(pVars, 0x02c0)), and(0xff, shr(0x28, mload(add(mload(0x40),0x0280)) )), 0, and(0xff, shr(0x28, mload(add(mload(0x40),0x0280)) ))))
             writeOutput(bezierVertex(sub(0, mload(add(pVars, 0x02c0))), and(0xff, shr(0x28, mload(add(mload(0x40),0x0280)) )), sub(0, mload(add(pVars, 0x02e0))), mload(add(pVars, 0x02a0)), sub(0, and(0xff, shr(0x18, mload(add(mload(0x40),0x0280)) ))), and(0xff, shr(0x20, mload(add(mload(0x40),0x0280)) ))))
-            writeOutput(bezierVertex(sub(0, slot1), slot0, sub(0, mload(add(pVars, 0xa0))), slot2, sub(0, and(0xff, shr(0x08, mload(add(mload(0x40),0x0280)) ))), sub(and(0xff, shr(0x10, mload(add(mload(0x40),0x0280)) )), 30)))
+            writeOutput(bezierVertex(sub(0, slot1), slot0, sub(0, slot5), slot2, sub(0, and(0xff, shr(0x08, mload(add(mload(0x40),0x0280)) ))), sub(and(0xff, shr(0x10, mload(add(mload(0x40),0x0280)) )), 30)))
             writeOutput(bezierVertex(sub(0, mload(add(pVars, 0x0200))), mload(add(pVars, 0x01e0)), sub(0, mload(add(pVars, 0x0220))), sub(and(0xff, shr(0x00, mload(add(mload(0x40),0x0280)) )), 55), sub(0, 0), sub(and(0xff, shr(0x00, mload(add(mload(0x40),0x0280)) )), 55)))
             writeOutput_text(42)
             writeOutput_int(ternary(and(0x01, shr(0x01, mload(add(mload(0x40),0x03a0)) )), 0, 0x01))
@@ -2960,7 +2961,7 @@ string memory dataPack = "00372c00003d5b175601490000332300003f581c50014e05002f06
             writeOutput_text(60)
             writeOutput_int(slot0)
             writeOutput_text(61)
-            slot0 := not(sgt(getRvsValue(rvs, 0x0f), getBreedData_b_tabbyFaceOdds(mload(add(pVars, 0x0280)))))
+            slot0 := not(sgt(getRvsValue(0x0f), getBreedData_b_tabbyFaceOdds(mload(add(pVars, 0x0280)))))
             writeOutput_int(ternary(slot0, 0, 0x01))
             writeOutput_text(62)
             writeOutput_int(sub(0, add(and(0xff, shr(0x18, mload(add(mload(0x40),0x0280)) )), 0x1e)))
@@ -2990,8 +2991,8 @@ string memory dataPack = "00372c00003d5b175601490000332300003f581c50014e05002f06
             writeOutput(mload(add(pVars, 0xc0)))
             mstore(add(pVars, 0xe0), lerp_100(sub(0, sub(and(0xff, shr(0x18, mload(add(mload(0x40),0x02c0)) )), 3)), and(0xff, shr(0x20, mload(add(mload(0x40),0x02c0)) )), mul(0, 0x64)))
             mstore(add(pVars, 0x01c0), sdiv(mul(0x32, slot0), 0x64))
-            mstore(add(pVars, 0xa0), bezierVertex(slot0, sdiv(mul(0x32, mload(add(pVars, 0xe0))), 0x64), mload(add(pVars, 0x01c0)), mload(add(pVars, 0xe0)), 0, mload(add(pVars, 0xe0))))
-            writeOutput(mload(add(pVars, 0xa0)))
+            slot5 := bezierVertex(slot0, sdiv(mul(0x32, mload(add(pVars, 0xe0))), 0x64), mload(add(pVars, 0x01c0)), mload(add(pVars, 0xe0)), 0, mload(add(pVars, 0xe0)))
+            writeOutput(slot5)
             mstore(add(pVars, 0x01a0), sdiv(mul(0x32, and(0xff, shr(0x10, mload(add(mload(0x40),0x02c0)) ))), 0x64))
             slot4 := bezierVertex(mload(add(pVars, 0x01a0)), mload(add(pVars, 0xe0)), and(0xff, shr(0x10, mload(add(mload(0x40),0x02c0)) )), sdiv(mul(0x32, mload(add(pVars, 0xe0))), 0x64), add(and(0xff, shr(0x10, mload(add(mload(0x40),0x02c0)) )), 0x04), 0)
             writeOutput(slot4)
@@ -3007,7 +3008,7 @@ string memory dataPack = "00372c00003d5b175601490000332300003f581c50014e05002f06
             writeOutput_text(71)
             writeOutput(mload(add(pVars, 0xc0)))
             writeOutput_text(72)
-            writeOutput(mload(add(pVars, 0xa0)))
+            writeOutput(slot5)
             writeOutput_text(72)
             writeOutput(slot4)
             writeOutput_text(72)
@@ -3017,7 +3018,7 @@ string memory dataPack = "00372c00003d5b175601490000332300003f581c50014e05002f06
             writeOutput_text(73)
             writeOutput(mload(add(pVars, 0xc0)))
             writeOutput_text(72)
-            writeOutput(mload(add(pVars, 0xa0)))
+            writeOutput(slot5)
             writeOutput_text(72)
             writeOutput(slot4)
             writeOutput_text(72)
@@ -3037,7 +3038,7 @@ string memory dataPack = "00372c00003d5b175601490000332300003f581c50014e05002f06
             writeOutput_text(73)
             writeOutput(mload(add(pVars, 0xc0)))
             writeOutput_text(72)
-            writeOutput(mload(add(pVars, 0xa0)))
+            writeOutput(slot5)
             writeOutput_text(72)
             writeOutput(slot4)
             writeOutput_text(72)
@@ -3047,7 +3048,7 @@ string memory dataPack = "00372c00003d5b175601490000332300003f581c50014e05002f06
             writeOutput_text(73)
             writeOutput(mload(add(pVars, 0xc0)))
             writeOutput_text(72)
-            writeOutput(mload(add(pVars, 0xa0)))
+            writeOutput(slot5)
             writeOutput_text(72)
             writeOutput(slot4)
             writeOutput_text(72)
@@ -3108,27 +3109,27 @@ string memory dataPack = "00372c00003d5b175601490000332300003f581c50014e05002f06
             slot2 := sdiv(mul(0x96, and(0xff, shr(0x10, mload(add(mload(0x40),0x0320)) ))), 0x64)
             slot0 := add(average(slot2, and(0xff, shr(0x20, mload(add(mload(0x40),0x0320)) ))), sdiv(mul(sub(and(0xff, shr(0x30, mload(add(mload(0x40),0x0320)) )), 18), sub(and(0xff, shr(0x28, mload(add(mload(0x40),0x0320)) )), 0)), 0x64))
             slot1 := sub(average(0, and(0xff, shr(0x28, mload(add(mload(0x40),0x0320)) ))), sdiv(mul(sub(and(0xff, shr(0x30, mload(add(mload(0x40),0x0320)) )), 18), sub(and(0xff, shr(0x20, mload(add(mload(0x40),0x0320)) )), slot2)), 0x64))
-            mstore(add(pVars, 0xa0), average(slot2, slot0))
+            slot5 := average(slot2, slot0)
             slot4 := average(0, slot1)
             slot3 := average(and(0xff, shr(0x20, mload(add(mload(0x40),0x0320)) )), slot0)
             slot0 := average(and(0xff, shr(0x28, mload(add(mload(0x40),0x0320)) )), slot1)
-            writeOutput_bezier(slot2, 0, mload(add(pVars, 0xa0)), slot4, slot3, slot0, and(0xff, shr(0x20, mload(add(mload(0x40),0x0320)) )), and(0xff, shr(0x28, mload(add(mload(0x40),0x0320)) )))
+            writeOutput_bezier(slot2, 0, slot5, slot4, slot3, slot0, and(0xff, shr(0x20, mload(add(mload(0x40),0x0320)) )), and(0xff, shr(0x28, mload(add(mload(0x40),0x0320)) )))
             writeOutput_text(90)
             writeOutput_int(sub(0, add(sdiv(mul(mul(0x39, 0x02), and(0xff, shr(0x08, mload(add(mload(0x40),0x0320)) ))), 0x64), 0x11)))
             writeOutput_text(70)
-            writeOutput_bezier(slot2, 0, mload(add(pVars, 0xa0)), slot4, sdiv(mul(slot3, 0x09), 0x0a), slot0, sdiv(mul(and(0xff, shr(0x20, mload(add(mload(0x40),0x0320)) )), 0x09), 0x0a), and(0xff, shr(0x28, mload(add(mload(0x40),0x0320)) )))
+            writeOutput_bezier(slot2, 0, slot5, slot4, sdiv(mul(slot3, 0x09), 0x0a), slot0, sdiv(mul(and(0xff, shr(0x20, mload(add(mload(0x40),0x0320)) )), 0x09), 0x0a), and(0xff, shr(0x28, mload(add(mload(0x40),0x0320)) )))
             writeOutput_text(91)
             writeOutput_int(ternary(sgt(and(0xff, shr(0x00, mload(add(mload(0x40),0x0320)) )), 0x02), 0, 0x01))
             writeOutput_text(92)
             writeOutput_int(sub(0, add(sdiv(mul(mul(0x39, 0x01), and(0xff, shr(0x08, mload(add(mload(0x40),0x0320)) ))), 0x64), 0x11)))
             writeOutput_text(70)
-            writeOutput_bezier(slot2, 0, mload(add(pVars, 0xa0)), slot4, slot3, slot0, and(0xff, shr(0x20, mload(add(mload(0x40),0x0320)) )), and(0xff, shr(0x28, mload(add(mload(0x40),0x0320)) )))
+            writeOutput_bezier(slot2, 0, slot5, slot4, slot3, slot0, and(0xff, shr(0x20, mload(add(mload(0x40),0x0320)) )), and(0xff, shr(0x28, mload(add(mload(0x40),0x0320)) )))
             writeOutput_text(91)
             writeOutput_int(ternary(sgt(and(0xff, shr(0x00, mload(add(mload(0x40),0x0320)) )), 0x03), 0, 0x01))
             writeOutput_text(92)
             writeOutput_int(sub(0, add(sdiv(mul(mul(0x39, 0x03), and(0xff, shr(0x08, mload(add(mload(0x40),0x0320)) ))), 0x64), 0x11)))
             writeOutput_text(70)
-            writeOutput_bezier(slot2, 0, mload(add(pVars, 0xa0)), slot4, sdiv(mul(slot3, 0x4b), 0x64), slot0, sdiv(mul(and(0xff, shr(0x20, mload(add(mload(0x40),0x0320)) )), 0x4b), 0x64), and(0xff, shr(0x28, mload(add(mload(0x40),0x0320)) )))
+            writeOutput_bezier(slot2, 0, slot5, slot4, sdiv(mul(slot3, 0x4b), 0x64), slot0, sdiv(mul(and(0xff, shr(0x20, mload(add(mload(0x40),0x0320)) )), 0x4b), 0x64), and(0xff, shr(0x28, mload(add(mload(0x40),0x0320)) )))
             writeOutput_text(93)
             writeOutput(vertex(0, mload(add(pVars, 0x0120))))
             slot4 := sub(0, 0x09)
@@ -3138,8 +3139,8 @@ string memory dataPack = "00372c00003d5b175601490000332300003f581c50014e05002f06
             mstore(add(pVars, 0x0100), average(0, slot0))
             mstore(add(pVars, 0xe0), average(mload(add(pVars, 0x0120)), slot1))
             mstore(add(pVars, 0xc0), average(slot4, slot0))
-            mstore(add(pVars, 0xa0), average(slot3, slot1))
-            writeOutput(bezierVertex(mload(add(pVars, 0x0100)), mload(add(pVars, 0xe0)), mload(add(pVars, 0xc0)), mload(add(pVars, 0xa0)), slot4, slot3))
+            slot5 := average(slot3, slot1)
+            writeOutput(bezierVertex(mload(add(pVars, 0x0100)), mload(add(pVars, 0xe0)), mload(add(pVars, 0xc0)), slot5, slot4, slot3))
             slot0 := sub(mload(add(pVars, 0x0120)), 0x0b)
             slot2 := add(average(slot4, 0x09), sdiv(mul(0x14, sub(slot0, slot3)), 0x64))
             slot1 := sub(average(slot3, slot0), sdiv(mul(0x14, sub(0x09, slot4)), 0x64))
@@ -3149,8 +3150,8 @@ string memory dataPack = "00372c00003d5b175601490000332300003f581c50014e05002f06
             writeOutput(bezierVertex(average(0x09, slot2), average(slot0, slot1), average(0, slot2), average(mload(add(pVars, 0x0120)), slot1), 0, mload(add(pVars, 0x0120))))
             writeOutput_text(94)
             slot0 := bezierPoint_100(0, mload(add(pVars, 0x0100)), mload(add(pVars, 0xc0)), slot4, 0x14)
-            slot1 := bezierPoint_100(mload(add(pVars, 0x0120)), mload(add(pVars, 0xe0)), mload(add(pVars, 0xa0)), slot3, 0x14)
-            writeOutput_bezier(slot0, slot1, add(slot0, 0x01), sub(slot1, sdiv(mul(0x28, 0x09), 0x64)), add(slot0, sdiv(mul(0x28, 0x09), 0x64)), sub(slot1, sdiv(mul(0x3c, 0x0b), 0x64)), bezierPoint_100(0, mload(add(pVars, 0x0100)), mload(add(pVars, 0xc0)), slot4, 0x50), bezierPoint_100(mload(add(pVars, 0x0120)), mload(add(pVars, 0xe0)), mload(add(pVars, 0xa0)), slot3, 0x50))
+            slot1 := bezierPoint_100(mload(add(pVars, 0x0120)), mload(add(pVars, 0xe0)), slot5, slot3, 0x14)
+            writeOutput_bezier(slot0, slot1, add(slot0, 0x01), sub(slot1, sdiv(mul(0x28, 0x09), 0x64)), add(slot0, sdiv(mul(0x28, 0x09), 0x64)), sub(slot1, sdiv(mul(0x3c, 0x0b), 0x64)), bezierPoint_100(0, mload(add(pVars, 0x0100)), mload(add(pVars, 0xc0)), slot4, 0x50), bezierPoint_100(mload(add(pVars, 0x0120)), mload(add(pVars, 0xe0)), slot5, slot3, 0x50))
             writeOutput_text(95)
         }
         generateSvgInner()
