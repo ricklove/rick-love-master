@@ -5,7 +5,7 @@
     "main": "index.js",
     "dependencies": {
         "@babel/polyfill": "^7.11.5",
-        "aws-sdk": "^2.749.0"
+        "aws-sdk": "^2.814.0"
     },
     "devDependencies": {},
     "author": "",
