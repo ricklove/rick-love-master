@@ -112,7 +112,7 @@ https://ricklove.me/tests/code-space
 
 #### Component Tests
 
-- Stripe: https://ricklove.me/tests/stripe)
+- Stripe: https://ricklove.me/tests/stripe
 - Hacker News - Front Page Demo: https://ricklove.me/tests/hacker-news
 
 
