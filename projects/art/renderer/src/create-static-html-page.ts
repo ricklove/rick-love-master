@@ -19,7 +19,7 @@ export const createStaticHtmlPages = async ({
   const maxSize = 1000;
   const useScriptFile = true;
 
-  console.log(`# createStaticHtmlPages`, { projectPath, workingDirPath, destHtmlDirPath });
+  console.log(`# createStaticHtmlPages`, { projectPath, workingDirPath, destHtmlDirPath, tokenIds });
 
   const entryPoint = joinPathNormalized(projectPath, `./index.ts`);
   const outputScriptFile = joinPathNormalized(workingDirPath, `script.js`);

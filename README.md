@@ -8,7 +8,12 @@ This is where I put all the cool stuff.
     - `rush build:watch --to-except ricklove_me`
   - Tab2 - Run nextjs dev
     - `cd /projects/web/ricklove_me`
-    - `npx next dev`
+    - `npm run dev`
+
+- art
+
+  - render previews
+    - `npm --prefix projects/art/renderer run cli`
 
 - run lesson-editor
 

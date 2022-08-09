@@ -30,9 +30,13 @@ const styles = css`
 export const ArtworkGallery = ({ artworkItems }: { artworkItems: { metadata: ArtworkMetadataWithExtra }[] }) => {
   // TESTING
   const { random } = createRandomGenerator(`42`);
-  const artworkItemsSamples = [...new Array(10)].flatMap((_) =>
-    artworkItems.map((x) => ({ artwork: x, tokenId: `` + 100 * random() })),
-  );
+  // const artworkItemsSamples = [...new Array(10)].flatMap((_) =>
+  //   artworkItems.map((x) => ({ artwork: x, tokenId: `` + 100 * random() })),
+  // );
+  const artworkItemsSamples = artworkItems.map((x) => ({
+    artwork: x,
+    tokenId: x.metadata.previewTokenId,
+  }));
 
   return (
     <>

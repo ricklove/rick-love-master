@@ -10,11 +10,17 @@ export const artworkList: ArtworkPageData[] = [
   ...artworkListRaw.map((x) => ({ key: x.key, title: x.metadata.projectMetadata.title })),
 ];
 
-const artworkListWithExtra = artworkListRaw.map((x) => ({
-  ...x,
-  // TODO: Copy the .art-output preview images to the web and use that image path
-  metadata: { ...x.metadata, previewImageUrl: `` } as ArtworkMetadataWithExtra,
-}));
+const artworkListWithExtra = artworkListRaw.flatMap((x) =>
+  x.previewTokenIds.map((tokenId) => ({
+    ...x,
+    // TODO: Copy the .art-output preview images to the web and use that image path
+    metadata: {
+      ...x.metadata,
+      previewTokenId: tokenId,
+      previewImageUrl: `/_media/artwork/${x.key}/${tokenId}.png`,
+    } as ArtworkMetadataWithExtra,
+  })),
+);
 
 export type ArtworkPageData = {
   key: string;
