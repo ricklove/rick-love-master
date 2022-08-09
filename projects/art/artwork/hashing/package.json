@@ -12,6 +12,7 @@
     "@ricklove/art-common": "*"
   },
   "devDependencies": {
-    "@ricklove/config-lib-rig": "*"
+    "@ricklove/config-lib-rig": "*",
+    "@ricklove/glsl-file-to-string": "*"
   }
 }

@@ -30,7 +30,7 @@
     "ethers": "^5.0.0",
     "hardhat": "^2.6.4",
     "solidity-coverage": "^0.7.17",
-    "ts-node": "~10.2.1",
+    "ts-node": "~10.9.1",
     "typechain": "^5.1.2",
     "typescript": "~4.3.5",
     "@ethersproject/providers": "~5.4.5",

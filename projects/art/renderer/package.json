@@ -20,6 +20,6 @@
     "@ricklove/config-lib-rig": "*",
     "@types/node": "12.12.6",
     "@types/puppeteer": "~5.4.4",
-    "ts-node": "~10.2.1"
+    "ts-node": "~10.9.1"
   }
 }

@@ -101,6 +101,7 @@ specifiers:
   express: ^4.17.1
   glob: ^7.1.7
   hardhat: ^2.6.4
+  hardhat-contract-sizer: ~2.1.1
   hash-wasm: ~4.9.0
   highlight.js: ~9.1.0
   lodash: ~4.17.21
@@ -119,7 +120,7 @@ specifiers:
   react-markdown: ~6.0.3
   rimraf: ~3.0.2
   solidity-coverage: ^0.7.17
-  ts-node: ~10.2.1
+  ts-node: ~10.9.1
   typechain: ^5.1.2
   typescript: ~4.3.5
   uuid: ^8.3.0
@@ -227,6 +228,7 @@ dependencies:
   express: 4.17.1
   glob: 7.1.7
   hardhat: 2.6.4
+  hardhat-contract-sizer: 2.1.1_hardhat@2.6.4
   hash-wasm: 4.9.0
   highlight.js: 9.1.0
   lodash: 4.17.21
@@ -245,7 +247,7 @@ dependencies:
   react-markdown: 6.0.3_4cd822c6044f4c1a7e1f1fea0e728f12
   rimraf: 3.0.2
   solidity-coverage: 0.7.17
-  ts-node: 10.2.1_70d6492c0feb1eb5d83e62cce7c43fd5
+  ts-node: 10.9.1_70d6492c0feb1eb5d83e62cce7c43fd5
   typechain: 5.1.2_typescript@4.3.5
   typescript: 4.3.5
   uuid: 8.3.2
@@ -613,16 +615,11 @@ packages:
       minimist: 1.2.5
     dev: false
 
-  /@cspotcode/source-map-consumer/0.8.0:
-    resolution: {integrity: sha512-41qniHzTU8yAGbCp04ohlmSrZf8bkf/iJsl3V0dRGsQN/5GFfx+LbCSsCpp2gqrqjTVg/K6O8ycoV35JIwAzAg==}
-    engines: {node: '>= 12'}
-    dev: false
-
-  /@cspotcode/source-map-support/0.6.1:
-    resolution: {integrity: sha512-DX3Z+T5dt1ockmPdobJS/FAsQPW4V4SrWEhD2iYQT2Cb2tQsiMnYxrcUH9By/Z3B+v0S5LMBkQtV/XOBbpLEOg==}
+  /@cspotcode/source-map-support/0.8.1:
+    resolution: {integrity: sha512-IchNf6dN4tHoMFIn/7OE8LWZ19Y6q/67Bmf6vnGREv8RSbBVb9LPJxEcnwrcwX6ixSvaiGoomAUvu4YSxXrVgw==}
     engines: {node: '>=12'}
     dependencies:
-      '@cspotcode/source-map-consumer': 0.8.0
+      '@jridgewell/trace-mapping': 0.3.9
     dev: false
 
   /@emotion/babel-plugin/11.3.0_@babel+core@7.15.0:
@@ -1499,6 +1496,22 @@ packages:
       '@types/node': 16.7.1
       '@types/yargs': 16.0.4
       chalk: 4.0.0
+    dev: false
+
+  /@jridgewell/resolve-uri/3.1.0:
+    resolution: {integrity: sha512-F2msla3tad+Mfht5cJq7LSXcdudKTWCVYUgw6pLFOOHSTtZlj6SWNYAp+AhuqLmWdBO2X5hPrLcu8cVP8fy28w==}
+    engines: {node: '>=6.0.0'}
+    dev: false
+
+  /@jridgewell/sourcemap-codec/1.4.14:
+    resolution: {integrity: sha512-XPSJHWmi394fuUuzDnGz1wiKqWfo1yXecHQMRf2l6hztTO+nPru658AyDngaBe7isIxEkRsPR3FZh+s7iVa4Uw==}
+    dev: false
+
+  /@jridgewell/trace-mapping/0.3.9:
+    resolution: {integrity: sha512-3Belt6tdc8bPgAtbcmdtNJlirVoTmEb5e2gC94PnkwEW9jI6CAHUeoG85tjWP5WquqfavoMtMwiG4P926ZKKuQ==}
+    dependencies:
+      '@jridgewell/resolve-uri': 3.1.0
+      '@jridgewell/sourcemap-codec': 1.4.14
     dev: false
 
   /@loadable/component/5.15.0_react@17.0.2:
@@ -13514,9 +13527,8 @@ packages:
       ts-essentials: 1.0.4
     dev: false
 
-  /ts-node/10.2.1_70d6492c0feb1eb5d83e62cce7c43fd5:
-    resolution: {integrity: sha512-hCnyOyuGmD5wHleOQX6NIjJtYVIO8bPP8F2acWkB4W06wdlkgyvJtubO/I9NkI88hCFECbsEgoLc0VNkYmcSfw==}
-    engines: {node: '>=12.0.0'}
+  /ts-node/10.9.1_70d6492c0feb1eb5d83e62cce7c43fd5:
+    resolution: {integrity: sha512-NtVysVPkxxrwFGUUxGYhfux8k78pQB3JqYBXlLRZgdGUqTO5wU/UyHop5p70iEbGhB7q5KmiZiU0Y3KlJrScEw==}
     hasBin: true
     peerDependencies:
       '@swc/core': '>=1.2.50'
@@ -13529,7 +13541,7 @@ packages:
       '@swc/wasm':
         optional: true
     dependencies:
-      '@cspotcode/source-map-support': 0.6.1
+      '@cspotcode/source-map-support': 0.8.1
       '@tsconfig/node10': 1.0.8
       '@tsconfig/node12': 1.0.9
       '@tsconfig/node14': 1.0.1
@@ -13542,6 +13554,7 @@ packages:
       diff: 4.0.2
       make-error: 1.3.6
       typescript: 4.3.5
+      v8-compile-cache-lib: 3.0.1
       yn: 3.1.1
     dev: false
 
@@ -14037,6 +14050,10 @@ packages:
   /uuid/8.3.2:
     resolution: {integrity: sha512-+NYs2QeMWy+GWFOEm9xnn6HCDp0l7QBD7ml8zLUmJ+93Q5NF0NocErnwkTkXVFNiX3/fpC6afS8Dhb/gz7R7eg==}
     hasBin: true
+    dev: false
+
+  /v8-compile-cache-lib/3.0.1:
+    resolution: {integrity: sha512-wa7YjyUGfNZngI/vtK0UHAN+lgDCxBPCylVXGp0zu59Fz5aiGtNXaq3DhIov063MorB+VfufLh3JlF2KdTK3xg==}
     dev: false
 
   /v8-compile-cache/2.3.0:
@@ -15332,7 +15349,7 @@ packages:
     dev: false
 
   file:projects/art-contract.tgz:
-    resolution: {integrity: sha512-aSPcXHf/BmIDaWcxBlZFEX9K/aTTmfwUvWZnmejmsHkMmgItVjARwuD+QOALiCHeaCM5Wax+MFK+hrjfL4NIfA==, tarball: file:projects/art-contract.tgz}
+    resolution: {integrity: sha512-cqdfV/GQYcXdBV0Yzi7f111N+eZU0anPSMfZBttxr9EGl+K1G0y0UiCpIg9XwbpxlqTOONEijQM0IffSO0GNmA==, tarball: file:projects/art-contract.tgz}
     name: '@rush-temp/art-contract'
     version: 0.0.0
     dependencies:
@@ -15356,7 +15373,7 @@ packages:
       hardhat-contract-sizer: 2.1.1_hardhat@2.6.4
       lodash: 4.17.21
       solidity-coverage: 0.7.17
-      ts-node: 10.2.1_70d6492c0feb1eb5d83e62cce7c43fd5
+      ts-node: 10.9.1_70d6492c0feb1eb5d83e62cce7c43fd5
       typechain: 5.1.2_typescript@4.3.5
       typescript: 4.3.5
     transitivePeerDependencies:
@@ -15368,7 +15385,7 @@ packages:
     dev: false
 
   file:projects/art-renderer.tgz:
-    resolution: {integrity: sha512-vwxMHwSTX26UqClGVGja9kmDCr3LmY5dXZCAMZdqkf2SIfC2bBia8g8VGv/iJtBrnxaiEYq4kbsyVzmpGw0gQQ==, tarball: file:projects/art-renderer.tgz}
+    resolution: {integrity: sha512-M93xlkqZy89KU92y1a2H4GjbCGJtXWpgMrD9TVxFhw7q9Kvk/5StEF+JgJ/A+cf+6IyVFDW7AJEv4cZAu6rGTA==, tarball: file:projects/art-renderer.tgz}
     name: '@rush-temp/art-renderer'
     version: 0.0.0
     dependencies:
@@ -15379,7 +15396,7 @@ packages:
       esbuild: 0.12.25
       puppeteer: 10.2.0
       rollup: 2.56.3
-      ts-node: 10.2.1_70d6492c0feb1eb5d83e62cce7c43fd5
+      ts-node: 10.9.1_70d6492c0feb1eb5d83e62cce7c43fd5
       tslib: 2.3.1
       typescript: 4.3.5
     transitivePeerDependencies:
@@ -15409,7 +15426,7 @@ packages:
     dev: false
 
   file:projects/brute-force.tgz_typescript@4.3.5:
-    resolution: {integrity: sha512-ALlrZL80MOlfHRAFyT8aovaml4fh+4Rc9ipfcBmSa08kimXLoyfh86KBAJbr53rIj5hh4N+kW8i8XxPXJwVu3g==, tarball: file:projects/brute-force.tgz}
+    resolution: {integrity: sha512-WqDy9iaobyrX9P8pL7+UYY8SxCpzlJR4CkssNZJ8Rrf7e3PTVy0lKNSRsanuPUwE8hsmp3KJ1VVQKn8R4ZvMhw==, tarball: file:projects/brute-force.tgz}
     id: file:projects/brute-force.tgz
     name: '@rush-temp/brute-force'
     version: 0.0.0
@@ -15417,7 +15434,7 @@ packages:
       '@types/node': 12.12.6
       hash-wasm: 4.9.0
       sha3: 2.1.4
-      ts-node: 10.2.1_70d6492c0feb1eb5d83e62cce7c43fd5
+      ts-node: 10.9.1_70d6492c0feb1eb5d83e62cce7c43fd5
     transitivePeerDependencies:
       - '@swc/core'
       - '@swc/wasm'
@@ -15477,7 +15494,7 @@ packages:
     dev: false
 
   file:projects/code-training-lesson-editor-local-server.tgz_typescript@4.3.5:
-    resolution: {integrity: sha512-OeW7Yodeo459pHDEg77DdskIg8ySntGJfdXuLb7+VgGpq63myKfx3glp7iInLUzpIwbkrB+tGkSEwLahiqtVmg==, tarball: file:projects/code-training-lesson-editor-local-server.tgz}
+    resolution: {integrity: sha512-hHUXTnoDaVx3IbjMROKhnCXIhjKGRKRR03SrNndbvjo1XsJe6ecwPf7lF+kIqWHy9Q1d06CjBBS5NybVZQo3UA==, tarball: file:projects/code-training-lesson-editor-local-server.tgz}
     id: file:projects/code-training-lesson-editor-local-server.tgz
     name: '@rush-temp/code-training-lesson-editor-local-server'
     version: 0.0.0
@@ -15485,7 +15502,7 @@ packages:
       '@types/express': 4.17.13
       '@types/node': 12.12.6
       express: 4.17.1
-      ts-node: 10.2.1_70d6492c0feb1eb5d83e62cce7c43fd5
+      ts-node: 10.9.1_70d6492c0feb1eb5d83e62cce7c43fd5
     transitivePeerDependencies:
       - '@swc/core'
       - '@swc/wasm'
@@ -15655,13 +15672,13 @@ packages:
     dev: false
 
   file:projects/glsl-file-to-string.tgz_typescript@4.3.5:
-    resolution: {integrity: sha512-vK8DhV5VFEhMJQTe0oCVeSO6yeD1XmUtLP27k3XVitXTmlBSuotkfGsbYYK9PCHfJ8Mk4+r0fKV7CMYV7r0HOg==, tarball: file:projects/glsl-file-to-string.tgz}
+    resolution: {integrity: sha512-8pltlgyb2i7bMgG+1+Udq+OzJTlx6mV0gMNunefTox6vUirkri2hfEDW17SQopuPVlEngMV8pwVQdicHFroF6Q==, tarball: file:projects/glsl-file-to-string.tgz}
     id: file:projects/glsl-file-to-string.tgz
     name: '@rush-temp/glsl-file-to-string'
     version: 0.0.0
     dependencies:
       '@types/node': 12.12.6
-      ts-node: 10.2.1_70d6492c0feb1eb5d83e62cce7c43fd5
+      ts-node: 10.9.1_70d6492c0feb1eb5d83e62cce7c43fd5
     transitivePeerDependencies:
       - '@swc/core'
       - '@swc/wasm'
@@ -15726,7 +15743,7 @@ packages:
     dev: false
 
   file:projects/ricklove_me-content.tgz_f0b419a7e119055c71dcaf6063a7ba7a:
-    resolution: {integrity: sha512-9M1OYAPhXsfsvrAYQGSgbIDmryna99/YXqS3x72Siv7hbR+GGpTQ+wjHTLsn4YAyQh3a5IAKGu3DP54KJyG1fQ==, tarball: file:projects/ricklove_me-content.tgz}
+    resolution: {integrity: sha512-ulfF2NBRGmiv4oIjxD+7F7yON8QJ+Ko13B4fiFhW7LHQmHgU5IiQgxraTtU/CADrdeZ8L4KlqDEwzootKSCRBA==, tarball: file:projects/ricklove_me-content.tgz}
     id: file:projects/ricklove_me-content.tgz
     name: '@rush-temp/ricklove_me-content'
     version: 0.0.0
@@ -15740,7 +15757,7 @@ packages:
       react-helmet: 6.1.0_react@17.0.2
       react-lowlight: 2.0.0_highlight.js@9.1.0+react@17.0.2
       react-markdown: 6.0.3_4cd822c6044f4c1a7e1f1fea0e728f12
-      ts-node: 10.2.1_70d6492c0feb1eb5d83e62cce7c43fd5
+      ts-node: 10.9.1_70d6492c0feb1eb5d83e62cce7c43fd5
     transitivePeerDependencies:
       - '@babel/core'
       - '@swc/core'
@@ -15776,13 +15793,13 @@ packages:
     dev: false
 
   file:projects/rush-packages.tgz_typescript@4.3.5:
-    resolution: {integrity: sha512-8TlUuo5L6IzAR9/eZHwLHu5Kxo/RPoUNf00J4fenb5/Gn1dMUQn63bwMvPEwYFwH88n1RLE7rH5R+bTvry4SMw==, tarball: file:projects/rush-packages.tgz}
+    resolution: {integrity: sha512-ncPLTZDwwd5odOfapeZ8YyfeDjQIFmxMYx/A20HdASGpqtQFA5kuMqRBzEAErOVEH9NW4BTlssqAUMjWdOtFEw==, tarball: file:projects/rush-packages.tgz}
     id: file:projects/rush-packages.tgz
     name: '@rush-temp/rush-packages'
     version: 0.0.0
     dependencies:
       '@types/node': 12.12.6
-      ts-node: 10.2.1_70d6492c0feb1eb5d83e62cce7c43fd5
+      ts-node: 10.9.1_70d6492c0feb1eb5d83e62cce7c43fd5
     transitivePeerDependencies:
       - '@swc/core'
       - '@swc/wasm'

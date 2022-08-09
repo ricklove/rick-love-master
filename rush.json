@@ -115,7 +115,7 @@
    * LTS schedule: https://nodejs.org/en/about/releases/
    * LTS versions: https://nodejs.org/en/download/releases/
    */
-  "nodeSupportedVersionRange": ">=12.13.0 <13.0.0 || >=14.15.0 <15.0.0",
+  "nodeSupportedVersionRange": ">=12.13.0 <13.0.0 || >=14.15.0 <15.0.0 || >=16.13.0 <17.0.0",
   /**
    * Odd-numbered major versions of Node.js are experimental.  Even-numbered releases
    * spend six months in a stabilization period before the first Long Term Support (LTS) version.
@@ -627,11 +627,11 @@
       "packageName": "@ricklove/ricklove_me-content",
       "projectFolder": "projects/web/ricklove_me-content"
     },
+    // Tools --
     {
       "packageName": "@ricklove/glsl-file-to-string",
       "projectFolder": "tools/glsl-file-to-string"
     },
-    // Tools --
     {
       "packageName": "@ricklove/rush-packages",
       "projectFolder": "tools/rush-packages"

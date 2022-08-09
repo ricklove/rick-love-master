@@ -19,6 +19,6 @@
     "@ricklove/config-lib-rig": "*",
     "@types/express": "^4.17.8",
     "@types/node": "12.12.6",
-    "ts-node": "~10.2.1"
+    "ts-node": "~10.9.1"
   }
 }
