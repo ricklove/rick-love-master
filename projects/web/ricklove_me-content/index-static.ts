@@ -6,5 +6,6 @@ export { page as page_blog_index } from './src/pages/blog/index.static';
 export { page as page_blog_____slug_ } from './src/pages/blog/[...slug].static';
 export { page as page_games_index } from './src/pages/games/index.static';
 export { page as page_games__name_ } from './src/pages/games/[name].static';
+export { page as page_lessons_editor } from './src/pages/lessons/editor.static';
 export { page as page_lessons_index } from './src/pages/lessons/index.static';
 export { page as page_lessons__name_ } from './src/pages/lessons/[name].static';

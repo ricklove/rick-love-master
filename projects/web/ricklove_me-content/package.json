@@ -26,6 +26,8 @@
   "devDependencies": {
     "@ricklove/art-build": "*",
     "@ricklove/code-training-lesson-build": "*",
+    "@ricklove/code-training-lesson-editor-common": "*",
+    "@ricklove/code-training-lesson-editor-client": "*",
     "@ricklove/config-lib-rig": "*",
     "@ricklove/utils-files": "*",
     "@ricklove/utils-react": "*",
