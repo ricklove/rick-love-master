@@ -7,7 +7,7 @@ This is where I put all the cool stuff.
   - Tab1 - Run rush build watch
     - `rush build:watch --to-except ricklove_me`
   - Tab2 - Run nextjs dev
-    - `cd \projects\ricklove_me`
+    - `cd /projects/web/ricklove_me`
     - `npx next dev`
 
 - run lesson-editor
