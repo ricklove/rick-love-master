@@ -2,6 +2,8 @@ This is where I put all the cool stuff.
 
 ## Commands
 
+- See package.json for scripts
+
 - develop blog
 
   - Tab1 - Run rush build watch
@@ -20,6 +22,7 @@ This is where I put all the cool stuff.
   - Tab1 - Run server
     - `npm --prefix projects/code-training/lesson-editor-local-server run serve`
   - Tab2 - Run client
+    - TODO: This is not implemented yet
 
 - create project
 

@@ -9,7 +9,7 @@ const lessonModuleFileRootPath = joinPathNormalized(projectDir, `../lessons/less
 const projectStateRootPath = joinPathNormalized(projectDir, `../lessons/templates/cra-template/src/project/`);
 const renderProjectRootPath = joinPathNormalized(projectDir, `../lessons/templates/cra-template`);
 
-export const runLocalServer = ({ port = 3042 }: { port?: number }) => {
+export const runLocalServer = ({ port }: { port: number }) => {
   const app = express();
   const server = createLessonApiServer_localFileServer({
     lessonModuleFileRootPath,

@@ -1,1 +1,1 @@
-export * from './src/lesson-editor';
+export * from './src/lesson-modules-client-editor';
