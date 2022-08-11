@@ -1,4 +1,3 @@
-import '@babel/polyfill';
 import { APIGatewayEvent } from 'aws-lambda';
 import { handleWebsocketEvent } from '@ricklove/websockets-api-server';
 import { corsHeaders } from '../helpers';

@@ -1,4 +1,3 @@
-import '@babel/polyfill';
 import { APIGatewayEvent } from 'aws-lambda';
 import { handleDoodleTask } from '@ricklove/doodle-server';
 
