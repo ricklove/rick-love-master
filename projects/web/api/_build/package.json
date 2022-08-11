@@ -1,0 +1,37 @@
+{
+  "name": "@ricklove/api-build",
+  "version": "1.0.0",
+  "type": "module",
+  "main": "./lib/index.js",
+  "scripts": {
+    "cli": "node --experimental-specifier-resolution=node --loader ts-node/esm ./src/cli.ts",
+    "build": "heft test --clean",
+    "build:watch": "heft build",
+    "---dependencies": "",
+    "---@ricklove/nft-art-server": "*"
+  },
+  "dependencies": {
+    "@ricklove/doodle-server": "*",
+    "@ricklove/upload-api-server": "*",
+    "@ricklove/websockets-api-server": "*",
+    "@ricklove/utils-core": "*",
+    "@ricklove/utils-files": "*",
+    "@babel/core": "^7.0.0",
+    "@babel/polyfill": "^7.11.5",
+    "aws-lambda": "^1.0.6",
+    "glob": "^7.1.7",
+    "rollup": "^2.77.2",
+    "@rollup/plugin-babel": "^5.3.1",
+    "@rollup/plugin-node-resolve": "^13.3.0",
+    "@rollup/plugin-typescript": "^8.3.4",
+    "ts-node": "~10.9.1",
+    "tslib": "2.4.0",
+    "typescript": "~4.3.5"
+  },
+  "devDependencies": {
+    "@ricklove/config-lib-rig": "*",
+    "@types/node": "12.12.6",
+    "@types/aws-lambda": "^8.10.62",
+    "@types/glob": "^7.1.3"
+  }
+}

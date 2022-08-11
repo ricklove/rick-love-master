@@ -620,6 +620,10 @@
     },
     // Web ---
     {
+      "packageName": "@ricklove/api-build",
+      "projectFolder": "projects/web/api/_build"
+    },
+    {
       "packageName": "@ricklove/ricklove_me",
       "projectFolder": "projects/web/ricklove_me"
     },

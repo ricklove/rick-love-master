@@ -1,0 +1,5 @@
+{
+  "scripts": {
+    "deploy": "serverless deploy --aws-profile ricklove"
+  }
+}

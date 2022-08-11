@@ -13,3 +13,5 @@ export * from './src/phone-number';
 
 export * from './src/secure-token-type';
 export * from './src/web-request-type';
+
+export * from './src/console-colors';

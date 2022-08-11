@@ -1,0 +1,162 @@
+service: rick-love-blog-aws
+
+custom:
+  bucket: rick-love-blog-user-data
+  keybucket: rick-love-blog-user-data-keys
+  tempbucket: rick-love-blog-user-data-temp
+  websocketstable: rick-love-blog-websockets-table
+  serverstatebucket: rick-love-blog-server-state
+  nftbucket: rick-love-nft-data
+
+resources:
+  Resources:
+    UploadsBucket:
+      Type: AWS::S3::Bucket
+      Properties:
+        BucketName: ${self:custom.bucket}
+        CorsConfiguration:
+          CorsRules:
+            - AllowedHeaders: ['*']
+              AllowedMethods: [GET, PUT]
+              AllowedOrigins: ['*']
+        # This allows listing of bucket objects, not reading an object
+        # AccessControl: PublicRead
+    # Allow Reading an object (but not listing - key must be known)
+    UploadsBucketPolicy:
+      Type: 'AWS::S3::BucketPolicy'
+      Properties:
+        PolicyDocument:
+          Statement:
+            - Sid: PublicReadForGetBucketObjects
+              Effect: Allow
+              Principal: '*'
+              Action:
+                - 's3:GetObject'
+              Resource: arn:aws:s3:::${self:custom.bucket}/*
+        Bucket:
+          Ref: UploadsBucket
+
+    # Holds server-only data for access key verification
+    UploadsKeyBucket:
+      Type: AWS::S3::Bucket
+      Properties:
+        BucketName: ${self:custom.keybucket}
+
+    # Holds shared keys for a short time - auto-expiring
+    UploadsTempBucket:
+      Type: AWS::S3::Bucket
+      Properties:
+        BucketName: ${self:custom.tempbucket}
+        CorsConfiguration:
+          CorsRules:
+            - AllowedHeaders: ['*']
+              AllowedMethods: [GET, PUT]
+              AllowedOrigins: ['*']
+        LifecycleConfiguration:
+          Rules:
+            - ExpirationInDays: 1
+              Status: Enabled
+    UploadsTempBucketPolicy:
+      Type: 'AWS::S3::BucketPolicy'
+      Properties:
+        PolicyDocument:
+          Statement:
+            - Sid: PublicReadForGetBucketObjects
+              Effect: Allow
+              Principal: '*'
+              Action:
+                - 's3:GetObject'
+              Resource: arn:aws:s3:::${self:custom.tempbucket}/*
+        Bucket:
+          Ref: UploadsTempBucket
+
+    # Holds server-only data
+    ServerStateBucket:
+      Type: AWS::S3::Bucket
+      Properties:
+        BucketName: ${self:custom.serverstatebucket}
+
+    # websocket table
+    WebsocketsTable:
+      Type: AWS::DynamoDB::Table
+      Properties:
+        TableName: ${self:custom.websocketstable}
+        AttributeDefinitions:
+          - AttributeName: key
+            AttributeType: S
+        KeySchema:
+          - AttributeName: key
+            KeyType: HASH
+        BillingMode: PAY_PER_REQUEST
+
+provider:
+  name: aws
+  runtime: nodejs12.x
+  region: us-east-1
+  stage: prod
+  iamRoleStatements:
+    - Effect: Allow
+      Action:
+        - s3:ListBucket
+      Resource: arn:aws:s3:::${self:custom.bucket}
+    - Effect: Allow
+      Action:
+        - s3:PutObject
+        - s3:GetObject
+      Resource: arn:aws:s3:::${self:custom.bucket}/*
+    - Effect: Allow
+      Action:
+        - s3:PutObject
+        - s3:GetObject
+      Resource: arn:aws:s3:::${self:custom.keybucket}/*
+    - Effect: Allow
+      Action:
+        - s3:PutObject
+        - s3:GetObject
+      Resource: arn:aws:s3:::${self:custom.tempbucket}/*
+    - Effect: Allow
+      Action:
+        - s3:PutObject
+        - s3:GetObject
+      Resource: arn:aws:s3:::${self:custom.serverstatebucket}/*
+    - Effect: Allow
+      Action:
+        - dynamodb:GetItem
+        - dynamodb:PutItem
+      Resource: 'arn:aws:dynamodb:${self:provider.region}:*:table/${self:custom.websocketstable}'
+
+functions:
+  nft-api:
+    handler: lambda/nft-api/index.handler
+    environment:
+      BUCKET: ${self:custom.nftbucket}
+    events:
+      - http:
+          path: nft-api/{param}
+          method: GET
+          cors: true
+  upload-api:
+    handler: lambda/upload-api/index.handler
+    environment:
+      BUCKET: ${self:custom.bucket}
+      KEYBUCKET: ${self:custom.keybucket}
+      TEMPBUCKET: ${self:custom.tempbucket}
+    events:
+      - http:
+          path: upload-api/{param}
+          method: POST
+          cors: true
+  websocket-api:
+    handler: lambda/websocket-api/index.handler
+    environment:
+      TABLE: ${self:custom.websocketstable}
+    events:
+      - websocket: $default
+
+  doodle-task:
+    handler: lambda/doodle-task/index.handler
+    environment:
+      BUCKET: ${self:custom.bucket}
+      SERVERSTATEBUCKET: ${self:custom.serverstatebucket}
+    events:
+      - schedule: rate(15 minutes)

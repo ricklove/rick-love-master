@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "dev": "next dev --port 3042",
-    "build": "next build && next export && rimraf ../../../_deploy/ricklove_me && copyfiles -u 1 ./out/**/* ../../../_deploy/ricklove_me/",
+    "build": "next build && next export && rimraf ../../../_deploy-staging/ricklove_me && copyfiles -u 1 ./out/**/* ../../../_deploy-staging/ricklove_me/",
     "build:watch": "npm run dev",
     "start": "next start --port 3042"
   },

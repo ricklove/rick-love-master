@@ -6,6 +6,8 @@
         "--- web": "// Run these command in separate terminals",
         "web:watch": "rush build:watch --to-except ricklove_me",
         "web:start": "cd ./projects/web/ricklove_me && npm run dev",
+        "server:build": "cd ./projects/web/api/_build && npm run cli",
+        "server:deploy": "cd ./projects/web/api/_serverless && npm run deploy",
         "--- art": "// Art rendering can be expensive, so run manually",
         "art:render": "cd ./projects/art/renderer && npm run cli",
         "--- lessons": "// Lesson server is needed for editing lessons (in addition to web)",
