@@ -6,6 +6,7 @@
         "--- web": "// Run these command in separate terminals",
         "web:watch": "rush build:watch --to-except ricklove_me",
         "web:start": "cd ./projects/web/ricklove_me && npm run dev",
+        "server:prebuild": "rush build --to api-build",
         "server:build": "cd ./projects/web/api/_build && npm run cli",
         "server:deploy": "cd ./projects/web/api/_serverless && npm run deploy",
         "--- art": "// Art rendering can be expensive, so run manually",
