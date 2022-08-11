@@ -129,7 +129,10 @@ async function runBuildFunction(sourceFunDir: string, destFunDir: string, funNam
     // console.log(`External Packages: ${idLog.filter(x => x.isInPackages).map(x => x.id).join(` `)}`);
     // console.log(`External Packages (Built-in): ${idLog.filter(x => !x.isInPackages && x.isWithoutDot).map(x => x.id).join(` `)}`);
 
+    // TODO: Add external dependencies
     const packageDeps = { ...packageJsonDependencies };
+    delete (packageDeps as Record<string, unknown>)[`aws-lambda`];
+
     // Object.keys(packageJsonDependencies)
     //   .filter((k) => !idLog.find((id) => id.id === k))
     //   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -165,7 +168,7 @@ async function runBuildFunction(sourceFunDir: string, destFunDir: string, funNam
     });
 
     // Run `npm i` in each folder
-    // await exec(`npm install`, { cwd: destDirPath });
+    await exec(`npm install`, { cwd: destDirPath });
 
     // const { output } = await bundle.generate({});
   } catch (error) {
