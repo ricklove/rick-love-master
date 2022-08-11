@@ -79,6 +79,7 @@ async function runBuildFunction(sourceFunDir: string, destFunDir: string, funNam
           // preferBuiltins: true,
         }),
         typescript({
+          target: `es2018`,
           declaration: false,
         }),
         // includePaths({
