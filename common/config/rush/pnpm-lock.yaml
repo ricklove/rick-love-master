@@ -47,6 +47,7 @@ specifiers:
   '@rush-temp/games-list': file:./projects/games-list.tgz
   '@rush-temp/github-comments': file:./projects/github-comments.tgz
   '@rush-temp/glsl-file-to-string': file:./projects/glsl-file-to-string.tgz
+  '@rush-temp/nft-api-server': file:./projects/nft-api-server.tgz
   '@rush-temp/punkscape-artathon': file:./projects/punkscape-artathon.tgz
   '@rush-temp/react-controls': file:./projects/react-controls.tgz
   '@rush-temp/react-native-lite': file:./projects/react-native-lite.tgz
@@ -184,6 +185,7 @@ dependencies:
   '@rush-temp/games-list': file:projects/games-list.tgz
   '@rush-temp/github-comments': file:projects/github-comments.tgz_@babel+core@7.15.0
   '@rush-temp/glsl-file-to-string': file:projects/glsl-file-to-string.tgz_typescript@4.3.5
+  '@rush-temp/nft-api-server': file:projects/nft-api-server.tgz
   '@rush-temp/punkscape-artathon': file:projects/punkscape-artathon.tgz
   '@rush-temp/react-controls': file:projects/react-controls.tgz_@babel+core@7.15.0
   '@rush-temp/react-native-lite': file:projects/react-native-lite.tgz_@babel+core@7.15.0
@@ -15882,7 +15884,7 @@ packages:
     dev: false
 
   file:projects/api-build.tgz:
-    resolution: {integrity: sha512-KVrRYqIwww8sNErbjrxkRU0zaM9tZ2q9mMJrtH/xu+NbgFVwhDULk2bVs/1BhSlMwg4ry/CjFeD7kmnBa9PuZw==, tarball: file:projects/api-build.tgz}
+    resolution: {integrity: sha512-DNctmgolO8FzJ9VOmo7s04UM3vTPMJ7PsYfnc95T6LJUTrrKSBdvfLY1xJnz6PVpnPewIYKD8G+7/WcQx/FogQ==, tarball: file:projects/api-build.tgz}
     name: '@rush-temp/api-build'
     version: 0.0.0
     dependencies:
@@ -16277,6 +16279,14 @@ packages:
       - '@swc/core'
       - '@swc/wasm'
       - typescript
+    dev: false
+
+  file:projects/nft-api-server.tgz:
+    resolution: {integrity: sha512-CT12p8ycwhOIZWDNChLUb4TKIgAnxczfNlRA5lhnX4a00kB/5TBIB+IhqzConB77JDB3Hqz8jj+mmcOcJIXV1Q==, tarball: file:projects/nft-api-server.tgz}
+    name: '@rush-temp/nft-api-server'
+    version: 0.0.0
+    dependencies:
+      '@types/p5': 1.3.1
     dev: false
 
   file:projects/punkscape-artathon.tgz:

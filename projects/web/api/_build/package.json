@@ -12,6 +12,7 @@
   },
   "dependencies": {
     "@ricklove/doodle-server": "*",
+    "@ricklove/nft-api-server": "*",
     "@ricklove/upload-api-server": "*",
     "@ricklove/websockets-api-server": "*",
     "@ricklove/utils-core": "*",

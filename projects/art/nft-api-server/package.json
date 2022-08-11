@@ -1,0 +1,18 @@
+{
+  "name": "@ricklove/nft-api-server",
+  "version": "1.0.0",
+  "type": "module",
+  "main": "./lib/index.js",
+  "scripts": {
+    "build": "heft test --clean",
+    "build:watch": "heft build"
+  },
+  "dependencies": {
+    "@ricklove/art-build": "*",
+    "@ricklove/utils-core": "*"
+  },
+  "devDependencies": {
+    "@ricklove/config-lib-rig": "*",
+    "@types/p5": "1.3.1"
+  }
+}

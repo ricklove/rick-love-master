@@ -516,6 +516,7 @@
       "packageName": "@ricklove/react-controls",
       "projectFolder": "features/ui/react-controls"
     },
+    // Art ---
     {
       "packageName": "@ricklove/art-build",
       "projectFolder": "projects/art/_build"
@@ -552,6 +553,11 @@
       "packageName": "@ricklove/art-renderer",
       "projectFolder": "projects/art/renderer"
     },
+    {
+      "packageName": "@ricklove/nft-api-server",
+      "projectFolder": "projects/art/nft-api-server"
+    },
+    // Code Training
     {
       "packageName": "@ricklove/code-training-lesson-build",
       "projectFolder": "projects/code-training/_lesson-build"
