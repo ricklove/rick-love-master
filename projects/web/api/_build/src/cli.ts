@@ -73,6 +73,9 @@ async function runBuildFunction(sourceFunDir: string, destFunDir: string, funNam
     }[];
     const bundle = await rollup({
       input: sourceIndexFile,
+      output: {
+        inlineDynamicImports: true,
+      },
       plugins: [
         resolve({
           // extensions,
@@ -126,7 +129,7 @@ async function runBuildFunction(sourceFunDir: string, destFunDir: string, funNam
       },
     });
 
-    idLog.forEach((x) => console.log(x));
+    idLog.filter((x) => x.external).forEach((x) => console.log(x));
     // console.log(`External Packages: ${idLog.filter(x => x.isInPackages).map(x => x.id).join(` `)}`);
     // console.log(`External Packages (Built-in): ${idLog.filter(x => !x.isInPackages && x.isWithoutDot).map(x => x.id).join(` `)}`);
 
@@ -173,7 +176,7 @@ async function runBuildFunction(sourceFunDir: string, destFunDir: string, funNam
 
     // const { output } = await bundle.generate({});
   } catch (error) {
-    console.error(`Failed to 'babel-rollup' function ${funName}`);
+    console.error(`Failed to 'rollup' function ${funName}`);
     console.error(consoleColors.FgRed, error, consoleColors.Reset);
   }
 }

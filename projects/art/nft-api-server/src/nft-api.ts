@@ -1,5 +1,5 @@
-import { artworkList } from '@ricklove/art-build';
 import { ApiError } from '@ricklove/utils-core';
+import { artworkListSimple } from './artworkListSimple';
 
 // TODO: Generate and save images as requested
 // import AWS from 'aws-sdk';
@@ -27,8 +27,8 @@ export const createNftApi = (settings: Settings) => {
       //     return await generateNftMetadata_art121({ params });
       // }
 
-      artworkList.forEach((a) => {
-        if (path.includes(a.key)) {
+      artworkListSimple.forEach((a) => {
+        if (path.includes(a.metadata.key)) {
           if (params.type === `contract` || params.type === `factory`) {
             return a.metadata.projectMetadata;
           }

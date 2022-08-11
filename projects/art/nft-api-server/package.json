@@ -8,7 +8,9 @@
     "build:watch": "heft build"
   },
   "dependencies": {
-    "@ricklove/art-build": "*",
+    "@ricklove/art-common": "*",
+    "@ricklove/artwork-circles": "*",
+    "@ricklove/artwork-hashing": "*",
     "@ricklove/utils-core": "*"
   },
   "devDependencies": {
