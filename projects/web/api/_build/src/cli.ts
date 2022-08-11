@@ -180,7 +180,7 @@ async function runBuildFunction(sourceFunDir: string, destFunDir: string, funNam
 
     const autoIncluded = [`aws-sdk`];
     const packageDeps = Object.fromEntries(
-      externalModules.filter((m) => autoIncluded.some((x) => x === m.name)).map((x) => [x.name, x.version]),
+      externalModules.filter((m) => !autoIncluded.some((x) => x === m.name)).map((x) => [x.name, x.version]),
     );
     const peerDeps = Object.fromEntries(
       externalModules.filter((m) => autoIncluded.some((x) => x === m.name)).map((x) => [x.name, x.version]),
