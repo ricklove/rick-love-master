@@ -7,7 +7,7 @@ import * as path from 'path';
 import { rollup } from 'rollup';
 import * as util from 'util';
 import { consoleColors } from '@ricklove/utils-core';
-import { joinPathNormalized } from '@ricklove/utils-files';
+import { findInParentPath, joinPathNormalized } from '@ricklove/utils-files';
 // import includePaths from `rollup-plugin-includepaths`;
 
 const fs = {
@@ -19,6 +19,7 @@ const fs = {
   deleteFile: util.promisify(fsRaw.unlink),
   mkdir: util.promisify(fsRaw.mkdir),
   readDir: util.promisify(fsRaw.readdir),
+  readFile: util.promisify(fsRaw.readFile),
 };
 
 const exec = util.promisify(child_process.exec);
@@ -34,7 +35,7 @@ const state = {
 };
 
 async function runBuildFunction(sourceFunDir: string, destFunDir: string, funName: string, fileName = `index`) {
-  console.log(`### runBuildFunction`);
+  console.log(`${consoleColors.BgBlue}runBuildFunction: ${funName}${consoleColors.Reset}`);
 
   try {
     const sourceIndexFile = path.resolve(`${sourceFunDir}${funName}/${fileName}.ts`);
@@ -46,27 +47,13 @@ async function runBuildFunction(sourceFunDir: string, destFunDir: string, funNam
     await fs.mkdir(path.dirname(destIndexFile), { recursive: true });
     await fs.mkdir(path.dirname(destPackageFile), { recursive: true });
 
-    const extensions = [`.js`, `.jsx`, `.ts`, `.tsx`];
-    console.log(`Bundling ${funName}`, { sourceIndexFile });
-
-    const packageJson = await import(`./lambda-dependencies.json`);
-    const packageJsonDependencies = { ...packageJson.default.dependencies };
-    const external = Object.keys(packageJsonDependencies);
-    console.log(`External: ${external.join(` `)}`, { packageJson });
-
-    // const tsconfigPaths = (await import(`../../tsconfig-paths.json`)).compilerOptions.paths;
-    // const allPaths = Object.values(tsconfigPaths).flatMap(x => x).map(x => ROOT + x.replace(/\/\*/, ``));
-    // console.log(`allPaths`, { allPaths });
-
-    // //const include = toKeyValueObject(Object.keys(tsconfigPaths).map(k => ({ key: k.replace(/\/\*/, ''), value: ROOT + tsconfigPaths[k as keyof typeof tsconfigPaths][0].replace(/\/\*/, '') })));
-    // const include = toKeyValueObject(Object.keys(tsconfigPaths).map(k => ({ key: k.replace(/\/\*/, ''), value: path.resolve(ROOT + tsconfigPaths[k as keyof typeof tsconfigPaths][0].replace(/\/\*/, '')) })));
-    // console.log('include', { include });
-    // //const exclude = external.map(x => 'node_modules/' + x);
+    const monoRepoNamespace = `@ricklove/`;
 
     const idLog = [] as {
       id: string;
-      isInTsconfig?: boolean;
-      isInPackages?: boolean;
+      // isInTsconfig?: boolean;
+      // isInPackages?: boolean;
+      isMonoRepo?: boolean;
       isWithoutDot?: boolean;
       isFilePath?: boolean;
       external: boolean;
@@ -112,7 +99,7 @@ async function runBuildFunction(sourceFunDir: string, destFunDir: string, funNam
         // const isInPackages = !!external.find((x) => id === x || id.startsWith(`${x}/`));
         const isWithoutDot = !id.startsWith(`.`);
         const isFilePath = path.isAbsolute(id);
-        const isMonoRepo = id.startsWith(`@ricklove/`);
+        const isMonoRepo = id.startsWith(monoRepoNamespace);
         const idInfo = {
           id,
           // isInTsconfig,
@@ -129,18 +116,75 @@ async function runBuildFunction(sourceFunDir: string, destFunDir: string, funNam
       },
     });
 
-    idLog.filter((x) => x.external).forEach((x) => console.log(x));
-    // console.log(`External Packages: ${idLog.filter(x => x.isInPackages).map(x => x.id).join(` `)}`);
-    // console.log(`External Packages (Built-in): ${idLog.filter(x => !x.isInPackages && x.isWithoutDot).map(x => x.id).join(` `)}`);
+    type ModuleDependencies = undefined | { name: string; version: string }[];
+    const getModuleDependencies = async (
+      name: string,
+      currentPath: string,
+      visited: Map<string, ModuleDependencies>,
+    ): Promise<ModuleDependencies> => {
+      if (visited.has(name)) {
+        return visited.get(name);
+      }
+      // Prevent circular references
+      visited.set(name, []);
 
-    // TODO: Add external dependencies
-    const packageDeps = { ...packageJsonDependencies };
-    delete (packageDeps as Record<string, unknown>)[`aws-lambda`];
+      const packagePath = await findInParentPath(currentPath, `package.json`, { includeSelf: true });
+      // console.log(`\n\n# getModuleDependencies`, { name, packagePath, currentPath });
 
-    // Object.keys(packageJsonDependencies)
-    //   .filter((k) => !idLog.find((id) => id.id === k))
-    //   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    //   .forEach((k) => delete (packageDeps as any)[k]);
+      if (!packagePath) {
+        return undefined;
+      }
+      const packageJsonRaw = await fs.readFile(packagePath.itemPath, { encoding: `utf-8` });
+      const packageJson = JSON.parse(packageJsonRaw) as {
+        version?: string;
+        dependencies?: { [name: string]: string };
+      };
+
+      const dependencyNames = Object.keys(packageJson.dependencies ?? {});
+      // console.log(`\t got dependencyNames`, { name, packageJson, packagePath, dependencyNames });
+
+      const externalDependencies = dependencyNames
+        .filter((x) => !x.startsWith(monoRepoNamespace))
+        .map((k) => ({ name: k, version: packageJson.dependencies?.[k] ?? `` }));
+
+      // console.log(`\t got externalDependencies`, { name, packageJson, externalDependencies });
+
+      const indirectDependencies = [] as NonNullable<ModuleDependencies>;
+      for (const d of dependencyNames.filter((x) => x.startsWith(monoRepoNamespace))) {
+        const innerPath = path.join(packagePath.dirPath, `node_modules`, d);
+        // console.log(`\t getting indirectDependency`, { d, innerPath });
+
+        indirectDependencies?.push(...((await getModuleDependencies(d, innerPath, visited)) ?? []));
+      }
+
+      // console.log(`\t got indirectDependencies`, {
+      //   name,
+      //   packageJson,
+      //   packagePath,
+      //   externalDependencies,
+      //   indirectDependencies,
+      // });
+      const result = [...externalDependencies, ...indirectDependencies];
+      visited.set(name, result);
+      return result;
+    };
+
+    const externalModulesMap = new Map<string, ModuleDependencies>();
+    const allExternalModules = (await getModuleDependencies(funName, process.cwd(), externalModulesMap)) ?? [];
+    const externalModules = idLog
+      .filter((x) => x.external)
+      .map((x) => allExternalModules.find((m) => m.name === x.id)!)
+      .filter((x) => x);
+
+    console.log(`${consoleColors.FgBlue}resolved externalModules ${consoleColors.Reset}`, { externalModules });
+
+    const autoIncluded = [`aws-sdk`];
+    const packageDeps = Object.fromEntries(
+      externalModules.filter((m) => autoIncluded.some((x) => x === m.name)).map((x) => [x.name, x.version]),
+    );
+    const peerDeps = Object.fromEntries(
+      externalModules.filter((m) => autoIncluded.some((x) => x === m.name)).map((x) => [x.name, x.version]),
+    );
 
     const packageText = `
 {
@@ -148,8 +192,8 @@ async function runBuildFunction(sourceFunDir: string, destFunDir: string, funNam
     "version": "1.0.0",
     "description": "",
     "main": "index.js",
-    "dependencies": ${JSON.stringify(packageDeps, null, 2)},
-    "devDependencies": {},
+    "dependencies": ${JSON.stringify(packageDeps)},
+    "pperDependencies": ${JSON.stringify(peerDeps)},
     "author": "",
     "license": "Private"
 }
@@ -157,7 +201,7 @@ async function runBuildFunction(sourceFunDir: string, destFunDir: string, funNam
 
     // Write Package
     console.log(`Writing Package ${destPackageFile}`);
-    await fs.writeFile(destPackageFile, packageText);
+    await fs.writeFile(destPackageFile, JSON.stringify(JSON.parse(packageText), null, 2));
     // await fs.writeFile(destServerlessFile, serverlessText);
 
     console.log(`Writing Bundle ${funName}`);

@@ -1,5 +1,6 @@
 {
   "scripts": {
+    "info": "serverless info --aws-profile ricklove",
     "deploy": "serverless deploy --aws-profile ricklove"
   }
 }

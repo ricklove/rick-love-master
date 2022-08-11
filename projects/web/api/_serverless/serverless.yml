@@ -94,36 +94,38 @@ provider:
   runtime: nodejs12.x
   region: us-east-1
   stage: prod
-  iamRoleStatements:
-    - Effect: Allow
-      Action:
-        - s3:ListBucket
-      Resource: arn:aws:s3:::${self:custom.bucket}
-    - Effect: Allow
-      Action:
-        - s3:PutObject
-        - s3:GetObject
-      Resource: arn:aws:s3:::${self:custom.bucket}/*
-    - Effect: Allow
-      Action:
-        - s3:PutObject
-        - s3:GetObject
-      Resource: arn:aws:s3:::${self:custom.keybucket}/*
-    - Effect: Allow
-      Action:
-        - s3:PutObject
-        - s3:GetObject
-      Resource: arn:aws:s3:::${self:custom.tempbucket}/*
-    - Effect: Allow
-      Action:
-        - s3:PutObject
-        - s3:GetObject
-      Resource: arn:aws:s3:::${self:custom.serverstatebucket}/*
-    - Effect: Allow
-      Action:
-        - dynamodb:GetItem
-        - dynamodb:PutItem
-      Resource: 'arn:aws:dynamodb:${self:provider.region}:*:table/${self:custom.websocketstable}'
+  iam:
+    role:
+      statements:
+        - Effect: Allow
+          Action:
+            - s3:ListBucket
+          Resource: arn:aws:s3:::${self:custom.bucket}
+        - Effect: Allow
+          Action:
+            - s3:PutObject
+            - s3:GetObject
+          Resource: arn:aws:s3:::${self:custom.bucket}/*
+        - Effect: Allow
+          Action:
+            - s3:PutObject
+            - s3:GetObject
+          Resource: arn:aws:s3:::${self:custom.keybucket}/*
+        - Effect: Allow
+          Action:
+            - s3:PutObject
+            - s3:GetObject
+          Resource: arn:aws:s3:::${self:custom.tempbucket}/*
+        - Effect: Allow
+          Action:
+            - s3:PutObject
+            - s3:GetObject
+          Resource: arn:aws:s3:::${self:custom.serverstatebucket}/*
+        - Effect: Allow
+          Action:
+            - dynamodb:GetItem
+            - dynamodb:PutItem
+          Resource: 'arn:aws:dynamodb:${self:provider.region}:*:table/${self:custom.websocketstable}'
 
 functions:
   nft-api:

@@ -4,8 +4,9 @@ import path from 'path';
 export const findInParentPath = async (
   currentPath: string,
   dirOrFilename: string,
+  { includeSelf = true }: { includeSelf?: boolean } = {},
 ): Promise<null | { dirPath: string; itemPath: string }> => {
-  const dirPath = path.dirname(currentPath);
+  const dirPath = includeSelf ? currentPath : path.dirname(currentPath);
   const itemPath = path.join(dirPath, dirOrFilename);
   try {
     const result = await fs.stat(itemPath);
