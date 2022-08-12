@@ -557,6 +557,10 @@
       "packageName": "@ricklove/nft-api-server",
       "projectFolder": "projects/art/nft-api-server"
     },
+    {
+      "packageName": "@ricklove/church-join-the-journey",
+      "projectFolder": "projects/church/join-the-journey"
+    },
     // Code Training
     {
       "packageName": "@ricklove/code-training-lesson-build",

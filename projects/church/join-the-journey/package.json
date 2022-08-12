@@ -1,0 +1,20 @@
+{
+  "name": "@ricklove/church-join-the-journey",
+  "version": "1.0.0",
+  "type": "module",
+  "main": "./lib/index.js",
+  "scripts": {
+    "cli": "node --experimental-specifier-resolution=node --loader ts-node/esm ./src/cli.ts",
+    "build": "heft test --clean",
+    "build:watch": "heft build"
+  },
+  "dependencies": {
+    "html5parser": "2.0.2"
+  },
+  "devDependencies": {
+    "@ricklove/config-lib-rig": "*",
+    "@types/node-fetch": "^2.6.2",
+    "node-fetch": "3.2.10",
+    "ts-node": "~10.9.1"
+  }
+}
