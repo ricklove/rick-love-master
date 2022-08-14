@@ -30,7 +30,7 @@
     "@loadable/babel-plugin": "^5.12.0",
     "@loadable/component": "^5.12.0",
     "@loadable/webpack-plugin": "^5.12.0",
-    "@openzeppelin/contracts": "^4.7.1",
+    "@openzeppelin/contracts": "^4.7.2",
     "@types/d3": "^5.7.2",
     "@types/loadable__component": "^5.10.0",
     "@types/loadable__webpack-plugin": "^5.7.0",
