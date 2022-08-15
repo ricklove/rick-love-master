@@ -1,6 +1,4 @@
-import './fetch-polyfill';
-import fs from 'fs/promises';
-import { scrapeEntries } from './scrape-entries';
+import { exportArticles } from './export-articles';
 
 // eslint-disable-next-line no-void
-void scrapeEntries({ fs });
+void exportArticles();

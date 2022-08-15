@@ -13,6 +13,7 @@
   },
   "devDependencies": {
     "@ricklove/config-lib-rig": "*",
+    "@ricklove/utils-core": "*",
     "@types/node-fetch": "^2.6.2",
     "node-fetch": "3.2.10",
     "ts-node": "~10.9.1"

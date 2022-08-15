@@ -57,6 +57,9 @@ This is where I put all the cool stuff.
   - `npm --prefix tools\rush-packages run cli -- --d projects/art/artwork/fluid-snake-game --p @ricklove/artwork-fluid-snake-game --t lib`
   - `npm --prefix tools\rush-packages run cli -- --d projects/art/artwork/example-fluid-simulator --p @ricklove/artwork-example-fluid-simulator --t lib`
 
+  - `npm --prefix tools\rush-packages run cli -- --d projects/church/join-the-journey --p @ricklove/church-join-the-journey --t lib`
+
+
 ## Tech Stack
 
 - rushjs monorepo

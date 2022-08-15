@@ -1,16 +1,27 @@
 import { IAttribute, INode, ITag, parse, SyntaxKind, walk } from 'html5parser';
+import { delay } from '@ricklove/utils-core';
 
-type DebugTools = {
-  fs: { writeFile: (filePath: string, content: string) => Promise<void> };
+const fetchWithDelay = async (url: string, timeMs: number) => {
+  const result = await fetch(url);
+  // Prevent bot detection
+  await delay(Math.floor(timeMs * (0.75 + 0.5 * Math.random())));
+  return result;
 };
 
-export const scrapeEntries = async (debugTools: DebugTools) => {
-  const { fs } = debugTools;
+type ScrapeEntriesDependencies = {
+  storage: {
+    loadTextFile: (filePath: string) => Promise<undefined | string>;
+    saveTextFile: (filePath: string, content: string) => Promise<void>;
+  };
+};
+
+export const scrapeEntries = async (debugTools: ScrapeEntriesDependencies): Promise<void> => {
+  const { storage } = debugTools;
 
   const url = `https://jointhejourneycollegeside.us5.list-manage.com/generate-js/?u=f15ff1bd1f3d1b2775c098f64&fid=34242&show=365`;
-  const result = await fetch(url);
+  const result = await fetchWithDelay(url, 0);
   const resultTextRaw = (await result.text()).trim();
-  await fs.writeFile(`./output/resultTextRaw.log`, resultTextRaw);
+  await storage.saveTextFile(`./output/resultTextRaw.log`, resultTextRaw);
 
   /*
     document.write("<div class=\"display_archive\"><div class=\"campaign\">08\/12\/2022 -
@@ -24,28 +35,111 @@ export const scrapeEntries = async (debugTools: DebugTools) => {
     ")
   */
   const resultString = resultTextRaw.substring(`document.write(`.length, resultTextRaw.length - `);`.length);
-  await fs.writeFile(`./output/resultString.log`, resultString);
-  const resultContent = JSON.parse(resultString);
-  await fs.writeFile(`./output/resultContent.log`, resultContent);
+  await storage.saveTextFile(`./output/resultString.log`, resultString);
+  const resultContent = JSON.parse(resultString) as string;
+  await storage.saveTextFile(`./output/resultContent.log`, resultContent);
 
   // <a href="http://us5.campaign-archive.com/?u=f15ff1bd1f3d1b2775c098f64&id=013a5e3cad"
   const urlMatches = [...resultContent.matchAll(/href="([^"]+)"/g)];
   const urls = urlMatches.map((m) => m[1] ?? ``).filter((x) => x);
   // console.log(urls, { urlMatches, urls });
-  await fs.writeFile(`./output/urls.log`, urls.join(`\n`));
+  await storage.saveTextFile(`./output/urls.log`, urls.join(`\n`));
 
-  const urlsToScrape = urls.slice(0, 1);
-  const items = await Promise.all(urlsToScrape.map(async (x, i) => await scrapeEntry(x, i, debugTools)));
+  const ARTICLES_CONTENT_DOCUMENT_PATH = `./output/articles-content.json`;
+  const ARTICLES_INDEX_DOCUMENT_PATH = `./output/articles-index.json`;
+  const existingJson = await storage.loadTextFile(ARTICLES_CONTENT_DOCUMENT_PATH);
+  const existing = existingJson ? (JSON.parse(existingJson) as ArticlesContentDocument) : undefined;
+
+  const urlsToScrape = urls.reverse();
+  // .slice(0, 10)
+
+  const saveArticles = async (articlesRaw: ArticleItem[]) => {
+    const articles = [...articlesRaw].sort((a, b) => a.metadata.date.localeCompare(b.metadata.date));
+
+    const articlesContentDoc: ArticlesContentDocument = {
+      articles,
+    };
+    const articlesIndexDoc: ArticlesIndexDocument = {
+      articles: articles.map((x) => ({ index: x.index, metadata: x.metadata })),
+    };
+    await storage.saveTextFile(ARTICLES_CONTENT_DOCUMENT_PATH, JSON.stringify(articlesContentDoc, null, 2));
+    await storage.saveTextFile(ARTICLES_INDEX_DOCUMENT_PATH, JSON.stringify(articlesIndexDoc, null, 2));
+
+    const indexMarkdown = articles
+      .map(
+        (x) => `
+- ${x.metadata.title}
+    - ${x.metadata.verse}
+    - ${x.metadata.author}
+    - ![](${x.metadata.image})
+  `,
+      )
+      .join();
+
+    await storage.saveTextFile(`./output/index.md`, indexMarkdown);
+  };
+
+  const items = existing?.articles ?? [];
+  for (const [iUrl, url] of urlsToScrape.entries()) {
+    const a = items.find((a) => a.metadata.url === url);
+    if (a) {
+      console.log(`SKIP - already found ${url}`);
+      continue;
+    }
+
+    console.log(`scraping ${url}`);
+    items.push(await scrapeEntry(url, iUrl, debugTools));
+    await saveArticles(items);
+  }
+
+  // return {
+  //   items,
+  // };
 };
 
-const scrapeEntry = async (url: string, iUrl: number, debugTools: DebugTools) => {
-  const { fs } = debugTools;
+type ArticlesIndexDocument = {
+  articles: Omit<ArticleItem, 'markdown'>[];
+};
+type ArticlesContentDocument = {
+  articles: ArticleItem[];
+};
+type ArticleItem = {
+  index: number;
+  metadata: {
+    title: string | undefined;
+    author: string | undefined;
+    image: string;
+    verse: string | undefined;
+    date: string;
+    url: string;
+  };
+  markdown: string;
+};
+const scrapeEntry = async (
+  url: string,
+  iDebugUrl: number,
+  debugTools: ScrapeEntriesDependencies,
+): Promise<ArticleItem> => {
+  const { storage } = debugTools;
 
-  const result = await fetch(url);
-  const resultTextRaw = (await result.text()).trim();
-  await fs.writeFile(`./output/url-${iUrl}-resultTextRaw.log`, resultTextRaw);
+  const getArticleText = async () => {
+    const RAW_TEXT_FILE_PATH = `./output/articles/url-${iDebugUrl}-resultTextRaw.log`;
 
-  const htmlNodes = parse(resultTextRaw);
+    const articleTextSaved = await storage.loadTextFile(RAW_TEXT_FILE_PATH);
+
+    if (articleTextSaved) {
+      return articleTextSaved;
+    }
+
+    const result = await fetchWithDelay(url, 1000);
+    const resultTextRaw = (await result.text()).trim();
+    await storage.saveTextFile(RAW_TEXT_FILE_PATH, resultTextRaw);
+
+    return resultTextRaw;
+  };
+
+  const articleText = await getArticleText();
+  const htmlNodes = parse(articleText);
 
   const extractTags = (nodes: INode[], filter: (x: ITag) => boolean) => {
     const allItems = [] as ITag[];
@@ -88,6 +182,13 @@ const scrapeEntry = async (url: string, iUrl: number, debugTools: DebugTools) =>
     return allItems;
   };
 
+  const unescapeText = (t: string) => {
+    return t
+      .replace(/&nbsp;/g, ` `)
+      .replace(/&amp;/g, `&`)
+      .replace(/%20/g, ` `);
+  };
+
   const extractText = (nodes: INode[]) => {
     const allTextContent = [] as string[];
 
@@ -100,7 +201,7 @@ const scrapeEntry = async (url: string, iUrl: number, debugTools: DebugTools) =>
         visited.add(node);
 
         if (node.type === SyntaxKind.Text) {
-          allTextContent.push(node.value.replace(/&nbsp;/g, ` `));
+          allTextContent.push(unescapeText(node.value));
           return;
         }
       },
@@ -121,7 +222,7 @@ const scrapeEntry = async (url: string, iUrl: number, debugTools: DebugTools) =>
         visited.add(node);
 
         if (node.type === SyntaxKind.Text) {
-          allContent.push(node.value.replace(/&nbsp;/g, ` `));
+          allContent.push(unescapeText(node.value));
           return;
         }
 
@@ -166,6 +267,11 @@ const scrapeEntry = async (url: string, iUrl: number, debugTools: DebugTools) =>
     ),
   );
 
+  const clickToReadTag = extractTags(bodyNodes, (x) => x.name === `a`).filter((x) =>
+    x.attributes.some((a) => a.name?.value === `title` && a.value?.value.includes(`READ`)),
+  )?.[0];
+  const iClickToReadTag = clickToReadTag?.start || 0;
+
   // const textContentNodes = textContentNodesRaw.slice(0,textContentNodesRaw.findIndex(x=>x.))
   // console.log(`scrapeEntry textContentNodes`, { textContentNodes });
 
@@ -174,24 +280,56 @@ const scrapeEntry = async (url: string, iUrl: number, debugTools: DebugTools) =>
     .filter((x) => x);
 
   // https://www.biblegateway.com/passage/?search=Jeremiah+34-36&version=NIV
-  const verse = /biblegateway\.com\/passage\/\?search=([^&]+)&/g.exec(links.join(` `))?.[1].replace(/\+/g, ` `);
+  const verse = /biblegateway\.com\/passage\/\?search=([^&]+)&/g
+    .exec(links.join(` `))?.[1]
+    .replace(`%20`, ` `)
+    .replace(/\+/g, ` `);
   console.log(`scrapeEntry links`, { links, verse });
 
-  const markdownContentLines = extractMarkdown(textContentNodes)
+  const markdownContentLines_beforeClickToRead = extractMarkdown(
+    textContentNodes.filter((x) => x.end < iClickToReadTag),
+  )
     .join(``)
     .split(`\n`)
     .map((x) => x.trim())
     .filter((x) => x);
 
-  const markdownContent = markdownContentLines
-    // Trim Footer
-    .slice(
-      0,
-      markdownContentLines.findIndex((l) => l === `Love the Journey?`),
-    )
-    .join(`\n\n`);
+  const markdownContentLines_afterClickToRead = extractMarkdown(
+    textContentNodes.filter((x) => x.start > iClickToReadTag),
+  )
+    .join(``)
+    .split(`\n`)
+    .map((x) => x.trim())
+    .filter((x) => x);
 
-  const author = markdownContentLines[0];
+  const markdownContentLines = [
+    ...markdownContentLines_beforeClickToRead,
+    `---`,
+    ...markdownContentLines_afterClickToRead,
+  ];
+
+  // Inject verse
+
+  const iVerse = markdownContentLines.findIndex((x) => x === verse);
+  const iDevotional = markdownContentLines.findIndex((x) => x.includes(`Devotional`));
+  if (iVerse) {
+    markdownContentLines[iVerse] = `[${verse}](https://www.esv.org/${verse?.replace(/ /g, `+`)})`;
+  } else if (iDevotional) {
+    markdownContentLines.splice(iDevotional, 0, `[${verse}](https://www.esv.org/${verse?.replace(/ /g, `+`)})`);
+  }
+
+  // Trim Footer
+  const iEndContent = Math.min(
+    ...[
+      markdownContentLines.findIndex((l) => l.toLocaleLowerCase().includes(`love the journey`)),
+      markdownContentLines.findIndex((l) => l.toLocaleLowerCase().includes(`mailing address`)),
+      markdownContentLines.findIndex((l) => l.toLocaleLowerCase().includes(`copyright`)),
+    ].filter((x) => x > 0),
+  );
+
+  console.log(iEndContent, { iEndContent });
+
+  const markdownContent = markdownContentLines.slice(0, iEndContent).join(`\n\n`);
 
   // <meta property="og:title" content="August 12- Join the Journey">
   const titleRaw = extractTags(
@@ -200,22 +338,42 @@ const scrapeEntry = async (url: string, iUrl: number, debugTools: DebugTools) =>
   )?.[0]?.attributes.find((a) => a.name?.value === `content`)?.value?.value;
   const title = titleRaw?.replace(/\s*-\s+/g, ` - `);
 
-  const dateRaw = title?.replace(/\s*-\s*Join the Journey/, ``).trim();
+  const dateRaw = /([\w]+\s*[\d]+)/.exec(title ?? ``)?.[1];
   const date = new Date(Date.parse(`${dateRaw}, 2022`));
 
-  const markdown = `
----
-title: "${title}"
-author: "${author}"
-verse: "${verse}"
-date: "${date.toISOString().substring(0, 10)}"
----
+  const imageLine = markdownContentLines.slice(markdownContentLines.indexOf(`---`)).filter((x) => x.includes(`![`))[0];
+  const image = imageLine.replace(/^!\[\]\(/, ``).replace(/\)$/, ``);
 
-[${verse}](https://www.esv.org/${verse?.replace(/ /g, `+`)})
+  // Author is first text after image
+  const authorRaw = markdownContentLines.slice(markdownContentLines.indexOf(imageLine)).find((x) => !x.includes(`[`));
+  const author = authorRaw?.includes(`2022`) ? undefined : authorRaw;
+
+  const metadata = {
+    title: title,
+    author: author,
+    image: image,
+    verse: verse,
+    date: date.toISOString().substring(0, 10),
+    url: url,
+  };
+
+  const markdownPost = `
+---
+${Object.entries(metadata)
+  .filter(([k, v]) => v)
+  .map(([k, v]) => `${k}: "${v}"`)
+  .join(`\n`)}
+---
 
 ${markdownContent}
-  `.trim();
+    `.trim();
 
-  await fs.writeFile(`./output/url-${iUrl}-bodyText.md`, markdown);
+  await storage.saveTextFile(`./output/articles/url-${iDebugUrl}-bodyText.md`, markdownPost);
   // console.log(`scrapeEntry nodes`, { allSpanText: extractText([bodyNode]) });
+
+  return {
+    index: iDebugUrl,
+    metadata,
+    markdown: markdownContent,
+  };
 };
