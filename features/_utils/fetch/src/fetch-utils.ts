@@ -1,5 +1,5 @@
 import fetch from 'isomorphic-unfetch';
-import { ApiError, WebRequestType } from '@ricklove/utils-core';
+import { ApiError, FetchJsonRequestType } from '@ricklove/utils-core';
 
 export function fetchWithTimeout(
   url: string,
@@ -14,8 +14,7 @@ export function fetchWithTimeout(
   ]);
 }
 
-// TODO: rename to fetchJsonRequest
-export const webRequest: WebRequestType = async <TJson, TResponse>(
+export const fetchJsonRequest: FetchJsonRequestType = async <TJson, TResponse>(
   url: string,
   data: TJson,
   options: { method: 'GET' | 'POST' | 'PUT'; timeoutMs?: number },

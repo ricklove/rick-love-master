@@ -1,7 +1,7 @@
 import { UploadUrl } from '@ricklove/upload-api-common';
 import { AppError } from '@ricklove/utils-core';
 import { fetchWithTimeout } from '@ricklove/utils-fetch';
-import { createUploadApiWebClient } from './web-client';
+import { createUploadApiClient } from './upload-client';
 
 export const downloadData = async (getUrl: string) => {
   const result = await fetchWithTimeout(getUrl, {
@@ -44,7 +44,7 @@ export const createSmartUploader = <T extends {}>(args: {
   uploadUrlPrefix: string;
   uploadApiUrl: string;
 }) => {
-  const uploadApiWebClient = createUploadApiWebClient(args);
+  const uploadApiWebClient = createUploadApiClient(args);
 
   let _uploadUrl = null as null | UploadUrl;
 

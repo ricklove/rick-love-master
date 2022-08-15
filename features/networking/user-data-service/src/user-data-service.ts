@@ -1,5 +1,5 @@
 import {
-  createUploadApiWebClient,
+  createUploadApiClient,
   createUploader,
   downloadData,
   UploadApiConfig,
@@ -37,7 +37,7 @@ type UserData = {
 };
 
 const createUserDataService = (uploadApiConfig: UploadApiConfig) => {
-  const uploadApi = createUploadApiWebClient(uploadApiConfig);
+  const uploadApi = createUploadApiClient(uploadApiConfig);
 
   const storage = {
     getUserDataServiceState: (): null | UserServiceState => {
