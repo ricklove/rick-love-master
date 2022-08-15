@@ -451,6 +451,10 @@
       "projectFolder": "features/_utils/core"
     },
     {
+      "packageName": "@ricklove/utils-fetch",
+      "projectFolder": "features/_utils/fetch"
+    },
+    {
       "packageName": "@ricklove/utils-files",
       "projectFolder": "features/_utils/files"
     },
@@ -474,6 +478,10 @@
     {
       "packageName": "@ricklove/upload-api-client",
       "projectFolder": "features/networking/upload-api/client"
+    },
+    {
+      "packageName": "@ricklove/upload-api-common-client",
+      "projectFolder": "features/networking/upload-api/common-client"
     },
     {
       "packageName": "@ricklove/upload-api-server",

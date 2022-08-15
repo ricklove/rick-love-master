@@ -1,9 +1,12 @@
 import React, { useRef, useState } from 'react';
 import { Text, TouchableOpacity, View } from '@ricklove/react-native-lite';
-import { UploadApiConfig, UploadUrl } from '@ricklove/upload-api-common';
+import {
+  createUploadApiWebClient,
+  createUploader,
+  UploadApiConfig,
+  UploadUrl,
+} from '@ricklove/upload-api-common-client';
 import { SecureToken } from '@ricklove/utils-core';
-import { createUploader } from './uploader';
-import { createUploadApiWebClient } from './web-client';
 
 export const UploadTestView = (props: { uploadApiConfig: UploadApiConfig }) => {
   const webClient = useRef(createUploadApiWebClient(props.uploadApiConfig));

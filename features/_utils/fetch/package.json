@@ -1,5 +1,5 @@
 {
-  "name": "@ricklove/utils-web",
+  "name": "@ricklove/utils-fetch",
   "version": "1.0.0",
   "type": "module",
   "main": "./lib/index.js",
@@ -7,9 +7,11 @@
     "build": "heft test --clean",
     "build:watch": "heft build"
   },
+  "dependencies": {
+    "isomorphic-unfetch": "3.1.0"
+  },
   "devDependencies": {
     "@ricklove/config-lib-rig": "*",
-    "@ricklove/utils-core": "*",
-    "@ricklove/utils-fetch": "*"
+    "@ricklove/utils-core": "*"
   }
 }

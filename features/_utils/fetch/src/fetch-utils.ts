@@ -1,21 +1,27 @@
+import fetch from 'isomorphic-unfetch';
 import { ApiError, WebRequestType } from '@ricklove/utils-core';
 
-export function fetchWithTimeout(url: string, options: RequestInit, timeoutMs: number = 10000): Promise<Response> {
+export function fetchWithTimeout(
+  url: string,
+  options: fetch.IsomorphicRequestInit,
+  timeoutMs: number = 10000,
+): Promise<fetch.IsomorphicResponse> {
   return Promise.race([
     fetch(url, options),
     new Promise((resolve, reject) =>
       setTimeout(() => reject(new ApiError(`Fetch Timeout`)), timeoutMs),
-    ) as Promise<Response>,
+    ) as Promise<fetch.IsomorphicResponse>,
   ]);
 }
 
+// TODO: rename to fetchJsonRequest
 export const webRequest: WebRequestType = async <TJson, TResponse>(
   url: string,
   data: TJson,
   options: { method: 'GET' | 'POST' | 'PUT'; timeoutMs?: number },
 ): Promise<TResponse> => {
   const body = JSON.stringify(data);
-  const reqData: RequestInit = {
+  const reqData: fetch.IsomorphicRequestInit = {
     method: options.method,
     headers: {
       Accept: `application/json`,
@@ -30,14 +36,14 @@ export const webRequest: WebRequestType = async <TJson, TResponse>(
   if (!result.ok) {
     throw new ApiError(`Api Error`, {
       data:
-        (await result.json().catch((_error) => {
+        (await result.json().catch((_error: unknown) => {
           /* Ignore Parse Error */
         })) ?? {},
       responseStatus: result.status,
       request: { url, data },
     });
   }
-  const resultObj = await result.json().catch((error) => {
+  const resultObj = await result.json().catch((error: unknown) => {
     throw new ApiError(`Request Parse Failure`, { url, data, error });
   });
   return resultObj;

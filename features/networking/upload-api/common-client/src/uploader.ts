@@ -1,6 +1,6 @@
 import { UploadUrl } from '@ricklove/upload-api-common';
 import { AppError } from '@ricklove/utils-core';
-import { fetchWithTimeout } from '@ricklove/utils-web';
+import { fetchWithTimeout } from '@ricklove/utils-fetch';
 import { createUploadApiWebClient } from './web-client';
 
 export const downloadData = async (getUrl: string) => {

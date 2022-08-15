@@ -60,9 +60,11 @@ specifiers:
   '@rush-temp/typescript-type-system-adventure': file:./projects/typescript-type-system-adventure.tgz
   '@rush-temp/upload-api-client': file:./projects/upload-api-client.tgz
   '@rush-temp/upload-api-common': file:./projects/upload-api-common.tgz
+  '@rush-temp/upload-api-common-client': file:./projects/upload-api-common-client.tgz
   '@rush-temp/upload-api-server': file:./projects/upload-api-server.tgz
   '@rush-temp/user-data-service': file:./projects/user-data-service.tgz
   '@rush-temp/utils-core': file:./projects/utils-core.tgz
+  '@rush-temp/utils-fetch': file:./projects/utils-fetch.tgz
   '@rush-temp/utils-files': file:./projects/utils-files.tgz
   '@rush-temp/utils-node': file:./projects/utils-node.tgz
   '@rush-temp/utils-react': file:./projects/utils-react.tgz
@@ -115,6 +117,7 @@ specifiers:
   hash-wasm: ~4.9.0
   highlight.js: ~9.1.0
   html5parser: 2.0.2
+  isomorphic-unfetch: 3.1.0
   lodash: ~4.17.21
   mocha: ^8.4.0
   next: ^11.0.0
@@ -202,9 +205,11 @@ dependencies:
   '@rush-temp/typescript-type-system-adventure': file:projects/typescript-type-system-adventure.tgz
   '@rush-temp/upload-api-client': file:projects/upload-api-client.tgz_@babel+core@7.15.0
   '@rush-temp/upload-api-common': file:projects/upload-api-common.tgz
+  '@rush-temp/upload-api-common-client': file:projects/upload-api-common-client.tgz
   '@rush-temp/upload-api-server': file:projects/upload-api-server.tgz
   '@rush-temp/user-data-service': file:projects/user-data-service.tgz_@babel+core@7.15.0
   '@rush-temp/utils-core': file:projects/utils-core.tgz
+  '@rush-temp/utils-fetch': file:projects/utils-fetch.tgz
   '@rush-temp/utils-files': file:projects/utils-files.tgz
   '@rush-temp/utils-node': file:projects/utils-node.tgz
   '@rush-temp/utils-react': file:projects/utils-react.tgz
@@ -257,6 +262,7 @@ dependencies:
   hash-wasm: 4.9.0
   highlight.js: 9.1.0
   html5parser: 2.0.2
+  isomorphic-unfetch: 3.1.0
   lodash: 4.17.21
   mocha: 8.4.0
   next: 11.1.0_d656e95d5564dbefda9f605dfed71e60
@@ -8589,6 +8595,13 @@ packages:
     engines: {node: '>=0.10.0'}
     dev: false
 
+  /isomorphic-unfetch/3.1.0:
+    resolution: {integrity: sha512-geDJjpoZ8N0kWexiwkX8F9NkTsXhetLPVbZFQ+JTW239QNOwvB0gniuR1Wc6f0AMTn7/mFGyXvHTifrCp/GH8Q==}
+    dependencies:
+      node-fetch: 2.6.1
+      unfetch: 4.2.0
+    dev: false
+
   /isstream/0.1.2:
     resolution: {integrity: sha1-R+Y/evVa+m+S4VAOaQ64uFKcCZo=}
     dev: false
@@ -14388,6 +14401,10 @@ packages:
     dev: false
     optional: true
 
+  /unfetch/4.2.0:
+    resolution: {integrity: sha512-F9p7yYCn6cIW9El1zi0HI6vqpeIvBsr3dSuRO6Xuppb1u5rXpCPmMvLSyECLhybr9isec8Ohl0hPekMVrEinDA==}
+    dev: false
+
   /unified/10.1.2:
     resolution: {integrity: sha512-pUSWAi/RAnVy1Pif2kAoeWNBa3JVrx0MId2LASj8G+7AiHWoKZNTomq6LG326T68U7/e263X6fTdcXIy7XnF7Q==}
     dependencies:
@@ -16098,7 +16115,7 @@ packages:
     dev: false
 
   file:projects/church-join-the-journey.tgz_70d6492c0feb1eb5d83e62cce7c43fd5:
-    resolution: {integrity: sha512-HKADlVk+K0cCshXMLHDd1X1ocjZWBbzxzkYWO+LnpRMExXV0J/fwKVzr5LvdaG+CwI2WGwUuNoiuooxSyuXTnA==, tarball: file:projects/church-join-the-journey.tgz}
+    resolution: {integrity: sha512-OCiizsWpzfS5HweIU+Ile+DIfmBhbfjxb8a9fHoh7b21XRC6AUpT0OrxaRIau/vqn8gkNTdxZhsOwSizRN7AgQ==, tarball: file:projects/church-join-the-journey.tgz}
     id: file:projects/church-join-the-journey.tgz
     name: '@rush-temp/church-join-the-journey'
     version: 0.0.0
@@ -16504,7 +16521,7 @@ packages:
     dev: false
 
   file:projects/upload-api-client.tgz_@babel+core@7.15.0:
-    resolution: {integrity: sha512-Laz3gZx7TAUoBzE85EJZz0w6xPpKS5OJH1zEahpT0GBym5SsiqNSu1RT5zoOoBFE4MaWBiTq0BP5VGfwc9An/g==, tarball: file:projects/upload-api-client.tgz}
+    resolution: {integrity: sha512-KOAuYPtqok8xorx0HLwAo7m6ygpaeMTTov2Np7bmsymcv6D9zMs0003ENA1tHmD2ycZSJOSpHYZp2WNwY6+Bng==, tarball: file:projects/upload-api-client.tgz}
     id: file:projects/upload-api-client.tgz
     name: '@rush-temp/upload-api-client'
     version: 0.0.0
@@ -16514,6 +16531,12 @@ packages:
       react: 17.0.2
     transitivePeerDependencies:
       - '@babel/core'
+    dev: false
+
+  file:projects/upload-api-common-client.tgz:
+    resolution: {integrity: sha512-wHnLAvNY6VCIfk3nsmXfTv54enZ5F1GSXVIVye7sLASElbPKcePvqyS2Iv/5GWy0Pn4RllfRs27skto92J3clw==, tarball: file:projects/upload-api-common-client.tgz}
+    name: '@rush-temp/upload-api-common-client'
+    version: 0.0.0
     dev: false
 
   file:projects/upload-api-common.tgz:
@@ -16553,6 +16576,14 @@ packages:
     version: 0.0.0
     dev: false
 
+  file:projects/utils-fetch.tgz:
+    resolution: {integrity: sha512-juCuEbQTRY5qi3wpLHb/ATTl+q7WwoLQYv3qb+XqnXfJZogQhsOWlQCfLMbjMI+tYBlH9q459dKBPQRHXYzUHg==, tarball: file:projects/utils-fetch.tgz}
+    name: '@rush-temp/utils-fetch'
+    version: 0.0.0
+    dependencies:
+      isomorphic-unfetch: 3.1.0
+    dev: false
+
   file:projects/utils-files.tgz:
     resolution: {integrity: sha512-sXo6tjibc1hGZYVlebLH9pEI9brs+MtCybYFiO2Bdx9vRMgUQ6a4dLOCq0jFAFeZvmwuQ9KYGpl1UDSNJ67g0Q==, tarball: file:projects/utils-files.tgz}
     name: '@rush-temp/utils-files'
@@ -16581,7 +16612,7 @@ packages:
     dev: false
 
   file:projects/utils-web.tgz:
-    resolution: {integrity: sha512-uX9yYBsInsPgWHCi5gNZdhUQ91cBNR0WfU5/io7mtLdtEPxiOYS3pc4ozwhbgT/UDpEo1kAxh2bjyAZrxLqw/Q==, tarball: file:projects/utils-web.tgz}
+    resolution: {integrity: sha512-i9Q5UVoeNq9VmEdpyKw7GOtnkLzh1OVnldQq8PkW7sayb+4Qy4afBYhDxHMkX8oo5KkmIr6nvlwqzlGxhjgXYg==, tarball: file:projects/utils-web.tgz}
     name: '@rush-temp/utils-web'
     version: 0.0.0
     dev: false
