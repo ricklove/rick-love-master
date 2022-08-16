@@ -126,7 +126,6 @@ specifiers:
   mocha: ^8.4.0
   next: ^11.0.0
   next-transpile-modules: ~8.0.0
-  node-fetch: ^3.2.10
   p5: 1.4.0
   prism-themes: ^1.4.0
   prismjs: ^1.21.0
@@ -276,7 +275,6 @@ dependencies:
   mocha: 8.4.0
   next: 11.1.0_d656e95d5564dbefda9f605dfed71e60
   next-transpile-modules: 8.0.0
-  node-fetch: 3.2.10
   p5: 1.4.0
   prism-themes: 1.8.0
   prismjs: 1.24.1
@@ -16924,7 +16922,7 @@ packages:
     dev: false
 
   file:projects/church-join-the-journey-components.tgz_@babel+core@7.15.0:
-    resolution: {integrity: sha512-40eAu4KEOIi560r09LFBxs3bE5nXIkLbYnes2rTzjl+pFgp0v0+/G21O9xCE+Z4WB4fHPvu0PVEWRRzEqtVo4w==, tarball: file:projects/church-join-the-journey-components.tgz}
+    resolution: {integrity: sha512-GkjX4iCDA6uixkqKsjYYkdWax2kw+/D7AbhXoA4p1Mq9Da7P2XGIlldD3dUGv5vqL9nczwuf8K3bGdQq2NRJCA==, tarball: file:projects/church-join-the-journey-components.tgz}
     id: file:projects/church-join-the-journey-components.tgz
     name: '@rush-temp/church-join-the-journey-components'
     version: 0.0.0
@@ -16932,8 +16930,10 @@ packages:
       '@emotion/react': 11.4.1_56f22c50b68024c6e259393098372ce5
       '@types/react': 17.0.19
       react: 17.0.2
+      react-markdown: 8.0.3_4cd822c6044f4c1a7e1f1fea0e728f12
     transitivePeerDependencies:
       - '@babel/core'
+      - supports-color
     dev: false
 
   file:projects/church-join-the-journey-exporter.tgz_70d6492c0feb1eb5d83e62cce7c43fd5:
@@ -16952,7 +16952,7 @@ packages:
     dev: false
 
   file:projects/church-join-the-journey-site.tgz:
-    resolution: {integrity: sha512-4O641Us7mY9saki4EqGLXInkzVTxuGrOIxoJBs165+4cmKtVy6CT/6Rxkc7+YJTlMx47sNb1t6KPvvZ8SY3oFQ==, tarball: file:projects/church-join-the-journey-site.tgz}
+    resolution: {integrity: sha512-fO+TXrFFfKOGu57aqtPN2Sm4Q/EGRoYhtgsCFsqPPCy8xScIg/aAYLlVVDfPN9z0wxSlKwhPsddjJLshQ1mF0w==, tarball: file:projects/church-join-the-journey-site.tgz}
     name: '@rush-temp/church-join-the-journey-site'
     version: 0.0.0
     dependencies:
@@ -17417,7 +17417,7 @@ packages:
     dev: false
 
   file:projects/utils-fetch.tgz:
-    resolution: {integrity: sha512-MUVsvaIlWFiTNNKHel7R/6hN13nH7HpKJ/M9DlRGoWo/ztDM1XyP6S+nyWzedyruxVo8enmaKkbywA7dJ9iTsA==, tarball: file:projects/utils-fetch.tgz}
+    resolution: {integrity: sha512-i9JX0fYCuXlhPqSBQSbC0Qm/2JRRcw3t/RZjb2m9DKBz3bIiMoOH5j7qeZx8NHmdFrk7gCWDFeG6kQzwILXP7A==, tarball: file:projects/utils-fetch.tgz}
     name: '@rush-temp/utils-fetch'
     version: 0.0.0
     dependencies:

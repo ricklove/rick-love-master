@@ -3,6 +3,7 @@ import type { ArticleItem as ArticleItemRaw, ArticlesContentDocument } from '@ri
 import { C } from '@ricklove/react-controls';
 import { fetchJsonGetRequest } from '@ricklove/utils-fetch';
 import { useAsyncWorker } from '@ricklove/utils-react';
+import { Markdown } from './markdown';
 
 type ArticleItem = ArticleItemRaw & { key: string };
 
@@ -17,8 +18,12 @@ export const JoinTheJourneyArticleList = ({ config }: { config: JoinTheJourneyCo
   const { loading, error, doWork } = useAsyncWorker();
   useEffect(() => {
     doWork(async (stopIfObsolete) => {
+      console.log(`JoinTheJourneyArticleList LOADING`, { config });
+
       const result = await fetchJsonGetRequest<ArticlesContentDocument>(config.articlesContentUrl);
       stopIfObsolete();
+
+      console.log(`JoinTheJourneyArticleList LOADED`, { result });
 
       setItems(
         result.articles.map((x) => ({
@@ -38,18 +43,26 @@ export const JoinTheJourneyArticleList = ({ config }: { config: JoinTheJourneyCo
 
   return (
     <>
-      <C.Loading loading={loading} />
-      <C.ErrorBox error={error} />
-      {!article && (
-        <div className='flex flex-row flex-wrap'>
-          {items?.map((x) => (
-            <Fragment key={x.key}>
-              <ArticleItemView item={x} onOpen={openArticle} />
-            </Fragment>
-          ))}
-        </div>
-      )}
-      {article && <ArticleDetailView item={article} onClose={closeArticle} />}
+      <div>
+        <C.Loading loading={loading} />
+        <C.ErrorBox error={error} />
+        {!article && (
+          <div
+            style={{
+              display: `flex`,
+              flexDirection: `row`,
+              flexWrap: `wrap`,
+            }}
+          >
+            {items?.map((x) => (
+              <Fragment key={x.key}>
+                <ArticleItemView item={x} onOpen={openArticle} />
+              </Fragment>
+            ))}
+          </div>
+        )}
+        {article && <ArticleDetailView item={article} onClose={closeArticle} />}
+      </div>
     </>
   );
 };
@@ -61,13 +74,30 @@ const ArticleItemView = ({ item, onOpen }: { item: ArticleItem; onOpen: (item: A
 
   return (
     <>
-      <div className='flex flex-col' onClick={open}>
+      <div
+        style={{
+          display: `flex`,
+          flexDirection: `column`,
+          flexWrap: `wrap`,
+          padding: 8,
+          margin: 8,
+          boxShadow: `rgba(100, 100, 111, 0.2) 0px 7px 29px 0px`,
+        }}
+        onClick={open}
+      >
         <div>{title}</div>
         <div>{verse}</div>
         <div>{author}</div>
         <div>{date}</div>
         <div>
-          <img src={image} />
+          <C.SmartImage
+            src={image}
+            alt={author ?? `Author`}
+            style={{
+              width: 120,
+              maxWidth: `100%`,
+            }}
+          />
         </div>
       </div>
     </>
@@ -81,16 +111,30 @@ const ArticleDetailView = ({ item, onClose }: { item: ArticleItem; onClose: (ite
 
   return (
     <>
-      <div className='flex flex-col' onClick={close}>
+      <div
+        style={{
+          display: `flex`,
+          flexDirection: `column`,
+        }}
+        onClick={close}
+      >
         <div>{title}</div>
         <div>{verse}</div>
         <div>{author}</div>
         <div>{date}</div>
+        {/* <div>
+          <C.SmartImage
+            src={image}
+            alt={author ?? `Author`}
+            style={{
+              width: 300,
+              maxWidth: `100%`,
+            }}
+          />
+        </div> */}
         <div>
-          <img src={image} />
+          <Markdown markdown={item.markdown} />
         </div>
-        {/* TODO: Format Markdown */}
-        <div className='whitespace-pre'>{item.markdown}</div>
       </div>
     </>
   );

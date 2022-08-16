@@ -1,4 +1,6 @@
 {
-  "extends": "@ricklove/config-lib-rig/profiles/default/tsconfig-base.json",
-  "include": ["index.ts"]
+  "extends": "@ricklove/config-lib-rig/profiles/default/tsconfig-web.json",
+  "include": [
+    "index.ts"
+  ]
 }

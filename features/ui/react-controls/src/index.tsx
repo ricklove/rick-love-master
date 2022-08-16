@@ -5,7 +5,9 @@ import { Button } from './button';
 import { ErrorBox, ErrorMessage } from './error-box';
 import { Icon } from './icon';
 import { Input_Currency, Input_Email, Input_Password, Input_Phone, Input_Text, Input_Username } from './inputs';
+import { LazyComponent } from './lazy-component';
 import { Loading, LoadingInline } from './loading';
+import { SmartImage } from './smart-image';
 
 type PropsOf<T> = T extends (props: infer P) => JSX.Element ? P : never;
 
@@ -35,4 +37,6 @@ export const C = {
   Input_Phone,
   Input_Email,
   Input_Currency,
+  LazyComponent,
+  SmartImage,
 };

@@ -7,7 +7,7 @@
     "build": "heft test --clean",
     "build:watch": "heft build"
   },
-  "dependencies": {
+  "peer-dependencies": {
     "node-fetch": "^3.2.10"
   },
   "devDependencies": {
