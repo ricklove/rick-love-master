@@ -1,8 +1,9 @@
 import { IAttribute, INode, ITag, parse, SyntaxKind, walk } from 'html5parser';
 import { delay } from '@ricklove/utils-core';
+import { fetchWithTimeout } from '@ricklove/utils-fetch';
 
 const fetchWithDelay = async (url: string, timeMs: number) => {
-  const result = await fetch(url);
+  const result = await fetchWithTimeout(url, { method: `get` });
   // Prevent bot detection
   await delay(Math.floor(timeMs * (0.75 + 0.5 * Math.random())));
   return result;
@@ -51,7 +52,8 @@ export const scrapeEntries = async (debugTools: ScrapeEntriesDependencies): Prom
   const existing = existingJson ? (JSON.parse(existingJson) as ArticlesContentDocument) : undefined;
 
   const urlsToScrape = urls.reverse();
-  // .slice(0, 10)
+  // TESTING
+  //.slice(0, 10);
 
   const saveArticles = async (articlesRaw: ArticleItem[]) => {
     const articles = [...articlesRaw].sort((a, b) => a.metadata.date.localeCompare(b.metadata.date));
@@ -74,7 +76,7 @@ export const scrapeEntries = async (debugTools: ScrapeEntriesDependencies): Prom
     - ![](${x.metadata.image})
   `,
       )
-      .join();
+      .join(``);
 
     await storage.saveTextFile(`./output/index.md`, indexMarkdown);
   };
@@ -284,7 +286,7 @@ const scrapeEntry = async (
     .exec(links.join(` `))?.[1]
     .replace(`%20`, ` `)
     .replace(/\+/g, ` `);
-  console.log(`scrapeEntry links`, { links, verse });
+  // console.log(`scrapeEntry links`, { links, verse });
 
   const markdownContentLines_beforeClickToRead = extractMarkdown(
     textContentNodes.filter((x) => x.end < iClickToReadTag),
@@ -327,7 +329,7 @@ const scrapeEntry = async (
     ].filter((x) => x > 0),
   );
 
-  console.log(iEndContent, { iEndContent });
+  // console.log(iEndContent, { iEndContent });
 
   const markdownContent = markdownContentLines.slice(0, iEndContent).join(`\n\n`);
 

@@ -122,7 +122,7 @@ specifiers:
   mocha: ^8.4.0
   next: ^11.0.0
   next-transpile-modules: ~8.0.0
-  node-fetch: 3.2.10
+  node-fetch: ^3.2.10
   p5: 1.4.0
   prism-themes: ^1.4.0
   prismjs: ^1.21.0
@@ -5084,6 +5084,14 @@ packages:
       whatwg-fetch: 2.0.4
     dev: false
 
+  /cross-fetch/3.1.5:
+    resolution: {integrity: sha512-lvb1SBsI0Z7GDwmuid+mU3kWVBwTVUbe7S0H52yaaAdQOXq2YktTCZdlAcNKFzE6QtRz0snpw9bNiPeOIkkQvw==}
+    dependencies:
+      node-fetch: 2.6.7
+    transitivePeerDependencies:
+      - encoding
+    dev: false
+
   /cross-spawn/6.0.5:
     resolution: {integrity: sha512-eTVLrBSt7fjbDygz805pMnstIs2VTBNkRm0qxZd+M7A5XDdxVRWO5MxGBXZhjY4cqLYLdtrGqRf8mBPmzwSpWQ==}
     engines: {node: '>=4.8'}
@@ -8598,8 +8606,10 @@ packages:
   /isomorphic-unfetch/3.1.0:
     resolution: {integrity: sha512-geDJjpoZ8N0kWexiwkX8F9NkTsXhetLPVbZFQ+JTW239QNOwvB0gniuR1Wc6f0AMTn7/mFGyXvHTifrCp/GH8Q==}
     dependencies:
-      node-fetch: 2.6.1
+      node-fetch: 2.6.7
       unfetch: 4.2.0
+    transitivePeerDependencies:
+      - encoding
     dev: false
 
   /isstream/0.1.2:
@@ -10902,6 +10912,18 @@ packages:
   /node-fetch/2.6.1:
     resolution: {integrity: sha512-V4aYg89jEoVRxRb2fJdAg8FHvI7cEyYdVAh94HH0UIK8oJxUfkjlDQN9RbMx+bEjP7+ggMiFRprSti032Oipxw==}
     engines: {node: 4.x || >=6.0.0}
+    dev: false
+
+  /node-fetch/2.6.7:
+    resolution: {integrity: sha512-ZjMPFEfVx5j+y2yF35Kzx5sF7kDzxuDj6ziH4FFbOp87zKDZNx8yExJIb05OGF4Nlt9IHFIMBkRl41VdvcNdbQ==}
+    engines: {node: 4.x || >=6.0.0}
+    peerDependencies:
+      encoding: ^0.1.0
+    peerDependenciesMeta:
+      encoding:
+        optional: true
+    dependencies:
+      whatwg-url: 5.0.0
     dev: false
 
   /node-fetch/3.2.10:
@@ -14066,6 +14088,10 @@ packages:
       punycode: 2.1.1
     dev: false
 
+  /tr46/0.0.3:
+    resolution: {integrity: sha512-N3WMsuqV66lT30CrXNbEjx4GEwlow3v6rr4mCcv6prnfwhS01rkgyFdjPNBYd9br7LpXV1+Emh01fHnq2Gdgrw==}
+    dev: false
+
   /tr46/1.0.1:
     resolution: {integrity: sha1-qLE/1r/SSJUZZ0zN5VujaTtwbQk=}
     dependencies:
@@ -15345,6 +15371,10 @@ packages:
       web3-utils: 1.5.2
     dev: false
 
+  /webidl-conversions/3.0.1:
+    resolution: {integrity: sha512-2JAn3z8AR6rjK8Sm8orRC0h/bcl/DqL7tRPdGZ4I1CjdF+EaMLmYxBHyXuKL849eucPFhvBoxMsflfOb8kxaeQ==}
+    dev: false
+
   /webidl-conversions/4.0.2:
     resolution: {integrity: sha512-YQ+BmxuTgd6UXZW3+ICGfyqRyHXVlD5GtQr5+qjiNW7bF0cqrzX500HVXPBOvgXb5YnzDd+h0zqyv61KUD7+Sg==}
     dev: false
@@ -15532,6 +15562,13 @@ packages:
 
   /whatwg-mimetype/2.3.0:
     resolution: {integrity: sha512-M4yMwr6mAnQz76TbJm914+gPpB/nCwvZbJU28cUD6dR004SAxDLOOSUaB1JDRqLtaOV/vi0IC5lEAGFgrjGv/g==}
+    dev: false
+
+  /whatwg-url/5.0.0:
+    resolution: {integrity: sha512-saE57nupxk6v3HY35+jzBwYa0rKSy0XR8JSxZPwgLr7ys0IBzhGviA1/TUGJLmSVqs8pb9AnvICXEuOHLprYTw==}
+    dependencies:
+      tr46: 0.0.3
+      webidl-conversions: 3.0.1
     dev: false
 
   /whatwg-url/7.1.0:
@@ -16115,7 +16152,7 @@ packages:
     dev: false
 
   file:projects/church-join-the-journey.tgz_70d6492c0feb1eb5d83e62cce7c43fd5:
-    resolution: {integrity: sha512-OCiizsWpzfS5HweIU+Ile+DIfmBhbfjxb8a9fHoh7b21XRC6AUpT0OrxaRIau/vqn8gkNTdxZhsOwSizRN7AgQ==, tarball: file:projects/church-join-the-journey.tgz}
+    resolution: {integrity: sha512-l1M7HpCDTxoK/C/F8fdIpStids52eCQs4EJ1ggOZhqM9IaoxWAl3iesv29LIidLsXYr/TdwiQY92rIunnVgqkw==, tarball: file:projects/church-join-the-journey.tgz}
     id: file:projects/church-join-the-journey.tgz
     name: '@rush-temp/church-join-the-journey'
     version: 0.0.0
@@ -16534,7 +16571,7 @@ packages:
     dev: false
 
   file:projects/upload-api-common-client.tgz:
-    resolution: {integrity: sha512-wHnLAvNY6VCIfk3nsmXfTv54enZ5F1GSXVIVye7sLASElbPKcePvqyS2Iv/5GWy0Pn4RllfRs27skto92J3clw==, tarball: file:projects/upload-api-common-client.tgz}
+    resolution: {integrity: sha512-pyZtlVkxqAFjTI8eH3KFY622SMKD0YsI6a9gSA5cYrbsGdnDczIuGnzgvoAy4joSnEv6eewBBDvwust7O4CtIg==, tarball: file:projects/upload-api-common-client.tgz}
     name: '@rush-temp/upload-api-common-client'
     version: 0.0.0
     dev: false
@@ -16577,11 +16614,16 @@ packages:
     dev: false
 
   file:projects/utils-fetch.tgz:
-    resolution: {integrity: sha512-juCuEbQTRY5qi3wpLHb/ATTl+q7WwoLQYv3qb+XqnXfJZogQhsOWlQCfLMbjMI+tYBlH9q459dKBPQRHXYzUHg==, tarball: file:projects/utils-fetch.tgz}
+    resolution: {integrity: sha512-c/5jlyccxLxMqlwRxapYz5ghPUZjiE5htI8McUPiijClgzJQ6r+Z/ElvKfB2ElwGjQG90ziXA1JavpXLELEQag==, tarball: file:projects/utils-fetch.tgz}
     name: '@rush-temp/utils-fetch'
     version: 0.0.0
     dependencies:
+      '@types/node-fetch': 2.6.2
+      cross-fetch: 3.1.5
       isomorphic-unfetch: 3.1.0
+      node-fetch: 3.2.10
+    transitivePeerDependencies:
+      - encoding
     dev: false
 
   file:projects/utils-files.tgz:

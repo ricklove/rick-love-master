@@ -8,10 +8,11 @@
     "build:watch": "heft build"
   },
   "dependencies": {
-    "isomorphic-unfetch": "3.1.0"
+    "node-fetch": "^3.2.10"
   },
   "devDependencies": {
     "@ricklove/config-lib-rig": "*",
-    "@ricklove/utils-core": "*"
+    "@ricklove/utils-core": "*",
+    "@types/node-fetch": "^2.6.2"
   }
 }

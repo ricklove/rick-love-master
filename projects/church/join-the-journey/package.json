@@ -15,8 +15,7 @@
     "@ricklove/config-lib-rig": "*",
     "@ricklove/upload-api-common-client": "*",
     "@ricklove/utils-core": "*",
-    "@types/node-fetch": "^2.6.2",
-    "node-fetch": "3.2.10",
+    "@ricklove/utils-fetch": "*",
     "ts-node": "~10.9.1"
   }
 }

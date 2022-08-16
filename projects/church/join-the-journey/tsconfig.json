@@ -1,5 +1,5 @@
 {
-  "extends": "@ricklove/config-lib-rig/profiles/default/tsconfig-web.json",
+  "extends": "@ricklove/config-lib-rig/profiles/default/tsconfig-base.json",
   "include": [
     "index.ts",
     "src"
