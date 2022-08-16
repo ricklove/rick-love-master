@@ -3,7 +3,6 @@ import { JoinTheJourneyArticleList } from '@ricklove/church-join-the-journey-com
 export const App = () => {
   return (
     <div>
-      Join the Journey
       <JoinTheJourneyArticleList
         config={{
           articlesContentUrl:
