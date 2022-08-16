@@ -28,7 +28,8 @@ body {
   margin: 0;
   display: flex;
   place-items: center;
-  min-width: 320px;
+  min-width: 120px;
+  max-width: 100vw;
   min-height: 100vh;
 }
 
@@ -66,5 +67,12 @@ button:focus-visible {
   }
   button {
     background-color: #f9f9f9;
+  }
+}
+
+@media only screen and (max-width: 320px) {
+  :root {
+    font-size: 12px;
+    line-height: 1.2em;
   }
 }

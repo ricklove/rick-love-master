@@ -52,6 +52,7 @@ export const JoinTheJourneyArticleList = ({ config }: { config: JoinTheJourneyCo
               display: `flex`,
               flexDirection: `row`,
               flexWrap: `wrap`,
+              maxWidth: `100vw`,
             }}
           >
             {items?.map((x) => (
