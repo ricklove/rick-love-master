@@ -1,6 +1,7 @@
 import { IAttribute, INode, ITag, parse, SyntaxKind, walk } from 'html5parser';
-import { delay } from '@ricklove/utils-core';
+import { delay, hashCode, replaceAll } from '@ricklove/utils-core';
 import { fetchWithTimeout } from '@ricklove/utils-fetch';
+import { VirtualFileSystem } from '../../../../features/networking/upload-api/common-client/lib';
 
 const fetchWithDelay = async (url: string, timeMs: number) => {
   const result = await fetchWithTimeout(url, { method: `get` });
@@ -10,14 +11,11 @@ const fetchWithDelay = async (url: string, timeMs: number) => {
 };
 
 type ScrapeEntriesDependencies = {
-  storage: {
-    loadTextFile: (filePath: string) => Promise<undefined | string>;
-    saveTextFile: (filePath: string, content: string) => Promise<void>;
-  };
+  storage: VirtualFileSystem;
 };
 
-export const scrapeEntries = async (debugTools: ScrapeEntriesDependencies): Promise<void> => {
-  const { storage } = debugTools;
+export const scrapeEntries = async (dependencies: ScrapeEntriesDependencies): Promise<void> => {
+  const { storage } = dependencies;
 
   const url = `https://jointhejourneycollegeside.us5.list-manage.com/generate-js/?u=f15ff1bd1f3d1b2775c098f64&fid=34242&show=365`;
   const result = await fetchWithDelay(url, 0);
@@ -46,10 +44,9 @@ export const scrapeEntries = async (debugTools: ScrapeEntriesDependencies): Prom
   // console.log(urls, { urlMatches, urls });
   await storage.saveTextFile(`./output/urls.log`, urls.join(`\n`));
 
-  const ARTICLES_CONTENT_DOCUMENT_PATH = `./output/articles-content.json`;
-  const ARTICLES_INDEX_DOCUMENT_PATH = `./output/articles-index.json`;
-  const existingJson = await storage.loadTextFile(ARTICLES_CONTENT_DOCUMENT_PATH);
-  const existing = existingJson ? (JSON.parse(existingJson) as ArticlesContentDocument) : undefined;
+  const ARTICLES_CONTENT_DOCUMENT_PATH = `./articles-content.json`;
+  const ARTICLES_INDEX_DOCUMENT_PATH = `./articles-index.json`;
+  const existing = await storage.loadJsonFile<ArticlesContentDocument>(ARTICLES_CONTENT_DOCUMENT_PATH);
 
   const urlsToScrape = urls.reverse();
   // TESTING
@@ -64,8 +61,8 @@ export const scrapeEntries = async (debugTools: ScrapeEntriesDependencies): Prom
     const articlesIndexDoc: ArticlesIndexDocument = {
       articles: articles.map((x) => ({ index: x.index, metadata: x.metadata })),
     };
-    await storage.saveTextFile(ARTICLES_CONTENT_DOCUMENT_PATH, JSON.stringify(articlesContentDoc, null, 2));
-    await storage.saveTextFile(ARTICLES_INDEX_DOCUMENT_PATH, JSON.stringify(articlesIndexDoc, null, 2));
+    await storage.saveJsonFile(ARTICLES_CONTENT_DOCUMENT_PATH, articlesContentDoc);
+    await storage.saveJsonFile(ARTICLES_INDEX_DOCUMENT_PATH, articlesIndexDoc);
 
     const indexMarkdown = articles
       .map(
@@ -85,12 +82,20 @@ export const scrapeEntries = async (debugTools: ScrapeEntriesDependencies): Prom
   for (const [iUrl, url] of urlsToScrape.entries()) {
     const a = items.find((a) => a.metadata.url === url);
     if (a) {
-      console.log(`SKIP - already found ${url}`);
+      console.log(`SKIP - already found [${iUrl}]: ${url}`);
       continue;
     }
 
-    console.log(`scraping ${url}`);
-    items.push(await scrapeEntry(url, iUrl, debugTools));
+    console.log(`scraping [${iUrl}]: ${url}`);
+    items.push(await scrapeEntry(dependencies, url, iUrl));
+    await saveArticles(items);
+  }
+
+  for (const x of items) {
+    if (x.isCloned) {
+      continue;
+    }
+    await cloneAndUpdateArticleImages(dependencies, x);
     await saveArticles(items);
   }
 
@@ -107,6 +112,7 @@ type ArticlesContentDocument = {
 };
 type ArticleItem = {
   index: number;
+  isCloned?: boolean;
   metadata: {
     title: string | undefined;
     author: string | undefined;
@@ -118,11 +124,11 @@ type ArticleItem = {
   markdown: string;
 };
 const scrapeEntry = async (
+  dependencies: ScrapeEntriesDependencies,
   url: string,
   iDebugUrl: number,
-  debugTools: ScrapeEntriesDependencies,
 ): Promise<ArticleItem> => {
-  const { storage } = debugTools;
+  const { storage } = dependencies;
 
   const getArticleText = async () => {
     const RAW_TEXT_FILE_PATH = `./output/articles/url-${iDebugUrl}-resultTextRaw.log`;
@@ -378,4 +384,57 @@ ${markdownContent}
     metadata,
     markdown: markdownContent,
   };
+};
+
+const cloneAndUpdateArticleImages = async (dependencies: ScrapeEntriesDependencies, article: ArticleItem) => {
+  if (article.isCloned) {
+    return;
+  }
+
+  // ![](https://mcusercontent.com/f15ff1bd1f3d1b2775c098f64/images/d054f0de-b7cd-3636-ec98-7835843d9cf5.png)
+  const markdownImages = [...article.markdown.matchAll(/!\[\]\(([^)]+)\)/g)].map((m) => m[1]);
+  const imageUrls = [...new Set([article.metadata.image, ...markdownImages])];
+
+  const getImageFilePath = (imageUrl: string) => {
+    const hash = hashCode(imageUrl, 42);
+    const filePath = `./image/${hash}`;
+    return filePath;
+  };
+
+  const images = imageUrls.map((x) => ({
+    imageUrl: x,
+    filePath: getImageFilePath(x),
+    clonedImageUrl: undefined as undefined | string,
+  }));
+
+  for (const image of images) {
+    const clonedImageUrl = await dependencies.storage.getFilePublicUrl(image.filePath);
+    if (clonedImageUrl) {
+      image.clonedImageUrl = clonedImageUrl;
+      continue;
+    }
+
+    const result = await fetchWithDelay(image.imageUrl, 100);
+    const contentType = result.headers.get(`Content-Type`) ?? ``;
+    await dependencies.storage.saveBinaryFile(image.filePath, await result.arrayBuffer(), contentType);
+    image.clonedImageUrl = await dependencies.storage.getFilePublicUrl(image.filePath);
+  }
+
+  // Replace article content
+  const getFinalImageUrl = async (imageUrl: string) => {
+    return images.find((x) => x.imageUrl === imageUrl)?.clonedImageUrl ?? imageUrl;
+  };
+
+  // eslint-disable-next-line require-atomic-updates
+  article.metadata.image = await getFinalImageUrl(article.metadata.image);
+
+  for (const image of images) {
+    if (!image.clonedImageUrl) {
+      return;
+    }
+
+    article.markdown = replaceAll(article.markdown, image.imageUrl, image.clonedImageUrl);
+  }
+
+  // console.log(`cloneImages`, { images });
 };

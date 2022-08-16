@@ -8,7 +8,9 @@ export type VirtualFileSystem = {
   loadTextFile: (relativePath: string) => Promise<undefined | string>;
   saveJsonFile: <T extends Record<string, unknown>>(relativePath: string, content: T) => Promise<void>;
   loadJsonFile: <T extends Record<string, unknown>>(relativePath: string) => Promise<undefined | T>;
-  // saveBinaryFile: (relativePath: string, content: Stream) => Promise<void>;
+  saveBinaryFile: (relativePath: string, content: ArrayBuffer, contentType: string) => Promise<void>;
+  // loadBinaryFile: (relativePath: string, content: ArrayBuffer, contentType: string) => Promise<void>;
+  getFilePublicUrl: (relativePath: string) => Promise<undefined | string>;
 };
 
 export const createUploadApiVirtualFileSystem = (
@@ -134,6 +136,12 @@ export const createUploadApiVirtualFileSystem = (
     return f.fileAccess! as UploadUrlAccess<TKind, TData>;
   };
 
+  const getFilePublicUrl = async (relativePath: string) => {
+    await loadFileSystemIndex();
+    relativePath = normalizeRelativePath(relativePath);
+    return state.files.get(relativePath)?.accessUrl.getUrl;
+  };
+
   return {
     loadTextFile: async (relativePath) => await (await setupFileAccess(relativePath, `text/plain`, `text`)).download(),
     saveTextFile: async (relativePath, content) =>
@@ -143,5 +151,9 @@ export const createUploadApiVirtualFileSystem = (
     saveJsonFile: async <T extends Record<string, unknown>>(relativePath: string, content: T) => {
       await (await setupFileAccess<'json', T>(relativePath, `application/json`, `json`)).upload(content);
     },
+    saveBinaryFile: async (relativePath: string, content: ArrayBuffer, contentType: string) => {
+      await (await setupFileAccess(relativePath, contentType, `binary`)).upload(content);
+    },
+    getFilePublicUrl,
   };
 };
