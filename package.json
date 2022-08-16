@@ -15,7 +15,8 @@
         "lessons:serve": "cd ./projects/code-training/lesson-editor-local-server && npm run serve",
         "lessons:edit": "start http://localhost:3042/lessons/editor",
         "--- projects": "",
-        "gen:project": "npm --prefix tools/rush-packages run cli -- --d projects/church/join-the-journey/common --p @ricklove/church-join-the-journey-common --t lib",
+        "gen:project": "npm --prefix tools/rush-packages run cli -- --d projects/church/join-the-journey/site --p @ricklove/church-join-the-journey-site --t react",
+        "gen:site": "cd projects/church/join-the-journey && npm create vite@latest join-the-journey-site -- --template react-ts",
         "---": ""
     }
 }

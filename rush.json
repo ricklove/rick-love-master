@@ -577,6 +577,10 @@
       "packageName": "@ricklove/church-join-the-journey-exporter",
       "projectFolder": "projects/church/join-the-journey/exporter"
     },
+    {
+      "packageName": "@ricklove/church-join-the-journey-site",
+      "projectFolder": "projects/church/join-the-journey/join-the-journey-site"
+    },
     // Code Training
     {
       "packageName": "@ricklove/code-training-lesson-build",
