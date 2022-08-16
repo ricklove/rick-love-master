@@ -11,7 +11,7 @@ import {
   DoodleUserVotesDataJson,
   encodeDoodleDrawing,
 } from '@ricklove/doodle-common';
-import { createSmartUploader, createUploadApiWebClient, downloadData, UploadUrl } from '@ricklove/upload-api-client';
+import { createSmartUploader, createUploadApiClient, downloadData, UploadUrl } from '@ricklove/upload-api-client';
 import { distinct_key, randomItem, shuffle, toKeyValueArray } from '@ricklove/utils-core';
 
 type DoodleStorageData = {
@@ -51,7 +51,7 @@ export const createDoodleDrawingStorageService = async (config: DoodleConfig) =>
       let uploadUrl = storageAccess.load()?.doodleUploadUrl;
 
       if (!uploadUrl) {
-        const uploadApiWebClient = createUploadApiWebClient(config);
+        const uploadApiWebClient = createUploadApiClient(config);
         uploadUrl = (await uploadApiWebClient.createUploadUrl({})).uploadUrl;
       }
 

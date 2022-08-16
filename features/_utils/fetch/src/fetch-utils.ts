@@ -1,6 +1,15 @@
-import { ApiError, WebRequestType } from '@ricklove/utils-core';
+// import fetch from 'isomorphic-unfetch';
+// import fetch from 'cross-fetch';
+import type { RequestInit, Response } from 'node-fetch';
+import fetch from 'node-fetch';
+import { ApiError, FetchJsonRequestType } from '@ricklove/utils-core';
+// export type { RequestInit, Response };
 
-export function fetchWithTimeout(url: string, options: RequestInit, timeoutMs: number = 10000): Promise<Response> {
+// type UnwrapPromise<T> = T extends PromiseLike<infer U> ? U : T;
+// type Response = UnwrapPromise<ReturnType<typeof fetch>>;
+// type RequestInit = Parameters<typeof fetch>[1];
+
+export function fetchWithTimeout(url: string, options?: RequestInit, timeoutMs: number = 10000): Promise<Response> {
   return Promise.race([
     fetch(url, options),
     new Promise((resolve, reject) =>
@@ -9,7 +18,7 @@ export function fetchWithTimeout(url: string, options: RequestInit, timeoutMs: n
   ]);
 }
 
-export const webRequest: WebRequestType = async <TJson, TResponse>(
+export const fetchJsonRequest: FetchJsonRequestType = async <TJson, TResponse>(
   url: string,
   data: TJson,
   options: { method: 'GET' | 'POST' | 'PUT'; timeoutMs?: number },
@@ -30,15 +39,15 @@ export const webRequest: WebRequestType = async <TJson, TResponse>(
   if (!result.ok) {
     throw new ApiError(`Api Error`, {
       data:
-        (await result.json().catch((_error) => {
+        (await result.json().catch((_error: unknown) => {
           /* Ignore Parse Error */
         })) ?? {},
       responseStatus: result.status,
       request: { url, data },
     });
   }
-  const resultObj = await result.json().catch((error) => {
+  const resultObj = await result.json().catch((error: unknown) => {
     throw new ApiError(`Request Parse Failure`, { url, data, error });
   });
-  return resultObj;
+  return resultObj as TResponse;
 };

@@ -8,7 +8,7 @@ import { LessonModulePlayer } from '@ricklove/code-training-lesson-player';
 import { C } from '@ricklove/react-controls';
 import { Text, TouchableOpacity, View } from '@ricklove/react-native-lite';
 import { useAsyncWorker } from '@ricklove/utils-react';
-import { webRequest } from '@ricklove/utils-web';
+import { fetchJsonRequest } from '@ricklove/utils-web';
 import { createDefaultLessonModule } from './lesson-defaults';
 import { LessonModuleEditor } from './lesson-module-editor';
 
@@ -32,7 +32,7 @@ const styles = {
 } as const;
 
 export const LessonModulesClientEditor = ({ config }: { config: LessonApiConfig }) => {
-  const apiClientRef = useRef(createLessonApiClient({ webRequest, config }));
+  const apiClientRef = useRef(createLessonApiClient({ fetchJsonRequest, config }));
   const apiClient = apiClientRef.current;
 
   const [mode, setMode] = useState(`edit` as 'edit' | 'play');

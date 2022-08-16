@@ -1,7 +1,7 @@
 import { UploadApi, UploadApiEndpointName, UploadApiRequestData } from '@ricklove/upload-api-common';
-import { webRequest } from '@ricklove/utils-web';
+import { fetchJsonRequest } from '@ricklove/utils-fetch';
 
-export const createUploadApiWebClient = (config: { uploadApiUrl: string }): UploadApi => {
+export const createUploadApiClient = (config: { uploadApiUrl: string }): UploadApi => {
   async function apiRequest<T>(endpoint: UploadApiEndpointName, data: unknown): Promise<T> {
     const url = `${config.uploadApiUrl}/${endpoint}`;
 
@@ -10,7 +10,7 @@ export const createUploadApiWebClient = (config: { uploadApiUrl: string }): Uplo
       data,
     };
 
-    const resultObj = (await webRequest(url, requestData, { method: `POST` })) as { data: T };
+    const resultObj = (await fetchJsonRequest(url, requestData, { method: `POST` })) as { data: T };
 
     return resultObj.data;
   }

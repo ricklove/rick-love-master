@@ -15,7 +15,7 @@
         "lessons:serve": "cd ./projects/code-training/lesson-editor-local-server && npm run serve",
         "lessons:edit": "start http://localhost:3042/lessons/editor",
         "--- projects": "",
-        "gen:project": "npm --prefix tools/rush-packages run cli -- --d projects/church/join-the-journey --p @ricklove/church-join-the-journey --t lib",
+        "gen:project": "npm --prefix tools/rush-packages run cli -- --d features/networking/upload-api/common-client --p @ricklove/upload-api-common-client --t lib",
         "---": ""
     }
 }

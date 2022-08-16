@@ -1,2 +1,2 @@
+export * from '@ricklove/utils-fetch';
 export * from './src/query';
-export * from './src/web-request';
