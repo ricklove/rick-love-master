@@ -16952,15 +16952,17 @@ packages:
     dev: false
 
   file:projects/church-join-the-journey-site.tgz:
-    resolution: {integrity: sha512-fO+TXrFFfKOGu57aqtPN2Sm4Q/EGRoYhtgsCFsqPPCy8xScIg/aAYLlVVDfPN9z0wxSlKwhPsddjJLshQ1mF0w==, tarball: file:projects/church-join-the-journey-site.tgz}
+    resolution: {integrity: sha512-5tdDCmrNtrqlxkDVk8nnFyALU0uTY7tStKHGCzR6lwzIIu1+c3BP8sgYehxSdNC+Ec0TlVvFc6Ar3UwGKmjw/Q==, tarball: file:projects/church-join-the-journey-site.tgz}
     name: '@rush-temp/church-join-the-journey-site'
     version: 0.0.0
     dependencies:
       '@types/react': 17.0.19
       '@types/react-dom': 17.0.17
       '@vitejs/plugin-react': 2.0.1_vite@3.0.8
+      copyfiles: 2.4.1
       react: 17.0.2
       react-dom: 17.0.2_react@17.0.2
+      rimraf: 3.0.2
       typescript: 4.3.5
       vite: 3.0.8
     transitivePeerDependencies:
