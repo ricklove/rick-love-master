@@ -455,6 +455,10 @@
       "projectFolder": "features/_utils/fetch"
     },
     {
+      "packageName": "@ricklove/utils-fetch-node",
+      "projectFolder": "features/_utils/fetch-node"
+    },
+    {
       "packageName": "@ricklove/utils-files",
       "projectFolder": "features/_utils/files"
     },

@@ -68,6 +68,7 @@ specifiers:
   '@rush-temp/user-data-service': file:./projects/user-data-service.tgz
   '@rush-temp/utils-core': file:./projects/utils-core.tgz
   '@rush-temp/utils-fetch': file:./projects/utils-fetch.tgz
+  '@rush-temp/utils-fetch-node': file:./projects/utils-fetch-node.tgz
   '@rush-temp/utils-files': file:./projects/utils-files.tgz
   '@rush-temp/utils-node': file:./projects/utils-node.tgz
   '@rush-temp/utils-react': file:./projects/utils-react.tgz
@@ -126,6 +127,7 @@ specifiers:
   mocha: ^8.4.0
   next: ^11.0.0
   next-transpile-modules: ~8.0.0
+  node-fetch: ^3.2.10
   p5: 1.4.0
   prism-themes: ^1.4.0
   prismjs: ^1.21.0
@@ -217,6 +219,7 @@ dependencies:
   '@rush-temp/user-data-service': file:projects/user-data-service.tgz_@babel+core@7.15.0
   '@rush-temp/utils-core': file:projects/utils-core.tgz
   '@rush-temp/utils-fetch': file:projects/utils-fetch.tgz
+  '@rush-temp/utils-fetch-node': file:projects/utils-fetch-node.tgz
   '@rush-temp/utils-files': file:projects/utils-files.tgz
   '@rush-temp/utils-node': file:projects/utils-node.tgz
   '@rush-temp/utils-react': file:projects/utils-react.tgz
@@ -275,6 +278,7 @@ dependencies:
   mocha: 8.4.0
   next: 11.1.0_d656e95d5564dbefda9f605dfed71e60
   next-transpile-modules: 8.0.0
+  node-fetch: 3.2.10
   p5: 1.4.0
   prism-themes: 1.8.0
   prismjs: 1.24.1
@@ -16937,7 +16941,7 @@ packages:
     dev: false
 
   file:projects/church-join-the-journey-exporter.tgz_70d6492c0feb1eb5d83e62cce7c43fd5:
-    resolution: {integrity: sha512-RQPDmR06gtSlXxA6zZVJwcCFubykjXRg8fPQkOtKmIKLlxhiil4jhtDhk4vHC7Urr+BivbMAmR35MnLoqJCFHg==, tarball: file:projects/church-join-the-journey-exporter.tgz}
+    resolution: {integrity: sha512-n1ofdnT0B0aqnLpZlPUkph0EuhCMQNxt5wALrkEc9Zn1MB/aRh2RCqAWqDTxfCkNECReGBtQUuJeFqGrAERaFA==, tarball: file:projects/church-join-the-journey-exporter.tgz}
     id: file:projects/church-join-the-journey-exporter.tgz
     name: '@rush-temp/church-join-the-journey-exporter'
     version: 0.0.0
@@ -17416,6 +17420,16 @@ packages:
     resolution: {integrity: sha512-cEtPsCmZu/LjaGIm5b34vAstU79Rarmb5hXV8eiBYh3/or2wxSipwQBOXRcCSnuN1OuM3HogKdYFJABiahXkAQ==, tarball: file:projects/utils-core.tgz}
     name: '@rush-temp/utils-core'
     version: 0.0.0
+    dev: false
+
+  file:projects/utils-fetch-node.tgz:
+    resolution: {integrity: sha512-wbbsahbfa8cGkqA6FRtBPGTyVwu6LuaPUQV3RQnedrRJC7vHqL0VB3940YNR6nyDO4MgidOuuOJRyNTtzkHvqQ==, tarball: file:projects/utils-fetch-node.tgz}
+    name: '@rush-temp/utils-fetch-node'
+    version: 0.0.0
+    dependencies:
+      '@types/node': 12.12.6
+      '@types/node-fetch': 2.6.2
+      node-fetch: 3.2.10
     dev: false
 
   file:projects/utils-fetch.tgz:

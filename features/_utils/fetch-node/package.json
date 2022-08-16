@@ -1,0 +1,19 @@
+{
+  "name": "@ricklove/utils-fetch-node",
+  "version": "1.0.0",
+  "type": "module",
+  "main": "./lib/index.js",
+  "scripts": {
+    "build": "heft test --clean",
+    "build:watch": "heft build"
+  },
+  "dependencies": {
+    "@ricklove/utils-fetch": "*",
+    "node-fetch": "^3.2.10"
+  },
+  "devDependencies": {
+    "@ricklove/config-lib-rig": "*",
+    "@types/node": "12.12.6",
+    "@types/node-fetch": "^2.6.2"
+  }
+}

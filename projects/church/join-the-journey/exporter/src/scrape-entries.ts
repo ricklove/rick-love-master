@@ -6,7 +6,7 @@ import type {
 } from '@ricklove/church-join-the-journey-common';
 import type { VirtualFileSystem } from '@ricklove/upload-api-common-client';
 import { delay, hashCode, replaceAll } from '@ricklove/utils-core';
-import { fetchWithTimeout } from '@ricklove/utils-fetch';
+import { fetchWithTimeout } from '@ricklove/utils-fetch-node';
 
 const fetchWithDelay = async (url: string, timeMs: number) => {
   const result = await fetchWithTimeout(url, { method: `get` });

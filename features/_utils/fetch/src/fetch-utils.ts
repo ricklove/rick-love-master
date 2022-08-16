@@ -2,7 +2,7 @@
 // import fetch from 'cross-fetch';
 import type { RequestInit, Response } from 'node-fetch';
 // import fetch from 'node-fetch';
-import { ApiError, FetchJsonRequestType } from '@ricklove/utils-core';
+import { ApiError, AppError, FetchJsonRequestType } from '@ricklove/utils-core';
 // export type { RequestInit, Response };
 
 // type UnwrapPromise<T> = T extends PromiseLike<infer U> ? U : T;
@@ -10,16 +10,14 @@ import { ApiError, FetchJsonRequestType } from '@ricklove/utils-core';
 // type RequestInit = Parameters<typeof fetch>[1];
 
 type FetchType = (url: string, options?: RequestInit) => Promise<Response>;
-declare let window: undefined | { fetch: FetchType };
+
 export async function fetch(url: string, options?: RequestInit) {
-  console.log(`fetch`, { url, options });
+  // console.log(`fetch`, { url, options });
 
-  const fetchWindow = window && window.fetch;
-  if (fetchWindow) {
-    console.log(`Using window.fetch`, { fetchWindow });
+  const fetchActual = (globalThis as { fetch?: FetchType }).fetch;
+  if (!fetchActual) {
+    throw new AppError(`No fetch available - make sure to import '@ricklove/fetch-node' if using node`);
   }
-
-  const fetchActual = fetchWindow || (await import(/* @vite-ignore */ `node-fetch`)).default;
   const result = await fetchActual(url, options);
   return result;
 }
@@ -33,7 +31,7 @@ export function fetchWithTimeout(url: string, options?: RequestInit, timeoutMs: 
   ]);
 }
 export const fetchJsonGetRequest = async <TResponse>(url: string) => {
-  console.log(`fetchJsonGetRequest`, { url });
+  // console.log(`fetchJsonGetRequest`, { url });
 
   return await fetchJsonRequest<undefined, TResponse>(url, undefined, { method: `GET` });
 };
@@ -42,7 +40,7 @@ export const fetchJsonRequest: FetchJsonRequestType = async <TJson, TResponse>(
   data: TJson,
   options: { method: 'GET' | 'POST' | 'PUT'; timeoutMs?: number },
 ): Promise<TResponse> => {
-  console.log(`fetchJsonGetRequest`, { url });
+  // console.log(`fetchJsonGetRequest`, { url });
 
   const body = data ? JSON.stringify(data) : undefined;
   const reqData: RequestInit = {

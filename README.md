@@ -26,6 +26,7 @@ This is where I put all the cool stuff.
 
 - create project
 
+  - `npm --prefix tools/rush-packages run cli -- --d features/_utils/fetch-node --p @ricklove/utils-fetch-node --t node`
   - `npm --prefix tools/rush-packages run cli -- --d features/ui/github-comments --p @ricklove/github-comments --t react`
   - `npm --prefix tools/rush-packages run cli -- --d projects/code-training/lessons/modules --p @ricklove/code-training-lesson-modules --t lib`
   - `npm --prefix tools/rush-packages run cli -- --d projects/code-training/lessons/templates/cra --p @ricklove/code-training-lesson-templates-cra --t react`

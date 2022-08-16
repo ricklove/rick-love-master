@@ -9,14 +9,14 @@
     "build:watch": "heft build"
   },
   "dependencies": {
-    "html5parser": "2.0.2"
-  },
-  "devDependencies": {
-    "@ricklove/config-lib-rig": "*",
+    "html5parser": "2.0.2",
     "@ricklove/church-join-the-journey-common": "*",
     "@ricklove/upload-api-common-client": "*",
     "@ricklove/utils-core": "*",
-    "@ricklove/utils-fetch": "*",
+    "@ricklove/utils-fetch-node": "*"
+  },
+  "devDependencies": {
+    "@ricklove/config-lib-rig": "*",
     "ts-node": "~10.9.1"
   }
 }
