@@ -13,10 +13,12 @@
     "@ricklove/church-join-the-journey-common": "*",
     "@ricklove/upload-api-common-client": "*",
     "@ricklove/utils-core": "*",
-    "@ricklove/utils-fetch-node": "*"
+    "@ricklove/utils-fetch-node": "*",
+    "sharp": "0.30.7"
   },
   "devDependencies": {
     "@ricklove/config-lib-rig": "*",
+    "@types/sharp": "0.30.5",
     "ts-node": "~10.9.1"
   }
 }

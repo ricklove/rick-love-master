@@ -7,6 +7,7 @@ import type {
 import type { VirtualFileSystem } from '@ricklove/upload-api-common-client';
 import { delay, hashCode, replaceAll } from '@ricklove/utils-core';
 import { fetchWithTimeout } from '@ricklove/utils-fetch-node';
+import { resizeImage } from './resize-image';
 
 const fetchWithDelay = async (url: string, timeMs: number) => {
   const result = await fetchWithTimeout(url, { method: `get` });
@@ -57,7 +58,14 @@ export const scrapeEntries = async (dependencies: ScrapeEntriesDependencies): Pr
   // TESTING
   //.slice(0, 10);
 
-  const saveArticles = async (articlesRaw: ArticleItem[]) => {
+  let iSaveCount = 0;
+  const saveArticles = async (articlesRaw: ArticleItem[], skipSaves = true) => {
+    iSaveCount++;
+    if (skipSaves && iSaveCount % 10 !== 0) {
+      return;
+    }
+
+    console.log(`saveArticles`);
     const articles = [...articlesRaw].sort((a, b) => a.metadata.date.localeCompare(b.metadata.date));
 
     const articlesContentDoc: ArticlesContentDocument = {
@@ -81,6 +89,7 @@ export const scrapeEntries = async (dependencies: ScrapeEntriesDependencies): Pr
       .join(``);
 
     await storage.saveTextFile(`./output/index.md`, indexMarkdown);
+    // console.log(`saveArticles DONE`);
   };
 
   const items = existing?.articles ?? [];
@@ -95,14 +104,18 @@ export const scrapeEntries = async (dependencies: ScrapeEntriesDependencies): Pr
     items.push(await scrapeEntry(dependencies, url, iUrl));
     await saveArticles(items);
   }
+  await saveArticles(items, false);
 
   for (const x of items) {
     if (x.isCloned) {
+      console.log(`SKIP - images already cloned [${x.index}]`);
       continue;
     }
+    console.log(`cloning images [${x.index}]`);
     await cloneAndUpdateArticleImages(dependencies, x);
     await saveArticles(items);
   }
+  await saveArticles(items, false);
 
   // return {
   //   items,
@@ -122,9 +135,11 @@ const scrapeEntry = async (
     const articleTextSaved = await storage.loadTextFile(RAW_TEXT_FILE_PATH);
 
     if (articleTextSaved) {
+      // console.log(`Using saved article text`, { url });
       return articleTextSaved;
     }
 
+    console.log(`Downloading article`, { url });
     const result = await fetchWithDelay(url, 1000);
     const resultTextRaw = (await result.text()).trim();
     await storage.saveTextFile(RAW_TEXT_FILE_PATH, resultTextRaw);
@@ -379,11 +394,11 @@ const cloneAndUpdateArticleImages = async (dependencies: ScrapeEntriesDependenci
 
   // ![](https://mcusercontent.com/f15ff1bd1f3d1b2775c098f64/images/d054f0de-b7cd-3636-ec98-7835843d9cf5.png)
   const markdownImages = [...article.markdown.matchAll(/!\[\]\(([^)]+)\)/g)].map((m) => m[1]);
-  const imageUrls = [...new Set([article.metadata.image, ...markdownImages])];
+  const imageUrls = [...new Set([article.metadata.image, ...markdownImages])].filter((x) => !x.includes(`rick-love`));
 
   const getImageFilePath = (imageUrl: string) => {
     const hash = hashCode(imageUrl, 42);
-    const filePath = `./image/${hash}`;
+    const filePath = `./images/${hash}`;
     return filePath;
   };
 
@@ -395,6 +410,7 @@ const cloneAndUpdateArticleImages = async (dependencies: ScrapeEntriesDependenci
 
   for (const image of images) {
     const clonedImageUrl = await dependencies.storage.getFilePublicUrl(image.filePath);
+    // Skip if image already cloned
     if (clonedImageUrl) {
       image.clonedImageUrl = clonedImageUrl;
       continue;
@@ -402,7 +418,9 @@ const cloneAndUpdateArticleImages = async (dependencies: ScrapeEntriesDependenci
 
     const result = await fetchWithDelay(image.imageUrl, 100);
     const contentType = result.headers.get(`Content-Type`) ?? ``;
-    await dependencies.storage.saveBinaryFile(image.filePath, await result.arrayBuffer(), contentType);
+    const imageBuffer = await result.arrayBuffer();
+    const resized = await resizeImage(imageBuffer, 320);
+    await dependencies.storage.saveBinaryFile(image.filePath, resized, contentType);
     image.clonedImageUrl = await dependencies.storage.getFilePublicUrl(image.filePath);
   }
 
@@ -416,11 +434,12 @@ const cloneAndUpdateArticleImages = async (dependencies: ScrapeEntriesDependenci
 
   for (const image of images) {
     if (!image.clonedImageUrl) {
-      return;
+      continue;
     }
 
     article.markdown = replaceAll(article.markdown, image.imageUrl, image.clonedImageUrl);
   }
 
-  // console.log(`cloneImages`, { images });
+  // eslint-disable-next-line require-atomic-updates
+  article.isCloned = true;
 };
