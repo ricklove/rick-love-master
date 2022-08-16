@@ -26,7 +26,7 @@ specifiers:
   '@rush-temp/artwork-hashing': file:./projects/artwork-hashing.tgz
   '@rush-temp/artwork-hodlers-quest': file:./projects/artwork-hodlers-quest.tgz
   '@rush-temp/brute-force': file:./projects/brute-force.tgz
-  '@rush-temp/church-join-the-journey': file:./projects/church-join-the-journey.tgz
+  '@rush-temp/church-join-the-journey-exporter': file:./projects/church-join-the-journey-exporter.tgz
   '@rush-temp/code-training-lesson-build': file:./projects/code-training-lesson-build.tgz
   '@rush-temp/code-training-lesson-common': file:./projects/code-training-lesson-common.tgz
   '@rush-temp/code-training-lesson-components': file:./projects/code-training-lesson-components.tgz
@@ -117,7 +117,6 @@ specifiers:
   hash-wasm: ~4.9.0
   highlight.js: ~9.1.0
   html5parser: 2.0.2
-  isomorphic-unfetch: 3.1.0
   lodash: ~4.17.21
   mocha: ^8.4.0
   next: ^11.0.0
@@ -171,7 +170,7 @@ dependencies:
   '@rush-temp/artwork-hashing': file:projects/artwork-hashing.tgz
   '@rush-temp/artwork-hodlers-quest': file:projects/artwork-hodlers-quest.tgz
   '@rush-temp/brute-force': file:projects/brute-force.tgz_typescript@4.3.5
-  '@rush-temp/church-join-the-journey': file:projects/church-join-the-journey.tgz_70d6492c0feb1eb5d83e62cce7c43fd5
+  '@rush-temp/church-join-the-journey-exporter': file:projects/church-join-the-journey-exporter.tgz_70d6492c0feb1eb5d83e62cce7c43fd5
   '@rush-temp/code-training-lesson-build': file:projects/code-training-lesson-build.tgz
   '@rush-temp/code-training-lesson-common': file:projects/code-training-lesson-common.tgz
   '@rush-temp/code-training-lesson-components': file:projects/code-training-lesson-components.tgz_@babel+core@7.15.0
@@ -262,7 +261,6 @@ dependencies:
   hash-wasm: 4.9.0
   highlight.js: 9.1.0
   html5parser: 2.0.2
-  isomorphic-unfetch: 3.1.0
   lodash: 4.17.21
   mocha: 8.4.0
   next: 11.1.0_d656e95d5564dbefda9f605dfed71e60
@@ -16151,15 +16149,13 @@ packages:
       - typescript
     dev: false
 
-  file:projects/church-join-the-journey.tgz_70d6492c0feb1eb5d83e62cce7c43fd5:
-    resolution: {integrity: sha512-l1M7HpCDTxoK/C/F8fdIpStids52eCQs4EJ1ggOZhqM9IaoxWAl3iesv29LIidLsXYr/TdwiQY92rIunnVgqkw==, tarball: file:projects/church-join-the-journey.tgz}
-    id: file:projects/church-join-the-journey.tgz
-    name: '@rush-temp/church-join-the-journey'
+  file:projects/church-join-the-journey-exporter.tgz_70d6492c0feb1eb5d83e62cce7c43fd5:
+    resolution: {integrity: sha512-EEDFq5mQMSOwRP6YO+T0q+QRX/vUb/wOgrBOP5QitENM2EorCDnJwX/s5DYVY4lFCd9iSMhOi4qCd0L4vznLwg==, tarball: file:projects/church-join-the-journey-exporter.tgz}
+    id: file:projects/church-join-the-journey-exporter.tgz
+    name: '@rush-temp/church-join-the-journey-exporter'
     version: 0.0.0
     dependencies:
-      '@types/node-fetch': 2.6.2
       html5parser: 2.0.2
-      node-fetch: 3.2.10
       ts-node: 10.9.1_70d6492c0feb1eb5d83e62cce7c43fd5
     transitivePeerDependencies:
       - '@swc/core'
@@ -16614,7 +16610,7 @@ packages:
     dev: false
 
   file:projects/utils-fetch.tgz:
-    resolution: {integrity: sha512-c/5jlyccxLxMqlwRxapYz5ghPUZjiE5htI8McUPiijClgzJQ6r+Z/ElvKfB2ElwGjQG90ziXA1JavpXLELEQag==, tarball: file:projects/utils-fetch.tgz}
+    resolution: {integrity: sha512-MUVsvaIlWFiTNNKHel7R/6hN13nH7HpKJ/M9DlRGoWo/ztDM1XyP6S+nyWzedyruxVo8enmaKkbywA7dJ9iTsA==, tarball: file:projects/utils-fetch.tgz}
     name: '@rush-temp/utils-fetch'
     version: 0.0.0
     dependencies:
@@ -16622,8 +16618,6 @@ packages:
       cross-fetch: 3.1.5
       isomorphic-unfetch: 3.1.0
       node-fetch: 3.2.10
-    transitivePeerDependencies:
-      - encoding
     dev: false
 
   file:projects/utils-files.tgz:

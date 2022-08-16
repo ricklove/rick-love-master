@@ -566,8 +566,8 @@
       "projectFolder": "projects/art/nft-api-server"
     },
     {
-      "packageName": "@ricklove/church-join-the-journey",
-      "projectFolder": "projects/church/join-the-journey"
+      "packageName": "@ricklove/church-join-the-journey-exporter",
+      "projectFolder": "projects/church/join-the-journey/exporter"
     },
     // Code Training
     {
