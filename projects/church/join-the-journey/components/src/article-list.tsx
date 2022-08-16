@@ -26,7 +26,7 @@ export const JoinTheJourneyArticleList = ({ config }: { config: JoinTheJourneyCo
       console.log(`JoinTheJourneyArticleList LOADED`, { result });
 
       setItems(
-        result.articles.map((x) => ({
+        result.articles.reverse().map((x) => ({
           ...x,
           key: `${x.index}`,
         })),
