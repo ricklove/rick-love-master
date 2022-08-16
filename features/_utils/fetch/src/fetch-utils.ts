@@ -17,7 +17,9 @@ export function fetchWithTimeout(url: string, options?: RequestInit, timeoutMs: 
     ) as Promise<Response>,
   ]);
 }
-
+export const fetchJsonGetRequest = async <TResponse>(url: string) => {
+  return await fetchJsonRequest<undefined, TResponse>(url, undefined, { method: `GET` });
+};
 export const fetchJsonRequest: FetchJsonRequestType = async <TJson, TResponse>(
   url: string,
   data: TJson,

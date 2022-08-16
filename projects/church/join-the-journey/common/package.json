@@ -1,0 +1,14 @@
+{
+  "name": "@ricklove/church-join-the-journey-common",
+  "version": "1.0.0",
+  "type": "module",
+  "main": "./lib/index.js",
+  "scripts": {
+    "build": "heft test --clean",
+    "build:watch": "heft build"
+  },
+  "dependencies": {},
+  "devDependencies": {
+    "@ricklove/config-lib-rig": "*"
+  }
+}

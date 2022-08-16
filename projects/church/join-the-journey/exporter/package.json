@@ -13,6 +13,7 @@
   },
   "devDependencies": {
     "@ricklove/config-lib-rig": "*",
+    "@ricklove/church-join-the-journey-common": "*",
     "@ricklove/upload-api-common-client": "*",
     "@ricklove/utils-core": "*",
     "@ricklove/utils-fetch": "*",

@@ -566,6 +566,14 @@
       "projectFolder": "projects/art/nft-api-server"
     },
     {
+      "packageName": "@ricklove/church-join-the-journey-common",
+      "projectFolder": "projects/church/join-the-journey/common"
+    },
+    {
+      "packageName": "@ricklove/church-join-the-journey-components",
+      "projectFolder": "projects/church/join-the-journey/components"
+    },
+    {
       "packageName": "@ricklove/church-join-the-journey-exporter",
       "projectFolder": "projects/church/join-the-journey/exporter"
     },

@@ -1,4 +1,9 @@
 import { IAttribute, INode, ITag, parse, SyntaxKind, walk } from 'html5parser';
+import type {
+  ArticleItem,
+  ArticlesContentDocument,
+  ArticlesIndexDocument,
+} from '@ricklove/church-join-the-journey-common';
 import type { VirtualFileSystem } from '@ricklove/upload-api-common-client';
 import { delay, hashCode, replaceAll } from '@ricklove/utils-core';
 import { fetchWithTimeout } from '@ricklove/utils-fetch';
@@ -104,25 +109,6 @@ export const scrapeEntries = async (dependencies: ScrapeEntriesDependencies): Pr
   // };
 };
 
-type ArticlesIndexDocument = {
-  articles: Omit<ArticleItem, 'markdown'>[];
-};
-type ArticlesContentDocument = {
-  articles: ArticleItem[];
-};
-type ArticleItem = {
-  index: number;
-  isCloned?: boolean;
-  metadata: {
-    title: string | undefined;
-    author: string | undefined;
-    image: string;
-    verse: string | undefined;
-    date: string;
-    url: string;
-  };
-  markdown: string;
-};
 const scrapeEntry = async (
   dependencies: ScrapeEntriesDependencies,
   url: string,

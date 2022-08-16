@@ -26,6 +26,8 @@ specifiers:
   '@rush-temp/artwork-hashing': file:./projects/artwork-hashing.tgz
   '@rush-temp/artwork-hodlers-quest': file:./projects/artwork-hodlers-quest.tgz
   '@rush-temp/brute-force': file:./projects/brute-force.tgz
+  '@rush-temp/church-join-the-journey-common': file:./projects/church-join-the-journey-common.tgz
+  '@rush-temp/church-join-the-journey-components': file:./projects/church-join-the-journey-components.tgz
   '@rush-temp/church-join-the-journey-exporter': file:./projects/church-join-the-journey-exporter.tgz
   '@rush-temp/code-training-lesson-build': file:./projects/code-training-lesson-build.tgz
   '@rush-temp/code-training-lesson-common': file:./projects/code-training-lesson-common.tgz
@@ -170,6 +172,8 @@ dependencies:
   '@rush-temp/artwork-hashing': file:projects/artwork-hashing.tgz
   '@rush-temp/artwork-hodlers-quest': file:projects/artwork-hodlers-quest.tgz
   '@rush-temp/brute-force': file:projects/brute-force.tgz_typescript@4.3.5
+  '@rush-temp/church-join-the-journey-common': file:projects/church-join-the-journey-common.tgz
+  '@rush-temp/church-join-the-journey-components': file:projects/church-join-the-journey-components.tgz_@babel+core@7.15.0
   '@rush-temp/church-join-the-journey-exporter': file:projects/church-join-the-journey-exporter.tgz_70d6492c0feb1eb5d83e62cce7c43fd5
   '@rush-temp/code-training-lesson-build': file:projects/code-training-lesson-build.tgz
   '@rush-temp/code-training-lesson-common': file:projects/code-training-lesson-common.tgz
@@ -16147,6 +16151,25 @@ packages:
       - '@swc/core'
       - '@swc/wasm'
       - typescript
+    dev: false
+
+  file:projects/church-join-the-journey-common.tgz:
+    resolution: {integrity: sha512-8fnJ3TRK2wLCg2alQ+adC4bNkVE5rMayBi7s5f8oEpsKfm/5GREblIZtsI3oNmvhcY2tTIOVNZTPjQNYMTz51A==, tarball: file:projects/church-join-the-journey-common.tgz}
+    name: '@rush-temp/church-join-the-journey-common'
+    version: 0.0.0
+    dev: false
+
+  file:projects/church-join-the-journey-components.tgz_@babel+core@7.15.0:
+    resolution: {integrity: sha512-ufLIVMwP4gHRiwTkOnA7m2fN6XNzfYfW3y/FKUw+FdzU4hDJ3L57DXG7Zz4NH6O5J56AlgVq+MBzN6ad63MV0g==, tarball: file:projects/church-join-the-journey-components.tgz}
+    id: file:projects/church-join-the-journey-components.tgz
+    name: '@rush-temp/church-join-the-journey-components'
+    version: 0.0.0
+    dependencies:
+      '@emotion/react': 11.4.1_56f22c50b68024c6e259393098372ce5
+      '@types/react': 17.0.19
+      react: 17.0.2
+    transitivePeerDependencies:
+      - '@babel/core'
     dev: false
 
   file:projects/church-join-the-journey-exporter.tgz_70d6492c0feb1eb5d83e62cce7c43fd5:
