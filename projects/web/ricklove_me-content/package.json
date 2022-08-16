@@ -1,0 +1,39 @@
+{
+  "name": "@ricklove/ricklove_me-content",
+  "version": "1.0.0",
+  "type": "module",
+  "main": "./lib/index.js",
+  "scripts": {
+    "build:script": "node --experimental-specifier-resolution=node --loader ts-node/esm ./scripts/build.ts",
+    "build": "heft test --clean && npm run build:script",
+    "build:watch": "heft build && npm run build:script"
+  },
+  "dependencies": {
+    "@emotion/react": "~11.4.1",
+    "@ricklove/art-components": "*",
+    "@ricklove/console-simulator": "*",
+    "@ricklove/code-training-lesson-player": "*",
+    "@ricklove/games-list": "*",
+    "@ricklove/github-comments": "*",
+    "@ricklove/utils-core": "*",
+    "react": "17.0.2",
+    "react-markdown": "~8.0.3",
+    "react-lowlight": "~2.0.0",
+    "highlight.js": "~9.1.0",
+    "react-helmet": "~6.1.0",
+    "remark-gfm": "~3.0.1"
+  },
+  "devDependencies": {
+    "@ricklove/art-build": "*",
+    "@ricklove/code-training-lesson-build": "*",
+    "@ricklove/code-training-lesson-editor-common": "*",
+    "@ricklove/code-training-lesson-editor-client": "*",
+    "@ricklove/config-lib-rig": "*",
+    "@ricklove/utils-files": "*",
+    "@ricklove/utils-react": "*",
+    "@types/node": "12.12.6",
+    "@types/react": "~17.0.19",
+    "@types/react-helmet": "~6.1.2",
+    "ts-node": "~10.9.1"
+  }
+}

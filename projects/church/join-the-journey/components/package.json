@@ -1,0 +1,24 @@
+{
+  "name": "@ricklove/church-join-the-journey-components",
+  "version": "1.0.0",
+  "type": "module",
+  "main": "./lib/index.js",
+  "scripts": {
+    "build": "heft test --clean",
+    "build:watch": "heft build"
+  },
+  "dependencies": {
+    "@emotion/react": "~11.4.1",
+    "@ricklove/church-join-the-journey-common": "*",
+    "@ricklove/react-controls": "*",
+    "@ricklove/utils-core": "*",
+    "@ricklove/utils-fetch": "*",
+    "@ricklove/utils-react": "*",
+    "react": "17.0.2",
+    "react-markdown": "~8.0.3"
+  },
+  "devDependencies": {
+    "@ricklove/config-lib-rig": "*",
+    "@types/react": "~17.0.19"
+  }
+}

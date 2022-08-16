@@ -1,0 +1,15 @@
+{
+  "name": "@ricklove/doodle-common",
+  "version": "1.0.0",
+  "type": "module",
+  "main": "./lib/index.js",
+  "scripts": {
+    "build": "heft test --clean",
+    "build:watch": "heft build"
+  },
+  "devDependencies": {
+    "@ricklove/config-lib-rig": "*",
+    "@ricklove/upload-api-common": "*",
+    "@ricklove/websockets-api-common": "*"
+  }
+}

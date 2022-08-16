@@ -1,0 +1,22 @@
+{
+  "name": "@ricklove/upload-api-client",
+  "version": "1.0.0",
+  "type": "module",
+  "main": "./lib/index.js",
+  "scripts": {
+    "build": "heft test --clean",
+    "build:watch": "heft build"
+  },
+  "dependencies": {
+    "@emotion/react": "~11.4.1",
+    "@ricklove/react-native-lite": "*",
+    "@ricklove/upload-api-common-client": "*",
+    "@ricklove/utils-core": "*",
+    "@ricklove/utils-fetch": "*",
+    "react": "17.0.2"
+  },
+  "devDependencies": {
+    "@ricklove/config-lib-rig": "*",
+    "@types/react": "~17.0.19"
+  }
+}

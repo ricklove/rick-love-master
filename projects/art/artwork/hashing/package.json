@@ -1,0 +1,18 @@
+{
+  "name": "@ricklove/artwork-hashing",
+  "version": "1.0.0",
+  "type": "module",
+  "main": "./lib/index.js",
+  "scripts": {
+    "build": "npm run build:shaders && heft test --clean",
+    "build:watch": "npm run build:shaders && heft build",
+    "build:shaders": "npm --prefix ../../../../tools/glsl-file-to-string run cli -- --d ../../projects/art/artwork/hashing/src/"
+  },
+  "dependencies": {
+    "@ricklove/art-common": "*"
+  },
+  "devDependencies": {
+    "@ricklove/config-lib-rig": "*",
+    "@ricklove/glsl-file-to-string": "*"
+  }
+}

@@ -1,0 +1,28 @@
+{
+  "name": "@ricklove/code-training-lesson-components",
+  "version": "1.0.0",
+  "type": "module",
+  "main": "./lib/index.js",
+  "scripts": {
+    "build": "heft test --clean",
+    "build:watch": "heft build"
+  },
+  "dependencies": {
+    "@emotion/react": "~11.4.1",
+    "@ricklove/code-training-lesson-common": "*",
+    "@ricklove/github-comments": "*",
+    "@ricklove/react-controls": "*",
+    "@ricklove/react-native-lite": "*",
+    "@ricklove/utils-core": "*",
+    "@ricklove/utils-react": "*",
+    "prism-themes": "^1.4.0",
+    "prismjs": "^1.21.0",
+    "react": "17.0.2",
+    "react-icons": "^3.10.0"
+  },
+  "devDependencies": {
+    "@ricklove/config-lib-rig": "*",
+    "@types/prismjs": "^1.16.1",
+    "@types/react": "~17.0.19"
+  }
+}

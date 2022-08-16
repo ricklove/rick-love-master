@@ -1,0 +1,27 @@
+{
+  "name": "@ricklove/ricklove_me",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev --port 3042",
+    "build": "next build && next export && rimraf ../../../_deploy-staging/ricklove_me && copyfiles -u 1 ./out/**/* ../../../_deploy-staging/ricklove_me/",
+    "build:watch": "npm run dev",
+    "start": "next start --port 3042"
+  },
+  "dependencies": {
+    "next": "^11.0.0",
+    "react": "17.0.2",
+    "react-dom": "17.0.2",
+    "@ricklove/example-node-lib": "*",
+    "@ricklove/ricklove_me-content": "*",
+    "next-transpile-modules": "~8.0.0"
+  },
+  "devDependencies": {
+    "@babel/core": "^7.0.0",
+    "@ricklove/config-lib-rig": "*",
+    "@types/react": "~17.0.19",
+    "copyfiles": "~2.4.1",
+    "rimraf": "~3.0.2",
+    "@next/bundle-analyzer": "~11.1.2"
+  }
+}

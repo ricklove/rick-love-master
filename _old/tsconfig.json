@@ -1,0 +1,58 @@
+{
+    "extends": "./tsconfig-paths",
+    "compilerOptions": {
+        "moduleResolution": "node",
+        "target": "es2018",
+        "module": "commonjs",
+        "lib": [
+            "dom",
+            "ES2015",
+            "ES2016",
+            "ES2017",
+            "ES2018",
+            "ES2019",
+            "ES2020",
+        ],
+        "allowJs": true,
+        "resolveJsonModule": true,
+        // "checkJs": true,
+        "jsx": "react",
+        "strict": true,
+        "esModuleInterop": true,
+        "experimentalDecorators": true,
+        "emitDecoratorMetadata": true,
+        "downlevelIteration": true,
+        "noEmit": true,
+        "skipLibCheck": true,
+        "baseUrl": ".",
+        "composite": true
+    },
+    "references": [
+        // {
+        //     "path": "code/typescript-type-system-adventure"
+        // }
+    ],
+    "exclude": [
+        "node_modules",
+        // "code/typescript-type-system-adventure"
+    ],
+    "include": [
+        // Just include things I'm working on right now
+        "code/utils/**/*",
+        "code/utils-react/**/*",
+        "code/themes/**/*",
+        "code/react-native-lite/**/*",
+        "code/controls-react/**/*",
+        "code/comments/**/*",
+        "code/code-training/**/*",
+        "code/blog/**/*",
+        "code/art/**/*",
+        "code/blog-serverless/**/*",
+        // "code",
+        // "scripts",
+        // "projects",
+        "projects/blog-art/",
+        "projects/art-builder/",
+        // "templates",
+    ],
+}

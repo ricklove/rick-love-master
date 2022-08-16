@@ -1,0 +1,8 @@
+{
+    "files.exclude": {
+        "**/node_modules": true
+    },
+    "typescript.tsdk": "d:\\Projects\\rick-love-master\\node_modules\\typescript\\lib",
+    "editor.formatOnSave": true,
+    "eslint.format.enable": true
+}

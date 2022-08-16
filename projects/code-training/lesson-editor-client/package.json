@@ -1,0 +1,27 @@
+{
+  "name": "@ricklove/code-training-lesson-editor-client",
+  "version": "1.0.0",
+  "type": "module",
+  "main": "./lib/index.js",
+  "scripts": {
+    "build": "heft test --clean",
+    "build:watch": "heft build"
+  },
+  "dependencies": {
+    "@emotion/react": "~11.4.1",
+    "@ricklove/code-training-lesson-common": "*",
+    "@ricklove/code-training-lesson-components": "*",
+    "@ricklove/code-training-lesson-editor-common": "*",
+    "@ricklove/code-training-lesson-player": "*",
+    "@ricklove/react-controls": "*",
+    "@ricklove/react-native-lite": "*",
+    "@ricklove/utils-core": "*",
+    "@ricklove/utils-react": "*",
+    "@ricklove/utils-web": "*",
+    "react": "17.0.2"
+  },
+  "devDependencies": {
+    "@ricklove/config-lib-rig": "*",
+    "@types/react": "~17.0.19"
+  }
+}

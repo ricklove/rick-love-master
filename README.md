@@ -1,241 +1,190 @@
 This is where I put all the cool stuff.
 
+## Commands
 
----
+- See package.json for scripts
 
-# Useful Commands
+- develop blog
 
-## Develop Blog
+  - Tab1 - Run rush build watch
+    - `rush build:watch --to-except ricklove_me`
+  - Tab2 - Run nextjs dev
+    - `cd /projects/web/ricklove_me`
+    - `npm run dev`
 
-- `cd ./projects/blog-site`
-- Sometimes `gatsby clean` is things like seo change
-- `gatsby develop`
+- art
 
-## Deploy Blog
+  - render previews
+    - `npm --prefix projects/art/renderer run cli`
 
-- `cd ./projects/blog-site`
-- `gatsby build`
-- Commit & Push to master branch (auto deploy)
+- run lesson-editor
 
-## Deploy blog-serverless
+  - Tab1 - Run server
+    - `npm --prefix projects/code-training/lesson-editor-local-server run serve`
+  - Tab2 - Run client
+    - TODO: This is not implemented yet
 
-- `cd ./projects/blog-serverless`
-- `ts-node ./build.ts`
-- `serverless deploy --aws-profile ricklove`
+- create project
 
----
+  - `npm --prefix tools/rush-packages run cli -- --d features/ui/github-comments --p @ricklove/github-comments --t react`
+  - `npm --prefix tools/rush-packages run cli -- --d projects/code-training/lessons/modules --p @ricklove/code-training-lesson-modules --t lib`
+  - `npm --prefix tools/rush-packages run cli -- --d projects/code-training/lessons/templates/cra --p @ricklove/code-training-lesson-templates-cra --t react`
+  - `npm --prefix tools/rush-packages run cli -- --d projects/code-training/lesson-common --p @ricklove/code-training-lesson-common --t lib`
+  - `npm --prefix tools/rush-packages run cli -- --d projects/code-training/lesson-components --p @ricklove/code-training-lesson-components --t react`
+  - `npm --prefix tools/rush-packages run cli -- --d projects/code-training/lesson-editor-common --p @ricklove/code-training-lesson-editor-common --t lib`
+  - `npm --prefix tools/rush-packages run cli -- --d projects/code-training/lesson-editor-client --p @ricklove/code-training-lesson-editor-client --t react`
+  - `npm --prefix tools/rush-packages run cli -- --d projects/code-training/lesson-editor-local-server --p @ricklove/code-training-lesson-editor-local-server --t node`
+  - `npm --prefix tools/rush-packages run cli -- --d projects/code-training/lesson-viewer --p @ricklove/code-training-lesson-viewer --t react`
+  - `npm --prefix tools/rush-packages run cli -- --d projects/code-training/_lesson-build --p @ricklove/code-training-lesson-build --t node`
 
+  - `npm --prefix tools/rush-packages run cli -- --d projects/art/_build --p @ricklove/art-build --t node`
+  - `npm --prefix tools/rush-packages run cli -- --d projects/art/common --p @ricklove/art-common --t lib`
+  - `npm --prefix tools/rush-packages run cli -- --d projects/art/components --p @ricklove/art-components --t react`
+  - `npm --prefix tools/rush-packages run cli -- --d projects/art/contract --p @ricklove/art-contract --t node`
+  - `npm --prefix tools/rush-packages run cli -- --d projects/art/renderer --p @ricklove/art-renderer --t node`
+  - `npm --prefix tools/rush-packages run cli -- --d projects/art/artwork/circles --p @ricklove/artwork-circles --t lib`
+  - `npm --prefix tools/rush-packages run cli -- --d projects/art/artwork/hodlers-quest --p @ricklove/artwork-hodlers-quest --t lib`
 
-# Folder Structure
+  - `npm --prefix tools/rush-packages run cli -- --d projects/art/artwork/punkscape-artathon --p @ricklove/punkscape-artathon --t lib`
+  - `npm --prefix tools/rush-packages run cli -- --d projects/experiments/brute-force --p @ricklove/brute-force --t node`
+  - `npm --prefix tools/rush-packages run cli -- --d tools/glsl-file-to-string --p @ricklove/glsl-file-to-string --t node`
 
-- packages
-    - Everything is a package
-    - This is where all the source code lives with it's necessary configuration
-    - A package can be a node module, content files, or something else
-    - Keep this folder flat and each package flat, avoid nested packages
-- workspaces
-    - This is mainly ide files
-    - Each folder contains a .code-workspace that lists all the dependencies for that project
-    - These workspaces are what enables the packages to be flat and a long list, while allowing the ide to be clean
+  - `npm --prefix tools/rush-packages run cli -- --d projects/art/artwork/gears --p @ricklove/artwork-gears --t lib`
+  - `npm --prefix tools/rush-packages run cli -- --d projects/art/artwork/onion --p @ricklove/artwork-onion --t lib`
+  - `npm --prefix tools/rush-packages run cli -- --d projects/art/artwork/clock-121 --p @ricklove/artwork-clock-121 --t lib`
+  - `npm --prefix tools/rush-packages run cli -- --d projects/art/artwork/gpu-01 --p @ricklove/artwork-gpu-01 --t lib`
+  - `npm --prefix tools/rush-packages run cli -- --d projects/art/artwork/flying-colors --p @ricklove/artwork-flying-colors --t lib`
+  - `npm --prefix tools/rush-packages run cli -- --d projects/art/artwork/fluid-snake-game --p @ricklove/artwork-fluid-snake-game --t lib`
+  - `npm --prefix tools/rush-packages run cli -- --d projects/art/artwork/example-fluid-simulator --p @ricklove/artwork-example-fluid-simulator --t lib`
 
+  - `npm --prefix tools/rush-packages run cli -- --d projects/church/join-the-journey/components --p @ricklove/church-join-the-journey-components --t react`
 
-# Development Features
+## Tech Stack
 
-## Option: Yarn Workspaces (Current)
+- rushjs monorepo
+  - finally a tool that let's all the config junk to be out of the way instead of the root!
+- nextjs for web sites
+- react for web components
+- typescript for most code
 
-- [FAIL] Only Relevant Code is visible in a specific project
-    - [FAIL] No config files needed
-        - Still needs packages.json
-        - Still needs tsconfig.json
-    - [FAIL] Ability to separate config from code with src
-        - Causes ugliness in imports 
-    - This can be somewhat corrected with vscode workspace hiding files, but not ideal
-- [x] Code folders have a simple well defined structure
-- [PARTIAL] vscode supports cross-project navigation
-    - [x] Go to definition works
-    - [PARTIAL] Find all references fails sometimes
-- [PARTIAL] vscode supports cross-project rename
-     - [PARTIAL] Rename fails sometimes 
-        - usually when renaming from usage
-        - other times, probably the same time when find all reference fails
-- [x] vscode supports cross-project debug
-    - [x] Break at Exception in any project level
-    - [x] Breakpoints work at any project level
-- [x] Shared/Single tsconfig
-    - [FAIL] Only root tsconfig
-        - [FAIL] Breaks Eslint => Each package must have a tsconfig.json, but it can just be an extends
-    - [x] Support extends to root tsconfig
-- [x] Shared/Single eslint
-- [x] works with gatsby
-- [ ] works with expo
-- [ ] works with create react app
+## Dev features
 
-- [x] Import typsecript directly module without index or extra path
-    - The only way to do this now is to not use a 'src' folder in the package
-    - vscode can be used to hide the extra files
+- [Partial] Refactoring across packages
+  - [x] F12 Navigation to definition works
+  - [ ] Find all references only works inside module and down into dependencies
+  - [ ] Renaming across packages is not working, but possibly ok
+- [x] Shared configuration
+- Dependencies
+  - [x] Single declaration of dependencies
+  - [x] Enforced declaration of dependencies
+  - [x] don't pollute auto complete namespace
+  - [FAIL] automatic registration of packages
+    - rush requires listing packages in rush.json
+    - [x] Single registration of packages
+      - No need to register typescript registrations
+- [x] Typescript stress test
+  - [x] Typescript uses .d.ts files instead of reanalyzing all code
+  - [x] Typescript uses independent typescript.json settings for each package's code
 
-### Evalation with Ideal Features
+## Comparison with typescript paths
 
-- [F] vscode works in every case
-    - [F] Goto Definition always works
-    - [F] Find all references always works
-    - [F] Rename changes all instances
-- [F] Single Default Config
-    - [x] Single .eslintrc.js
-    - [Partial - Extends] Single tsconfig.json
-    - [F] Single pacakges.json
-- [x] Special Config
-    - [x] Override config by placing own version in folder
-- [ ] Separation of code from boilerplate
-    - [ ] Ability to define all code without any boilerplate files
-    - [ ] Boilerplate projects can be isolated
-    - [ ] Customizations of boilerplate can be separated from default boilerplate
+- Better than typescript paths
+  - Editor Performance
+    - rush build:watch updates are detected by vscode in a few seconds
+    - F12 navigation is very reliable
+    - Formatting is quick and reliable
+    - Editor is stable, not requiring many reloads
+    - typescript paths would often overload tsserver and break, had to manually disable some paths, etc.
+  - Targetted Builds (only build specific projects)
+    - rush makes it possible to build:watch only specific targets with the `rush build:watch --to project-name`
+  - Targetted Includes (only include specific ts files)
+    - It is possible to only include specific files for a project
+  - Specific project dependencies
+    - It is possible to define specific environment targets and libraries (node vs dom, etc.)
+  - Enforced separation of environments
+    - This leads to smaller more precise modules
+  - Many small modules
+    - Modules are more likely to be small and include separate modules for each environment target:
+      - feature-common (types and config)
+      - feature-client
+      - feature-server
+    - This forces the module to be at a more granular level (at the level where multiple enviroments are needed)
+  - Custom build scripts
+    - build scripts per project
+- Worse than typescript paths
+  - cross-project rename
+    - scopes to current project only
+  - find all references
+    - does not find references in unloaded files
+  - much more project boilerplate:
+    - required files:
+      - config/rig.json
+      - src
+      - .eslintrc.cjs
+      - index.ts
+      - package.json
+      - tsconfig.json
+    - [WORKAROUND] vscode hidden files can hide these
+    - [x] tool to create new module
+      - Copy template
+      - Register in rush.json
+  - auto imports doesn't work (unless already imported)
+    - [FIXED] Created `tools/vscode/auto-imports-fix`
+      - Still uses good scope (only package.json dependencies)
 
+## File Structure
 
-## Option: Code Folder - with `sync.ts` (G.T. setup)
+- `projects`
 
-- [x] code folder contains just code
-- [FAIL] no config
-    - Requires a custom script that lists folders to include in syncing with project/client/src
-    
-- [FAIL] development sync is fast
-    - [x] Code syncing is fast
-    - Rollup part is part of the code syncing and slows it down - deployment scripts that use rollup and other build should be separated
+  - everything starts as a project
+  - specific functionality
+    - could become an individual git repo
+    - dynamic and hard to define -> flexible organization
+    - composed of features & content
+    - Private License (original IP)
+  - examples:
+    - art/artwork/clock-121
+    - art/artwork/art-index
+    - games/dork
+  - parts
+    - example:
+      - web/blog/app-nextjs
+      - web/blog/blog-posts
+      - web/blog/blog-pages
+    - main project
+      - minimal code
+      - platform agnostic
+    - boilerplate project
+      - produces a deployable output
+      - platform boilerplate files and configurations
+      - e.g.
+        - next.js
+        - react native
+        - serverless framework
 
-- [FAIL] debugging points to original code
-    - [FAIL] debugging points to copy of code and resulted in edits in wrong files a few times
+- `features`
 
-## Option: Code Folder with Advanced Build (Current)
+  - features come from projects
+  - generic functionality
+    - could become public npm packages
+    - minimalistic
+    - many and unique -> flat organization
+    - MIT License
+  - examples:
+    - artwork
+    - art-gallery
+    - pixel-art-generator
+    - canvas-recorder
+    - terminal-emulator
+    - payment-processing
+    - authentication
 
-- [x] vscode works in every case
-    - [x] Typescript
-        - [x] Goto Definition always works
-        - [x] Find all references always works
-        - [x] Rename changes all instances
-        - [x] Auto import always works
-- [x] Single Default Config
-    - [x] Single .eslintrc.js
-    - [x] Single tsconfig.json
-    - [x] Single package.json
-        - Hydrate/Dehydrate generated package.json for runtime (Not needed for ts-node runs using tsconfig-paths)
-- [x] Special Config
-    - [x] Override config by placing own version in folder
-        - Hydrate/Dehydrate can work with custom config
-- [x] Separation of code from boilerplate
-    - [x] Ability to define all code without any boilerplate files
-    - [x] Boilerplate projects can be isolated
-    - [x] Customizations of boilerplate can be separated from default boilerplate
-        - Using template.json with a build script, templates/projects can be separated
-- [ ] Optional Dependency Versioning
-    - [ ] Dependencies can optionally be modified while allowing dependants to continue to use an old version
-    - [ ] Dependants can be reconciled to an updated version of the dependency at their own convenience
-- [x] Multi-Repo
-    - [x] Code can be synced with multiple repos
-    - [x] Optional Blind code ownership, code can be copied into target repo and has no dependencies on master repo
-        - Code can be copied and tranformed to any target path
-        - Code can also be copied from a target path and transformed in project
-- [ ] Multi-Config
-    - [ ] Code can be synced into a target that uses a different tsconfig
-    - [ ] Code can be synced into a target that uses a different eslint
-    - [ ] Code can be automatically formatted with target config tools (i.e. auto run eslint --fix)
-        - Note: This would require being able to run a command at the target path
-- [x] Free Project structure
-    - [x] Possible to have packages in catagory folders or nested (i.e. packages/ games/ projects/)
-        - Convention currently identifies packages as any folder that contains a `src/` folder
-        - Another possible convention could be: the parentmost folder (under root) that contains a source code file (*.ts/*.tsx)
-- [ ] Languange/Project/Environment/Target Agnostic
-    - [ ] Tools can work with any code or framework
-        - Typescript, C#, Python, etc.
-- [ ] Config files in isolated folder (i.e. .config/ folder)
-    - [ ] Config files do not have to live in the root of the project, but can live out of the way in their own folder
-        - It is possible to extract config files from root, but that would potentially break the scripts
-        - With a globally installed cli tool, it would be possible to hydrate/dehydrate config files out from the root
+- `_deploy`
 
-
-## Ideal Features
-
-- [ ] vscode works in every case
-    - [ ] Goto Definition always works
-    - [ ] Find all references always works
-    - [ ] Rename changes all instances
-    - [ ] Auto import always works
-- [ ] Single Default Config
-    - [ ] Single .eslintrc.js
-    - [ ] Single tsconfig.json
-    - [ ] Single package.json
-- [ ] Special Config
-    - [ ] Override config by placing own version in folder
-- [ ] Separation of code from boilerplate
-    - [ ] Ability to define all code without any boilerplate files
-    - [ ] Boilerplate projects can be isolated
-    - [ ] Customizations of boilerplate can be separated from default boilerplate
-- [ ] Optional Dependency Versioning
-    - [ ] Dependencies can optionally be modified while allowing dependants to continue to use an old version
-    - [ ] Dependants can be reconciled to an updated version of the dependency at their own convenience
-- [ ] Multi-Repo
-    - [ ] Code can be synced with multiple repos
-    - [ ] Optional Blind code ownership, code can be copied into target repo and has no dependencies on master repo
-- [ ] Multi-Config
-    - [ ] Code can be synced into a target that uses a different tsconfig
-    - [ ] Code can be synced into a target that uses a different eslint
-    - [ ] Code can be automatically formatted with target config tools (i.e. auto run eslint --fix)
-- [ ] Free Project structure
-    - [ ] Possible to have packages in catagory folders (i.e. packages/ games/ projects/)
-- [ ] Languange/Project/Environment/Target Agnostic
-    - [ ] Tools can work with any code or framework
-        - Typescript, C#, Python, etc.
-- [ ] Config files in isolated folder (i.e. .config/ folder)
-    - [ ] Config files do not have to live in the root of the project, but can live out of the way in their own folder
-
-### Implementation Options
-
-#### Option: Symlinks (Fail)
-
-- Symlinks do not support code transformations
-
-#### Option: 2-Way Sync with Code Transformations
-
-- Multiple copies of files is possible
-- Both Versions of the source code become part of git, which allows diff in either context
-- Independent git repos are possible
-- This can work with anything, files are just files
-- Repos don't have to sync everything, either side could have custom code or independent files
-- Dependencies could be generated and listed, diff'ed, etc.
-- Project templates could be used for hosting code
-    - Gatsby, Expo, React Native, etc.
-
-### Use Case
-
-#### Dork doesn't want external dependencies for minor files
-
-- dork needs to use util/delay.ts
-- copy/paste is a simple enough solution, but that creates a copy of that for every project
-- injection of that file into the dork project would be ideal
-
-
----
-
-## Useful Commands:
-
-- print eslint rules
-    `npx eslint --print-config .\src\_.ts > .eslint-all-rules.debug.json`
-- print eslint files linted
-    `npx eslint --debug`
-    `npx eslint --ext js,jsx,ts,tsx code --debug`
-- Convert JS to TSX (and convert prop-types)
-    `npx react-proptypes-to-typescript "./src/**/*.js" --remove-original-files`
-- Fix all files with eslint
-    `npx eslint --ext js,jsx,ts,tsx src --fix`
-- Find depedency used in node_modules (bash)
-    `find ./node_modules/ -name package.json | xargs grep <the_package_name>`
-
-- Display Dependencies
-    `depcruise --ts-config --exclude "^node_modules" --output-type dot code | dot -T svg > dependencygraph.svg`
-
+  - permanent location of pre-built output artifacts needed for CD (like netlify git deploy)
 
 ## License
 
-*tl;dr Don't copy my blog content, lessons, games, or art, but any source code is available under MIT*
+_tl;dr Don't copy my blog content, lessons, games, or art, but any source code is available under MIT_
 
-The blog content, lessons, games, art, or any other non-source code contained inside this repo is *Not Licensesed* for any use. However, source code is licensed under the MIT license - unless otherwise stated in the root of any package directory.
-
+The blog content, lessons, games, art, or any other non-source code contained inside this repo is _Not Licensed_ for any use. However, source code is licensed under the MIT license - unless otherwise stated in the root of any package directory.

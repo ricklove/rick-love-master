@@ -1,0 +1,54 @@
+{
+  "name": "ricklove-vscode-auto-imports-fix",
+  "publisher": "RickLove",
+  "displayName": "auto-imports-fix",
+  "description": "Fix auto imports to use package name",
+  "version": "0.0.1",
+  "repository": "github:ricklove/rick-love-master",
+  "engines": {
+    "vscode": "^1.59.0"
+  },
+  "categories": [
+    "Other"
+  ],
+  "activationEvents": [
+    "onCommand:auto-imports-fix.fixAutoImports",
+    "onLanguage:typescript",
+    "onLanguage:typescriptreact"
+  ],
+  "main": "./out/extension.js",
+  "contributes": {
+    "commands": [
+      {
+        "command": "auto-imports-fix.fixAutoImports",
+        "title": "auto-imports-fix: Fix Auto Imports"
+      }
+    ]
+  },
+  "scripts": {
+    "build": "vsce package && npm run install",
+    "build:watch": "npm run watch",
+    "vscode:prepublish": "npm run esbuild-base -- --minify",
+    "esbuild-base": "esbuild ./src/extension.ts --bundle --outfile=out/extension.js --external:vscode --format=cjs --platform=node",
+    "esbuild": "npm run esbuild-base -- --sourcemap",
+    "esbuild-watch": "npm run esbuild-base -- --sourcemap --watch",
+    "test-compile": "tsc -p ./",
+    "install": "code --install-extension ricklove-vscode-auto-imports-fix-0.0.1.vsix"
+  },
+  "devDependencies": {
+    "@ricklove/config-lib-rig": "*",
+    "@ricklove/rush-packages": "*",
+    "@types/glob": "^7.1.3",
+    "@types/mocha": "^8.2.2",
+    "@types/node": "12.12.6",
+    "@types/vscode": "^1.59.0",
+    "@typescript-eslint/eslint-plugin": "^4.26.0",
+    "@typescript-eslint/parser": "^4.26.0",
+    "eslint": "~7.32.0",
+    "glob": "^7.1.7",
+    "mocha": "^8.4.0",
+    "typescript": "~4.3.5",
+    "vscode-test": "^1.5.2",
+    "esbuild": "~0.12.25"
+  }
+}

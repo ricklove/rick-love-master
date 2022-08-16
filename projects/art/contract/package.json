@@ -1,0 +1,44 @@
+{
+  "name": "@ricklove/art-contract",
+  "version": "1.0.0",
+  "main": "./lib/index.js",
+  "scripts": {
+    "build": "npm run build-contract-types",
+    "build:watch": "npm run build-contract-types",
+    "build-contract-types": "npx hardhat typechain",
+    "test": "npx hardhat test",
+    "coverage": "npx hardhat coverage",
+    "compile": "npx hardhat compile",
+    "deploy:testnet": "npx hardhat run --network rinkeby scripts/deploy.ts",
+    "deploy-onchain:testnet": "npx hardhat run --network rinkeby scripts/deploy-onchain.ts",
+    "deploy-onchain-svg:testnet": "npx hardhat run --network rinkeby scripts/deploy-onchain-svg.ts"
+  },
+  "devDependencies": {
+    "@ricklove/config-lib-rig": "*",
+    "@ethersproject/bytes": "~5.4.0",
+    "@nomiclabs/hardhat-ethers": "^2.0.2",
+    "@nomiclabs/hardhat-waffle": "^2.0.1",
+    "@typechain/ethers-v5": "^7.1.0",
+    "@typechain/hardhat": "^2.3.0",
+    "@types/chai": "^4.2.21",
+    "@types/mocha": "^8.2.2",
+    "@types/node": "12.12.6",
+    "chai": "^4.3.4",
+    "dotenv": "^8.2.0",
+    "env-cmd": "^10.1.0",
+    "ethereum-waffle": "^3.2.0",
+    "ethers": "^5.0.0",
+    "hardhat": "^2.6.4",
+    "solidity-coverage": "^0.7.17",
+    "ts-node": "~10.9.1",
+    "typechain": "^5.1.2",
+    "typescript": "~4.3.5",
+    "@ethersproject/providers": "~5.4.5",
+    "@ethersproject/abi": "~5.4.1",
+    "lodash": "~4.17.21",
+    "@ethersproject/bignumber": "~5.4.2"
+  },
+  "dependencies": {
+    "hardhat-contract-sizer": "~2.1.1"
+  }
+}

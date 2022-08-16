@@ -1,0 +1,20 @@
+{
+  "name": "@ricklove/art-build",
+  "version": "1.0.0",
+  "type": "module",
+  "main": "./lib/index.js",
+  "scripts": {
+    "build": "heft test --clean",
+    "build:watch": "heft build"
+  },
+  "dependencies": {
+    "@ricklove/art-common": "*",
+    "@ricklove/art-components": "*",
+    "@ricklove/artwork-circles": "*",
+    "@ricklove/artwork-hashing": "*"
+  },
+  "devDependencies": {
+    "@ricklove/config-lib-rig": "*",
+    "@types/node": "12.12.6"
+  }
+}
