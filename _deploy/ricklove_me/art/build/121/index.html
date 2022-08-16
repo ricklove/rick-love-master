@@ -1,0 +1,305 @@
+
+<html>
+<head>
+    <style>
+    html, body, div, span, applet, object, iframe,
+    h1, h2, h3, h4, h5, h6, p, blockquote, pre,
+    a, abbr, acronym, address, big, cite, code,
+    del, dfn, em, img, ins, kbd, q, s, samp,
+    small, strike, strong, sub, sup, tt, var,
+    b, u, i, center,
+    dl, dt, dd, ol, ul, li,
+    fieldset, form, label, legend,
+    table, caption, tbody, tfoot, thead, tr, th, td,
+    article, aside, canvas, details, embed, 
+    figure, figcaption, footer, header, hgroup, 
+    menu, nav, output, ruby, section, summary,
+    time, mark, audio, video {
+        margin: 0;
+        padding: 0;
+        border: 0;
+        font-size: 100%;
+        font: inherit;
+        vertical-align: baseline;
+    }
+    /* HTML5 display-role reset for older browsers */
+    article, aside, details, figcaption, figure, 
+    footer, header, hgroup, menu, nav, section {
+        display: block;
+    }
+    body {
+        line-height: 1;
+    }
+    ol, ul {
+        list-style: none;
+    }
+    blockquote, q {
+        quotes: none;  
+    }
+    blockquote:before, blockquote:after,
+    q:before, q:after {
+        content: '';
+        content: none;
+    }
+    table {
+        border-collapse: collapse;
+        border-spacing: 0;
+    }
+
+    body { 
+        background: #000000;
+    }
+    body, div {
+        display: flex;
+        flex: 1;
+        justify-content: center;
+        align-items: center;
+        max-width: 100%;
+        max-height: 100%;
+    }
+    </style>
+</head>
+<body>
+
+    <div id='host'></div>
+    
+<script src="https://cdn.jsdelivr.net/npm/p5@1.4.0/lib/p5.js"></script>
+
+    <script>
+    (function (exports, p5) {
+    'use strict';
+
+    function _interopDefaultLegacy (e) { return e && typeof e === 'object' && 'default' in e ? e : { 'default': e }; }
+
+    var p5__default = /*#__PURE__*/_interopDefaultLegacy(p5);
+
+    /* eslint-disable no-return-assign */
+
+    /* eslint-disable no-multi-assign */
+
+    /* eslint-disable @typescript-eslint/no-unused-expressions */
+
+    /* eslint-disable no-bitwise */
+    // FROM: https://stackoverflow.com/a/47593316/567524
+    function xmur3(str) {
+      var h = 1779033703 ^ str.length;
+
+      for (var i = 0; i < str.length; i++) {
+        h = Math.imul(h ^ str.charCodeAt(i), 3432918353);
+        h = h << 13 | h >>> 19;
+      }
+
+      return function () {
+        h = Math.imul(h ^ h >>> 16, 2246822507);
+        h = Math.imul(h ^ h >>> 13, 3266489909);
+        return (h ^= h >>> 16) >>> 0;
+      };
+    }
+
+    function mulberry32(a) {
+      return function () {
+        var t = a += 0x6D2B79F5;
+        t = Math.imul(t ^ t >>> 15, t | 1);
+        t ^= t + Math.imul(t ^ t >>> 7, t | 61);
+        return ((t ^ t >>> 14) >>> 0) / 4294967296;
+      };
+    }
+
+    var createRandomGenerator = function createRandomGenerator(hash) {
+      var seed = xmur3(hash)();
+      return {
+        random: mulberry32(seed)
+      };
+    };
+
+    var parseTokenId_art121 = function parseTokenId_art121(tokenId) {
+      var tokenTimestampValue = Number.parseInt(tokenId.substr(0, tokenId.length - 6), 10);
+      var tokenCounterValue = Number.parseInt(tokenId.substr(tokenId.length - 6), 10);
+      console.log("parseTokenId_art121", {
+        tokenId: tokenId,
+        tokenTimestampValue: tokenTimestampValue,
+        tokenCounterValue: tokenCounterValue
+      });
+
+      if (!Number.isFinite(tokenTimestampValue)) {
+        return null;
+      }
+
+      if (!Number.isFinite(tokenCounterValue)) {
+        return null;
+      }
+
+      var tokenCounter = tokenCounterValue;
+      var timestampSecs = tokenTimestampValue;
+      var targetSecs = Math.floor(new Date("2021-01-21 21:21:21Z").getTime()) / 1000;
+      var timeDeltaSecs = Math.abs(targetSecs - timestampSecs);
+      return {
+        tokenId: tokenId,
+        tokenCounter: tokenCounter,
+        timestampSecs: timestampSecs,
+        targetSecs: targetSecs,
+        timeDeltaSecs: timeDeltaSecs
+      };
+    };
+
+    /* eslint-disable new-cap */
+    var art_121 = {
+      key: "121",
+      title: "1/21/21 21:21:21",
+      description: "This exact time pattern will occur only once in our human timeline. This NFT crypto art will attempt to capture that time to the precise second and embed it in the distributed blockchain forever. \n    \nHowever the exact outcome cannot be controlled: \n\nThe color scheme is generated from the token hash.\n\nEven more difficult to predict - the block mining timestamp since 1/21/21 21:21:21 UTC controls the behavior of the clocks:\n\nYear\nMonth\nDay\nHour\nMinute\nSecond\n\nIf this is mined at the exact second, perfect stability will be achieved.\n\nThis is all up to whatever timing occurs on the blockchain when these NFTs are mined by the collectors.\n\nCan we obtain the exact precision?\n",
+      artist: "Rick Love",
+      getTokenDescription: function getTokenDescription(tokenId) {
+        var tokenData = parseTokenId_art121(tokenId);
+
+        if (!tokenData) {
+          return null;
+        }
+
+        return "".concat(tokenData.timeDeltaSecs, " Seconds from 1/21/21 21:21:21 (#").concat(tokenData.tokenCounter, ")");
+      },
+      renderArt: function renderArt(hostElement, tokenId) {
+        // const { a, b, c } = { a: 57, b: 23, c: 15 };
+        var _createRandomGenerato = createRandomGenerator(tokenId),
+            random = _createRandomGenerato.random;
+
+        ({
+          a: 1 + Math.floor(57 * random()),
+          b: 1 + Math.floor(213 * random()),
+          c: 1 + Math.floor(115 * random())
+        });
+        var _cr$cg$cb$ca = {
+          cr: Math.floor(25 + 230 * random()),
+          cg: Math.floor(25 + 230 * random()),
+          cb: Math.floor(25 + 230 * random()),
+          ca: Math.floor(25 + 25 * random())
+        },
+            cr = _cr$cg$cb$ca.cr,
+            cg = _cr$cg$cb$ca.cg,
+            cb = _cr$cg$cb$ca.cb;
+        var tick = 0;
+        var tokenData = parseTokenId_art121(tokenId);
+        return new p5__default['default'](function (s) {
+          s.setup = function () {
+            s.createCanvas(350, 350);
+          };
+
+          s.draw = function () {
+            s.background(0);
+
+            var drawClock = function drawClock(index, clockRadius, units, value) {
+              var perUnit = 1 / units;
+
+              for (var iHalf = 0; iHalf <= 1; iHalf++) {
+                var isFront = iHalf === 1;
+                var xZeroValue = 0;
+
+                for (var i = 0; i < units; i++) {
+                  var errorRatio = (0.5 - Math.abs(value * perUnit - 0.5)) * 2;
+                  var correctRatioRaw = 1 - errorRatio; // const correctRatio = correctRatioRaw * ((tick * 0.121 * correctRatioRaw) % 2 - 1);
+
+                  var zRotation = Math.cos(tick * 0.0121 * correctRatioRaw + index * 0.25);
+                  var angleOffset = -0.25 + value * perUnit;
+                  var x = zRotation * clockRadius * Math.cos(Math.PI * 2 * (angleOffset - i * perUnit));
+                  var y = clockRadius * Math.sin(Math.PI * 2 * (angleOffset - i * perUnit));
+
+                  if (i === 0) {
+                    xZeroValue = x;
+                  }
+
+                  var isFrontValue = (value === 0 && index % 2 === 0 ? -1 : 1) * Math.sign(xZeroValue) === Math.sign(x); // const isFrontValue = Math.sign(xZeroValue) === Math.sign(x);
+                  // const isFrontValue = Math.sign(xZeroValue) === Math.sign(x);
+
+                  if (isFront && !isFrontValue) {
+                    continue;
+                  }
+
+                  if (!isFront && isFrontValue) {
+                    continue;
+                  } // if (isFront && isFrontX) { continue; }
+                  // if (!isFront && (isFrontOnLeft && x > 0 || !isFrontOnLeft && x < 0)) { continue; }
+                  // if (!isFront && value !== 0) { continue; }
+
+
+                  var colorKey = index + 1; // const alphaShift = 0.5 + 0.5 * (x / clockRadius) * (isFrontOnLeft ? -1 : 1);
+                  // const alphaShift = 1;
+
+                  var alphaShift = isFront ? 1 : 0.25;
+                  var lowAlpha = Math.ceil(units < 100 ? 100 : 25);
+                  s.noFill();
+                  s.stroke(s.color(cr * colorKey % 255, cg * colorKey % 255, cb * colorKey % 255, Math.ceil((value === 0 ? 255 : lowAlpha) * alphaShift)));
+                  s.strokeWeight(2);
+                  s.line(x * (1 - 0.05 * Math.abs(zRotation)), y * 0.95, x, y);
+
+                  if (i === 0) {
+                    s.stroke(s.color(cr * colorKey % 255, cg * colorKey % 255, cb * colorKey % 255, value === 0 ? 255 : 50));
+                    s.line(0, 0, x, y);
+                  }
+                }
+              }
+            };
+
+            s.translate(175, 175);
+            var defaultDelta = new Date("2021-01-21 21:21:21.212Z").getTime() - Date.now(); // const defaultDelta = ((new Date(`2022-01-21 21:21:21.212Z`)).getTime() - Date.now());
+            // const defaultDelta = ((new Date(`2000-01-01 00:00:00.000Z`)).getTime() - Date.now());
+            // const defaultDelta = 0;
+
+            var tokenTimeDeltaSecs = tokenData === null || tokenData === void 0 ? void 0 : tokenData.timeDeltaSecs;
+            var delta = tokenTimeDeltaSecs != null ? tokenTimeDeltaSecs * 1000 : defaultDelta; // console.log(`delta`, { delta, defaultDelta, tokenId });
+
+            var e = {
+              year: Math.floor(delta / (1000 * 60 * 60 * 24 * 365)),
+              month: Math.floor(delta / (1000 * 60 * 60 * 24 * 31) % 12),
+              day: Math.floor(delta / (1000 * 60 * 60 * 24) % 31),
+              hour: Math.floor(delta / (1000 * 60 * 60) % 24),
+              minute: Math.floor(delta / (1000 * 60) % 60),
+              second: Math.floor(delta / 1000 % 60) // ms: delta % 1000,
+
+            };
+
+            for (var iTick = 0; iTick < 10; iTick++) {
+              drawClock(0, 140, 100, e.year);
+              drawClock(1, 120, 12, e.month);
+              drawClock(2, 100, 31, e.day);
+              drawClock(3, 80, 60, e.hour);
+              drawClock(4, 60, 60, e.minute);
+              drawClock(5, 40, 60, e.second); // drawClock(6, 20, 1000, e.ms);
+
+              s.background(s.color(0, 0, 0, 5));
+              tick++;
+            }
+
+            s.translate(-175, -175);
+
+
+            tick++;
+          };
+        }, hostElement);
+      }
+    };
+
+    exports.art_121 = art_121;
+
+    Object.defineProperty(exports, '__esModule', { value: true });
+
+    return exports;
+
+}(window, window.p5));
+
+    
+var seedMatch = document.location.search.match(/seed=([^;])/) || document.location.search.match(/tokenId=([^;])/);
+var seed = seedMatch && seedMatch[1] || '0';
+
+var createP5 = function(s,host){
+    return new p5(s,host);
+};
+
+window.art_121.renderArt(
+    document.getElementById('host'),
+    seed,
+    null,
+    createP5
+)
+    </script>
+
+</body>
+</html>
