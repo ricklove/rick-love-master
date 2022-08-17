@@ -183,7 +183,7 @@ export const JoinTheJourneyArticleList = ({ config }: { config: JoinTheJourneyCo
             boxShadow: `rgba(100, 100, 111, 0.2) 0px 7px 29px 0px`,
           }}
         >
-          <div style={{ flex: 1 }} onClick={closeArticle}>
+          <div style={{ flex: 1 }} onClick={article ? closeArticle : undefined}>
             {article ? `⬅ ` : ``} Join the Journey
           </div>
           <UserSettings value={readHash} onChange={changeReadState} />
@@ -230,13 +230,24 @@ const UserSettings = ({ value, onChange }: { value: string; onChange: (value: st
   }, [hashValue]);
   return (
     <>
-      <div onClick={toggleExpanded}>{`⚙`}</div>
+      <button style={{ padding: 4, fontSize: 16, background: `unset` }} onClick={toggleExpanded}>{`⚙`}</button>
       {expanded && (
         <div style={{ width: `100%` }}>
-          <div>
-            <label>Edit Progress</label>
-            <input style={{ marginLeft: 4, padding: 4 }} type='text' value={hashValue} onChange={changeHashValue} />
-            <button style={{ marginLeft: 4, padding: 4 }} onClick={save}>
+          <div
+            style={{
+              display: `flex`,
+              flexDirection: `row`,
+              alignItems: `center`,
+            }}
+          >
+            <label>Edit Progress: Read</label>
+            <input
+              style={{ marginLeft: 4, padding: 4, fontSize: 16 }}
+              type='text'
+              value={hashValue}
+              onChange={changeHashValue}
+            />
+            <button style={{ marginLeft: 4, padding: 4, alignSelf: `stretch` }} onClick={save}>
               Save
             </button>
           </div>
