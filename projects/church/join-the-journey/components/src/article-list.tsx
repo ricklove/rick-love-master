@@ -149,6 +149,19 @@ export const JoinTheJourneyArticleList = ({ config }: { config: JoinTheJourneyCo
     // setItems((s) => s!.map((x) => (x.index === article.index ? { ...x, isRead: true } : x)));
   }, []);
 
+  const toggleArticleRead = useCallback((article: ArticleItem) => {
+    let { read } = readStorageAccess.get();
+    if (!read.includes(article.articleNumber)) {
+      read.push(article.articleNumber);
+    } else {
+      read = read.filter((x) => x !== article.articleNumber);
+    }
+    readStorageAccess.set(read);
+
+    console.log(`toggleArticleRead`, { read, article });
+    changeReadState(getReadHash(readStorageAccess.get()));
+  }, []);
+
   const changeReadState = (hashValue: string) => {
     const read = getReadFromHash(hashValue);
     readStorageAccess.set(read);
@@ -203,7 +216,7 @@ export const JoinTheJourneyArticleList = ({ config }: { config: JoinTheJourneyCo
         >
           {items?.map((x) => (
             <Fragment key={`${x.key}${x.isRead}`}>
-              <ArticleItemView item={x} onOpen={openArticle} />
+              <ArticleItemView item={x} onOpen={openArticle} onToggleRead={toggleArticleRead} />
             </Fragment>
           ))}
         </div>
@@ -303,10 +316,19 @@ and betterment of the family of believers? Pray about it. And then [check out th
   );
 };
 
-const ArticleItemView = ({ item, onOpen }: { item: ArticleItem; onOpen: (item: ArticleItem) => void }) => {
+const ArticleItemView = ({
+  item,
+  onOpen,
+  onToggleRead,
+}: {
+  item: ArticleItem;
+  onOpen: (item: ArticleItem) => void;
+  onToggleRead: (item: ArticleItem) => void;
+}) => {
   const { title, author, image, verse, date, url } = item.metadata;
 
   const open = useCallback(() => onOpen(item), [item.key]);
+  const toggleRead = useCallback(() => onToggleRead(item), [item.key]);
 
   return (
     <>
@@ -321,26 +343,25 @@ const ArticleItemView = ({ item, onOpen }: { item: ArticleItem; onOpen: (item: A
           opacity: item.isRead ? 0.8 : undefined,
         }}
       >
-        {!item.isRead && (
+        <div
+          style={{
+            height: 0,
+          }}
+          onClick={toggleRead}
+        >
           <div
             style={{
-              height: 0,
+              position: `absolute`,
+              top: -8,
+              right: -8,
+              width: 16,
+              height: 16,
+              borderRadius: 9999,
+              border: `1px solid #FFFFFF`,
+              background: item.isRead ? `#CCCCCC` : `#0066FF`,
             }}
-          >
-            <div
-              style={{
-                position: `absolute`,
-                top: -8,
-                right: -8,
-                width: 16,
-                height: 16,
-                borderRadius: 9999,
-                border: `1px solid #FFFF00`,
-                background: `#0066FF`,
-              }}
-            />
-          </div>
-        )}
+          />
+        </div>
         <div
           style={{
             display: `flex`,
