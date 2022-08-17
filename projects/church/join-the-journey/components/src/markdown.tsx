@@ -7,14 +7,14 @@ export const Markdown = ({ markdown }: { markdown: string }) => {
       <ReactMarkdown
         components={{
           img: (p: unknown) => (
-            <span>
+            <p style={{ textAlign: `center` }}>
               <img
                 {...(p as never)}
                 style={{
                   maxWidth: `100%`,
                 }}
               />
-            </span>
+            </p>
           ),
         }}
       >

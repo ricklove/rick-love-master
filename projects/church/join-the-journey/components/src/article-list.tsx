@@ -194,10 +194,11 @@ export const JoinTheJourneyArticleList = ({ config }: { config: JoinTheJourneyCo
         <div
           style={{
             // Hide to prevent reloading images
-            display: !article ? `flex` : `none`,
-            flexDirection: `row`,
-            flexWrap: `wrap`,
-            maxWidth: `100vw`,
+            display: !article ? `grid` : `none`,
+            gridTemplateColumns: `repeat(auto-fill, minmax(80px, 200px))`,
+            gap: 32,
+            padding: 16,
+            maxWidth: `calc(100% - 64px)`,
           }}
         >
           {items?.map((x) => (
@@ -208,6 +209,7 @@ export const JoinTheJourneyArticleList = ({ config }: { config: JoinTheJourneyCo
         </div>
         {article && <ArticleDetailView item={article} onClose={closeArticle} onRead={markArticleRead} />}
         <div style={{ flex: 1 }} />
+        <Footer />
       </div>
     </>
   );
@@ -259,6 +261,48 @@ const UserSettings = ({ value, onChange }: { value: string; onChange: (value: st
   );
 };
 
+const Footer = () => {
+  return (
+    <>
+      <div
+        style={{
+          display: `flex`,
+          flexDirection: `column`,
+          alignItems: `center`,
+          maxWidth: `100%`,
+          padding: 8,
+        }}
+      >
+        <div style={{ maxWidth: 600 }}>
+          <Markdown
+            markdown={`
+### Love the Journey?
+
+Then we want you! We need you to sign-up to lead just one day's devotional. 
+Would you allow yourself to be stretched beyond your comfort level to the encouragement 
+and betterment of the family of believers? Pray about it. And then [check out this link to sign up.](https://www.jointhejourneycollegeside.org/lead.html)
+      `}
+          />
+        </div>
+        <div
+          style={{
+            display: `flex`,
+            flexDirection: `column`,
+            alignItems: `center`,
+          }}
+        >
+          <img
+            style={{ width: 160, maxWidth: `100%` }}
+            src='https://rick-love-blog-user-data.s3.us-east-1.amazonaws.com/join-the-journey/Collegeside.png'
+            alt='Collegeside'
+          />
+          <p>Copyright © 2022 Collegeside Church of Christ, All rights reserved.</p>
+        </div>
+      </div>
+    </>
+  );
+};
+
 const ArticleItemView = ({ item, onOpen }: { item: ArticleItem; onOpen: (item: ArticleItem) => void }) => {
   const { title, author, image, verse, date, url } = item.metadata;
 
@@ -269,7 +313,12 @@ const ArticleItemView = ({ item, onOpen }: { item: ArticleItem; onOpen: (item: A
       <div
         style={{
           position: `relative`,
-          margin: 8,
+          width: `100%`,
+          height: `100%`,
+          padding: 8,
+          boxShadow: `rgba(100, 100, 111, 0.2) 0px 7px 29px 0px`,
+          borderRadius: 4,
+          opacity: item.isRead ? 0.8 : undefined,
         }}
       >
         {!item.isRead && (
@@ -296,16 +345,17 @@ const ArticleItemView = ({ item, onOpen }: { item: ArticleItem; onOpen: (item: A
           style={{
             display: `flex`,
             flexDirection: `column`,
-            padding: 8,
-            boxShadow: `rgba(100, 100, 111, 0.2) 0px 7px 29px 0px`,
-            maxWidth: `160px`,
-            borderRadius: 4,
-            opacity: item.isRead ? 0.8 : undefined,
           }}
           onClick={open}
         >
           <ArticleInfo item={item} />
-          <div>
+          <div
+            style={{
+              display: `flex`,
+              flexDirection: `column`,
+              alignItems: `center`,
+            }}
+          >
             <C.SmartImage
               src={image}
               alt={author ?? `Author`}
@@ -335,20 +385,34 @@ const ArticleDetailView = ({
   const close = useCallback(() => onClose(item), [item.key]);
   const read = useCallback(() => onRead(item), [item.key]);
 
+  const markdownCleaned = item.markdown.replace(/!\[\]\([^)]*5981052803000701[^)]*\)/g, ``);
+
   return (
     <>
       <div
         style={{
           display: `flex`,
           flexDirection: `column`,
-          padding: 8,
+          alignSelf: `center`,
+          maxWidth: `100%`,
+          width: 600,
           margin: 8,
           boxShadow: `rgba(100, 100, 111, 0.2) 0px 7px 29px 0px`,
         }}
       >
-        <ArticleInfo item={item} />
-        <div>
-          <Markdown markdown={item.markdown} />
+        <div
+          style={{
+            padding: 4,
+          }}
+        >
+          <ArticleInfo item={item} />
+        </div>
+        <div
+          style={{
+            padding: 4,
+          }}
+        >
+          <Markdown markdown={markdownCleaned} />
         </div>
 
         <C.LazyComponent onLoad={read}>
