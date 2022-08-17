@@ -1,7 +1,8 @@
 import React, { ReactNode, useEffect, useRef, useState } from 'react';
 import { delay } from '@ricklove/utils-core';
 
-// const debug_timeStart = Date.now();
+// eslint-disable-next-line @typescript-eslint/naming-convention
+const debug_timeStart = Date.now();
 const globalRelayoutCallbacks = [] as (null | (() => boolean))[];
 let activeNotifyRelayoutId = 0;
 const notifyRelayout = () => {
@@ -9,7 +10,7 @@ const notifyRelayout = () => {
     // Cancellable
     activeNotifyRelayoutId++;
     const notifyRelayoutId = activeNotifyRelayoutId;
-    await delay(100);
+    await delay(10);
 
     // console.log('LazyComponent notifyRelayout', {notifyRelayoutId});
 
@@ -17,7 +18,7 @@ const notifyRelayout = () => {
     while (i < globalRelayoutCallbacks.length) {
       const callback = globalRelayoutCallbacks[i];
       if (callback && callback()) {
-        await delay(25);
+        await delay(5);
       }
       i++;
 
@@ -67,13 +68,15 @@ export const LazyComponent = ({ children, onLoad }: { children: ReactNode; onLoa
       }
 
       const divRect = placeholder.getBoundingClientRect();
-      const screenBottom = window.scrollY + window.innerHeight;
-      const isOnScreen = divRect.top < screenBottom;
+      const screenBottomExact = window.innerHeight;
+      const OFFSCREEN_LOAD_HEIGHT = 100;
+      const screenBottom = screenBottomExact + OFFSCREEN_LOAD_HEIGHT;
+      const isOnScreen = divRect.top < screenBottom && divRect.bottom > 0 - OFFSCREEN_LOAD_HEIGHT;
 
       if (!isOnScreen) {
         return false;
       }
-      // console.log(`isOnScreen`,{ time: Date.now() - debug_timeStart, iRelayout, divRect, screenBottom, isOnScreen });
+      // console.log(`isOnScreen`, { time: Date.now() - debug_timeStart, iRelayout, divRect, screenBottom, isOnScreen });
 
       isDoneRef.current = true;
       unsub();
