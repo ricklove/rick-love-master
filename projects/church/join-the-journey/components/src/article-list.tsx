@@ -178,6 +178,7 @@ export const JoinTheJourneyArticleList = ({ config }: { config: JoinTheJourneyCo
             display: `flex`,
             flexDirection: `row`,
             flexWrap: `wrap`,
+            alignItems: `center`,
             padding: 8,
             margin: 8,
             boxShadow: `rgba(100, 100, 111, 0.2) 0px 7px 29px 0px`,
@@ -233,6 +234,7 @@ const UserSettings = ({ value, onChange }: { value: string; onChange: (value: st
       <button style={{ padding: 4, fontSize: 16, background: `unset` }} onClick={toggleExpanded}>{`⚙`}</button>
       {expanded && (
         <div style={{ width: `100%` }}>
+          <div>Edit Progress:</div>
           <div
             style={{
               display: `flex`,
@@ -240,7 +242,7 @@ const UserSettings = ({ value, onChange }: { value: string; onChange: (value: st
               alignItems: `center`,
             }}
           >
-            <label>Edit Progress: Read</label>
+            <label>Read</label>
             <input
               style={{ marginLeft: 4, padding: 4, fontSize: 16 }}
               type='text'
