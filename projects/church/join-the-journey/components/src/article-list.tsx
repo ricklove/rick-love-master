@@ -151,6 +151,8 @@ export const JoinTheJourneyArticleList = ({ config }: { config: JoinTheJourneyCo
 
     console.log(`markArticleRead`, { read, article });
     window.history.replaceState(null, ``, `#${getReadHash()}`);
+
+    setItems((s) => s!.map((x) => (x.index === article.index ? { ...x, isRead: true } : x)));
   }, []);
 
   return (
@@ -186,7 +188,7 @@ export const JoinTheJourneyArticleList = ({ config }: { config: JoinTheJourneyCo
           }}
         >
           {items?.map((x) => (
-            <Fragment key={x.key}>
+            <Fragment key={`${x.key}${x.isRead}`}>
               <ArticleItemView item={x} onOpen={openArticle} />
             </Fragment>
           ))}
