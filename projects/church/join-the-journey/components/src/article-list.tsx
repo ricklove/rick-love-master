@@ -19,8 +19,7 @@ const readStorageAccess = {
   },
 };
 
-const getReadHash = () => {
-  const { read } = readStorageAccess.get();
+const getReadHash = ({ read }: { read: number[] }) => {
   const max = Math.max(...read);
   const readSet = new Set(read);
 
@@ -28,7 +27,7 @@ const getReadHash = () => {
   let lastRead = false;
   let iStart = 0;
 
-  for (let i = 0; i <= max; i++) {
+  for (let i = 0; i <= max + 1; i++) {
     const hasRead = readSet.has(i);
     if (hasRead === lastRead) {
       continue;
@@ -46,11 +45,10 @@ const getReadHash = () => {
   return t.substring(1);
 };
 
-const getReadFromHash = () => {
-  const hash = window.location.hash.replace(/^#/, ``);
-  console.log(`getReadFromHash`, { hash });
+const getReadFromHash = (hashValue: string) => {
+  console.log(`getReadFromHash`, { hashValue });
 
-  const parts = [...`,${hash}`.matchAll(/,(\d+)-?(\d+)?/g)].map((m) => ({
+  const parts = [...`,${hashValue}`.matchAll(/,(\d+)-?(\d+)?/g)].map((m) => ({
     from: Number(m[1]),
     to: Number(m[2] ?? m[1]),
   }));
@@ -90,13 +88,6 @@ export const JoinTheJourneyArticleList = ({ config }: { config: JoinTheJourneyCo
     const parts = window.location.pathname.split(`/`);
     const date = parts[parts.length - 1];
 
-    const readFromHash = getReadFromHash();
-    const { read: readFromState } = readStorageAccess.get();
-
-    const readCombined = [...new Set([...readFromHash, ...readFromState])];
-    readStorageAccess.set(readCombined);
-    window.history.replaceState(null, ``, `#${getReadHash()}`);
-
     if (items && article?.metadata.date === date) {
       return;
     }
@@ -127,6 +118,7 @@ export const JoinTheJourneyArticleList = ({ config }: { config: JoinTheJourneyCo
   }, []);
 
   useEffect(() => {
+    setReadHash(getReadHash(readStorageAccess.get()));
     load();
     window.addEventListener(`popstate`, load);
     return () => {
@@ -134,14 +126,17 @@ export const JoinTheJourneyArticleList = ({ config }: { config: JoinTheJourneyCo
     };
   }, []);
 
+  const [readHash, setReadHash] = useState(getReadHash(readStorageAccess.get()));
+
   const openArticle = useCallback((article: ArticleItem) => {
     setArticle(article);
-    window.history.pushState(undefined, article.metadata.date, `./${article.metadata.date}#${getReadHash()}`);
+    window.history.pushState(undefined, article.metadata.date, `./${article.metadata.date}`);
     window.scroll({ top: 0, left: 0 });
   }, []);
   const closeArticle = useCallback(() => {
     setArticle(undefined);
     window.history.back();
+    changeReadState(getReadHash(readStorageAccess.get()));
   }, []);
 
   const markArticleRead = useCallback((article: ArticleItem) => {
@@ -150,10 +145,22 @@ export const JoinTheJourneyArticleList = ({ config }: { config: JoinTheJourneyCo
     readStorageAccess.set(read);
 
     console.log(`markArticleRead`, { read, article });
-    window.history.replaceState(null, ``, `#${getReadHash()}`);
-
-    setItems((s) => s!.map((x) => (x.index === article.index ? { ...x, isRead: true } : x)));
+    // Don't trigger a state change until close
+    // setItems((s) => s!.map((x) => (x.index === article.index ? { ...x, isRead: true } : x)));
   }, []);
+
+  const changeReadState = (hashValue: string) => {
+    const read = getReadFromHash(hashValue);
+    readStorageAccess.set(read);
+
+    setReadHash(hashValue);
+    setItems((s) =>
+      s?.map((x) => ({
+        ...x,
+        isRead: read.some((r) => r === x.index + 1),
+      })),
+    );
+  };
 
   return (
     <>
@@ -161,20 +168,25 @@ export const JoinTheJourneyArticleList = ({ config }: { config: JoinTheJourneyCo
         style={{
           display: `flex`,
           flexDirection: `column`,
-          minHeight: `100vh`,
+          alignItems: `stretch`,
+          width: `100%`,
+          height: `100%`,
         }}
       >
         <div
           style={{
             display: `flex`,
-            flexDirection: `column`,
+            flexDirection: `row`,
+            flexWrap: `wrap`,
             padding: 8,
             margin: 8,
             boxShadow: `rgba(100, 100, 111, 0.2) 0px 7px 29px 0px`,
           }}
-          onClick={closeArticle}
         >
-          {article ? `⬅ ` : ``} Join the Journey
+          <div style={{ flex: 1 }} onClick={closeArticle}>
+            {article ? `⬅ ` : ``} Join the Journey
+          </div>
+          <UserSettings value={readHash} onChange={changeReadState} />
         </div>
         <C.Loading loading={loading} />
         <C.ErrorBox error={error} />
@@ -196,6 +208,40 @@ export const JoinTheJourneyArticleList = ({ config }: { config: JoinTheJourneyCo
         {article && <ArticleDetailView item={article} onClose={closeArticle} onRead={markArticleRead} />}
         <div style={{ flex: 1 }} />
       </div>
+    </>
+  );
+};
+
+const UserSettings = ({ value, onChange }: { value: string; onChange: (value: string) => void }) => {
+  const [expanded, setExpanded] = useState(false);
+  const toggleExpanded = useCallback(() => setExpanded((s) => !s), []);
+
+  const [hashValue, setHashValue] = useState(value);
+  useEffect(() => {
+    setHashValue(value);
+  }, [value]);
+
+  const changeHashValue = useCallback(({ target: { value } }: { target: { value: string } }) => {
+    setHashValue(value);
+  }, []);
+
+  const save = useCallback(() => {
+    onChange(hashValue);
+  }, [hashValue]);
+  return (
+    <>
+      <div onClick={toggleExpanded}>{`⚙`}</div>
+      {expanded && (
+        <div style={{ width: `100%` }}>
+          <div>
+            <label>Edit Progress</label>
+            <input style={{ marginLeft: 4, padding: 4 }} type='text' value={hashValue} onChange={changeHashValue} />
+            <button style={{ marginLeft: 4, padding: 4 }} onClick={save}>
+              Save
+            </button>
+          </div>
+        </div>
+      )}
     </>
   );
 };
@@ -241,7 +287,7 @@ const ArticleItemView = ({ item, onOpen }: { item: ArticleItem; onOpen: (item: A
             boxShadow: `rgba(100, 100, 111, 0.2) 0px 7px 29px 0px`,
             maxWidth: `160px`,
             borderRadius: 4,
-            background: item.isRead ? `#EEEEEE` : undefined,
+            opacity: item.isRead ? 0.8 : undefined,
           }}
           onClick={open}
         >
