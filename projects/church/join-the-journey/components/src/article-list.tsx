@@ -338,6 +338,7 @@ const Footer = () => {
   return (
     <>
       <div
+        className='foot'
         style={{
           display: `flex`,
           flexDirection: `column`,
