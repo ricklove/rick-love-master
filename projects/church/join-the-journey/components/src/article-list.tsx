@@ -338,7 +338,7 @@ const Footer = () => {
   return (
     <>
       <div
-        className='foot'
+        className='comment'
         style={{
           display: `flex`,
           flexDirection: `column`,
@@ -359,6 +359,7 @@ and betterment of the family of believers? Pray about it. And then [check out th
           />
         </div>
         <div
+          className='comment'
           style={{
             display: `flex`,
             flexDirection: `column`,
