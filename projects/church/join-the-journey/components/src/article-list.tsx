@@ -89,6 +89,8 @@ export const JoinTheJourneyArticleList = ({ config }: { config: JoinTheJourneyCo
     const parts = window.location.pathname.split(`/`);
     const date = parts[parts.length - 1];
 
+    const urlProgressCode = window.location.search.match(/p=([\w]+)/)?.[1];
+
     if (items && article?.metadata.date === date) {
       return;
     }
@@ -98,6 +100,12 @@ export const JoinTheJourneyArticleList = ({ config }: { config: JoinTheJourneyCo
         // Load Articles
         const result = await fetchJsonGetRequest<ArticlesContentDocument>(config.articlesContentUrl);
         stopIfObsolete();
+
+        // Load url progress code
+        if (urlProgressCode) {
+          await userProgressService.current.loadShareCode({ shareCode: urlProgressCode });
+          window.history.replaceState(undefined, ``, `./`);
+        }
 
         // Load user progress
         await userProgressService.current.loadUserProgress();
