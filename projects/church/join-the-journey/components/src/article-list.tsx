@@ -481,8 +481,6 @@ const ArticleDetailView = ({
   return (
     <>
       <div
-        // Disable reader mode
-        className='comment'
         style={{
           display: `flex`,
           flexDirection: `column`,
