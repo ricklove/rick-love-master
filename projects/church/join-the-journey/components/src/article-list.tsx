@@ -403,6 +403,8 @@ const ArticleItemView = ({
   return (
     <>
       <div
+        // Block Safari Reader Mode
+        className='comment'
         style={{
           position: `relative`,
           width: `100%`,
