@@ -2,7 +2,7 @@ import React, { Fragment, useCallback, useEffect, useRef, useState } from 'react
 import type { ArticleItem as ArticleItemRaw, ArticlesContentDocument } from '@ricklove/church-join-the-journey-common';
 import { C } from '@ricklove/react-controls';
 import { fetchJsonGetRequest } from '@ricklove/utils-fetch';
-import { useAsyncWorker } from '@ricklove/utils-react';
+import { useAsyncWorker, useMediaQuery } from '@ricklove/utils-react';
 import { Markdown } from './markdown';
 import { createUserProgressService, UserProgressConfig, UserProgressService } from './user-data';
 
@@ -223,22 +223,12 @@ export const JoinTheJourneyArticleList = ({ config }: { config: JoinTheJourneyCo
         </div>
         <C.Loading loading={loading} />
         <C.ErrorBox error={error} />
-        <div
-          style={{
-            // Hide to prevent reloading images
-            display: !article ? `grid` : `none`,
-            gridTemplateColumns: `repeat(auto-fill, minmax(80px, 200px))`,
-            gap: 32,
-            padding: 16,
-            maxWidth: `calc(100% - 64px)`,
-          }}
-        >
-          {items?.map((x) => (
-            <Fragment key={`${x.key}${x.isRead}`}>
-              <ArticleItemView item={x} onOpen={openArticle} onToggleRead={toggleArticleRead} />
-            </Fragment>
-          ))}
-        </div>
+        <ArticleListView
+          visible={!article}
+          items={items ?? []}
+          onOpenArticle={openArticle}
+          onToggleArticleRead={toggleArticleRead}
+        />
         {article && <ArticleDetailView item={article} onClose={closeArticle} onRead={markArticleRead} />}
         <div style={{ flex: 1 }} />
         <Footer />
@@ -386,6 +376,56 @@ and betterment of the family of believers? Pray about it. And then [check out th
   );
 };
 
+const ArticleListView = ({
+  visible,
+  items,
+  onOpenArticle,
+  onToggleArticleRead,
+}: {
+  // Hide to prevent reloading images
+  visible: boolean;
+  items: ArticleItem[];
+  onOpenArticle: (value: ArticleItem) => void;
+  onToggleArticleRead: (value: ArticleItem) => void;
+}) => {
+  const hasColumns = useMediaQuery(`(min-width: 400px)`);
+  const isLarge = useMediaQuery(`(min-width: 750px)`);
+
+  return (
+    <div style={{ display: `flex`, flexDirection: `column`, alignItems: `center` }}>
+      <div
+        style={
+          !visible
+            ? {
+                display: `none`,
+              }
+            : hasColumns
+            ? {
+                display: `grid`,
+                gridTemplateColumns: isLarge
+                  ? `repeat(auto-fill, minmax(80px, 200px))`
+                  : `repeat(auto-fill, minmax(80px, 160px))`,
+                gap: isLarge ? 32 : 24,
+                padding: isLarge ? 16 : 4,
+                maxWidth: `calc(100% - 64px)`,
+              }
+            : {
+                display: `flex`,
+                flexDirection: `column`,
+                padding: 16,
+              }
+        }
+      >
+        {items.map((x) => (
+          <Fragment key={`${x.key}${x.isRead}`}>
+            <ArticleItemView item={x} onOpen={onOpenArticle} onToggleRead={onToggleArticleRead} />
+          </Fragment>
+        ))}
+      </div>
+    </div>
+  );
+};
+
 const ArticleItemView = ({
   item,
   onOpen,
@@ -405,8 +445,6 @@ const ArticleItemView = ({
       <div
         style={{
           position: `relative`,
-          width: `100%`,
-          height: `100%`,
           padding: 8,
           boxShadow: `rgba(100, 100, 111, 0.2) 0px 7px 29px 0px`,
           borderRadius: 4,
