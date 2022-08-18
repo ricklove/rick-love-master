@@ -6,7 +6,6 @@ export const Markdown = ({ markdown }: { markdown: string }) => {
     <div className='markdown-body' style={{ padding: 0 }}>
       <ReactMarkdown
         components={{
-          p: ({ children }) => <p className='comment'>{children}</p>,
           img: (props) => (
             <p style={{ textAlign: `center` }}>
               <img

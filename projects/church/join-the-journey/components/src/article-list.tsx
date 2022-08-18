@@ -82,6 +82,8 @@ export const JoinTheJourneyArticleList = ({ config }: { config: JoinTheJourneyCo
     article,
   };
 
+  const isTiny = useMediaQuery(`(max-width: 200px)`);
+
   const { loading, error, doWork } = useAsyncWorker();
   const load = useCallback(() => {
     const { items, article } = pageState.current;
@@ -141,12 +143,16 @@ export const JoinTheJourneyArticleList = ({ config }: { config: JoinTheJourneyCo
 
   const openArticle = useCallback((article: ArticleItem) => {
     setArticle(article);
-    window.history.pushState(undefined, article.metadata.date, `./${article.metadata.date}`);
-    window.scroll({ top: 0, left: 0 });
+    if (!isTiny) {
+      window.history.pushState(undefined, article.metadata.date, `./${article.metadata.date}`);
+      window.scroll({ top: 0, left: 0 });
+    }
   }, []);
   const closeArticle = useCallback(() => {
     setArticle(undefined);
-    window.history.back();
+    if (!isTiny) {
+      window.history.back();
+    }
     changeReadState(getReadHash(readStorageAccess.get()));
   }, []);
 
@@ -338,7 +344,6 @@ const Footer = () => {
   return (
     <>
       <div
-        className='comment'
         style={{
           display: `flex`,
           flexDirection: `column`,
@@ -359,7 +364,6 @@ and betterment of the family of believers? Pray about it. And then [check out th
           />
         </div>
         <div
-          className='comment'
           style={{
             display: `flex`,
             flexDirection: `column`,
