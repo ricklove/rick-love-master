@@ -212,7 +212,7 @@ const createUserDataService = (uploadApiConfig: UploadApiConfig) => {
   let isSetupDone = false;
 
   const service = {
-    setup: async () => {
+    setup: async (defaultUserName = `Player 1`) => {
       if (isSetupStarted) {
         while (!isSetupDone) {
           // eslint-disable-next-line no-await-in-loop
@@ -243,7 +243,7 @@ const createUserDataService = (uploadApiConfig: UploadApiConfig) => {
           userProfiles: [
             {
               key: newUploadUrlResult.uploadUrl.relativePath,
-              name: `${`Player 1`}`,
+              name: defaultUserName,
               uploadUrl: newUploadUrlResult.uploadUrl,
             },
           ],
@@ -437,9 +437,10 @@ const createUserDataService = (uploadApiConfig: UploadApiConfig) => {
       }
 
       // Already has that user profile
-      if (state.userProfiles.find((x) => x.key === sharedUploadUrl.relativePath)) {
+      const existingUserProfile = state.userProfiles.find((x) => x.key === sharedUploadUrl.relativePath);
+      if (existingUserProfile) {
         console.log(`addUserFromShareCode - ALREADY HAS USER`, { userKey: sharedUploadUrl.relativePath });
-        return;
+        return existingUserProfile;
       }
 
       state.userProfiles.push({
@@ -453,6 +454,8 @@ const createUserDataService = (uploadApiConfig: UploadApiConfig) => {
 
       // Reload profile
       await updateUserProfileFromServer(sharedUploadUrl.relativePath);
+
+      return state.userProfiles[state.userProfiles.length - 1];
     },
   };
   return service;

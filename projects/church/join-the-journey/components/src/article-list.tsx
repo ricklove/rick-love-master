@@ -4,10 +4,11 @@ import { C } from '@ricklove/react-controls';
 import { fetchJsonGetRequest } from '@ricklove/utils-fetch';
 import { useAsyncWorker } from '@ricklove/utils-react';
 import { Markdown } from './markdown';
+import { createUserProgressService, UserProgressConfig, UserProgressService } from './user-data';
 
 const readStorageAccess = {
   get: () => {
-    const v = localStorage.getItem(`read`);
+    const v = localStorage.getItem(`joinTheJourneyReadArticles`);
     if (!v) {
       return { read: [] as number[] };
     }
@@ -15,7 +16,7 @@ const readStorageAccess = {
   },
   set: (read: number[]) => {
     read = [...new Set(read)].sort((a, b) => a - b);
-    localStorage.setItem(`read`, JSON.stringify({ read }));
+    localStorage.setItem(`joinTheJourneyReadArticles`, JSON.stringify({ read }));
   },
 };
 
@@ -68,7 +69,7 @@ type ArticleItem = ArticleItemRaw & { key: string; articleNumber: number; isRead
 export type JoinTheJourneyConfig = {
   articlesIndexUrl: string;
   articlesContentUrl: string;
-};
+} & UserProgressConfig;
 export const JoinTheJourneyArticleList = ({ config }: { config: JoinTheJourneyConfig }) => {
   const [items, setItems] = useState(undefined as undefined | ArticleItem[]);
   const [article, setArticle] = useState(undefined as undefined | ArticleItem);
@@ -94,13 +95,15 @@ export const JoinTheJourneyArticleList = ({ config }: { config: JoinTheJourneyCo
 
     doWork(async (stopIfObsolete) => {
       const loadItems = async () => {
-        console.log(`JoinTheJourneyArticleList LOADING`, { config });
-
+        // Load Articles
         const result = await fetchJsonGetRequest<ArticlesContentDocument>(config.articlesContentUrl);
         stopIfObsolete();
 
+        // Load user progress
+        await userProgressService.current.loadUserProgress();
+        stopIfObsolete();
+
         const { read } = readStorageAccess.get();
-        console.log(`JoinTheJourneyArticleList LOADED`, { result });
         const items: ArticleItem[] = result.articles.reverse().map((x) => ({
           ...x,
           articleNumber: x.index + 1,
@@ -142,7 +145,7 @@ export const JoinTheJourneyArticleList = ({ config }: { config: JoinTheJourneyCo
   const markArticleRead = useCallback((article: ArticleItem) => {
     const { read } = readStorageAccess.get();
     read.push(article.articleNumber);
-    readStorageAccess.set(read);
+    saveRead(read);
 
     console.log(`markArticleRead`, { read, article });
     // Don't trigger a state change until close
@@ -156,7 +159,7 @@ export const JoinTheJourneyArticleList = ({ config }: { config: JoinTheJourneyCo
     } else {
       read = read.filter((x) => x !== article.articleNumber);
     }
-    readStorageAccess.set(read);
+    saveRead(read);
 
     console.log(`toggleArticleRead`, { read, article });
     changeReadState(getReadHash(readStorageAccess.get()));
@@ -164,7 +167,7 @@ export const JoinTheJourneyArticleList = ({ config }: { config: JoinTheJourneyCo
 
   const changeReadState = (hashValue: string) => {
     const read = getReadFromHash(hashValue);
-    readStorageAccess.set(read);
+    saveRead(read);
 
     setReadHash(hashValue);
     setItems((s) =>
@@ -173,6 +176,14 @@ export const JoinTheJourneyArticleList = ({ config }: { config: JoinTheJourneyCo
         isRead: read.some((r) => r === x.index + 1),
       })),
     );
+  };
+
+  const userProgressService = useRef(createUserProgressService(config));
+  const saveRead = (read: number[]) => {
+    (async () => {
+      readStorageAccess.set(read);
+      await userProgressService.current.saveUserProgress();
+    })();
   };
 
   return (
@@ -200,7 +211,7 @@ export const JoinTheJourneyArticleList = ({ config }: { config: JoinTheJourneyCo
           <div style={{ flex: 1 }} onClick={article ? closeArticle : undefined}>
             {article ? `⬅ ` : ``} Join the Journey
           </div>
-          <UserSettings value={readHash} onChange={changeReadState} />
+          <UserSettings value={readHash} onChange={changeReadState} userProgressServiceRef={userProgressService} />
         </div>
         <C.Loading loading={loading} />
         <C.ErrorBox error={error} />
@@ -228,7 +239,15 @@ export const JoinTheJourneyArticleList = ({ config }: { config: JoinTheJourneyCo
   );
 };
 
-const UserSettings = ({ value, onChange }: { value: string; onChange: (value: string) => void }) => {
+const UserSettings = ({
+  value,
+  onChange,
+  userProgressServiceRef,
+}: {
+  value: string;
+  onChange: (value: string) => void;
+  userProgressServiceRef: { current: UserProgressService };
+}) => {
   const [expanded, setExpanded] = useState(false);
   const toggleExpanded = useCallback(() => setExpanded((s) => !s), []);
 
@@ -241,9 +260,34 @@ const UserSettings = ({ value, onChange }: { value: string; onChange: (value: st
     setHashValue(value);
   }, []);
 
-  const save = useCallback(() => {
+  const saveHashValue = useCallback(() => {
     onChange(hashValue);
   }, [hashValue]);
+
+  const { loading, error, doWork } = useAsyncWorker();
+  const [progressCode, setProgressCode] = useState(``);
+  useEffect(() => {
+    doWork(async (stopIfObsolete) => {
+      const result = await userProgressServiceRef.current.createShareCode();
+      stopIfObsolete();
+      setProgressCode(result.shareCode);
+    });
+  }, []);
+
+  const changeProgressCode = useCallback(({ target: { value } }: { target: { value: string } }) => {
+    setProgressCode(value);
+  }, []);
+  const saveProgressCode = useCallback(() => {
+    doWork(async (stopIfObsolete) => {
+      await userProgressServiceRef.current.loadShareCode({ shareCode: progressCode });
+      stopIfObsolete();
+      // Storage was directly modified after loading share code
+      const hashValue = getReadHash(readStorageAccess.get());
+      setHashValue(hashValue);
+      onChange(hashValue);
+    });
+  }, [progressCode]);
+
   return (
     <>
       <button style={{ padding: 4, fontSize: 16, background: `unset` }} onClick={toggleExpanded}>{`⚙`}</button>
@@ -264,7 +308,25 @@ const UserSettings = ({ value, onChange }: { value: string; onChange: (value: st
               value={hashValue}
               onChange={changeHashValue}
             />
-            <button style={{ marginLeft: 4, padding: 4, alignSelf: `stretch` }} onClick={save}>
+            <button style={{ marginLeft: 4, padding: 4, alignSelf: `stretch` }} onClick={saveHashValue}>
+              Save
+            </button>
+          </div>
+          <div
+            style={{
+              display: `flex`,
+              flexDirection: `row`,
+              alignItems: `center`,
+            }}
+          >
+            <label>Progress Sync Code</label>
+            <input
+              style={{ marginLeft: 4, padding: 4, fontSize: 16 }}
+              type='text'
+              value={progressCode}
+              onChange={changeProgressCode}
+            />
+            <button style={{ marginLeft: 4, padding: 4, alignSelf: `stretch` }} onClick={saveProgressCode}>
               Save
             </button>
           </div>

@@ -11,6 +11,7 @@
     "@emotion/react": "~11.4.1",
     "@ricklove/church-join-the-journey-common": "*",
     "@ricklove/react-controls": "*",
+    "@ricklove/user-data-service": "*",
     "@ricklove/utils-core": "*",
     "@ricklove/utils-fetch": "*",
     "@ricklove/utils-react": "*",
