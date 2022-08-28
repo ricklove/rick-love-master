@@ -105,7 +105,11 @@ export const JoinTheJourneyArticleList = ({ config }: { config: JoinTheJourneyCo
 
         // Load url progress code
         if (urlProgressCode) {
-          await userProgressService.current.loadShareCode({ shareCode: urlProgressCode });
+          try {
+            await userProgressService.current.loadShareCode({ shareCode: urlProgressCode });
+          } catch (err) {
+            console.error(`SKIP: The share code was invalid - perhaps it has already been used`);
+          }
           window.history.replaceState(undefined, ``, `./`);
         }
 
