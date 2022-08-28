@@ -42,9 +42,11 @@ export const createUserProgressService = (config: UserProgressConfig) => {
       await doSetup();
       await UserDataService.get().downloadUserDataIfNewer();
     },
-    createShareCode: async () => {
+    createShareCode: async ({ temporaryShareCode = true }: { temporaryShareCode?: boolean } = {}) => {
       await doSetup();
-      return await UserDataService.get().createShareCode(UserDataService.get().getActiveUser()!.key);
+      return await UserDataService.get().createShareCode(UserDataService.get().getActiveUser()!.key, {
+        temporaryShareCode,
+      });
     },
     loadShareCode: async ({ shareCode }: { shareCode: string }) => {
       await doSetup();

@@ -398,14 +398,17 @@ const createUserDataService = (uploadApiConfig: UploadApiConfig) => {
       storage.clearUserData();
       storage.setUserData(userData);
     },
-    createShareCode: async (userProfileKey: string) => {
+    createShareCode: async (
+      userProfileKey: string,
+      { temporaryShareCode = true }: { temporaryShareCode?: boolean } = {},
+    ) => {
       await service.setup();
       const user = getUserProfile(userProfileKey);
       if (!user) {
         throw new AppError(`user should not be null`);
       }
 
-      const shareUrlResult = await uploadApi.createUploadUrl({ shareablePath: true });
+      const shareUrlResult = await uploadApi.createUploadUrl({ shareablePath: temporaryShareCode });
 
       // Save user uploadUrl to shared path
       const uploader = createUploader(shareUrlResult.uploadUrl);
@@ -419,12 +422,32 @@ const createUserDataService = (uploadApiConfig: UploadApiConfig) => {
       console.log(`addUserFromShareCode`, { shareCode });
 
       // Don't have a clean way to get the path, but can generate a new path from the server and use it as a template
-      const shareUrlResult = await uploadApi.createUploadUrl({ shareablePath: true });
-      const shareGetUrl = shareUrlResult.uploadUrl.getUrl.replace(
-        shareUrlResult.uploadUrl.relativePath,
-        shareCode.toUpperCase(),
-      );
-      const sharedUploadUrl = (await downloadData(shareGetUrl)) as UploadUrl;
+      const getSharedUploadUrl = async () => {
+        const getResult = async (temporaryShareCode: boolean) => {
+          const shareUrlResult = await uploadApi.createUploadUrl({ shareablePath: temporaryShareCode });
+          const shareGetUrl = shareUrlResult.uploadUrl.getUrl.replace(
+            shareUrlResult.uploadUrl.relativePath,
+            temporaryShareCode ? shareCode.toUpperCase() : shareCode,
+          );
+          const sharedUploadUrl = (await downloadData(shareGetUrl)) as UploadUrl;
+          return sharedUploadUrl;
+        };
+
+        try {
+          console.log(`addUserFromShareCode trying temporary share code`, { shareCode });
+          const result = await getResult(true);
+          if (!result.putUrl) {
+            throw Error(`Try permanent`);
+          }
+          return result;
+        } catch {
+          console.log(`addUserFromShareCode trying permanent share code`, { shareCode });
+          return await getResult(false);
+        }
+      };
+
+      const sharedUploadUrl = await getSharedUploadUrl();
+
       if (!sharedUploadUrl.putUrl) {
         console.log(`addUserFromShareCode - FAILED TO GET PROFILE`);
         throw new AppError(`Failed to get user profile`);

@@ -91,7 +91,7 @@ export const JoinTheJourneyArticleList = ({ config }: { config: JoinTheJourneyCo
     const parts = window.location.pathname.split(`/`);
     const date = parts[parts.length - 1];
 
-    const urlProgressCode = window.location.search.match(/p=([\w]+)/)?.[1];
+    const urlProgressCode = window.location.search.match(/p=([\w-]+)/)?.[1];
 
     if (items && article?.metadata.date === date) {
       return;
@@ -106,9 +106,10 @@ export const JoinTheJourneyArticleList = ({ config }: { config: JoinTheJourneyCo
         // Load url progress code
         if (urlProgressCode) {
           try {
+            console.log(`Loading from share code`, { urlProgressCode });
             await userProgressService.current.loadShareCode({ shareCode: urlProgressCode });
           } catch (err) {
-            console.error(`SKIP: The share code was invalid - perhaps it has already been used`);
+            console.error(`SKIP: The share code was invalid - perhaps it has already been used`, { urlProgressCode });
           }
           window.history.replaceState(undefined, ``, `./`);
         }
@@ -274,11 +275,16 @@ const UserSettings = ({
 
   const { loading, error, doWork } = useAsyncWorker();
   const [progressCode, setProgressCode] = useState(``);
+  const [progressUrl, setProgressUrl] = useState(``);
   useEffect(() => {
     doWork(async (stopIfObsolete) => {
-      const result = await userProgressServiceRef.current.createShareCode();
+      const result = await userProgressServiceRef.current.createShareCode({ temporaryShareCode: true });
       stopIfObsolete();
       setProgressCode(result.shareCode);
+
+      const result2 = await userProgressServiceRef.current.createShareCode({ temporaryShareCode: false });
+      stopIfObsolete();
+      setProgressUrl(`${location.href.split(`?`)[0]}?p=${result2.shareCode}`);
     });
   }, []);
 
@@ -295,6 +301,10 @@ const UserSettings = ({
       onChange(hashValue);
     });
   }, [progressCode]);
+
+  const copyProgressUrl = useCallback(() => {
+    (async () => await navigator.clipboard.writeText(progressUrl))();
+  }, [progressUrl]);
 
   return (
     <>
@@ -336,6 +346,24 @@ const UserSettings = ({
             />
             <button style={{ marginLeft: 4, padding: 4, alignSelf: `stretch` }} onClick={saveProgressCode}>
               Save
+            </button>
+          </div>
+          <div
+            style={{
+              display: `flex`,
+              flexDirection: `row`,
+              alignItems: `center`,
+            }}
+          >
+            <label>Progress Sync Url - Permanent</label>
+            <input
+              style={{ marginLeft: 4, padding: 4, fontSize: 16 }}
+              type='text'
+              value={progressUrl}
+              disabled={true}
+            />
+            <button style={{ marginLeft: 4, padding: 4, alignSelf: `stretch` }} onClick={copyProgressUrl}>
+              Copy
             </button>
           </div>
         </div>

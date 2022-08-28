@@ -11,6 +11,11 @@ export type UploadUrl = {
 };
 
 export type UploadApi = {
+    /** Create an uploadUrl
+     *
+     * shareablePath => temporaryPath
+     *
+     * */
     createUploadUrl: (data: { contentType?: string; prefix?: string; shareablePath?: boolean }) => Promise<{ uploadUrl: UploadUrl }>;
     renewUploadUrl: (data: { uploadUrl: UploadUrl }) => Promise<{ uploadUrl: UploadUrl }>;
 };
