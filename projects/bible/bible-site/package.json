@@ -7,7 +7,7 @@
     "dev": "vite",
     "build": "tsc && vite build",
     "build:watch": "npm run dev",
-    "deploy": "npm run build && rimraf ../../../../_deploy/bible && copyfiles -u 1 ./dist/**/* ../../../../_deploy/bible/",
+    "deploy": "npm run build && rimraf ../../../_deploy/bible && copyfiles -u 1 ./dist/**/* ../../../_deploy/bible/",
     "preview": "vite preview",
     "// build": "heft test --clean",
     "// build:watch": "heft build"
