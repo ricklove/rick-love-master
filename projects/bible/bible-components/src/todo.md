@@ -1,0 +1,32 @@
+- Input Modes
+  - [x] Voice input
+  - [ ] Voice input Improved
+    - Prevent reuse of same word with word overlap detection
+  - [ ] Type First Letter Only
+    - Type only the first letter and allow skipping ahead (like voice)
+  - Q:
+    - How to warn for extra words?
+- Bible Memory Modes
+  - [x] Whole Section
+    - [x] Prompt with PassageReference
+    - [ ] Prompt with Section Headings
+  - [ ] Single Verse
+    - [ ] Prompt with PassageReference
+    - [ ] Prompt with Text and Select Chapter and Verse
+  - [ ] Only Section Headings
+  - [ ] First Words
+  - [ ] Reverse Verse Order
+- Visualize Structure
+  - [x] Colorize common words
+  - [x] Break on punctionation and transition words
+  - [ ] Emoji for common words
+  - [ ] Vertical text
+  - [ ] Crossword puzzle building
+- Progress Tracking
+  - [x] Anonymous User Storage
+  - [ ] Bible heatmap
+  - [ ] Data to track
+    - Time Last read
+    - Time Last memorized
+    - Memorization Average time per word
+      - Adjust for hints
