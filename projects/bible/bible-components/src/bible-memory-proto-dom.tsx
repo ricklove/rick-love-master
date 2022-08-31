@@ -104,7 +104,12 @@ export const createMemoryRuntimeService = () => {
       //   wordBanks = wordBanks.slice(1);
       // }
 
-      updateResult(newResultWords.flatMap((x) => x).map((w) => w.split(`@`)[0]));
+      addInput(
+        newResultWords
+          .flatMap((x) => x)
+          .map((w) => w.split(`@`)[0])
+          .map((x) => ({ text: x, matchMode: `phonetic` })),
+      );
     };
 
     recognition.onspeechend = () => {
@@ -370,7 +375,7 @@ export const createMemoryRuntimeService = () => {
         }
       }
 
-      updateResult([]);
+      addInput([]);
       setDiagnostic(`hintMode=${hintMode}`);
     };
 
@@ -378,17 +383,19 @@ export const createMemoryRuntimeService = () => {
 
     const AHEAD_LENGTH = 3;
 
-    const updateResult = (allNewWords: string[]) => {
-      const recentNewText = allNewWords.slice(allNewWords.length - 10).join(` `);
-      const newWordBank = new Set(`${recentNewText}`.toLocaleLowerCase().split(` `));
-
+    const addInput = (newInput: { text: string; matchMode: 'firstLetter' | 'phonetic' }[]) => {
+      newInput = newInput.slice(-10);
       const iPartLastDone = Math.max(-1, ...partStates.filter((x) => x.isDone).map((x) => x.index));
       const partsToMatch = partStates.filter((x) => !x.isDone && x.index <= iPartLastDone + AHEAD_LENGTH);
 
       let wasForwardPartCompleted = false;
 
       for (const p of partsToMatch) {
-        if (!newWordBank.has(p.normalized)) {
+        const iMatch = newInput.findIndex((x) =>
+          x.matchMode === `phonetic` ? x.text === p.normalized : p.word.toLowerCase().startsWith(x.text),
+        );
+
+        if (iMatch < 0) {
           continue;
         }
 
@@ -398,15 +405,13 @@ export const createMemoryRuntimeService = () => {
           p.startTime = p.endTime;
         }
         p.elapsedTime = p.endTime - p.startTime;
-        newWordBank.delete(p.normalized);
+        newInput.splice(iMatch, 1);
 
         wasForwardPartCompleted = wasForwardPartCompleted || p.index > iPartLastDone;
       }
 
-      setDiagnostic(`unused: ${[...newWordBank].join(` `)}`);
-      console.log(`updateResult`, { recentNewText, newWordBank, partStates, partsToMatch });
-
-      newWordBank.clear();
+      setDiagnostic(`unused: ${newInput.map((x) => x.text).join(` `)}`);
+      console.log(`updateResult`, { newInput, partStates, partsToMatch });
 
       const iPartLastDoneAfter = Math.max(-1, ...partStates.filter((x) => x.isDone).map((x) => x.index));
       const pNext = partStates[iPartLastDoneAfter + 1];
@@ -437,7 +442,7 @@ export const createMemoryRuntimeService = () => {
       partStates = getParts(formatted);
 
       setHint(`Say ${title}`);
-      updateResult([]);
+      addInput([]);
       setDiagnostic(`AHEAD_LENGTH=${AHEAD_LENGTH}`);
     };
     // resetProblem(passages[0], );
@@ -447,6 +452,7 @@ export const createMemoryRuntimeService = () => {
     };
 
     return {
+      addInput,
       resetProblem,
       toggleHintMode,
       start: (onDone: () => void) => {
@@ -479,14 +485,26 @@ export const createMemoryRuntimeService = () => {
       scrollTargetDiv.style.marginTop = `-50px`;
       scrollTargetDiv.style.height = `100px`;
       const diagnosticDiv = document.createElement(`div`);
+      const textInput = document.createElement(`input`);
+      textInput.type = `input`;
+      textInput.onkeypress = (e) => {
+        if (!state.instance) {
+          return;
+        }
+
+        state.instance.addInput([{ text: e.key, matchMode: `firstLetter` }]);
+        e.preventDefault();
+      };
 
       hostDiv.appendChild(hintDiv);
       hostDiv.appendChild(outputDiv);
       hostDiv.appendChild(scrollTargetDiv);
+      hostDiv.appendChild(textInput);
       hostDiv.appendChild(diagnosticDiv);
 
       const setDiagnosticHtml = (html: string) => {
-        diagnosticDiv.innerHTML = html;
+        // diagnosticDiv.innerHTML = html;
+        console.log(`diagnostic: ${html}`);
       };
       const setHintHtml = (html: string) => {
         hintDiv.innerHTML = html;

@@ -26,6 +26,7 @@ body,
 
 button,
 input {
+  font-size: 16px;
   margin: 4px;
   padding: 4px;
   background-color: #ffffff;
