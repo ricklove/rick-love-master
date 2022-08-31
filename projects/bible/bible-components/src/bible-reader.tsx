@@ -20,20 +20,26 @@ export const BiblePassageLoader = ({
   }, []);
 
   const { loading, error, doWork } = useAsyncWorker();
-  const loadPassage = useCallback(() => {
-    doWork(async (stopIfObsolete) => {
-      const result = await bibleService.getPassage(passageReference);
-      stopIfObsolete();
-      onPassageLoaded(result);
-    });
-  }, [passageReference]);
+  const loadPassage = useCallback(
+    (e: { preventDefault: () => void }) => {
+      e.preventDefault();
+      doWork(async (stopIfObsolete) => {
+        const result = await bibleService.getPassage(passageReference);
+        stopIfObsolete();
+        onPassageLoaded(result);
+      });
+    },
+    [passageReference],
+  );
 
   return (
     <>
       <C.Loading loading={loading} />
       <C.ErrorBox error={error} />
-      <input type='text' value={passageReference} onChange={changePassageReference} />
-      <button onClick={loadPassage}>Load</button>
+      <form onSubmit={loadPassage}>
+        <input type='text' value={passageReference} onChange={changePassageReference} />
+        <button onClick={loadPassage}>Load</button>
+      </form>
     </>
   );
 };

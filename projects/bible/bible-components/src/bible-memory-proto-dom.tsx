@@ -317,7 +317,7 @@ export const createMemoryRuntimeService = () => {
       },
     ];
 
-    const getWordRegex = () => /(['\u20190-9a-zA-Z\u00C0-\u00D6\u00D8-\u00F6\u00F8-\u024F\u1E00-\u1EFF])+/g;
+    const getWordRegex = () => /(\d+|['\u2019a-zA-Z\u00C0-\u00D6\u00D8-\u00F6\u00F8-\u024F\u1E00-\u1EFF]+)/g;
 
     const getParts = (text: string): typeof partStates => {
       const partMatches = [...text.matchAll(getWordRegex())];
@@ -487,6 +487,7 @@ export const createMemoryRuntimeService = () => {
       const diagnosticDiv = document.createElement(`div`);
       const textInput = document.createElement(`input`);
       textInput.type = `input`;
+      textInput.autofocus = true;
       textInput.onkeypress = (e) => {
         if (!state.instance) {
           return;
