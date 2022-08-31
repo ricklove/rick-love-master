@@ -2,11 +2,17 @@ import React, { useMemo, useState } from 'react';
 import { useCallback } from 'react';
 import { C } from '@ricklove/react-controls';
 import { useAsyncWorker } from '@ricklove/utils-react';
+import { MemoryPassage } from './bible-memory-types';
 import { BiblePassage, BibleServiceConfig, createBibleService } from './bible-service';
 
-export const BibleReaderView = ({ config }: { config: BibleServiceConfig }) => {
+export const BiblePassageLoader = ({
+  config,
+  onPassageLoaded,
+}: {
+  config: BibleServiceConfig;
+  onPassageLoaded: (passage: BiblePassage) => void;
+}) => {
   const [passageRef, setPassageRef] = useState(``);
-  const [passage, setPassage] = useState(undefined as undefined | BiblePassage);
   const bibleService = useMemo(() => createBibleService(config), []);
 
   const changePassageRef = useCallback((e: { target: { value: string } }) => {
@@ -18,17 +24,30 @@ export const BibleReaderView = ({ config }: { config: BibleServiceConfig }) => {
     doWork(async (stopIfObsolete) => {
       const result = await bibleService.getPassage(passageRef);
       stopIfObsolete();
-      setPassage(result);
+      onPassageLoaded(result);
     });
   }, [passageRef]);
 
   return (
     <>
+      <C.Loading loading={loading} />
+      <C.ErrorBox error={error} />
+      <input type='text' value={passageRef} onChange={changePassageRef} />
+      <button onClick={loadPassage}>Load</button>
+    </>
+  );
+};
+
+export const BibleReaderView = ({
+  passage,
+  onStartMemorize,
+}: {
+  passage: BiblePassage;
+  onStartMemorize?: (passages: MemoryPassage[]) => void;
+}) => {
+  return (
+    <>
       <div style={{ margin: 4, padding: 4, background: `#EEEEEE`, minHeight: 100 }}>
-        <C.Loading loading={loading} />
-        <C.ErrorBox error={error} />
-        <input type='text' value={passageRef} onChange={changePassageRef} />
-        <button onClick={loadPassage}>Load</button>
         <div>
           <div>
             <h2>
@@ -39,12 +58,47 @@ export const BibleReaderView = ({ config }: { config: BibleServiceConfig }) => {
             </h2>
           </div>
           {passage?.sections.map((s) => (
-            <React.Fragment key={s.header}>
-              <h3 style={{ marginTop: 32, fontWeight: `bold` }}>{s.header}</h3>
-              <div style={{ whiteSpace: `pre-wrap` }}>{s.verses.map((x) => x.text).join(``)}</div>
-            </React.Fragment>
+            <BiblePassage key={s.key} passage={passage} section={s} onStartMemorize={onStartMemorize} />
           ))}
         </div>
+      </div>
+    </>
+  );
+};
+
+const BiblePassage = ({
+  passage,
+  section,
+  onStartMemorize,
+}: {
+  passage: BiblePassage;
+  section: BiblePassage['sections'][number];
+  onStartMemorize?: (passages: MemoryPassage[]) => void;
+}) => {
+  const startMemorize = useCallback(() => {
+    const sectionsToMemorize = passage.sections.slice(section.index);
+    onStartMemorize?.(
+      sectionsToMemorize.map((s) => ({
+        title: `${s.passageRef}`,
+        //title: `${s.passageRef} - ${s.header}`,
+        text: `${s.passageRef} - ${s.header}\n\n${s.verses.map((v) => v.text).join(``)}`,
+        lang: `en-US`,
+      })),
+    );
+  }, [section]);
+
+  return (
+    <>
+      <h3 style={{ marginTop: 32, fontWeight: `bold` }}>
+        {section.header}
+        <span style={{ fontSize: `0.7em` }}> {section.passageRef}</span>
+        {onStartMemorize && <button onClick={startMemorize}>Memorize</button>}
+      </h3>
+      <div style={{ whiteSpace: `pre-wrap` }}>
+        {section.verses
+          //.map((x) => `[${x.chapterRef}:${x.verseRef}]${x.text}`)
+          .map((x) => x.text)
+          .join(``)}
       </div>
     </>
   );

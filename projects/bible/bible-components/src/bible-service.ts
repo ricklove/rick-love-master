@@ -7,6 +7,9 @@ export type BibleServiceConfig = {
 export type BiblePassage = {
   passageReference: string;
   sections: {
+    key: string;
+    index: number;
+    passageRef: string;
     header: string;
     verses: {
       chapterRef: number;
@@ -33,6 +36,7 @@ export const createBibleService = (config: BibleServiceConfig) => {
           },
         },
       );
+      console.log(`getPassage - response`, { response });
 
       const result = (await response.json()) as {
         canonical: string;
@@ -43,8 +47,12 @@ export const createBibleService = (config: BibleServiceConfig) => {
         }[];
         passages: string[];
       };
+      console.log(`getPassage - result`, { result });
+
       const passage = result.passages[0];
       const passageSkipRef = `\n` + passage.split(`\n`).slice(2).join(`\n`) + `\n`;
+
+      const bookRef = result.canonical.replace(/[^a-zA-Z]+$/g, ``);
 
       const chapterStartCode = result.passage_meta[0].chapter_start[0];
       let lastChapterRef = Math.floor(chapterStartCode / 1000) % 1000;
@@ -52,7 +60,8 @@ export const createBibleService = (config: BibleServiceConfig) => {
 
       const sections = passageSkipRef
         .split(`\n___\n`)
-        .map((x) => {
+        .filter((x) => x.trim())
+        .map((x, iSection) => {
           const [header, blank, ...paragraphLines] = x.split(`\n`);
           const sectionText = paragraphLines.join(`\n`);
           const mVerseNumbers = [...sectionText.matchAll(/\[\d+\]/g)];
@@ -60,8 +69,8 @@ export const createBibleService = (config: BibleServiceConfig) => {
             const verseRef = Number.parseInt(m?.[0]?.match(/\d+/)?.[0] ?? `0`);
             if (verseRef < lastVerseRef) {
               lastChapterRef++;
-              lastVerseRef = verseRef;
             }
+            lastVerseRef = verseRef;
 
             const mNext = mVerseNumbers[i + 1];
             const iStart = i === 0 ? 0 : m.index ?? 0;
@@ -73,12 +82,24 @@ export const createBibleService = (config: BibleServiceConfig) => {
               text: verseText,
             };
           });
+
+          const vFirst = verses[0];
+          const vLast = verses[verses.length - 1];
+
           return {
+            key: `[${iSection}]${header}`,
+            index: iSection,
+            passageRef: `${bookRef} ${vFirst.chapterRef}:${vFirst.verseRef}${
+              vLast === vFirst
+                ? ``
+                : `-${vLast.chapterRef !== vFirst.chapterRef ? `${vLast.chapterRef}:` : ``}${vLast.verseRef}`
+            }`,
             header,
             verses,
           };
-        })
-        .filter((s) => s.header || s.verses.length);
+        });
+
+      console.log(`getPassage - sections`, { sections });
 
       return {
         passageReference: result.canonical,

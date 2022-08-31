@@ -1,8 +1,5 @@
-export type MemoryPassage = {
-  title: string;
-  text: string;
-  lang: string;
-};
+import { MemoryPassage } from './bible-memory-types';
+
 export type MemoryRuntimeService = ReturnType<typeof createMemoryRuntimeService>;
 export const createMemoryRuntimeService = () => {
   type Dependencies = {
@@ -426,6 +423,11 @@ export const createMemoryRuntimeService = () => {
       if (wasForwardPartCompleted) {
         scrollToBottom();
       }
+
+      if (partStates.every((p) => p.isDone)) {
+        console.log(`DONE!`);
+        doneCallback();
+      }
     };
 
     const resetProblem = (text: string, title: string, lang: string) => {
@@ -440,11 +442,16 @@ export const createMemoryRuntimeService = () => {
     };
     // resetProblem(passages[0], );
 
+    let doneCallback = () => {
+      // Empty
+    };
+
     return {
       resetProblem,
       toggleHintMode,
-      start: () => {
+      start: (onDone: () => void) => {
         isRunning = true;
+        doneCallback = onDone;
         recognition.start();
       },
       stop: () => {
@@ -460,7 +467,7 @@ export const createMemoryRuntimeService = () => {
 
   return {
     isActive: () => false,
-    start: (hostDiv: HTMLDivElement, memoryPassage: MemoryPassage) => {
+    start: (hostDiv: HTMLDivElement, memoryPassage: MemoryPassage, onDone: () => void) => {
       if (state.instance) {
         return;
       }
@@ -487,7 +494,7 @@ export const createMemoryRuntimeService = () => {
         outputDiv.innerHTML = html;
       };
       const scrollToBottom = () => {
-        scrollTargetDiv.scrollIntoView();
+        scrollTargetDiv.scrollIntoView(false);
       };
       state.instance = setup({
         setDiagnosticHtml,
@@ -497,7 +504,19 @@ export const createMemoryRuntimeService = () => {
       });
 
       state.instance.resetProblem(memoryPassage.text, memoryPassage.title, memoryPassage.lang);
-      state.instance.start();
+      state.instance.start(onDone);
+    },
+    setPassage: (memoryPassage: MemoryPassage) => {
+      if (!state.instance) {
+        return;
+      }
+      state.instance.resetProblem(memoryPassage.text, memoryPassage.title, memoryPassage.lang);
+    },
+    toggleHintMode: () => {
+      if (!state.instance) {
+        return;
+      }
+      state.instance.toggleHintMode();
     },
     stop: () => {
       if (!state.instance) {
