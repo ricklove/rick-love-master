@@ -12,27 +12,27 @@ export const BiblePassageLoader = ({
   config: BibleServiceConfig;
   onPassageLoaded: (passage: BiblePassage) => void;
 }) => {
-  const [passageRef, setPassageRef] = useState(``);
+  const [passageReference, setPassageReference] = useState(``);
   const bibleService = useMemo(() => createBibleService(config), []);
 
-  const changePassageRef = useCallback((e: { target: { value: string } }) => {
-    setPassageRef(e.target.value);
+  const changePassageReference = useCallback((e: { target: { value: string } }) => {
+    setPassageReference(e.target.value);
   }, []);
 
   const { loading, error, doWork } = useAsyncWorker();
   const loadPassage = useCallback(() => {
     doWork(async (stopIfObsolete) => {
-      const result = await bibleService.getPassage(passageRef);
+      const result = await bibleService.getPassage(passageReference);
       stopIfObsolete();
       onPassageLoaded(result);
     });
-  }, [passageRef]);
+  }, [passageReference]);
 
   return (
     <>
       <C.Loading loading={loading} />
       <C.ErrorBox error={error} />
-      <input type='text' value={passageRef} onChange={changePassageRef} />
+      <input type='text' value={passageReference} onChange={changePassageReference} />
       <button onClick={loadPassage}>Load</button>
     </>
   );
@@ -79,9 +79,9 @@ const BiblePassage = ({
     const sectionsToMemorize = passage.sections.slice(section.index);
     onStartMemorize?.(
       sectionsToMemorize.map((s) => ({
-        title: `${s.passageRef}`,
-        //title: `${s.passageRef} - ${s.header}`,
-        text: `${s.passageRef} - ${s.header}\n\n${s.verses.map((v) => v.text).join(``)}`,
+        title: `${s.passageReference}`,
+        //title: `${s.passageReference} - ${s.header}`,
+        text: `${s.passageReference} - ${s.header}\n\n${s.verses.map((v) => v.text).join(``)}`,
         lang: `en-US`,
       })),
     );
@@ -91,12 +91,12 @@ const BiblePassage = ({
     <>
       <h3 style={{ marginTop: 32, fontWeight: `bold` }}>
         {section.header}
-        <span style={{ fontSize: `0.7em` }}> {section.passageRef}</span>
+        <span style={{ fontSize: `0.7em` }}> {section.passageReference}</span>
         {onStartMemorize && <button onClick={startMemorize}>Memorize</button>}
       </h3>
       <div style={{ whiteSpace: `pre-wrap` }}>
         {section.verses
-          //.map((x) => `[${x.chapterRef}:${x.verseRef}]${x.text}`)
+          //.map((x) => `[${x.chapterNumber}:${x.verseNumber}]${x.text}`)
           .map((x) => x.text)
           .join(``)}
       </div>

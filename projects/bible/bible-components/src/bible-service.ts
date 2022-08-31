@@ -5,15 +5,17 @@ export type BibleServiceConfig = {
   esvApiKey: string;
 };
 export type BiblePassage = {
+  bookName: string;
   passageReference: string;
   sections: {
     key: string;
     index: number;
-    passageRef: string;
+    bookName: string;
+    passageReference: string;
     header: string;
     verses: {
-      chapterRef: number;
-      verseRef: number;
+      chapterNumber: number;
+      verseNumber: number;
       text: string;
     }[];
   }[];
@@ -52,7 +54,7 @@ export const createBibleService = (config: BibleServiceConfig) => {
       const passage = result.passages[0];
       const passageSkipRef = `\n` + passage.split(`\n`).slice(2).join(`\n`) + `\n`;
 
-      const bookRef = result.canonical.replace(/[^a-zA-Z]+$/g, ``);
+      const bookName = result.canonical.replace(/[^a-zA-Z]+$/g, ``);
 
       const chapterStartCode = result.passage_meta[0].chapter_start[0];
       let lastChapterRef = Math.floor(chapterStartCode / 1000) % 1000;
@@ -66,19 +68,19 @@ export const createBibleService = (config: BibleServiceConfig) => {
           const sectionText = paragraphLines.join(`\n`);
           const mVerseNumbers = [...sectionText.matchAll(/\[\d+\]/g)];
           const verses = mVerseNumbers.map((m, i) => {
-            const verseRef = Number.parseInt(m?.[0]?.match(/\d+/)?.[0] ?? `0`);
-            if (verseRef < lastVerseRef) {
+            const verseNumber = Number.parseInt(m?.[0]?.match(/\d+/)?.[0] ?? `0`);
+            if (verseNumber < lastVerseRef) {
               lastChapterRef++;
             }
-            lastVerseRef = verseRef;
+            lastVerseRef = verseNumber;
 
             const mNext = mVerseNumbers[i + 1];
             const iStart = i === 0 ? 0 : m.index ?? 0;
             const iEndAfter = mNext?.index ?? sectionText.length;
-            const verseText = sectionText.substring(iStart, iEndAfter).replace(`[${verseRef}]`, `${verseRef}`);
+            const verseText = sectionText.substring(iStart, iEndAfter).replace(`[${verseNumber}]`, `${verseNumber}`);
             return {
-              chapterRef: lastChapterRef,
-              verseRef,
+              chapterNumber: lastChapterRef,
+              verseNumber,
               text: verseText,
             };
           });
@@ -89,10 +91,13 @@ export const createBibleService = (config: BibleServiceConfig) => {
           return {
             key: `[${iSection}]${header}`,
             index: iSection,
-            passageRef: `${bookRef} ${vFirst.chapterRef}:${vFirst.verseRef}${
+            bookName,
+            passageReference: `${bookName} ${vFirst.chapterNumber}:${vFirst.verseNumber}${
               vLast === vFirst
                 ? ``
-                : `-${vLast.chapterRef !== vFirst.chapterRef ? `${vLast.chapterRef}:` : ``}${vLast.verseRef}`
+                : `-${vLast.chapterNumber !== vFirst.chapterNumber ? `${vLast.chapterNumber}:` : ``}${
+                    vLast.verseNumber
+                  }`
             }`,
             header,
             verses,
@@ -102,6 +107,7 @@ export const createBibleService = (config: BibleServiceConfig) => {
       console.log(`getPassage - sections`, { sections });
 
       return {
+        bookName,
         passageReference: result.canonical,
         sections,
         copyright: {
