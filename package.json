@@ -14,9 +14,14 @@
         "--- lessons": "// Lesson server is needed for editing lessons (in addition to web)",
         "lessons:serve": "cd ./projects/code-training/lesson-editor-local-server && npm run serve",
         "lessons:edit": "start http://localhost:3042/lessons/editor",
+        "--- generation TEMP Scripts": "",
+        "gen:project": "npm --prefix tools/rush-packages run cli -- --d projects/bible/bible-components --p @ricklove/bible-components --t lib",
+        "gen:site": "cd projects/bible && npm create vite@latest bible-site -- --template react-ts",
         "--- projects": "",
-        "gen:project": "npm --prefix tools/rush-packages run cli -- --d features/_utils/fetch-node --p @ricklove/utils-fetch-node --t node",
-        "gen:site": "cd projects/church/join-the-journey && npm create vite@latest join-the-journey-site -- --template react-ts",
+        "jointhejourney:dev": "cd projects/church/join-the-journey/join-the-journey-site && npm run dev",
+        "jointhejourney:deploy": "cd projects/church/join-the-journey/join-the-journey-site && npm run deploy",
+        "bible:dev": "cd projects/bible/bible-site && npm run dev",
+        "bible:deploy": "cd projects/bible/bible-site && npm run deploy",
         "---": ""
     }
 }

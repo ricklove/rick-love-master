@@ -512,6 +512,10 @@
       "projectFolder": "features/networking/websockets-api/server"
     },
     {
+      "packageName": "@ricklove/speech-recognition",
+      "projectFolder": "features/speech/recognition"
+    },
+    {
       "packageName": "@ricklove/github-comments",
       "projectFolder": "features/ui/github-comments"
     },
@@ -569,6 +573,16 @@
       "packageName": "@ricklove/nft-api-server",
       "projectFolder": "projects/art/nft-api-server"
     },
+    // Bible
+    {
+      "packageName": "@ricklove/bible-components",
+      "projectFolder": "projects/bible/bible-components"
+    },
+    {
+      "packageName": "@ricklove/bible-site",
+      "projectFolder": "projects/bible/bible-site"
+    },
+    // Church
     {
       "packageName": "@ricklove/church-join-the-journey-common",
       "projectFolder": "projects/church/join-the-journey/common"
