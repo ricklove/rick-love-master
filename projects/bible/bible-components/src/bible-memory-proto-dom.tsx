@@ -475,14 +475,15 @@ export const createMemoryRuntimeService = () => {
       const hintDiv = document.createElement(`div`);
       const outputDiv = document.createElement(`div`);
       outputDiv.style.whiteSpace = `pre-wrap`;
-      outputDiv.style.marginBottom = `32px`;
-      const diagnosticDiv = document.createElement(`div`);
       const scrollTargetDiv = document.createElement(`div`);
+      scrollTargetDiv.style.marginTop = `-50px`;
+      scrollTargetDiv.style.height = `100px`;
+      const diagnosticDiv = document.createElement(`div`);
 
       hostDiv.appendChild(hintDiv);
       hostDiv.appendChild(outputDiv);
-      hostDiv.appendChild(diagnosticDiv);
       hostDiv.appendChild(scrollTargetDiv);
+      hostDiv.appendChild(diagnosticDiv);
 
       const setDiagnosticHtml = (html: string) => {
         diagnosticDiv.innerHTML = html;
@@ -494,7 +495,7 @@ export const createMemoryRuntimeService = () => {
         outputDiv.innerHTML = html;
       };
       const scrollToBottom = () => {
-        scrollTargetDiv.scrollIntoView(false);
+        scrollTargetDiv.scrollIntoView({ block: `start`, behavior: `smooth` });
       };
       state.instance = setup({
         setDiagnosticHtml,
