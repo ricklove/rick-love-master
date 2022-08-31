@@ -100,8 +100,6 @@ export const BibleMemoryHost = ({ passages }: { passages: undefined | MemoryPass
         {passages && !isStarted && (
           <button
             style={{
-              padding: 4,
-              margin: 4,
               background: `#444444`,
               color: `#FFFFFF`,
             }}
@@ -114,8 +112,6 @@ export const BibleMemoryHost = ({ passages }: { passages: undefined | MemoryPass
         {isStarted && (
           <button
             style={{
-              padding: 4,
-              margin: 4,
               background: `#444444`,
               color: `#FFFFFF`,
             }}
@@ -138,8 +134,6 @@ const MemoryPassageButton = ({ value, onClick }: { value: MemoryPassage; onClick
     <>
       <button
         style={{
-          padding: 4,
-          margin: 4,
           background: `#444444`,
           color: `#FFFFFF`,
         }}
