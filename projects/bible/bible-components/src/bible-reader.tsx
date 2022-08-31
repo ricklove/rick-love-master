@@ -30,13 +30,20 @@ export const BibleReaderView = ({ config }: { config: BibleServiceConfig }) => {
         <input type='text' value={passageRef} onChange={changePassageRef} />
         <button onClick={loadPassage}>Load</button>
         <div>
+          <div>
+            <h2>
+              {passage?.passageReference}
+              <span style={{ fontSize: `0.5em` }} title={passage?.copyright.long}>
+                &nbsp;{passage?.copyright.short}
+              </span>
+            </h2>
+          </div>
           {passage?.sections.map((s) => (
             <React.Fragment key={s.header}>
               <h3 style={{ marginTop: 32, fontWeight: `bold` }}>{s.header}</h3>
               <div style={{ whiteSpace: `pre-wrap` }}>{s.verses.map((x) => x.text).join(``)}</div>
             </React.Fragment>
           ))}
-          <div>{passage?.copyright}</div>
         </div>
       </div>
     </>
