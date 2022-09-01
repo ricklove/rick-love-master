@@ -422,12 +422,13 @@ export const createMemoryRuntimeService = () => {
 
       const getPartsToMatch = () => {
         const iPartLastDone = Math.max(-1, ...partStatesWithIndex.filter((x) => x.isDone).map((x) => x.index));
+        const nextPart = partStatesWithIndex.filter((x) => !x.isDone && x.index === iPartLastDone + 1);
         const forwardParts = partStatesWithIndex.filter(
-          (x) => !x.isDone && x.index > iPartLastDone && x.index <= iPartLastDone + AHEAD_LENGTH,
+          (x) => !x.isDone && x.index > iPartLastDone + 1 && x.index <= iPartLastDone + AHEAD_LENGTH,
         );
         const skippedParts = partStatesWithIndex.filter((x) => !x.isDone && x.index <= iPartLastDone);
-        // Match forward parts first
-        const parts = [...forwardParts, ...skippedParts];
+        // Match next part, skipped parts, then forward parts
+        const parts = [...nextPart, ...skippedParts, ...forwardParts];
         return {
           parts,
           iPartLastDone,
