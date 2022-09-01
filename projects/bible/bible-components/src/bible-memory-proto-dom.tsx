@@ -327,7 +327,6 @@ export const createMemoryRuntimeService = () => {
         const isLast = i === partMatches.length - 1;
         const partText = text.substring(iNext, isLast ? text.length : (m?.index ?? 0) + m[0].length);
         const entry = {
-          index: i,
           text: partText,
           word: getWordRegex().exec(partText)?.[0] ?? ``,
           normalized: normalizeWord(partText),
@@ -342,7 +341,26 @@ export const createMemoryRuntimeService = () => {
 
       const normalizedBlanks = parts.filter((x) => !x.normalized);
       if (normalizedBlanks.length) {
-        console.error(`getParts - some parts are normalized to blank`, { normalizedBlanks });
+        console.warn(`getParts - some parts are normalized to blank`, { normalizedBlanks });
+        let iPartBlank = parts.findIndex((x) => !x.normalized);
+        while (iPartBlank >= 0) {
+          const partBlank = parts[iPartBlank];
+          const partAfter = parts[iPartBlank + 1];
+          const partBefore = parts[iPartBlank - 1];
+          if (partAfter) {
+            partAfter.text = partBlank.text + partAfter.text;
+          } else if (partBefore) {
+            partBefore.text += partBlank.text;
+          } else {
+            // No parts before or after - fail!
+            console.error(`getParts - all parts are normalized to blank`, { normalizedBlanks });
+            break;
+          }
+
+          parts.splice(iPartBlank, 1);
+          iPartBlank = parts.findIndex((x) => !x.normalized);
+          console.log(`getParts - combined blank part`, { partBlank, partAfter, partBefore, parts });
+        }
       }
 
       console.log(`getParts`, { partMatches, parts, text });
