@@ -542,7 +542,10 @@ export const createMemoryRuntimeService = () => {
       const diagnosticDiv = document.createElement(`div`);
       const textInput = document.createElement(`input`);
       textInput.type = `input`;
-      textInput.autofocus = true;
+      textInput.autocapitalize = `off`;
+      textInput.autocomplete = `off`;
+      (textInput as unknown as { autocorrect: string }).autocorrect = `off`;
+
       const textForm = document.createElement(`form`);
       textForm.appendChild(textInput);
 
@@ -592,6 +595,7 @@ export const createMemoryRuntimeService = () => {
       hostDiv.appendChild(scrollTargetDiv);
       hostDiv.appendChild(textForm);
       hostDiv.appendChild(diagnosticDiv);
+      textInput.focus();
 
       const setDiagnosticHtml = (html: string) => {
         // diagnosticDiv.innerHTML = html;
