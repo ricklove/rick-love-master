@@ -560,6 +560,7 @@ export const createMemoryRuntimeService = () => {
       const diagnosticDiv = document.createElement(`div`);
       const textInput = document.createElement(`input`);
       textInput.type = `input`;
+      textInput.spellcheck = false;
       textInput.autocapitalize = `off`;
       textInput.autocomplete = `off`;
       (textInput as unknown as { autocorrect: string }).autocorrect = `off`;
