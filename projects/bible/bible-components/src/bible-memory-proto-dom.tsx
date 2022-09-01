@@ -1,3 +1,4 @@
+import { randomIndex, randomItem, randomOrder } from '@ricklove/utils-core';
 import { MemoryPassage } from './bible-memory-types';
 
 export type MemoryRuntimeService = ReturnType<typeof createMemoryRuntimeService>;
@@ -488,6 +489,9 @@ export const createMemoryRuntimeService = () => {
         doneCallback();
       }
 
+      setTimeout(() => {
+        nextCallback();
+      }, 0);
       return {
         isDone,
         inputItems,
@@ -522,16 +526,24 @@ export const createMemoryRuntimeService = () => {
     let doneCallback = () => {
       // Empty
     };
+    let nextCallback = () => {
+      // Empty
+    };
 
     return {
+      getParts: () => partStates,
       addInput,
       resetProblem,
       addToProblem,
       toggleHintMode,
-      start: (onDone: () => void) => {
+      start: (onDone: () => void, onNext: () => void) => {
         isRunning = true;
         doneCallback = onDone;
+        nextCallback = onNext;
         recognition.start();
+        setTimeout(() => {
+          nextCallback();
+        }, 0);
       },
       stop: () => {
         isRunning = false;
@@ -571,6 +583,16 @@ export const createMemoryRuntimeService = () => {
       textForm.appendChild(textInput);
 
       const TEXT_INPUT_IMMEDIATE = false;
+      const getFirstLetterInputs = (value: string) => {
+        return [...value.matchAll(/(\d+|\w)/g)]
+          .map((m) => m[0] ?? ``)
+          .filter((x) => x)
+          .map((x) => ({
+            text: x,
+            matchMode: Number.isInteger(Number(x)) ? (`number` as const) : (`firstLetter` as const),
+          }));
+      };
+
       textInput.onkeypress = (e) => {
         if (!TEXT_INPUT_IMMEDIATE) {
           return;
@@ -590,13 +612,7 @@ export const createMemoryRuntimeService = () => {
           return;
         }
 
-        const firstLetterOrNumbers = [...textInput.value.matchAll(/(\d+|\w)/g)]
-          .map((m) => m[0] ?? ``)
-          .filter((x) => x)
-          .map((x) => ({
-            text: x,
-            matchMode: Number.isInteger(Number(x)) ? (`number` as const) : (`firstLetter` as const),
-          }));
+        const firstLetterOrNumbers = getFirstLetterInputs(textInput.value);
         const { isDone, inputItems } = state.instance.addInput(firstLetterOrNumbers);
         const iLastUsed = inputItems.length - 1 - [...inputItems].reverse().findIndex((x) => x.used);
         console.log(`textForm.onsubmit`, { firstLetterOrNumbers, inputItems, iLastUsed, input: textInput.value });
@@ -611,12 +627,89 @@ export const createMemoryRuntimeService = () => {
         e.preventDefault();
       };
 
+      // Input buttons
+      const choicesDiv = document.createElement(`div`);
+      const onNext = () => {
+        choicesDiv.innerHTML = ``;
+
+        const parts = state.instance?.getParts();
+        if (!parts) {
+          return;
+        }
+
+        const iFirstUndone = parts.findIndex((p) => !p.isDone);
+        if (iFirstUndone < 0) {
+          return;
+        }
+
+        const iFirstDoneAfterUndone = parts.findIndex((p) => p.isDone, iFirstUndone + 1);
+        const GROUP_SIZE = 3;
+        const CHOICE_SIZE = 3;
+
+        const partsGroup = parts
+          .slice(iFirstUndone, iFirstDoneAfterUndone <= iFirstUndone ? undefined : iFirstDoneAfterUndone)
+          .slice(0, GROUP_SIZE);
+        if (!partsGroup.length) {
+          console.error(`onNext - No undone parts found`, { parts, partsGroup, iFirstUndone, iFirstDoneAfterUndone });
+          return;
+        }
+
+        const correctFirstLetters = partsGroup
+          .map((x) => x.word)
+          .map((x) => (Number.isInteger(Number(x)) ? x : x.substring(0, 1)))
+          .map((x) => x.toLocaleLowerCase());
+
+        const correctAnswer = correctFirstLetters.join(` `);
+        const allWrongAnswers = [...new Array(10)].map(() => {
+          const iPart = randomIndex(correctFirstLetters.length);
+          const p = correctFirstLetters[iPart];
+          const n = Number(p);
+          const wrongP = Number.isInteger(n)
+            ? `${Math.abs(n + randomIndex(7) - 3)}`
+            : randomItem(
+                `rstln rstln rstln rstln rstln aeiou aeiou aeiou abcdefghijklmnopqrstuvwxyz`
+                  .replace(/\s/g, ``)
+                  .split(``),
+              );
+
+          return correctFirstLetters.map((x, i) => (i === iPart ? wrongP : x)).join(` `);
+        });
+
+        const wrongAnswers = [...new Set(allWrongAnswers)].filter((x) => x !== correctAnswer);
+        const allAnswers = [correctAnswer, ...wrongAnswers.slice(0, CHOICE_SIZE - 1)];
+        const answers = randomOrder(allAnswers);
+
+        const choicesContainer = document.createElement(`div`);
+
+        answers.forEach((x) => {
+          const d = document.createElement(`button`);
+          d.innerText = x;
+          d.onclick = () => {
+            if (!state.instance) {
+              return;
+            }
+            d.disabled = true;
+            d.style.opacity = `0.5`;
+
+            const isCorrect = x === correctAnswer;
+            if (!isCorrect) {
+              d.style.background = `#FF0000`;
+              return;
+            }
+            state.instance.addInput(getFirstLetterInputs(x));
+          };
+          choicesContainer.appendChild(d);
+        });
+        choicesDiv.appendChild(choicesContainer);
+      };
+
       hostDiv.appendChild(hintDiv);
       hostDiv.appendChild(outputDiv);
       hostDiv.appendChild(scrollTargetDiv);
+      hostDiv.appendChild(choicesDiv);
       hostDiv.appendChild(textForm);
       hostDiv.appendChild(diagnosticDiv);
-      textInput.focus();
+      // textInput.focus();
 
       const setDiagnosticHtml = (html: string) => {
         // diagnosticDiv.innerHTML = html;
@@ -639,7 +732,7 @@ export const createMemoryRuntimeService = () => {
       });
 
       state.instance.resetProblem(memoryPassage.text, memoryPassage.title, memoryPassage.lang);
-      state.instance.start(onDone);
+      state.instance.start(onDone, onNext);
     },
     setPassage: (memoryPassage: MemoryPassage) => {
       if (!state.instance) {

@@ -4,6 +4,8 @@
     - Prevent reuse of same word with word overlap detection
   - [x] Type First Letter Only
     - Type only the first letter and allow skipping ahead (like voice)
+  - [ ] First Letter Choices
+    - For small screens show first letter choices - (for n words) (or whole number) for next word (or first missed word)
   - Q:
     - How to warn for extra words?
 - Bible Memory Modes
