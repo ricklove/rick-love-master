@@ -108,7 +108,9 @@ export const createMemoryRuntimeService = () => {
         newResultWords
           .flatMap((x) => x)
           .map((w) => w.split(`@`)[0])
-          .map((x) => ({ text: x, matchMode: `phonetic` })),
+          .map((x) => ({ text: x, matchMode: `phonetic` as const }))
+          // max 10
+          .slice(-10),
       );
     };
 
@@ -211,10 +213,9 @@ export const createMemoryRuntimeService = () => {
           .trim()
           .toLowerCase()
           .replace(/[^a-z0-9]/g, ``)
-          .replace(/(?!^)[aeiouyhw]/g, ``)
-
-          // Remove starting h (because it is sometimes silent)
+          // Remove all h (because it is sometimes silent in starting position)
           .replace(/[h]/g, ``)
+          .replace(/(?!^)[aeiouyhw]/g, ``)
 
           // All vowels the same
           .replace(/[aeiou]/g, `a`)
@@ -306,7 +307,6 @@ export const createMemoryRuntimeService = () => {
 
     let partStates = [
       {
-        index: 0,
         text: ``,
         word: ``,
         normalized: ``,
@@ -339,6 +339,12 @@ export const createMemoryRuntimeService = () => {
         iNext += partText.length;
         return entry;
       });
+
+      const normalizedBlanks = parts.filter((x) => !x.normalized);
+      if (normalizedBlanks.length) {
+        console.error(`getParts - some parts are normalized to blank`, { normalizedBlanks });
+      }
+
       console.log(`getParts`, { partMatches, parts, text });
 
       return parts;
@@ -383,43 +389,72 @@ export const createMemoryRuntimeService = () => {
 
     const AHEAD_LENGTH = 3;
 
-    const addInput = (newInput: { text: string; matchMode: 'firstLetter' | 'phonetic' }[]) => {
-      newInput = newInput.slice(-10);
-      const iPartLastDone = Math.max(-1, ...partStates.filter((x) => x.isDone).map((x) => x.index));
-      const partsToMatch = partStates.filter((x) => !x.isDone && x.index <= iPartLastDone + AHEAD_LENGTH);
+    const markPartDone = (p: typeof partStates[number]) => {
+      p.isDone = true;
+      p.endTime = Date.now();
+      if (!p.startTime) {
+        p.startTime = p.endTime;
+      }
+      p.elapsedTime = p.endTime - p.startTime;
+    };
+
+    const addInput = (newInput: { text: string; matchMode: 'firstLetter' | 'number' | 'phonetic' }[]) => {
+      const partStatesWithIndex = partStates as (typeof partStates[number] & { index: number })[];
+      partStatesWithIndex.forEach((p, i) => (p.index = i));
+
+      const getPartsToMatch = () => {
+        const iPartLastDone = Math.max(-1, ...partStatesWithIndex.filter((x) => x.isDone).map((x) => x.index));
+        const forwardParts = partStatesWithIndex.filter(
+          (x) => !x.isDone && x.index > iPartLastDone && x.index <= iPartLastDone + AHEAD_LENGTH,
+        );
+        const skippedParts = partStatesWithIndex.filter((x) => !x.isDone && x.index <= iPartLastDone);
+        // Match forward parts first
+        const parts = [...forwardParts, ...skippedParts];
+        return {
+          parts,
+          iPartLastDone,
+        };
+      };
 
       let wasForwardPartCompleted = false;
 
-      for (const p of partsToMatch) {
-        const iMatch = newInput.findIndex((x) =>
-          x.matchMode === `phonetic` ? x.text === p.normalized : p.word.toLowerCase().startsWith(x.text),
+      const inputItems = newInput.map((x) => ({ ...x, used: false }));
+
+      for (const xInput of inputItems) {
+        const partsToMatch = getPartsToMatch();
+        const p = partsToMatch.parts.find((p) =>
+          xInput.matchMode === `phonetic`
+            ? xInput.text === p.normalized
+            : xInput.matchMode === `number`
+            ? p.word === xInput.text
+            : p.word.toLowerCase().startsWith(xInput.text.toLowerCase()),
         );
 
-        if (iMatch < 0) {
+        if (!p) {
           continue;
         }
 
-        p.isDone = true;
-        p.endTime = Date.now();
-        if (!p.startTime) {
-          p.startTime = p.endTime;
-        }
-        p.elapsedTime = p.endTime - p.startTime;
-        newInput.splice(iMatch, 1);
+        xInput.used = true;
+        markPartDone(p);
 
-        wasForwardPartCompleted = wasForwardPartCompleted || p.index > iPartLastDone;
+        wasForwardPartCompleted = wasForwardPartCompleted || p.index > partsToMatch.iPartLastDone;
       }
 
-      setDiagnostic(`unused: ${newInput.map((x) => x.text).join(` `)}`);
-      console.log(`updateResult`, { newInput, partStates, partsToMatch });
+      setDiagnostic(
+        `unused: ${inputItems
+          .filter((x) => !x.used)
+          .map((x) => x.text)
+          .join(` `)}`,
+      );
+      console.log(`updateResult`, { inputItems, partStatesWithIndex });
 
-      const iPartLastDoneAfter = Math.max(-1, ...partStates.filter((x) => x.isDone).map((x) => x.index));
-      const pNext = partStates[iPartLastDoneAfter + 1];
+      const iPartLastDoneAfter = Math.max(-1, ...partStatesWithIndex.filter((x) => x.isDone).map((x) => x.index));
+      const pNext = partStatesWithIndex[iPartLastDoneAfter + 1];
       if (pNext && !pNext.startTime) {
         pNext.startTime = Date.now();
       }
 
-      const completed = partStates
+      const completed = partStatesWithIndex
         .filter((x) => x.index <= iPartLastDoneAfter + (hintMode !== `blank` ? 1 : 0))
         .map((x) => formatPart(x))
         .join(``);
@@ -429,17 +464,36 @@ export const createMemoryRuntimeService = () => {
         scrollToBottom();
       }
 
-      if (partStates.every((p) => p.isDone)) {
+      const isDone = partStatesWithIndex.every((p) => p.isDone);
+      if (isDone) {
         console.log(`DONE!`);
         doneCallback();
       }
+
+      return {
+        isDone,
+        inputItems,
+      };
     };
 
     const resetProblem = (text: string, title: string, lang: string) => {
       setLanguage(lang);
-
       const formatted = formatPassage(text);
       partStates = getParts(formatted);
+
+      setHint(`Say ${title}`);
+      addInput([]);
+      setDiagnostic(`AHEAD_LENGTH=${AHEAD_LENGTH}`);
+    };
+
+    const addToProblem = (text: string, title: string, lang: string) => {
+      // Mark old as done
+      partStates.filter((p) => !p.isDone).forEach((p) => markPartDone(p));
+
+      // Add items
+      setLanguage(lang);
+      const formatted = formatPassage(text);
+      partStates = [...partStates, ...getParts(formatted)];
 
       setHint(`Say ${title}`);
       addInput([]);
@@ -454,6 +508,7 @@ export const createMemoryRuntimeService = () => {
     return {
       addInput,
       resetProblem,
+      addToProblem,
       toggleHintMode,
       start: (onDone: () => void) => {
         isRunning = true;
@@ -488,19 +543,54 @@ export const createMemoryRuntimeService = () => {
       const textInput = document.createElement(`input`);
       textInput.type = `input`;
       textInput.autofocus = true;
+      const textForm = document.createElement(`form`);
+      textForm.appendChild(textInput);
+
+      const TEXT_INPUT_IMMEDIATE = false;
       textInput.onkeypress = (e) => {
+        if (!TEXT_INPUT_IMMEDIATE) {
+          return;
+        }
+        e.preventDefault();
+        if (!state.instance) {
+          return;
+        }
+        state.instance.addInput([{ text: e.key, matchMode: `firstLetter` }]);
+      };
+      textForm.onsubmit = (e) => {
+        e.preventDefault();
+        if (TEXT_INPUT_IMMEDIATE) {
+          return;
+        }
         if (!state.instance) {
           return;
         }
 
-        state.instance.addInput([{ text: e.key, matchMode: `firstLetter` }]);
+        const firstLetterOrNumbers = [...textInput.value.matchAll(/(\d+|\w)/g)]
+          .map((m) => m[0] ?? ``)
+          .filter((x) => x)
+          .map((x) => ({
+            text: x,
+            matchMode: Number.isInteger(Number(x)) ? (`number` as const) : (`firstLetter` as const),
+          }));
+        const { isDone, inputItems } = state.instance.addInput(firstLetterOrNumbers);
+        const iLastUsed = inputItems.length - 1 - [...inputItems].reverse().findIndex((x) => x.used);
+        console.log(`textForm.onsubmit`, { firstLetterOrNumbers, inputItems, iLastUsed, input: textInput.value });
+
+        textInput.value = inputItems
+          .filter((x, i) => i > iLastUsed)
+          .map((x) => x.text)
+          .join(``);
+        //textInput.value = ``;
+        //textInput.value = isDone ? unused.map((x) => x.text).join(``) : ``;
+        textInput.focus();
         e.preventDefault();
       };
 
       hostDiv.appendChild(hintDiv);
       hostDiv.appendChild(outputDiv);
       hostDiv.appendChild(scrollTargetDiv);
-      hostDiv.appendChild(textInput);
+      hostDiv.appendChild(textForm);
       hostDiv.appendChild(diagnosticDiv);
 
       const setDiagnosticHtml = (html: string) => {
@@ -530,7 +620,7 @@ export const createMemoryRuntimeService = () => {
       if (!state.instance) {
         return;
       }
-      state.instance.resetProblem(memoryPassage.text, memoryPassage.title, memoryPassage.lang);
+      state.instance.addToProblem(memoryPassage.text, memoryPassage.title, memoryPassage.lang);
     },
     toggleHintMode: () => {
       if (!state.instance) {
