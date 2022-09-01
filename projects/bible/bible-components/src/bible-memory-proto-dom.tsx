@@ -161,8 +161,7 @@ export const createMemoryRuntimeService = () => {
 
     const formatPassage = (text: string) => {
       return text
-        .replace(/([,.?!:;()"])/g, `$1\n    `)
-        .replace(/(\d)\s*:\n\s*(\d)/g, `$1:$2`)
+        .replace(/([,.?!:;)”’]+)(?!\w)/g, `$1\n    `)
         .replace(/ (and|or|but) /g, `\n    $1 `)
         .replace(/\n {4}\n {4}/g, `\n        `)
         .replace(/\n {4}\n {4}/g, `\n        `)
