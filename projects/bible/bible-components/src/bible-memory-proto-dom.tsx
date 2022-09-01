@@ -28,7 +28,27 @@ export const createMemoryRuntimeService = () => {
 
     let isRunning = false;
 
-    const recognition = new SpeechRecognition();
+    const USE_SPEECH = true;
+    const createSpeechRecognition = () => {
+      try {
+        if (!USE_SPEECH) {
+          throw new Error(`SKIP SPEECH`);
+        }
+        return new SpeechRecognition();
+      } catch {
+        return {
+          start: () => {
+            // empty
+          },
+          stop: () => {
+            // empty
+          },
+        } as SpeechRecognition;
+      }
+    };
+
+    const recognition = createSpeechRecognition();
+
     // if (SpeechGrammarList) {
     //   // SpeechGrammarList is not currently available in Safari, and does not have any effect in any other browser.
     //   // This code is provided as a demonstration of possible capability. You may choose not to use it.
