@@ -51,6 +51,9 @@ export const BibleReaderView = ({
   passage: BiblePassage;
   onStartMemorize?: (passages: MemoryPassage[]) => void;
 }) => {
+  const openExternalUrl = useCallback(() => {
+    window.open(passage?.copyright.url, `_blank`);
+  }, []);
   return (
     <>
       <div style={{ margin: 4, padding: 4, background: `#EEEEEE`, minHeight: 100 }}>
@@ -58,8 +61,13 @@ export const BibleReaderView = ({
           <div>
             <h2>
               {passage?.passageReference}
-              <span style={{ fontSize: `0.5em` }} title={passage?.copyright.long}>
+              <span
+                style={{ fontSize: `0.5em`, cursor: `pointer` }}
+                title={passage?.copyright.long}
+                onClick={openExternalUrl}
+              >
                 &nbsp;{passage?.copyright.short}
+                {`🔗`}
               </span>
             </h2>
           </div>
