@@ -2,7 +2,7 @@
   - [x] Voice input
   - [ ] Voice input Improved
     - Prevent reuse of same word with word overlap detection
-  - [ ] Type First Letter Only
+  - [x] Type First Letter Only
     - Type only the first letter and allow skipping ahead (like voice)
   - Q:
     - How to warn for extra words?

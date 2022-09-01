@@ -560,6 +560,8 @@ export const createMemoryRuntimeService = () => {
       const diagnosticDiv = document.createElement(`div`);
       const textInput = document.createElement(`input`);
       textInput.type = `input`;
+      // Disable autocomplete
+      textInput.name = `${Date.now()}${Math.random()}`;
       textInput.spellcheck = false;
       textInput.autocapitalize = `off`;
       textInput.autocomplete = `off`;
