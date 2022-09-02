@@ -6,6 +6,7 @@ export * from './src/json';
 export * from './src/objects';
 export * from './src/random';
 export * from './src/string-span';
+export * from './src/string-words';
 export * from './src/string-utils';
 export * from './src/subscribable';
 

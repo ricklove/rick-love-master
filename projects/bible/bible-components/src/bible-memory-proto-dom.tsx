@@ -1,4 +1,4 @@
-import { randomIndex, randomItem, randomOrder } from '@ricklove/utils-core';
+import { getWordRegex, randomIndex, randomItem, randomOrder } from '@ricklove/utils-core';
 import { MemoryPassage } from './bible-memory-types';
 
 export type MemoryRuntimeService = ReturnType<typeof createMemoryRuntimeService>;
@@ -465,8 +465,6 @@ export const createMemoryRuntimeService = () => {
         elapsedTime: 0,
       },
     ];
-
-    const getWordRegex = () => /(\d+|['\u2019a-zA-Z\u00C0-\u00D6\u00D8-\u00F6\u00F8-\u024F\u1E00-\u1EFF]+)/g;
 
     const getParts = (text: string): typeof partStates => {
       const partMatches = [...text.matchAll(getWordRegex())];
