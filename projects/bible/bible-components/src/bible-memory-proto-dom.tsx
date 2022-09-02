@@ -203,23 +203,27 @@ export const createMemoryRuntimeService = () => {
       { color: `#6666FF`, words: `is|are|was|were|will|shall|be|has|have`.split(`|`) },
     ];
 
-    const formatPart = (part: typeof partStates[number]) => {
+    const formatPart = (part: typeof partStates[number] & { index: number }) => {
       const { elapsedTime, word, text, isDone } = part;
       const wordToUse = isDone ? word : getTextWithBlanks(word);
 
       const textColor = !isEnglish ? undefined : wordColors.find((c) => c.words.some((w) => w === word))?.color;
       const errorStyle =
         elapsedTime > 10000
-          ? `background:#FF0000;font-size:2.4em`
+          ? `background:#FF0000;font-size:2.4em;`
           : elapsedTime > 5000
-          ? `background:#880000;font-size:1.8em`
+          ? `background:#880000;font-size:1.8em;`
           : elapsedTime > 2000
-          ? `background:#440000;font-size:1.6em`
+          ? `background:#440000;font-size:1.6em;`
           : elapsedTime > 500
-          ? `background:#220000;font-size:1.2em`
+          ? `background:#220000;font-size:1.2em;`
           : ``;
 
-      const colorStyle = `${textColor ? `color:${textColor};` : ``}${errorStyle}`.trim();
+      //const displayStyle = `transform:rotate(${-30 + (60 / 4) * ((2 + part.index) % (4 + 1))}deg);`;
+      // const displayStyle = part.index % 2 ? `` : `writing-mode:vertical-lr;text-orientation: upright;`;
+      const displayStyle = ``;
+
+      const colorStyle = `${textColor ? `color:${textColor};` : ``}${errorStyle}${displayStyle}`.trim();
       const content = !colorStyle
         ? text.replace(word, wordToUse)
         : text.replace(word, `<span style='display:inline-block;${colorStyle}'>${wordToUse}</span>`);

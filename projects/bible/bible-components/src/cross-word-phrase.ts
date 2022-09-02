@@ -3,5 +3,8 @@ export const generateCrosswordPhrase = <T>(items: T[], getWord: (item: T) => str
     part: x,
     word: getWord(x),
   }));
+
+  const grid = [] as string[][];
+
   // TODO:
 };
