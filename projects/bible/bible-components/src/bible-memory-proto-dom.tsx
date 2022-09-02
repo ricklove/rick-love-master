@@ -203,9 +203,129 @@ export const createMemoryRuntimeService = () => {
       { color: `#6666FF`, words: `is|are|was|were|will|shall|be|has|have`.split(`|`) },
     ];
 
+    const wordEmojis = [
+      { emoji: `❤️`, words: `love`.split(`|`) },
+      { emoji: `🖤`, words: `hate`.split(`|`) },
+      { emoji: `🤣`, words: `joy`.split(`|`) },
+      { emoji: `🙏`, words: `pray|prayer`.split(`|`) },
+      { emoji: `🥺`, words: `beg|begging|beggar`.split(`|`) },
+      { emoji: `😱`, words: `fear|afraid`.split(`|`) },
+      { emoji: `🥵`, words: `anger|angry`.split(`|`) },
+      { emoji: `🩸`, words: `blood`.split(`|`) },
+      { emoji: `🔥`, words: `fire|hell`.split(`|`) },
+      { emoji: `🌊`, words: `water`.split(`|`) },
+      { emoji: `🎁`, words: `give|gift`.split(`|`) },
+      { emoji: `🏠`, words: `house`.split(`|`) },
+      { emoji: `🧱`, words: `stone`.split(`|`) },
+      { emoji: `🌌`, words: `world`.split(`|`) },
+      { emoji: `🌍`, words: `earth`.split(`|`) },
+      { emoji: `🍞`, words: `bread`.split(`|`) },
+      { emoji: `🌲`, words: `plant|tree`.split(`|`) },
+      { emoji: `🌱`, words: `seed|vine`.split(`|`) },
+      { emoji: `👣`, words: `foot|feet`.split(`|`) },
+      { emoji: `👨‍⚖️`, words: `judge|judges|judgement|court|guilt`.split(`|`) },
+
+      { emoji: `🐂`, words: `cow|bull|ox`.split(`|`) },
+      { emoji: `🐑`, words: `sheep|lamb`.split(`|`) },
+      { emoji: `🐐`, words: `goat`.split(`|`) },
+      { emoji: `🦁`, words: `lion`.split(`|`) },
+      { emoji: `🐖`, words: `pig`.split(`|`) },
+      { emoji: `🐺`, words: `wolf`.split(`|`) },
+      { emoji: `🐕`, words: `dog`.split(`|`) },
+
+      { emoji: `🔹`, words: `the`.split(`|`) },
+      { emoji: `🔲`, words: `a|an`.split(`|`) },
+      { emoji: `&&`, words: `and`.split(`|`) },
+      { emoji: `||`, words: `or`.split(`|`) },
+
+      { emoji: `🔘`, words: `of`.split(`|`) },
+      { emoji: `⏩`, words: `to`.split(`|`) },
+      { emoji: `💠`, words: `for`.split(`|`) },
+
+      { emoji: `👉`, words: `you|your`.split(`|`) },
+      { emoji: `👤`, words: `i|me|my`.split(`|`) },
+      { emoji: `👨`, words: `he|him|his|man`.split(`|`) },
+      { emoji: `👩`, words: `she|her|hers|woman`.split(`|`) },
+      { emoji: `🚹`, words: `men`.split(`|`) },
+      { emoji: `🚺`, words: `women`.split(`|`) },
+
+      { emoji: `👨‍🦳`, words: `father`.split(`|`) },
+      { emoji: `👩‍🦳`, words: `mother`.split(`|`) },
+      { emoji: `🤴`, words: `lord`.split(`|`) },
+      { emoji: `👶`, words: `child`.split(`|`) },
+      { emoji: ``, words: `god`.split(`|`) },
+      { emoji: `🌬`, words: `spirit`.split(`|`) },
+
+      { emoji: `👥`, words: `they|them|their|theirs`.split(`|`) },
+      { emoji: `🔵`, words: `it|its`.split(`|`) },
+
+      { emoji: `🔻`, words: `in`.split(`|`) },
+      { emoji: `🔛`, words: `on`.split(`|`) },
+      { emoji: `🆙`, words: `up`.split(`|`) },
+      { emoji: `⤵`, words: `into`.split(`|`) },
+      { emoji: `↔`, words: `by`.split(`|`) },
+      { emoji: `↪`, words: `from`.split(`|`) },
+      { emoji: `➿`, words: `with`.split(`|`) },
+      { emoji: ``, words: `as`.split(`|`) },
+
+      { emoji: `↗`, words: `that|those|there`.split(`|`) },
+      { emoji: `↘`, words: `this|here`.split(`|`) },
+
+      { emoji: `❕`, words: `but`.split(`|`) },
+      { emoji: `‼`, words: `not`.split(`|`) },
+
+      { emoji: `↔`, words: `is|are|be`.split(`|`) },
+      { emoji: `↔`, words: `was|were`.split(`|`) },
+      { emoji: `↔`, words: `has|have|had`.split(`|`) },
+      { emoji: `🔜`, words: `shall|should`.split(`|`) },
+      { emoji: `⤴`, words: `will|would`.split(`|`) },
+      { emoji: `⏩`, words: `let|lets`.split(`|`) },
+      { emoji: `▶`, words: `so`.split(`|`) },
+
+      { emoji: `❔`, words: `who|what|when`.split(`|`) },
+      { emoji: ``, words: `whoever`.split(`|`) },
+
+      { emoji: `🔢`, words: `all`.split(`|`) },
+
+      { emoji: `👄`, words: `say|said|saying`.split(`|`) },
+      { emoji: `🎤`, words: `call|called`.split(`|`) },
+      { emoji: `📢`, words: `tell|told|spoken`.split(`|`) },
+      { emoji: `🦻`, words: `listen`.split(`|`) },
+      { emoji: `👂`, words: `hear|heard`.split(`|`) },
+      { emoji: `👁`, words: `look`.split(`|`) },
+      { emoji: `👀`, words: `see|saw|behold`.split(`|`) },
+
+      { emoji: `🌤`, words: `heaven`.split(`|`) },
+
+      { emoji: `⁉`, words: `if`.split(`|`) },
+      { emoji: `➡`, words: `then`.split(`|`) },
+      { emoji: `⌛`, words: `until`.split(`|`) },
+      { emoji: `🕒`, words: `now`.split(`|`) },
+
+      { emoji: ``, words: `blessed`.split(`|`) },
+      { emoji: `1️⃣`, words: `one`.split(`|`) },
+
+      { emoji: ``, words: `come|came`.split(`|`) },
+      { emoji: `🚦`, words: `go|went`.split(`|`) },
+      { emoji: `🛑`, words: `stop`.split(`|`) },
+
+      { emoji: `👑`, words: `kingdom`.split(`|`) },
+      { emoji: `👑`, words: `christ`.split(`|`) },
+      { emoji: `💡`, words: `light`.split(`|`) },
+      { emoji: `🏆`, words: `great`.split(`|`) },
+
+      { emoji: `👪`, words: `people`.split(`|`) },
+      { emoji: `🛤`, words: `way`.split(`|`) },
+
+      { emoji: `🏴‍☠️`, words: `take|took`.split(`|`) },
+    ];
+
     const formatPart = (part: typeof partStates[number] & { index: number }) => {
       const { elapsedTime, word, text, isDone } = part;
-      const wordToUse = isDone ? word : getTextWithBlanks(word);
+
+      const wordEmoji = wordEmojis.find((x) => x.words.includes(word.toLowerCase()))?.emoji ?? ``;
+      // const wordEmoji = ``;
+      const wordToUse = isDone ? `${word}${wordEmoji}` : getTextWithBlanks(word);
 
       const textColor = !isEnglish ? undefined : wordColors.find((c) => c.words.some((w) => w === word))?.color;
       const errorStyle =
