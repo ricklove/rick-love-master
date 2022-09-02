@@ -290,6 +290,7 @@ export const createMemoryRuntimeService = () => {
       { emoji: `👄`, words: `say|said|saying`.split(`|`) },
       { emoji: `🎤`, words: `call|called`.split(`|`) },
       { emoji: `📢`, words: `tell|told|spoken`.split(`|`) },
+      { emoji: `🗣`, words: `spoken`.split(`|`) },
       { emoji: `🦻`, words: `listen`.split(`|`) },
       { emoji: `👂`, words: `hear|heard`.split(`|`) },
       { emoji: `👁`, words: `look`.split(`|`) },
@@ -318,6 +319,12 @@ export const createMemoryRuntimeService = () => {
       { emoji: `🛤`, words: `way`.split(`|`) },
 
       { emoji: `🏴‍☠️`, words: `take|took`.split(`|`) },
+
+      { emoji: `🧑❓`, words: `whoever`.split(`|`) },
+      { emoji: `🤷‍♂️`, words: `anyone`.split(`|`) },
+      { emoji: `👨‍👩‍👧‍👦`, words: `everyone`.split(`|`) },
+      { emoji: `♾`, words: `all`.split(`|`) },
+      { emoji: `🚶`, words: `someone`.split(`|`) },
     ];
 
     const formatPart = (part: typeof partStates[number] & { index: number }) => {
