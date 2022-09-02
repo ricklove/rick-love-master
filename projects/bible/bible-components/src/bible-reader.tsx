@@ -97,6 +97,11 @@ const BiblePassage = ({
         //title: `${s.passageReference} - ${s.header}`,
         text: `${s.passageReference} - ${s.header}\n\n${s.verses.map((v) => v.text).join(``)}`,
         lang: `en-US`,
+        passageRange: {
+          bookName: s.bookName,
+          start: { ...s.verses[0], text: `` },
+          end: { ...s.verses[s.verses.length - 1], text: `` },
+        },
       })),
     );
   }, [section]);

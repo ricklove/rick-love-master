@@ -19,12 +19,23 @@ export const BibleMemoryProto = () => {
           <MemoryPassageButton value={x} onClick={startBibleMemory} />
         </React.Fragment>
       ))}
-      <BibleMemoryHost passages={passage ? [passage] : []} />
+      <BibleMemoryHost
+        passages={passage ? [passage] : []}
+        onPassageComplete={() => {
+          /*ignore*/
+        }}
+      />
     </>
   );
 };
 
-export const BibleMemoryHost = ({ passages }: { passages: undefined | MemoryPassage[] }) => {
+export const BibleMemoryHost = ({
+  passages,
+  onPassageComplete,
+}: {
+  passages: undefined | MemoryPassage[];
+  onPassageComplete: (passage: MemoryPassage, scoreRatio: number) => void;
+}) => {
   const [isStarted, setIsStarted] = useState(false);
   const activePassageRef = useRef(passages?.[0]);
   useEffect(() => {
@@ -78,7 +89,14 @@ export const BibleMemoryHost = ({ passages }: { passages: undefined | MemoryPass
       return;
     }
 
-    bibleMemoryRef.current.start(hostRef.current, activePassageRef.current, gotoNextPassage);
+    bibleMemoryRef.current.start(hostRef.current, activePassageRef.current, (scoreRatio) => {
+      const p = activePassageRef.current;
+      if (!p) {
+        return;
+      }
+      gotoNextPassage();
+      onPassageComplete(p, scoreRatio);
+    });
     setIsStarted(true);
   }, []);
 

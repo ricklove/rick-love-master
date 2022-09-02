@@ -1,9 +1,24 @@
 import { UploadApiConfig, UserDataService } from '@ricklove/user-data-service';
 import { AppError, delay } from '@ricklove/utils-core';
 
+const createStorageAccess = <T>(storageName: string) => {
+  return {
+    get: () => {
+      const v = localStorage.getItem(storageName);
+      if (!v) {
+        return undefined;
+      }
+      return JSON.parse(v) as T;
+    },
+    set: (value: T) => {
+      localStorage.setItem(storageName, JSON.stringify(value));
+    },
+  };
+};
+
 export type UserProgressConfig = UploadApiConfig;
 export type UserProgressService = ReturnType<typeof createUserProgressService>;
-export const createUserProgressService = (config: UserProgressConfig) => {
+export const createUserProgressService = <T>(config: UserProgressConfig, options: { storageName: string }) => {
   let isSetup = false;
   let isRunningSetup = false;
 
@@ -33,7 +48,10 @@ export const createUserProgressService = (config: UserProgressConfig) => {
     }
   };
 
+  const storageAccess = createStorageAccess<T>(options.storageName);
   return {
+    getUserData: storageAccess.get,
+    setUserData: storageAccess.set,
     saveUserProgress: async () => {
       await doSetup();
       await UserDataService.get().uploadUserData();

@@ -632,8 +632,31 @@ export const createMemoryRuntimeService = () => {
 
       const isDone = partStatesWithIndex.every((p) => p.isDone);
       if (isDone) {
-        console.log(`DONE!`);
-        doneCallback();
+        const elapsedTimeTotal = partStatesWithIndex
+          .map((x) => x.elapsedTime)
+          .reduce((out, x) => {
+            out += x || 0;
+            return out;
+          }, 0);
+
+        const averageTime = elapsedTimeTotal / partStatesWithIndex.length;
+        const PERFECT_AVERAGE_TIME = 500;
+        const WORST_AVERAGE_TIME = 3000;
+
+        const scoreRatio = Math.min(
+          1,
+          Math.max(0, 1 - (averageTime - PERFECT_AVERAGE_TIME) / (WORST_AVERAGE_TIME - PERFECT_AVERAGE_TIME)),
+        );
+
+        console.log(`DONE!`, {
+          scoreRatio,
+          averageTime,
+          elapsedTimeTotal,
+          partStatesWithIndex,
+          PERFECT_AVERAGE_TIME,
+          WORST_AVERAGE_TIME,
+        });
+        doneCallback(scoreRatio);
       }
 
       setTimeout(() => {
@@ -670,7 +693,7 @@ export const createMemoryRuntimeService = () => {
     };
     // resetProblem(passages[0], );
 
-    let doneCallback = () => {
+    let doneCallback = (scoreRatio: number) => {
       // Empty
     };
     let nextCallback = () => {
@@ -683,7 +706,7 @@ export const createMemoryRuntimeService = () => {
       resetProblem,
       addToProblem,
       toggleHintMode,
-      start: (onDone: () => void, onNext: () => void) => {
+      start: (onDone: (scoreRatio: number) => void, onNext: () => void) => {
         isRunning = true;
         doneCallback = onDone;
         nextCallback = onNext;
@@ -705,7 +728,7 @@ export const createMemoryRuntimeService = () => {
 
   return {
     isActive: () => false,
-    start: (hostDiv: HTMLDivElement, memoryPassage: MemoryPassage, onDone: () => void) => {
+    start: (hostDiv: HTMLDivElement, memoryPassage: MemoryPassage, onDone: (scoreRatio: number) => void) => {
       if (state.instance) {
         return;
       }

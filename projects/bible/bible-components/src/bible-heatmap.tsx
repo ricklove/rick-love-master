@@ -3,17 +3,20 @@ import { bibleVerseCounts_esv } from '@ricklove/bible-data';
 import { createBibleHeatmapData } from './bible-heatmap-logic';
 import { getHolySarcasticPhrase } from './holy-sarcasm';
 
-export const BibleHeatmapView = () => {
+export const BibleHeatmapView = ({
+  verseState,
+}: {
+  verseState: {
+    bookName: string;
+    chapterNumber: number;
+    verseNumber: number;
+    scoreRatio: number;
+  }[];
+}) => {
   const [selfRighteousness, setSelfRighteousness] = useState({ level: 0, phrase: `Unclean!` });
   const canvasRef = useRef(null as null | HTMLCanvasElement);
   useEffect(() => {
-    const matthew5Done = [...new Array(48)].map((_, i) => ({
-      bookName: `Matthew`,
-      chapterNumber: 5,
-      verseNumber: i + 1,
-      scoreRatio: 1,
-    }));
-    const result = createBibleHeatmapData(bibleVerseCounts_esv, matthew5Done);
+    const result = createBibleHeatmapData(bibleVerseCounts_esv, verseState);
     const cvs = canvasRef.current;
     if (!cvs) {
       return;
