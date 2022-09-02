@@ -9,6 +9,7 @@
     "build:watch": "heft build"
   },
   "dependencies": {
+    "@ricklove/bible-types": "*",
     "@ricklove/utils-core": "*"
   },
   "devDependencies": {

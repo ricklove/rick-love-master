@@ -1,7 +1,12 @@
 import { promises as fs } from 'fs';
 import path from 'path';
+import {
+  BibleAnalysisData,
+  BibleAnalysisSectionsDocument,
+  BibleAnalysisVerseCountDocument,
+  BibleData,
+} from '@ricklove/bible-types';
 import { getWordCounts } from '@ricklove/utils-core';
-import { BibleAnalysisData, BibleData } from './types';
 
 export const analyzeBibleTextCli = async (
   sourceFilePath: string,
@@ -12,21 +17,24 @@ export const analyzeBibleTextCli = async (
 
   const bibleData = bibleParser(sourceText);
   const analysis = analyzeBibleText(bibleData);
-  const sections = analysis.books.map((b) => ({
-    bookName: b.bookName,
-    bookNumber: b.bookNumber,
-    sections: b.sections.map((x) => ({
-      heading: x.heading,
-      start: `${x.start[0]}:${x.start[1]}`,
-      end: `${x.end[0]}:${x.end[1]}`,
+  const sections: BibleAnalysisSectionsDocument = {
+    books: analysis.books.map((b) => ({
+      bookName: b.bookName,
+      bookNumber: b.bookNumber,
+      sections: b.sections.map((x) => ({
+        heading: x.heading,
+        start: `${x.start[0]}:${x.start[1]}`,
+        end: `${x.end[0]}:${x.end[1]}`,
+      })),
     })),
-  }));
-  const verseCounts = analysis.books.map((b) => ({
-    book: b.bookName,
-    // bookName: b.bookName,
-    // bookNumber: b.bookNumber,
-    chapters: Object.entries(b.chapterVerseCounts).map(([chapterNumber, verseCount]) => verseCount),
-  }));
+  };
+  const verseCounts: BibleAnalysisVerseCountDocument = {
+    books: analysis.books.map((b) => ({
+      bookName: b.bookName,
+      bookNumber: b.bookNumber,
+      chapters: Object.entries(b.chapterVerseCounts).map(([chapterNumber, verseCount]) => verseCount),
+    })),
+  };
 
   const INDENT_JSON = 2;
   // const INDENT_JSON = undefined;

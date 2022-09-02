@@ -1,4 +1,4 @@
-import { BibleBookData, BibleData, BibleSectionData, BibleVerseData } from '../types';
+import { BibleBookData, BibleData, BibleSectionData, BibleVerseData } from '@ricklove/bible-types';
 
 export const parseBibleEsv = (sourceText: string): BibleData => {
   // Example Format:

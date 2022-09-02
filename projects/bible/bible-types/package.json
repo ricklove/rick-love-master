@@ -1,5 +1,5 @@
 {
-  "name": "@ricklove/bible-data",
+  "name": "@ricklove/bible-types",
   "version": "1.0.0",
   "type": "module",
   "main": "./lib/index.js",
@@ -7,9 +7,7 @@
     "build": "heft test --clean",
     "build:watch": "heft build"
   },
-  "dependencies": {
-    "@ricklove/bible-types": "*"
-  },
+  "dependencies": {},
   "devDependencies": {
     "@ricklove/config-lib-rig": "*"
   }

@@ -590,6 +590,10 @@
       "packageName": "@ricklove/bible-site",
       "projectFolder": "projects/bible/bible-site"
     },
+    {
+      "packageName": "@ricklove/bible-types",
+      "projectFolder": "projects/bible/bible-types"
+    },
     // Church
     {
       "packageName": "@ricklove/church-join-the-journey-common",

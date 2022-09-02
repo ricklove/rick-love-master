@@ -29,6 +29,7 @@ specifiers:
   '@rush-temp/bible-components': file:./projects/bible-components.tgz
   '@rush-temp/bible-data': file:./projects/bible-data.tgz
   '@rush-temp/bible-site': file:./projects/bible-site.tgz
+  '@rush-temp/bible-types': file:./projects/bible-types.tgz
   '@rush-temp/brute-force': file:./projects/brute-force.tgz
   '@rush-temp/church-join-the-journey-common': file:./projects/church-join-the-journey-common.tgz
   '@rush-temp/church-join-the-journey-components': file:./projects/church-join-the-journey-components.tgz
@@ -187,6 +188,7 @@ dependencies:
   '@rush-temp/bible-components': file:projects/bible-components.tgz_@babel+core@7.15.0
   '@rush-temp/bible-data': file:projects/bible-data.tgz
   '@rush-temp/bible-site': file:projects/bible-site.tgz
+  '@rush-temp/bible-types': file:projects/bible-types.tgz
   '@rush-temp/brute-force': file:projects/brute-force.tgz_typescript@4.3.5
   '@rush-temp/church-join-the-journey-common': file:projects/church-join-the-journey-common.tgz
   '@rush-temp/church-join-the-journey-components': file:projects/church-join-the-journey-components.tgz_@babel+core@7.15.0
@@ -17082,7 +17084,7 @@ packages:
     dev: false
 
   file:projects/bible-components.tgz_@babel+core@7.15.0:
-    resolution: {integrity: sha512-/IavX7eo/p5AxfYh2x7VSeFQ+rC8xIiEYMrF3/afBXe76gRAvbtnt6kD19aoQ6z48q2BgrnBAl0OgA5WnxE2iw==, tarball: file:projects/bible-components.tgz}
+    resolution: {integrity: sha512-xYh6Mp4cOOMO/MbXzZwHTk4/V7Xi8ITyJA/aBQGD0kIa4XpQE/jfhlNNDjf0tIC8WqE5sJ7U7INoVhd9rL+9gg==, tarball: file:projects/bible-components.tgz}
     id: file:projects/bible-components.tgz
     name: '@rush-temp/bible-components'
     version: 0.0.0
@@ -17122,6 +17124,12 @@ packages:
       - stylus
       - supports-color
       - terser
+    dev: false
+
+  file:projects/bible-types.tgz:
+    resolution: {integrity: sha512-wUmMdUGvRFvMw/NAwHzJ7n5QqKPGduKofTcQhzdzlY/8m2VfMxAkqy7a80tEuiGWomvVjziBgFTAsaf2rdf5ZA==, tarball: file:projects/bible-types.tgz}
+    name: '@rush-temp/bible-types'
+    version: 0.0.0
     dev: false
 
   file:projects/brute-force.tgz_typescript@4.3.5:

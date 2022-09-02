@@ -9,6 +9,8 @@
   },
   "dependencies": {
     "@emotion/react": "~11.4.1",
+    "@ricklove/bible-data": "*",
+    "@ricklove/bible-types": "*",
     "@ricklove/react-controls": "*",
     "@ricklove/user-data-service": "*",
     "@ricklove/utils-core": "*",
