@@ -210,7 +210,7 @@ export const createMemoryRuntimeService = () => {
       { emoji: `🙏`, words: `pray|prayer`.split(`|`) },
       { emoji: `🥺`, words: `beg|begging|beggar`.split(`|`) },
       { emoji: `😱`, words: `fear|afraid`.split(`|`) },
-      { emoji: `🥵`, words: `anger|angry`.split(`|`) },
+      { emoji: `😡`, words: `anger|angry`.split(`|`) },
       { emoji: `🩸`, words: `blood`.split(`|`) },
       { emoji: `🔥`, words: `fire|hell`.split(`|`) },
       { emoji: `🌊`, words: `water`.split(`|`) },
