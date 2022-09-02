@@ -96,7 +96,7 @@ export const createBibleHeatmapData = (
           yInVertical -= VERTICAL_HEIGHT;
         }
 
-        drawPixel(iVertical, yInVertical, Math.random() > 0.75 ? [0x00, 0x00, 0xff, 0xff] : [0xff, 0x00, 0x00, 0xff]);
+        drawPixel(iVertical, yInVertical, Math.random() > 0.99 ? [0x00, 0xff, 0x00, 0xff] : [0xff, 0x00, 0x00, 0xff]);
         yInVertical++;
       }
       yInVertical += EXTRA_GAP_PER_CHAPTER;
