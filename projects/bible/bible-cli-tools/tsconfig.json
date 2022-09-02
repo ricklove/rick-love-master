@@ -2,7 +2,6 @@
   "extends": "@ricklove/config-lib-rig/profiles/default/tsconfig-node.json",
   "include": [
     "index.ts",
-    "src",
-    "output"
+    "src"
   ]
 }

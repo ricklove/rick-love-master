@@ -27,6 +27,7 @@ specifiers:
   '@rush-temp/artwork-hodlers-quest': file:./projects/artwork-hodlers-quest.tgz
   '@rush-temp/bible-cli-tools': file:./projects/bible-cli-tools.tgz
   '@rush-temp/bible-components': file:./projects/bible-components.tgz
+  '@rush-temp/bible-data': file:./projects/bible-data.tgz
   '@rush-temp/bible-site': file:./projects/bible-site.tgz
   '@rush-temp/brute-force': file:./projects/brute-force.tgz
   '@rush-temp/church-join-the-journey-common': file:./projects/church-join-the-journey-common.tgz
@@ -184,6 +185,7 @@ dependencies:
   '@rush-temp/artwork-hodlers-quest': file:projects/artwork-hodlers-quest.tgz
   '@rush-temp/bible-cli-tools': file:projects/bible-cli-tools.tgz_typescript@4.3.5
   '@rush-temp/bible-components': file:projects/bible-components.tgz_@babel+core@7.15.0
+  '@rush-temp/bible-data': file:projects/bible-data.tgz
   '@rush-temp/bible-site': file:projects/bible-site.tgz
   '@rush-temp/brute-force': file:projects/brute-force.tgz_typescript@4.3.5
   '@rush-temp/church-join-the-journey-common': file:projects/church-join-the-journey-common.tgz
@@ -17066,7 +17068,7 @@ packages:
     dev: false
 
   file:projects/bible-cli-tools.tgz_typescript@4.3.5:
-    resolution: {integrity: sha512-vBAb0Fznft088cYSf0ih3kqz8sOfSkqg6CnlBL501u9wRUrjbuYUL4cXn6tETMhtS0yYWlMW4T8QEApmd6Jb/w==, tarball: file:projects/bible-cli-tools.tgz}
+    resolution: {integrity: sha512-k9Fk5E0qxPzxvYhgIhkzWiRHaXvM2x4ARrW48OUsH9fTdRYMl08hoDyRXrE6nN7R1X7y9FCNKP/I9fRjLaXETg==, tarball: file:projects/bible-cli-tools.tgz}
     id: file:projects/bible-cli-tools.tgz
     name: '@rush-temp/bible-cli-tools'
     version: 0.0.0
@@ -17092,6 +17094,12 @@ packages:
     transitivePeerDependencies:
       - '@babel/core'
       - supports-color
+    dev: false
+
+  file:projects/bible-data.tgz:
+    resolution: {integrity: sha512-OBIji82oOTQl5fUxnUUQeHjO5yYAH5VJAWI5FZ0F4bdX4fWFiCZBKjpGhgmDPcH8GCI8qVWW7Njbg+vJABpbRg==, tarball: file:projects/bible-data.tgz}
+    name: '@rush-temp/bible-data'
+    version: 0.0.0
     dev: false
 
   file:projects/bible-site.tgz:

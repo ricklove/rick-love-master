@@ -583,6 +583,10 @@
       "projectFolder": "projects/bible/bible-components"
     },
     {
+      "packageName": "@ricklove/bible-data",
+      "projectFolder": "projects/bible/bible-data"
+    },
+    {
       "packageName": "@ricklove/bible-site",
       "projectFolder": "projects/bible/bible-site"
     },

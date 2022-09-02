@@ -6,7 +6,7 @@ export const run = async () => {
   // This requires a text source of the entire bible which is not included in the repo because of copyright restrictions
   await analyzeBibleTextCli(
     path.resolve(`./data/esv-bible-raw-analysis-text.txt`),
-    path.resolve(`./output/esv/`),
+    path.resolve(`../bible-data/src/output/esv/`),
     parseBibleEsv,
   );
 };
