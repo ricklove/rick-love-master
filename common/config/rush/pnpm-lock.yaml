@@ -182,7 +182,7 @@ dependencies:
   '@rush-temp/artwork-circles': file:projects/artwork-circles.tgz
   '@rush-temp/artwork-hashing': file:projects/artwork-hashing.tgz
   '@rush-temp/artwork-hodlers-quest': file:projects/artwork-hodlers-quest.tgz
-  '@rush-temp/bible-cli-tools': file:projects/bible-cli-tools.tgz
+  '@rush-temp/bible-cli-tools': file:projects/bible-cli-tools.tgz_typescript@4.3.5
   '@rush-temp/bible-components': file:projects/bible-components.tgz_@babel+core@7.15.0
   '@rush-temp/bible-site': file:projects/bible-site.tgz
   '@rush-temp/brute-force': file:projects/brute-force.tgz_typescript@4.3.5
@@ -17065,12 +17065,18 @@ packages:
     version: 0.0.0
     dev: false
 
-  file:projects/bible-cli-tools.tgz:
-    resolution: {integrity: sha512-91RmCNsqyFb4iKNTvmhG+9DDxVrZ8KlJwbRWK/wnQxcgfynnqE6WjxwKTBcx/aWFDRsJG/9Zb3jiA/pxOa2bIQ==, tarball: file:projects/bible-cli-tools.tgz}
+  file:projects/bible-cli-tools.tgz_typescript@4.3.5:
+    resolution: {integrity: sha512-vBAb0Fznft088cYSf0ih3kqz8sOfSkqg6CnlBL501u9wRUrjbuYUL4cXn6tETMhtS0yYWlMW4T8QEApmd6Jb/w==, tarball: file:projects/bible-cli-tools.tgz}
+    id: file:projects/bible-cli-tools.tgz
     name: '@rush-temp/bible-cli-tools'
     version: 0.0.0
     dependencies:
       '@types/node': 12.12.6
+      ts-node: 10.9.1_70d6492c0feb1eb5d83e62cce7c43fd5
+    transitivePeerDependencies:
+      - '@swc/core'
+      - '@swc/wasm'
+      - typescript
     dev: false
 
   file:projects/bible-components.tgz_@babel+core@7.15.0:
