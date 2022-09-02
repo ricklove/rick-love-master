@@ -21,8 +21,10 @@
 - Visualize Structure
   - [x] Colorize common words
   - [x] Break on punctionation and transition words
-  - [ ] Emoji for common words
-  - [ ] Vertical text
+  - [x] Emoji for common words
+    - Helpful!
+  - [x] Vertical text
+    - Doesn't help
   - [ ] Crossword puzzle building
 - Progress Tracking
   - [x] Anonymous User Storage

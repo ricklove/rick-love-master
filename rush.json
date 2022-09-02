@@ -573,6 +573,10 @@
       "packageName": "@ricklove/nft-api-server",
       "projectFolder": "projects/art/nft-api-server"
     },
+    {
+      "packageName": "@ricklove/bible-cli-tools",
+      "projectFolder": "projects/bible/bible-cli-tools"
+    },
     // Bible
     {
       "packageName": "@ricklove/bible-components",
