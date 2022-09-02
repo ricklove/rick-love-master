@@ -12,5 +12,5 @@ export const getHolySarcasticPhrase = (selfRighteousnessLevel: number) => {
     return `You art not that holy!`;
   }
 
-  return `I am 100x more righeteous than thou art!`;
+  return `I'm 1,000,000x as humble as thou art!`;
 };
