@@ -22,21 +22,25 @@ export const createBibleHeatmapData = (
       return out;
     }, 0);
 
-  const VERTICAL_HEIGHT = 40;
-  const EXTRA_VERTICALS_PER_CHAPTER = 1;
+  const DEFAULT_WIDTH = 160;
+  const VERTICAL_HEIGHT = 12;
+  const VERTICAL_GAP = 1;
+  const EXTRA_GAP_PER_CHAPTER = 0;
+  const EXTRA_VERTICALS_PER_BOOK = 2;
 
-  const totalVerseVerticals = verseCounts.books
-    .flatMap((x) => x.chapters)
-    .reduce((out, x) => {
-      out += Math.ceil(x / VERTICAL_HEIGHT) + EXTRA_VERTICALS_PER_CHAPTER;
-      return out;
-    }, 0);
+  const totalVerseVerticals = Math.ceil(
+    verseCounts.books
+      .flatMap((x) => x.chapters)
+      .reduce((out, x) => {
+        out += x + EXTRA_GAP_PER_CHAPTER;
+        return out;
+      }, 0) / VERTICAL_HEIGHT,
+  );
 
   // Book name = 8
-  const EXTRA_VERTICALS_PER_BOOK = 10;
   const totalVerticals = totalVerseVerticals + verseCounts.books.length * EXTRA_VERTICALS_PER_BOOK;
-  const w = options?.width ?? 350;
-  const h = Math.ceil(totalVerticals / w) * VERTICAL_HEIGHT;
+  const w = options?.width ?? DEFAULT_WIDTH;
+  const h = Math.ceil(totalVerticals / w) * (VERTICAL_HEIGHT + VERTICAL_GAP);
   const data = new Uint8ClampedArray(4 * w * h);
 
   // Set Background
@@ -44,9 +48,9 @@ export const createBibleHeatmapData = (
     for (let y = 0; y < h; y++) {
       const iPixel = 4 * (y * w + x);
 
-      data[iPixel + 0] = 0xff;
-      data[iPixel + 1] = 0xff;
-      data[iPixel + 2] = 0xff;
+      data[iPixel + 0] = 0x00;
+      data[iPixel + 1] = 0x00;
+      data[iPixel + 2] = 0x00;
       data[iPixel + 3] = 0xff;
     }
   }
@@ -57,7 +61,7 @@ export const createBibleHeatmapData = (
     [r, g, b, a]: [r: number, g: number, b: number, a: number],
   ) => {
     const x = iVertical % w;
-    const y = Math.floor(iVertical / w) * VERTICAL_HEIGHT + yInVertical;
+    const y = Math.floor(iVertical / w) * (VERTICAL_HEIGHT + VERTICAL_GAP) + yInVertical;
     const iPixel = 4 * (y * w + x);
 
     data[iPixel + 0] = r;
@@ -69,27 +73,33 @@ export const createBibleHeatmapData = (
   let iVertical = 0;
 
   for (const b of verseCounts.books) {
+    if ((iVertical % w) + EXTRA_VERTICALS_PER_BOOK * 2 > w) {
+      iVertical += w - (iVertical % w);
+    }
+
     // TODO: Paint book name
-    for (let v = 0; v < EXTRA_VERTICALS_PER_BOOK; v++) {
+    for (let v = 0; v <= EXTRA_VERTICALS_PER_BOOK; v++) {
       iVertical++;
       for (let v = 0; v < VERTICAL_HEIGHT; v++) {
         const yInVertical = v % VERTICAL_HEIGHT;
-        drawPixel(iVertical, yInVertical, [0xee, 0xee, 0xee, 0xff]);
+        drawPixel(iVertical, yInVertical, [0x00, 0x00, 0x00, 0xff]);
       }
     }
+
+    let yInVertical = 0;
 
     for (const chapterVerses of b.chapters) {
       // Draw chapter
       for (let v = 0; v < chapterVerses; v++) {
-        if (v % VERTICAL_HEIGHT === 0) {
+        if (yInVertical >= VERTICAL_HEIGHT) {
           iVertical++;
+          yInVertical -= VERTICAL_HEIGHT;
         }
 
-        const yInVertical = v % VERTICAL_HEIGHT;
-        drawPixel(iVertical, yInVertical, [0, 0, 0, 0xff]);
+        drawPixel(iVertical, yInVertical, Math.random() > 0.75 ? [0x00, 0x00, 0xff, 0xff] : [0xff, 0x00, 0x00, 0xff]);
+        yInVertical++;
       }
-      // Draw chapter right padding
-      iVertical += EXTRA_VERTICALS_PER_CHAPTER;
+      yInVertical += EXTRA_GAP_PER_CHAPTER;
     }
   }
 
