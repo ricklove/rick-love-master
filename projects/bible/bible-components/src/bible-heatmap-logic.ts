@@ -2,10 +2,17 @@ import { BibleAnalysisVerseCountDocument } from '@ricklove/bible-types';
 
 export type BibleHeatmapData = {
   imageData: ImageData;
+  averageScoreRatio: number;
 };
 
 export const createBibleHeatmapData = (
   verseCounts: BibleAnalysisVerseCountDocument,
+  verseState: {
+    bookName: string;
+    chapterNumber: number;
+    verseNumber: number;
+    scoreRatio: number;
+  }[],
   options?: { width?: number },
 ): BibleHeatmapData => {
   const totalChapters = verseCounts.books
@@ -70,9 +77,16 @@ export const createBibleHeatmapData = (
     data[iPixel + 3] = a;
   };
 
+  let sumOverallScore = 0;
   let iVertical = 0;
 
+  const verseStateMap = new Map(
+    verseState.map((x) => [`${x.bookName}:${x.chapterNumber}:${x.verseNumber}`, x.scoreRatio]),
+  );
+
   for (const b of verseCounts.books) {
+    let sumBookScore = 0;
+
     if ((iVertical % w) + EXTRA_VERTICALS_PER_BOOK * 2 > w) {
       iVertical += w - (iVertical % w);
     }
@@ -88,7 +102,9 @@ export const createBibleHeatmapData = (
 
     let yInVertical = 0;
 
-    for (const chapterVerses of b.chapters) {
+    for (let c = 0; c < b.chapters.length; c++) {
+      const chapterVerses = b.chapters[c];
+
       // Draw chapter
       for (let v = 0; v < chapterVerses; v++) {
         if (yInVertical >= VERTICAL_HEIGHT) {
@@ -96,17 +112,29 @@ export const createBibleHeatmapData = (
           yInVertical -= VERTICAL_HEIGHT;
         }
 
-        drawPixel(iVertical, yInVertical, Math.random() > 0.99 ? [0x00, 0xff, 0x00, 0xff] : [0xff, 0x00, 0x00, 0xff]);
+        const scoreRatio = verseStateMap.get(`${b.bookName}:${c}:${v}`) ?? 0;
+        sumBookScore += scoreRatio;
+        drawPixel(iVertical, yInVertical, [
+          Math.floor(0xff * Math.min(1, Math.max(0, 1 - scoreRatio * 2))),
+          Math.floor(0xff * Math.min(1, Math.max(0, scoreRatio * 2 - 1))),
+          Math.floor(0xff * Math.min(1, Math.max(0, 1 - Math.abs(1 - scoreRatio * 2)))),
+          0xff,
+        ]);
         yInVertical++;
       }
       yInVertical += EXTRA_GAP_PER_CHAPTER;
     }
+
+    sumOverallScore += sumBookScore;
   }
 
   const averageVersePerChapter = Math.ceil(totalVerses / totalChapters);
   console.log(`createBibleHeatmapData`, { w, h, totalChapters, totalVerses, totalVerticals, averageVersePerChapter });
 
+  const averageScoreRatio = sumOverallScore / totalVerses;
+
   return {
     imageData: new ImageData(data, w, h),
+    averageScoreRatio,
   };
 };

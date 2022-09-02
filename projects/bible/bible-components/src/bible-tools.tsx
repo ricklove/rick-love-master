@@ -23,8 +23,8 @@ export const BibleToolsRoot = ({ config }: { config: BibleToolsConfig }) => {
   return (
     <>
       <div style={{ background: `#333333`, color: `#FFFFFF` }}>
-        <button onClick={() => setTab(`reader`)}>reader</button>
-        <button onClick={() => setTab(`heatmap`)}>Heatmap</button>
+        <button onClick={() => setTab(`reader`)}>Read & Memorize</button>
+        <button onClick={() => setTab(`heatmap`)}>Progress</button>
       </div>
       {tab === `reader` && (
         <>
