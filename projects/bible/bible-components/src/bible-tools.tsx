@@ -1,4 +1,5 @@
 import React, { useCallback, useState } from 'react';
+import { BibleHeatmapView } from './bible-heatmap';
 import { BibleMemoryHost } from './bible-memory-proto';
 import { MemoryPassage } from './bible-memory-types';
 import { BiblePassageLoader, BibleReaderView } from './bible-reader';
@@ -7,6 +8,8 @@ import { UserProgressConfig } from './user-data';
 
 export type BibleToolsConfig = BibleServiceConfig & UserProgressConfig;
 export const BibleToolsRoot = ({ config }: { config: BibleToolsConfig }) => {
+  const [tab, setTab] = useState(`reader` as 'reader' | 'heatmap');
+
   const [passage, setPassage] = useState(undefined as undefined | BiblePassage);
   const changePassage = useCallback((value: BiblePassage) => {
     setPassage(value);
@@ -19,13 +22,26 @@ export const BibleToolsRoot = ({ config }: { config: BibleToolsConfig }) => {
 
   return (
     <>
-      <BiblePassageLoader config={config} onPassageLoaded={changePassage} />
-      {memoryPassages && (
-        <div style={{ background: `#000000`, minHeight: `100vh` }}>
-          <BibleMemoryHost passages={memoryPassages} />
-        </div>
+      <div style={{ background: `#333333`, color: `#FFFFFF` }}>
+        <button onClick={() => setTab(`reader`)}>reader</button>
+        <button onClick={() => setTab(`heatmap`)}>Heatmap</button>
+      </div>
+      {tab === `reader` && (
+        <>
+          <BiblePassageLoader config={config} onPassageLoaded={changePassage} />
+          {memoryPassages && (
+            <div style={{ background: `#000000`, minHeight: `100vh` }}>
+              <BibleMemoryHost passages={memoryPassages} />
+            </div>
+          )}
+          {!memoryPassages && passage && <BibleReaderView passage={passage} onStartMemorize={startMemorize} />}
+        </>
       )}
-      {!memoryPassages && passage && <BibleReaderView passage={passage} onStartMemorize={startMemorize} />}
+      {tab === `heatmap` && (
+        <>
+          <BibleHeatmapView />
+        </>
+      )}
     </>
   );
 };
