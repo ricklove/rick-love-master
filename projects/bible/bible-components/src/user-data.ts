@@ -17,8 +17,18 @@ const createStorageAccess = <T>(storageName: string) => {
 };
 
 export type UserProgressConfig = UploadApiConfig;
-export type UserProgressService = ReturnType<typeof createUserProgressService>;
-export const createUserProgressService = <T>(config: UserProgressConfig, options: { storageName: string }) => {
+export type UserProgressService<T> = {
+  getUserData: () => T | undefined;
+  setUserData: (value: T) => void;
+  saveUserProgress: () => Promise<void>;
+  loadUserProgress: () => Promise<void>;
+  createShareCode: (args?: { temporaryShareCode?: boolean }) => Promise<{ shareCode: string }>;
+  loadShareCode: (args: { shareCode: string }) => Promise<void>;
+};
+export const createUserProgressService = <T>(
+  config: UserProgressConfig,
+  options: { storageName: string },
+): UserProgressService<T> => {
   let isSetup = false;
   let isRunningSetup = false;
 

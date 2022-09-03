@@ -28,9 +28,9 @@
   - [ ] Crossword puzzle building
 - Progress Tracking
   - [x] Anonymous User Storage
-  - [ ] Bible heatmap
+  - [x] Bible heatmap
   - [ ] Data to track
     - Time Last read
     - Time Last memorized
-    - Memorization Average time per word
+    - [x] Memorization Average time per word
       - Adjust for hints

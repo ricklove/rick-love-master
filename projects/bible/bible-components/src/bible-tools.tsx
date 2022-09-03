@@ -5,6 +5,7 @@ import { MemoryPassage } from './bible-memory-types';
 import { BiblePassageLoader, BibleReaderView } from './bible-reader';
 import { BiblePassage, BibleServiceConfig } from './bible-service';
 import { createUserProgressService, UserProgressConfig } from './user-data';
+import { UserSettings } from './user-settings';
 
 type BibleToolsUserProgress = {
   books: {
@@ -62,6 +63,9 @@ export const BibleToolsRoot = ({ config }: { config: BibleToolsConfig }) => {
     }
 
     userProgressService.current.setUserData(s);
+
+    // eslint-disable-next-line @typescript-eslint/no-floating-promises
+    userProgressService.current.saveUserProgress();
   }, []);
 
   const [passage, setPassage] = useState(undefined as undefined | BiblePassage);
@@ -74,11 +78,18 @@ export const BibleToolsRoot = ({ config }: { config: BibleToolsConfig }) => {
     setMemoryPassages(passages);
   }, []);
 
+  const [, setReloadId] = useState(0);
+  const reload = useCallback(() => {
+    setReloadId((s) => s + 1);
+  }, []);
+
   return (
     <>
-      <div style={{ background: `#333333`, color: `#FFFFFF` }}>
+      <div style={{ display: `flex`, flexDirection: `row`, flexWrap: `wrap`, background: `#333333`, color: `#FFFFFF` }}>
         <button onClick={() => setTab(`reader`)}>Read & Memorize</button>
         <button onClick={() => setTab(`heatmap`)}>Progress</button>
+        <div style={{ flex: 1 }} />
+        <UserSettings userProgressServiceRef={userProgressService} onChange={reload} />
       </div>
       {tab === `reader` && (
         <>
