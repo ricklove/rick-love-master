@@ -2,6 +2,7 @@ import React, { useMemo, useState } from 'react';
 import { useCallback } from 'react';
 import { C } from '@ricklove/react-controls';
 import { useAsyncWorker } from '@ricklove/utils-react';
+import { createMemoryPassagesFromBible } from './bible-memory-passage';
 import { MemoryPassage } from './bible-memory-types';
 import { BiblePassage, BibleServiceConfig, createBibleService } from './bible-service';
 
@@ -89,21 +90,8 @@ const BiblePassage = ({
   section: BiblePassage['sections'][number];
   onStartMemorize?: (passages: MemoryPassage[]) => void;
 }) => {
-  const startMemorize = useCallback(() => {
-    const sectionsToMemorize = passage.sections.slice(section.index);
-    onStartMemorize?.(
-      sectionsToMemorize.map((s) => ({
-        title: `${s.passageReference}`,
-        //title: `${s.passageReference} - ${s.header}`,
-        text: `${s.passageReference} - ${s.header}\n\n${s.verses.map((v) => v.text).join(``)}`,
-        lang: `en-US`,
-        passageRange: {
-          bookName: s.bookName,
-          start: { ...s.verses[0], text: `` },
-          end: { ...s.verses[s.verses.length - 1], text: `` },
-        },
-      })),
-    );
+  const startMemorizeSection = useCallback(() => {
+    onStartMemorize?.(createMemoryPassagesFromBible({ passage, startSection: section }));
   }, [section]);
 
   return (
@@ -111,14 +99,48 @@ const BiblePassage = ({
       <h3 style={{ marginTop: 32, fontWeight: `bold` }}>
         {section.header}
         <span style={{ fontSize: `0.7em` }}> {section.passageReference}</span>
-        {onStartMemorize && <button onClick={startMemorize}>Memorize</button>}
+        {onStartMemorize && (
+          <button
+            style={{ margin: 0, padding: 0, background: `unset`, border: `unset` }}
+            onClick={startMemorizeSection}
+          >
+            🧠
+          </button>
+        )}
       </h3>
       <div style={{ whiteSpace: `pre-wrap` }}>
-        {section.verses
-          //.map((x) => `[${x.chapterNumber}:${x.verseNumber}]${x.text}`)
-          .map((x) => x.text)
-          .join(``)}
+        {section.verses.map((x) => (
+          <BibleVerse
+            key={`${x.chapterNumber}:${x.verseNumber}`}
+            passage={passage}
+            verse={x}
+            onStartMemorize={onStartMemorize}
+          />
+        ))}
       </div>
+    </>
+  );
+};
+
+const BibleVerse = ({
+  passage,
+  verse,
+  onStartMemorize,
+}: {
+  passage: BiblePassage;
+  verse: BiblePassage['sections'][number]['verses'][number];
+  onStartMemorize?: (passages: MemoryPassage[]) => void;
+}) => {
+  const startMemorizeVerse = useCallback(() => {
+    onStartMemorize?.(createMemoryPassagesFromBible({ passage, startVerse: verse }));
+  }, [verse]);
+
+  return (
+    <>
+      <button style={{ margin: 0, padding: 0, background: `unset`, border: `unset` }} onClick={startMemorizeVerse}>
+        🧠
+      </button>
+      <span>{verse.text}</span>
     </>
   );
 };

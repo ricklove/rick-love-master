@@ -102,22 +102,26 @@ export const createBibleHeatmapData = (
 
     let yInVertical = 0;
 
-    for (let c = 0; c < b.chapters.length; c++) {
-      const chapterVerses = b.chapters[c];
+    for (let iChapter = 0; iChapter < b.chapters.length; iChapter++) {
+      const chapterVerses = b.chapters[iChapter];
 
       // Draw chapter
-      for (let v = 0; v < chapterVerses; v++) {
+      for (let iVerse = 0; iVerse < chapterVerses; iVerse++) {
         if (yInVertical >= VERTICAL_HEIGHT) {
           iVertical++;
           yInVertical -= VERTICAL_HEIGHT;
         }
 
-        const scoreRatio = verseStateMap.get(`${b.bookName}:${c}:${v}`) ?? 0;
+        const scoreRatio = verseStateMap.get(`${b.bookName}:${iChapter + 1}:${iVerse + 1}`) ?? 0;
         sumBookScore += scoreRatio;
+
+        // Boost any progress away from default
+        const scoreRatioQuantized = scoreRatio > 0 ? 0.25 + 0.75 * (Math.round(scoreRatio * 5) / 5) : 0;
+
         drawPixel(iVertical, yInVertical, [
-          Math.floor(0xff * Math.min(1, Math.max(0, 1 - scoreRatio * 2))),
-          Math.floor(0xff * Math.min(1, Math.max(0, scoreRatio * 2 - 1))),
-          Math.floor(0xff * Math.min(1, Math.max(0, 1 - Math.abs(1 - scoreRatio * 2)))),
+          Math.floor(0xff * Math.min(1, Math.max(0, 1 - scoreRatioQuantized * 2))),
+          Math.floor(0xff * Math.min(1, Math.max(0, scoreRatioQuantized * 2 - 1))),
+          Math.floor(0xff * Math.min(1, Math.max(0, 1 - Math.abs(1 - scoreRatioQuantized * 2)))),
           0xff,
         ]);
         yInVertical++;
