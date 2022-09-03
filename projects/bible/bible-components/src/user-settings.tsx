@@ -13,7 +13,7 @@ export const UserSettings = <T extends Record<string, unknown>>({
   const toggleExpanded = useCallback(() => setExpanded((s) => !s), []);
 
   const { loading, error, doWork } = useAsyncWorker();
-  const [progressCode, setProgressCode] = useState(``);
+  // const [progressCode, setProgressCode] = useState(``);
   const [progressUrl, setProgressUrl] = useState(``);
 
   useEffect(() => {
@@ -41,9 +41,9 @@ export const UserSettings = <T extends Record<string, unknown>>({
     }
 
     doWork(async (stopIfObsolete) => {
-      const result = await userProgressServiceRef.current.createShareCode({ temporaryShareCode: true });
-      stopIfObsolete();
-      setProgressCode(result.shareCode);
+      // const result = await userProgressServiceRef.current.createShareCode({ temporaryShareCode: true });
+      // stopIfObsolete();
+      // setProgressCode(result.shareCode);
 
       const result2 = await userProgressServiceRef.current.createShareCode({ temporaryShareCode: false });
       stopIfObsolete();
@@ -51,16 +51,16 @@ export const UserSettings = <T extends Record<string, unknown>>({
     });
   }, [expanded]);
 
-  const changeProgressCode = useCallback(({ target: { value } }: { target: { value: string } }) => {
-    setProgressCode(value);
-  }, []);
-  const saveProgressCode = useCallback(() => {
-    doWork(async (stopIfObsolete) => {
-      await userProgressServiceRef.current.loadShareCode({ shareCode: progressCode });
-      stopIfObsolete();
-      onChange?.(userProgressServiceRef.current.getUserData());
-    });
-  }, [progressCode]);
+  // const changeProgressCode = useCallback(({ target: { value } }: { target: { value: string } }) => {
+  //   setProgressCode(value);
+  // }, []);
+  // const saveProgressCode = useCallback(() => {
+  //   doWork(async (stopIfObsolete) => {
+  //     await userProgressServiceRef.current.loadShareCode({ shareCode: progressCode });
+  //     stopIfObsolete();
+  //     onChange?.(userProgressServiceRef.current.getUserData());
+  //   });
+  // }, [progressCode]);
 
   const copyProgressUrl = useCallback(() => {
     (async () => await navigator.clipboard.writeText(progressUrl))();
@@ -93,7 +93,7 @@ export const UserSettings = <T extends Record<string, unknown>>({
               Save
             </button>
           </div> */}
-          <div
+          {/* <div
             style={{
               display: `flex`,
               flexDirection: `row`,
@@ -110,7 +110,7 @@ export const UserSettings = <T extends Record<string, unknown>>({
             <button style={{ marginLeft: 4, padding: 4, alignSelf: `stretch` }} onClick={saveProgressCode}>
               Save
             </button>
-          </div>
+          </div> */}
           <div
             style={{
               display: `flex`,
@@ -128,6 +128,15 @@ export const UserSettings = <T extends Record<string, unknown>>({
             <button style={{ marginLeft: 4, padding: 4, alignSelf: `stretch` }} onClick={copyProgressUrl}>
               Copy
             </button>
+          </div>
+          <div style={{ margin: 4, padding: 4, background: `#CCCCCC`, color: `#000000` }}>
+            <div>
+              Instructions: Copy this url and open on a different device - now your progress will by synced between
+              those devices.
+            </div>
+            <div style={{ color: `#880000` }}>
+              Do not share this url with others or their progress with by synced with yours.
+            </div>
           </div>
         </div>
       )}
