@@ -4,7 +4,7 @@ import { C } from '@ricklove/react-controls';
 import { useAsyncWorker } from '@ricklove/utils-react';
 import { createMemoryPassagesFromBible } from './bible-memory-passage';
 import { MemoryPassage } from './bible-memory-types';
-import { BiblePassage, BibleServiceConfig, createBibleService } from './bible-service';
+import { BiblePassage, BiblePassageRange, BibleServiceConfig, createBibleService } from './bible-service';
 
 export const BiblePassageLoader = ({
   config,
@@ -47,9 +47,11 @@ export const BiblePassageLoader = ({
 
 export const BibleReaderView = ({
   passage,
+  onPassageRead,
   onStartMemorize,
 }: {
   passage: BiblePassage;
+  onPassageRead: (passageRange: BiblePassageRange) => void;
   onStartMemorize?: (passages: MemoryPassage[]) => void;
 }) => {
   const openExternalUrl = useCallback(() => {
@@ -73,10 +75,18 @@ export const BibleReaderView = ({
             </h2>
           </div>
           {passage?.sections.map((s) => (
-            <BiblePassage key={s.key} passage={passage} section={s} onStartMemorize={onStartMemorize} />
+            <BiblePassage
+              key={s.key}
+              passage={passage}
+              section={s}
+              onPassageRead={onPassageRead}
+              onStartMemorize={onStartMemorize}
+            />
           ))}
         </div>
       </div>
+      {/* Ensure reader can scroll to top of screen */}
+      <div style={{ height: `100vh`, background: `#CCCCCC` }} />
     </>
   );
 };
@@ -84,21 +94,36 @@ export const BibleReaderView = ({
 const BiblePassage = ({
   passage,
   section,
+  onPassageRead,
   onStartMemorize,
 }: {
   passage: BiblePassage;
   section: BiblePassage['sections'][number];
+  onPassageRead: (passageRange: BiblePassageRange) => void;
   onStartMemorize?: (passages: MemoryPassage[]) => void;
 }) => {
   const startMemorizeSection = useCallback(() => {
     onStartMemorize?.(createMemoryPassagesFromBible({ passage, startSection: section }));
   }, [section]);
 
+  const [isRead, setIsRead] = useState(false);
+  const markRead = useCallback(() => {
+    setIsRead(true);
+    onPassageRead({
+      bookName: passage.bookName,
+      start: section.verses[0],
+      end: section.verses[section.verses.length - 1],
+    });
+  }, [passage, section]);
+
   return (
     <>
       <h3 style={{ marginTop: 32, fontWeight: `bold` }}>
         {section.header}
         <span style={{ fontSize: `0.7em` }}> {section.passageReference}</span>
+        <button style={{ width: 24, margin: 0, padding: 0, background: `unset`, border: `unset` }} onClick={markRead}>
+          {isRead ? `📖` : `📕`}
+        </button>
         {onStartMemorize && (
           <button
             style={{ margin: 0, padding: 0, background: `unset`, border: `unset` }}
@@ -114,6 +139,7 @@ const BiblePassage = ({
             key={`${x.chapterNumber}:${x.verseNumber}`}
             passage={passage}
             verse={x}
+            onPassageRead={onPassageRead}
             onStartMemorize={onStartMemorize}
           />
         ))}
@@ -125,21 +151,47 @@ const BiblePassage = ({
 const BibleVerse = ({
   passage,
   verse,
+  onPassageRead,
   onStartMemorize,
 }: {
   passage: BiblePassage;
   verse: BiblePassage['sections'][number]['verses'][number];
+  onPassageRead: (passageRange: BiblePassageRange) => void;
   onStartMemorize?: (passages: MemoryPassage[]) => void;
 }) => {
+  const [isRead, setIsRead] = useState(false);
   const startMemorizeVerse = useCallback(() => {
     onStartMemorize?.(createMemoryPassagesFromBible({ passage, startVerse: verse }));
   }, [verse]);
 
+  const markRead = useCallback(() => {
+    setIsRead(true);
+    onPassageRead({
+      bookName: passage.bookName,
+      start: {
+        chapterNumber: verse.chapterNumber,
+        verseNumber: verse.verseNumber,
+      },
+      end: {
+        chapterNumber: verse.chapterNumber,
+        verseNumber: verse.verseNumber,
+      },
+    });
+  }, [passage, verse]);
+
   return (
     <>
-      <button style={{ margin: 0, padding: 0, background: `unset`, border: `unset` }} onClick={startMemorizeVerse}>
-        🧠
+      <button style={{ width: 24, margin: 0, padding: 0, background: `unset`, border: `unset` }} onClick={markRead}>
+        {isRead ? `📖` : `📕`}
       </button>
+      <C.LazyComponent onLoad={markRead} options={{ onscreenDistanceFromTopLoadHeight: 200 }}>
+        <span />
+      </C.LazyComponent>
+      {onStartMemorize && (
+        <button style={{ margin: 0, padding: 0, background: `unset`, border: `unset` }} onClick={startMemorizeVerse}>
+          🧠
+        </button>
+      )}
       <span>{verse.text}</span>
     </>
   );

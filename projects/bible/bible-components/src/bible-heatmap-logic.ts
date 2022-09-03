@@ -11,7 +11,9 @@ export const createBibleHeatmapData = (
     bookName: string;
     chapterNumber: number;
     verseNumber: number;
-    scoreRatio: number;
+    scoreRatioA: number;
+    scoreRatioB?: number;
+    scoreRatioC?: number;
   }[],
   options?: { width?: number },
 ): BibleHeatmapData => {
@@ -33,6 +35,7 @@ export const createBibleHeatmapData = (
   const VERTICAL_HEIGHT = 12;
   const VERTICAL_GAP = 1;
   const EXTRA_GAP_PER_CHAPTER = 0;
+  const EXTRA_GAP_BEFORE_BOOK = 2;
   const EXTRA_VERTICALS_PER_BOOK = 2;
 
   const totalVerseVerticals = Math.ceil(
@@ -55,9 +58,9 @@ export const createBibleHeatmapData = (
     for (let y = 0; y < h; y++) {
       const iPixel = 4 * (y * w + x);
 
-      data[iPixel + 0] = 0x00;
-      data[iPixel + 1] = 0x00;
-      data[iPixel + 2] = 0x00;
+      data[iPixel + 0] = 0xcc;
+      data[iPixel + 1] = 0xcc;
+      data[iPixel + 2] = 0xcc;
       data[iPixel + 3] = 0xff;
     }
   }
@@ -80,23 +83,29 @@ export const createBibleHeatmapData = (
   let sumOverallScore = 0;
   let iVertical = 0;
 
-  const verseStateMap = new Map(
-    verseState.map((x) => [`${x.bookName}:${x.chapterNumber}:${x.verseNumber}`, x.scoreRatio]),
-  );
+  const verseStateMap = new Map(verseState.map((x) => [`${x.bookName}:${x.chapterNumber}:${x.verseNumber}`, x]));
 
   for (const b of verseCounts.books) {
     let sumBookScore = 0;
 
-    if ((iVertical % w) + EXTRA_VERTICALS_PER_BOOK * 2 > w) {
+    // Don't start close to edge
+    if ((iVertical % w) + (EXTRA_GAP_BEFORE_BOOK + EXTRA_VERTICALS_PER_BOOK) * 2 > w) {
       iVertical += w - (iVertical % w);
+    } else {
+      iVertical += EXTRA_GAP_BEFORE_BOOK;
     }
 
     // TODO: Paint book name
+    const bookEdgeColor = getDefaultBookColor(b);
+    bookEdgeColor[0] += 0x88;
+    bookEdgeColor[1] += 0x88;
+    bookEdgeColor[2] += 0x88;
+
     for (let v = 0; v <= EXTRA_VERTICALS_PER_BOOK; v++) {
       iVertical++;
       for (let v = 0; v < VERTICAL_HEIGHT; v++) {
         const yInVertical = v % VERTICAL_HEIGHT;
-        drawPixel(iVertical, yInVertical, [0x00, 0x00, 0x00, 0xff]);
+        drawPixel(iVertical, yInVertical, bookEdgeColor);
       }
     }
 
@@ -112,18 +121,25 @@ export const createBibleHeatmapData = (
           yInVertical -= VERTICAL_HEIGHT;
         }
 
-        const scoreRatio = verseStateMap.get(`${b.bookName}:${iChapter + 1}:${iVerse + 1}`) ?? 0;
-        sumBookScore += scoreRatio;
+        const {
+          scoreRatioA = 0,
+          scoreRatioB = 0,
+          scoreRatioC = 0,
+        } = verseStateMap.get(`${b.bookName}:${iChapter + 1}:${iVerse + 1}`) ?? {};
 
-        // Boost any progress away from default
-        const scoreRatioQuantized = scoreRatio > 0 ? 0.25 + 0.75 * (Math.round(scoreRatio * 5) / 5) : 0;
+        if (scoreRatioA || scoreRatioB || scoreRatioC) {
+          sumBookScore += Math.max(scoreRatioA, scoreRatioB, scoreRatioC);
 
-        drawPixel(iVertical, yInVertical, [
-          Math.floor(0xff * Math.min(1, Math.max(0, 1 - scoreRatioQuantized * 2))),
-          Math.floor(0xff * Math.min(1, Math.max(0, scoreRatioQuantized * 2 - 1))),
-          Math.floor(0xff * Math.min(1, Math.max(0, 1 - Math.abs(1 - scoreRatioQuantized * 2)))),
-          0xff,
-        ]);
+          // Boost any progress away from default
+          drawPixel(iVertical, yInVertical, [
+            Math.floor(0xff * Math.min(1, Math.max(0, Math.round((scoreRatioB > 0 ? 0 : scoreRatioA) * 5) / 5))),
+            Math.floor(0xff * Math.min(1, Math.max(0, Math.round((scoreRatioC > 0 ? 0 : scoreRatioB) * 5) / 5))),
+            Math.floor(0xff * Math.min(1, Math.max(0, Math.round(scoreRatioC * 5) / 5))),
+            0xff,
+          ]);
+        } else {
+          drawPixel(iVertical, yInVertical, getDefaultBookColor(b));
+        }
         yInVertical++;
       }
       yInVertical += EXTRA_GAP_PER_CHAPTER;
@@ -141,4 +157,54 @@ export const createBibleHeatmapData = (
     imageData: new ImageData(data, w, h),
     averageScoreRatio,
   };
+};
+
+const getDefaultBookColor = ({
+  bookNumber,
+}: {
+  bookName: string;
+  bookNumber: number;
+}): [number, number, number, number] => {
+  if (bookNumber <= 5) {
+    return [0x11, 0x00, 0x00, 0xff];
+  }
+  if (bookNumber <= 17) {
+    return [0x00, 0x00, 0x11, 0xff];
+  }
+  if (bookNumber <= 22) {
+    return [0x00, 0x11, 0x00, 0xff];
+  }
+
+  if (bookNumber <= 27) {
+    return [0x11, 0x00, 0x11, 0xff];
+  }
+  if (bookNumber <= 39) {
+    return [0x11, 0x11, 0x00, 0xff];
+  }
+
+  if (bookNumber <= 43) {
+    return [0x17, 0x00, 0x00, 0xff];
+  }
+  if (bookNumber <= 44) {
+    return [0x00, 0x00, 0x17, 0xff];
+  }
+  if (bookNumber <= 53) {
+    return [0x00, 0x17, 0x00, 0xff];
+  }
+
+  if (bookNumber <= 57) {
+    return [0x00, 0x17, 0x17, 0xff];
+  }
+  if (bookNumber <= 58) {
+    return [0x17, 0x00, 0x17, 0xff];
+  }
+  if (bookNumber <= 65) {
+    return [0x17, 0x17, 0x00, 0xff];
+  }
+
+  if (bookNumber <= 66) {
+    return [0x17, 0x00, 0x00, 0xff];
+  }
+
+  return [0x00, 0x00, 0x00, 0xff];
 };

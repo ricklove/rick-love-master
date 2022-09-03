@@ -25,6 +25,17 @@ export type BiblePassage = {
     long: string;
   };
 };
+export type BiblePassageRange = {
+  bookName: string;
+  start: {
+    chapterNumber: number;
+    verseNumber: number;
+  };
+  end: {
+    chapterNumber: number;
+    verseNumber: number;
+  };
+};
 
 export const createBibleService = (config: BibleServiceConfig) => {
   return {

@@ -39,7 +39,15 @@ window.addEventListener(`load`, () => {
 
 let nextLazyComponentId = 0;
 
-export const LazyComponent = ({ children, onLoad }: { children: ReactNode; onLoad?: () => void }) => {
+export const LazyComponent = ({
+  children,
+  onLoad,
+  options,
+}: {
+  children: ReactNode;
+  onLoad?: () => void;
+  options?: { offscreenPreloadHeight?: number; onscreenDistanceFromTopLoadHeight?: number };
+}) => {
   const placeholderRef = useRef(null as null | HTMLDivElement);
   const [shouldLoad, setShouldLoad] = useState(false);
   const isDoneRef = useRef(false);
@@ -68,10 +76,22 @@ export const LazyComponent = ({ children, onLoad }: { children: ReactNode; onLoa
       }
 
       const divRect = placeholder.getBoundingClientRect();
-      const screenBottomExact = window.innerHeight;
-      const OFFSCREEN_LOAD_HEIGHT = 100;
-      const screenBottom = screenBottomExact + OFFSCREEN_LOAD_HEIGHT;
-      const isOnScreen = divRect.top < screenBottom && divRect.bottom > 0 - OFFSCREEN_LOAD_HEIGHT;
+      const getIsOnScreen = () => {
+        const { offscreenPreloadHeight, onscreenDistanceFromTopLoadHeight } = options ?? {};
+        if (onscreenDistanceFromTopLoadHeight) {
+          const ONSCREEN_LOAD_HEIGHT = onscreenDistanceFromTopLoadHeight;
+          const screenTopExact = 0;
+          const screenTop = screenTopExact + ONSCREEN_LOAD_HEIGHT;
+          return divRect.top < screenTop && divRect.bottom > 0 - ONSCREEN_LOAD_HEIGHT;
+        }
+
+        const OFFSCREEN_LOAD_HEIGHT = offscreenPreloadHeight ?? 100;
+        const screenBottomExact = window.innerHeight;
+        const screenBottom = screenBottomExact + OFFSCREEN_LOAD_HEIGHT;
+        return divRect.top < screenBottom && divRect.bottom > 0 - OFFSCREEN_LOAD_HEIGHT;
+      };
+
+      const isOnScreen = getIsOnScreen();
 
       if (!isOnScreen) {
         return false;
@@ -104,7 +124,11 @@ export const LazyComponent = ({ children, onLoad }: { children: ReactNode; onLoa
   // console.log('LazyComponent RENDER', {lazyComponentId});
   return (
     <>
-      {!shouldLoad && <div ref={placeholderRef} style={{ minWidth: 100, minHeight: 100 }} />}
+      {!shouldLoad && (
+        <div style={{ display: `inline-block`, position: `relative` }}>
+          <div ref={placeholderRef} style={{ position: `absolute`, minWidth: 100, minHeight: 100 }} />
+        </div>
+      )}
       {shouldLoad && children}
     </>
   );

@@ -10,7 +10,9 @@ export const BibleHeatmapView = ({
     bookName: string;
     chapterNumber: number;
     verseNumber: number;
-    scoreRatio: number;
+    scoreRatioA: number;
+    scoreRatioB?: number;
+    scoreRatioC?: number;
   }[];
 }) => {
   const [selfRighteousness, setSelfRighteousness] = useState({ level: 0, phrase: `Unclean!` });
@@ -58,7 +60,7 @@ export const BibleHeatmapView = ({
             <canvas style={{ width: `100%`, imageRendering: `pixelated` }} ref={canvasRef} />
           </div>
           <div style={{ width: `100%`, display: `flex`, flexDirection: `column`, alignItems: `center` }}>
-            <div>Self-Righteousness Indicator:</div>
+            <div>{`Self-Righteousness Indicator:`}</div>
 
             <div
               style={{
@@ -68,13 +70,14 @@ export const BibleHeatmapView = ({
                 alignItems: `center`,
               }}
             >
+              {`🥴`}
               <div
                 style={{
                   width: `100%`,
                   height: 20,
                   color: `#FFFFFF`,
                   textShadow: `0px 1px 3px #000000`,
-                  backgroundColor: `#FF0000`,
+                  backgroundColor: `#000000`,
                   borderRadius: 4,
                   border: `1px solid #444444`,
                   overflow: `hidden`,
@@ -84,18 +87,24 @@ export const BibleHeatmapView = ({
                   style={{
                     width: `${Math.ceil(selfRighteousness.level * 100)}%`,
                     height: `100%`,
-                    backgroundColor: `#0000FF`,
+                    backgroundColor: `#FF0000`,
                     textAlign: `right`,
                   }}
                 >
                   <span>{`${(selfRighteousness.level * 100).toFixed(2)}%`}</span>
                 </div>
               </div>
+              {`😇`}
             </div>
             <div>{selfRighteousness.phrase}</div>
             <div style={{ fontFamily: `Georgia`, fontStyle: `italic`, margin: 16 }}>
-              Matthew 5:20 For I tell you, unless your righteousness exceeds that of the scribes and Pharisees, you will
-              never enter the kingdom of heaven. (ESV)
+              {`Matthew 5:20 For I tell you, unless your righteousness exceeds that of the scribes and Pharisees, you will
+              never enter the kingdom of heaven. (ESV)`}
+            </div>
+            <div style={{ textAlign: `left` }}>
+              {`Let this 'Self-Righteousness Indicator' be a reminder that Jesus is our only hope. We have the opportunity
+              to study his word and the opportunity to serve others and share his teachings, but that is solely because
+              he loves us and welcomes us to do so - despite our failures.`}
             </div>
           </div>
         </div>
