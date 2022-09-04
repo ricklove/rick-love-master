@@ -99,9 +99,9 @@ export const createBibleHeatmapData = (
 
     // Paint book name
     const bookEdgeColor = getDefaultBookColor(b);
-    bookEdgeColor[0] += 0x88;
-    bookEdgeColor[1] += 0x88;
-    bookEdgeColor[2] += 0x88;
+    bookEdgeColor[0] += 0x44;
+    bookEdgeColor[1] += 0x44;
+    bookEdgeColor[2] += 0x44;
 
     for (let v = 0; v <= EXTRA_VERTICALS_PER_BOOK; v++) {
       iVertical++;
@@ -111,6 +111,10 @@ export const createBibleHeatmapData = (
       }
     }
 
+    const bookNameColor = getDefaultBookColor(b);
+    bookNameColor[0] += 0x22;
+    bookNameColor[1] += 0x22;
+    bookNameColor[2] += 0x22;
     for (let l = 0; l < 3; l++) {
       const letterGrid = getChar3x3Grid(b.bookName.replace(/\s/g, ``)[l]);
       console.log(`draw letter grid`, { b, letterGrid });
@@ -119,7 +123,7 @@ export const createBibleHeatmapData = (
       for (let i = 0; i < 3; i++) {
         for (let j = 0; j < 3; j++) {
           if (letterGrid?.grid[i + j * 3]) {
-            drawPixel(iVerticalLetterStart + i, yInVerticalLetterStart + j, [0x00, 0x00, 0x00, 0xff]);
+            drawPixel(iVerticalLetterStart + i, yInVerticalLetterStart + j, bookNameColor);
           }
         }
       }
