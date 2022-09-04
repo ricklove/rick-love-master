@@ -1,4 +1,5 @@
 import { BibleAnalysisVerseCountDocument } from '@ricklove/bible-types';
+import { getChar3x3Grid } from './letters-3x3';
 
 export type BibleHeatmapData = {
   imageData: ImageData;
@@ -36,7 +37,7 @@ export const createBibleHeatmapData = (
   const VERTICAL_GAP = 1;
   const EXTRA_GAP_PER_CHAPTER = 0;
   const EXTRA_GAP_BEFORE_BOOK = 2;
-  const EXTRA_VERTICALS_PER_BOOK = 2;
+  const EXTRA_VERTICALS_PER_BOOK = 5;
 
   const totalVerseVerticals = Math.ceil(
     verseCounts.books
@@ -48,7 +49,8 @@ export const createBibleHeatmapData = (
   );
 
   // Book name = 8
-  const totalVerticals = totalVerseVerticals + verseCounts.books.length * EXTRA_VERTICALS_PER_BOOK;
+  const totalVerticals =
+    totalVerseVerticals + verseCounts.books.length * (EXTRA_GAP_BEFORE_BOOK + EXTRA_VERTICALS_PER_BOOK) * 1.05;
   const w = options?.width ?? DEFAULT_WIDTH;
   const h = Math.ceil(totalVerticals / w) * (VERTICAL_HEIGHT + VERTICAL_GAP);
   const data = new Uint8ClampedArray(4 * w * h);
@@ -95,7 +97,7 @@ export const createBibleHeatmapData = (
       iVertical += EXTRA_GAP_BEFORE_BOOK;
     }
 
-    // TODO: Paint book name
+    // Paint book name
     const bookEdgeColor = getDefaultBookColor(b);
     bookEdgeColor[0] += 0x88;
     bookEdgeColor[1] += 0x88;
@@ -106,6 +108,20 @@ export const createBibleHeatmapData = (
       for (let v = 0; v < VERTICAL_HEIGHT; v++) {
         const yInVertical = v % VERTICAL_HEIGHT;
         drawPixel(iVertical, yInVertical, bookEdgeColor);
+      }
+    }
+
+    for (let l = 0; l < 3; l++) {
+      const letterGrid = getChar3x3Grid(b.bookName.replace(/\s/g, ``)[l]);
+      console.log(`draw letter grid`, { b, letterGrid });
+      const iVerticalLetterStart = iVertical - EXTRA_VERTICALS_PER_BOOK + 1;
+      const yInVerticalLetterStart = 1 + l * 4;
+      for (let i = 0; i < 3; i++) {
+        for (let j = 0; j < 3; j++) {
+          if (letterGrid?.grid[i + j * 3]) {
+            drawPixel(iVerticalLetterStart + i, yInVerticalLetterStart + j, [0x00, 0x00, 0x00, 0xff]);
+          }
+        }
       }
     }
 
@@ -132,9 +148,13 @@ export const createBibleHeatmapData = (
 
           // Boost any progress away from default
           drawPixel(iVertical, yInVertical, [
-            Math.floor(0xff * Math.min(1, Math.max(0, Math.round((scoreRatioB > 0 ? 0 : scoreRatioA) * 5) / 5))),
-            Math.floor(0xff * Math.min(1, Math.max(0, Math.round((scoreRatioC > 0 ? 0 : scoreRatioB) * 5) / 5))),
-            Math.floor(0xff * Math.min(1, Math.max(0, Math.round(scoreRatioC * 5) / 5))),
+            Math.floor(
+              0xff * Math.min(1, Math.max(0, Math.round((scoreRatioB > 0 ? 0 : scoreRatioA * 0.75 + 0.25) * 5) / 5)),
+            ),
+            Math.floor(
+              0xff * Math.min(1, Math.max(0, Math.round((scoreRatioC > 0 ? 0 : scoreRatioB * 0.75 + 0.25) * 5) / 5)),
+            ),
+            Math.floor(0xff * Math.min(1, Math.max(0, Math.round((scoreRatioC * 0.75 + 0.25) * 5) / 5))),
             0xff,
           ]);
         } else {
@@ -166,44 +186,44 @@ const getDefaultBookColor = ({
   bookNumber: number;
 }): [number, number, number, number] => {
   if (bookNumber <= 5) {
-    return [0x11, 0x00, 0x00, 0xff];
+    return [0x22, 0x00, 0x00, 0xff];
   }
   if (bookNumber <= 17) {
-    return [0x00, 0x00, 0x11, 0xff];
+    return [0x00, 0x00, 0x22, 0xff];
   }
   if (bookNumber <= 22) {
-    return [0x00, 0x11, 0x00, 0xff];
+    return [0x00, 0x22, 0x00, 0xff];
   }
 
   if (bookNumber <= 27) {
-    return [0x11, 0x00, 0x11, 0xff];
+    return [0x22, 0x00, 0x22, 0xff];
   }
   if (bookNumber <= 39) {
-    return [0x11, 0x11, 0x00, 0xff];
+    return [0x22, 0x22, 0x00, 0xff];
   }
 
   if (bookNumber <= 43) {
-    return [0x17, 0x00, 0x00, 0xff];
+    return [0x33, 0x00, 0x00, 0xff];
   }
   if (bookNumber <= 44) {
-    return [0x00, 0x00, 0x17, 0xff];
+    return [0x00, 0x00, 0x33, 0xff];
   }
   if (bookNumber <= 53) {
-    return [0x00, 0x17, 0x00, 0xff];
+    return [0x00, 0x33, 0x00, 0xff];
   }
 
   if (bookNumber <= 57) {
-    return [0x00, 0x17, 0x17, 0xff];
+    return [0x00, 0x33, 0x33, 0xff];
   }
   if (bookNumber <= 58) {
-    return [0x17, 0x00, 0x17, 0xff];
+    return [0x33, 0x00, 0x33, 0xff];
   }
   if (bookNumber <= 65) {
-    return [0x17, 0x17, 0x00, 0xff];
+    return [0x33, 0x33, 0x00, 0xff];
   }
 
   if (bookNumber <= 66) {
-    return [0x17, 0x00, 0x00, 0xff];
+    return [0x33, 0x00, 0x00, 0xff];
   }
 
   return [0x00, 0x00, 0x00, 0xff];
