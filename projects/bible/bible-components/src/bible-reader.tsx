@@ -184,7 +184,10 @@ const BibleVerse = ({
       <button style={{ width: 24, margin: 0, padding: 0, background: `unset`, border: `unset` }} onClick={markRead}>
         {isRead ? `📖` : `📕`}
       </button>
-      <C.LazyComponent onLoad={markRead} options={{ onscreenDistanceFromTopLoadHeight: 200 }}>
+      <C.LazyComponent
+        onLoad={markRead}
+        options={{ debugName: `${verse.chapterNumber}:${verse.verseNumber}`, onscreenDistanceFromTopLoadHeight: 100 }}
+      >
         <span />
       </C.LazyComponent>
       {onStartMemorize && (

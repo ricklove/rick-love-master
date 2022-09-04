@@ -46,7 +46,7 @@ export const LazyComponent = ({
 }: {
   children: ReactNode;
   onLoad?: () => void;
-  options?: { offscreenPreloadHeight?: number; onscreenDistanceFromTopLoadHeight?: number };
+  options?: { debugName?: string; offscreenPreloadHeight?: number; onscreenDistanceFromTopLoadHeight?: number };
 }) => {
   const placeholderRef = useRef(null as null | HTMLDivElement);
   const [shouldLoad, setShouldLoad] = useState(false);
@@ -82,6 +82,13 @@ export const LazyComponent = ({
           const ONSCREEN_LOAD_HEIGHT = onscreenDistanceFromTopLoadHeight;
           const screenTopExact = 0;
           const screenTop = screenTopExact + ONSCREEN_LOAD_HEIGHT;
+          // console.log(`getIsOnScreen`, {
+          //   debugName: options?.debugName,
+          //   screenTop,
+          //   top: divRect.top,
+          //   bottom: divRect.bottom,
+          // });
+
           return divRect.top < screenTop && divRect.bottom > 0 - ONSCREEN_LOAD_HEIGHT;
         }
 
@@ -125,7 +132,7 @@ export const LazyComponent = ({
   return (
     <>
       {!shouldLoad && (
-        <div style={{ display: `inline-block`, position: `relative` }}>
+        <div id={options?.debugName} style={{ display: `inline-block`, position: `relative` }}>
           <div ref={placeholderRef} style={{ position: `absolute`, minWidth: 100, minHeight: 100 }} />
         </div>
       )}
