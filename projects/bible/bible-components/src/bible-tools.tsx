@@ -19,6 +19,7 @@ type BibleToolsUserProgress = {
 
 type VerseProgress = {
   lastRead?: number;
+  lastMemorized?: number;
   memoryScoreRatio?: number;
 };
 
@@ -68,7 +69,12 @@ const getVerseState = (userProgress: BibleToolsUserProgress) => {
         chapterNumber: Number(chapterNumber),
         verseNumber: Number(verseNumber),
         scoreRatioA: Math.min(1, Math.max(0, 1 - (Date.now() - (v.lastRead ?? 0)) / (365 * 24 * 60 * 60 * 1000))),
-        scoreRatioB: v.memoryScoreRatio ?? 0,
+        scoreRatioB:
+          (v.memoryScoreRatio ?? 0) *
+          Math.min(
+            1,
+            Math.max(0, 1 - (Date.now() - (v.lastMemorized ?? v.lastRead ?? 0)) / (365 * 24 * 60 * 60 * 1000)),
+          ),
         // scoreRatioC: v.memoryScoreRatio ?? 0,
       })),
     ),
@@ -99,6 +105,7 @@ export const BibleToolsRoot = ({ config }: { config: BibleToolsConfig }) => {
 
     setPassageProgress(s, passageRange, {
       memoryScoreRatio: Number(scoreRatio.toFixed(2)),
+      lastMemorized: Date.now(),
       lastRead: Date.now(),
     });
 
