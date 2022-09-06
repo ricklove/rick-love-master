@@ -1,3 +1,17 @@
+- Options Controls
+  - [x] Display Options Controls
+- Memory/Reading Plans
+  - [ ] Editable PassageReference List
+  - [ ] Display Status
+- Reader
+  - [ ] Display Verse Status
+  - [ ] Display Section Status
+  - [ ] Reader Controls
+    - [x] Auto Read Toggle
+    - [ ] Fixed Header
+  - [ ] Reader Modes
+    - [ ] Fill in Blanks
+    - [ ] Delayed Fill in Blank Entry
 - Input Modes
   - [x] Voice input
   - [ ] Voice input Improved
@@ -12,8 +26,9 @@
   - [x] Whole Section
     - [x] Prompt with PassageReference
     - [ ] Prompt with Section Headings
-  - [ ] Single Verse
-    - [ ] Prompt with PassageReference
+  - [x] Single Verse
+    - [x] Prompt with PassageReference
+    - [ ] Include section heading
     - [ ] Prompt with Text and Select Chapter and Verse
   - [ ] Only Section Headings
   - [ ] First Words
@@ -30,7 +45,7 @@
   - [x] Anonymous User Storage
   - [x] Bible heatmap
   - [ ] Data to track
-    - Time Last read
-    - Time Last memorized
+    - [x] Time Last read
+    - [x] Time Last memorized
     - [x] Memorization Average time per word
       - Adjust for hints

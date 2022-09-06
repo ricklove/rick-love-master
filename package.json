@@ -18,6 +18,7 @@
         "gen:project": "npm --prefix tools/rush-packages run cli -- --d projects/bible/bible-types --p @ricklove/bible-types --t lib",
         "gen:site": "cd projects/bible && npm create vite@latest bible-site -- --template react-ts",
         "--- projects": "",
+        "jointhejourney:extract": "cd projects/church/join-the-journey/exporter && npm run cli",
         "jointhejourney:dev": "cd projects/church/join-the-journey/join-the-journey-site && npm run dev",
         "jointhejourney:deploy": "cd projects/church/join-the-journey/join-the-journey-site && npm run deploy",
         "bible:dev": "cd projects/bible/bible-site && npm run dev",

@@ -45,18 +45,49 @@ export const BiblePassageLoader = ({
   );
 };
 
+export type BibleReaderOptions = {
+  autoRead: boolean;
+};
+export const defaultBibleReaderOptions: BibleReaderOptions = {
+  autoRead: true,
+};
+
+export const BibleReaderOptionsView = ({
+  value,
+  onChange,
+}: {
+  value: BibleReaderOptions;
+  onChange: (value: BibleReaderOptions) => void;
+}) => {
+  const toggleAutoRead = useCallback(() => {
+    onChange({ ...value, autoRead: !value.autoRead });
+  }, [value]);
+
+  return (
+    <div>
+      <label>
+        <input type='checkbox' checked={value.autoRead} onChange={toggleAutoRead} />
+        Auto read
+      </label>
+    </div>
+  );
+};
+
 export const BibleReaderView = ({
   passage,
+  readerOptions,
   onPassageRead,
   onStartMemorize,
 }: {
   passage: BiblePassage;
+  readerOptions: BibleReaderOptions;
   onPassageRead: (passageRange: BiblePassageRange) => void;
   onStartMemorize?: (passages: MemoryPassage[]) => void;
 }) => {
   const openExternalUrl = useCallback(() => {
     window.open(passage?.copyright.url, `_blank`);
   }, []);
+
   return (
     <>
       <div style={{ margin: 4, padding: 4, background: `#EEEEEE`, minHeight: 100 }}>
@@ -79,6 +110,7 @@ export const BibleReaderView = ({
               key={s.key}
               passage={passage}
               section={s}
+              readerOptions={readerOptions}
               onPassageRead={onPassageRead}
               onStartMemorize={onStartMemorize}
             />
@@ -94,11 +126,13 @@ export const BibleReaderView = ({
 const BiblePassage = ({
   passage,
   section,
+  readerOptions,
   onPassageRead,
   onStartMemorize,
 }: {
   passage: BiblePassage;
   section: BiblePassage['sections'][number];
+  readerOptions: BibleReaderOptions;
   onPassageRead: (passageRange: BiblePassageRange) => void;
   onStartMemorize?: (passages: MemoryPassage[]) => void;
 }) => {
@@ -139,6 +173,7 @@ const BiblePassage = ({
             key={`${x.chapterNumber}:${x.verseNumber}`}
             passage={passage}
             verse={x}
+            readerOptions={readerOptions}
             onPassageRead={onPassageRead}
             onStartMemorize={onStartMemorize}
           />
@@ -151,11 +186,13 @@ const BiblePassage = ({
 const BibleVerse = ({
   passage,
   verse,
+  readerOptions,
   onPassageRead,
   onStartMemorize,
 }: {
   passage: BiblePassage;
   verse: BiblePassage['sections'][number]['verses'][number];
+  readerOptions: BibleReaderOptions;
   onPassageRead: (passageRange: BiblePassageRange) => void;
   onStartMemorize?: (passages: MemoryPassage[]) => void;
 }) => {
@@ -184,12 +221,14 @@ const BibleVerse = ({
       <button style={{ width: 24, margin: 0, padding: 0, background: `unset`, border: `unset` }} onClick={markRead}>
         {isRead ? `📖` : `📕`}
       </button>
-      <C.LazyComponent
-        onLoad={markRead}
-        options={{ debugName: `${verse.chapterNumber}:${verse.verseNumber}`, onscreenDistanceFromTopLoadHeight: 100 }}
-      >
-        <span />
-      </C.LazyComponent>
+      {readerOptions.autoRead && (
+        <C.LazyComponent
+          onLoad={markRead}
+          options={{ debugName: `${verse.chapterNumber}:${verse.verseNumber}`, onscreenDistanceFromTopLoadHeight: 100 }}
+        >
+          <span />
+        </C.LazyComponent>
+      )}
       {onStartMemorize && (
         <button style={{ margin: 0, padding: 0, background: `unset`, border: `unset` }} onClick={startMemorizeVerse}>
           🧠

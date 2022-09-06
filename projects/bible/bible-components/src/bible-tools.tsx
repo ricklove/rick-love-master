@@ -1,8 +1,8 @@
-import React, { useCallback, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { BibleHeatmapView } from './bible-heatmap';
 import { BibleMemoryHost } from './bible-memory-proto';
 import { MemoryPassage } from './bible-memory-types';
-import { BiblePassageLoader, BibleReaderView } from './bible-reader';
+import { BiblePassageLoader, BibleReaderOptionsView, BibleReaderView, defaultBibleReaderOptions } from './bible-reader';
 import { BiblePassage, BiblePassageRange, BibleServiceConfig } from './bible-service';
 import { createUserProgressService, UserProgressConfig } from './user-data';
 import { UserSettings } from './user-settings';
@@ -153,32 +153,72 @@ export const BibleToolsRoot = ({ config }: { config: BibleToolsConfig }) => {
     setReloadId((s) => s + 1);
   }, []);
 
+  const mode = tab === `heatmap` ? `heatmap` : tab === `reader` && memoryPassages ? `memory` : `reader`;
+  const [readerOptions, setReaderOptions] = useState(defaultBibleReaderOptions);
+
   return (
     <>
-      <div style={{ display: `flex`, flexDirection: `row`, flexWrap: `wrap`, background: `#333333`, color: `#FFFFFF` }}>
-        <button onClick={() => setTab(`reader`)}>Read & Memorize</button>
-        <button onClick={() => setTab(`heatmap`)}>Progress</button>
-        <div style={{ flex: 1 }} />
-        <UserSettings userProgressServiceRef={userProgressService} onChange={reload} />
+      <AutoStickyHeader>
+        <div style={{ background: `#333333`, color: `#FFFFFF` }}>
+          <div
+            style={{
+              display: `flex`,
+              flexDirection: `row`,
+              flexWrap: `wrap`,
+              background: `#444444`,
+            }}
+          >
+            <button onClick={() => setTab(`reader`)}>Read & Memorize</button>
+            <button onClick={() => setTab(`heatmap`)}>Progress</button>
+            <div style={{ flex: 1 }} />
+            <UserSettings userProgressServiceRef={userProgressService} onChange={reload} />
+          </div>
+          <div>
+            {mode === `reader` && (
+              <>
+                <BiblePassageLoader config={config} onPassageLoaded={changePassage} />
+                <BibleReaderOptionsView value={readerOptions} onChange={setReaderOptions} />
+              </>
+            )}
+          </div>
+        </div>
+      </AutoStickyHeader>
+      <div>
+        {mode === `reader` && passage && (
+          <BibleReaderView
+            passage={passage}
+            readerOptions={readerOptions}
+            onPassageRead={recordPassageRead}
+            onStartMemorize={startMemorize}
+          />
+        )}
+        {mode === `memory` && memoryPassages && (
+          <div style={{ background: `#000000`, minHeight: `100vh` }}>
+            <BibleMemoryHost passages={memoryPassages} onPassageComplete={recordPassageMemorized} />
+          </div>
+        )}
+        {mode === `heatmap` && userProgressService.current && (
+          <>
+            <BibleHeatmapView verseState={getVerseState(userProgressService.current.getUserData() ?? { books: {} })} />
+          </>
+        )}
       </div>
-      {tab === `reader` && (
-        <>
-          <BiblePassageLoader config={config} onPassageLoaded={changePassage} />
-          {memoryPassages && (
-            <div style={{ background: `#000000`, minHeight: `100vh` }}>
-              <BibleMemoryHost passages={memoryPassages} onPassageComplete={recordPassageMemorized} />
-            </div>
-          )}
-          {!memoryPassages && passage && (
-            <BibleReaderView passage={passage} onPassageRead={recordPassageRead} onStartMemorize={startMemorize} />
-          )}
-        </>
-      )}
-      {tab === `heatmap` && userProgressService.current && (
-        <>
-          <BibleHeatmapView verseState={getVerseState(userProgressService.current.getUserData() ?? { books: {} })} />
-        </>
-      )}
     </>
   );
+};
+
+const AutoStickyHeader = ({ children }: { children: JSX.Element }) => {
+  const [isHeaderSticky, setIsHeaderSticky] = useState(true);
+  useEffect(() => {
+    let lastPos = 0;
+    const callback = () => {
+      const diff = window.scrollY - lastPos;
+      lastPos = window.scrollY;
+      setIsHeaderSticky(diff < 0);
+    };
+    window.addEventListener(`scroll`, callback);
+    return () => window.removeEventListener(`scroll`, callback);
+  }, []);
+
+  return <div style={isHeaderSticky ? { position: `sticky`, top: 0 } : {}}>{children}</div>;
 };
