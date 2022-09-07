@@ -1,9 +1,13 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
+import { BiblePassageRange, BiblePassageRangeString } from '@ricklove/bible-types';
+import { C } from '@ricklove/react-controls';
 import { BibleHeatmapView } from './bible-heatmap';
 import { BibleMemoryHost } from './bible-memory-proto';
 import { MemoryPassage } from './bible-memory-types';
-import { BiblePassageLoader, BibleReaderOptionsView, BibleReaderView, defaultBibleReaderOptions } from './bible-reader';
-import { BiblePassage, BiblePassageRange, BibleServiceConfig } from './bible-service';
+import { BiblePassageLoader, useBiblePassageLoader } from './bible-passage-loader';
+import { BibleReaderOptionsView, BibleReaderView, defaultBibleReaderOptions } from './bible-reader';
+import { BiblePassage, BibleServiceConfig } from './bible-service';
+import { BibleUserHistoryView } from './bible-user-history';
 import { createUserProgressService, UserProgressConfig } from './user-data';
 import { UserSettings } from './user-settings';
 
@@ -15,6 +19,10 @@ type BibleToolsUserProgress = {
       };
     };
   };
+  history: {
+    timestamp: number;
+    passageRange: BiblePassageRangeString;
+  }[];
 };
 
 type VerseProgress = {
@@ -61,6 +69,11 @@ const setPassageProgress = (
   }
 };
 
+const addPassageHistory = (progressState: BibleToolsUserProgress, passageRange: BiblePassageRange) => {
+  progressState.history = progressState.history ?? [];
+  progressState.history.push({ passageRange: BiblePassageRange.encode(passageRange), timestamp: Date.now() });
+};
+
 const getVerseState = (userProgress: BibleToolsUserProgress) => {
   const verseState = Object.entries(userProgress.books).flatMap(([bookName, b]) =>
     Object.entries(b).flatMap(([chapterNumber, c]) =>
@@ -86,11 +99,21 @@ const getVerseState = (userProgress: BibleToolsUserProgress) => {
 
 export type BibleToolsConfig = BibleServiceConfig & UserProgressConfig;
 export const BibleToolsRoot = ({ config }: { config: BibleToolsConfig }) => {
-  const [tab, setTab] = useState(`reader` as 'reader' | 'heatmap');
+  const [tab, setTab] = useState(`reader` as 'reader' | 'heatmap' | 'history');
 
   const userProgressService = useRef(
     createUserProgressService<BibleToolsUserProgress>(config, { storageName: `bible-tools-progress` }),
   );
+
+  const updateUserProgress = (updateState: (previousState: BibleToolsUserProgress) => void) => {
+    const s = userProgressService.current.getUserData() ?? { books: {}, history: [] };
+    updateState(s);
+
+    userProgressService.current.setUserData(s);
+    // eslint-disable-next-line @typescript-eslint/no-floating-promises
+    userProgressService.current.saveUserProgress();
+  };
+
   const recordPassageMemorized = useCallback((passage: MemoryPassage, scoreRatio: number) => {
     if (!userProgressService.current) {
       return;
@@ -100,19 +123,13 @@ export const BibleToolsRoot = ({ config }: { config: BibleToolsConfig }) => {
       return;
     }
 
-    const s = userProgressService.current.getUserData() ?? { books: {} };
-    console.log(`recordPassageMemorized`, { passageRange, s, passage, scoreRatio });
-
-    setPassageProgress(s, passageRange, {
-      memoryScoreRatio: Number(scoreRatio.toFixed(2)),
-      lastMemorized: Date.now(),
-      lastRead: Date.now(),
+    updateUserProgress((s) => {
+      setPassageProgress(s, passageRange, {
+        memoryScoreRatio: Number(scoreRatio.toFixed(2)),
+        lastMemorized: Date.now(),
+        lastRead: Date.now(),
+      });
     });
-
-    userProgressService.current.setUserData(s);
-
-    // eslint-disable-next-line @typescript-eslint/no-floating-promises
-    userProgressService.current.saveUserProgress();
   }, []);
   const recordPassageRead = useCallback(
     (passageRange: {
@@ -124,16 +141,11 @@ export const BibleToolsRoot = ({ config }: { config: BibleToolsConfig }) => {
         return;
       }
 
-      const s = userProgressService.current.getUserData() ?? { books: {} };
-      console.log(`recordPassageRead`, { passageRange, s, passage });
-
-      setPassageProgress(s, passageRange, {
-        lastRead: Date.now(),
+      updateUserProgress((s) => {
+        setPassageProgress(s, passageRange, {
+          lastRead: Date.now(),
+        });
       });
-
-      userProgressService.current.setUserData(s);
-      // eslint-disable-next-line @typescript-eslint/no-floating-promises
-      userProgressService.current.saveUserProgress();
     },
     [],
   );
@@ -142,7 +154,21 @@ export const BibleToolsRoot = ({ config }: { config: BibleToolsConfig }) => {
   const changePassage = useCallback((value: BiblePassage) => {
     setPassage(value);
     setMemoryPassages(undefined);
+
+    updateUserProgress((s) => {
+      addPassageHistory(s, value.passageRange);
+    });
   }, []);
+  const {
+    loading,
+    error,
+    loadPassage: loadPassageInner,
+  } = useBiblePassageLoader({ config, onPassageLoaded: changePassage });
+  const loadPassage = useCallback((value: string) => {
+    loadPassageInner(value);
+    setTab(`reader`);
+  }, []);
+
   const [memoryPassages, setMemoryPassages] = useState(undefined as undefined | MemoryPassage[]);
   const startMemorize = useCallback((passages: MemoryPassage[]) => {
     setMemoryPassages(passages);
@@ -153,7 +179,7 @@ export const BibleToolsRoot = ({ config }: { config: BibleToolsConfig }) => {
     setReloadId((s) => s + 1);
   }, []);
 
-  const mode = tab === `heatmap` ? `heatmap` : tab === `reader` && memoryPassages ? `memory` : `reader`;
+  const mode = tab === `reader` && memoryPassages ? `memory` : tab;
   const [readerOptions, setReaderOptions] = useState(defaultBibleReaderOptions);
 
   return (
@@ -170,6 +196,7 @@ export const BibleToolsRoot = ({ config }: { config: BibleToolsConfig }) => {
           >
             <button onClick={() => setTab(`reader`)}>Read & Memorize</button>
             <button onClick={() => setTab(`heatmap`)}>Progress</button>
+            <button onClick={() => setTab(`history`)}>History</button>
             <div style={{ flex: 1 }} />
             <UserSettings userProgressServiceRef={userProgressService} onChange={reload} />
           </div>
@@ -183,6 +210,8 @@ export const BibleToolsRoot = ({ config }: { config: BibleToolsConfig }) => {
           </div>
         </div>
       </AutoStickyHeader>
+      <C.Loading loading={loading} />
+      <C.ErrorBox error={error} />
       <div>
         {mode === `reader` && passage && (
           <BibleReaderView
@@ -199,7 +228,17 @@ export const BibleToolsRoot = ({ config }: { config: BibleToolsConfig }) => {
         )}
         {mode === `heatmap` && userProgressService.current && (
           <>
-            <BibleHeatmapView verseState={getVerseState(userProgressService.current.getUserData() ?? { books: {} })} />
+            <BibleHeatmapView
+              verseState={getVerseState(userProgressService.current.getUserData() ?? { books: {}, history: [] })}
+            />
+          </>
+        )}
+        {mode === `history` && userProgressService.current && (
+          <>
+            <BibleUserHistoryView
+              history={(userProgressService.current.getUserData() ?? { books: {}, history: [] }).history}
+              onLoadPassage={loadPassage}
+            />
           </>
         )}
       </div>

@@ -1,49 +1,10 @@
-import React, { useMemo, useState } from 'react';
+import React, { useState } from 'react';
 import { useCallback } from 'react';
+import { BiblePassageRange } from '@ricklove/bible-types';
 import { C } from '@ricklove/react-controls';
-import { useAsyncWorker } from '@ricklove/utils-react';
 import { createMemoryPassagesFromBible } from './bible-memory-passage';
 import { MemoryPassage } from './bible-memory-types';
-import { BiblePassage, BiblePassageRange, BibleServiceConfig, createBibleService } from './bible-service';
-
-export const BiblePassageLoader = ({
-  config,
-  onPassageLoaded,
-}: {
-  config: BibleServiceConfig;
-  onPassageLoaded: (passage: BiblePassage) => void;
-}) => {
-  const [passageReference, setPassageReference] = useState(``);
-  const bibleService = useMemo(() => createBibleService(config), []);
-
-  const changePassageReference = useCallback((e: { target: { value: string } }) => {
-    setPassageReference(e.target.value);
-  }, []);
-
-  const { loading, error, doWork } = useAsyncWorker();
-  const loadPassage = useCallback(
-    (e: { preventDefault: () => void }) => {
-      e.preventDefault();
-      doWork(async (stopIfObsolete) => {
-        const result = await bibleService.getPassage(passageReference);
-        stopIfObsolete();
-        onPassageLoaded(result);
-      });
-    },
-    [passageReference],
-  );
-
-  return (
-    <>
-      <C.Loading loading={loading} />
-      <C.ErrorBox error={error} />
-      <form onSubmit={loadPassage}>
-        <input type='text' value={passageReference} onChange={changePassageReference} />
-        <button onClick={loadPassage}>Load</button>
-      </form>
-    </>
-  );
-};
+import { BiblePassage } from './bible-service';
 
 export type BibleReaderOptions = {
   autoRead: boolean;

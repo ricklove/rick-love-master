@@ -1,6 +1,9 @@
 - Options Controls
   - [x] Display Options Controls
 - Memory/Reading Plans
+  - [ ] Passage History
+    - [ ] Verse List w/ Verse State
+    - [ ] Add to plan
   - [ ] Editable PassageReference List
   - [ ] Display Status
 - Reader

@@ -53,3 +53,42 @@ export type BibleAnalysisVerseCountDocument = {
     chapters: number[];
   }[];
 };
+
+type BookName = string;
+type ChapterNumber = number;
+type VerseNumber = number;
+export type BibleChapterVerseString = `${number}:${number}`;
+
+export type BiblePassageRangeString =
+  | `${BookName} ${ChapterNumber}:${VerseNumber}-${ChapterNumber}:${VerseNumber}`
+  | `${BookName} ${ChapterNumber}:${VerseNumber}-${VerseNumber}`;
+export type BiblePassageRange = {
+  bookName: string;
+  start: {
+    chapterNumber: number;
+    verseNumber: number;
+  };
+  end: {
+    chapterNumber: number;
+    verseNumber: number;
+  };
+};
+
+export const BiblePassageRange = {
+  encode: (value: BiblePassageRange): BiblePassageRangeString => {
+    const { bookName, start, end } = value;
+    return `${bookName} ${start.chapterNumber}:${start.verseNumber}-${
+      end.chapterNumber === start.chapterNumber ? (`` as const) : (`${end.chapterNumber}:` as const)
+    }${end.verseNumber}`;
+  },
+  decode: (value: BiblePassageRangeString): BiblePassageRange => {
+    const [, bookName, startChapter, startVerse, endChapter, endVerse] = [
+      ...(value.match(/^([^:]*) (\d+):(\d+)(?:-(?:(\d+):)?(\d+))$/) ?? []),
+    ];
+    return {
+      bookName,
+      start: { chapterNumber: Number(startChapter), verseNumber: Number(startVerse) },
+      end: { chapterNumber: Number(endChapter ?? startChapter), verseNumber: Number(endVerse ?? startVerse) },
+    };
+  },
+};

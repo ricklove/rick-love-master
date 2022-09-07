@@ -1,4 +1,5 @@
 /* eslint-disable @typescript-eslint/naming-convention */
+import { BiblePassageRange } from '@ricklove/bible-types';
 
 export type BibleServiceConfig = {
   /** NOTE: This is not secure, and should be replaced with a server-side access */
@@ -6,11 +7,13 @@ export type BibleServiceConfig = {
 };
 export type BiblePassage = {
   bookName: string;
+  passageRange: BiblePassageRange;
   passageReference: string;
   sections: {
     key: string;
     index: number;
     bookName: string;
+    passageRange: BiblePassageRange;
     passageReference: string;
     header: string;
     verses: {
@@ -23,17 +26,6 @@ export type BiblePassage = {
     url: string;
     short: string;
     long: string;
-  };
-};
-export type BiblePassageRange = {
-  bookName: string;
-  start: {
-    chapterNumber: number;
-    verseNumber: number;
-  };
-  end: {
-    chapterNumber: number;
-    verseNumber: number;
   };
 };
 
@@ -104,6 +96,17 @@ export const createBibleService = (config: BibleServiceConfig) => {
             key: `[${iSection}]${header}`,
             index: iSection,
             bookName,
+            passageRange: {
+              bookName,
+              start: {
+                chapterNumber: vFirst.chapterNumber,
+                verseNumber: vFirst.verseNumber,
+              },
+              end: {
+                chapterNumber: vLast.chapterNumber,
+                verseNumber: vLast.verseNumber,
+              },
+            },
             passageReference: `${bookName} ${vFirst.chapterNumber}:${vFirst.verseNumber}${
               vLast === vFirst
                 ? ``
@@ -118,8 +121,15 @@ export const createBibleService = (config: BibleServiceConfig) => {
 
       console.log(`getPassage - sections`, { sections });
 
+      const sFirst = sections[0];
+      const sLast = sections[sections.length - 1];
       return {
         bookName,
+        passageRange: {
+          bookName,
+          start: { ...sFirst.passageRange.start },
+          end: { ...sLast.passageRange.end },
+        },
         passageReference: result.canonical,
         sections,
         copyright: {
