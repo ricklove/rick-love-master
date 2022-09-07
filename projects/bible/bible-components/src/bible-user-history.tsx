@@ -11,10 +11,14 @@ export const BibleUserHistoryView = ({
   onLoadPassage: (passageRange: BiblePassageRangeString) => void;
 }) => {
   const historySorted = [...history].sort((a, b) => -(a.timestamp - b.timestamp));
+  const historyWithExtra = historySorted.map((x, i) => ({
+    ...x,
+    isDuplicate: i > historySorted.findIndex((h) => h.passageRange === x.passageRange),
+  }));
   return (
     <>
       <div>
-        {historySorted.map((x) => (
+        {historyWithExtra.map((x) => (
           <PassageHistoryView value={x} key={x.timestamp} onLoadPassage={onLoadPassage} />
         ))}
       </div>
@@ -26,7 +30,7 @@ const PassageHistoryView = ({
   value,
   onLoadPassage,
 }: {
-  value: PassageHistory;
+  value: PassageHistory & { isDuplicate: boolean };
   onLoadPassage: (passageRange: BiblePassageRangeString) => void;
 }) => {
   const loadPassage = useCallback(() => {
@@ -34,7 +38,7 @@ const PassageHistoryView = ({
   }, [value]);
 
   return (
-    <div style={{ display: `flex`, flexDirection: `row`, padding: 4 }}>
+    <div style={{ display: `flex`, flexDirection: `row`, padding: 4, opacity: value.isDuplicate ? 0.5 : 1 }}>
       <div onClick={loadPassage}>{`📕`}</div>
       <div>{value.passageRange}</div>
       <div style={{ flex: 1 }} />
