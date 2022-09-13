@@ -397,7 +397,8 @@ const cloneAndUpdateArticleImages = async (dependencies: ScrapeEntriesDependenci
   const imageUrls = [...new Set([article.metadata.image, ...markdownImages])].filter((x) => !x.includes(`rick-love`));
 
   const getImageFilePath = (imageUrl: string) => {
-    const hash = hashCode(imageUrl, 42);
+    // Change hash seed to reset images
+    const hash = hashCode(imageUrl, 43);
     const filePath = `./images/${hash}`;
     return filePath;
   };
@@ -419,7 +420,7 @@ const cloneAndUpdateArticleImages = async (dependencies: ScrapeEntriesDependenci
     const result = await fetchWithDelay(image.imageUrl, 100);
     const contentType = result.headers.get(`Content-Type`) ?? ``;
     const imageBuffer = await result.arrayBuffer();
-    const resized = await resizeImage(imageBuffer, 320);
+    const resized = await resizeImage(imageBuffer, 600);
     await dependencies.storage.saveBinaryFile(image.filePath, resized, contentType);
     image.clonedImageUrl = await dependencies.storage.getFilePublicUrl(image.filePath);
   }
