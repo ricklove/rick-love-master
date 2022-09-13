@@ -429,8 +429,23 @@ const ArticleListView = ({
   const hasColumns = useMediaQuery(`(min-width: 400px)`);
   const isLarge = useMediaQuery(`(min-width: 750px)`);
 
+  const [searchTerm, setSearchTerm] = useState(``);
+  const changeSearchTerm = useCallback((e: { target: { value: string } }) => {
+    setSearchTerm(e.target.value);
+  }, []);
+
+  const itemsFiltered = !searchTerm
+    ? items
+    : items.filter((x) =>
+        `${x.metadata.author} ${x.metadata.title} ${x.metadata.verse}`.toLowerCase().includes(searchTerm.toLowerCase()),
+      );
+
   return (
     <div style={{ display: `flex`, flexDirection: `column`, alignItems: `center` }}>
+      <div style={{ display: `flex`, flexDirection: `column`, alignItems: `stretch`, padding: 4, maxWidth: `100%` }}>
+        <label>Search:</label>
+        <input type='text' style={{ padding: 4 }} value={searchTerm} onChange={changeSearchTerm} />
+      </div>
       <div
         style={
           !visible
@@ -454,7 +469,7 @@ const ArticleListView = ({
               }
         }
       >
-        {items.map((x) => (
+        {itemsFiltered.map((x) => (
           <Fragment key={`${x.key}${x.isRead}`}>
             <ArticleItemView item={x} onOpen={onOpenArticle} onToggleRead={onToggleArticleRead} />
           </Fragment>
