@@ -2,7 +2,7 @@
   "name": "utils",
   "version": "1.0.0",
   "dependencies": {
-    "luxon": "^1.24.1",
+    "luxon": "^1.28.1",
     "dayjs": "^1.8.28"
   }
 }
