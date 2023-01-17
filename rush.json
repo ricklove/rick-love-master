@@ -678,6 +678,10 @@
       "packageName": "@ricklove/brute-force",
       "projectFolder": "projects/experiments/brute-force"
     },
+    {
+      "packageName": "@ricklove/vr-games",
+      "projectFolder": "projects/games/vr"
+    },
     // Web ---
     {
       "packageName": "@ricklove/api-build",

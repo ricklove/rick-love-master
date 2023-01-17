@@ -12,9 +12,11 @@
     "next": "^11.0.0",
     "react": "17.0.2",
     "react-dom": "17.0.2",
+    "@react-three/fiber": "^7.0.29",
     "@ricklove/example-node-lib": "*",
     "@ricklove/ricklove_me-content": "*",
-    "next-transpile-modules": "~8.0.0"
+    "next-transpile-modules": "~8.0.0",
+    "three": "^0.137.0"
   },
   "devDependencies": {
     "@babel/core": "^7.0.0",
