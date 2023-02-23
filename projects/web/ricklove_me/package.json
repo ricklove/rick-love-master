@@ -9,21 +9,21 @@
     "start": "next start --port 3042"
   },
   "dependencies": {
-    "next": "^11.0.0",
-    "react": "17.0.2",
-    "react-dom": "17.0.2",
-    "@react-three/fiber": "^7.0.29",
+    "next": "^13.1.6",
+    "react": "18.2.0",
+    "react-dom": "18.2.0",
+    "@react-three/fiber": "8.0.27",
     "@ricklove/example-node-lib": "*",
     "@ricklove/ricklove_me-content": "*",
     "next-transpile-modules": "~8.0.0",
-    "three": "^0.137.0"
+    "three": "0.141.0"
   },
   "devDependencies": {
     "@babel/core": "^7.0.0",
     "@ricklove/config-lib-rig": "*",
-    "@types/react": "~17.0.19",
+    "@types/react": "18.0.14",
     "copyfiles": "~2.4.1",
     "rimraf": "~3.0.2",
-    "@next/bundle-analyzer": "~11.1.2"
+    "@next/bundle-analyzer": "~13.1.6"
   }
 }

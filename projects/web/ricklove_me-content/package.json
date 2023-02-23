@@ -16,11 +16,11 @@
     "@ricklove/games-list": "*",
     "@ricklove/github-comments": "*",
     "@ricklove/utils-core": "*",
-    "react": "17.0.2",
+    "react": "18.2.0",
     "react-markdown": "~8.0.3",
     "react-lowlight": "~2.0.0",
     "highlight.js": "~9.1.0",
-    "react-helmet": "~6.1.0",
+    "react-helmet-async": "1.3.0",
     "remark-gfm": "~3.0.1"
   },
   "devDependencies": {
@@ -32,8 +32,7 @@
     "@ricklove/utils-files": "*",
     "@ricklove/utils-react": "*",
     "@types/node": "12.12.6",
-    "@types/react": "~17.0.19",
-    "@types/react-helmet": "~6.1.2",
+    "@types/react": "18.0.14",
     "ts-node": "~10.9.1"
   }
 }

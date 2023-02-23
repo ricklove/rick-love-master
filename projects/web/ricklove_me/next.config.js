@@ -1,17 +1,15 @@
-const options = {
+module.exports = {
+  transpilePackages: ['@ricklove/ricklove_me-content'],
   // Deterministict build
   generateBuildId: async () => {
     const gitHash = require('child_process').execSync('git rev-parse HEAD').toString().trim();
     console.log('nextjs generateBuildId - using git commit hash', { gitHash });
     return gitHash;
   },
-  optimization: {
-    moduleIds: 'deterministic',
-  },
+  // optimization: {
+  //   moduleIds: 'deterministic',
+  // },
 };
-
-const withTM = require('next-transpile-modules')(['@ricklove/ricklove_me-content']);
-module.exports = withTM(options);
 
 // // Bundle anayzer
 // const withBundleAnalyzer = require('@next/bundle-analyzer')({

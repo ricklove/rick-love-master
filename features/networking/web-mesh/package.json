@@ -14,10 +14,10 @@
     "@ricklove/utils-core": "*",
     "@ricklove/utils-react": "*",
     "@ricklove/websockets-api-client": "*",
-    "react": "17.0.2"
+    "react": "18.2.0"
   },
   "devDependencies": {
     "@ricklove/config-lib-rig": "*",
-    "@types/react": "~17.0.19"
+    "@types/react": "18.0.14"
   }
 }

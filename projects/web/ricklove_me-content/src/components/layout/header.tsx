@@ -45,9 +45,7 @@ export const Header = ({ siteTitle }: { siteTitle: string }) => {
       <Global styles={styles} />
       <div>
         <h1>
-          <Link to='/'>
-            <a>&nbsp;&gt;&nbsp;</a>
-          </Link>
+          <Link to='/'>&nbsp;&gt;&nbsp;</Link>
           <ConsoleSimulatorLoader initialPrompt={siteTitle} />
         </h1>
       </div>

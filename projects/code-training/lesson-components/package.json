@@ -17,12 +17,12 @@
     "@ricklove/utils-react": "*",
     "prism-themes": "^1.4.0",
     "prismjs": "^1.21.0",
-    "react": "17.0.2",
+    "react": "18.2.0",
     "react-icons": "^3.10.0"
   },
   "devDependencies": {
     "@ricklove/config-lib-rig": "*",
     "@types/prismjs": "^1.16.1",
-    "@types/react": "~17.0.19"
+    "@types/react": "18.0.14"
   }
 }
