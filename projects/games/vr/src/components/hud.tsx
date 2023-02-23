@@ -1,9 +1,9 @@
 import React, { useRef } from 'react';
 import { mergeRefs } from 'react-merge-refs';
-import { Box, Sphere } from '@react-three/drei';
 import { useFrame } from '@react-three/fiber';
 import { useController, useXR } from '@react-three/xr';
 import { Group, Vector3 } from 'three';
+import { DebugModel } from './debug-model';
 
 type BillboardProps = {
   follow?: boolean;
@@ -123,6 +123,9 @@ export const HudDebugConsole = (props: Omit<BillboardProps, `children`>) => {
     // // setText(`${logger.logState.slice(0, 3).join(`\n`)}`);
   });
 
+  const jointsL = [...Object.entries(handLSource?.hand.joints ?? {})];
+  const jointsR = [...Object.entries(handRSource?.hand.joints ?? {})];
+
   return (
     <Hud {...props}>
       {/* <Text textAlign='center' whiteSpace={`overflowWrap`} maxWidth={10}>
@@ -130,7 +133,15 @@ export const HudDebugConsole = (props: Omit<BillboardProps, `children`>) => {
       </Text> */}
       <group scale={0.5}>
         <group ref={originRef}>
-          <group ref={headRef}>
+          <DebugModel model={playerSource.children[0]} depth={0} />
+          {jointsL.map(([k, v]) => (
+            <DebugModel key={k} model={v} depth={0} scale={0.01} />
+          ))}
+          {jointsR.map(([k, v]) => (
+            <DebugModel key={k} model={v} depth={0} scale={0.01} />
+          ))}
+          {/* <DebugModel model={handLSource?.children[0]} depth={0} /> */}
+          {/* <group ref={headRef}>
             <group scale={0.2}>
               <Box position={[0, 0, -1]}>
                 <meshStandardMaterial color={`#333333`} />
@@ -139,8 +150,8 @@ export const HudDebugConsole = (props: Omit<BillboardProps, `children`>) => {
                 <meshStandardMaterial color={`#55ff55`} transparent={true} opacity={0.5} />
               </Sphere>
             </group>
-          </group>
-          <group ref={handLRef}>
+          </group> */}
+          {/* <group ref={handLRef}>
             <group scale={0.1}>
               <Box position={[0, 0, -1]}>
                 <meshStandardMaterial color={`#333333`} />
@@ -149,8 +160,8 @@ export const HudDebugConsole = (props: Omit<BillboardProps, `children`>) => {
                 <meshStandardMaterial color={`#55ff55`} transparent={true} opacity={0.5} />
               </Sphere>
             </group>
-          </group>
-          <group ref={handRRef}>
+          </group> */}
+          {/* <group ref={handRRef}>
             <group scale={0.1}>
               <Box position={[0, 0, -1]}>
                 <meshStandardMaterial color={`#333333`} />
@@ -159,7 +170,7 @@ export const HudDebugConsole = (props: Omit<BillboardProps, `children`>) => {
                 <meshStandardMaterial color={`#55ff55`} transparent={true} opacity={0.5} />
               </Sphere>
             </group>
-          </group>
+          </group> */}
         </group>
       </group>
     </Hud>

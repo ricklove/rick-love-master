@@ -16,7 +16,7 @@ export const VrTestGame = () => {
           <Hands />
           <Controllers />
           <Sphere position={[0, 2, -5]} />
-          <HudDebugConsole position={[0, -1, 3]} />
+          <HudDebugConsole position={[0, -0.1, 1]} />
           {/* <Weapons /> */}
           {/* <MovableBox /> */}
 
