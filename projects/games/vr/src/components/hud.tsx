@@ -1,11 +1,9 @@
-import React from 'react';
+import React, { useRef, useState } from 'react';
 import { mergeRefs } from 'react-merge-refs';
 import { Box, Sphere, Text } from '@react-three/drei';
 import { useFrame } from '@react-three/fiber';
-import { useXR } from '@react-three/xr';
+import { useController, useXR } from '@react-three/xr';
 import { Group, Vector3 } from 'three';
-import { formatVector } from '../utils/formatters';
-import { logger } from '../utils/logger';
 
 type BillboardProps = {
   follow?: boolean;
@@ -87,33 +85,82 @@ export const Hud: React.FC<BillboardProps> = React.forwardRef(
 );
 
 export const HudDebugConsole = (props: Omit<BillboardProps, `children`>) => {
-  const [text, setText] = React.useState(``);
+  // const [text, setText] = useState(``);
+  const [frameCount, setFrameCount] = useState(0);
 
-  const player = useXR((state) => state.player);
+  const playerSource = useXR((state) => state.player);
+  const handLSource = useController(`left`);
+  const handRSource = useController(`right`);
+
+  const originRef = useRef<Group>(null);
+  const headRef = useRef<Group>(null);
+  const handLRef = useRef<Group>(null);
+  const handRRef = useRef<Group>(null);
 
   useFrame(() => {
-    const playerPos = [player.children[0].position].map((v) => formatVector(v)).join(`,`);
-    // const handPos = tracking.hands
-    //   .map((x) => [x.position, x.velocity].map((v) => formatVector(v)).join(`,`))
-    //   .join(`\n`);
-    // // const handPos = ``;
-    setText(`${playerPos}\n\n${logger.logState.slice(0, 3).join(`\n`)}`);
+    originRef.current?.position.copy(new Vector3().sub(playerSource.children[0].position));
 
-    // setText(`${logger.logState.slice(0, 3).join(`\n`)}`);
+    headRef.current?.position.copy(playerSource.children[0].position);
+    headRef.current?.rotation.copy(playerSource.children[0].rotation);
+    if (handLSource) {
+      handLRef.current?.position.copy(handLSource.children[0].position);
+      handLRef.current?.rotation.copy(handLSource.children[0].rotation);
+    }
+    if (handRSource) {
+      handRRef.current?.position.copy(handRSource.children[0].position);
+      handRRef.current?.rotation.copy(handRSource.children[0].rotation);
+    }
+
+    setFrameCount((s) => s + 1);
+
+    // const playerPos = [player.children[0].position].map((v) => formatVector(v)).join(`,`);
+    // // const handPos = tracking.hands
+    // //   .map((x) => [x.position, x.velocity].map((v) => formatVector(v)).join(`,`))
+    // //   .join(`\n`);
+    // // // const handPos = ``;
+    // setText(`${playerPos}\n\n${logger.logState.slice(0, 3).join(`\n`)}`);
+
+    // // setText(`${logger.logState.slice(0, 3).join(`\n`)}`);
   });
 
   return (
     <Hud {...props}>
       <Text textAlign='center' whiteSpace={`overflowWrap`} maxWidth={10}>
-        {text}
+        {`F:${frameCount}`}
       </Text>
-      <group scale={0.1} rotation={player.children[0].rotation.clone()}>
-        <Box position={[0, 0, -1]}>
-          <meshStandardMaterial color={`#333333`} />
-        </Box>
-        <Sphere scale={1} position={[0, 0, 0]}>
-          <meshStandardMaterial color={`#55ff55`} transparent={true} opacity={0.5} />
-        </Sphere>
+      <group scale={0.5}>
+        <group ref={originRef}>
+          <group ref={headRef}>
+            <group scale={0.2}>
+              <Box position={[0, 0, -1]}>
+                <meshStandardMaterial color={`#333333`} />
+              </Box>
+              <Sphere position={[0, 0, 0]}>
+                <meshStandardMaterial color={`#55ff55`} transparent={true} opacity={0.5} />
+              </Sphere>
+            </group>
+          </group>
+          <group ref={handLRef}>
+            <group scale={0.1}>
+              <Box position={[0, 0, -1]}>
+                <meshStandardMaterial color={`#333333`} />
+              </Box>
+              <Sphere position={[0, 0, 0]}>
+                <meshStandardMaterial color={`#55ff55`} transparent={true} opacity={0.5} />
+              </Sphere>
+            </group>
+          </group>
+          <group ref={handRRef}>
+            <group scale={0.1}>
+              <Box position={[0, 0, -1]}>
+                <meshStandardMaterial color={`#333333`} />
+              </Box>
+              <Sphere position={[0, 0, 0]}>
+                <meshStandardMaterial color={`#55ff55`} transparent={true} opacity={0.5} />
+              </Sphere>
+            </group>
+          </group>
+        </group>
       </group>
     </Hud>
   );
