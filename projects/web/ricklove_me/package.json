@@ -3,6 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
+    "--dev - use ngrok": "next-dev-https --https --qr --port 3042",
     "dev": "next dev --port 3042",
     "build": "next build && next export && rimraf ../../../_deploy-staging/ricklove_me && copyfiles -u 1 ./out/**/* ../../../_deploy-staging/ricklove_me/",
     "build:watch": "npm run dev",
@@ -10,13 +11,12 @@
   },
   "dependencies": {
     "next": "^13.1.6",
+    "next-dev-https": "0.1.1",
     "react": "18.2.0",
     "react-dom": "18.2.0",
-    "@react-three/fiber": "8.0.27",
     "@ricklove/example-node-lib": "*",
     "@ricklove/ricklove_me-content": "*",
-    "next-transpile-modules": "~8.0.0",
-    "three": "0.141.0"
+    "next-transpile-modules": "~8.0.0"
   },
   "devDependencies": {
     "@babel/core": "^7.0.0",
