@@ -98,7 +98,7 @@ export const HudDebugConsole = (props: Omit<BillboardProps, `children`>) => {
   const handRRef = useRef<Group>(null);
 
   useFrame(() => {
-    originRef.current?.position.copy(new Vector3().sub(playerSource.children[0].position));
+    originRef.current?.position.set(0, 0, 0).sub(playerSource.children[0].position);
 
     headRef.current?.position.copy(playerSource.children[0].position);
     headRef.current?.rotation.copy(playerSource.children[0].rotation);
