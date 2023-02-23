@@ -1,6 +1,6 @@
-import React, { useRef, useState } from 'react';
+import React, { useRef } from 'react';
 import { mergeRefs } from 'react-merge-refs';
-import { Box, Sphere, Text } from '@react-three/drei';
+import { Box, Sphere } from '@react-three/drei';
 import { useFrame } from '@react-three/fiber';
 import { useController, useXR } from '@react-three/xr';
 import { Group, Vector3 } from 'three';
@@ -86,7 +86,7 @@ export const Hud: React.FC<BillboardProps> = React.forwardRef(
 
 export const HudDebugConsole = (props: Omit<BillboardProps, `children`>) => {
   // const [text, setText] = useState(``);
-  const [frameCount, setFrameCount] = useState(0);
+  // const [frameCount, setFrameCount] = useState(0);
 
   const playerSource = useXR((state) => state.player);
   const handLSource = useController(`left`);
@@ -111,7 +111,7 @@ export const HudDebugConsole = (props: Omit<BillboardProps, `children`>) => {
       handRRef.current?.rotation.copy(handRSource.children[0].rotation);
     }
 
-    setFrameCount((s) => s + 1);
+    // setFrameCount((s) => s + 1);
 
     // const playerPos = [player.children[0].position].map((v) => formatVector(v)).join(`,`);
     // // const handPos = tracking.hands
@@ -125,9 +125,9 @@ export const HudDebugConsole = (props: Omit<BillboardProps, `children`>) => {
 
   return (
     <Hud {...props}>
-      <Text textAlign='center' whiteSpace={`overflowWrap`} maxWidth={10}>
+      {/* <Text textAlign='center' whiteSpace={`overflowWrap`} maxWidth={10}>
         {`F:${frameCount}`}
-      </Text>
+      </Text> */}
       <group scale={0.5}>
         <group ref={originRef}>
           <group ref={headRef}>
