@@ -2,6 +2,7 @@ import React, { useMemo, useRef } from 'react';
 import { useFrame } from '@react-three/fiber';
 import { useXR } from '@react-three/xr';
 import { Group, Vector3 } from 'three';
+import { useIsomorphicLayoutEffect } from '../utils/layoutEffect';
 import { useCamera, usePlayer } from './camera';
 import { Hud } from './hud';
 
@@ -10,6 +11,7 @@ const ScenePerspective_PlayerDolly = ({
   children,
   perspective,
 }: Pick<JSX.IntrinsicElements['group'], `children`> & { perspective: PerspectiveKind }) => {
+  const camera = useCamera();
   const xr = useXR();
   const { cameraDolly, playerDolly } = useMemo(() => {
     // Setup dolly
@@ -25,6 +27,16 @@ const ScenePerspective_PlayerDolly = ({
   const rotate = perspective === `3rdBehind`;
   const scale = 0.3;
 
+  useIsomorphicLayoutEffect(() => {
+    if (perspective === `1st`) {
+      camera.fov = 50;
+      camera.updateProjectionMatrix();
+      return;
+    }
+    camera.fov = 120;
+    camera.updateProjectionMatrix();
+  }, [perspective]);
+
   useFrame(() => {
     if (perspective === `1st`) {
       // camera dolly === playerAvatar
@@ -34,9 +46,9 @@ const ScenePerspective_PlayerDolly = ({
     }
 
     // Move the camera dolly so that the camera is the correct distance and pointing at the player
-    const DISTANCE_3RD = 10;
+    const DISTANCE_3RD = 8;
+    camera.updateProjectionMatrix();
 
-    const camera = cameraDolly.children[0];
     const playerTargetFromCamera = new Vector3();
     camera.getWorldDirection(playerTargetFromCamera);
     playerTargetFromCamera.multiplyScalar(DISTANCE_3RD);

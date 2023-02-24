@@ -1,13 +1,13 @@
 import { useThree } from '@react-three/fiber';
 import { useXR } from '@react-three/xr';
-import { Group } from 'three';
+import { Group, PerspectiveCamera } from 'three';
 
 export const useCamera = () => {
   //   const player = useXR((state) => state.player);
   //   return player.children[0];
 
   const camera = useThree((state) => state.camera);
-  return camera;
+  return camera as PerspectiveCamera;
 };
 
 export const usePlayer = () => {

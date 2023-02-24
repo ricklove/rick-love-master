@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Box, Plane, Sphere, Text } from '@react-three/drei';
+import { Box, Sphere, Text } from '@react-three/drei';
 import { Canvas } from '@react-three/fiber';
 import { useFrame } from '@react-three/fiber';
 import { Interactive, VRButton, XR } from '@react-three/xr';
@@ -46,11 +46,14 @@ const SceneContent = () => {
     <>
       <pointLight position={[5, 5, 5]} />
       <Sphere position={[-2, 1, 0]} />
+      <Sphere position={[0, 1, -10]} />
+      <Sphere position={[0, 1, -90]} />
       <PlayerAvatarInSceneSpace />
-      <Plane receiveShadow rotation={[Math.PI * -0.5, 0, 0]} position={[0, 0, 0]}>
+      {/* <Plane receiveShadow rotation={[Math.PI * -0.5, 0, 0]} position={[0, 0, 0]}>
         <planeGeometry args={[1000, 1000]} />
-        <meshStandardMaterial color={`#333333`} />
-      </Plane>
+        <shadowMaterial color={`#333333`} />
+      </Plane> */}
+      <gridHelper args={[100, 100]} />
       <Mover />
     </>
   );
