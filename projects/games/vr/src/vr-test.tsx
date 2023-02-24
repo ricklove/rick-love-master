@@ -3,8 +3,8 @@ import { Box, Plane, Sphere, Text } from '@react-three/drei';
 import { Canvas } from '@react-three/fiber';
 import { useFrame } from '@react-three/fiber';
 import { Interactive, VRButton, XR } from '@react-three/xr';
-import { useXR } from '@react-three/xr';
 import { Vector3 } from 'three';
+import { useCamera, usePlayer } from './components/camera';
 import { DebugConsole, Hud } from './components/hud';
 import { PerspectiveKind, ScenePerspective } from './components/perspective';
 import { PlayerAvatar } from './components/player-avatar';
@@ -57,16 +57,17 @@ const SceneContent = () => {
 };
 
 const Mover = () => {
-  const player = useXR((state) => state.player);
+  const camera = useCamera();
+  const player = usePlayer();
 
   useFrame(() => {
     const dir = new Vector3();
-    player.children[0].getWorldDirection(dir);
+    camera.getWorldDirection(dir);
     player.position.add(dir.multiplyScalar(0.03));
 
     logger.log(`Mover`, {
       playerPos: formatVector(player.position),
-      camPos: formatVector(player.children[0].position),
+      camPos: formatVector(camera.position),
     });
   });
   return <></>;

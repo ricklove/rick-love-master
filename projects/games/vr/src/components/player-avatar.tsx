@@ -1,12 +1,15 @@
 import React, { useRef } from 'react';
 import { Sphere } from '@react-three/drei';
 import { useFrame } from '@react-three/fiber';
-import { useController, useXR } from '@react-three/xr';
+import { useController } from '@react-three/xr';
 import { Group, Object3D } from 'three';
+import { useCamera } from './camera';
 import { DebugModel } from './debug-model';
 
+/** The player relative to camera dolly */
 export const PlayerAvatar = () => {
-  const playerSource = useXR((state) => state.player);
+  const camera = useCamera();
+
   const handLSource = useController(`left`);
   const handRSource = useController(`right`);
 
@@ -19,11 +22,11 @@ export const PlayerAvatar = () => {
   // const referenceSpace = useThree((state) => state.gl.xr.getReferenceSpace() as XRBoundedReferenceSpace);
 
   useFrame(() => {
-    // originRef.current?.position.set(0, 0, 0).sub(playerSource.children[0].position);
+    // originRef.current?.position.set(0, 0, 0).sub(camera.position);
 
-    headRef.current?.position.copy(playerSource.children[0].position);
-    headRef.current?.rotation.copy(playerSource.children[0].rotation);
-    headFloorRef.current?.position.copy(playerSource.children[0].position).setY(0);
+    headRef.current?.position.copy(camera.position);
+    headRef.current?.rotation.copy(camera.rotation);
+    headFloorRef.current?.position.copy(camera.position).setY(0);
 
     if (handLSource) {
       handLRef.current?.position.copy(handLSource.children[0].position);
@@ -50,7 +53,7 @@ export const PlayerAvatar = () => {
       <Sphere ref={headFloorRef} scale={[0.2, 0.01, 0.2]}>
         <meshStandardMaterial color={`#445244`} transparent={true} opacity={0.5} />
       </Sphere>
-      <DebugModel model={playerSource.children[0]} depth={0} scale={0.2} />
+      <DebugModel model={camera} depth={0} scale={0.2} />
       {jointsL.map(([k, v]) => (
         <DebugModel key={k} model={v} depth={0} scale={0.01} />
       ))}
