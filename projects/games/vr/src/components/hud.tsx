@@ -1,9 +1,10 @@
-import React, { useRef } from 'react';
+import React, { useRef, useState } from 'react';
 import { mergeRefs } from 'react-merge-refs';
-import { Plane, Sphere } from '@react-three/drei';
+import { Sphere, Text } from '@react-three/drei';
 import { useFrame, useThree } from '@react-three/fiber';
 import { useController, useXR } from '@react-three/xr';
 import { Group, Object3D, Vector3 } from 'three';
+import { logger } from '../utils/logger';
 import { DebugModel } from './debug-model';
 
 type BillboardProps = {
@@ -116,15 +117,51 @@ export const Hud = (props: JSX.IntrinsicElements['group']) => {
   return <group ref={ref} {...props} />;
 };
 
-export const HudDebugPlayer = (props: Omit<BillboardProps, `children`>) => {
-  // const [text, setText] = useState(``);
-  // const [frameCount, setFrameCount] = useState(0);
+export const PlayerAsOrigin = (
+  props: Pick<JSX.IntrinsicElements['group'], `children`> & { rotate: boolean; scale: number },
+) => {
+  const playerSource = useXR((state) => state.player);
+  const posRef = useRef<Group>(null);
+  const rotRef = useRef<Group>(null);
 
+  useFrame(() => {
+    posRef.current?.position.set(0, 0, 0).sub(playerSource.children[0].position);
+    if (props.rotate) {
+      const rotSource = playerSource.children[0];
+      const direction = new Vector3();
+      rotSource.getWorldDirection(direction);
+      const cameraAngle = Math.atan2(direction.x, direction.z);
+      const reverseAngle = Math.PI - cameraAngle;
+      posRef.current?.rotation.set(0, reverseAngle, 0);
+      logger.log(`player rot.y`, { reverseAngle, cameraAngle });
+    }
+  });
+
+  return (
+    <group scale={props.scale}>
+      <group ref={rotRef}>
+        <group ref={posRef}>{props.children}</group>
+      </group>
+    </group>
+  );
+};
+
+export const DebugConsole = () => {
+  const [text, setText] = useState(``);
+
+  useFrame(() => {
+    setText(`${logger.logState.slice(0, 3).join(`\n`)}`);
+  });
+
+  return <Text>{text}</Text>;
+};
+
+export const DebugPlayerAvatar = () => {
   const playerSource = useXR((state) => state.player);
   const handLSource = useController(`left`);
   const handRSource = useController(`right`);
 
-  const originRef = useRef<Group>(null);
+  // const originRef = useRef<Group>(null);
   const headRef = useRef<Group>(null);
   const headFloorRef = useRef<Object3D>(null);
   const handLRef = useRef<Group>(null);
@@ -133,7 +170,7 @@ export const HudDebugPlayer = (props: Omit<BillboardProps, `children`>) => {
   const referenceSpace = useThree((state) => state.gl.xr.getReferenceSpace() as XRBoundedReferenceSpace);
 
   useFrame(() => {
-    originRef.current?.position.set(0, 0, 0).sub(playerSource.children[0].position);
+    // originRef.current?.position.set(0, 0, 0).sub(playerSource.children[0].position);
 
     headRef.current?.position.copy(playerSource.children[0].position);
     headRef.current?.rotation.copy(playerSource.children[0].rotation);
@@ -147,17 +184,6 @@ export const HudDebugPlayer = (props: Omit<BillboardProps, `children`>) => {
       handRRef.current?.position.copy(handRSource.children[0].position);
       handRRef.current?.rotation.copy(handRSource.children[0].rotation);
     }
-
-    // setFrameCount((s) => s + 1);
-
-    // const playerPos = [player.children[0].position].map((v) => formatVector(v)).join(`,`);
-    // // const handPos = tracking.hands
-    // //   .map((x) => [x.position, x.velocity].map((v) => formatVector(v)).join(`,`))
-    // //   .join(`\n`);
-    // // // const handPos = ``;
-    // setText(`${playerPos}\n\n${logger.logState.slice(0, 3).join(`\n`)}`);
-
-    // // setText(`${logger.logState.slice(0, 3).join(`\n`)}`);
   });
 
   const jointsL = [...Object.entries(handLSource?.hand.joints ?? {})];
@@ -165,32 +191,28 @@ export const HudDebugPlayer = (props: Omit<BillboardProps, `children`>) => {
   const boundsGeometry = referenceSpace?.boundsGeometry ?? [];
 
   return (
-    <Hud {...props}>
-      {/* <Text textAlign='center' whiteSpace={`overflowWrap`} maxWidth={10}>
-        {`F:${frameCount}`}
-      </Text> */}
-      <group scale={0.3}>
-        <group ref={originRef}>
-          <Plane rotation={[Math.PI * -0.5, 0, 0]} position={[0, 0, 0]}>
-            <meshStandardMaterial color={`#55ff55`} transparent={true} opacity={0.5} />
-          </Plane>
-          <Sphere ref={headFloorRef} scale={[0.2, 0.01, 0.2]}>
-            <meshStandardMaterial color={`#445244`} transparent={true} opacity={0.5} />
-          </Sphere>
-          <DebugModel model={playerSource.children[0]} depth={0} scale={0.2} />
-          {jointsL.map(([k, v]) => (
-            <DebugModel key={k} model={v} depth={0} scale={0.01} />
-          ))}
-          {jointsR.map(([k, v]) => (
-            <DebugModel key={k} model={v} depth={0} scale={0.01} />
-          ))}
-          {boundsGeometry.map((p, i) => (
-            <Sphere key={i} position={[p.x, p.y, p.z]}>
-              <meshStandardMaterial color={`#55ff55`} transparent={true} opacity={0.5} />
-            </Sphere>
-          ))}
-        </group>
-      </group>
-    </Hud>
+    <group>
+      {/* <Plane rotation={[Math.PI * -0.5, 0, 0]} position={[0, 0, 0]}>
+          <meshStandardMaterial color={`#55ff55`} transparent={true} opacity={0.5} />
+        </Plane> */}
+      <Sphere scale={[1, 0.001, 1]}>
+        <meshStandardMaterial color={`#001e39`} transparent={true} opacity={0.5} />
+      </Sphere>
+      <Sphere ref={headFloorRef} scale={[0.2, 0.01, 0.2]}>
+        <meshStandardMaterial color={`#445244`} transparent={true} opacity={0.5} />
+      </Sphere>
+      <DebugModel model={playerSource.children[0]} depth={0} scale={0.2} />
+      {jointsL.map(([k, v]) => (
+        <DebugModel key={k} model={v} depth={0} scale={0.01} />
+      ))}
+      {jointsR.map(([k, v]) => (
+        <DebugModel key={k} model={v} depth={0} scale={0.01} />
+      ))}
+      {boundsGeometry.map((p, i) => (
+        <Sphere key={i} position={[p.x, p.y, p.z]}>
+          <meshStandardMaterial color={`#55ff55`} transparent={true} opacity={0.5} />
+        </Sphere>
+      ))}
+    </group>
   );
 };
