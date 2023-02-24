@@ -1,10 +1,15 @@
 import React, { useState } from 'react';
 import { Box, Plane, Sphere, Text } from '@react-three/drei';
 import { Canvas } from '@react-three/fiber';
+import { useFrame } from '@react-three/fiber';
 import { Interactive, VRButton, XR } from '@react-three/xr';
+import { useXR } from '@react-three/xr';
+import { Vector3 } from 'three';
 import { DebugConsole, Hud } from './components/hud';
 import { PerspectiveKind, ScenePerspective } from './components/perspective';
 import { PlayerAvatar } from './components/player-avatar';
+import { formatVector } from './utils/formatters';
+import { logger } from './utils/logger';
 
 export const VrTestGame = () => {
   const [perspective, setPerspective] = useState(`1st` as PerspectiveKind);
@@ -24,9 +29,11 @@ export const VrTestGame = () => {
             <SceneContent />
           </ScenePerspective>
 
-          <Button position={[0, 1, -1]} text={`Change Perspective`} onClick={changePerspective} />
           <Hud position={[0, 1, 4]}>
             <DebugConsole />
+          </Hud>
+          <Hud position={[0.5, 0, 1]}>
+            <Button position={[0, 0, 0]} text={`Change Perspective`} onClick={changePerspective} />
           </Hud>
         </XR>
       </Canvas>
@@ -44,8 +51,25 @@ const SceneContent = () => {
         <planeGeometry args={[1000, 1000]} />
         <meshStandardMaterial color={`#333333`} />
       </Plane>
+      <Mover />
     </>
   );
+};
+
+const Mover = () => {
+  const player = useXR((state) => state.player);
+
+  useFrame(() => {
+    const dir = new Vector3();
+    player.children[0].getWorldDirection(dir);
+    player.position.add(dir.multiplyScalar(0.03));
+
+    logger.log(`Mover`, {
+      playerPos: formatVector(player.position),
+      camPos: formatVector(player.children[0].position),
+    });
+  });
+  return <></>;
 };
 
 const Button = (props: { text: string; onClick: () => void } & Omit<JSX.IntrinsicElements['mesh'], `onClick`>) => {

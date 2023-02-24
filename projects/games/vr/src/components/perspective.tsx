@@ -2,7 +2,6 @@ import React, { useRef } from 'react';
 import { useFrame } from '@react-three/fiber';
 import { useXR } from '@react-three/xr';
 import { Group, Vector3 } from 'three';
-import { logger } from '../utils/logger';
 import { Hud } from './hud';
 
 export type PerspectiveKind = `1st` | `3rd` | `3rdBehind`;
@@ -35,7 +34,7 @@ const PlayerAsOrigin = (
   const rotRef = useRef<Group>(null);
 
   useFrame(() => {
-    posRef.current?.position.set(0, 0, 0).sub(playerSource.children[0].position);
+    posRef.current?.position.set(0, 0, 0).sub(playerSource.position).sub(playerSource.children[0].position);
     if (props.rotate) {
       const rotSource = playerSource.children[0];
       const direction = new Vector3();
@@ -43,7 +42,7 @@ const PlayerAsOrigin = (
       const cameraAngle = Math.atan2(direction.x, direction.z);
       const reverseAngle = Math.PI - cameraAngle;
       rotRef.current?.rotation.set(0, reverseAngle, 0);
-      logger.log(`player rot.y`, { reverseAngle, cameraAngle });
+      //   logger.log(`player rot.y`, { reverseAngle, cameraAngle });
     }
   });
 
