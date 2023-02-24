@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Box, Sphere, Text } from '@react-three/drei';
 import { Canvas } from '@react-three/fiber';
 import { useFrame } from '@react-three/fiber';
-import { Interactive, VRButton, XR } from '@react-three/xr';
+import { Controllers, Hands, Interactive, VRButton, XR } from '@react-three/xr';
 import { Vector3 } from 'three';
 import { useCamera, usePlayer } from './components/camera';
 import { DebugConsole, Hud } from './components/hud';
@@ -23,8 +23,8 @@ export const VrTestGame = () => {
         <XR referenceSpace={`local-floor`}>
           {/* <AudioHost /> */}
           <ambientLight intensity={0.5} />
-          {/* <Hands />
-          <Controllers /> */}
+          <Hands />
+          <Controllers />
           <ScenePerspective perspective={perspective}>
             <SceneContent />
           </ScenePerspective>

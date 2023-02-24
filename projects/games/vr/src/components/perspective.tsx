@@ -1,6 +1,6 @@
 import React, { useMemo, useRef } from 'react';
 import { useFrame } from '@react-three/fiber';
-import { useXR } from '@react-three/xr';
+import { useXR, XRState } from '@react-three/xr';
 import { Group, Vector3 } from 'three';
 import { useIsomorphicLayoutEffect } from '../utils/layoutEffect';
 import { useCamera, usePlayer } from './camera';
@@ -19,7 +19,7 @@ const ScenePerspective_PlayerDolly = ({
     // new group => playerDolly
     const cameraDolly = xr.player;
     const playerDolly = new Group();
-    xr.set({ player: playerDolly });
+    xr.set(() => ({ playerDolly } as unknown as XRState));
 
     return { cameraDolly, playerDolly };
   }, []);

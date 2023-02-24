@@ -51,8 +51,8 @@ export const PlayerAvatar = () => {
         <meshStandardMaterial color={`#445244`} transparent={true} opacity={0.5} />
       </Sphere>
       <NodeModel model={camera} depth={0} scale={0.2} />
-      {!jointsL.length && <NodeModel model={handLSource?.children[0]} depth={0} scale={0.1} />}
-      {!jointsR.length && <NodeModel model={handRSource?.children[0]} depth={0} scale={0.1} />}
+      {!handLSource?.hand && <NodeModel model={handLSource?.children[0]} depth={0} scale={0.1} />}
+      {!handRSource?.hand && <NodeModel model={handRSource?.children[0]} depth={0} scale={0.1} />}
       {jointsL.map(([k, v]) => (
         <NodeModel key={k} model={v} depth={0} scale={0.01} />
       ))}

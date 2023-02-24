@@ -1,5 +1,5 @@
 import { useThree } from '@react-three/fiber';
-import { useXR } from '@react-three/xr';
+import { useXR, XRState } from '@react-three/xr';
 import { Group, PerspectiveCamera } from 'three';
 
 export const useCamera = () => {
@@ -10,6 +10,7 @@ export const useCamera = () => {
   return camera as PerspectiveCamera;
 };
 
+export type XRStateWithPlayerDolly = XRState & { playerDolly: Omit<Group, `children`> };
 export const usePlayer = () => {
-  return useXR((state) => state.player) as Omit<Group, `children`>;
+  return useXR((state) => (state as XRStateWithPlayerDolly).playerDolly);
 };
