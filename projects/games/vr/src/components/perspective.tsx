@@ -6,7 +6,26 @@ import { useIsomorphicLayoutEffect } from '../utils/layoutEffect';
 import { useCamera, usePlayer } from './camera';
 import { Hud } from './hud';
 
-export type PerspectiveKind = `1st` | `3rd` | `3rdBehind`;
+export type PerspectiveKind = `1st` | `1stProjection` | `1stTo3rd` | `3rdTo1st` | `3rd` | `3rdBehind`;
+export const togglePerspective = (s: PerspectiveKind): PerspectiveKind => {
+  switch (s) {
+    case `1st`:
+      return `1stTo3rd`;
+    case `1stTo3rd`:
+      //   return `3rdTo1st`;
+      // case `3rdTo1st`:
+      //   return `1stProjection`;
+      // case `1stProjection`:
+      return `3rd`;
+    case `3rd`:
+      //   return `3rdBehind`;
+      // case `3rdBehind`:
+      return `1st`;
+  }
+
+  return `1st`;
+};
+
 const ScenePerspective_PlayerDolly = ({
   children,
   perspective,
@@ -45,15 +64,56 @@ const ScenePerspective_PlayerDolly = ({
       return;
     }
 
+    // CONCEPT: 1st-projection (you can move behind and forward out of yourself based on distance to dolly origin)
+    // i.e. if over origin, you are lined up
+    // if behind origin, 3rd person
+    // if in front of origin, projected forward into walls etc
+
     // Move the camera dolly so that the camera is the correct distance and pointing at the player
-    const DISTANCE_3RD = 8;
-    camera.updateProjectionMatrix();
+    const cameraDirection = new Vector3();
+    camera.getWorldDirection(cameraDirection);
+    const toCameraDirection = new Vector3().sub(cameraDirection);
+    const toCameraDirectionFlat = toCameraDirection.clone().setY(0);
+
+    const targerDistanceToAvatar =
+      perspective === `1stTo3rd`
+        ? Math.max(0, 3 * camera.position.clone().setY(0).lengthSq() - 0.1)
+        : perspective === `3rdTo1st`
+        ? Math.max(0, 8 - 8 * camera.position.clone().setY(0).lengthSq())
+        : perspective === `1stProjection`
+        ? camera.position.dot(toCameraDirectionFlat)
+        : 8;
+    // const targerDistanceToAvatar = perspective === `1stProjection` ? camera.position.dot(toCameraDirectionFlat) : 8;
 
     const playerTargetFromCamera = new Vector3();
-    camera.getWorldDirection(playerTargetFromCamera);
-    playerTargetFromCamera.multiplyScalar(DISTANCE_3RD);
+    playerTargetFromCamera.copy(cameraDirection).multiplyScalar(targerDistanceToAvatar);
 
     cameraDolly.position.copy(playerDolly.position).sub(playerTargetFromCamera);
+
+    if (perspective === `1stProjection` || perspective === `1stTo3rd` || perspective === `3rdTo1st`) {
+      return;
+    }
+
+    // The camera is now directly behind
+    // The cameraDolly is not at the playerDolly
+    // Now the rotation can be corrected:
+    // - Should the camera be rotated to a fixed y height?
+    // - Should the camera be rotated around to the side?
+
+    // // TODO: Broken!
+    // const TARGET_HEIGHT_ANGLE_3RD = -Math.PI * 0.15;
+
+    // const toCameraDirectionFlat = toCameraDirection.clone().setY(0);
+    // const angleToForward = toCameraDirectionFlat.angleTo(new Vector3(0, 0, -1));
+
+    // cameraDolly.rotation.set(0, 0, 0);
+    // const rotationAxis = new Vector3(0, 1, 0).cross(cameraDirection);
+    // const angleToDown = cameraDirection.angleTo(new Vector3(0, -1, 0));
+    // const angleDown = Math.PI * 0.5 - angleToDown;
+    // const angleChange = angleDown - TARGET_ANGLE_3RD;
+    // cameraDolly.rotateOnWorldAxis(rotationAxis, angleChange);
+
+    // cameraDolly.lookAt(playerTargetFromCamera);
 
     // if (perspective === `3rd`) {
 

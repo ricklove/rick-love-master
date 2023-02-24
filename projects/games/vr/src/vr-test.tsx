@@ -6,7 +6,7 @@ import { Controllers, Hands, Interactive, VRButton, XR } from '@react-three/xr';
 import { Vector3 } from 'three';
 import { useCamera, usePlayer } from './components/camera';
 import { DebugConsole, Hud } from './components/hud';
-import { PerspectiveKind, ScenePerspective } from './components/perspective';
+import { PerspectiveKind, ScenePerspective, togglePerspective } from './components/perspective';
 import { PlayerAvatarInSceneSpace } from './components/player-avatar';
 import { formatVector } from './utils/formatters';
 import { logger } from './utils/logger';
@@ -14,7 +14,7 @@ import { logger } from './utils/logger';
 export const VrTestGame = () => {
   const [perspective, setPerspective] = useState(`1st` as PerspectiveKind);
   const changePerspective = () => {
-    setPerspective((s) => (s === `1st` ? `3rd` : s === `3rd` ? `3rdBehind` : `1st`));
+    setPerspective((s) => togglePerspective(s));
   };
   return (
     <>
@@ -33,7 +33,7 @@ export const VrTestGame = () => {
             <DebugConsole />
           </Hud>
           <Hud position={[0.5, 0, 1]}>
-            <Button position={[0, 0, 0]} text={`Change Perspective`} onClick={changePerspective} />
+            <Button position={[0, 0, 0]} text={`Change Perspective: ${perspective}`} onClick={changePerspective} />
           </Hud>
         </XR>
       </Canvas>
@@ -86,9 +86,18 @@ const Button = (props: { text: string; onClick: () => void } & Omit<JSX.Intrinsi
 
   return (
     <Interactive onSelect={click} onHover={() => setHover(true)} onBlur={() => setHover(false)}>
-      <Box {...props} args={[0.4, 0.1, 0.1]} scale={hover ? 1.5 : 1}>
+      <Box {...props} args={[0.4, 0.3, 0.1]} scale={hover ? 1.5 : 1}>
         <meshStandardMaterial color={color} />
-        <Text position={[0, 0, 0.06]} fontSize={0.05} color='#000' anchorX='center' anchorY='middle'>
+        <Text
+          position={[0, 0, 0.06]}
+          fontSize={0.05}
+          color='#000'
+          anchorX='center'
+          anchorY='middle'
+          maxWidth={0.4}
+          overflowWrap={`break-word`}
+          whiteSpace={`overflowWrap`}
+        >
           {props.text}
         </Text>
       </Box>
