@@ -1,7 +1,7 @@
 import React, { useRef, useState } from 'react';
 import { mergeRefs } from 'react-merge-refs';
 import { Sphere, Text } from '@react-three/drei';
-import { useFrame, useThree } from '@react-three/fiber';
+import { useFrame } from '@react-three/fiber';
 import { useController, useXR } from '@react-three/xr';
 import { Group, Object3D, Vector3 } from 'three';
 import { logger } from '../utils/logger';
@@ -117,35 +117,6 @@ export const Hud = (props: JSX.IntrinsicElements['group']) => {
   return <group ref={ref} {...props} />;
 };
 
-export const PlayerAsOrigin = (
-  props: Pick<JSX.IntrinsicElements['group'], `children`> & { rotate: boolean; scale: number },
-) => {
-  const playerSource = useXR((state) => state.player);
-  const posRef = useRef<Group>(null);
-  const rotRef = useRef<Group>(null);
-
-  useFrame(() => {
-    posRef.current?.position.set(0, 0, 0).sub(playerSource.children[0].position);
-    if (props.rotate) {
-      const rotSource = playerSource.children[0];
-      const direction = new Vector3();
-      rotSource.getWorldDirection(direction);
-      const cameraAngle = Math.atan2(direction.x, direction.z);
-      const reverseAngle = Math.PI - cameraAngle;
-      posRef.current?.rotation.set(0, reverseAngle, 0);
-      logger.log(`player rot.y`, { reverseAngle, cameraAngle });
-    }
-  });
-
-  return (
-    <group scale={props.scale}>
-      <group ref={rotRef}>
-        <group ref={posRef}>{props.children}</group>
-      </group>
-    </group>
-  );
-};
-
 export const DebugConsole = () => {
   const [text, setText] = useState(``);
 
@@ -167,7 +138,7 @@ export const DebugPlayerAvatar = () => {
   const handLRef = useRef<Group>(null);
   const handRRef = useRef<Group>(null);
 
-  const referenceSpace = useThree((state) => state.gl.xr.getReferenceSpace() as XRBoundedReferenceSpace);
+  // const referenceSpace = useThree((state) => state.gl.xr.getReferenceSpace() as XRBoundedReferenceSpace);
 
   useFrame(() => {
     // originRef.current?.position.set(0, 0, 0).sub(playerSource.children[0].position);
@@ -188,7 +159,7 @@ export const DebugPlayerAvatar = () => {
 
   const jointsL = [...Object.entries(handLSource?.hand.joints ?? {})];
   const jointsR = [...Object.entries(handRSource?.hand.joints ?? {})];
-  const boundsGeometry = referenceSpace?.boundsGeometry ?? [];
+  // const boundsGeometry = referenceSpace?.boundsGeometry ?? [];
 
   return (
     <group>
@@ -208,11 +179,11 @@ export const DebugPlayerAvatar = () => {
       {jointsR.map(([k, v]) => (
         <DebugModel key={k} model={v} depth={0} scale={0.01} />
       ))}
-      {boundsGeometry.map((p, i) => (
+      {/* {boundsGeometry.map((p, i) => (
         <Sphere key={i} position={[p.x, p.y, p.z]}>
           <meshStandardMaterial color={`#55ff55`} transparent={true} opacity={0.5} />
         </Sphere>
-      ))}
+      ))} */}
     </group>
   );
 };

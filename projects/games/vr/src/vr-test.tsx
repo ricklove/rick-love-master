@@ -2,7 +2,8 @@ import React, { useState } from 'react';
 import { Box, Plane, Sphere, Text } from '@react-three/drei';
 import { Canvas } from '@react-three/fiber';
 import { Interactive, VRButton, XR } from '@react-three/xr';
-import { DebugConsole, DebugPlayerAvatar, Hud, PlayerAsOrigin } from './components/hud';
+import { DebugConsole, DebugPlayerAvatar, Hud } from './components/hud';
+import { PerspectiveKind, ScenePerspective } from './components/perspective';
 
 export const VrTestGame = () => {
   const [perspective, setPerspective] = useState(`1st` as PerspectiveKind);
@@ -13,34 +14,22 @@ export const VrTestGame = () => {
     <>
       <VRButton onError={(e) => console.error(e)} />
       <Canvas>
-        <XR referenceSpace={`bounded-floor`}>
+        <XR referenceSpace={`local-floor`}>
           {/* <AudioHost /> */}
           <ambientLight intensity={0.5} />
           {/* <Hands />
           <Controllers /> */}
+          <ScenePerspective perspective={perspective}>
+            <SceneContent />
+          </ScenePerspective>
+
+          <Button position={[0, 1, -1]} text={`Change Perspective`} onClick={changePerspective} />
           <Hud position={[0, 1, 4]}>
             <DebugConsole />
           </Hud>
-          <ScenePerspective perspective={perspective} />
-          <Button position={[0, 1, -1]} text={`Change Perspective`} onClick={changePerspective} />
         </XR>
       </Canvas>
     </>
-  );
-};
-
-type PerspectiveKind = `1st` | `3rd` | `3rdBehind`;
-const ScenePerspective = ({ perspective }: { perspective: PerspectiveKind }) => {
-  const scene = <SceneContent />;
-  if (perspective === `1st`) {
-    return scene;
-  }
-  return (
-    <Hud position={[0, 0, 2]}>
-      <PlayerAsOrigin rotate={perspective === `3rdBehind`} scale={0.3}>
-        {scene}
-      </PlayerAsOrigin>
-    </Hud>
   );
 };
 
@@ -48,7 +37,7 @@ const SceneContent = () => {
   return (
     <>
       <pointLight position={[5, 5, 5]} />
-      <Sphere position={[0, 1, -5]} />
+      <Sphere position={[-2, 1, 0]} />
       <DebugPlayerAvatar />
       <Plane receiveShadow rotation={[Math.PI * -0.5, 0, 0]} position={[0, 0, 0]}>
         <planeGeometry args={[1000, 1000]} />
