@@ -1,10 +1,24 @@
-import React, { useRef } from 'react';
-import { Sphere } from '@react-three/drei';
+import React, { useRef, useState } from 'react';
+import { Box, Sphere } from '@react-three/drei';
 import { useFrame } from '@react-three/fiber';
 import { useController } from '@react-three/xr';
 import { Group, Object3D } from 'three';
-import { useCamera } from './camera';
-import { DebugModel } from './debug-model';
+import { useCamera, usePlayer } from './camera';
+
+export const PlayerAvatarInSceneSpace = () => {
+  const player = usePlayer();
+  const playerDollyRef = useRef<Group>(null);
+
+  useFrame(() => {
+    playerDollyRef.current?.position.copy(player.position);
+  });
+
+  return (
+    <group ref={playerDollyRef}>
+      <PlayerAvatar />
+    </group>
+  );
+};
 
 /** The player relative to camera dolly */
 export const PlayerAvatar = () => {
@@ -13,29 +27,12 @@ export const PlayerAvatar = () => {
   const handLSource = useController(`left`);
   const handRSource = useController(`right`);
 
-  // const originRef = useRef<Group>(null);
-  const headRef = useRef<Group>(null);
   const headFloorRef = useRef<Object3D>(null);
-  const handLRef = useRef<Group>(null);
-  const handRRef = useRef<Group>(null);
 
   // const referenceSpace = useThree((state) => state.gl.xr.getReferenceSpace() as XRBoundedReferenceSpace);
 
   useFrame(() => {
-    // originRef.current?.position.set(0, 0, 0).sub(camera.position);
-
-    headRef.current?.position.copy(camera.position);
-    headRef.current?.rotation.copy(camera.rotation);
     headFloorRef.current?.position.copy(camera.position).setY(0);
-
-    if (handLSource) {
-      handLRef.current?.position.copy(handLSource.children[0].position);
-      handLRef.current?.rotation.copy(handLSource.children[0].rotation);
-    }
-    if (handRSource) {
-      handRRef.current?.position.copy(handRSource.children[0].position);
-      handRRef.current?.rotation.copy(handRSource.children[0].rotation);
-    }
   });
 
   const jointsL = [...Object.entries(handLSource?.hand.joints ?? {})];
@@ -53,12 +50,14 @@ export const PlayerAvatar = () => {
       <Sphere ref={headFloorRef} scale={[0.2, 0.01, 0.2]}>
         <meshStandardMaterial color={`#445244`} transparent={true} opacity={0.5} />
       </Sphere>
-      <DebugModel model={camera} depth={0} scale={0.2} />
+      <NodeModel model={camera} depth={0} scale={0.2} />
+      {!jointsL.length && <NodeModel model={handLSource?.children[0]} depth={0} scale={0.1} />}
+      {!jointsR.length && <NodeModel model={handRSource?.children[0]} depth={0} scale={0.1} />}
       {jointsL.map(([k, v]) => (
-        <DebugModel key={k} model={v} depth={0} scale={0.01} />
+        <NodeModel key={k} model={v} depth={0} scale={0.01} />
       ))}
       {jointsR.map(([k, v]) => (
-        <DebugModel key={k} model={v} depth={0} scale={0.01} />
+        <NodeModel key={k} model={v} depth={0} scale={0.01} />
       ))}
       {/* {boundsGeometry.map((p, i) => (
         <Sphere key={i} position={[p.x, p.y, p.z]}>
@@ -66,5 +65,54 @@ export const PlayerAvatar = () => {
         </Sphere>
       ))} */}
     </group>
+  );
+};
+
+export const NodeModel = ({ model, depth, scale }: { model: undefined | Object3D; depth: number; scale?: number }) => {
+  const ref = useRef<Group>(null);
+  const [children, setChildren] = useState([] as Object3D[]);
+
+  useFrame(() => {
+    if (!ref.current || !model) {
+      return;
+    }
+    // ref.current.matrix.copy(model.matrix);
+    // ref.current.updateMatrixWorld();
+    ref.current.position.copy(model.position);
+    ref.current.rotation.copy(model.rotation);
+    ref.current.scale.copy(model.scale);
+    // model.getWorldPosition(ref.current.position);
+    // model.getWorldQuaternion(ref.current.quaternion);
+    // model.getWorldScale(ref.current.scale);
+    // model.traverse
+
+    if (depth <= 0) {
+      return;
+    }
+
+    setChildren((s) => (s.length === (ref.current?.children?.length ?? 0) ? s : ref.current?.children ?? []));
+    // ref.current.matrix.copy(model.matrix);
+  });
+
+  if (!model) {
+    return <></>;
+  }
+
+  return (
+    <>
+      <group ref={ref}>
+        <group scale={scale ?? 0.1}>
+          <Box position={[0, 0, -0.8]}>
+            <meshStandardMaterial color={`#333333`} transparent={true} opacity={0.5} />
+          </Box>
+          <Sphere position={[0, 0, 0]}>
+            <meshStandardMaterial color={`#55ff55`} transparent={true} opacity={0.5} />
+          </Sphere>
+          {children.map((c, i) => (
+            <NodeModel key={i} model={c} depth={depth - 1} />
+          ))}
+        </group>
+      </group>
+    </>
   );
 };

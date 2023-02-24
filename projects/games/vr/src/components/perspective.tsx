@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useMemo, useRef } from 'react';
 import { useFrame } from '@react-three/fiber';
 import { useXR } from '@react-three/xr';
 import { Group, Vector3 } from 'three';
@@ -11,39 +11,37 @@ const ScenePerspective_PlayerDolly = ({
   perspective,
 }: Pick<JSX.IntrinsicElements['group'], `children`> & { perspective: PerspectiveKind }) => {
   const xr = useXR();
-  const playerDollyRef = useRef(undefined as undefined | Group);
-  const cameraDollyRef = useRef(undefined as undefined | Group);
-
-  useEffect(() => {
+  const { cameraDolly, playerDolly } = useMemo(() => {
     // Setup dolly
     // original player => cameraDollyRef
     // new group => playerDolly
-    cameraDollyRef.current = xr.player;
-    playerDollyRef.current = new Group();
-    xr.set({ player: playerDollyRef.current });
+    const cameraDolly = xr.player;
+    const playerDolly = new Group();
+    xr.set({ player: playerDolly });
+
+    return { cameraDolly, playerDolly };
   }, []);
 
   const rotate = perspective === `3rdBehind`;
   const scale = 0.3;
 
   useFrame(() => {
-    if (!playerDollyRef.current || !cameraDollyRef.current) {
-      return;
-    }
-    const cameraDolly = cameraDollyRef.current;
-
     if (perspective === `1st`) {
       // camera dolly === playerAvatar
-      cameraDolly.position.copy(playerDollyRef.current.position);
-      cameraDolly.rotation.copy(playerDollyRef.current.rotation);
+      cameraDolly.position.copy(playerDolly.position);
+      cameraDolly.rotation.copy(playerDolly.rotation);
       return;
     }
 
-    // Move the camera dolly so that the camera is the correct position from the player
-    cameraDollyRef.current.position
-      .set(0, 0, 0)
-      .add(playerDollyRef.current.position)
-      .sub(cameraDolly.children[0].position);
+    // Move the camera dolly so that the camera is the correct distance and pointing at the player
+    const DISTANCE_3RD = 10;
+
+    const camera = cameraDolly.children[0];
+    const playerTargetFromCamera = new Vector3();
+    camera.getWorldDirection(playerTargetFromCamera);
+    playerTargetFromCamera.multiplyScalar(DISTANCE_3RD);
+
+    cameraDolly.position.copy(playerDolly.position).sub(playerTargetFromCamera);
 
     // if (perspective === `3rd`) {
 
@@ -64,7 +62,7 @@ const ScenePerspective_PlayerDolly = ({
   return (
     <>
       {children}
-      <primitive object={playerDollyRef.current} />
+      <primitive object={playerDolly} />
     </>
   );
 };
@@ -73,7 +71,7 @@ export const ScenePerspective = ({
   children,
   perspective,
 }: Pick<JSX.IntrinsicElements['group'], `children`> & { perspective: PerspectiveKind }) => {
-  const USE_PLAYER_AVATAR = false;
+  const USE_PLAYER_AVATAR = true;
 
   if (USE_PLAYER_AVATAR) {
     return (

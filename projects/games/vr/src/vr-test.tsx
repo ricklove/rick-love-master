@@ -7,7 +7,7 @@ import { Vector3 } from 'three';
 import { useCamera, usePlayer } from './components/camera';
 import { DebugConsole, Hud } from './components/hud';
 import { PerspectiveKind, ScenePerspective } from './components/perspective';
-import { PlayerAvatar } from './components/player-avatar';
+import { PlayerAvatarInSceneSpace } from './components/player-avatar';
 import { formatVector } from './utils/formatters';
 import { logger } from './utils/logger';
 
@@ -46,7 +46,7 @@ const SceneContent = () => {
     <>
       <pointLight position={[5, 5, 5]} />
       <Sphere position={[-2, 1, 0]} />
-      <PlayerAvatar />
+      <PlayerAvatarInSceneSpace />
       <Plane receiveShadow rotation={[Math.PI * -0.5, 0, 0]} position={[0, 0, 0]}>
         <planeGeometry args={[1000, 1000]} />
         <meshStandardMaterial color={`#333333`} />
@@ -61,8 +61,7 @@ const Mover = () => {
   const player = usePlayer();
 
   useFrame(() => {
-    const dir = new Vector3();
-    camera.getWorldDirection(dir);
+    const dir = new Vector3(0, 0, -1).applyQuaternion(camera.quaternion);
     player.position.add(dir.multiplyScalar(0.03));
 
     logger.log(`Mover`, {
