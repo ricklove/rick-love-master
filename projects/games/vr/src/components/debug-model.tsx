@@ -44,7 +44,7 @@ export const DebugModel = ({ model, depth, scale }: { model: undefined | Model; 
     <>
       <group ref={ref}>
         <group scale={scale ?? 0.1}>
-          <Box position={[0, 0, -1]}>
+          <Box position={[0, 0, -0.8]}>
             <meshStandardMaterial color={`#333333`} transparent={true} opacity={0.5} />
           </Box>
           <Sphere position={[0, 0, 0]}>

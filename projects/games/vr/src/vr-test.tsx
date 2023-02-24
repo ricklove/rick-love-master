@@ -2,8 +2,9 @@ import React, { useState } from 'react';
 import { Box, Plane, Sphere, Text } from '@react-three/drei';
 import { Canvas } from '@react-three/fiber';
 import { Interactive, VRButton, XR } from '@react-three/xr';
-import { DebugConsole, DebugPlayerAvatar, Hud } from './components/hud';
+import { DebugConsole, Hud } from './components/hud';
 import { PerspectiveKind, ScenePerspective } from './components/perspective';
+import { PlayerAvatar } from './components/player-avatar';
 
 export const VrTestGame = () => {
   const [perspective, setPerspective] = useState(`1st` as PerspectiveKind);
@@ -38,7 +39,7 @@ const SceneContent = () => {
     <>
       <pointLight position={[5, 5, 5]} />
       <Sphere position={[-2, 1, 0]} />
-      <DebugPlayerAvatar />
+      <PlayerAvatar />
       <Plane receiveShadow rotation={[Math.PI * -0.5, 0, 0]} position={[0, 0, 0]}>
         <planeGeometry args={[1000, 1000]} />
         <meshStandardMaterial color={`#333333`} />
@@ -52,7 +53,7 @@ const Button = (props: { text: string; onClick: () => void } & Omit<JSX.Intrinsi
   const [color, setColor] = React.useState(0x123456);
 
   const click = () => {
-    setColor((Math.random() * 0xffffff) | 0);
+    setColor(Math.floor(Math.random() * 0xffffff));
     props.onClick();
   };
 
