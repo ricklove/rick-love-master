@@ -1,8 +1,9 @@
 import React, { useRef } from 'react';
 import { mergeRefs } from 'react-merge-refs';
-import { useFrame } from '@react-three/fiber';
+import { Plane, Sphere } from '@react-three/drei';
+import { useFrame, useThree } from '@react-three/fiber';
 import { useController, useXR } from '@react-three/xr';
-import { Group, Vector3 } from 'three';
+import { Group, Object3D, Vector3 } from 'three';
 import { DebugModel } from './debug-model';
 
 type BillboardProps = {
@@ -35,7 +36,7 @@ export const Billboard: React.FC<BillboardProps> = React.forwardRef(
   },
 );
 
-export const Hud: React.FC<BillboardProps> = React.forwardRef(
+export const Hud2: React.FC<BillboardProps> = React.forwardRef(
   ({ follow = true, lockX = false, lockY = false, lockZ = false, ...props }, ref) => {
     const player = useXR((state) => state.player);
 
@@ -84,7 +85,38 @@ export const Hud: React.FC<BillboardProps> = React.forwardRef(
   },
 );
 
-export const HudDebugConsole = (props: Omit<BillboardProps, `children`>) => {
+export const Hud = (props: JSX.IntrinsicElements['group']) => {
+  const player = useXR((state) => state.player);
+
+  const ref = React.useRef<Group>(null);
+  useFrame(() => {
+    if (!ref.current) return;
+
+    // always face the player
+    player.children[0].getWorldPosition(ref.current.position);
+
+    const positionPlayer = ref.current.position.clone();
+    // const frontDirection = new Vector3().sub(new Vector3(0, 0, 1).applyEuler(player.children[0].rotation));
+    // const frontProjection = frontDirection.clone().add(positionPlayer);
+    const positionOriginal = Array.isArray(props.position)
+      ? new Vector3(...props.position)
+      : typeof props.position === `object`
+      ? props.position
+      : undefined ?? new Vector3();
+    const positionOriginalMirrored = positionOriginal.clone().multiply(new Vector3(-1, -1, 1));
+    const projectedOrignalPosition = new Vector3().sub(
+      positionOriginalMirrored.clone().applyEuler(player.children[0].rotation),
+    );
+    const positionFinal = projectedOrignalPosition.clone().add(positionPlayer);
+
+    ref.current.position.copy(positionFinal);
+    player.children[0].getWorldQuaternion(ref.current.quaternion);
+  });
+
+  return <group ref={ref} {...props} />;
+};
+
+export const HudDebugPlayer = (props: Omit<BillboardProps, `children`>) => {
   // const [text, setText] = useState(``);
   // const [frameCount, setFrameCount] = useState(0);
 
@@ -94,14 +126,19 @@ export const HudDebugConsole = (props: Omit<BillboardProps, `children`>) => {
 
   const originRef = useRef<Group>(null);
   const headRef = useRef<Group>(null);
+  const headFloorRef = useRef<Object3D>(null);
   const handLRef = useRef<Group>(null);
   const handRRef = useRef<Group>(null);
+
+  const referenceSpace = useThree((state) => state.gl.xr.getReferenceSpace() as XRBoundedReferenceSpace);
 
   useFrame(() => {
     originRef.current?.position.set(0, 0, 0).sub(playerSource.children[0].position);
 
     headRef.current?.position.copy(playerSource.children[0].position);
     headRef.current?.rotation.copy(playerSource.children[0].rotation);
+    headFloorRef.current?.position.copy(playerSource.children[0].position).setY(0);
+
     if (handLSource) {
       handLRef.current?.position.copy(handLSource.children[0].position);
       handLRef.current?.rotation.copy(handLSource.children[0].rotation);
@@ -125,52 +162,33 @@ export const HudDebugConsole = (props: Omit<BillboardProps, `children`>) => {
 
   const jointsL = [...Object.entries(handLSource?.hand.joints ?? {})];
   const jointsR = [...Object.entries(handRSource?.hand.joints ?? {})];
+  const boundsGeometry = referenceSpace?.boundsGeometry ?? [];
 
   return (
     <Hud {...props}>
       {/* <Text textAlign='center' whiteSpace={`overflowWrap`} maxWidth={10}>
         {`F:${frameCount}`}
       </Text> */}
-      <group scale={0.5}>
+      <group scale={0.3}>
         <group ref={originRef}>
-          <DebugModel model={playerSource.children[0]} depth={0} />
+          <Plane rotation={[Math.PI * -0.5, 0, 0]} position={[0, 0, 0]}>
+            <meshStandardMaterial color={`#55ff55`} transparent={true} opacity={0.5} />
+          </Plane>
+          <Sphere ref={headFloorRef} scale={[0.2, 0.01, 0.2]}>
+            <meshStandardMaterial color={`#445244`} transparent={true} opacity={0.5} />
+          </Sphere>
+          <DebugModel model={playerSource.children[0]} depth={0} scale={0.2} />
           {jointsL.map(([k, v]) => (
             <DebugModel key={k} model={v} depth={0} scale={0.01} />
           ))}
           {jointsR.map(([k, v]) => (
             <DebugModel key={k} model={v} depth={0} scale={0.01} />
           ))}
-          {/* <DebugModel model={handLSource?.children[0]} depth={0} /> */}
-          {/* <group ref={headRef}>
-            <group scale={0.2}>
-              <Box position={[0, 0, -1]}>
-                <meshStandardMaterial color={`#333333`} />
-              </Box>
-              <Sphere position={[0, 0, 0]}>
-                <meshStandardMaterial color={`#55ff55`} transparent={true} opacity={0.5} />
-              </Sphere>
-            </group>
-          </group> */}
-          {/* <group ref={handLRef}>
-            <group scale={0.1}>
-              <Box position={[0, 0, -1]}>
-                <meshStandardMaterial color={`#333333`} />
-              </Box>
-              <Sphere position={[0, 0, 0]}>
-                <meshStandardMaterial color={`#55ff55`} transparent={true} opacity={0.5} />
-              </Sphere>
-            </group>
-          </group> */}
-          {/* <group ref={handRRef}>
-            <group scale={0.1}>
-              <Box position={[0, 0, -1]}>
-                <meshStandardMaterial color={`#333333`} />
-              </Box>
-              <Sphere position={[0, 0, 0]}>
-                <meshStandardMaterial color={`#55ff55`} transparent={true} opacity={0.5} />
-              </Sphere>
-            </group>
-          </group> */}
+          {boundsGeometry.map((p, i) => (
+            <Sphere key={i} position={[p.x, p.y, p.z]}>
+              <meshStandardMaterial color={`#55ff55`} transparent={true} opacity={0.5} />
+            </Sphere>
+          ))}
         </group>
       </group>
     </Hud>
