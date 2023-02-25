@@ -134,8 +134,8 @@ const calculateHandGesture = (hand: XRHandSpace | undefined, filter: GestureBitF
     pointing._directionDelta.copy(pointing._direction).sub(pointing.direction);
     pointing._originDelta.copy(pointing._origin).sub(pointing.origin);
 
-    const runningAverageFactorOrigin = Math.min(1, 100.0 * pointing._originDelta.lengthSq());
-    const runningAverageFactorDirection = Math.min(1, 10.0 * pointing._directionDelta.lengthSq());
+    const runningAverageFactorOrigin = Math.min(1, 10.0 * pointing._originDelta.length());
+    const runningAverageFactorDirection = Math.min(1, 1.0 * pointing._directionDelta.length());
 
     pointing.origin
       .multiplyScalar(1 - runningAverageFactorOrigin)
