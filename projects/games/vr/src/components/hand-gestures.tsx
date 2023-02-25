@@ -24,7 +24,8 @@ export const useHandGesture = (filter: GestureBitFlag) => {
 
 export enum GestureBitFlag {
   none = 0,
-  pointing = 1 << 0,
+  handDirection = 1 << 0,
+  pointing = 2 << 0,
   //   Mean = 1 << 1,
   //   Funny = 1 << 2,
   //   Boring = 1 << 3,
@@ -37,6 +38,17 @@ const createGestureResult = () => {
     _empty: new Vector3(),
     _joints: {} as Partial<XRHandJoints>,
     kind: 0,
+    handDirection: {
+      active: false,
+      direction: new Vector3(),
+      origin: new Vector3(),
+      _directionDelta: new Vector3(),
+      _originDelta: new Vector3(),
+      _direction: new Vector3(),
+      _origin: new Vector3(),
+      _target: new Vector3(),
+      _toTarget: new Vector3(),
+    },
     pointing: {
       active: false,
       direction: new Vector3(),
@@ -46,9 +58,9 @@ const createGestureResult = () => {
       _direction: new Vector3(),
       _origin: new Vector3(),
       _indexTarget: new Vector3(),
-      _pointingOrigin: new Vector3(),
       _toMiddleTip: new Vector3(),
       _toIndexTip: new Vector3(),
+      _toIndexTarget: new Vector3(),
     },
   };
 };
@@ -81,6 +93,24 @@ const resetGestureResult = (result: GestureResult, hand: XRHandSpace | undefined
   }
 };
 
+type SmoothDirection = { _directionDelta: Vector3; _direction: Vector3; direction: Vector3 };
+const smoothDirection = (value: Vector3, g: SmoothDirection) => {
+  g._direction.copy(value);
+  g._directionDelta.copy(g._direction).sub(g.direction);
+  const runningAverageFactorDirection = Math.min(1, 1.0 * g._directionDelta.length());
+  g.direction
+    .multiplyScalar(1 - runningAverageFactorDirection)
+    .add(g._direction.multiplyScalar(runningAverageFactorDirection));
+};
+
+type SmoothOrigin = { _originDelta: Vector3; _origin: Vector3; origin: Vector3 };
+const smoothOrigin = (value: Vector3, g: SmoothOrigin) => {
+  g._origin.copy(value);
+  g._originDelta.copy(g._origin).sub(g.origin);
+  const runningAverageFactorOrigin = Math.min(1, 10.0 * g._originDelta.length());
+  g.origin.multiplyScalar(1 - runningAverageFactorOrigin).add(g._origin.multiplyScalar(runningAverageFactorOrigin));
+};
+
 const calculateHandGesture = (hand: XRHandSpace | undefined, filter: GestureBitFlag, out: GestureResult) => {
   resetGestureResult(out, hand);
   const joints = out?._joints;
@@ -97,52 +127,66 @@ const calculateHandGesture = (hand: XRHandSpace | undefined, filter: GestureBitF
 
   const empty = out._empty;
 
+  if (filter & GestureBitFlag.handDirection) {
+    const g = out.handDirection;
+
+    const target0 = joints[`index-finger-phalanx-intermediate`]?.position ?? empty;
+    const target1 = joints[`middle-finger-phalanx-intermediate`]?.position ?? empty;
+    const target2 = joints[`ring-finger-phalanx-intermediate`]?.position ?? empty;
+
+    const origin0 = joints[`thumb-metacarpal`]?.position ?? wrist.position;
+    const origin1 = joints[`index-finger-metacarpal`]?.position ?? wrist.position;
+    const origin2 = joints[`middle-finger-metacarpal`]?.position ?? wrist.position;
+
+    const target = g._target
+      .copy(target0)
+      .add(target1)
+      .add(target2)
+      .multiplyScalar(1 / 3);
+    const origin = g._origin
+      .copy(origin0)
+      .add(origin1)
+      .add(origin2)
+      .multiplyScalar(1 / 3);
+
+    const toTarget = g._toTarget.copy(target).sub(origin);
+    smoothDirection(toTarget, g);
+    smoothOrigin(g._origin, g);
+  }
+
   if (filter & GestureBitFlag.pointing) {
+    const g = out.pointing;
+
     const indexTarget0 = joints[`index-finger-tip`]?.position ?? empty;
     const indexTarget1 = joints[`index-finger-phalanx-distal`]?.position ?? empty;
     const indexTarget2 = joints[`index-finger-phalanx-intermediate`]?.position ?? empty;
 
     const middleTip = joints[`middle-finger-tip`]?.position ?? empty;
 
-    const pointingOrigin0 = joints[`thumb-metacarpal`]?.position ?? wrist.position;
-    const pointingOrigin1 = joints[`index-finger-metacarpal`]?.position ?? wrist.position;
-    const pointingOrigin2 = joints[`middle-finger-metacarpal`]?.position ?? wrist.position;
+    const origin0 = joints[`thumb-metacarpal`]?.position ?? wrist.position;
+    const origin1 = joints[`index-finger-metacarpal`]?.position ?? wrist.position;
+    const origin2 = joints[`middle-finger-metacarpal`]?.position ?? wrist.position;
 
-    const pointing = out.pointing;
-
-    const indexTarget = pointing._indexTarget
+    const indexTarget = g._indexTarget
       .copy(indexTarget0)
       .add(indexTarget1)
       .add(indexTarget2)
       .multiplyScalar(1 / 3);
-    const pointingOrigin = pointing._pointingOrigin
-      .copy(pointingOrigin0)
-      .add(pointingOrigin1)
-      .add(pointingOrigin2)
+    const origin = g._origin
+      .copy(origin0)
+      .add(origin1)
+      .add(origin2)
       .multiplyScalar(1 / 3);
 
-    const toMiddleTip = pointing._toMiddleTip.copy(middleTip).sub(pointingOrigin);
-    const toIndexTip = pointing._toIndexTip.copy(indexTarget0).sub(pointingOrigin);
-    const toIndexTarget = pointing._toIndexTip.copy(indexTarget).sub(pointingOrigin);
+    const toMiddleTip = g._toMiddleTip.copy(middleTip).sub(origin);
+    const toIndexTip = g._toIndexTip.copy(indexTarget0).sub(origin);
     // if the middle finger is closer to the wrist than the index finger tip by a factor
     const FACTOR = 2;
-    pointing.active = toIndexTip.lengthSq() > toMiddleTip.lengthSq() * FACTOR * FACTOR;
+    g.active = toIndexTip.lengthSq() > toMiddleTip.lengthSq() * FACTOR * FACTOR;
 
-    pointing._origin.copy(pointingOrigin);
-    pointing._direction.copy(toIndexTarget).normalize();
-
-    pointing._directionDelta.copy(pointing._direction).sub(pointing.direction);
-    pointing._originDelta.copy(pointing._origin).sub(pointing.origin);
-
-    const runningAverageFactorOrigin = Math.min(1, 10.0 * pointing._originDelta.length());
-    const runningAverageFactorDirection = Math.min(1, 1.0 * pointing._directionDelta.length());
-
-    pointing.origin
-      .multiplyScalar(1 - runningAverageFactorOrigin)
-      .add(pointing._origin.multiplyScalar(runningAverageFactorOrigin));
-    pointing.direction
-      .multiplyScalar(1 - runningAverageFactorDirection)
-      .add(pointing._direction.multiplyScalar(runningAverageFactorDirection));
+    const toIndexTarget = g._toIndexTarget.copy(indexTarget).sub(origin);
+    smoothDirection(toIndexTarget, g);
+    smoothOrigin(g._origin, g);
   }
 
   return out;
