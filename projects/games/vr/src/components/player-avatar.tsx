@@ -1,9 +1,10 @@
 import React, { useRef, useState } from 'react';
-import { Box, Sphere } from '@react-three/drei';
+import { Box, Sphere, Text } from '@react-three/drei';
 import { useFrame } from '@react-three/fiber';
 import { useController } from '@react-three/xr';
 import { Group, Object3D } from 'three';
 import { useCamera, usePlayer } from './camera';
+import { PlayerHandGestures } from './hand-gestures-view';
 
 export const PlayerAvatarInSceneSpace = () => {
   const player = usePlayer();
@@ -54,21 +55,34 @@ export const PlayerAvatar = () => {
       {!handLSource?.hand && <NodeModel model={handLSource?.children[0]} depth={0} scale={0.1} />}
       {!handRSource?.hand && <NodeModel model={handRSource?.children[0]} depth={0} scale={0.1} />}
       {jointsL.map(([k, v]) => (
-        <NodeModel key={k} model={v} depth={0} scale={0.01} />
+        <NodeModel key={k} model={v} depth={0} scale={0.01} name={k} />
       ))}
       {jointsR.map(([k, v]) => (
-        <NodeModel key={k} model={v} depth={0} scale={0.01} />
+        <NodeModel key={k} model={v} depth={0} scale={0.01} name={k} />
       ))}
       {/* {boundsGeometry.map((p, i) => (
         <Sphere key={i} position={[p.x, p.y, p.z]}>
           <meshStandardMaterial color={`#55ff55`} transparent={true} opacity={0.5} />
         </Sphere>
       ))} */}
+      <PlayerHandGestures />
     </group>
   );
 };
 
-export const NodeModel = ({ model, depth, scale }: { model: undefined | Object3D; depth: number; scale?: number }) => {
+const SHOW_NAMES = false;
+
+export const NodeModel = ({
+  model,
+  depth,
+  scale,
+  name,
+}: {
+  model: undefined | Object3D;
+  depth: number;
+  scale?: number;
+  name?: string;
+}) => {
   const ref = useRef<Group>(null);
   const [children, setChildren] = useState([] as Object3D[]);
 
@@ -102,7 +116,7 @@ export const NodeModel = ({ model, depth, scale }: { model: undefined | Object3D
     <>
       <group ref={ref}>
         <group scale={scale ?? 0.1}>
-          <Box position={[0, 0, -0.8]}>
+          <Box position={[0, 0, -0.8]} args={[1, 0.75, 1]}>
             <meshStandardMaterial color={`#333333`} transparent={true} opacity={0.5} />
           </Box>
           <Sphere position={[0, 0, 0]}>
@@ -111,6 +125,17 @@ export const NodeModel = ({ model, depth, scale }: { model: undefined | Object3D
           {children.map((c, i) => (
             <NodeModel key={i} model={c} depth={depth - 1} />
           ))}
+          {SHOW_NAMES && !!name && (
+            <Text
+              position={[0, 10, 0]}
+              rotation={[0, 0, Math.PI * 0.5]}
+              fontSize={2}
+              color={`#FFFFFF`}
+              anchorX={`left`}
+            >
+              {name || `TEST`}
+            </Text>
+          )}
         </group>
       </group>
     </>

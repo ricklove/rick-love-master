@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Box, Sphere, Text } from '@react-three/drei';
 import { Canvas } from '@react-three/fiber';
 import { useFrame } from '@react-three/fiber';
-import { Controllers, Hands, Interactive, VRButton, XR } from '@react-three/xr';
+import { Controllers, Interactive, VRButton, XR } from '@react-three/xr';
 import { Vector3 } from 'three';
 import { useCamera, usePlayer } from './components/camera';
 import { DebugConsole, Hud } from './components/hud';
@@ -23,7 +23,7 @@ export const VrTestGame = () => {
         <XR referenceSpace={`local-floor`}>
           {/* <AudioHost /> */}
           <ambientLight intensity={0.5} />
-          <Hands />
+          {/* <Hands /> */}
           <Controllers />
           <ScenePerspective perspective={perspective}>
             <SceneContent />
@@ -45,9 +45,9 @@ const SceneContent = () => {
   return (
     <>
       <pointLight position={[5, 5, 5]} />
-      <Sphere position={[-2, 1, 0]} />
-      <Sphere position={[0, 1, -10]} />
-      <Sphere position={[0, 1, -90]} />
+      <Sphere position={[-2, 1, 0]} scale={0.02} />
+      <Sphere position={[0, 1, -10]} scale={0.05} />
+      <Sphere position={[5, 1, -90]} />
       <PlayerAvatarInSceneSpace />
       {/* <Plane receiveShadow rotation={[Math.PI * -0.5, 0, 0]} position={[0, 0, 0]}>
         <planeGeometry args={[1000, 1000]} />
@@ -64,6 +64,11 @@ const Mover = () => {
   const player = usePlayer();
 
   useFrame(() => {
+    const DISABLE = true;
+    if (DISABLE) {
+      return;
+    }
+
     const dir = new Vector3(0, 0, -1).applyQuaternion(camera.quaternion);
     player.position.add(dir.multiplyScalar(0.03));
 
