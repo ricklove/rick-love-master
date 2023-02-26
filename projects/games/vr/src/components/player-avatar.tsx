@@ -1,5 +1,5 @@
 import React, { useRef, useState } from 'react';
-import { Box, Sphere, Text } from '@react-three/drei';
+import { Box, Line, Sphere, Text } from '@react-three/drei';
 import { useFrame } from '@react-three/fiber';
 import { useController } from '@react-three/xr';
 import { Group, Object3D } from 'three';
@@ -71,6 +71,7 @@ export const PlayerAvatar = () => {
 };
 
 const SHOW_NAMES = false;
+const SHOW_DIRECTION = true;
 
 export const NodeModel = ({
   model,
@@ -116,6 +117,16 @@ export const NodeModel = ({
     <>
       <group ref={ref}>
         <group scale={scale ?? 0.1}>
+          {SHOW_DIRECTION && (
+            <Line
+              lineWidth={1}
+              points={[
+                [0, 0, 0],
+                [0, 0, -100],
+              ]}
+              color={0xff0088}
+            />
+          )}
           <Box position={[0, 0, -0.8]} args={[1, 0.75, 1]}>
             <meshStandardMaterial color={`#333333`} transparent={true} opacity={0.5} />
           </Box>
