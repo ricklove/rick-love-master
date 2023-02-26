@@ -36,6 +36,7 @@ const PlayerHandGesture = ({ gesture }: { gesture: GestureResult }) => {
       /> */}
       <GestureLine gesture={gesture.pointingGun} color={0xff0000} />
       <GestureLine gesture={gesture.pointingIndexFinger} color={0x00ff00} />
+      <GestureLine gesture={gesture.pointingWand} color={0xff00ff} />
     </>
   );
 };

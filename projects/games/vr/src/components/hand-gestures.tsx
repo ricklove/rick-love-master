@@ -26,12 +26,14 @@ export type GestureOptions = {
   pointingHand?: boolean;
   pointingGun?: boolean;
   pointingIndexFinger?: boolean;
+  pointingWand?: boolean;
 };
 export const GestureOptions = {
   all: {
     pointingHand: true,
     pointingGun: true,
     pointingIndexFinger: true,
+    pointingWand: true,
   } as GestureOptions,
 };
 
@@ -74,6 +76,17 @@ const createGestureResult = () => {
       _toIndexTip: new Vector3(),
       _origin: new Vector3(),
       _originUpAdjustment: new Vector3(),
+      _toTargetDirection: new Vector3(),
+    },
+    pointingWand: {
+      active: false,
+      ...createDirectionAndOrigin(),
+      _target: new Vector3(),
+      _toMiddleTip: new Vector3(),
+      _toIndexTip: new Vector3(),
+      _origin: new Vector3(),
+      _targetAdjustment: new Vector3(),
+      _originAdjustment: new Vector3(),
       _toTargetDirection: new Vector3(),
     },
   };
@@ -249,6 +262,40 @@ const calculateHandGesture = (
     const toTargetDirection = g._toTargetDirection.copy(target).sub(origin).normalize();
     g.direction.copy(smoothValue(toTargetDirection, g._directionSmoothing));
     g.position.copy(indeTip);
+    calculateRotation(g);
+  }
+
+  if (options.pointingWand) {
+    const g = out.pointingWand;
+    const h = out.pointingHand;
+
+    const indeTip = joints[`index-finger-tip`]?.position ?? empty;
+    const indeDist = joints[`index-finger-phalanx-distal`]?.position ?? empty;
+    const indeInte = joints[`index-finger-phalanx-intermediate`]?.position ?? empty;
+
+    const middTip = joints[`middle-finger-tip`]?.position ?? empty;
+
+    const targetAdjustment = g._targetAdjustment.copy(h._ringToIndex).multiplyScalar(-0.2);
+
+    const target = g._target
+      .copy(indeTip)
+      .add(indeDist)
+      .add(indeInte)
+      .multiplyScalar(1 / 3)
+      .add(targetAdjustment);
+
+    const originAdjustment = g._originAdjustment.copy(h._ringToIndex).multiplyScalar(-0.2);
+    const origin = g._origin.copy(h._wristMetacarpalAverage).add(originAdjustment);
+
+    const toMiddleTip = g._toMiddleTip.copy(middTip).sub(origin);
+    const toIndexTip = g._toIndexTip.copy(indeTip).sub(origin);
+    // if the middle finger is closer to the wrist than the index finger tip by a factor
+    const FACTOR = 2;
+    g.active = toIndexTip.lengthSq() > toMiddleTip.lengthSq() * FACTOR * FACTOR;
+
+    const toTargetDirection = g._toTargetDirection.copy(target).sub(origin).normalize();
+    g.direction.copy(smoothValue(toTargetDirection, g._directionSmoothing));
+    g.position.copy(origin);
     calculateRotation(g);
   }
 
