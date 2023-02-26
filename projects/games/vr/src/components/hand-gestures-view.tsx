@@ -3,10 +3,10 @@ import { Line } from '@react-three/drei';
 import { useFrame } from '@react-three/fiber';
 import { Matrix4, Vector3 } from 'three';
 import { Line2 } from 'three-stdlib';
-import { GestureBitFlag, GestureResult, useHandGesture } from './hand-gestures';
+import { GestureOptions, GestureResult, useHandGesture } from './hand-gestures';
 
 export const PlayerHandGestures = () => {
-  const gestures = useHandGesture(GestureBitFlag.all);
+  const gestures = useHandGesture(GestureOptions.all);
 
   return (
     <>
@@ -16,52 +16,104 @@ export const PlayerHandGestures = () => {
   );
 };
 const PlayerHandGesture = ({ gesture }: { gesture: GestureResult }) => {
-  const handPointingRef = useRef<Line2>(null);
-  const pointingRef = useRef<Line2>(null);
+  return (
+    <>
+      <GestureLine gesture={gesture.pointingHand} color={0x0000ff} />
+      {/* <GestureLineDirection
+        {...gesture.pointingHand}
+        direction={gesture.pointingHand._handUpDirection}
+        color={0x008800}
+      />
+      <GestureLineDirection
+        {...gesture.pointingHand}
+        direction={gesture.pointingHand._handForwardDirection}
+        color={0x000088}
+      />
+      <GestureLineDirection
+        {...gesture.pointingHand}
+        direction={gesture.pointingHand._handPalmDirection}
+        color={0x880000}
+      /> */}
+      <GestureLine gesture={gesture.pointingGun} color={0xff0000} />
+      <GestureLine gesture={gesture.pointingIndexFinger} color={0x00ff00} />
+    </>
+  );
+};
+
+const GestureLine = ({
+  gesture,
+  color,
+}: {
+  gesture: {
+    active: boolean;
+    position: Vector3;
+    rotation: Matrix4;
+  };
+  color?: number;
+}) => {
+  const ref = useRef<Line2>(null);
 
   useFrame(() => {
-    if (handPointingRef.current) {
-      const o = handPointingRef.current;
-      const g = gesture.handPointing;
-
-      o.visible = g.active;
-      o.position.copy(g.origin);
-
-      const mx = new Matrix4().lookAt(new Vector3(0, 0, 0), g.direction, new Vector3(0, 1, 0));
-      o.rotation.setFromRotationMatrix(mx);
+    if (!ref.current) {
+      return;
     }
-    if (pointingRef.current) {
-      const o = pointingRef.current;
-      const g = gesture.pointing;
+    const o = ref.current;
+    const g = gesture;
 
-      o.visible = g.active;
-      o.position.copy(g.origin);
-
-      const mx = new Matrix4().lookAt(new Vector3(0, 0, 0), g.direction, new Vector3(0, 1, 0));
-      o.rotation.setFromRotationMatrix(mx);
-    }
+    o.visible = g.active;
+    o.position.copy(g.position);
+    o.rotation.setFromRotationMatrix(g.rotation);
   });
 
   return (
-    <>
-      <Line
-        ref={handPointingRef}
-        lineWidth={1}
-        points={[
-          [0, 0, 0],
-          [0, 0, -100],
-        ]}
-        color={0xff0000}
-      />
-      <Line
-        ref={pointingRef}
-        lineWidth={1}
-        points={[
-          [0, 0, 0],
-          [0, 0, -100],
-        ]}
-        color={0x00ff00}
-      />
-    </>
+    <Line
+      ref={ref}
+      lineWidth={1}
+      points={[
+        [0, 0, 0],
+        [0, 0, -100],
+      ]}
+      color={color ?? 0x00ff00}
+    />
+  );
+};
+
+const GestureLineDirection = ({
+  gesture,
+  direction,
+  color,
+}: {
+  gesture: {
+    active: boolean;
+    position: Vector3;
+  };
+  direction: () => Vector3;
+  color?: number;
+}) => {
+  const ref = useRef<Line2>(null);
+
+  useFrame(() => {
+    if (!ref.current) {
+      return;
+    }
+    const o = ref.current;
+    const g = gesture;
+
+    o.visible = g.active;
+    o.position.copy(g.position);
+    const rotation = new Matrix4().lookAt(new Vector3(0, 0, 0), direction(), new Vector3(0, 1, 0));
+    o.rotation.setFromRotationMatrix(rotation);
+  });
+
+  return (
+    <Line
+      ref={ref}
+      lineWidth={1}
+      points={[
+        [0, 0, 0],
+        [0, 0, -100],
+      ]}
+      color={color ?? 0x00ff00}
+    />
   );
 };

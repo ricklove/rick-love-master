@@ -71,7 +71,7 @@ export const PlayerAvatar = () => {
 };
 
 const SHOW_NAMES = false;
-const SHOW_DIRECTION = true;
+const SHOW_DIRECTION = false;
 
 export const NodeModel = ({
   model,

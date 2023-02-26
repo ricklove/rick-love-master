@@ -2,9 +2,9 @@
 import { useRef } from 'react';
 import { useFrame } from '@react-three/fiber';
 import { useController } from '@react-three/xr';
-import { Vector3, XRHandJoints, XRHandSpace } from 'three';
+import { Matrix4, Vector3, XRHandJoints, XRHandSpace } from 'three';
 
-export const useHandGesture = (filter: GestureBitFlag) => {
+export const useHandGesture = (options: GestureOptions) => {
   const controllerL = useController(`left`);
   const controllerR = useController(`right`);
 
@@ -12,8 +12,8 @@ export const useHandGesture = (filter: GestureBitFlag) => {
   const gestureResultR = useRef(createGestureResult());
 
   useFrame(() => {
-    calculateHandGesture(controllerL?.hand, false, filter, gestureResultL.current);
-    calculateHandGesture(controllerR?.hand, true, filter, gestureResultR.current);
+    calculateHandGesture(controllerL?.hand, false, options, gestureResultL.current);
+    calculateHandGesture(controllerR?.hand, true, options, gestureResultR.current);
   });
 
   return {
@@ -22,42 +22,59 @@ export const useHandGesture = (filter: GestureBitFlag) => {
   };
 };
 
-export enum GestureBitFlag {
-  none = 0,
-  handPointing = 1 << 0,
-  pointing = 2 << 0,
-
-  all = 0xffffffff,
-}
+export type GestureOptions = {
+  pointingHand?: boolean;
+  pointingGun?: boolean;
+  pointingIndexFinger?: boolean;
+};
+export const GestureOptions = {
+  all: {
+    pointingHand: true,
+    pointingGun: true,
+    pointingIndexFinger: true,
+  } as GestureOptions,
+};
 
 const createGestureResult = () => {
+  const createDirectionAndOrigin = () => ({
+    position: new Vector3(),
+    _positionSmoothing: createSmoothValues(10),
+    direction: new Vector3(),
+    _directionSmoothing: createSmoothValues(0.15),
+    rotation: new Matrix4(),
+  });
   return {
-    _empty: new Vector3(),
     _joints: {} as Partial<XRHandJoints>,
     kind: 0,
-    handPointing: {
+    pointingHand: {
       active: false,
-      direction: new Vector3(),
-      origin: new Vector3(),
-      _directionDelta: new Vector3(),
-      _originDelta: new Vector3(),
-      _direction: new Vector3(),
-      _origin: new Vector3(),
-      _target: new Vector3(),
-      _toTarget: new Vector3(),
+      ...createDirectionAndOrigin(),
+      _proximalAverage: new Vector3(),
+      _wristMetacarpalAverage: new Vector3(),
+      _wristToProximal: new Vector3(),
+      _handForwardDirection: new Vector3(),
+      _handUpDirection: new Vector3(),
+      _handPalmDirection: new Vector3(),
+      _directionAdjustment: new Vector3(),
+      _handPointDirection: new Vector3(),
+      _ringToIndex: new Vector3(),
     },
-    pointing: {
+    pointingGun: {
       active: false,
-      direction: new Vector3(),
-      origin: new Vector3(),
-      _directionDelta: new Vector3(),
-      _originDelta: new Vector3(),
-      _direction: new Vector3(),
-      _origin: new Vector3(),
+      ...createDirectionAndOrigin(),
+      _gunOrigin: new Vector3(),
+      _gunUpAdjustment: new Vector3(),
+      _gunForwardAdjustment: new Vector3(),
+    },
+    pointingIndexFinger: {
+      active: false,
+      ...createDirectionAndOrigin(),
       _target: new Vector3(),
       _toMiddleTip: new Vector3(),
       _toIndexTip: new Vector3(),
-      _toTarget: new Vector3(),
+      _origin: new Vector3(),
+      _originUpAdjustment: new Vector3(),
+      _toTargetDirection: new Vector3(),
     },
   };
 };
@@ -90,30 +107,36 @@ const resetGestureResult = (result: GestureResult, hand: XRHandSpace | undefined
   }
 };
 
-type SmoothDirection = { _directionDelta: Vector3; _direction: Vector3; direction: Vector3 };
-const smoothDirection = (value: Vector3, g: SmoothDirection) => {
-  g._direction.copy(value);
-  g._directionDelta.copy(g._direction).sub(g.direction);
+const createSmoothValues = (runningAverageBase: number) => {
+  return {
+    _runningAverageBase: runningAverageBase,
+    _delta: new Vector3(),
+    _keep: new Vector3(),
+    out: new Vector3(),
+  };
+};
+type SmoothValues = ReturnType<typeof createSmoothValues>;
 
-  const runningAverageFactorDirection = Math.min(1, 0.15 * g._directionDelta.length());
-  g.direction
-    .multiplyScalar(1 - runningAverageFactorDirection)
-    .add(g._direction.multiplyScalar(runningAverageFactorDirection));
+const smoothValue = (value: Vector3, g: SmoothValues): Vector3 => {
+  // return g.out.copy(value);
+  const originDelta = g._delta.copy(value).sub(g.out);
+  const runningAverageFactorOrigin = Math.min(1, g._runningAverageBase * originDelta.length());
+
+  const keep = g._keep.copy(g.out).multiplyScalar(1 - runningAverageFactorOrigin);
+  return g.out.copy(value).multiplyScalar(runningAverageFactorOrigin).add(keep);
 };
 
-type SmoothOrigin = { _originDelta: Vector3; _origin: Vector3; origin: Vector3 };
-const smoothOrigin = (value: Vector3, g: SmoothOrigin) => {
-  g._origin.copy(value);
-  g._originDelta.copy(g._origin).sub(g.origin);
+const empty = new Vector3(0, 0, 0);
+const up = new Vector3(0, 1, 0);
 
-  const runningAverageFactorOrigin = Math.min(1, 10.0 * g._originDelta.length());
-  g.origin.multiplyScalar(1 - runningAverageFactorOrigin).add(g._origin.multiplyScalar(runningAverageFactorOrigin));
+const calculateRotation = (g: { direction: Vector3; rotation: Matrix4 }) => {
+  g.rotation.lookAt(empty, g.direction, up);
 };
 
 const calculateHandGesture = (
   hand: XRHandSpace | undefined,
   isRightHand: boolean,
-  filter: GestureBitFlag,
+  options: GestureOptions,
   out: GestureResult,
 ) => {
   resetGestureResult(out, hand);
@@ -128,93 +151,105 @@ const calculateHandGesture = (
     return out;
   }
 
-  const empty = out._empty;
+  if (options.pointingHand || options.pointingGun || options.pointingIndexFinger) {
+    const g = out.pointingHand;
 
-  if (filter & GestureBitFlag.handPointing) {
-    const g = out.handPointing;
+    const indeProx = joints[`index-finger-phalanx-proximal`]?.position ?? empty;
+    const middProx = joints[`middle-finger-phalanx-proximal`]?.position ?? empty;
+    const ringProx = joints[`ring-finger-phalanx-proximal`]?.position ?? empty;
+    const pinkProx = joints[`pinky-finger-phalanx-proximal`]?.position ?? empty;
 
-    const target0 = joints[`index-finger-phalanx-proximal`]?.position ?? empty;
-    const target1 = joints[`middle-finger-phalanx-proximal`]?.position ?? empty;
-    const target2 = joints[`ring-finger-phalanx-proximal`]?.position ?? empty;
-    const target3 = joints[`pinky-finger-phalanx-proximal`]?.position ?? empty;
+    const indeMeta = joints[`index-finger-metacarpal`]?.position ?? wrist.position;
+    const middMeta = joints[`middle-finger-metacarpal`]?.position ?? wrist.position;
+    const ringMeta = joints[`ring-finger-metacarpal`]?.position ?? wrist.position;
+    const wristPos = wrist.position;
 
-    const origin0 = joints[`index-finger-metacarpal`]?.position ?? wrist.position;
-    const origin1 = joints[`middle-finger-metacarpal`]?.position ?? wrist.position;
-    const origin2 = joints[`ring-finger-metacarpal`]?.position ?? wrist.position;
-    const origin3 = wrist.position;
-
-    const target = g._target
-      .copy(target0)
-      .add(target1)
-      .add(target2)
-      .add(target3)
+    const proximalAverage = g._proximalAverage
+      .copy(indeProx)
+      .add(middProx)
+      .add(ringProx)
+      .add(pinkProx)
       .multiplyScalar(1 / 4);
-    const origin = g._origin
-      .copy(origin0)
-      .add(origin1)
-      .add(origin2)
-      .add(origin3)
+    const wristMetacarpalAverage = g._wristMetacarpalAverage
+      .copy(indeMeta)
+      .add(middMeta)
+      .add(ringMeta)
+      .add(wristPos)
       .multiplyScalar(1 / 4);
 
-    const toTarget = g._toTarget.copy(target).sub(origin);
+    const wristToProximal = g._wristToProximal.copy(proximalAverage).sub(wristMetacarpalAverage);
+    const handForwardDirection = g._handForwardDirection.copy(wristToProximal).normalize();
 
-    g._direction.copy(toTarget).normalize();
+    const ringToIndex = g._ringToIndex
+      .copy(indeProx)
+      .sub(ringProx)
+      .add(indeMeta)
+      .sub(ringMeta)
+      .multiplyScalar(1 / 2);
+    const handUpDirection = g._handUpDirection.copy(ringToIndex).normalize();
 
-    // Adjust direction
-    const toIndexTip = new Vector3().copy(target0).sub(origin);
-    const toRingTip = new Vector3().copy(target2).sub(origin);
-    const directionAdjustment = new Vector3()
-      .copy(toIndexTip)
-      .cross(toRingTip)
-      .normalize()
-      .multiplyScalar(0.2)
-      .multiplyScalar(isRightHand ? 1 : -1);
-    g._direction.add(directionAdjustment).normalize();
+    // Already normalized
+    const handPalmDirection = isRightHand
+      ? g._handPalmDirection.copy(handUpDirection).cross(handForwardDirection)
+      : g._handPalmDirection.copy(handForwardDirection).cross(handUpDirection);
 
-    const ringToIndex = new Vector3().copy(target0).sub(target3);
-    const originAdjustment = ringToIndex.multiplyScalar(0.7);
-    g._origin.add(originAdjustment);
-
-    smoothDirection(g._direction, g);
-    smoothOrigin(g._origin, g);
+    // Adjust direction to center
+    const directionAdjustment = g._directionAdjustment.copy(handPalmDirection).multiplyScalar(0.2);
+    const handPointDirection = g._handPointDirection.copy(handForwardDirection).add(directionAdjustment).normalize();
 
     g.active = true;
+    g.position.copy(smoothValue(wristMetacarpalAverage, g._positionSmoothing));
+    g.direction.copy(smoothValue(handPointDirection, g._directionSmoothing));
+    calculateRotation(g);
   }
 
-  if (filter & GestureBitFlag.pointing) {
-    const g = out.pointing;
+  if (options.pointingGun) {
+    const g = out.pointingGun;
+    const h = out.pointingHand;
 
-    const target0 = joints[`index-finger-tip`]?.position ?? empty;
-    const target1 = joints[`index-finger-phalanx-distal`]?.position ?? empty;
-    const target2 = joints[`index-finger-phalanx-intermediate`]?.position ?? empty;
+    // Adjust origin
+    const gunUpAdjustment = g._gunUpAdjustment.copy(h._ringToIndex).multiplyScalar(1.5);
+    const gunForwardAdjustment = g._gunForwardAdjustment
+      .copy(h._wristToProximal)
+      .multiplyScalar(1.0)
+      .projectOnVector(h._handPointDirection);
+    const gunOrigin = g._gunOrigin.copy(h._wristMetacarpalAverage).add(gunUpAdjustment).add(gunForwardAdjustment);
 
-    const middleTip = joints[`middle-finger-tip`]?.position ?? empty;
+    g.active = true;
+    g.position.copy(smoothValue(gunOrigin, g._positionSmoothing));
+    g.direction.copy(h.direction);
+    calculateRotation(g);
+  }
 
-    const origin0 = joints[`thumb-metacarpal`]?.position ?? wrist.position;
-    const origin1 = joints[`index-finger-metacarpal`]?.position ?? wrist.position;
-    const origin2 = joints[`middle-finger-metacarpal`]?.position ?? wrist.position;
+  if (options.pointingIndexFinger) {
+    const g = out.pointingIndexFinger;
+    const h = out.pointingHand;
+
+    const indeTip = joints[`index-finger-tip`]?.position ?? empty;
+    const indeDist = joints[`index-finger-phalanx-distal`]?.position ?? empty;
+    const indeInte = joints[`index-finger-phalanx-intermediate`]?.position ?? empty;
+
+    const middTip = joints[`middle-finger-tip`]?.position ?? empty;
 
     const target = g._target
-      .copy(target0)
-      .add(target1)
-      .add(target2)
-      .multiplyScalar(1 / 3);
-    const origin = g._origin
-      .copy(origin0)
-      .add(origin1)
-      .add(origin2)
+      .copy(indeTip)
+      .add(indeDist)
+      .add(indeInte)
       .multiplyScalar(1 / 3);
 
-    const toMiddleTip = g._toMiddleTip.copy(middleTip).sub(origin);
-    const toIndexTip = g._toIndexTip.copy(target0).sub(origin);
+    const originUpAdjustment = g._originUpAdjustment.copy(h._ringToIndex).multiplyScalar(1.0);
+    const origin = g._origin.copy(h._wristMetacarpalAverage).add(originUpAdjustment);
+
+    const toMiddleTip = g._toMiddleTip.copy(middTip).sub(origin);
+    const toIndexTip = g._toIndexTip.copy(indeTip).sub(origin);
     // if the middle finger is closer to the wrist than the index finger tip by a factor
     const FACTOR = 2;
     g.active = toIndexTip.lengthSq() > toMiddleTip.lengthSq() * FACTOR * FACTOR;
 
-    const toTarget = g._toTarget.copy(target).sub(origin);
-    g._direction.copy(toTarget).normalize();
-    smoothDirection(g._direction, g);
-    smoothOrigin(g._origin, g);
+    const toTargetDirection = g._toTargetDirection.copy(target).sub(origin).normalize();
+    g.direction.copy(smoothValue(toTargetDirection, g._directionSmoothing));
+    g.position.copy(indeTip);
+    calculateRotation(g);
   }
 
   return out;
