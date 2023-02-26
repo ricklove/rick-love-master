@@ -24,7 +24,7 @@ export const useHandGesture = (filter: GestureBitFlag) => {
 
 export enum GestureBitFlag {
   none = 0,
-  handDirection = 1 << 0,
+  handPointing = 1 << 0,
   pointing = 2 << 0,
   //   Mean = 1 << 1,
   //   Funny = 1 << 2,
@@ -38,7 +38,7 @@ const createGestureResult = () => {
     _empty: new Vector3(),
     _joints: {} as Partial<XRHandJoints>,
     kind: 0,
-    handDirection: {
+    handPointing: {
       active: false,
       direction: new Vector3(),
       origin: new Vector3(),
@@ -128,8 +128,8 @@ const calculateHandGesture = (hand: XRHandSpace | undefined, filter: GestureBitF
 
   const empty = out._empty;
 
-  if (filter & GestureBitFlag.handDirection) {
-    const g = out.handDirection;
+  if (filter & GestureBitFlag.handPointing) {
+    const g = out.handPointing;
 
     const target0 = joints[`index-finger-phalanx-proximal`]?.position ?? empty;
     const target1 = joints[`middle-finger-phalanx-proximal`]?.position ?? empty;

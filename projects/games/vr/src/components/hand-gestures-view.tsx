@@ -16,13 +16,13 @@ export const PlayerHandGestures = () => {
   );
 };
 const PlayerHandGesture = ({ gesture }: { gesture: GestureResult }) => {
-  const handDirectionRef = useRef<Line2>(null);
+  const handPointingRef = useRef<Line2>(null);
   const pointingRef = useRef<Line2>(null);
 
   useFrame(() => {
-    if (handDirectionRef.current) {
-      const o = handDirectionRef.current;
-      const g = gesture.handDirection;
+    if (handPointingRef.current) {
+      const o = handPointingRef.current;
+      const g = gesture.handPointing;
 
       o.visible = g.active;
       o.position.copy(g.origin);
@@ -45,7 +45,7 @@ const PlayerHandGesture = ({ gesture }: { gesture: GestureResult }) => {
   return (
     <>
       <Line
-        ref={handDirectionRef}
+        ref={handPointingRef}
         lineWidth={1}
         points={[
           [0, 0, 0],
