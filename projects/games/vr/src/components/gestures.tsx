@@ -1,25 +1,35 @@
 /* eslint-disable no-bitwise */
-import { useRef } from 'react';
+import React, { createContext, useRef } from 'react';
+import { useContext } from 'react';
 import { useFrame } from '@react-three/fiber';
 import { useController } from '@react-three/xr';
 import { Matrix4, Vector3, XRHandJoints, XRHandSpace } from 'three';
 
-export const useHandGesture = (options: GestureOptions) => {
+const useGesturesInstance = (options: GestureOptions) => {
   const controllerL = useController(`left`);
   const controllerR = useController(`right`);
 
-  const gestureResultL = useRef(createGestureResult());
-  const gestureResultR = useRef(createGestureResult());
+  const gestureResultL = useRef(createGestureHandResult());
+  const gestureResultR = useRef(createGestureHandResult());
 
   useFrame(() => {
-    calculateHandGesture(controllerL?.hand, false, options, gestureResultL.current);
-    calculateHandGesture(controllerR?.hand, true, options, gestureResultR.current);
+    calculateHandGestures(controllerL?.hand, false, options, gestureResultL.current);
+    calculateHandGestures(controllerR?.hand, true, options, gestureResultR.current);
   });
 
   return {
     left: gestureResultL.current,
     right: gestureResultR.current,
   };
+};
+type Gestures = ReturnType<typeof useGesturesInstance>;
+const gesturesContext = createContext<undefined | Gestures>(undefined);
+export const GesturesProvider = ({ children, options }: { children: JSX.Element[]; options: GestureOptions }) => {
+  const gestures = useGesturesInstance(options);
+  return <gesturesContext.Provider value={gestures}>{children}</gesturesContext.Provider>;
+};
+export const useGestures = () => {
+  return useContext(gesturesContext) as Gestures;
 };
 
 export type GestureOptions = {
@@ -37,7 +47,7 @@ export const GestureOptions = {
   } as GestureOptions,
 };
 
-const createGestureResult = () => {
+const createGestureHandResult = () => {
   const createDirectionAndOrigin = () => ({
     position: new Vector3(),
     _positionSmoothing: createSmoothValues(10),
@@ -91,13 +101,13 @@ const createGestureResult = () => {
     },
   };
 };
-export type GestureResult = ReturnType<typeof createGestureResult>;
+export type GestureHandResult = ReturnType<typeof createGestureHandResult>;
 
-const resetGestureResult = (result: GestureResult, hand: XRHandSpace | undefined) => {
+const resetGestureResult = (result: GestureHandResult, hand: XRHandSpace | undefined) => {
   result.kind = 0;
   // eslint-disable-next-line guard-for-in
   for (const k in result) {
-    const o = result[k as keyof GestureResult] as { active?: boolean };
+    const o = result[k as keyof GestureHandResult] as { active?: boolean };
     if (!o?.active) {
       continue;
     }
@@ -146,11 +156,11 @@ const calculateRotation = (g: { direction: Vector3; rotation: Matrix4 }) => {
   g.rotation.lookAt(empty, g.direction, up);
 };
 
-const calculateHandGesture = (
+const calculateHandGestures = (
   hand: XRHandSpace | undefined,
   isRightHand: boolean,
   options: GestureOptions,
-  out: GestureResult,
+  out: GestureHandResult,
 ) => {
   resetGestureResult(out, hand);
   const joints = out?._joints;

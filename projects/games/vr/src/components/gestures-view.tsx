@@ -3,10 +3,10 @@ import { Line } from '@react-three/drei';
 import { useFrame } from '@react-three/fiber';
 import { Matrix4, Vector3 } from 'three';
 import { Line2 } from 'three-stdlib';
-import { GestureOptions, GestureResult, useHandGesture } from './hand-gestures';
+import { GestureHandResult, useGestures } from './gestures';
 
-export const PlayerHandGestures = () => {
-  const gestures = useHandGesture(GestureOptions.all);
+export const PlayerGestures = () => {
+  const gestures = useGestures();
 
   return (
     <>
@@ -15,7 +15,7 @@ export const PlayerHandGestures = () => {
     </>
   );
 };
-const PlayerHandGesture = ({ gesture }: { gesture: GestureResult }) => {
+const PlayerHandGesture = ({ gesture }: { gesture: GestureHandResult }) => {
   return (
     <>
       <GestureLine gesture={gesture.pointingHand} color={0x0000ff} />

@@ -4,7 +4,7 @@ import { useFrame } from '@react-three/fiber';
 import { useController } from '@react-three/xr';
 import { Group, Object3D } from 'three';
 import { useCamera, usePlayer } from './camera';
-import { PlayerHandGestures } from './hand-gestures-view';
+import { PlayerGestures } from './gestures-view';
 
 export const PlayerAvatarInSceneSpace = () => {
   const player = usePlayer();
@@ -65,7 +65,7 @@ export const PlayerAvatar = () => {
           <meshStandardMaterial color={`#55ff55`} transparent={true} opacity={0.5} />
         </Sphere>
       ))} */}
-      <PlayerHandGestures />
+      <PlayerGestures />
     </group>
   );
 };
