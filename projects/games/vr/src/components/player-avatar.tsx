@@ -3,8 +3,8 @@ import { Box, Line, Sphere, Text } from '@react-three/drei';
 import { useFrame } from '@react-three/fiber';
 import { useController } from '@react-three/xr';
 import { Group, Object3D } from 'three';
+import { PlayerGestures } from '../gestures/gestures-view';
 import { useCamera, usePlayer } from './camera';
-import { PlayerGestures } from './gestures-view';
 
 export const PlayerAvatarInSceneSpace = () => {
   const player = usePlayer();

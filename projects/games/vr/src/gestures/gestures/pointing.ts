@@ -1,180 +1,9 @@
 /* eslint-disable no-bitwise */
-import React, { createContext, useRef } from 'react';
-import { useContext } from 'react';
-import { useFrame } from '@react-three/fiber';
-import { useController } from '@react-three/xr';
-import { Matrix4, Vector3, XRHandJoints, XRHandSpace, XRJointSpace } from 'three';
+import { Vector3 } from 'three';
+import { defineHandGesture } from '../gestures-core';
+import { calculateRotation, createDirectionAndOrigin, empty, smoothValue } from '../helpers';
 
-export const GesturesProvider = ({ children, options }: { children: JSX.Element[]; options: GestureOptions }) => {
-  const gestures = useGesturesInstance(options);
-  return <gesturesContext.Provider value={gestures}>{children}</gesturesContext.Provider>;
-};
-export const useGestures = () => {
-  return useContext(gesturesContext) as Gestures;
-};
-
-type Gestures = ReturnType<typeof useGesturesInstance>;
-const gesturesContext = createContext<undefined | Gestures>(undefined);
-
-const useGesturesInstance = (options: GestureOptions) => {
-  const controllerL = useController(`left`);
-  const controllerR = useController(`right`);
-
-  const gestureResultL = useRef(createHandGestureResult());
-  const gestureResultR = useRef(createHandGestureResult());
-
-  useFrame(() => {
-    calculateHandGestures(controllerL?.hand, false, options, gestureResultL.current);
-    calculateHandGestures(controllerR?.hand, true, options, gestureResultR.current);
-  });
-
-  return {
-    left: gestureResultL.current,
-    right: gestureResultR.current,
-  };
-};
-
-const createDirectionAndOrigin = () => ({
-  position: new Vector3(),
-  _positionSmoothing: createSmoothValues(10),
-  direction: new Vector3(),
-  _directionSmoothing: createSmoothValues(0.15),
-  rotation: new Matrix4(),
-});
-
-const resetHandGestureResult = (result: HandGestureResult, hand: XRHandSpace | undefined) => {
-  result.kind = 0;
-  // eslint-disable-next-line guard-for-in
-  for (const k in result) {
-    const o = result[k as keyof HandGestureResult] as { active?: boolean };
-    if (!o?.active) {
-      continue;
-    }
-    o.active = false;
-  }
-
-  // setup joints - keep last joint obj in case it is temporarily lost
-  const joints = hand?.joints;
-  if (!joints) {
-    return;
-  }
-  // eslint-disable-next-line guard-for-in
-  for (const kRaw in joints) {
-    const k = kRaw as keyof typeof joints;
-    const v = joints[k];
-    if (!v) {
-      return;
-    }
-    result._joints[k] = v;
-  }
-};
-
-const createSmoothValues = (runningAverageBase: number) => {
-  return {
-    _runningAverageBase: runningAverageBase,
-    _delta: new Vector3(),
-    _keep: new Vector3(),
-    out: new Vector3(),
-  };
-};
-type SmoothValues = ReturnType<typeof createSmoothValues>;
-
-const smoothValue = (value: Vector3, g: SmoothValues): Vector3 => {
-  // return g.out.copy(value);
-  const originDelta = g._delta.copy(value).sub(g.out);
-  const runningAverageFactorOrigin = Math.min(1, g._runningAverageBase * originDelta.length());
-
-  const keep = g._keep.copy(g.out).multiplyScalar(1 - runningAverageFactorOrigin);
-  return g.out.copy(value).multiplyScalar(runningAverageFactorOrigin).add(keep);
-};
-
-const empty = new Vector3(0, 0, 0);
-const up = new Vector3(0, 1, 0);
-
-const calculateRotation = (g: { direction: Vector3; rotation: Matrix4 }) => {
-  g.rotation.lookAt(empty, g.direction, up);
-};
-
-const defineHandGesture = <
-  TKey extends string,
-  TResult extends Record<string, unknown>,
-  TDeps extends Record<string, { optionsFilter: (o: Record<string, boolean>) => boolean }>,
->(definition: {
-  key: TKey;
-  deps?: TDeps;
-  createResult: () => TResult;
-  calculate: (
-    hand: XRHandSpace | undefined,
-    isRightHand: boolean,
-    options: { [k in TKey]: boolean },
-    joints: Partial<XRHandJoints>,
-    wrist: XRJointSpace,
-    out: ResultsOf<TDeps> & {
-      [k in TKey]: TResult;
-    },
-  ) => void;
-}) => {
-  const key = definition.key;
-  if (definition.deps) {
-    Object.values(definition.deps).forEach((d) => {
-      const orig = d.optionsFilter;
-      d.optionsFilter = (o) => orig(o) || !!o[key];
-    });
-  }
-  return {
-    ...definition,
-    optionsFilter: (o: Record<string, boolean>) => !!o[key],
-  };
-};
-
-type ResultsOf<T extends Record<string, unknown>> = {
-  [K in keyof T]: T[K] extends { createResult: () => infer UResult } ? UResult : unknown;
-};
-type OptionsOf<T extends Record<string, unknown>> = {
-  [K in keyof T]: boolean;
-};
-
-const createHandGestureResult = () => {
-  const createResults = <T extends Record<string, { createResult: () => unknown }>>(g: T): ResultsOf<T> => {
-    return Object.fromEntries([...Object.entries(g)].map(([k, v]) => [k, v.createResult()])) as ResultsOf<T>;
-  };
-
-  return {
-    _joints: {} as Partial<XRHandJoints>,
-    kind: 0,
-    ...createResults(handGestures),
-  };
-};
-export type HandGestureResult = ReturnType<typeof createHandGestureResult>;
-
-const calculateHandGestures = (
-  hand: XRHandSpace | undefined,
-  isRightHand: boolean,
-  options: GestureOptions,
-  out: HandGestureResult,
-) => {
-  resetHandGestureResult(out, hand);
-  const joints = out?._joints;
-  if (!joints) {
-    return out;
-  }
-
-  const wrist = joints.wrist;
-  if (!wrist) {
-    // disable if wrist is missing
-    return out;
-  }
-
-  for (const g of handGesturesArray) {
-    if (g.optionsFilter(options)) {
-      g.calculate(hand, isRightHand, options, joints, wrist, out);
-    }
-  }
-  return out;
-};
-
-// Gestures
-const pointingHand = defineHandGesture({
+export const pointingHand = defineHandGesture({
   key: `pointingHand`,
   createResult: () => {
     return {
@@ -244,7 +73,7 @@ const pointingHand = defineHandGesture({
   },
 });
 
-const pointingGun = defineHandGesture({
+export const pointingGun = defineHandGesture({
   key: `pointingGun`,
   deps: {
     pointingHand,
@@ -277,7 +106,7 @@ const pointingGun = defineHandGesture({
   },
 });
 
-const pointingIndexFinger = defineHandGesture({
+export const pointingIndexFinger = defineHandGesture({
   key: `pointingIndexFinger`,
   deps: {
     pointingHand,
@@ -326,7 +155,7 @@ const pointingIndexFinger = defineHandGesture({
   },
 });
 
-const pointingWand = defineHandGesture({
+export const pointingWand = defineHandGesture({
   key: `pointingWand`,
   deps: {
     pointingHand,
@@ -378,22 +207,3 @@ const pointingWand = defineHandGesture({
     calculateRotation(g);
   },
 });
-
-const handGestures = {
-  pointingHand,
-  pointingGun,
-  pointingIndexFinger,
-  pointingWand,
-};
-const handGesturesArray = [...Object.values(handGestures)];
-type Clean<T> = {} & {
-  [K in keyof T]: T[K];
-};
-
-const gestures = {
-  ...handGestures,
-};
-export type GestureOptions = Clean<OptionsOf<typeof gestures>>;
-export const GestureOptions = {
-  all: Object.fromEntries([...Object.keys(gestures)].map((k) => [k, true])) as GestureOptions,
-};

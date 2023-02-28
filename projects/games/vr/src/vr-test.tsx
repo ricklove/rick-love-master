@@ -5,10 +5,10 @@ import { useFrame } from '@react-three/fiber';
 import { Controllers, Interactive, VRButton, XR } from '@react-three/xr';
 import { Vector3 } from 'three';
 import { usePlayer } from './components/camera';
-import { GestureOptions, GesturesProvider, useGestures } from './components/gestures';
 import { DebugConsole, Hud } from './components/hud';
 import { PerspectiveKind, ScenePerspective, togglePerspective } from './components/perspective';
 import { PlayerAvatarInSceneSpace } from './components/player-avatar';
+import { GestureOptions, GesturesProvider, useGestures } from './gestures/gestures';
 
 export const VrTestGame = () => {
   const [perspective, setPerspective] = useState(`1st` as PerspectiveKind);
