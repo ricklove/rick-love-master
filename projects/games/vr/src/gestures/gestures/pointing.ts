@@ -2,6 +2,7 @@
 import { Vector3 } from 'three';
 import { defineHandGesture } from '../gestures-core';
 import { calculateRotationMatrix, createDirectionAndOrigin, empty, smoothValue } from '../helpers';
+import { fingerExtendedIndex, fingerExtendedMiddle } from './finger-states';
 
 export const pointingHand = defineHandGesture({
   key: `pointingHand`,
@@ -110,6 +111,8 @@ export const pointingIndexFinger = defineHandGesture({
   key: `pointingIndexFinger`,
   deps: {
     pointingHand,
+    fingerExtendedIndex,
+    fingerExtendedMiddle,
   },
   createResult: () => {
     return {
@@ -126,12 +129,17 @@ export const pointingIndexFinger = defineHandGesture({
   calculate: (hand, isRightHand, options, joints, wrist, out) => {
     const g = out.pointingIndexFinger;
     const h = out.pointingHand;
+    const indeExtended = out.fingerExtendedIndex;
+    const middExtended = out.fingerExtendedMiddle;
+
+    g.active = indeExtended.state === `extended` && middExtended.state === `closed`;
+    if (!g.active) {
+      return;
+    }
 
     const indeTip = joints[`index-finger-tip`]?.position ?? empty;
     const indeDist = joints[`index-finger-phalanx-distal`]?.position ?? empty;
     const indeInte = joints[`index-finger-phalanx-intermediate`]?.position ?? empty;
-
-    const middTip = joints[`middle-finger-tip`]?.position ?? empty;
 
     const target = g._target
       .copy(indeTip)
@@ -141,12 +149,6 @@ export const pointingIndexFinger = defineHandGesture({
 
     const originUpAdjustment = g._originUpAdjustment.copy(h._ringToIndex).multiplyScalar(1.0);
     const origin = g._origin.copy(h._wristMetacarpalAverage).add(originUpAdjustment);
-
-    const toMiddleTip = g._toMiddleTip.copy(middTip).sub(origin);
-    const toIndexTip = g._toIndexTip.copy(indeTip).sub(origin);
-    // if the middle finger is closer to the wrist than the index finger tip by a factor
-    const FACTOR = 2;
-    g.active = toIndexTip.lengthSq() > toMiddleTip.lengthSq() * FACTOR * FACTOR;
 
     const toTargetDirection = g._toTargetDirection.copy(target).sub(origin).normalize();
     g.direction.copy(smoothValue(toTargetDirection, g._directionSmoothing));
