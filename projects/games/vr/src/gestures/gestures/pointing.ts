@@ -1,7 +1,6 @@
-/* eslint-disable no-bitwise */
 import { Vector3 } from 'three';
 import { defineHandGesture } from '../gestures-core';
-import { calculateRotationMatrix, createDirectionAndOrigin, empty, smoothValue } from '../helpers';
+import { calculateRotationMatrix, createPositionAndDirection, empty, smoothValue } from '../helpers';
 import { fingerExtendedIndex, fingerExtendedMiddle } from './finger-states';
 
 export const pointingHand = defineHandGesture({
@@ -9,7 +8,7 @@ export const pointingHand = defineHandGesture({
   createResult: () => {
     return {
       active: false,
-      ...createDirectionAndOrigin(),
+      ...createPositionAndDirection(),
       _proximalAverage: new Vector3(),
       _wristMetacarpalAverage: new Vector3(),
       _wristToProximal: new Vector3(),
@@ -82,7 +81,7 @@ export const pointingGun = defineHandGesture({
   createResult: () => {
     return {
       active: false,
-      ...createDirectionAndOrigin(),
+      ...createPositionAndDirection(),
       _gunOrigin: new Vector3(),
       _gunUpAdjustment: new Vector3(),
       _gunForwardAdjustment: new Vector3(),
@@ -117,7 +116,7 @@ export const pointingIndexFinger = defineHandGesture({
   createResult: () => {
     return {
       active: false,
-      ...createDirectionAndOrigin(),
+      ...createPositionAndDirection(),
       _target: new Vector3(),
       _toMiddleTip: new Vector3(),
       _toIndexTip: new Vector3(),
@@ -165,7 +164,7 @@ export const pointingWand = defineHandGesture({
   createResult: () => {
     return {
       active: false,
-      ...createDirectionAndOrigin(),
+      ...createPositionAndDirection(),
       _target: new Vector3(),
       _toMiddleTip: new Vector3(),
       _toIndexTip: new Vector3(),

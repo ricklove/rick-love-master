@@ -12,6 +12,7 @@ export const PlayerGestures = () => {
     <>
       <PlayerHandGesture gesture={gestures.left} />
       <PlayerHandGesture gesture={gestures.right} />
+      <GestureLine gesture={gestures.body.moving} color={0x0000ff} length={1} />
     </>
   );
 };

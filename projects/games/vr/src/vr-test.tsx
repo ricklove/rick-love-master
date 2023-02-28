@@ -55,12 +55,28 @@ const SceneContent = () => {
         <shadowMaterial color={`#333333`} />
       </Plane> */}
       <gridHelper args={[100, 100]} />
-      <Mover />
+      <Mover_Running />
     </>
   );
 };
 
-const Mover = () => {
+const Mover_Running = () => {
+  // const camera = useCamera();
+  const player = usePlayer();
+  const gestures = useGestures();
+  const velocity = useRef(new Vector3());
+
+  useFrame(() => {
+    const DISABLE = false;
+    if (DISABLE) {
+      return;
+    }
+    player.position.add(gestures.body.moving._velocity.clone().multiplyScalar(1 / 60));
+  });
+  return <></>;
+};
+
+const Mover_ThumbStick = () => {
   // const camera = useCamera();
   const player = usePlayer();
   const gestures = useGestures();

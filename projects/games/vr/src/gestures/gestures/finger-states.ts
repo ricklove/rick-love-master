@@ -1,7 +1,7 @@
 /* eslint-disable no-bitwise */
 import { Vector3, XRHandJoints } from 'three';
 import { defineHandGesture } from '../gestures-core';
-import { calculateRotationMatrix, createDirectionAndOrigin, empty, smoothValue } from '../helpers';
+import { calculateRotationMatrix, createPositionAndDirection, empty, smoothValue } from '../helpers';
 
 const getFingerExtended = <TKey extends `Thumb` | `Index` | `Middle` | `Ring` | `Pinky`>(
   keyPrefix: TKey,
@@ -19,7 +19,7 @@ const getFingerExtended = <TKey extends `Thumb` | `Index` | `Middle` | `Ring` | 
     createResult: () => {
       return {
         active: false,
-        ...createDirectionAndOrigin(),
+        ...createPositionAndDirection(),
         bendRatio: 1,
         state: `extended` as `extended` | `partial` | `closed`,
         _metaToTip: new Vector3(),

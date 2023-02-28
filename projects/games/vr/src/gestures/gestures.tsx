@@ -3,9 +3,10 @@ import React, { createContext, useRef } from 'react';
 import { useContext } from 'react';
 import { useFrame } from '@react-three/fiber';
 import { useController } from '@react-three/xr';
-import { XRHandJoints, XRHandSpace } from 'three';
+import { Object3D, Vector3, XRHandJoints, XRHandSpace } from 'three';
+import { useCamera, usePlayer } from '../components/camera';
 import { OptionsOf, ResultsOf } from './gestures-core';
-import { gestures, handGestures } from './gestures-list';
+import { bodyGestures, gestures, handGestures } from './gestures-list';
 
 export const GesturesProvider = ({ children, options }: { children: JSX.Element[]; options: GestureOptions }) => {
   const gestures = useGesturesInstance(options);
@@ -19,26 +20,43 @@ type Gestures = ReturnType<typeof useGesturesInstance>;
 const gesturesContext = createContext<undefined | Gestures>(undefined);
 
 const useGesturesInstance = (options: GestureOptions) => {
+  const camera = useCamera();
+  const player = usePlayer();
+  const _headPos = useRef(new Vector3());
   const controllerL = useController(`left`);
   const controllerR = useController(`right`);
 
   const gestureResultL = useRef(createHandGestureResult());
   const gestureResultR = useRef(createHandGestureResult());
+  const gestureResultBody = useRef(createBodyGestureResult());
 
   useFrame(() => {
     calculateHandGestures(controllerL?.hand, false, options, gestureResultL.current);
     calculateHandGestures(controllerR?.hand, true, options, gestureResultR.current);
+    calculateBodyGestures(
+      {
+        position: camera.position,
+        rotation: camera.rotation,
+        quaternion: camera.quaternion,
+      },
+      controllerR?.hand,
+      controllerR?.hand,
+      options,
+      gestureResultL.current,
+      gestureResultR.current,
+      gestureResultBody.current,
+    );
   });
 
   return {
     left: gestureResultL.current,
     right: gestureResultR.current,
+    body: gestureResultBody.current,
   };
 };
 
 // Gestures
 
-const handGesturesArray = [...Object.values(handGestures)];
 type Clean<T> = {} & {
   [K in keyof T]: T[K];
 };
@@ -55,14 +73,12 @@ const createHandGestureResult = () => {
 
   return {
     _joints: {} as Partial<XRHandJoints>,
-    kind: 0,
     ...createResults(handGestures),
   };
 };
 export type HandGestureResult = ReturnType<typeof createHandGestureResult>;
 
 const resetHandGestureResult = (result: HandGestureResult, hand: XRHandSpace | undefined) => {
-  result.kind = 0;
   // eslint-disable-next-line guard-for-in
   for (const k in result) {
     const o = result[k as keyof HandGestureResult] as { active?: boolean };
@@ -88,6 +104,7 @@ const resetHandGestureResult = (result: HandGestureResult, hand: XRHandSpace | u
   }
 };
 
+const handGesturesArray = [...Object.values(handGestures)];
 const calculateHandGestures = (
   hand: XRHandSpace | undefined,
   isRightHand: boolean,
@@ -109,6 +126,48 @@ const calculateHandGestures = (
   for (const g of handGesturesArray) {
     if (g.optionsFilter(options)) {
       g.calculate(hand, isRightHand, options, joints, wrist, out);
+    }
+  }
+  return out;
+};
+
+const createBodyGestureResult = () => {
+  const createResults = <T extends Record<string, { createResult: () => unknown }>>(g: T): ResultsOf<T> => {
+    return Object.fromEntries([...Object.entries(g)].map(([k, v]) => [k, v.createResult()])) as ResultsOf<T>;
+  };
+
+  return {
+    ...createResults(bodyGestures),
+  };
+};
+export type BodyGestureResult = ReturnType<typeof createBodyGestureResult>;
+
+const resetBodyGestureResult = (result: BodyGestureResult) => {
+  // eslint-disable-next-line guard-for-in
+  for (const k in result) {
+    const o = result[k as keyof BodyGestureResult] as { active?: boolean };
+    if (!o?.active) {
+      continue;
+    }
+    o.active = false;
+  }
+};
+
+const bodyGesturesArray = [...Object.values(bodyGestures)];
+const calculateBodyGestures = (
+  head: Pick<Object3D, `position` | `rotation` | `quaternion`>,
+  handLeft: XRHandSpace | undefined,
+  handRight: XRHandSpace | undefined,
+  options: GestureOptions,
+  leftResult: HandGestureResult,
+  rightResult: HandGestureResult,
+  out: BodyGestureResult,
+) => {
+  resetBodyGestureResult(out);
+
+  for (const g of bodyGesturesArray) {
+    if (g.optionsFilter(options)) {
+      g.calculate(head, handLeft, handRight, options, leftResult, rightResult, out);
     }
   }
   return out;

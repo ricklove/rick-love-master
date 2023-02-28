@@ -7,6 +7,7 @@ import {
   fingerExtendedRing,
   fingerExtendedThumb,
 } from './gestures/finger-states';
+import { moving } from './gestures/moving';
 import { pointingGun, pointingHand, pointingIndexFinger, pointingWand } from './gestures/pointing';
 
 export const handGestures = {
@@ -21,6 +22,11 @@ export const handGestures = {
   pointingWand,
 };
 
+export const bodyGestures = {
+  moving,
+};
+
 export const gestures = {
   ...handGestures,
+  ...bodyGestures,
 };
