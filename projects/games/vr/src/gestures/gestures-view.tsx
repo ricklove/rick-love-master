@@ -1,7 +1,7 @@
 import React, { useRef } from 'react';
 import { Line } from '@react-three/drei';
 import { useFrame } from '@react-three/fiber';
-import { Matrix4, Vector3 } from 'three';
+import { Matrix4, Quaternion, Vector3 } from 'three';
 import { Line2 } from 'three-stdlib';
 import { HandGestureResult, useGestures } from './gestures';
 
@@ -37,20 +37,61 @@ const PlayerHandGesture = ({ gesture }: { gesture: HandGestureResult }) => {
       <GestureLine gesture={gesture.pointingGun} color={0xff0000} />
       <GestureLine gesture={gesture.pointingIndexFinger} color={0x00ff00} />
       <GestureLine gesture={gesture.pointingWand} color={0xff00ff} />
+
+      <GestureFingerState gesture={gesture.fingerExtendedThumb} />
+      <GestureFingerState gesture={gesture.fingerExtendedIndex} />
+      <GestureFingerState gesture={gesture.fingerExtendedMiddle} />
+      <GestureFingerState gesture={gesture.fingerExtendedRing} />
+      <GestureFingerState gesture={gesture.fingerExtendedPinky} />
     </>
+  );
+};
+
+const GestureFingerState = ({ gesture }: { gesture: HandGestureResult[`fingerExtendedIndex`] }) => {
+  const length = 0.1;
+
+  const ref = useRef<Line2>(null);
+
+  useFrame(() => {
+    if (!ref.current) {
+      return;
+    }
+    const o = ref.current;
+    const g = gesture;
+
+    o.visible = true;
+    o.position.copy(g.position);
+    o.quaternion.copy(g.quaternion);
+
+    const color = gesture.state === `extended` ? 0x00ffff : gesture.state === `partial` ? 0xff00ff : 0x333333;
+    o.material.color.set(color);
+  });
+
+  return (
+    <Line
+      ref={ref}
+      lineWidth={1}
+      points={[
+        [0, 0, 0],
+        [0, 0, -(length ?? 100)],
+      ]}
+      color={0x00ff00}
+    />
   );
 };
 
 const GestureLine = ({
   gesture,
   color,
+  length,
 }: {
   gesture: {
     active: boolean;
     position: Vector3;
-    rotation: Matrix4;
+    quaternion: Quaternion;
   };
   color?: number;
+  length?: number;
 }) => {
   const ref = useRef<Line2>(null);
 
@@ -63,7 +104,7 @@ const GestureLine = ({
 
     o.visible = g.active;
     o.position.copy(g.position);
-    o.rotation.setFromRotationMatrix(g.rotation);
+    o.quaternion.copy(g.quaternion);
   });
 
   return (
@@ -72,7 +113,7 @@ const GestureLine = ({
       lineWidth={1}
       points={[
         [0, 0, 0],
-        [0, 0, -100],
+        [0, 0, -(length ?? 100)],
       ]}
       color={color ?? 0x00ff00}
     />

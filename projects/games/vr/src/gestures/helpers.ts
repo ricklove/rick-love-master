@@ -1,12 +1,19 @@
 /* eslint-disable no-bitwise */
-import { Matrix4, Vector3 } from 'three';
+import { Euler, Matrix4, Quaternion, Vector3 } from 'three';
+
+export const empty = new Vector3(0, 0, 0);
+export const emptyRotation = new Euler();
+export const emptyQuanternion = new Quaternion();
+export const identity = new Matrix4().identity();
+export const up = new Vector3(0, 1, 0);
 
 export const createDirectionAndOrigin = () => ({
   position: new Vector3(),
   _positionSmoothing: createSmoothValues(10),
   direction: new Vector3(),
   _directionSmoothing: createSmoothValues(0.15),
-  rotation: new Matrix4(),
+  rotationMatrix: new Matrix4(),
+  quaternion: new Quaternion(),
 });
 const createSmoothValues = (runningAverageBase: number) => {
   return {
@@ -27,9 +34,7 @@ export const smoothValue = (value: Vector3, g: SmoothValues): Vector3 => {
   return g.out.copy(value).multiplyScalar(runningAverageFactorOrigin).add(keep);
 };
 
-export const empty = new Vector3(0, 0, 0);
-export const up = new Vector3(0, 1, 0);
-
-export const calculateRotation = (g: { direction: Vector3; rotation: Matrix4 }) => {
-  g.rotation.lookAt(empty, g.direction, up);
+export const calculateRotationMatrix = (g: { direction: Vector3; rotationMatrix: Matrix4; quaternion: Quaternion }) => {
+  g.rotationMatrix.lookAt(empty, g.direction, up);
+  g.quaternion.setFromRotationMatrix(g.rotationMatrix);
 };

@@ -1,7 +1,7 @@
 /* eslint-disable no-bitwise */
 import { Vector3 } from 'three';
 import { defineHandGesture } from '../gestures-core';
-import { calculateRotation, createDirectionAndOrigin, empty, smoothValue } from '../helpers';
+import { calculateRotationMatrix, createDirectionAndOrigin, empty, smoothValue } from '../helpers';
 
 export const pointingHand = defineHandGesture({
   key: `pointingHand`,
@@ -69,7 +69,7 @@ export const pointingHand = defineHandGesture({
     g.active = true;
     g.position.copy(smoothValue(wristMetacarpalAverage, g._positionSmoothing));
     g.direction.copy(smoothValue(handPointDirection, g._directionSmoothing));
-    calculateRotation(g);
+    calculateRotationMatrix(g);
   },
 });
 
@@ -102,7 +102,7 @@ export const pointingGun = defineHandGesture({
     g.active = true;
     g.position.copy(smoothValue(gunOrigin, g._positionSmoothing));
     g.direction.copy(h.direction);
-    calculateRotation(g);
+    calculateRotationMatrix(g);
   },
 });
 
@@ -151,7 +151,7 @@ export const pointingIndexFinger = defineHandGesture({
     const toTargetDirection = g._toTargetDirection.copy(target).sub(origin).normalize();
     g.direction.copy(smoothValue(toTargetDirection, g._directionSmoothing));
     g.position.copy(indeTip);
-    calculateRotation(g);
+    calculateRotationMatrix(g);
   },
 });
 
@@ -204,6 +204,6 @@ export const pointingWand = defineHandGesture({
     const toTargetDirection = g._toTargetDirection.copy(target).sub(origin).normalize();
     g.direction.copy(smoothValue(toTargetDirection, g._directionSmoothing));
     g.position.copy(origin);
-    calculateRotation(g);
+    calculateRotationMatrix(g);
   },
 });
