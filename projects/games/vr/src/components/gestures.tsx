@@ -3,14 +3,25 @@ import React, { createContext, useRef } from 'react';
 import { useContext } from 'react';
 import { useFrame } from '@react-three/fiber';
 import { useController } from '@react-three/xr';
-import { Matrix4, Vector3, XRHandJoints, XRHandSpace } from 'three';
+import { Matrix4, Vector3, XRHandJoints, XRHandSpace, XRJointSpace } from 'three';
+
+export const GesturesProvider = ({ children, options }: { children: JSX.Element[]; options: GestureOptions }) => {
+  const gestures = useGesturesInstance(options);
+  return <gesturesContext.Provider value={gestures}>{children}</gesturesContext.Provider>;
+};
+export const useGestures = () => {
+  return useContext(gesturesContext) as Gestures;
+};
+
+type Gestures = ReturnType<typeof useGesturesInstance>;
+const gesturesContext = createContext<undefined | Gestures>(undefined);
 
 const useGesturesInstance = (options: GestureOptions) => {
   const controllerL = useController(`left`);
   const controllerR = useController(`right`);
 
-  const gestureResultL = useRef(createGestureHandResult());
-  const gestureResultR = useRef(createGestureHandResult());
+  const gestureResultL = useRef(createHandGestureResult());
+  const gestureResultR = useRef(createHandGestureResult());
 
   useFrame(() => {
     calculateHandGestures(controllerL?.hand, false, options, gestureResultL.current);
@@ -22,92 +33,20 @@ const useGesturesInstance = (options: GestureOptions) => {
     right: gestureResultR.current,
   };
 };
-type Gestures = ReturnType<typeof useGesturesInstance>;
-const gesturesContext = createContext<undefined | Gestures>(undefined);
-export const GesturesProvider = ({ children, options }: { children: JSX.Element[]; options: GestureOptions }) => {
-  const gestures = useGesturesInstance(options);
-  return <gesturesContext.Provider value={gestures}>{children}</gesturesContext.Provider>;
-};
-export const useGestures = () => {
-  return useContext(gesturesContext) as Gestures;
-};
 
-export type GestureOptions = {
-  pointingHand?: boolean;
-  pointingGun?: boolean;
-  pointingIndexFinger?: boolean;
-  pointingWand?: boolean;
-};
-export const GestureOptions = {
-  all: {
-    pointingHand: true,
-    pointingGun: true,
-    pointingIndexFinger: true,
-    pointingWand: true,
-  } as GestureOptions,
-};
+const createDirectionAndOrigin = () => ({
+  position: new Vector3(),
+  _positionSmoothing: createSmoothValues(10),
+  direction: new Vector3(),
+  _directionSmoothing: createSmoothValues(0.15),
+  rotation: new Matrix4(),
+});
 
-const createGestureHandResult = () => {
-  const createDirectionAndOrigin = () => ({
-    position: new Vector3(),
-    _positionSmoothing: createSmoothValues(10),
-    direction: new Vector3(),
-    _directionSmoothing: createSmoothValues(0.15),
-    rotation: new Matrix4(),
-  });
-  return {
-    _joints: {} as Partial<XRHandJoints>,
-    kind: 0,
-    pointingHand: {
-      active: false,
-      ...createDirectionAndOrigin(),
-      _proximalAverage: new Vector3(),
-      _wristMetacarpalAverage: new Vector3(),
-      _wristToProximal: new Vector3(),
-      _handForwardDirection: new Vector3(),
-      _handUpDirection: new Vector3(),
-      _handPalmDirection: new Vector3(),
-      _directionAdjustment: new Vector3(),
-      _handPointDirection: new Vector3(),
-      _ringToIndex: new Vector3(),
-    },
-    pointingGun: {
-      active: false,
-      ...createDirectionAndOrigin(),
-      _gunOrigin: new Vector3(),
-      _gunUpAdjustment: new Vector3(),
-      _gunForwardAdjustment: new Vector3(),
-    },
-    pointingIndexFinger: {
-      active: false,
-      ...createDirectionAndOrigin(),
-      _target: new Vector3(),
-      _toMiddleTip: new Vector3(),
-      _toIndexTip: new Vector3(),
-      _origin: new Vector3(),
-      _originUpAdjustment: new Vector3(),
-      _toTargetDirection: new Vector3(),
-    },
-    pointingWand: {
-      active: false,
-      ...createDirectionAndOrigin(),
-      _target: new Vector3(),
-      _toMiddleTip: new Vector3(),
-      _toIndexTip: new Vector3(),
-      _origin: new Vector3(),
-      _targetAdjustment: new Vector3(),
-      _originAdjustment: new Vector3(),
-      _toTargetDirection: new Vector3(),
-    },
-  };
-};
-export type GestureHandResult = ReturnType<typeof createGestureHandResult>;
-
-const resetGestureResult = (result: GestureHandResult, hand: XRHandSpace | undefined) => {
+const resetHandGestureResult = (result: HandGestureResult, hand: XRHandSpace | undefined) => {
   result.kind = 0;
   // eslint-disable-next-line guard-for-in
   for (const k in result) {
-    const o = result[k as keyof GestureHandResult] as { active?: boolean };
+    const o = result[k as keyof HandGestureResult] as { active?: boolean };
     if (!o?.active) {
       continue;
     }
@@ -156,13 +95,65 @@ const calculateRotation = (g: { direction: Vector3; rotation: Matrix4 }) => {
   g.rotation.lookAt(empty, g.direction, up);
 };
 
+const defineHandGesture = <
+  TKey extends string,
+  TResult extends Record<string, unknown>,
+  TDeps extends Record<string, { optionsFilter: (o: Record<string, boolean>) => boolean }>,
+>(definition: {
+  key: TKey;
+  deps?: TDeps;
+  createResult: () => TResult;
+  calculate: (
+    hand: XRHandSpace | undefined,
+    isRightHand: boolean,
+    options: { [k in TKey]: boolean },
+    joints: Partial<XRHandJoints>,
+    wrist: XRJointSpace,
+    out: ResultsOf<TDeps> & {
+      [k in TKey]: TResult;
+    },
+  ) => void;
+}) => {
+  const key = definition.key;
+  if (definition.deps) {
+    Object.values(definition.deps).forEach((d) => {
+      const orig = d.optionsFilter;
+      d.optionsFilter = (o) => orig(o) || !!o[key];
+    });
+  }
+  return {
+    ...definition,
+    optionsFilter: (o: Record<string, boolean>) => !!o[key],
+  };
+};
+
+type ResultsOf<T extends Record<string, unknown>> = {
+  [K in keyof T]: T[K] extends { createResult: () => infer UResult } ? UResult : unknown;
+};
+type OptionsOf<T extends Record<string, unknown>> = {
+  [K in keyof T]: boolean;
+};
+
+const createHandGestureResult = () => {
+  const createResults = <T extends Record<string, { createResult: () => unknown }>>(g: T): ResultsOf<T> => {
+    return Object.fromEntries([...Object.entries(g)].map(([k, v]) => [k, v.createResult()])) as ResultsOf<T>;
+  };
+
+  return {
+    _joints: {} as Partial<XRHandJoints>,
+    kind: 0,
+    ...createResults(handGestures),
+  };
+};
+export type HandGestureResult = ReturnType<typeof createHandGestureResult>;
+
 const calculateHandGestures = (
   hand: XRHandSpace | undefined,
   isRightHand: boolean,
   options: GestureOptions,
-  out: GestureHandResult,
+  out: HandGestureResult,
 ) => {
-  resetGestureResult(out, hand);
+  resetHandGestureResult(out, hand);
   const joints = out?._joints;
   if (!joints) {
     return out;
@@ -174,7 +165,33 @@ const calculateHandGestures = (
     return out;
   }
 
-  if (options.pointingHand || options.pointingGun || options.pointingIndexFinger) {
+  for (const g of handGesturesArray) {
+    if (g.optionsFilter(options)) {
+      g.calculate(hand, isRightHand, options, joints, wrist, out);
+    }
+  }
+  return out;
+};
+
+// Gestures
+const pointingHand = defineHandGesture({
+  key: `pointingHand`,
+  createResult: () => {
+    return {
+      active: false,
+      ...createDirectionAndOrigin(),
+      _proximalAverage: new Vector3(),
+      _wristMetacarpalAverage: new Vector3(),
+      _wristToProximal: new Vector3(),
+      _handForwardDirection: new Vector3(),
+      _handUpDirection: new Vector3(),
+      _handPalmDirection: new Vector3(),
+      _directionAdjustment: new Vector3(),
+      _handPointDirection: new Vector3(),
+      _ringToIndex: new Vector3(),
+    };
+  },
+  calculate: (hand, isRightHand, options, joints, wrist, out) => {
     const g = out.pointingHand;
 
     const indeProx = joints[`index-finger-phalanx-proximal`]?.position ?? empty;
@@ -224,9 +241,24 @@ const calculateHandGestures = (
     g.position.copy(smoothValue(wristMetacarpalAverage, g._positionSmoothing));
     g.direction.copy(smoothValue(handPointDirection, g._directionSmoothing));
     calculateRotation(g);
-  }
+  },
+});
 
-  if (options.pointingGun) {
+const pointingGun = defineHandGesture({
+  key: `pointingGun`,
+  deps: {
+    pointingHand,
+  },
+  createResult: () => {
+    return {
+      active: false,
+      ...createDirectionAndOrigin(),
+      _gunOrigin: new Vector3(),
+      _gunUpAdjustment: new Vector3(),
+      _gunForwardAdjustment: new Vector3(),
+    };
+  },
+  calculate: (hand, isRightHand, options, joints, wrist, out) => {
     const g = out.pointingGun;
     const h = out.pointingHand;
 
@@ -242,9 +274,27 @@ const calculateHandGestures = (
     g.position.copy(smoothValue(gunOrigin, g._positionSmoothing));
     g.direction.copy(h.direction);
     calculateRotation(g);
-  }
+  },
+});
 
-  if (options.pointingIndexFinger) {
+const pointingIndexFinger = defineHandGesture({
+  key: `pointingIndexFinger`,
+  deps: {
+    pointingHand,
+  },
+  createResult: () => {
+    return {
+      active: false,
+      ...createDirectionAndOrigin(),
+      _target: new Vector3(),
+      _toMiddleTip: new Vector3(),
+      _toIndexTip: new Vector3(),
+      _origin: new Vector3(),
+      _originUpAdjustment: new Vector3(),
+      _toTargetDirection: new Vector3(),
+    };
+  },
+  calculate: (hand, isRightHand, options, joints, wrist, out) => {
     const g = out.pointingIndexFinger;
     const h = out.pointingHand;
 
@@ -273,9 +323,28 @@ const calculateHandGestures = (
     g.direction.copy(smoothValue(toTargetDirection, g._directionSmoothing));
     g.position.copy(indeTip);
     calculateRotation(g);
-  }
+  },
+});
 
-  if (options.pointingWand) {
+const pointingWand = defineHandGesture({
+  key: `pointingWand`,
+  deps: {
+    pointingHand,
+  },
+  createResult: () => {
+    return {
+      active: false,
+      ...createDirectionAndOrigin(),
+      _target: new Vector3(),
+      _toMiddleTip: new Vector3(),
+      _toIndexTip: new Vector3(),
+      _origin: new Vector3(),
+      _targetAdjustment: new Vector3(),
+      _originAdjustment: new Vector3(),
+      _toTargetDirection: new Vector3(),
+    };
+  },
+  calculate: (hand, isRightHand, options, joints, wrist, out) => {
     const g = out.pointingWand;
     const h = out.pointingHand;
 
@@ -307,7 +376,24 @@ const calculateHandGestures = (
     g.direction.copy(smoothValue(toTargetDirection, g._directionSmoothing));
     g.position.copy(origin);
     calculateRotation(g);
-  }
+  },
+});
 
-  return out;
+const handGestures = {
+  pointingHand,
+  pointingGun,
+  pointingIndexFinger,
+  pointingWand,
+};
+const handGesturesArray = [...Object.values(handGestures)];
+type Clean<T> = {} & {
+  [K in keyof T]: T[K];
+};
+
+const gestures = {
+  ...handGestures,
+};
+export type GestureOptions = Clean<OptionsOf<typeof gestures>>;
+export const GestureOptions = {
+  all: Object.fromEntries([...Object.keys(gestures)].map((k) => [k, true])) as GestureOptions,
 };
