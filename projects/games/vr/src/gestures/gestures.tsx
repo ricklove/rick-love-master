@@ -72,6 +72,8 @@ const createHandGestureResult = () => {
   };
 
   return {
+    active: false,
+    _wristPosition: new Vector3(),
     _joints: {} as Partial<XRHandJoints>,
     ...createResults(handGestures),
   };
@@ -79,6 +81,8 @@ const createHandGestureResult = () => {
 export type HandGestureResult = ReturnType<typeof createHandGestureResult>;
 
 const resetHandGestureResult = (result: HandGestureResult, hand: XRHandSpace | undefined) => {
+  // result.active = false;
+
   // eslint-disable-next-line guard-for-in
   for (const k in result) {
     const o = result[k as keyof HandGestureResult] as { active?: boolean };
@@ -111,18 +115,31 @@ const calculateHandGestures = (
   options: GestureOptions,
   out: HandGestureResult,
 ) => {
+  const wrist = hand?.joints.wrist;
+  if (!wrist) {
+    // disable if wrist is missing
+    return out;
+  }
+
+  // detect if hand is out of view
+  const hasMoved = !wrist.position.equals(out._wristPosition);
+  out._wristPosition.copy(wrist.position);
+
+  // Deactivate hand, but leave previous hand gesture results intact
+  out.active = hasMoved;
+
+  if (!out.active) {
+    return out;
+  }
+
+  // Reset hand
   resetHandGestureResult(out, hand);
   const joints = out?._joints;
   if (!joints) {
     return out;
   }
 
-  const wrist = joints.wrist;
-  if (!wrist) {
-    // disable if wrist is missing
-    return out;
-  }
-
+  // Calculate gestures
   for (const g of handGesturesArray) {
     if (g.optionsFilter(options)) {
       g.calculate(hand, isRightHand, options, joints, wrist, out);

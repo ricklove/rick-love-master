@@ -55,8 +55,8 @@ export const defineBodyGesture = <
     handLeft: XRHandSpace | undefined,
     handRight: XRHandSpace | undefined,
     options: { [k in TKey]: boolean },
-    leftResult: ResultsOf<TDepsHand>,
-    rightResult: ResultsOf<TDepsHand>,
+    leftResult: ResultsOf<TDepsHand> & { active: boolean },
+    rightResult: ResultsOf<TDepsHand> & { active: boolean },
     out: ResultsOf<TDeps> & {
       [k in TKey]: TResult;
     },

@@ -20,48 +20,51 @@ export const moving = defineBodyGesture({
       _rDelta: new Vector3(),
       _instantMovement: new Vector3(),
       _velocity: new Vector3(),
+      _velocityMin: new Vector3(),
+      _velocityRaw: new Vector3(),
       _velocityRunningAverage: createSmoothValues(1 / 30),
     };
   },
   calculate: (head, handLeft, handRight, options, leftResult, rightResult, out) => {
     const g = out.moving;
 
-    const lPos = g._lRelPos
-      .copy(leftResult.pointingHand._wristMetacarpalAverage)
-      .sub(rightResult.pointingHand._wristMetacarpalAverage);
-    const rPos = g._rRelPos
-      .copy(rightResult.pointingHand._wristMetacarpalAverage)
-      .sub(leftResult.pointingHand._wristMetacarpalAverage);
+    const lPos = !leftResult.active ? undefined : g._lRelPos.copy(leftResult.pointingHand._wristMetacarpalAverage);
+    const rPos = !rightResult.active ? undefined : g._rRelPos.copy(rightResult.pointingHand._wristMetacarpalAverage);
 
     if (lPos) {
-      g._lDelta.copy(lPos).sub(g._lLastPos);
-      if (g._lDelta.lengthSq() > 10) {
-        g._lDelta.set(0, 0, 0);
+      if (g._lLastPos.lengthSq() === 0) {
+        g._lLastPos.copy(lPos);
       }
+      g._lDelta.copy(lPos).sub(g._lLastPos);
       g._lLastPos.copy(lPos);
     }
 
     if (rPos) {
-      g._rDelta.copy(rPos).sub(g._rLastPos);
-      if (g._rDelta.lengthSq() > 10) {
-        g._rDelta.set(0, 0, 0);
+      if (g._rLastPos.lengthSq() === 0) {
+        g._rLastPos.copy(rPos);
       }
+      g._rDelta.copy(rPos).sub(g._rLastPos);
       g._rLastPos.copy(rPos);
     }
 
-    const instantSpeed = Math.min(1000, 300 * Math.max(g._lDelta.length(), g._lDelta.length()));
-    g._velocityRunningAverage._runningAverageBase = Math.min(1 / 10, 0.1 / g._velocity.length());
-    const movement = g._instantMovement.set(0, 0, -1).applyEuler(head.rotation).multiplyScalar(instantSpeed);
-    g._velocity.copy(runningAverage(movement, g._velocityRunningAverage));
+    const instantSpeed = Math.min(1000, 300 * Math.min(g._lDelta.length(), g._rDelta.length()));
+    const instantMovement = g._instantMovement.set(0, 0, -1).applyEuler(head.rotation).multiplyScalar(instantSpeed);
+    g._velocityRunningAverage._runningAverageBase = Math.min(1 / 2, 0.05 / g._velocityRaw.length());
+    g._velocityRaw.copy(runningAverage(instantMovement, g._velocityRunningAverage));
 
-    g.active = true;
-    g.direction.copy(g._velocity).normalize();
+    const MIN_SPEED = 1;
+
+    const isMoving = g._velocityRaw.lengthSq() > MIN_SPEED * MIN_SPEED;
+    if (isMoving) {
+      g._velocityMin.copy(g._velocityRaw).normalize().multiplyScalar(MIN_SPEED);
+      g._velocity.copy(g._velocityRaw).sub(g._velocityMin);
+    } else {
+      g._velocity.set(0, 0, 0);
+    }
+
+    g.active = isMoving;
+    g.direction.copy(g._velocityRaw).normalize();
     g.position.copy(head.position).add(g._velocity);
     calculateRotationMatrix(g);
-
-    // g.active = true;
-    // g.direction.copy(g._rDelta).normalize();
-    // g.position.copy(g._rLastPos);
-    // calculateRotationMatrix(g);
   },
 });
