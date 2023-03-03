@@ -8,6 +8,7 @@ import { usePlayer } from './components/camera';
 import { DebugConsole, Hud } from './components/hud';
 import { PerspectiveKind, ScenePerspective, togglePerspective } from './components/perspective';
 import { PlayerAvatarInSceneSpace } from './components/player-avatar';
+import { RandomGround } from './environment/ground';
 import { GestureOptions, GesturesProvider, useGestures } from './gestures/gestures';
 
 export const VrTestGame = () => {
@@ -55,6 +56,7 @@ const SceneContent = () => {
         <shadowMaterial color={`#333333`} />
       </Plane> */}
       <gridHelper args={[100, 100]} />
+      <RandomGround />
       <Mover_Running />
     </>
   );
