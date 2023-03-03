@@ -46,7 +46,14 @@ export const VrTestGame = () => {
 const SceneContent = () => {
   return (
     <>
-      <pointLight position={[5, 5, 5]} />
+      {[...new Array(20)].map((_, i) => (
+        <pointLight
+          key={i}
+          position={[500 - 1000 * Math.random(), 50 * Math.random(), 500 - 1000 * Math.random()]}
+          color={Math.round(0xffffff * Math.random())}
+          distance={300}
+        />
+      ))}
       <Sphere position={[-2, 1, 0]} scale={0.02} />
       <Sphere position={[0, 1, -10]} scale={0.05} />
       <Sphere position={[5, 1, -90]} />
@@ -73,7 +80,7 @@ const Mover_Running = () => {
     if (DISABLE) {
       return;
     }
-    player.position.add(gestures.body.moving._velocity.clone().multiplyScalar(1 / 60));
+    player.position.add(gestures.body.moving._velocity.clone().multiplyScalar((10 * 1) / 60));
   });
   return <></>;
 };
