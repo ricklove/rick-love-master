@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/naming-convention */
 import React, { useRef, useState } from 'react';
 import { Box, Sphere, Text } from '@react-three/drei';
 import { Canvas } from '@react-three/fiber';
@@ -17,7 +18,10 @@ export const VrTestGame = () => {
       <VRButton onError={(e) => console.error(e)} />
       <Canvas>
         <XR referenceSpace={`local-floor`}>
-          <Scene_Minimal />
+          {/* <Scene_01_Minimal /> */}
+          {/* <Scene_02_PerfGestures /> */}
+          {/* <Scene_03_PerfGesturesMover /> */}
+          <Scene_04_PerfGesturesMoverWithGround />
           {/* <Scene_GesturesSetup /> */}
         </XR>
       </Canvas>
@@ -25,7 +29,8 @@ export const VrTestGame = () => {
   );
 };
 
-const Scene_Minimal = () => {
+// good
+const Scene_01_Minimal = () => {
   return (
     <>
       <ambientLight intensity={0.5} />
@@ -33,6 +38,63 @@ const Scene_Minimal = () => {
         <gridHelper args={[100, 100]} />
         <Mover_Auto />
       </ScenePerspective>
+    </>
+  );
+};
+
+// good
+const Scene_02_PerfGestures = () => {
+  return (
+    <>
+      <GesturesProvider options={GestureOptions.all}>
+        <ambientLight intensity={0.5} />
+        <ScenePerspective perspective={`1st`}>
+          <gridHelper args={[100, 100]} />
+          <Mover_Auto />
+          <PlayerAvatarInSceneSpace />
+        </ScenePerspective>
+      </GesturesProvider>
+    </>
+  );
+};
+
+// good
+const Scene_03_PerfGesturesMover = () => {
+  return (
+    <>
+      <GesturesProvider options={GestureOptions.all}>
+        <ambientLight intensity={0.5} />
+        <ScenePerspective perspective={`1st`}>
+          <gridHelper args={[100, 100]} />
+          <Mover_Running />
+          <PlayerAvatarInSceneSpace />
+        </ScenePerspective>
+      </GesturesProvider>
+    </>
+  );
+};
+
+// ok
+const Scene_04_PerfGesturesMoverWithGround = () => {
+  return (
+    <>
+      <GesturesProvider options={GestureOptions.all}>
+        <ambientLight intensity={0.5} />
+        <ScenePerspective perspective={`1st`}>
+          {[...new Array(3)].map((_, i) => (
+            <pointLight
+              key={i}
+              position={[500 - 1000 * Math.random(), 50 * Math.random(), 500 - 1000 * Math.random()]}
+              color={Math.round(0xffffff * Math.random())}
+              distance={300}
+            />
+          ))}
+          <gridHelper args={[100, 100]} />
+          <Mover_Running />
+          <RandomGround />
+          <PlayerAvatarInSceneSpace />
+        </ScenePerspective>
+      </GesturesProvider>
     </>
   );
 };
