@@ -93,7 +93,15 @@ const Scene_04_PerfGesturesMoverWithGround = () => {
           <Mover_Running />
           <RandomGround />
           <PlayerAvatarInSceneSpace />
+
+          <Sphere position={[-2, 1, 0]} scale={0.02} />
+          <Sphere position={[0, 1, -10]} scale={0.05} />
+          <Sphere position={[0, 1, -90]} />
         </ScenePerspective>
+
+        <Hud position={[0, 1, 4]}>
+          <DebugConsole />
+        </Hud>
       </GesturesProvider>
     </>
   );

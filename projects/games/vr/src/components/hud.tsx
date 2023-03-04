@@ -69,7 +69,7 @@ export const DebugConsole = () => {
   const [text, setText] = useState(``);
 
   useFrame(() => {
-    setText(`${logger.logState.slice(0, 3).join(`\n`)}`);
+    setText(`${logger.logState.slice(0, 10).join(`\n`)}`);
   });
 
   return <Text>{text}</Text>;

@@ -1,6 +1,4 @@
 import { Vector3 } from 'three';
-import { formatVector } from '../../utils/formatters';
-import { logger } from '../../utils/logger';
 import { defineBodyGesture } from '../gestures-core';
 import { calculateRotationMatrix, createPositionAndDirection, createSmoothValues, runningAverage } from '../helpers';
 import { pointingHand } from './pointing';
@@ -69,17 +67,22 @@ export const moving = defineBodyGesture({
       SPEED_AT_1METERPERSECOND_ARM_MOVEMENT * 60 * g._speedPerFrame,
     );
 
-    logger.log(`instantSpeed`, {
-      instantSpeed: instantSpeed.toFixed(3),
-      rDelta: formatVector(g._rDelta),
-      lDelta: formatVector(g._lDelta),
-    });
+    // logger.log(`instantSpeed`, {
+    //   instantSpeed: instantSpeed.toFixed(3),
+    //   rDelta: formatVector(g._rDelta),
+    //   lDelta: formatVector(g._lDelta),
+    // });
 
     const instantMovement = g._instantMovement.set(0, 0, -1).applyEuler(head.rotation).multiplyScalar(instantSpeed);
     g._velocityRunningAverage._runningAverageBase = Math.min(1 / 2, 0.05 / g._velocityRaw.length());
     g._velocityRaw.copy(runningAverage(instantMovement, g._velocityRunningAverage));
 
     const CUTOFF_SPEED = 5;
+    const MAX_SPEED = 20;
+
+    if (g._velocityRaw.lengthSq() > MAX_SPEED * MAX_SPEED) {
+      g._velocityRaw.normalize().multiplyScalar(MAX_SPEED);
+    }
 
     const isMoving = g._velocityRaw.lengthSq() > CUTOFF_SPEED * CUTOFF_SPEED;
     if (isMoving) {
