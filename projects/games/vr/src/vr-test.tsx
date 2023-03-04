@@ -12,34 +12,53 @@ import { RandomGround } from './environment/ground';
 import { GestureOptions, GesturesProvider, useGestures } from './gestures/gestures';
 
 export const VrTestGame = () => {
-  const [perspective, setPerspective] = useState(`1st` as PerspectiveKind);
-  const changePerspective = () => {
-    setPerspective((s) => togglePerspective(s));
-  };
   return (
     <>
       <VRButton onError={(e) => console.error(e)} />
       <Canvas>
         <XR referenceSpace={`local-floor`}>
-          <GesturesProvider options={GestureOptions.all}>
-            {/* <AudioHost /> */}
-            <ambientLight intensity={0.5} />
-            {/* <Hands /> */}
-            <Controllers />
-            <ScenePerspective perspective={perspective}>
-              <SceneContent />
-            </ScenePerspective>
-
-            <Hud position={[0, 1, 4]}>
-              <DebugConsole />
-            </Hud>
-            <Hud position={[0.5, 0, 1]}>
-              <Button position={[0, 0, 0]} text={`Change Perspective: ${perspective}`} onClick={changePerspective} />
-            </Hud>
-          </GesturesProvider>
+          <Scene_Minimal />
+          {/* <Scene_GesturesSetup /> */}
         </XR>
       </Canvas>
     </>
+  );
+};
+
+const Scene_Minimal = () => {
+  return (
+    <>
+      <ambientLight intensity={0.5} />
+      <ScenePerspective perspective={`1st`}>
+        <gridHelper args={[100, 100]} />
+        <Mover_Auto />
+      </ScenePerspective>
+    </>
+  );
+};
+
+const Scene_GesturesSetup = () => {
+  const [perspective, setPerspective] = useState(`1st` as PerspectiveKind);
+  const changePerspective = () => {
+    setPerspective((s) => togglePerspective(s));
+  };
+  return (
+    <GesturesProvider options={GestureOptions.all}>
+      {/* <AudioHost /> */}
+      <ambientLight intensity={0.5} />
+      {/* <Hands /> */}
+      <Controllers />
+      <ScenePerspective perspective={perspective}>
+        <SceneContent />
+      </ScenePerspective>
+
+      <Hud position={[0, 1, 4]}>
+        <DebugConsole />
+      </Hud>
+      <Hud position={[0.5, 0, 1]}>
+        <Button position={[0, 0, 0]} text={`Change Perspective: ${perspective}`} onClick={changePerspective} />
+      </Hud>
+    </GesturesProvider>
   );
 };
 
@@ -134,6 +153,33 @@ const Mover_ThumbStick = () => {
     //   playerPos: formatVector(player.position),
     //   camPos: formatVector(camera.position),
     // });
+  });
+  return <></>;
+};
+
+const Mover_Auto = () => {
+  const player = usePlayer();
+  const velocity = useRef(new Vector3());
+
+  useFrame(() => {
+    const DISABLE = false;
+    if (DISABLE) {
+      return;
+    }
+
+    const now = Date.now();
+    const timeToCircle = 0.1 * 1000 * Math.PI;
+    const dir = new Vector3(Math.cos(now / timeToCircle), 0, Math.sin(now / timeToCircle));
+
+    const VEL_MULT = 0.0001;
+    velocity.current.multiplyScalar(1 - VEL_MULT).add(dir.multiplyScalar(VEL_MULT));
+
+    const MAX_SPEED = 10 / 60;
+    if (velocity.current.lengthSq() > MAX_SPEED * MAX_SPEED) {
+      velocity.current.normalize().multiplyScalar(MAX_SPEED);
+    }
+
+    player.position.add(velocity.current);
   });
   return <></>;
 };
