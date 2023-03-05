@@ -1,4 +1,5 @@
 import React from 'react';
+import { Physics } from '@react-three/cannon';
 import { useFrame } from '@react-three/fiber';
 import { EntityGravity } from './entities/components/gravity';
 import { EntityAdjustToGround, EntityGround } from './entities/components/ground';
@@ -65,9 +66,11 @@ export const WorldContainer = ({}: {}) => {
 
   return (
     <>
-      {world.entities.map((x) => (
-        <React.Fragment key={x.key}>{x.active && x.view && <x.view.Component entity={x} />}</React.Fragment>
-      ))}
+      <Physics allowSleep={true} iterations={15} gravity={[0, -20, 0]}>
+        {world.entities.map((x) => (
+          <React.Fragment key={x.key}>{x.active && x.view && <x.view.Component entity={x} />}</React.Fragment>
+        ))}
+      </Physics>
     </>
   );
 };

@@ -68,7 +68,7 @@ export const EntityGround = defineComponent<EntityGround>()
       // positions are row (x), then column (z)
 
       const edgeCount = segmentCount + 1;
-      // const iCenter = 0.5 * segmentCount;
+      const iCenter = 0.5 * segmentCount;
 
       const grid = new Float32Array(edgeCount * edgeCount);
       for (let i = 0; i < edgeCount; i++) {
@@ -89,10 +89,22 @@ export const EntityGround = defineComponent<EntityGround>()
     },
   )
   .attach({
-    getLocalHeightAtGridIndex: (ground: EntityGround, i: number) => {
-      const { position } = ground.transform;
-      const c = ground.ground;
-      return c.grid[i] * (c.maxHeight - c.minHeight) + c.minHeight + position.y;
+    getLocalHeightAtGridIndex: (entity: EntityGround, index: number) => {
+      const { grid, segmentCount, minHeight, maxHeight } = entity.ground;
+      return grid[index] * (maxHeight - minHeight) + minHeight;
+    },
+    to2dHeightArray: (entity: EntityGround) => {
+      const { grid, segmentCount, minHeight, maxHeight } = entity.ground;
+
+      const edgeCount = segmentCount + 1;
+      const heights = new Array(edgeCount) as number[][];
+      for (let i = 0; i < edgeCount; i++) {
+        heights[i] = new Array(edgeCount);
+        for (let j = 0; j < edgeCount; j++) {
+          heights[i][j] = grid[j * edgeCount + i] * (maxHeight - minHeight) + minHeight;
+        }
+      }
+      return heights;
     },
     getWorldHeightAtPoint: (ground: EntityGround, x: number, z: number) => getHeightAtPoint(ground, x, z),
   });
