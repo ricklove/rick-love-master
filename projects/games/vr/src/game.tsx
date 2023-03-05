@@ -68,7 +68,7 @@ export const WorldContainer = ({}: {}) => {
 
   return (
     <>
-      <Physics allowSleep={true} iterations={15} gravity={[0, -20, 0]}>
+      <Physics allowSleep={true} iterations={15} gravity={[0, -9.8, 0]}>
         {world.entities.map((x) => (
           <React.Fragment key={x.key}>{x.active && x.view && <x.view.Component entity={x} />}</React.Fragment>
         ))}

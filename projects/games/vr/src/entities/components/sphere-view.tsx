@@ -102,7 +102,7 @@ const EntityPhysicalSpheres = ({ entities }: { entities: EntitySphereView[] }) =
 
   return (
     <instancedMesh ref={ref} castShadow receiveShadow args={[undefined, undefined, count]}>
-      <sphereBufferGeometry args={[0.2, 16, 16]}>
+      <sphereBufferGeometry args={[undefined, 16, 16]}>
         <instancedBufferAttribute attach='attributes-color' args={[colors, 3]} />
       </sphereBufferGeometry>
       <meshPhongMaterial vertexColors />
