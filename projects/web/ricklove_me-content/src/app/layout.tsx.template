@@ -1,0 +1,21 @@
+import React from 'react';
+import Link from 'next/link';
+import { setupNavigation } from '@ricklove/ricklove_me-content/lib/src/components/site';
+
+setupNavigation({
+  StaticPageLinkComponent: ({ children, to }) => <Link href={to}>{children}</Link>,
+});
+
+export default function RootLayout({
+  // Layouts must accept a children prop.
+  // This will be populated with nested layouts or pages
+  children,
+}: {
+  children: React.ReactNode;
+}) {
+  return (
+    <html lang='en'>
+      <body>{children}</body>
+    </html>
+  );
+}
