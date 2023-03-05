@@ -1,25 +1,28 @@
 /* eslint-disable no-bitwise */
 import React, { useRef } from 'react';
-import { BufferAttribute, DynamicDrawUsage, Mesh, PlaneGeometry, Vector3 } from 'three';
+import { BufferAttribute, DoubleSide, DynamicDrawUsage, Mesh, PlaneGeometry, Vector3 } from 'three';
 import { useIsomorphicLayoutEffect } from '../../utils/layoutEffect';
-import { defineComponent } from '../core';
+import { defineComponent, EntityBase } from '../core';
 import { EntityGround } from './ground';
 
-export type EntityGroundView = EntityGround & {
-  transform: {
-    position: Vector3;
+export type EntityGroundView = EntityBase &
+  EntityGround & {
+    transform: {
+      position: Vector3;
+    };
+    view: {
+      Component: (props: { entity: EntityBase }) => JSX.Element;
+    };
   };
-  view: {
-    Component: (props: { ground: EntityGroundView }) => JSX.Element;
-  };
-};
 
-export const EntityGroundView = defineComponent<EntityGroundView>().with(`view`, () => ({
-  Component: EntityGroundViewComponent,
-}));
-// .with(`transform`, () => ({
-//   position: undefined as unknown as Vector3,
-// }));
+export const EntityGroundView = defineComponent<EntityGroundView>()
+  .with(`view`, () => ({
+    Component: (x) => <EntityGroundViewComponent ground={x.entity as EntityGroundView} />,
+  }))
+  .with(`transform`, () => ({
+    // Will be created by the component
+    position: undefined as unknown as Vector3,
+  }));
 
 export const EntityGroundViewComponent = ({ ground }: { ground: EntityGroundView }) => {
   const ref = useRef<Mesh>(null);
@@ -45,7 +48,7 @@ export const EntityGroundViewComponent = ({ ground }: { ground: EntityGroundView
 
     for (let i = 0; i < position.count; i++) {
       // positions are row (x), then column (z)
-      const y = EntityGround.getHeightAtGridIndex(ground, i);
+      const y = EntityGround.getLocalHeightAtGridIndex(ground, i);
       position.setY(i, y);
     }
 
@@ -56,7 +59,7 @@ export const EntityGroundViewComponent = ({ ground }: { ground: EntityGroundView
   return (
     <mesh ref={ref}>
       <planeGeometry args={[segmentSize * segmentCount, segmentSize * segmentCount, segmentCount, segmentCount]} />
-      <meshStandardMaterial color={`#565656`} />
+      <meshStandardMaterial color={`#565656`} side={DoubleSide} />
     </mesh>
   );
 };

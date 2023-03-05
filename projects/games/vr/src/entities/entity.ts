@@ -1,12 +1,20 @@
 import type {} from 'three';
-import { EntityGround, EntityKeepAboveGround } from './components/ground';
-import { defineEntity, EntityBase } from './core';
+import { EntityGravity } from './components/gravity';
+import { EntityAdjustToGround, EntityGround } from './components/ground';
+import { EntityGroundView } from './components/ground-view';
+import { EntitySphereView } from './components/sphere-view';
+import { defineEntity, EntityBase, SimplifyEntity } from './core';
 
 // prettier-ignore
-export type Entity = EntityBase & (
+type EntityUnion = EntityBase & (
 | EntityGround
-| EntityKeepAboveGround
+| EntityGroundView
+| EntityAdjustToGround
+| EntitySphereView
+| EntityGravity
 );
+
+export type Entity = SimplifyEntity<EntityUnion>;
 
 export const Entity = defineEntity<Entity>();
 

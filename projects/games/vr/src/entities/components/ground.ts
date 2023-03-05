@@ -1,26 +1,39 @@
 import { defineComponent, Vector3 } from '../core';
 
-export type EntityKeepAboveGround = {
+export type EntityAdjustToGround = {
   transform: {
     position: Vector3;
   };
-  keepAboveGround: {
+  adjustToGround: {
     active: true;
-    originHeight: number;
+    minGroundHeight?: number;
+    maxGroundHeight?: number;
   };
 };
-export const EntityKeepAboveGround = defineComponent<EntityKeepAboveGround>()
-  .with(`keepAboveGround`, ({ originHeight = 0 }: { originHeight?: number }) => ({
-    active: true,
-    originHeight,
-  }))
+export const EntityAdjustToGround = defineComponent<EntityAdjustToGround>()
+  .with(
+    `adjustToGround`,
+    ({ minGroundHeight = 0, maxGroundHeight }: { minGroundHeight?: number; maxGroundHeight?: number }) => ({
+      active: true,
+      minGroundHeight,
+      maxGroundHeight,
+    }),
+  )
   .attach({
-    keepAboveGround: (entity: EntityKeepAboveGround, ground: EntityGround) => {
-      if (!entity.keepAboveGround.active) {
+    adjustToGround: (entity: EntityAdjustToGround, ground: EntityGround) => {
+      if (!entity.adjustToGround.active) {
         return;
       }
-      if (entity.transform.position.y < ground.transform.position.y + entity.keepAboveGround.originHeight) {
-        entity.transform.position.setY(ground.transform.position.y + entity.keepAboveGround.originHeight);
+      const pos = entity.transform.position;
+      const y = pos.y;
+      const yGround = EntityGround.getWorldHeightAtPoint(ground, pos.x, pos.z);
+      const { minGroundHeight, maxGroundHeight } = entity.adjustToGround;
+
+      if (minGroundHeight != null && y < yGround + minGroundHeight) {
+        pos.setY(yGround + minGroundHeight);
+      }
+      if (maxGroundHeight != null && y > yGround + maxGroundHeight) {
+        pos.setY(yGround + maxGroundHeight);
       }
     },
   });
@@ -55,11 +68,13 @@ export const EntityGround = defineComponent<EntityGround>()
       // positions are row (x), then column (z)
 
       const edgeCount = segmentCount + 1;
+      // const iCenter = 0.5 * segmentCount;
 
       const grid = new Float32Array(edgeCount * edgeCount);
       for (let i = 0; i < edgeCount; i++) {
         for (let j = 0; j < edgeCount; j++) {
           grid[j * edgeCount + i] = Math.sin(i);
+
           // grid[j * edgeCount + i] = (i - iCenter) / edgeCount;
         }
       }
@@ -74,11 +89,12 @@ export const EntityGround = defineComponent<EntityGround>()
     },
   )
   .attach({
-    getHeightAtGridIndex: (ground: EntityGround, i: number) => {
+    getLocalHeightAtGridIndex: (ground: EntityGround, i: number) => {
+      const { position } = ground.transform;
       const c = ground.ground;
-      return c.maxHeight + (c.maxHeight - c.minHeight) * c.grid[i];
+      return c.grid[i] * (c.maxHeight - c.minHeight) + c.minHeight + position.y;
     },
-    getHeightAtPoint: (ground: EntityGround, x: number, z: number) => getHeightAtPoint(ground, x, z),
+    getWorldHeightAtPoint: (ground: EntityGround, x: number, z: number) => getHeightAtPoint(ground, x, z),
   });
 
 const getHeightAtPoint = (ground: EntityGround, x: number, z: number): number => {
@@ -118,7 +134,7 @@ const getHeightAtPoint = (ground: EntityGround, x: number, z: number): number =>
     + bl * bRatio * lRatio
     + br * bRatio * rRatio;
 
-  const y = ave * (maxHeight - minHeight) + minHeight * position.y;
+  const y = ave * (maxHeight - minHeight) + minHeight + position.y;
 
   // logger.log(`h`, {
   //   x: x.toFixed(3),

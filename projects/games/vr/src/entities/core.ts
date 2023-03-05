@@ -4,6 +4,7 @@ export type Vector3 = Vector3Three;
 export type EntityBase = {
   active: boolean;
   name: string;
+  key: string;
   //position: Vector3;
 };
 
@@ -11,8 +12,16 @@ export type Simplify<T> = {} & {
   [K in keyof T]: T[K];
 };
 
+export type SimplifyFields<T> = {} & {
+  [K in keyof T]: Simplify<T[K]>;
+};
+
+type UnionToIntersection<T> = (T extends unknown ? (k: T) => void : never) extends (k: infer I) => void ? I : never;
+type UnionToPartial<T> = Partial<UnionToIntersection<T>>;
+export type SimplifyEntity<TEntity> = SimplifyFields<EntityBase & Exclude<UnionToPartial<TEntity>, EntityBase>>;
+
 function attach<
-  TBefore extends { _type: unknown; attach: unknown },
+  TBefore extends { _componentType: unknown; attach: unknown },
   TAfter extends Simplify<Omit<TBefore, `addComponent` | `attach`> & TMethods & TBefore>,
   TMethods extends Record<string, unknown>,
 >(this: TBefore, methods: TMethods): TAfter {
@@ -25,40 +34,61 @@ function attach<
   return result as TAfter;
 }
 
-export const defineComponent = <TEntityWithComponent extends { [K in string]: unknown }>() => {
-  const _with = <
-    TName extends string & keyof Omit<TEntityWithComponent, keyof EntityBase>,
-    TArgs extends Record<string, unknown>,
-  >(
-    name: TName,
-    createComponent: (args: TArgs) => TEntityWithComponent[TName],
-  ) => {
+export const defineComponent = <TEntityWithComponent extends Record<string, unknown>>() => {
+  function _with<
+    TName extends keyof TEntityWithComponent,
+    TComponentFactoryBefore extends {
+      _componentType: {};
+      _argsType: {};
+    },
+    TArgs = {},
+  >(this: TComponentFactoryBefore, name: TName, createComponent: (args: TArgs) => TEntityWithComponent[TName]) {
+    type TAllComponents = Pick<TEntityWithComponent, TName> & TComponentFactoryBefore[`_componentType`];
+    type TAllArgs = TArgs & TComponentFactoryBefore[`_argsType`];
+
+    const inner = this as {
+      addComponent?: <TBeforeInner, TArgsInner>(entity: TBeforeInner, args: TArgsInner) => unknown;
+    };
     const addComponent = <TBefore extends EntityBase>(
       entity: TBefore,
-      args: TArgs,
-    ): Simplify<TBefore & Pick<TEntityWithComponent, TName>> => {
-      const e = entity as TEntityWithComponent;
+      args: TAllArgs,
+    ): SimplifyFields<TBefore & TAllComponents> => {
+      const e = entity as unknown as TAllComponents;
       if (e[name]) {
-        return entity as TBefore & TEntityWithComponent;
+        return entity as TBefore & TAllComponents;
       }
       e[name] = createComponent(args);
-      return entity as TBefore & TEntityWithComponent;
+
+      // call inner
+      if (inner.addComponent) {
+        inner.addComponent(e, args);
+      }
+
+      return entity as TBefore & TAllComponents;
     };
 
     const result = {
-      _type: undefined as unknown as Pick<Simplify<TEntityWithComponent>, TName>,
-      _argsType: undefined as unknown as TArgs,
+      _componentType: undefined as unknown as Simplify<TAllComponents>,
+      _argsType: undefined as unknown as Simplify<TAllArgs>,
       addComponent,
       attach,
-      //   with: _with,
+      with: _with,
     };
     result.attach.bind(result);
+    result.with.bind(result);
     return result;
-  };
+  }
 
-  return { with: _with };
+  const cf = {
+    _componentType: undefined as unknown as {},
+    _argsType: undefined as unknown as {},
+    with: _with,
+  };
+  cf.with.bind(cf);
+  return cf;
 };
 
+let nextEntityId = 0;
 export const defineEntity = <TEntity>() => ({
   create: (name: string) => {
     const result = {
@@ -66,6 +96,7 @@ export const defineEntity = <TEntity>() => ({
       entity: {
         name,
         active: true,
+        key: `${nextEntityId++}`,
       },
       addComponent,
       build,
@@ -76,8 +107,8 @@ export const defineEntity = <TEntity>() => ({
   },
 });
 
-type EntityOfComponentFactory<T> = T extends {
-  _type: infer U;
+type ComponentOfComponentFactory<T> = T extends {
+  _componentType: infer U;
 }
   ? U
   : never;
@@ -88,23 +119,30 @@ type ArgsOfComponentFactory<T> = T extends {
   ? U
   : never;
 
+type EntityOfEntityFactory<T> = T extends {
+  entity: infer U;
+}
+  ? U
+  : never;
+
 function addComponent<
-  TEntityFactory extends { entity: TBefore },
-  TBefore extends EntityBase,
+  TEntityFactory extends { entity: EntityBase },
   TComponentFactory extends {
-    addComponent: (entity: TBefore, args: ArgsOfComponentFactory<TComponentFactory>) => unknown;
+    addComponent: (entity: EntityBase, args: ArgsOfComponentFactory<TComponentFactory>) => unknown;
   },
 >(this: TEntityFactory, component: TComponentFactory, args: ArgsOfComponentFactory<TComponentFactory>) {
+  type TEntityBefore = EntityOfEntityFactory<TEntityFactory>;
+
   const result = {
-    entity: component.addComponent(this.entity, args) as Simplify<
-      TBefore & EntityOfComponentFactory<TComponentFactory>
-    >,
+    entity: component.addComponent(this.entity, args) as TEntityBefore & ComponentOfComponentFactory<TComponentFactory>,
     addComponent,
     build,
   };
   result.addComponent.bind(result);
   result.build.bind(result);
-  return result;
+  return result as Omit<typeof result, `entity`> & {
+    entity: SimplifyFields<TEntityBefore & ComponentOfComponentFactory<TComponentFactory>>;
+  };
 }
 
 function build<TEntity extends EntityBase>(this: { entity: TEntity }) {
