@@ -99,9 +99,9 @@ const Scene_04_PerfGesturesMoverWithGround = () => {
           <Sphere position={[0, 1, -90]} />
         </ScenePerspective>
 
-        <Hud position={[0, 1, 4]}>
+        {/* <Hud position={[0, 1, 4]}>
           <DebugConsole />
-        </Hud>
+        </Hud> */}
       </GesturesProvider>
     </>
   );
