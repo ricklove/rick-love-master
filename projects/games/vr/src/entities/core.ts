@@ -11,36 +11,6 @@ export type Simplify<T> = {} & {
   [K in keyof T]: T[K];
 };
 
-const defineComponentInner = <
-  TEntityWithComponent extends { [K in string]: unknown },
-  TName extends string & keyof Omit<TEntityWithComponent, keyof EntityBase>,
-  TArgs extends Record<string, unknown>,
->(
-  name: TName,
-  createComponent: (args: TArgs) => TEntityWithComponent[TName],
-) => {
-  const addComponent = <TBefore extends EntityBase>(
-    entity: TBefore,
-    args: TArgs,
-  ): Simplify<TBefore & Pick<TEntityWithComponent, TName>> => {
-    const e = entity as TEntityWithComponent;
-    if (e[name]) {
-      return entity as TBefore & TEntityWithComponent;
-    }
-    e[name] = createComponent(args);
-    return entity as TBefore & TEntityWithComponent;
-  };
-
-  const result = {
-    _type: undefined as unknown as Simplify<TEntityWithComponent>,
-    _argsType: undefined as unknown as TArgs,
-    addComponent,
-    attach,
-  };
-  result.attach.bind(result);
-  return result;
-};
-
 function attach<
   TBefore extends { _type: unknown; attach: unknown },
   TAfter extends Simplify<Omit<TBefore, `addComponent` | `attach`> & TMethods & TBefore>,
@@ -55,17 +25,39 @@ function attach<
   return result as TAfter;
 }
 
-export const defineComponent = <TEntityWithComponent extends { [K in string]: unknown }>() => ({
-  with: <
+export const defineComponent = <TEntityWithComponent extends { [K in string]: unknown }>() => {
+  const _with = <
     TName extends string & keyof Omit<TEntityWithComponent, keyof EntityBase>,
     TArgs extends Record<string, unknown>,
   >(
     name: TName,
     createComponent: (args: TArgs) => TEntityWithComponent[TName],
   ) => {
-    return defineComponentInner(name, createComponent);
-  },
-});
+    const addComponent = <TBefore extends EntityBase>(
+      entity: TBefore,
+      args: TArgs,
+    ): Simplify<TBefore & Pick<TEntityWithComponent, TName>> => {
+      const e = entity as TEntityWithComponent;
+      if (e[name]) {
+        return entity as TBefore & TEntityWithComponent;
+      }
+      e[name] = createComponent(args);
+      return entity as TBefore & TEntityWithComponent;
+    };
+
+    const result = {
+      _type: undefined as unknown as Pick<Simplify<TEntityWithComponent>, TName>,
+      _argsType: undefined as unknown as TArgs,
+      addComponent,
+      attach,
+      //   with: _with,
+    };
+    result.attach.bind(result);
+    return result;
+  };
+
+  return { with: _with };
+};
 
 export const defineEntity = <TEntity>() => ({
   create: (name: string) => {
