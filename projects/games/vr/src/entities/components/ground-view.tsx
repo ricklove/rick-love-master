@@ -1,4 +1,3 @@
-/* eslint-disable no-bitwise */
 import React, { useMemo, useRef } from 'react';
 import { Triplet, useHeightfield } from '@react-three/cannon';
 import { BufferAttribute, BufferGeometry, DoubleSide, DynamicDrawUsage, Mesh, PlaneGeometry, Vector3 } from 'three';

@@ -73,8 +73,13 @@ export const EntityGround = defineComponent<EntityGround>()
       const grid = new Float32Array(edgeCount * edgeCount);
       for (let i = 0; i < edgeCount; i++) {
         for (let j = 0; j < edgeCount; j++) {
-          grid[j * edgeCount + i] = Math.sin(i);
+          // Mountains
+          grid[j * edgeCount + i] = Math.sin(j * edgeCount + i);
 
+          // Wavy
+          // grid[j * edgeCount + i] = Math.sin(i);
+
+          // Plane
           // grid[j * edgeCount + i] = (i - iCenter) / edgeCount;
         }
       }

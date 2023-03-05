@@ -30,17 +30,19 @@ const ball = Entity.create(`ball`)
 
 const balls = [...new Array(100)].map(() => {
   const radius = 3 * Math.random();
-  return Entity.create(`ball`)
-    .addComponent(EntitySphereView, {
-      radius,
-      color: 0xffffff * Math.random(),
-      startPosition: [50 - 100 * Math.random(), 100 * Math.random(), 50 - 100 * Math.random()],
-    })
-    .addComponent(EntityAdjustToGround, {
-      minGroundHeight: radius,
-    })
-    .addComponent(EntityGravity, {})
-    .build();
+  return (
+    Entity.create(`ball`)
+      .addComponent(EntitySphereView, {
+        radius,
+        color: 0xffffff * Math.random(),
+        startPosition: [50 - 100 * Math.random(), 100 + 100 * Math.random(), 50 - 100 * Math.random()],
+      })
+      // .addComponent(EntityAdjustToGround, {
+      //   minGroundHeight: radius,
+      // })
+      // .addComponent(EntityGravity, {})
+      .build()
+  );
 });
 
 const world: World = {
@@ -70,6 +72,9 @@ export const WorldContainer = ({}: {}) => {
         {world.entities.map((x) => (
           <React.Fragment key={x.key}>{x.active && x.view && <x.view.Component entity={x} />}</React.Fragment>
         ))}
+        <EntitySphereView.BatchComponent
+          entities={world.entities.filter((x) => x.sphere).map((x) => x as EntitySphereView)}
+        />
       </Physics>
     </>
   );
