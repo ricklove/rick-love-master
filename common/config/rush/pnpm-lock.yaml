@@ -134,6 +134,7 @@ specifiers:
   hardhat-contract-sizer: ~2.1.1
   hash-wasm: ~4.9.0
   highlight.js: ~9.1.0
+  html2canvas: 1.4.1
   html5parser: 2.0.2
   lodash: ~4.17.21
   mocha: ^8.4.0
@@ -302,6 +303,7 @@ dependencies:
   hardhat-contract-sizer: 2.1.1_hardhat@2.6.4
   hash-wasm: 4.9.0
   highlight.js: 9.1.0
+  html2canvas: 1.4.1
   html5parser: 2.0.2
   lodash: 4.17.21
   mocha: 8.4.0
@@ -4708,6 +4710,11 @@ packages:
       pascalcase: 0.1.1
     dev: false
 
+  /base64-arraybuffer/1.0.2:
+    resolution: {integrity: sha512-I3yl4r9QB5ZRY3XuJVEPfc2XhZO6YweFPI+UovAzn+8/hb3oJ6lnysaFcjVpkCPfVWFUDvoZ8kmVDP7WyRtYtQ==}
+    engines: {node: '>= 0.6.0'}
+    dev: false
+
   /base64-js/1.5.1:
     resolution: {integrity: sha512-AKpaYlHn8t4SVbOHCy+b5+KKgvR4vrsD8vbvrbiQJps7fKDTkjkDry6ji0rUJjC0kzbNePLwzxq8iypo41qeWA==}
     dev: false
@@ -5860,6 +5867,12 @@ packages:
       public-encrypt: 4.0.3
       randombytes: 2.1.0
       randomfill: 1.0.4
+    dev: false
+
+  /css-line-break/2.1.0:
+    resolution: {integrity: sha512-FHcKFCZcAha3LwfVBhCQbW2nCNbkZXn7KVUJcsT5/P8YmfsVja0FMPJr0B903j/E69HUphKiV9iQArX8SDYA4w==}
+    dependencies:
+      utrie: 1.0.2
     dev: false
 
   /css-modules-loader-core/1.1.0:
@@ -8822,6 +8835,14 @@ packages:
 
   /html-escaper/2.0.2:
     resolution: {integrity: sha512-H2iMtd0I4Mt5eYiapRdIDjp+XzelXQ0tFE4JS7YFwFevXXMmOp9myNrUvCg0D6ws8iqkRPBfKHgbwig1SmlLfg==}
+    dev: false
+
+  /html2canvas/1.4.1:
+    resolution: {integrity: sha512-fPU6BHNpsyIhr8yyMpTLLxAbkaK8ArIBcmZIRiBLiDhjeqvXolaEmDGmELFuX9I4xDcaKKcJl+TKZLqruBbmWA==}
+    engines: {node: '>=8.0.0'}
+    dependencies:
+      css-line-break: 2.1.0
+      text-segmentation: 1.0.3
     dev: false
 
   /html5parser/2.0.2:
@@ -15092,6 +15113,12 @@ packages:
     deprecated: testrpc has been renamed to ganache-cli, please use this package from now on.
     dev: false
 
+  /text-segmentation/1.0.3:
+    resolution: {integrity: sha512-iOiPUo/BGnZ6+54OsWxZidGCsdU8YbE4PSpdPinp7DeMtUJNJBoJ/ouUSTJjHkh1KntHaltHl/gDs2FC4i5+Nw==}
+    dependencies:
+      utrie: 1.0.2
+    dev: false
+
   /text-table/0.2.0:
     resolution: {integrity: sha1-f17oI66AUgfACvLfSoTsP8+lcLQ=}
     dev: false
@@ -15891,6 +15918,12 @@ packages:
   /utils-merge/1.0.1:
     resolution: {integrity: sha1-n5VxD1CiZ5R7LMwSR0HBAoQn5xM=}
     engines: {node: '>= 0.4.0'}
+    dev: false
+
+  /utrie/1.0.2:
+    resolution: {integrity: sha512-1MLa5ouZiOmQzUbjbu9VmjLzn1QLXBhwpUa7kdLUQK+KQ5KA9I1vk5U4YHe/X2Ch7PYnJfWuWT+VbuxbGwljhw==}
+    dependencies:
+      base64-arraybuffer: 1.0.2
     dev: false
 
   /uuid/2.0.1:
@@ -18044,7 +18077,7 @@ packages:
     dev: false
 
   file:projects/vr-games.tgz_b77eceae350969a91c333e9cb57a6b88:
-    resolution: {integrity: sha512-dCQEq6ai4RAyHTs2sFzYmVfVlgRgU/6c2WsgXrvk/Y/3qnEyKNXRgyR8KyWHm8I6MGXosy8iiEGMyvaLvXrw2g==, tarball: file:projects/vr-games.tgz}
+    resolution: {integrity: sha512-mDJqeT1M0g687dUZxpDp3C9M8pn2JLUmwckS5EMSQgK/fRJfdiUl1alj9ig+ywS6tSxm8QCRa7FgjwsVis3gAg==, tarball: file:projects/vr-games.tgz}
     id: file:projects/vr-games.tgz
     name: '@rush-temp/vr-games'
     version: 0.0.0
@@ -18056,6 +18089,7 @@ packages:
       '@types/react': 18.0.14
       '@types/react-dom': 18.0.5
       '@types/three': 0.149.0
+      html2canvas: 1.4.1
       react: 18.2.0
       react-merge-refs: 2.0.1
       three: 0.149.0

@@ -3,17 +3,46 @@ import React, { useRef, useState } from 'react';
 import { Box, Sphere, Text } from '@react-three/drei';
 import { Canvas } from '@react-three/fiber';
 import { useFrame } from '@react-three/fiber';
-import { Controllers, Interactive, VRButton, XR } from '@react-three/xr';
+import { ARButton, Controllers, Interactive, VRButton, XR } from '@react-three/xr';
 import { Vector3 } from 'three';
 import { usePlayer } from './components/camera';
 import { DebugConsole, Hud } from './components/hud';
 import { PerspectiveKind, ScenePerspective, togglePerspective } from './components/perspective';
 import { PlayerAvatarInSceneSpace } from './components/player-avatar';
 import { RandomGround } from './environment/ground';
+import { ExampleHtmlObject, ExampleHtmlObject_Dynamic } from './experiments/html/html-to-string-component';
 import { WorldContainer } from './game';
 import { GestureOptions, GesturesProvider, useGestures } from './gestures/gestures';
+import { logger } from './utils/logger';
 
 export const VrTestGame = () => {
+  return (
+    <>
+      {/* <ARPage /> */}
+      <VRPage />
+    </>
+  );
+};
+
+const ARPage = () => {
+  return (
+    <>
+      <ARButton onError={(e) => console.error(e)} />
+      <Canvas>
+        <XR referenceSpace={`local-floor`}>
+          {/* <Scene_GesturesSetup /> */}
+          {/* <Scene_01_Minimal /> */}
+          {/* <Scene_02_PerfGestures /> */}
+          {/* <Scene_03_PerfGesturesMover /> */}
+          {/* <Scene_04_PerfGesturesMoverWithGround /> */}
+          <Scene_05_WithEntities />
+        </XR>
+      </Canvas>
+    </>
+  );
+};
+
+const VRPage = () => {
   return (
     <>
       <VRButton onError={(e) => console.error(e)} />
@@ -25,8 +54,45 @@ export const VrTestGame = () => {
           {/* <Scene_03_PerfGesturesMover /> */}
           {/* <Scene_04_PerfGesturesMoverWithGround /> */}
           <Scene_05_WithEntities />
+          {/* <Scene_Experiment_01_Html /> */}
         </XR>
       </Canvas>
+    </>
+  );
+};
+
+// Html should only be used for static content
+// that can be generated during a loading screeen
+// Text is fast and can be dynamic any time
+const Scene_Experiment_01_Html = () => {
+  useFrame(() => {
+    // Text test
+    // Text is very fast - even when using setState to update
+    logger.log(`frame`, {});
+  });
+  return (
+    <>
+      <GesturesProvider options={GestureOptions.all}>
+        <ambientLight intensity={0.5} />
+        <ScenePerspective perspective={`1st`}>
+          <gridHelper args={[100, 100]} />
+          <Mover_Auto />
+          <Mover_Running />
+          <PlayerAvatarInSceneSpace />
+
+          <Sphere position={[-2, 1, 0]} scale={0.02} />
+          <Sphere position={[0, 1, -10]} scale={0.05} />
+          <Sphere position={[0, 1, -90]} />
+
+          {/* Rendering html once is ok */}
+          <ExampleHtmlObject position={[0, 1, -5]} />
+          {/* Re-rendering html is very laggy and will drop frames */}
+          <ExampleHtmlObject_Dynamic position={[0, 1, -8]} />
+          <Hud position={[0, 1, 4]}>
+            <DebugConsole />
+          </Hud>
+        </ScenePerspective>
+      </GesturesProvider>
     </>
   );
 };
