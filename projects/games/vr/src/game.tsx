@@ -4,8 +4,17 @@ import { useFrame } from '@react-three/fiber';
 import { EntityGravity } from './entities/components/gravity';
 import { EntityAdjustToGround, EntityGround } from './entities/components/ground';
 import { EntityGroundView } from './entities/components/ground-view';
+import { EntityPlayer } from './entities/components/player';
 import { EntitySphereView } from './entities/components/sphere-view';
 import { Entity, World } from './entities/entity';
+
+const player = Entity.create(`player`)
+  .addComponent(EntityPlayer, {})
+  .addComponent(EntityAdjustToGround, {
+    minGroundHeight: 0,
+    maxGroundHeight: 0,
+  })
+  .build();
 
 const ground = Entity.create(`ground`)
   .addComponent(EntityGround, {
@@ -46,7 +55,7 @@ const balls = [...new Array(100)].map(() => {
 });
 
 const world: World = {
-  entities: [ground, ball, ...balls],
+  entities: [player, ground, ball, ...balls],
 };
 
 export const game = {
