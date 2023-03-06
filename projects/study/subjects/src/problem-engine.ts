@@ -16,41 +16,164 @@ type PlayerState = {
   writeAnswerToFile?: (answer: StudyProblemAnswer) => Promise<void>;
 };
 
-const REVIEW_RATIO = 0.9;
+type Presenter = {
+  presentMultipleChoiceProblem: (
+    playerName: string,
+    args: {
+      subjectTitle: string;
+      question: string;
+      choices: string[];
+      correctAnswer: string;
+    },
+  ) => Promise<{ answer: string }>;
+  presentShortAnswerProblem: (
+    playerName: string,
+    args: {
+      subjectTitle: string;
+      question: string;
+      correctAnswer: string;
+    },
+  ) => Promise<{ answer: string }>;
+  presentQuestionPreview: (
+    playerName: string,
+    args: {
+      subjectTitle: string;
+      questionPreview: string;
+      questionPreviewTimeMs: number;
+    },
+  ) => Promise<{ answer: string }>;
+  sayMessage?: (playerName: string, message: string) => Promise<void>;
+};
 
-const gotoNextProblem = async ({
-  playerState,
-  presenter,
-  setInterval,
-  clearInterval,
-  delay,
-}: {
-  playerState: PlayerState;
-  presenter: {
-    presentMultipleChoiceProblem: (
-      playerName: string,
-      args: {
-        subjectTitle: string;
-        question: string;
-        choices: string[];
-      },
-    ) => Promise<{ answer: string }>;
-    presentShortAnswerProblem: (
-      playerName: string,
-      args: { subjectTitle: string; question: string },
-    ) => Promise<{ answer: string }>;
-    presentQuestionPreview: (
-      playerName: string,
-      args: { subjectTitle: string; questionPreview: string; questionPreviewTimeMs: number },
-    ) => Promise<{ answer: string }>;
-    sayMessage?: (playerName: string, message: string) => Promise<void>;
-  };
+const defaultProblemEngineOptions = {
+  reviewRatio: 0.9,
+  previewTimeMultiplier: 1,
+  accidentalAnswerAllowedTimeMs: 1000,
+};
+type ProblemEngineOptions = typeof defaultProblemEngineOptions;
+
+type ProblemEngineDependencies = {
   setInterval: (cb: () => void, timeMs: number) => number;
   clearInterval: (id: number) => void;
   delay: (timeMs: number) => Promise<void>;
+};
+
+const showNextProblem = async ({
+  playerState,
+  presenter,
+  options,
+  dependencies: { setInterval, clearInterval, delay },
+}: {
+  playerState: PlayerState;
+  presenter: Presenter;
+  options?: Partial<ProblemEngineOptions>;
+  dependencies: ProblemEngineDependencies;
 }): Promise<undefined | StudyProblemAnswer> => {
   const { playerName } = playerState;
+  const o = { ...defaultProblemEngineOptions, ...(options ?? {}) };
 
+  const problem = getNextProblem(playerState, o);
+  const problemSubject = getSubject(problem.subjectKey);
+
+  // For Text to speech
+  let textToSpeechRepeaterId = undefined as undefined | ReturnType<typeof setInterval>;
+  if (presenter.sayMessage && problem.questionPreviewChat) {
+    const chatTts = problem.questionPreviewChat;
+    await presenter.sayMessage(playerName, chatTts);
+    await delay(problem.questionPreviewChatTimeMs ?? 0);
+
+    let repeatCount = 0;
+    textToSpeechRepeaterId = setInterval(() => {
+      if (repeatCount > 5) {
+        clearInterval(textToSpeechRepeaterId!);
+        return;
+      }
+      // eslint-disable-next-line no-void
+      void presenter.sayMessage?.(playerName, chatTts);
+      repeatCount++;
+    }, 3000);
+  }
+
+  // Title Display
+  if (problem.questionPreview && problem.questionPreviewTimeMs) {
+    await presenter.presentQuestionPreview(playerName, {
+      subjectTitle: problem.subjectTitle,
+      questionPreview: problem.questionPreview,
+      questionPreviewTimeMs: problem.questionPreviewTimeMs,
+    });
+    await delay(problem.questionPreviewTimeMs * o.previewTimeMultiplier);
+  }
+
+  const presentProblem = async () => {
+    const formType = problem.isTyping ? `input` : `choices`;
+    if (formType === `choices`) {
+      const wrongChoicesSet = problemSubject.getWrongChoices(problem);
+      const wrongChoices = [...wrongChoicesSet.values()]
+        .filter((x) => x !== problem.correctAnswer)
+        .map((x) => ({ x, rand: Math.random() }))
+        .sort((a, b) => a.rand - b.rand)
+        .map((x) => x.x)
+        .slice(0, 3);
+      const choices = [problem.correctAnswer, ...wrongChoices];
+      const choicesRandomized = choices
+        .map((x) => ({ x, rand: Math.random() }))
+        .sort((a, b) => a.rand - b.rand)
+        .map((x) => x.x);
+
+      const response = await presenter.presentMultipleChoiceProblem(playerName, {
+        subjectTitle: problem.subjectTitle,
+        question: problem.question,
+        choices: choicesRandomized,
+        correctAnswer: problem.correctAnswer,
+      });
+      return response.answer;
+    }
+
+    const response = await presenter.presentShortAnswerProblem(playerName, {
+      subjectTitle: problem.subjectTitle,
+      question: problem.question,
+      correctAnswer: problem.correctAnswer,
+    });
+    return response.answer;
+  };
+
+  const presentProblemWithReissueOnAccidentalAnswer = async (): Promise<StudyProblemAnswer> => {
+    const timeSent = Date.now();
+    const answerRaw = await presentProblem();
+    const time = new Date();
+    const timeToAnswerMs = Date.now() - timeSent;
+    const { isCorrect, responseMessage } = problemSubject.evaluateAnswer(problem, answerRaw?.trim());
+
+    // Re-issue question on accidental tap
+    if (!answerRaw) {
+      return await presentProblemWithReissueOnAccidentalAnswer();
+    }
+    if (timeToAnswerMs < 0.5 * o.accidentalAnswerAllowedTimeMs) {
+      return await presentProblemWithReissueOnAccidentalAnswer();
+    }
+    if (timeToAnswerMs < o.accidentalAnswerAllowedTimeMs && !isCorrect) {
+      return await presentProblemWithReissueOnAccidentalAnswer();
+    }
+
+    return {
+      wasCorrect: isCorrect,
+      responseMessage,
+      answerRaw,
+      problem,
+      time,
+      timeToAnswerMs,
+    };
+  };
+
+  const result = await presentProblemWithReissueOnAccidentalAnswer();
+
+  if (textToSpeechRepeaterId) {
+    clearInterval(textToSpeechRepeaterId);
+  }
+  return result;
+};
+
+const getNextProblem = (playerState: PlayerState, { reviewRatio }: ProblemEngineOptions) => {
   const getQueuedProblem = () => {
     // return playerState.problemQueue.shift();
 
@@ -72,7 +195,7 @@ const gotoNextProblem = async ({
       return;
     }
     // Chance for new problem
-    if (playerState.reviewProblems.length < 3 && Math.random() > REVIEW_RATIO) {
+    if (playerState.reviewProblems.length < 3 && Math.random() > reviewRatio) {
       return;
     }
 
@@ -105,133 +228,33 @@ const gotoNextProblem = async ({
     return getQueuedProblem();
   };
 
-  const getProblem = () => {
-    const qProblem = getQueuedProblem();
-    if (qProblem) {
-      return qProblem;
-    }
-
-    const wProblem = getReviewProblem();
-    if (wProblem) {
-      return wProblem;
-    }
-
-    const includedSubjects = allSubjects.filter((x) =>
-      playerState.selectedSubjectCategories.some((s) => s.subjectKey === x.subjectKey),
-    );
-    const randomSubject = includedSubjects[Math.floor(Math.random() * includedSubjects.length)] ?? allSubjects[0];
-    const problem = randomSubject.getNewProblem(
-      playerState.selectedSubjectCategories.filter((x) => x.subjectKey === randomSubject.subjectKey),
-    );
-
-    // Add to problem queue
-    playerState.problemQueue.push(problem);
-
-    // Run as queued problem (so it will auto-repeat if skipped)
-    return getQueuedProblem() ?? problem;
-  };
-
-  const problem = getProblem();
-  const problemSubject = getSubject(problem.subjectKey);
-
-  const presentProblem = async () => {
-    const formType = problem.isTyping ? `input` : `choices`;
-    if (formType === `choices`) {
-      const wrongChoicesSet = problemSubject.getWrongChoices(problem);
-      const wrongChoices = [...wrongChoicesSet.values()]
-        .filter((x) => x !== problem.correctAnswer)
-        .map((x) => ({ x, rand: Math.random() }))
-        .sort((a, b) => a.rand - b.rand)
-        .map((x) => x.x)
-        .slice(0, 3);
-      const choices = [problem.correctAnswer, ...wrongChoices];
-      const choicesRandomized = choices
-        .map((x) => ({ x, rand: Math.random() }))
-        .sort((a, b) => a.rand - b.rand)
-        .map((x) => x.x);
-
-      const response = await presenter.presentMultipleChoiceProblem(playerName, {
-        subjectTitle: problem.subjectTitle,
-        question: problem.question,
-        choices: choicesRandomized,
-      });
-      return response.answer;
-    }
-
-    const response = await presenter.presentShortAnswerProblem(playerName, {
-      subjectTitle: problem.subjectTitle,
-      question: problem.question,
-    });
-    return response.answer;
-  };
-
-  // For Text to speech
-  let textToSpeechRepeaterId = undefined as undefined | ReturnType<typeof setInterval>;
-  if (presenter.sayMessage && problem.questionPreviewChat) {
-    const chatTts = problem.questionPreviewChat;
-    await presenter.sayMessage(playerName, chatTts);
-    await delay(problem.questionPreviewChatTimeMs ?? 0);
-
-    let repeatCount = 0;
-    textToSpeechRepeaterId = setInterval(() => {
-      if (repeatCount > 5) {
-        clearInterval(textToSpeechRepeaterId!);
-        return;
-      }
-      // eslint-disable-next-line no-void
-      void presenter.sayMessage?.(playerName, chatTts);
-      repeatCount++;
-    }, 3000);
+  const qProblem = getQueuedProblem();
+  if (qProblem) {
+    return qProblem;
   }
 
-  // Title Display
-  if (problem.questionPreview && problem.questionPreviewTimeMs) {
-    await presenter.presentQuestionPreview(playerName, {
-      subjectTitle: problem.subjectTitle,
-      questionPreview: problem.questionPreview,
-      questionPreviewTimeMs: problem.questionPreviewTimeMs,
-    });
-    await delay(problem.questionPreviewTimeMs);
+  const wProblem = getReviewProblem();
+  if (wProblem) {
+    return wProblem;
   }
 
-  const presentProblemWithReissueOnAccidentalAnswer = async (): Promise<StudyProblemAnswer> => {
-    const timeSent = Date.now();
-    const answerRaw = await presentProblem();
-    const time = new Date();
-    const timeToAnswerMs = Date.now() - timeSent;
-    const { isCorrect, responseMessage } = problemSubject.evaluateAnswer(problem, answerRaw?.trim());
+  const includedSubjects = allSubjects.filter((x) =>
+    playerState.selectedSubjectCategories.some((s) => s.subjectKey === x.subjectKey),
+  );
+  const randomSubject = includedSubjects[Math.floor(Math.random() * includedSubjects.length)] ?? allSubjects[0];
+  const problem = randomSubject.getNewProblem(
+    playerState.selectedSubjectCategories.filter((x) => x.subjectKey === randomSubject.subjectKey),
+  );
 
-    // Re-issue question on accidental tap
-    if (!answerRaw) {
-      return await presentProblemWithReissueOnAccidentalAnswer();
-    }
-    if (timeToAnswerMs < 500) {
-      return await presentProblemWithReissueOnAccidentalAnswer();
-    }
-    if (timeToAnswerMs < 1000 && !isCorrect) {
-      return await presentProblemWithReissueOnAccidentalAnswer();
-    }
+  // Add to problem queue
+  playerState.problemQueue.push(problem);
 
-    return {
-      wasCorrect: isCorrect,
-      responseMessage,
-      answerRaw,
-      problem,
-      time,
-      timeToAnswerMs,
-    };
-  };
-
-  const result = await presentProblemWithReissueOnAccidentalAnswer();
-
-  if (textToSpeechRepeaterId) {
-    clearInterval(textToSpeechRepeaterId);
-  }
-  return result;
+  // Run as queued problem (so it will auto-repeat if skipped)
+  return getQueuedProblem() ?? problem;
 };
 
 export const createProblemEngine = () => {
   return {
-    gotoNextProblem,
+    showNextProblem,
   };
 };
