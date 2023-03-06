@@ -65,11 +65,11 @@ export const Hud = (props: JSX.IntrinsicElements['group']) => {
   return <group ref={ref} {...props} />;
 };
 
-export const DebugConsole = () => {
+export const DebugConsole = ({ maxLines = 3 }: { maxLines?: number }) => {
   const [text, setText] = useState(``);
 
   useFrame(() => {
-    setText(`${logger.logState.slice(0, 30).join(`\n`)}`);
+    setText(`${logger.logState.slice(0, maxLines).join(`\n`)}`);
   });
 
   return <Text>{text}</Text>;

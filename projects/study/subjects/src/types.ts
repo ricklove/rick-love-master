@@ -42,3 +42,14 @@ export type StudySubject<TProblem extends StudyProblemBase<TSubjectKey>, TSubjec
   getReviewProblemSequence: (problem: TProblem, reviewLevel: number) => TProblem[];
   getCategories: () => { categoryKey: string; categoryTitle: string }[];
 };
+
+export type ProblemEnginePlayerSaveState = {
+  playerName: string;
+  problemQueue: StudyProblemType[];
+  reviewProblems: StudyProblemReviewState[];
+  answerHistory: StudyProblemAnswer[];
+  selectedSubjectCategories: {
+    subjectKey: string;
+    categoryKey: string;
+  }[];
+};

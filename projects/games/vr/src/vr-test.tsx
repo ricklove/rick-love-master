@@ -202,9 +202,9 @@ const Scene_05_WithEntities = () => {
           <WorldContainer />
         </ScenePerspective>
 
-        {/* <Hud position={[0, 1, 4]}>
+        <Hud position={[0, 1, 4]}>
           <DebugConsole />
-        </Hud> */}
+        </Hud>
       </GesturesProvider>
     </>
   );

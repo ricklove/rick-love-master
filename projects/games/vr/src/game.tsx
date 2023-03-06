@@ -5,8 +5,11 @@ import { EntityGravity } from './entities/components/gravity';
 import { EntityAdjustToGround, EntityGround } from './entities/components/ground';
 import { EntityGroundView } from './entities/components/ground-view';
 import { EntityPlayer } from './entities/components/player';
+import { EntityProblemEngine } from './entities/components/problem-engine';
 import { EntitySphereView } from './entities/components/sphere-view';
 import { Entity, World } from './entities/entity';
+
+const problemEngine = Entity.create(`problemEngine`).addComponent(EntityProblemEngine, {}).build();
 
 const player = Entity.create(`player`)
   .addComponent(EntityPlayer, {})
@@ -55,7 +58,7 @@ const balls = [...new Array(100)].map(() => {
 });
 
 const world: World = {
-  entities: [player, ground, ball, ...balls],
+  entities: [problemEngine, player, ground, ball, ...balls],
 };
 
 export const game = {

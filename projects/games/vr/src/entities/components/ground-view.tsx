@@ -19,9 +19,9 @@ export type EntityGroundView = EntityBase &
 export const EntityGroundView = defineComponent<EntityGroundView>()
   .with(`view`, () => ({
     // Component: (x) => <EntityGroundViewComponent ground={x.entity as EntityGroundView} />,
-    Component: (x) => (
+    Component: ({ entity }) => (
       <>
-        <EntityHeightFieldComponent entity={x.entity as EntityGroundView} />
+        <EntityHeightFieldComponent entity={entity as EntityGroundView} />
         {/* <group position={[0, 0.1, 0]}>
           <EntityGroundViewComponent ground={x.entity as EntityGroundView} />
         </group> */}
@@ -33,7 +33,7 @@ export const EntityGroundView = defineComponent<EntityGroundView>()
     position: undefined as unknown as Vector3,
   }));
 
-export const EntityGroundViewComponent = ({ ground }: { ground: EntityGroundView }) => {
+export const EntityGroundViewComponent = ({ entity }: { entity: EntityGroundView }) => {
   const ref = useRef<Mesh>(null);
 
   useIsomorphicLayoutEffect(() => {
@@ -42,7 +42,7 @@ export const EntityGroundViewComponent = ({ ground }: { ground: EntityGroundView
       return;
     }
     // Assign mesh
-    ground.transform = mesh;
+    entity.transform = mesh;
 
     const geometry = ref.current?.geometry as PlaneGeometry;
     if (!geometry) {
@@ -57,7 +57,7 @@ export const EntityGroundViewComponent = ({ ground }: { ground: EntityGroundView
 
     for (let i = 0; i < position.count; i++) {
       // positions are row (x), then column (z)
-      const y = EntityGround.getLocalHeightAtGridIndex(ground, i);
+      const y = EntityGround.getLocalHeightAtGridIndex(entity, i);
       position.setY(i, y);
     }
 
@@ -67,7 +67,7 @@ export const EntityGroundViewComponent = ({ ground }: { ground: EntityGroundView
     // geometry.computeBoundingSphere();
   }, []);
 
-  const { segmentCount, segmentSize } = ground.ground;
+  const { segmentCount, segmentSize } = entity.ground;
   return (
     <mesh ref={ref}>
       <planeGeometry args={[segmentSize * segmentCount, segmentSize * segmentCount, segmentCount, segmentCount]} />
