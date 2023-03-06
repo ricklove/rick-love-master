@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Text } from '@react-three/drei';
+import { Sphere, Text } from '@react-three/drei';
 import { Box, Flex } from '@react-three/flex';
 import { createProblemEngine, ProblemEngine, ProblemEnginePlayerState } from '@ricklove/study-subjects';
 import { delay } from '@ricklove/utils-core';
@@ -162,10 +162,15 @@ export const EntityProblemEngineComponent = ({ entity }: { entity: EntityProblem
                 </Text>
               </Box>
               {ui.choices?.map((c, i) => (
-                <Box key={i} height={16}>
-                  <Text anchorX='left' anchorY='top' fontSize={10}>
-                    {c}
-                  </Text>
+                <Box key={i} dir='row' justifyContent='flex-start' alignItems='center'>
+                  <Box centerAnchor height={20} width={20}>
+                    <Sphere args={[10]} />
+                  </Box>
+                  <Box height={16} margin={4}>
+                    <Text anchorX='left' anchorY='top' fontSize={16}>
+                      {c}
+                    </Text>
+                  </Box>
                 </Box>
               ))}
             </Box>
