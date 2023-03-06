@@ -69,6 +69,7 @@ specifiers:
   '@rush-temp/ricklove_me-content': file:./projects/ricklove_me-content.tgz
   '@rush-temp/rush-packages': file:./projects/rush-packages.tgz
   '@rush-temp/speech-recognition': file:./projects/speech-recognition.tgz
+  '@rush-temp/study-subjects': file:./projects/study-subjects.tgz
   '@rush-temp/themes': file:./projects/themes.tgz
   '@rush-temp/typescript-type-system-adventure': file:./projects/typescript-type-system-adventure.tgz
   '@rush-temp/upload-api-client': file:./projects/upload-api-client.tgz
@@ -238,6 +239,7 @@ dependencies:
   '@rush-temp/ricklove_me-content': file:projects/ricklove_me-content.tgz_47f4d805a44784f0712b4553a4fa125f
   '@rush-temp/rush-packages': file:projects/rush-packages.tgz_typescript@4.3.5
   '@rush-temp/speech-recognition': file:projects/speech-recognition.tgz
+  '@rush-temp/study-subjects': file:projects/study-subjects.tgz
   '@rush-temp/themes': file:projects/themes.tgz
   '@rush-temp/typescript-type-system-adventure': file:projects/typescript-type-system-adventure.tgz
   '@rush-temp/upload-api-client': file:projects/upload-api-client.tgz_@babel+core@7.15.0
@@ -17948,6 +17950,12 @@ packages:
   file:projects/speech-recognition.tgz:
     resolution: {integrity: sha512-jM5s3UyAGTvPLz6ZtXFoZkmfMNLa/Fmrg0s7OnuA+qdKzk4UAHzKQ/uPhVplBGBQcJy/jNSBssZA6AL9+Srw2A==, tarball: file:projects/speech-recognition.tgz}
     name: '@rush-temp/speech-recognition'
+    version: 0.0.0
+    dev: false
+
+  file:projects/study-subjects.tgz:
+    resolution: {integrity: sha512-SsQ42Xj9vpDO+8PiXXhosFScEQjtuETBGbSzfmV7p8clPH7KkT3CTNOM8YoHSuYG80nU6Dzs1PZ94hrBg0dxrg==, tarball: file:projects/study-subjects.tgz}
+    name: '@rush-temp/study-subjects'
     version: 0.0.0
     dev: false
 
