@@ -1,5 +1,5 @@
-import { allSubjects, getSubject } from './all-subjects';
-import { StudyProblemAnswer, StudyProblemReviewState, StudyProblemType } from './types';
+import { allSubjects, getSubject, StudyProblemType } from './all-subjects';
+import { StudyProblemAnswer, StudyProblemReviewState } from './types';
 
 type PlayerState = {
   nextProblemTimerId: undefined | number;
@@ -228,4 +228,10 @@ const gotoNextProblem = async ({
     clearInterval(textToSpeechRepeaterId);
   }
   return result;
+};
+
+export const createProblemEngine = () => {
+  return {
+    gotoNextProblem,
+  };
 };

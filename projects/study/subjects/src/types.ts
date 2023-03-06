@@ -1,8 +1,4 @@
-import type { MathProblemType } from './subjects/mathProblems';
-import type { SpanishProblemType } from './subjects/spanishProblems';
-import type { SpellingProblemType } from './subjects/spellingProblems';
-
-export type StudyProblemType = MathProblemType | SpellingProblemType | SpanishProblemType;
+import type { StudyProblemType } from './all-subjects';
 
 export type StudyProblemAnswer = {
   wasCorrect: boolean;
