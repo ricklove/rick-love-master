@@ -16,6 +16,7 @@ specifiers:
   '@react-three/cannon': 6.5.2
   '@react-three/drei': 9.13.2
   '@react-three/fiber': 8.0.27
+  '@react-three/flex': 1.0.1
   '@react-three/xr': 5.2.0
   '@rollup/plugin-babel': ^5.3.1
   '@rollup/plugin-node-resolve': ^13.3.0
@@ -186,6 +187,7 @@ dependencies:
   '@react-three/cannon': 6.5.2_c444ffaba0b602c1af19033b7b8f7f6a
   '@react-three/drei': 9.13.2_14eb8be2d0b5d9e93c0802c099b3b82f
   '@react-three/fiber': 8.0.27_bba3f0e2b059b810413ec30a113000bf
+  '@react-three/flex': 1.0.1_d7d148c5a2989f57970d2923e85bf4b9
   '@react-three/xr': 5.2.0_d7d148c5a2989f57970d2923e85bf4b9
   '@rollup/plugin-babel': 5.3.1_@babel+core@7.15.0+rollup@2.77.2
   '@rollup/plugin-node-resolve': 13.3.0_rollup@2.77.2
@@ -2143,6 +2145,12 @@ packages:
     resolution: {integrity: sha512-88p7+M0QGxKpmnkfXjS4V26AnoC/eiqZutE8GLdaI5X12NY75bXSdTY9NkmYb2Xyk1O+MmkuO6Frmsj84V6I8Q==}
     dev: false
 
+  /@react-pdf/yoga/2.0.4:
+    resolution: {integrity: sha512-bsU48GQ8E4LEQ38AtyQPQZ9oEATMpolGPFewgI4sBXOZBNH2miLtoBTbyB/xEOMuBcyqtvJQwSNg2czSZjrlyQ==}
+    dependencies:
+      '@types/yoga-layout': 1.9.4
+    dev: false
+
   /@react-spring/animated/9.6.1_react@18.2.0:
     resolution: {integrity: sha512-ls/rJBrAqiAYozjLo5EPPLLOb1LM0lNVQcXODTC1SMtS6DbuBCPaKco5svFUQFMP2dso3O+qcC4k9FsKc0KxMQ==}
     peerDependencies:
@@ -2316,6 +2324,20 @@ packages:
       suspend-react: 0.0.8_react@18.2.0
       three: 0.149.0
       zustand: 3.7.2_react@18.2.0
+    dev: false
+
+  /@react-three/flex/1.0.1_d7d148c5a2989f57970d2923e85bf4b9:
+    resolution: {integrity: sha512-m1zcuE0BWyUP6ASX09SGYZWHkyMS9GVcP4WGXjdSdxWi228D0p8hti9nHlnv+fpZvQO8v+Qz4EXmrf302mEzXQ==}
+    peerDependencies:
+      '@react-three/fiber': '>=8.0'
+      react: ^18.0.0
+      three: '>=0.137'
+    dependencies:
+      '@react-pdf/yoga': 2.0.4
+      '@react-three/fiber': 8.0.27_bba3f0e2b059b810413ec30a113000bf
+      react: 18.2.0
+      react-merge-refs: 1.1.0
+      three: 0.149.0
     dev: false
 
   /@react-three/xr/5.2.0_d7d148c5a2989f57970d2923e85bf4b9:
@@ -3326,6 +3348,10 @@ packages:
       '@types/node': 16.7.1
     dev: false
     optional: true
+
+  /@types/yoga-layout/1.9.4:
+    resolution: {integrity: sha512-RRHc1+8Hc5mf/2lZKnom6kCnqcNS07s8keahniWTOva0KELF6RgDJmaEcvGEKUUJgN4UgessmEsWuidaOycIOw==}
+    dev: false
 
   /@typescript-eslint/eslint-plugin/4.28.5_a8e83fcad666e1ba86be4b2e27a20aea:
     resolution: {integrity: sha512-m31cPEnbuCqXtEZQJOXAHsHvtoDi9OVaeL5wZnO2KZTnkvELk+u6J6jHg+NzvWQxk+87Zjbc4lJS4NHmgImz6Q==}
@@ -18085,7 +18111,7 @@ packages:
     dev: false
 
   file:projects/vr-games.tgz_b77eceae350969a91c333e9cb57a6b88:
-    resolution: {integrity: sha512-mDJqeT1M0g687dUZxpDp3C9M8pn2JLUmwckS5EMSQgK/fRJfdiUl1alj9ig+ywS6tSxm8QCRa7FgjwsVis3gAg==, tarball: file:projects/vr-games.tgz}
+    resolution: {integrity: sha512-ceUUQlVhDH01BDNhdjRnvmsRfFc/Bd64miG1RcKMxZ8NBoMvbRtKkLpIdk/eE7WS3OrZ2CtPr30FcgqP+UgKhQ==, tarball: file:projects/vr-games.tgz}
     id: file:projects/vr-games.tgz
     name: '@rush-temp/vr-games'
     version: 0.0.0
@@ -18093,6 +18119,7 @@ packages:
       '@react-three/cannon': 6.5.2_c444ffaba0b602c1af19033b7b8f7f6a
       '@react-three/drei': 9.13.2_14eb8be2d0b5d9e93c0802c099b3b82f
       '@react-three/fiber': 8.0.27_bba3f0e2b059b810413ec30a113000bf
+      '@react-three/flex': 1.0.1_d7d148c5a2989f57970d2923e85bf4b9
       '@react-three/xr': 5.2.0_d7d148c5a2989f57970d2923e85bf4b9
       '@types/react': 18.0.14
       '@types/react-dom': 18.0.5

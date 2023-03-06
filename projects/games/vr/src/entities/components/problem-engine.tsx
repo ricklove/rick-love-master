@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { Text } from '@react-three/drei';
+import { Box, Flex } from '@react-three/flex';
 import { createProblemEngine, ProblemEngine, ProblemEnginePlayerState } from '@ricklove/study-subjects';
 import { delay } from '@ricklove/utils-core';
 import { Hud } from '../../components/hud';
@@ -147,18 +148,28 @@ export const EntityProblemEngineComponent = ({ entity }: { entity: EntityProblem
   return (
     <>
       {ui.visible && (
-        <Hud position={[0, 0.3, 2]}>
-          <Text fontSize={0.08} position={[0, 0, 0]}>
-            {ui.title ?? ``}
-          </Text>
-          <Text fontSize={0.06} position={[0, -0.1, 0]}>
-            {ui.message ?? ``}
-          </Text>
-          {ui.choices?.map((c, i) => (
-            <Text key={i} fontSize={0.05} position={[0, -0.2 + -0.06 * i, 0]}>
-              {c}
-            </Text>
-          ))}
+        <Hud position={[-0.3, 0.3, 2]}>
+          <Flex scale={[0.6 / 200, 0.6 / 200, 0]} size={[200, 200, 0]}>
+            <Box dir='column' justifyContent='flex-start' alignItems='flex-start'>
+              <Box height={20}>
+                <Text anchorX='left' anchorY='top' fontSize={20}>
+                  {ui.title ?? ``}
+                </Text>
+              </Box>
+              <Box height={18}>
+                <Text anchorX='left' anchorY='top' fontSize={16}>
+                  {ui.message ?? ``}
+                </Text>
+              </Box>
+              {ui.choices?.map((c, i) => (
+                <Box key={i} height={16}>
+                  <Text anchorX='left' anchorY='top' fontSize={10}>
+                    {c}
+                  </Text>
+                </Box>
+              ))}
+            </Box>
+          </Flex>
         </Hud>
       )}
     </>
