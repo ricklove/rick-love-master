@@ -1,6 +1,9 @@
-import React, { useState } from 'react';
-import { Sphere, Text } from '@react-three/drei';
+import React, { Ref, useMemo, useRef, useState } from 'react';
+import { Triplet, useSphere, useSpring } from '@react-three/cannon';
+import { Text } from '@react-three/drei';
+import { useFrame } from '@react-three/fiber';
 import { Box, Flex } from '@react-three/flex';
+import { Mesh, Vector3 } from 'three';
 import { createProblemEngine, ProblemEngine, ProblemEnginePlayerState } from '@ricklove/study-subjects';
 import { delay } from '@ricklove/utils-core';
 import { Hud } from '../../components/hud';
@@ -164,7 +167,7 @@ export const EntityProblemEngineComponent = ({ entity }: { entity: EntityProblem
               {ui.choices?.map((c, i) => (
                 <Box key={i} dir='row' justifyContent='flex-start' alignItems='center'>
                   <Box centerAnchor height={20} width={20}>
-                    <Sphere args={[10]} />
+                    <PhysicsBulletPoint size={20} />
                   </Box>
                   <Box height={16} margin={4}>
                     <Text anchorX='left' anchorY='top' fontSize={16}>
@@ -178,5 +181,92 @@ export const EntityProblemEngineComponent = ({ entity }: { entity: EntityProblem
         </Hud>
       )}
     </>
+  );
+};
+
+const PhysicsBulletPoint_debug = ({ size }: { size: number }) => {
+  // return <Sphere args={[size * 0.5]} />;
+  return (
+    <mesh>
+      <sphereGeometry args={[size * 0.5]} />
+      <meshBasicMaterial color={`#00ff00`} transparent={true} opacity={1} />
+    </mesh>
+  );
+};
+
+export const PhysicsBulletPoint = ({
+  size,
+  position,
+  physicsPosition: physicsPositionRaw,
+}: {
+  size: number;
+  position?: Triplet;
+  physicsPosition?: Triplet;
+}) => {
+  const physicsPosition = useMemo(
+    () => physicsPositionRaw ?? ([1000 * Math.random(), 100, 1000 * Math.random()] as Triplet),
+    [],
+  );
+  const radius = size * 0.5;
+  const [ref, api] = useSphere(() => ({
+    args: [radius * 0.8],
+    mass: 1,
+    position: [...physicsPosition].map((x) => x + 1 * Math.random()) as Triplet,
+    linearDamping: 0.5,
+  }));
+  const [refAnchor] = useSphere(() => ({
+    type: `Static`,
+    args: [radius * 0.01],
+    position: physicsPosition,
+  }));
+
+  useSpring(ref, refAnchor, {
+    restLength: radius * 0.1,
+    damping: 0,
+    stiffness: 100,
+  });
+
+  const working = useRef({
+    worldPos: new Vector3(),
+    lastWorldPos: new Vector3(),
+    delta: new Vector3(),
+    impulse: new Vector3(),
+  });
+  useFrame(() => {
+    if (!refAnchor.current || !ref.current) {
+      return;
+    }
+    const { worldPos, lastWorldPos, delta, impulse } = working.current;
+    refAnchor.current.getWorldPosition(worldPos);
+    delta.copy(worldPos).sub(lastWorldPos);
+    lastWorldPos.copy(worldPos);
+
+    impulse
+      .set(0, 0, 0)
+      .sub(delta)
+      .multiplyScalar((10000 * 1) / 60);
+    api.applyImpulse(impulse.toArray(), ref.current.position.toArray());
+    // ref.current.position.add(delta.multiplyScalar(-100));
+
+    // refAnchor.current.position.copy(worldPos);
+    // mainRef.current.position.copy(b.set(0, 0, 0).sub(worldPos));
+
+    // // if (delta.lengthSq() > 1) {
+    // // }
+  });
+
+  return (
+    <group position={position}>
+      <group position={[...physicsPosition].map((x) => -x) as Triplet}>
+        <mesh ref={refAnchor as Ref<Mesh>}>
+          <sphereGeometry args={[radius * 0.05]} />
+          <meshStandardMaterial color={`#00ff00`} transparent={false} opacity={0} />
+        </mesh>
+        <mesh ref={ref as Ref<Mesh>}>
+          <sphereGeometry args={[radius * 0.8]} />
+          <meshBasicMaterial color={`#00ff00`} />
+        </mesh>
+      </group>
+    </group>
   );
 };
