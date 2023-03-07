@@ -1,12 +1,13 @@
-import React, { Ref, useMemo, useRef, useState } from 'react';
+import React, { Ref, RefObject, useMemo, useRef, useState } from 'react';
 import { Triplet, useSphere, useSpring } from '@react-three/cannon';
 import { Text } from '@react-three/drei';
-import { useFrame } from '@react-three/fiber';
+import { createPortal, useFrame } from '@react-three/fiber';
 import { Box, Flex } from '@react-three/flex';
-import { Mesh, Vector3 } from 'three';
+import { Group, Mesh, Object3D, Vector3 } from 'three';
 import { createProblemEngine, ProblemEngine, ProblemEnginePlayerState } from '@ricklove/study-subjects';
 import { delay } from '@ricklove/utils-core';
 import { Hud } from '../../components/hud';
+import { formatVector } from '../../utils/formatters';
 import { useIsomorphicLayoutEffect } from '../../utils/layoutEffect';
 import { logger } from '../../utils/logger';
 import { defineComponent, EntityBase } from '../core';
@@ -148,11 +149,16 @@ export const EntityProblemEngineComponent = ({ entity }: { entity: EntityProblem
 
   logger.log(`EntityProblemEngineComponent: render`);
 
+  const portalTargetRef = useRef<Group>(null);
+
+  const flexScale = 0.6 / 200;
+
   return (
     <>
+      <group ref={portalTargetRef} />
       {ui.visible && (
         <Hud position={[-0.3, 0.3, 2]}>
-          <Flex scale={[0.6 / 200, 0.6 / 200, 0]} size={[200, 200, 0]}>
+          <Flex scale={flexScale} size={[200, 200, 0]}>
             <Box dir='column' justifyContent='flex-start' alignItems='flex-start'>
               <Box height={20}>
                 <Text anchorX='left' anchorY='top' fontSize={20}>
@@ -167,7 +173,7 @@ export const EntityProblemEngineComponent = ({ entity }: { entity: EntityProblem
               {ui.choices?.map((c, i) => (
                 <Box key={i} dir='row' justifyContent='flex-start' alignItems='center'>
                   <Box centerAnchor height={20} width={20}>
-                    <PhysicsBulletPoint size={20} />
+                    <PhysicsBulletPoint size={20 * flexScale} worldPortal={portalTargetRef} />
                   </Box>
                   <Box height={16} margin={4}>
                     <Text anchorX='left' anchorY='top' fontSize={16}>
@@ -184,6 +190,81 @@ export const EntityProblemEngineComponent = ({ entity }: { entity: EntityProblem
   );
 };
 
+// Using a portal
+const WorldSpacePortal = ({
+  worldPortal,
+  children,
+}: {
+  worldPortal: RefObject<Object3D>;
+  children: ({ ref }: { ref: RefObject<Mesh> }) => JSX.Element;
+}) => {
+  // return <Sphere args={[size * 0.5]} />;
+
+  const flexSpaceRef = useRef<Group>(null);
+  const targetChildRef = useRef<Mesh>(null);
+
+  useFrame(() => {
+    if (!targetChildRef.current || !flexSpaceRef.current) {
+      return;
+    }
+    flexSpaceRef.current.getWorldPosition(targetChildRef.current.position);
+    logger.log(`sphere`, { pos: formatVector(targetChildRef.current.position) });
+  });
+  return (
+    <>
+      <group ref={flexSpaceRef} />
+      {!!worldPortal.current && createPortal(<>{children({ ref: targetChildRef })}</>, worldPortal.current)}
+    </>
+  );
+};
+
+const PhysicsBulletPoint = ({ size, worldPortal }: { size: number; worldPortal: RefObject<Object3D> }) => {
+  return (
+    <>
+      <WorldSpacePortal worldPortal={worldPortal}>
+        {({ ref }) => (
+          <>
+            <mesh ref={ref}>
+              <sphereGeometry args={[size * 0.5]} />
+              <meshBasicMaterial color={`#00ff00`} transparent={true} opacity={1} />
+            </mesh>
+          </>
+        )}
+      </WorldSpacePortal>
+    </>
+  );
+};
+
+const PhysicsBulletPoint_2 = ({ size, portalTargetRef }: { size: number; portalTargetRef: RefObject<Object3D> }) => {
+  // return <Sphere args={[size * 0.5]} />;
+
+  const flexSpaceRef = useRef<Group>(null);
+  const worldRef = useRef<Mesh>(null);
+
+  useFrame(() => {
+    if (!worldRef.current || !flexSpaceRef.current) {
+      return;
+    }
+    flexSpaceRef.current.getWorldPosition(worldRef.current.position);
+    logger.log(`sphere`, { pos: formatVector(worldRef.current.position) });
+  });
+  return (
+    <>
+      <group ref={flexSpaceRef} />
+      {!!portalTargetRef.current &&
+        createPortal(
+          <>
+            <mesh ref={worldRef}>
+              <sphereGeometry args={[size * 0.5]} />
+              <meshBasicMaterial color={`#00ff00`} transparent={true} opacity={1} />
+            </mesh>
+          </>,
+          portalTargetRef.current,
+        )}
+    </>
+  );
+};
+
 const PhysicsBulletPoint_debug = ({ size }: { size: number }) => {
   // return <Sphere args={[size * 0.5]} />;
   return (
@@ -194,7 +275,7 @@ const PhysicsBulletPoint_debug = ({ size }: { size: number }) => {
   );
 };
 
-export const PhysicsBulletPoint = ({
+export const PhysicsBulletPoint_1 = ({
   size,
   position,
   physicsPosition: physicsPositionRaw,
