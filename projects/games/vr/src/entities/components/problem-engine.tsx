@@ -1,9 +1,9 @@
-import React, { Ref, RefObject, useMemo, useRef, useState } from 'react';
-import { Triplet, useSphere, useSpring } from '@react-three/cannon';
+import React, { Ref, RefObject, useRef, useState } from 'react';
+import { useSphere, useSpring } from '@react-three/cannon';
 import { Text } from '@react-three/drei';
 import { createPortal, useFrame } from '@react-three/fiber';
 import { Box, Flex } from '@react-three/flex';
-import { Group, Mesh, Object3D, Vector3 } from 'three';
+import { Group, Matrix4, Mesh, Object3D, Vector3 } from 'three';
 import { createProblemEngine, ProblemEngine, ProblemEnginePlayerState } from '@ricklove/study-subjects';
 import { delay } from '@ricklove/utils-core';
 import { Hud } from '../../components/hud';
@@ -196,24 +196,23 @@ const WorldSpacePortal = ({
   children,
 }: {
   worldPortal: RefObject<Object3D>;
-  children: ({ ref }: { ref: RefObject<Mesh> }) => JSX.Element;
+  children: ({ worldMatrixRef }: { worldMatrixRef: RefObject<Matrix4> }) => JSX.Element;
 }) => {
   // return <Sphere args={[size * 0.5]} />;
 
   const flexSpaceRef = useRef<Group>(null);
-  const targetChildRef = useRef<Mesh>(null);
+  const worldMatrixRef = useRef<Matrix4>(new Matrix4());
 
-  useFrame(() => {
-    if (!targetChildRef.current || !flexSpaceRef.current) {
+  useIsomorphicLayoutEffect(() => {
+    if (!flexSpaceRef.current) {
       return;
     }
-    flexSpaceRef.current.getWorldPosition(targetChildRef.current.position);
-    logger.log(`sphere`, { pos: formatVector(targetChildRef.current.position) });
-  });
+    worldMatrixRef.current = flexSpaceRef.current.matrixWorld;
+  }, [!flexSpaceRef.current]);
   return (
     <>
       <group ref={flexSpaceRef} />
-      {!!worldPortal.current && createPortal(<>{children({ ref: targetChildRef })}</>, worldPortal.current)}
+      {!!worldPortal.current && createPortal(<>{children({ worldMatrixRef })}</>, worldPortal.current)}
     </>
   );
 };
@@ -222,132 +221,107 @@ const PhysicsBulletPoint = ({ size, worldPortal }: { size: number; worldPortal: 
   return (
     <>
       <WorldSpacePortal worldPortal={worldPortal}>
-        {({ ref }) => (
-          <>
-            <mesh ref={ref}>
-              <sphereGeometry args={[size * 0.5]} />
-              <meshBasicMaterial color={`#00ff00`} transparent={true} opacity={1} />
-            </mesh>
-          </>
-        )}
+        {({ worldMatrixRef }) => <PhysicsBulletPointInner worldMatrixRef={worldMatrixRef} size={size} />}
       </WorldSpacePortal>
     </>
   );
 };
 
-const PhysicsBulletPoint_2 = ({ size, portalTargetRef }: { size: number; portalTargetRef: RefObject<Object3D> }) => {
-  // return <Sphere args={[size * 0.5]} />;
-
-  const flexSpaceRef = useRef<Group>(null);
-  const worldRef = useRef<Mesh>(null);
+const PhysicsBulletPointInnerSimple = ({
+  size,
+  worldMatrixRef,
+}: {
+  size: number;
+  worldMatrixRef: RefObject<Matrix4>;
+}) => {
+  const ref = useRef<Mesh>(null);
 
   useFrame(() => {
-    if (!worldRef.current || !flexSpaceRef.current) {
+    if (!ref.current || !worldMatrixRef.current) {
       return;
     }
-    flexSpaceRef.current.getWorldPosition(worldRef.current.position);
-    logger.log(`sphere`, { pos: formatVector(worldRef.current.position) });
+
+    ref.current.position.setFromMatrixPosition(worldMatrixRef.current);
+    logger.log(`bullet pos`, formatVector(ref.current.position));
   });
+
   return (
     <>
-      <group ref={flexSpaceRef} />
-      {!!portalTargetRef.current &&
-        createPortal(
-          <>
-            <mesh ref={worldRef}>
-              <sphereGeometry args={[size * 0.5]} />
-              <meshBasicMaterial color={`#00ff00`} transparent={true} opacity={1} />
-            </mesh>
-          </>,
-          portalTargetRef.current,
-        )}
+      <mesh ref={ref}>
+        <sphereGeometry args={[size * 0.5]} />
+        <meshBasicMaterial color={`#00ff00`} transparent={true} opacity={1} />
+      </mesh>
     </>
   );
 };
 
-const PhysicsBulletPoint_debug = ({ size }: { size: number }) => {
-  // return <Sphere args={[size * 0.5]} />;
-  return (
-    <mesh>
-      <sphereGeometry args={[size * 0.5]} />
-      <meshBasicMaterial color={`#00ff00`} transparent={true} opacity={1} />
-    </mesh>
-  );
-};
-
-export const PhysicsBulletPoint_1 = ({
+export const PhysicsBulletPointInner = ({
   size,
-  position,
-  physicsPosition: physicsPositionRaw,
+  worldMatrixRef,
 }: {
   size: number;
-  position?: Triplet;
-  physicsPosition?: Triplet;
+  worldMatrixRef: RefObject<Matrix4>;
 }) => {
-  const physicsPosition = useMemo(
-    () => physicsPositionRaw ?? ([1000 * Math.random(), 100, 1000 * Math.random()] as Triplet),
-    [],
-  );
   const radius = size * 0.5;
   const [ref, api] = useSphere(() => ({
     args: [radius * 0.8],
     mass: 1,
-    position: [...physicsPosition].map((x) => x + 1 * Math.random()) as Triplet,
-    linearDamping: 0.5,
+    linearDamping: 0.9,
   }));
-  const [refAnchor] = useSphere(() => ({
+  const [refAnchor, apiAnchor] = useSphere(() => ({
     type: `Static`,
     args: [radius * 0.01],
-    position: physicsPosition,
   }));
 
   useSpring(ref, refAnchor, {
     restLength: radius * 0.1,
     damping: 0,
-    stiffness: 100,
+    stiffness: 1000,
   });
 
   const working = useRef({
-    worldPos: new Vector3(),
-    lastWorldPos: new Vector3(),
-    delta: new Vector3(),
-    impulse: new Vector3(),
+    w: new Vector3(),
+    a: new Vector3(),
+    b: new Vector3(),
   });
   useFrame(() => {
-    if (!refAnchor.current || !ref.current) {
+    if (!ref.current || !refAnchor.current || !worldMatrixRef.current) {
       return;
     }
-    const { worldPos, lastWorldPos, delta, impulse } = working.current;
-    refAnchor.current.getWorldPosition(worldPos);
-    delta.copy(worldPos).sub(lastWorldPos);
-    lastWorldPos.copy(worldPos);
+    const { w, a, b } = working.current;
 
-    impulse
-      .set(0, 0, 0)
-      .sub(delta)
-      .multiplyScalar((10000 * 1) / 60);
-    api.applyImpulse(impulse.toArray(), ref.current.position.toArray());
-    // ref.current.position.add(delta.multiplyScalar(-100));
+    logger.log(`anchor wor`, formatVector(refAnchor.current.getWorldPosition(w)));
 
-    // refAnchor.current.position.copy(worldPos);
-    // mainRef.current.position.copy(b.set(0, 0, 0).sub(worldPos));
+    a.setFromMatrixPosition(worldMatrixRef.current);
 
-    // // if (delta.lengthSq() > 1) {
-    // // }
+    // b.copy(a).sub(refAnchor.current.getWorldPosition(w));
+    // if (b.lengthSq() < 0.001) {
+    //   return;
+    // }
+
+    apiAnchor.position.copy(a);
+
+    // logger.log(`anchor pos`, formatVector(refAnchor.current.position));
+    // logger.log(`anchor wor`, formatVector(refAnchor.current.getWorldPosition(b)));
+
+    b.copy(a).sub(ref.current.getWorldPosition(w));
+    if (b.lengthSq() > 0.1) {
+      api.position.copy(a);
+    }
+
+    logger.log(`ref pos`, formatVector(ref.current.getWorldPosition(w)));
   });
 
   return (
-    <group position={position}>
-      <group position={[...physicsPosition].map((x) => -x) as Triplet}>
-        <mesh ref={refAnchor as Ref<Mesh>}>
-          <sphereGeometry args={[radius * 0.05]} />
-          <meshStandardMaterial color={`#00ff00`} transparent={false} opacity={0} />
-        </mesh>
-        <mesh ref={ref as Ref<Mesh>}>
-          <sphereGeometry args={[radius * 0.8]} />
-          <meshBasicMaterial color={`#00ff00`} />
-        </mesh>
-      </group>
-    </group>
+    <>
+      <mesh ref={refAnchor as Ref<Mesh>}>
+        <sphereGeometry args={[radius * 0.1]} />
+        <meshStandardMaterial color={`#00ff00`} transparent={true} opacity={1} />
+      </mesh>
+      <mesh ref={ref as Ref<Mesh>}>
+        <sphereGeometry args={[radius * 0.8]} />
+        <meshBasicMaterial color={`#00ff00`} />
+      </mesh>
+    </>
   );
 };
