@@ -1,9 +1,7 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { mergeRefs } from 'react-merge-refs';
-import { Text } from '@react-three/drei';
 import { useFrame } from '@react-three/fiber';
 import { Group, Vector3 } from 'three';
-import { logger } from '../utils/logger';
 import { useCamera } from './camera';
 
 type BillboardProps = {
@@ -63,14 +61,4 @@ export const Hud = (props: JSX.IntrinsicElements['group']) => {
   });
 
   return <group ref={ref} {...props} />;
-};
-
-export const DebugConsole = ({ maxLines = 3 }: { maxLines?: number }) => {
-  const [text, setText] = useState(``);
-
-  useFrame(() => {
-    setText(`${logger.logState.slice(0, maxLines).join(`\n`)}`);
-  });
-
-  return <Text>{text}</Text>;
 };

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Physics } from '@react-three/cannon';
 import { useFrame } from '@react-three/fiber';
 import { Vector3 } from 'three';
@@ -20,36 +20,37 @@ const player = Entity.create(`player`)
     minGroundHeight: 0,
     maxGroundHeight: 0,
   })
-  .addComponent(EntityRaycastSelector, {})
   .build();
+
+const raycastSelectorLeft = Entity.create(`raycastSelector`).addComponent(EntityRaycastSelector, {}).build();
+const raycastSelectorRight = Entity.create(`raycastSelector`).addComponent(EntityRaycastSelector, {}).build();
 
 // GestureHandler: Gun shoot to select
 const handleGestures = (() => {
-  const v = new Vector3();
-  const handleHandGesture = (hand: Gestures[`left`]) => {
+  const handleHandGesture = (hand: Gestures[`left`], raycastSelector: typeof raycastSelectorLeft, v: Vector3) => {
     if (!hand.pointingIndexFinger.active) {
-      return false;
+      return EntityRaycastSelector.changeSelectionMode(raycastSelector, `none`);
     }
 
     const thumbUp = hand.fingerExtendedThumb.active;
-    EntityRaycastSelector.changeSource(player, {
+    EntityRaycastSelector.changeSource(raycastSelector, {
       position: v.copy(player.transform.position).add(hand.pointingIndexFinger.position),
       direction: hand.pointingIndexFinger.direction,
     });
-    EntityRaycastSelector.changeSelectionMode(player, thumbUp ? `hover` : `down`);
-    return true;
+    EntityRaycastSelector.changeSelectionMode(raycastSelector, thumbUp ? `hover` : `down`);
   };
+
+  const vLeft = new Vector3();
+  const vRight = new Vector3();
 
   return () => {
     const g = player.player.gestures;
     if (!g) {
       return;
     }
-    const wasHandled = handleHandGesture(g.left) || handleHandGesture(g.right) || false;
 
-    if (!wasHandled) {
-      EntityRaycastSelector.changeSelectionMode(player, `none`);
-    }
+    handleHandGesture(g.left, raycastSelectorLeft, vLeft);
+    handleHandGesture(g.right, raycastSelectorRight, vRight);
   };
 })();
 
@@ -94,14 +95,38 @@ const balls = [...new Array(100)].map(() => {
 });
 
 const world: World = {
-  entities: [problemEngine, player, ground, ...balls],
+  entities: [problemEngine, player, raycastSelectorLeft, raycastSelectorRight, ground, ...balls] as Entity[],
 };
 
 export const game = {
   world,
 };
 
+const useWorldFilter = <T extends Entity>(filter: (item: Entity) => boolean) => {
+  const [activeEntities, setActiveEntities] = useState(world.entities.filter((x) => x.active).filter(filter));
+
+  useFrame(() => {
+    const items = world.entities.filter((x) => x.active).filter(filter);
+    setActiveEntities((s) => {
+      if (s.length !== items.length) {
+        return items;
+      }
+      for (let i = 0; i < items.length; i++) {
+        if (s[i] !== items[i]) {
+          return items;
+        }
+      }
+
+      return s;
+    });
+  });
+
+  return activeEntities as T[];
+};
+
 export const WorldContainer = ({}: {}) => {
+  const activeViews = useWorldFilter((x) => !!x.view);
+  const activeSpheres = useWorldFilter<EntitySphereView>((x) => !!x.sphere);
   useFrame(() => {
     const active = world.entities.filter((x) => x.active);
     const ground = active.find((x) => x.ground) as EntityGround;
@@ -109,7 +134,7 @@ export const WorldContainer = ({}: {}) => {
 
     handleGestures();
 
-    for (const e of world.entities) {
+    for (const e of active) {
       if (e.gravity) {
         EntityGravity.fall(e as EntityGravity);
       }
@@ -125,12 +150,10 @@ export const WorldContainer = ({}: {}) => {
   return (
     <>
       <Physics allowSleep={true} iterations={15} gravity={[0, -9.8, 0]}>
-        {world.entities.map((x) => (
-          <React.Fragment key={x.key}>{x.active && x.view && <x.view.Component entity={x} />}</React.Fragment>
+        {activeViews.map((x) => (
+          <React.Fragment key={x.key}>{x.view && <x.view.Component entity={x} />}</React.Fragment>
         ))}
-        <EntitySphereView.BatchComponent
-          entities={world.entities.filter((x) => x.sphere).map((x) => x as EntitySphereView)}
-        />
+        <EntitySphereView.BatchComponent entities={activeSpheres} />
       </Physics>
     </>
   );
