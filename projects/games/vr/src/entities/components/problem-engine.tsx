@@ -290,7 +290,7 @@ export const PhysicsBulletPointInner = ({
     }
     const { w, a, b } = working.current;
 
-    logger.log(`anchor wor`, formatVector(refAnchor.current.getWorldPosition(w)));
+    // logger.log(`anchor wor`, formatVector(refAnchor.current.getWorldPosition(w)));
 
     a.setFromMatrixPosition(worldMatrixRef.current);
 
@@ -309,7 +309,7 @@ export const PhysicsBulletPointInner = ({
       api.position.copy(a);
     }
 
-    logger.log(`ref pos`, formatVector(ref.current.getWorldPosition(w)));
+    // logger.log(`ref pos`, formatVector(ref.current.getWorldPosition(w)));
   });
 
   return (

@@ -42,7 +42,11 @@ export const defineComponent = <TEntityWithComponent extends Record<string, unkn
       _argsType: {};
     },
     TArgs = {},
-  >(this: TComponentFactoryBefore, name: TName, createComponent: (args: TArgs) => TEntityWithComponent[TName]) {
+  >(
+    this: TComponentFactoryBefore,
+    name: TName,
+    createComponent: (args: TArgs, e?: TEntityWithComponent) => TEntityWithComponent[TName],
+  ) {
     type TAllComponents = Pick<TEntityWithComponent, TName> & TComponentFactoryBefore[`_componentType`];
     type TAllArgs = TArgs & TComponentFactoryBefore[`_argsType`];
 
@@ -57,7 +61,7 @@ export const defineComponent = <TEntityWithComponent extends Record<string, unkn
       if (e[name]) {
         return entity as TBefore & TAllComponents;
       }
-      e[name] = createComponent(args);
+      e[name] = createComponent(args, e as TEntityWithComponent);
 
       // call inner
       if (inner.addComponent) {

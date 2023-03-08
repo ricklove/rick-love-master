@@ -16,7 +16,7 @@ export const useGestures = () => {
   return useContext(gesturesContext) as Gestures;
 };
 
-type Gestures = ReturnType<typeof useGesturesInstance>;
+export type Gestures = ReturnType<typeof useGesturesInstance>;
 const gesturesContext = createContext<undefined | Gestures>(undefined);
 
 const useGesturesInstance = (options: GestureOptions) => {

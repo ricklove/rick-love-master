@@ -3,13 +3,15 @@ import { useSphere } from '@react-three/cannon';
 import { Color, InstancedMesh, Mesh, Vector3 } from 'three';
 import { useIsomorphicLayoutEffect } from '../../utils/layoutEffect';
 import { defineComponent, EntityBase } from '../core';
+import { EntitySelectable } from './selectable';
 
-export type EntitySphereView = EntityBase & {
+export type EntitySphereView = EntitySelectable & {
   sphere: {
     radius: number;
   };
   transform: {
     position: Vector3;
+    getWorldDirection: (out: Vector3) => Vector3;
   };
   view: {
     Component: (props: { entity: EntityBase }) => JSX.Element;
@@ -35,6 +37,7 @@ export const EntitySphereView = defineComponent<EntitySphereView>()
   .with(`transform`, ({ startPosition }: { startPosition?: [number, number, number] }) => ({
     // Will be created by the component
     position: startPosition ? new Vector3(...startPosition) : (undefined as unknown as Vector3),
+    getWorldDirection: (out) => out,
   }))
   .attach({
     BatchComponent: ({ entities }: { entities: EntitySphereView[] }) => <EntityPhysicalSpheres entities={entities} />,
@@ -99,6 +102,39 @@ const EntityPhysicalSpheres = ({ entities }: { entities: EntitySphereView[] }) =
         .toArray(array, i * 3);
     return array;
   }, [count]);
+
+  useIsomorphicLayoutEffect(() => {
+    if (!ref.current) {
+      return;
+    }
+
+    const r = ref.current;
+
+    const hoverColor = new Color(0x008800);
+    const selectColor = new Color(0x00ff00);
+
+    const subs = entities.map((x, i) => {
+      // use main mesh as target for instanced
+      x.selectable.target = r;
+      x.selectable.targetInstanceId = i;
+
+      const origColor = new Color(colors[i]);
+
+      return x.selectable.observeStateChange.subscribe((o) => {
+        if (o.event === `hoverStart`) {
+          r.setColorAt(i, hoverColor);
+          return;
+        }
+        if (o.event === `downStart`) {
+          r.setColorAt(i, selectColor);
+          return;
+        }
+        r.setColorAt(i, origColor);
+      });
+    });
+
+    return () => subs.forEach((x) => x.unsubscribe());
+  }, [!ref.current, count]);
 
   return (
     <instancedMesh ref={ref} castShadow receiveShadow args={[undefined, undefined, count]}>

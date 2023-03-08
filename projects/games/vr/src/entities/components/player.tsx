@@ -1,15 +1,18 @@
 import React from 'react';
 import { Vector3 } from 'three';
-import { usePlayer } from '../../components/camera';
+import { useCamera, usePlayer } from '../../components/camera';
+import { Gestures, useGestures } from '../../gestures/gestures';
 import { useIsomorphicLayoutEffect } from '../../utils/layoutEffect';
 import { defineComponent, EntityBase } from '../core';
 
 export type EntityPlayer = EntityBase & {
   player: {
     active: boolean;
+    gestures?: Gestures;
   };
   transform: {
     position: Vector3;
+    getWorldDirection: (out: Vector3) => Vector3;
   };
   view: {
     Component: (props: { entity: EntityBase }) => JSX.Element;
@@ -17,8 +20,10 @@ export type EntityPlayer = EntityBase & {
 };
 
 export const EntityPlayer = defineComponent<EntityPlayer>()
-  .with(`player`, () => ({
+  .with(`player`, ({}: {}) => ({
     active: true,
+    // will be set in component
+    gestures: undefined,
   }))
   .with(`view`, () => ({
     Component: (x) => <EntityPlayerComponent entity={x.entity as EntityPlayer} />,
@@ -26,14 +31,19 @@ export const EntityPlayer = defineComponent<EntityPlayer>()
   .with(`transform`, ({ startPosition }: { startPosition?: [number, number, number] }) => ({
     // Will be created by the component
     position: startPosition ? new Vector3(...startPosition) : (undefined as unknown as Vector3),
+    getWorldDirection: (out) => out,
   }));
 
 export const EntityPlayerComponent = ({ entity }: { entity: EntityPlayer }) => {
   const player = usePlayer();
+  const camera = useCamera();
+  const gestures = useGestures();
 
   useIsomorphicLayoutEffect(() => {
     // Assign transform
-    entity.transform = player;
+    entity.transform.position = player.position;
+    entity.transform.getWorldDirection = camera.getWorldDirection;
+    entity.player.gestures = gestures;
   }, []);
 
   return <></>;

@@ -1,5 +1,9 @@
 export type Subscription<T> = (state: T) => void;
 export type Subscribe<T> = (callback: (state: T) => void) => { unsubscribe: () => void };
+export type Subscribable<T> = {
+  subscribe: Subscribe<T>;
+  onStateChange: (state: T) => void;
+};
 
 // No window or global declared here (no lib or node context)
 declare function setTimeout(callback: () => void, timeout: number): void;
