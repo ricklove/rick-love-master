@@ -145,15 +145,15 @@ export const EntityRaycastSelector = defineComponent<EntityRaycastSelector>()
       const intersections = r.raycaster.intersectObjects(targets);
       const intersection = intersections[0];
 
-      //   if (intersection) {
-      logger.log(`raycast - intersection`, {
-        id: intersection?.instanceId,
-        intersection: intersection && formatVector(intersection.point),
-        position: formatVector(r.source.position),
-        direction: formatVector(r.source.direction),
-        targets: targets.length,
-      });
-      //   }
+      if (intersection) {
+        logger.log(`raycast - intersection`, {
+          id: intersection?.instanceId,
+          intersection: intersection && formatVector(intersection.point),
+          position: formatVector(r.source.position),
+          direction: formatVector(r.source.direction),
+          targets: targets.length,
+        });
+      }
 
       const s = selectables.find(
         (s) =>

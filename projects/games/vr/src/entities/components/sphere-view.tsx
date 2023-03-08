@@ -76,7 +76,7 @@ const niceColors = [`#99b898`, `#fecea8`, `#ff847c`, `#e84a5f`, `#2a363b`] as co
 const EntityPhysicalSpheres = ({ entities }: { entities: EntitySphereView[] }) => {
   //{ columns, rows, spread }: { columns: number; rows: number; spread: number }
   const count = entities.length;
-  const [ref] = useSphere(
+  const [ref, api] = useSphere(
     (index) => ({
       args: [entities[index].sphere.radius],
       mass: 1,
@@ -110,31 +110,43 @@ const EntityPhysicalSpheres = ({ entities }: { entities: EntitySphereView[] }) =
 
     const r = ref.current;
 
-    const hoverColor = new Color(0x008800);
-    const selectColor = new Color(0x00ff00);
+    const c = new Color(0x008800);
+    const v = new Vector3();
 
     const subs = entities.map((x, i) => {
       // use main mesh as target for instanced
       x.selectable.target = r;
       x.selectable.targetInstanceId = i;
 
-      const origColor = new Color(colors[i]);
-
       return x.selectable.observeStateChange.subscribe((o) => {
-        if (o.event === `hoverStart`) {
-          r.setColorAt(i, hoverColor);
-          return;
-        }
-        if (o.event === `downStart`) {
-          r.setColorAt(i, selectColor);
-          return;
-        }
-        r.setColorAt(i, origColor);
+        api.at(i).applyImpulse([0, 10, 0], r.getVertexPosition(i, v).toArray());
+        // r.getColorAt(i, c);
+
+        // const rInstanceColor = r.instanceColor;
+        // if (!rInstanceColor) {
+        //   logger.log(`FAILED to set color: r.instanceColor is null`, { i, c });
+        //   return;
+        // }
+
+        // logger.log(`${i} color = ${o.event}`);
+
+        // if (o.event === `hoverStart`) {
+        //   r.setColorAt(i, c.setHex(0xffffff));
+        //   rInstanceColor.needsUpdate = true;
+        //   return;
+        // }
+        // if (o.event === `downStart`) {
+        //   r.setColorAt(i, c.setHex(0x888888));
+        //   rInstanceColor.needsUpdate = true;
+        //   return;
+        // }
+        // r.setColorAt(i, c.setHex(colors[i]));
+        // rInstanceColor.needsUpdate = true;
       });
     });
 
     return () => subs.forEach((x) => x.unsubscribe());
-  }, [!ref.current, count]);
+  }, [!ref.current?.instanceColor, count]);
 
   return (
     <instancedMesh ref={ref} castShadow receiveShadow args={[undefined, undefined, count]}>
