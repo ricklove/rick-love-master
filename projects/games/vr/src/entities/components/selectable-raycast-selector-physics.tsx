@@ -41,7 +41,7 @@ export const EntityRaycastSelectorPhysicsComponent = ({
     onHit: (e: RayhitEvent) => {
       logger.log(`r hit`, { e: e.distance });
 
-      const t = entity.raycastSelector.targets?.find((t) => t.selectable.target === e.body);
+      const t = entity.selector.targets?.find((t) => t.selectable.target === e.body);
       if (!t) {
         return;
       }
@@ -61,13 +61,14 @@ export const EntityRaycastSelectorPhysicsComponent = ({
     if (!refTarget.current) {
       return;
     }
-    const r = entity.raycastSelector;
+    const r = entity.selector;
+    const { source } = entity.raycastSelector;
     const w = workersRef.current;
 
-    if (!r.source) {
+    if (!source) {
       return;
     }
-    const s = r.source;
+    const s = source;
     // logger.log(`r comp phy`, { pos: formatVector(s.position), mode: r.mode });
 
     w.from.copy(s.position);

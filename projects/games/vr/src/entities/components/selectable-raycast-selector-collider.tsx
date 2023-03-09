@@ -44,7 +44,7 @@ export const EntityRaycastSelectorColliderComponent = ({
       onCollide: (e) => {
         logger.log(`r hit`, { target: e.target.userData, body: e.body.userData, op: e.op });
 
-        const t = entity.raycastSelector.targets?.find((t) => t.selectable.target === e.body);
+        const t = entity.selector.targets?.find((t) => t.selectable.target === e.body);
         if (!t) {
           return;
         }
@@ -77,13 +77,14 @@ export const EntityRaycastSelectorColliderComponent = ({
     if (!refTarget.current) {
       return;
     }
-    const r = entity.raycastSelector;
+    const r = entity.selector;
+    const { source } = entity.raycastSelector;
     const w = workersRef.current;
 
-    if (!r.source) {
+    if (!source) {
       return;
     }
-    const s = r.source;
+    const s = source;
     // logger.log(`r comp phy`, { pos: formatVector(s.position), mode: r.mode });
 
     w.from.copy(s.position);
@@ -94,6 +95,11 @@ export const EntityRaycastSelectorColliderComponent = ({
 
     apiTrigger.position.copy(w.toMid);
     apiTrigger.quaternion.copy(w.quaternion);
+    apiTrigger.userData.set({
+      key: entity.key,
+      name: entity.name,
+      mode: entity.selector.mode,
+    });
 
     // setRayProps((s) => {
     //   const visible = r.mode !== `none`;

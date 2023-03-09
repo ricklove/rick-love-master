@@ -7,7 +7,7 @@ import { EntityAdjustToGround, EntityGround } from './entities/components/ground
 import { EntityGroundView } from './entities/components/ground-view';
 import { EntityPlayer } from './entities/components/player';
 import { EntityProblemEngine } from './entities/components/problem-engine';
-import { EntitySelectable } from './entities/components/selectable';
+import { EntitySelectable, EntitySelector } from './entities/components/selectable';
 import { EntityRaycastSelector } from './entities/components/selectable-raycast-selector';
 import { EntityRaycastSelectorCollider } from './entities/components/selectable-raycast-selector-collider';
 import { EntityRaycastSelectorThree } from './entities/components/selectable-raycast-selector-three';
@@ -26,10 +26,12 @@ const player = Entity.create(`player`)
   .build();
 
 const raycastSelectorLeft = Entity.create(`raycastSelectorLeft`)
+  .addComponent(EntitySelector, {})
   .addComponent(EntityRaycastSelector, {})
   .addComponent(EntityRaycastSelectorCollider, {})
   .build();
 const raycastSelectorRight = Entity.create(`raycastSelectorRight`)
+  .addComponent(EntitySelector, {})
   .addComponent(EntityRaycastSelector, {})
   .addComponent(EntityRaycastSelectorThree, {})
   .build();
@@ -39,7 +41,7 @@ const raycastSelectorRight = Entity.create(`raycastSelectorRight`)
 const handleGestures = (() => {
   const handleHandGesture = (hand: Gestures[`left`], raycastSelector: EntityRaycastSelector, v: Vector3) => {
     if (!hand.pointingIndexFinger.active) {
-      return EntityRaycastSelector.changeSelectionMode(raycastSelector, `none`);
+      return EntitySelector.changeSelectionMode(raycastSelector, `none`);
     }
 
     const thumbUp = hand.fingerExtendedThumb.active;
@@ -47,7 +49,7 @@ const handleGestures = (() => {
       position: v.copy(player.transform.position).add(hand.pointingIndexFinger.position),
       direction: hand.pointingIndexFinger.direction,
     });
-    EntityRaycastSelector.changeSelectionMode(raycastSelector, thumbUp ? `hover` : `down`);
+    EntitySelector.changeSelectionMode(raycastSelector, thumbUp ? `hover` : `down`);
   };
 
   const vLeft = new Vector3();
@@ -139,7 +141,7 @@ export const WorldContainer = ({}: {}) => {
   const activeSpheres = useWorldFilter<EntitySphereView>((x) => !!x.sphere);
   const activeSelectables = useWorldFilter<EntitySelectable>((x) => !!x.selectable);
   const activeSelectors = useWorldFilter<EntityRaycastSelector>((x) => !!x.raycastSelector);
-  activeSelectors.forEach((e) => EntityRaycastSelector.changeTargets(e as EntityRaycastSelector, activeSelectables));
+  activeSelectors.forEach((e) => EntitySelector.changeTargets(e as EntitySelector, activeSelectables));
 
   useFrame(() => {
     const active = world.entities.filter((x) => x.active);
@@ -156,7 +158,7 @@ export const WorldContainer = ({}: {}) => {
         EntityAdjustToGround.adjustToGround(e as EntityAdjustToGround, ground);
       }
 
-      if (e.raycastSelectorThree && e.raycastSelector?.mode !== `none`) {
+      if (e.raycastSelectorThree && e.selector?.mode !== `none`) {
         EntityRaycastSelectorThree.raycast(e as EntityRaycastSelectorThree);
       }
       // if (e.raycastSelectorPhysics && e.raycastSelector?.mode !== `none`) {

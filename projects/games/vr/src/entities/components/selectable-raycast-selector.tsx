@@ -1,18 +1,14 @@
 import React, { useRef } from 'react';
 import { Line } from '@react-three/drei';
 import { useFrame } from '@react-three/fiber';
-import { Matrix4, Mesh, Quaternion, Raycaster, Vector3 } from 'three';
+import { Matrix4, Mesh, Quaternion, Vector3 } from 'three';
 import { Line2 } from 'three-stdlib';
 import { calculateRotationMatrix } from '../../gestures/helpers';
-import { logger } from '../../utils/logger';
-import { defineComponent, EntityBase } from '../core';
-import { EntitySelectable } from './selectable';
+import { defineComponent } from '../core';
+import { EntitySelector } from './selectable';
 
-export type EntityRaycastSelector = EntityBase & {
+export type EntityRaycastSelector = EntitySelector & {
   raycastSelector: {
-    mode: `none` | `hover` | `down`;
-    targets?: EntitySelectable[];
-    activeTarget?: EntitySelectable;
     source?: {
       position: Vector3;
       direction: Vector3;
@@ -22,10 +18,7 @@ export type EntityRaycastSelector = EntityBase & {
 
 export const EntityRaycastSelector = defineComponent<EntityRaycastSelector>()
   .with(`raycastSelector`, () => {
-    return {
-      mode: `none`,
-      raycaster: new Raycaster(),
-    };
+    return {};
   })
   .attach({
     changeSource: (
@@ -39,36 +32,6 @@ export const EntityRaycastSelector = defineComponent<EntityRaycastSelector>()
       r.source = source;
 
       // logger.log(`changeSource`, { pos: formatVector(source.position) });
-    },
-    changeSelectionMode: (entity: EntityRaycastSelector, mode: `none` | `hover` | `down`) => {
-      const r = entity.raycastSelector;
-      if (r.mode === mode) {
-        return;
-      }
-
-      logger.log(`changeSelectionMode`, { mode });
-
-      if (r.activeTarget) {
-        if (mode === `down`) {
-          EntitySelectable.downStart(r.activeTarget);
-        }
-        if (mode === `hover`) {
-          EntitySelectable.hoverStart(r.activeTarget);
-        }
-        if (r.mode === `down`) {
-          EntitySelectable.downEnd(r.activeTarget);
-        }
-        if (r.mode === `hover`) {
-          EntitySelectable.hoverEnd(r.activeTarget);
-        }
-      }
-
-      r.mode = mode;
-    },
-    changeTargets: (entity: EntityRaycastSelector, targets: EntitySelectable[]) => {
-      const r = entity.raycastSelector;
-      logger.log(`changeSelectionMode`, { targets: targets.length });
-      r.targets = targets;
     },
   });
 
@@ -96,15 +59,16 @@ export const EntityRaycastSelectorDebugComponent = ({
       return;
     }
     const o = refLine.current;
-    const r = entity.raycastSelector;
+    const r = entity.selector;
+    const { source } = entity.raycastSelector;
     const w = workersRef.current;
 
     // logger.log(`r comp useFrame`, { s: !!r.source });
 
-    if (!r.source) {
+    if (!source) {
       return;
     }
-    const s = r.source;
+    const s = source;
 
     // logger.log(`r comp`, { pos: formatVector(s.position), mode: r.mode });
 

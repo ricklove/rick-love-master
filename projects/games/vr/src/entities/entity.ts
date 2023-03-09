@@ -2,7 +2,7 @@ import type {} from 'three';
 import { EntityGravity } from './components/gravity';
 import { EntityAdjustToGround, EntityGround } from './components/ground';
 import { EntityGroundView } from './components/ground-view';
-import { EntitySelectable } from './components/selectable';
+import { EntitySelectable, EntitySelector } from './components/selectable';
 import { EntityRaycastSelector } from './components/selectable-raycast-selector';
 import { EntityRaycastSelectorCollider } from './components/selectable-raycast-selector-collider';
 import { EntityRaycastSelectorPhysics } from './components/selectable-raycast-selector-physics';
@@ -18,6 +18,7 @@ type EntityUnion = EntityBase & (
 | EntitySphereView
 | EntityGravity
 | EntitySelectable
+| EntitySelector
 | EntityRaycastSelector
 | EntityRaycastSelectorThree
 | EntityRaycastSelectorPhysics

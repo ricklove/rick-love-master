@@ -2,7 +2,6 @@ import React, { useMemo, useRef } from 'react';
 import { useSphere } from '@react-three/cannon';
 import { Color, InstancedMesh, Mesh, Vector3 } from 'three';
 import { useIsomorphicLayoutEffect } from '../../utils/layoutEffect';
-import { logger } from '../../utils/logger';
 import { defineComponent, EntityBase } from '../core';
 import { EntitySelectable } from './selectable';
 
@@ -84,21 +83,8 @@ const EntityPhysicalSpheres = ({ entities }: { entities: EntitySphereView[] }) =
         entities[index].transform.position.y,
         entities[index].transform.position.z,
       ],
-      userData: {
-        name: entities[index].name,
-        key: entities[index].key,
-      },
-      onCollide: (e) => {
-        if (!e.target.userData.key && !e.body.userData.key) {
-          return;
-        }
-        logger.log(`onCollide`, {
-          target: e.target.userData,
-          body: e.body.userData,
-          key: entities[index].key,
-          name: entities[index].name,
-        });
-      },
+      onCollideBegin: (e) => EntitySelectable.onCollideBegin(entities[index], e),
+      onCollideEnd: (e) => EntitySelectable.onCollideEnd(entities[index], e),
     }),
     useRef<InstancedMesh>(null),
   );
