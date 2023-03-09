@@ -1,6 +1,6 @@
 import React, { useMemo, useRef } from 'react';
-import { useSphere } from '@react-three/cannon';
-import { Color, InstancedMesh, Mesh, Vector3 } from 'three';
+import { useSphere, WorkerApi } from '@react-three/cannon';
+import { Color, InstancedMesh, Vector3 } from 'three';
 import { useIsomorphicLayoutEffect } from '../../utils/layoutEffect';
 import { defineComponent, EntityBase } from '../core';
 import { EntitySelectable } from './selectable';
@@ -12,8 +12,14 @@ export type EntitySphereView = EntitySelectable & {
   transform: {
     position: Vector3;
   };
+  physics: {
+    api: WorkerApi;
+    mass: number;
+  };
   view: {
     Component: (props: { entity: EntityBase }) => JSX.Element;
+    BatchComponent?: (props: { entities: EntityBase[] }) => JSX.Element;
+    batchKey?: string;
     color?: number;
   };
 };
@@ -22,62 +28,30 @@ export const EntitySphereView = defineComponent<EntitySphereView>()
   .with(`sphere`, ({ radius }: { radius: number }) => ({
     radius,
   }))
-  .with(`view`, ({ color }: { color?: number }) => ({
-    color,
-    Component: (x) => (
-      <>
-        {/* <EntityPhysicalSphere entity={x.entity as EntitySphereView} /> */}
-        {/* <group position={[0, 0.1, 0]}>
-      <EntitySphereViewComponent entity={x.entity as EntitySphereView} />
-    </group> */}
-      </>
-    ),
-  }))
   .with(`transform`, ({ startPosition }: { startPosition?: [number, number, number] }) => ({
     // Will be created by the component
     position: startPosition ? new Vector3(...startPosition) : (undefined as unknown as Vector3),
   }))
-  .attach({
-    BatchComponent: ({ entities }: { entities: EntitySphereView[] }) => <EntityPhysicalSpheres entities={entities} />,
-  });
-
-export const EntitySphereViewComponent = ({ entity }: { entity: EntitySphereView }) => {
-  const ref = useRef<Mesh>(null);
-
-  useIsomorphicLayoutEffect(() => {
-    const mesh = ref.current;
-    if (!mesh) {
-      return;
-    }
-
-    // Assign mesh
-    const startPos = entity.transform.position;
-    if (startPos) {
-      mesh.position.copy(startPos);
-    }
-    entity.transform = mesh;
-  }, []);
-
-  const { radius } = entity.sphere;
-  const { color } = entity.view;
-  return (
-    <mesh ref={ref}>
-      <sphereGeometry args={[radius]} />
-      <meshStandardMaterial color={color} />
-    </mesh>
-  );
-};
-
-// Based on: https://github.com/pmndrs/use-cannon/blob/master/packages/react-three-cannon-examples/src/colors.ts
-const niceColors = [`#99b898`, `#fecea8`, `#ff847c`, `#e84a5f`, `#2a363b`] as const;
+  .with(`physics`, ({ mass }: { mass: number }) => ({
+    mass,
+    // Will be created by the component
+    api: undefined as unknown as WorkerApi,
+  }))
+  .with(`view`, ({ color }: { color?: number }) => ({
+    color,
+    Component: () => <></>,
+    batchKey: `EntitySphereView`,
+    BatchComponent: ({ entities }: { entities: EntityBase[] }) => (
+      <EntityPhysicalSpheres entities={entities as EntitySphereView[]} />
+    ),
+  }));
 
 const EntityPhysicalSpheres = ({ entities }: { entities: EntitySphereView[] }) => {
-  //{ columns, rows, spread }: { columns: number; rows: number; spread: number }
   const count = entities.length;
   const [ref, api] = useSphere(
     (index) => ({
       args: [entities[index].sphere.radius],
-      mass: 1,
+      mass: entities[index].physics.mass,
       position: [
         entities[index].transform.position.x,
         entities[index].transform.position.y,
@@ -91,12 +65,9 @@ const EntityPhysicalSpheres = ({ entities }: { entities: EntitySphereView[] }) =
   const colors = useMemo(() => {
     const array = new Float32Array(count * 3);
     const color = new Color();
-    for (let i = 0; i < count; i++)
-      color
-        // .set(niceColors[Math.floor(Math.random() * 5)])
-        // .convertSRGBToLinear()
-        .set(entities[i].view.color ?? 0xffffff)
-        .toArray(array, i * 3);
+    for (let i = 0; i < count; i++) {
+      color.set(entities[i].view.color ?? 0xffffff).toArray(array, i * 3);
+    }
     return array;
   }, [count]);
 
@@ -107,57 +78,11 @@ const EntityPhysicalSpheres = ({ entities }: { entities: EntitySphereView[] }) =
 
     const r = ref.current;
 
-    const c = new Color(0x008800);
-    const v = new Vector3();
-
-    const subs = entities.map((x, i) => {
-      // api.at(i).userData.subscribe((v) => {
-      //   logger.log(`s`, {
-      //     key: v?.key,
-      //     name: v?.name,
-      //     ename: entities[i].name,
-      //     ekey: entities[i].key,
-      //   });
-      // });
-
-      // use main mesh as target for instanced
+    entities.forEach((x, i) => {
       x.selectable.target = r;
       x.selectable.targetInstanceId = i;
-      // x.selectable.targetPhysicsObject = api.at(i).;
-
-      api.at(i).userData.set({
-        name: entities[i].name,
-        key: entities[i].key,
-      });
-
-      return x.selectable.observeStateChange.subscribe((o) => {
-        api.at(i).applyImpulse([0, 10, 0], r.getVertexPosition(i, v).toArray());
-        // r.getColorAt(i, c);
-
-        // const rInstanceColor = r.instanceColor;
-        // if (!rInstanceColor) {
-        //   logger.log(`FAILED to set color: r.instanceColor is null`, { i, c });
-        //   return;
-        // }
-
-        // logger.log(`${i} color = ${o.event}`);
-
-        // if (o.event === `hoverStart`) {
-        //   r.setColorAt(i, c.setHex(0xffffff));
-        //   rInstanceColor.needsUpdate = true;
-        //   return;
-        // }
-        // if (o.event === `downStart`) {
-        //   r.setColorAt(i, c.setHex(0x888888));
-        //   rInstanceColor.needsUpdate = true;
-        //   return;
-        // }
-        // r.setColorAt(i, c.setHex(colors[i]));
-        // rInstanceColor.needsUpdate = true;
-      });
+      x.physics.api = api.at(i);
     });
-
-    return () => subs.forEach((x) => x.unsubscribe());
   }, [!ref.current?.instanceColor, count]);
 
   return (

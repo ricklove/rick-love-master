@@ -1,3 +1,4 @@
+import type {} from '@react-three/cannon';
 import type {} from 'three';
 import { EntityGravity } from './components/gravity';
 import { EntityAdjustToGround, EntityGround } from './components/ground';

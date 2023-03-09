@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useMemo, useState } from 'react';
 import { Physics } from '@react-three/cannon';
 import { useFrame } from '@react-three/fiber';
 import { Vector3 } from 'three';
@@ -93,6 +93,7 @@ const balls = [...new Array(100)].map(() => {
   return (
     Entity.create(`ball`)
       .addComponent(EntitySphereView, {
+        mass: 1,
         radius,
         color: 0xffffff * Math.random(),
         startPosition: [50 - 100 * Math.random(), 100 + 100 * Math.random(), 50 - 100 * Math.random()],
@@ -114,18 +115,42 @@ export const game = {
   world,
 };
 
-const useWorldFilter = <T extends Entity>(filter: (item: Entity) => boolean) => {
-  const [activeEntities, setActiveEntities] = useState(world.entities.filter((x) => x.active && filter(x)));
+const useWorldFilter = <T extends Entity>(filter: (item: Entity) => boolean, groupKey?: (item: Entity) => string) => {
+  const groupItems = useMemo(
+    () => (items: Entity[]) => {
+      const grouped = !groupKey
+        ? { items }
+        : items.reduce((out, x) => {
+            const k = groupKey(x);
+            (out[k] ?? (out[k] = [])).push(x);
+            return out;
+          }, {} as { [key: string]: Entity[] });
+
+      return {
+        items: items as T[],
+        grouped: [
+          ...Object.entries(grouped).map(([k, v]) => ({
+            key: k,
+            first: v[0] as T,
+            items: v as T[],
+          })),
+        ],
+      };
+    },
+    [],
+  );
+
+  const [activeEntities, setActiveEntities] = useState(groupItems(world.entities.filter((x) => x.active && filter(x))));
 
   useFrame(() => {
     const items = world.entities.filter((x) => x.active).filter(filter);
     setActiveEntities((s) => {
-      if (s.length !== items.length) {
-        return items;
+      if (s.items.length !== items.length) {
+        return groupItems(items);
       }
       for (let i = 0; i < items.length; i++) {
-        if (s[i] !== items[i]) {
-          return items;
+        if (s.items[i] !== items[i]) {
+          return groupItems(items);
         }
       }
 
@@ -133,20 +158,19 @@ const useWorldFilter = <T extends Entity>(filter: (item: Entity) => boolean) => 
     });
   });
 
-  return activeEntities as T[];
+  return activeEntities;
 };
 
 export const WorldContainer = ({}: {}) => {
-  const activeViews = useWorldFilter((x) => !!x.view);
-  const activeSpheres = useWorldFilter<EntitySphereView>((x) => !!x.sphere);
-  const activeSelectables = useWorldFilter<EntitySelectable>((x) => !!x.selectable);
-  const activeSelectors = useWorldFilter<EntityRaycastSelector>((x) => !!x.raycastSelector);
+  const activeViews = useWorldFilter((x) => !!x.view && !x.view.BatchComponent).items;
+  const activeBatchViews = useWorldFilter((x) => !!x.view && !!x.view.BatchComponent).grouped;
+  const activeSelectables = useWorldFilter<EntitySelectable>((x) => !!x.selectable).items;
+  const activeSelectors = useWorldFilter<EntityRaycastSelector>((x) => !!x.raycastSelector).items;
   activeSelectors.forEach((e) => EntitySelector.changeTargets(e as EntitySelector, activeSelectables));
 
   useFrame(() => {
     const active = world.entities.filter((x) => x.active);
     const ground = active.find((x) => x.ground) as EntityGround;
-    const selectables = active.filter((x) => x.selectable) as EntitySelectable[];
 
     handleGestures();
 
@@ -173,7 +197,11 @@ export const WorldContainer = ({}: {}) => {
         {activeViews.map((x) => (
           <React.Fragment key={x.key}>{x.view && <x.view.Component entity={x} />}</React.Fragment>
         ))}
-        <EntitySphereView.BatchComponent entities={activeSpheres} />
+        {activeBatchViews.map((g) => (
+          <React.Fragment key={g.key}>
+            {g.first.view?.BatchComponent && <g.first.view.BatchComponent entities={g.items} />}
+          </React.Fragment>
+        ))}
       </Physics>
     </>
   );

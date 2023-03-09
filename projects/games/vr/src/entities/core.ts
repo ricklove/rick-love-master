@@ -5,7 +5,18 @@ export type EntityBase = {
   active: boolean;
   name: string;
   key: string;
-  //position: Vector3;
+  // transform?: {
+  //   position: Vector3;
+  // };
+  // physics?: {
+  //   api: WorkerApi;
+  //   mass: number;
+  // };
+  // view?: {
+  //   Component?: (props: { entity: EntityBase }) => JSX.Element;
+  //   isBatchComponent?: true;
+  //   color?: number;
+  // };
 };
 
 export type Simplify<T> = {} & {
