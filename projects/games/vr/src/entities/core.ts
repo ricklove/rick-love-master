@@ -101,7 +101,7 @@ export const defineEntity = <TEntity>() => ({
         name,
         active: true,
         key: `${nextEntityId++}`,
-      },
+      } as EntityBase,
       addComponent,
       build,
     };

@@ -10,7 +10,6 @@ export type EntityGroundView = EntityBase &
   EntityGround & {
     transform: {
       position: Vector3;
-      getWorldDirection: (out: Vector3) => Vector3;
     };
     view: {
       Component: (props: { entity: EntityBase }) => JSX.Element;
@@ -32,7 +31,6 @@ export const EntityGroundView = defineComponent<EntityGroundView>()
   .with(`transform`, () => ({
     // Will be created by the component
     position: undefined as unknown as Vector3,
-    getWorldDirection: (out) => out,
   }));
 
 export const EntityGroundViewComponent = ({ entity }: { entity: EntityGroundView }) => {

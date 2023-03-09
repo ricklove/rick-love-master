@@ -12,7 +12,6 @@ export type EntityPlayer = EntityBase & {
   };
   transform: {
     position: Vector3;
-    getWorldDirection: (out: Vector3) => Vector3;
   };
   view: {
     Component: (props: { entity: EntityBase }) => JSX.Element;
@@ -31,7 +30,6 @@ export const EntityPlayer = defineComponent<EntityPlayer>()
   .with(`transform`, ({ startPosition }: { startPosition?: [number, number, number] }) => ({
     // Will be created by the component
     position: startPosition ? new Vector3(...startPosition) : (undefined as unknown as Vector3),
-    getWorldDirection: (out) => out,
   }));
 
 export const EntityPlayerComponent = ({ entity }: { entity: EntityPlayer }) => {
@@ -42,7 +40,6 @@ export const EntityPlayerComponent = ({ entity }: { entity: EntityPlayer }) => {
   useIsomorphicLayoutEffect(() => {
     // Assign transform
     entity.transform.position = player.position;
-    entity.transform.getWorldDirection = camera.getWorldDirection;
     entity.player.gestures = gestures;
   }, []);
 

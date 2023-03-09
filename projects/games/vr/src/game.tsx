@@ -7,7 +7,10 @@ import { EntityAdjustToGround, EntityGround } from './entities/components/ground
 import { EntityGroundView } from './entities/components/ground-view';
 import { EntityPlayer } from './entities/components/player';
 import { EntityProblemEngine } from './entities/components/problem-engine';
-import { EntityRaycastSelector, EntitySelectable } from './entities/components/selectable';
+import { EntitySelectable } from './entities/components/selectable';
+import { EntityRaycastSelector } from './entities/components/selectable-raycast-selector';
+import { EntityRaycastSelectorCollider } from './entities/components/selectable-raycast-selector-collider';
+import { EntityRaycastSelectorThree } from './entities/components/selectable-raycast-selector-three';
 import { EntitySphereView } from './entities/components/sphere-view';
 import { Entity, World } from './entities/entity';
 import { Gestures } from './gestures/gestures';
@@ -22,12 +25,19 @@ const player = Entity.create(`player`)
   })
   .build();
 
-const raycastSelectorLeft = Entity.create(`raycastSelector`).addComponent(EntityRaycastSelector, {}).build();
-const raycastSelectorRight = Entity.create(`raycastSelector`).addComponent(EntityRaycastSelector, {}).build();
+const raycastSelectorLeft = Entity.create(`raycastSelectorLeft`)
+  .addComponent(EntityRaycastSelector, {})
+  .addComponent(EntityRaycastSelectorCollider, {})
+  .build();
+const raycastSelectorRight = Entity.create(`raycastSelectorRight`)
+  .addComponent(EntityRaycastSelector, {})
+  .addComponent(EntityRaycastSelectorThree, {})
+  .build();
 
+// TODO: Gesture component?
 // GestureHandler: Gun shoot to select
 const handleGestures = (() => {
-  const handleHandGesture = (hand: Gestures[`left`], raycastSelector: typeof raycastSelectorLeft, v: Vector3) => {
+  const handleHandGesture = (hand: Gestures[`left`], raycastSelector: EntityRaycastSelector, v: Vector3) => {
     if (!hand.pointingIndexFinger.active) {
       return EntityRaycastSelector.changeSelectionMode(raycastSelector, `none`);
     }
@@ -103,7 +113,7 @@ export const game = {
 };
 
 const useWorldFilter = <T extends Entity>(filter: (item: Entity) => boolean) => {
-  const [activeEntities, setActiveEntities] = useState(world.entities.filter((x) => x.active).filter(filter));
+  const [activeEntities, setActiveEntities] = useState(world.entities.filter((x) => x.active && filter(x)));
 
   useFrame(() => {
     const items = world.entities.filter((x) => x.active).filter(filter);
@@ -127,6 +137,10 @@ const useWorldFilter = <T extends Entity>(filter: (item: Entity) => boolean) => 
 export const WorldContainer = ({}: {}) => {
   const activeViews = useWorldFilter((x) => !!x.view);
   const activeSpheres = useWorldFilter<EntitySphereView>((x) => !!x.sphere);
+  const activeSelectables = useWorldFilter<EntitySelectable>((x) => !!x.selectable);
+  const activeSelectors = useWorldFilter<EntityRaycastSelector>((x) => !!x.raycastSelector);
+  activeSelectors.forEach((e) => EntityRaycastSelector.changeTargets(e as EntityRaycastSelector, activeSelectables));
+
   useFrame(() => {
     const active = world.entities.filter((x) => x.active);
     const ground = active.find((x) => x.ground) as EntityGround;
@@ -141,9 +155,13 @@ export const WorldContainer = ({}: {}) => {
       if (e.adjustToGround) {
         EntityAdjustToGround.adjustToGround(e as EntityAdjustToGround, ground);
       }
-      if (e.raycastSelector && e.raycastSelector.mode !== `none`) {
-        EntityRaycastSelector.raycast(e as EntityRaycastSelector, selectables);
+
+      if (e.raycastSelectorThree && e.raycastSelector?.mode !== `none`) {
+        EntityRaycastSelectorThree.raycast(e as EntityRaycastSelectorThree);
       }
+      // if (e.raycastSelectorPhysics && e.raycastSelector?.mode !== `none`) {
+      //   EntityRaycastSelectorPhysics.raycast(e as EntityRaycastSelectorPhysics);
+      // }
     }
   });
 

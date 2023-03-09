@@ -2,6 +2,7 @@ import React, { useMemo, useRef } from 'react';
 import { useSphere } from '@react-three/cannon';
 import { Color, InstancedMesh, Mesh, Vector3 } from 'three';
 import { useIsomorphicLayoutEffect } from '../../utils/layoutEffect';
+import { logger } from '../../utils/logger';
 import { defineComponent, EntityBase } from '../core';
 import { EntitySelectable } from './selectable';
 
@@ -11,7 +12,6 @@ export type EntitySphereView = EntitySelectable & {
   };
   transform: {
     position: Vector3;
-    getWorldDirection: (out: Vector3) => Vector3;
   };
   view: {
     Component: (props: { entity: EntityBase }) => JSX.Element;
@@ -37,7 +37,6 @@ export const EntitySphereView = defineComponent<EntitySphereView>()
   .with(`transform`, ({ startPosition }: { startPosition?: [number, number, number] }) => ({
     // Will be created by the component
     position: startPosition ? new Vector3(...startPosition) : (undefined as unknown as Vector3),
-    getWorldDirection: (out) => out,
   }))
   .attach({
     BatchComponent: ({ entities }: { entities: EntitySphereView[] }) => <EntityPhysicalSpheres entities={entities} />,
@@ -84,10 +83,22 @@ const EntityPhysicalSpheres = ({ entities }: { entities: EntitySphereView[] }) =
         entities[index].transform.position.x,
         entities[index].transform.position.y,
         entities[index].transform.position.z,
-        // ((index % columns) - (columns - 1) / 2) * spread,
-        // 2.0,
-        // (Math.floor(index / columns) - (rows - 1) / 2) * spread,
       ],
+      userData: {
+        name: entities[index].name,
+        key: entities[index].key,
+      },
+      onCollide: (e) => {
+        if (!e.target.userData.key && !e.body.userData.key) {
+          return;
+        }
+        logger.log(`onCollide`, {
+          target: e.target.userData,
+          body: e.body.userData,
+          key: entities[index].key,
+          name: entities[index].name,
+        });
+      },
     }),
     useRef<InstancedMesh>(null),
   );
@@ -114,9 +125,24 @@ const EntityPhysicalSpheres = ({ entities }: { entities: EntitySphereView[] }) =
     const v = new Vector3();
 
     const subs = entities.map((x, i) => {
+      // api.at(i).userData.subscribe((v) => {
+      //   logger.log(`s`, {
+      //     key: v?.key,
+      //     name: v?.name,
+      //     ename: entities[i].name,
+      //     ekey: entities[i].key,
+      //   });
+      // });
+
       // use main mesh as target for instanced
       x.selectable.target = r;
       x.selectable.targetInstanceId = i;
+      // x.selectable.targetPhysicsObject = api.at(i).;
+
+      api.at(i).userData.set({
+        name: entities[i].name,
+        key: entities[i].key,
+      });
 
       return x.selectable.observeStateChange.subscribe((o) => {
         api.at(i).applyImpulse([0, 10, 0], r.getVertexPosition(i, v).toArray());
