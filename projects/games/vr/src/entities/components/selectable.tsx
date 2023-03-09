@@ -1,17 +1,19 @@
-import { CollideBeginEvent, CollideEndEvent } from '@react-three/cannon';
+import { CollideBeginEvent, CollideEndEvent, CollideEvent } from '@react-three/cannon';
 import { Object3D, Vector3 } from 'three';
 import { createSubscribable, Subscribable } from '@ricklove/utils-core';
 import { logger } from '../../utils/logger';
 import { defineComponent, EntityBase } from '../core';
 
+export type SelectionState = `inactive` | `hover` | `down`;
+export type SelectionEvent = `hoverStart` | `hoverContinue` | `hoverEnd` | `downStart` | `downContinue` | `downEnd`;
 export type EntitySelectable = EntityBase & {
   selectable: {
-    state: `inactive` | `hover` | `down`;
+    state: SelectionState;
     hoverCount: number;
     downCount: number;
     observeStateChange: Subscribable<{
       entity: EntitySelectable;
-      event: `hoverStart` | `hoverEnd` | `downStart` | `downEnd`;
+      event: SelectionEvent;
     }>;
     target?: Object3D;
     targetInstanceId?: number;
@@ -46,7 +48,7 @@ export const EntitySelectable = defineComponent<EntitySelectable>()
     };
   })
   .attach({
-    _getCollideSelectorMode: (entity: EntitySelectable, e: CollideBeginEvent | CollideEndEvent) => {
+    _getCollideSelectorMode: (entity: EntitySelectable, e: CollideBeginEvent | CollideEndEvent | CollideEvent) => {
       const selectorKey = e.body.userData.key as undefined | string;
       if (!selectorKey) {
         return;
@@ -66,6 +68,17 @@ export const EntitySelectable = defineComponent<EntitySelectable>()
       }
       if (mode === `down`) {
         EntitySelectable.downStart(entity);
+        return;
+      }
+    },
+    onCollide: (entity: EntitySelectable, e: CollideEvent) => {
+      const mode = EntitySelectable._getCollideSelectorMode(entity, e);
+      if (mode === `hover`) {
+        EntitySelectable.hoverContinue(entity);
+        return;
+      }
+      if (mode === `down`) {
+        EntitySelectable.downContinue(entity);
         return;
       }
     },
@@ -90,6 +103,11 @@ export const EntitySelectable = defineComponent<EntitySelectable>()
         s.observeStateChange.onStateChange({ entity, event: `hoverStart` });
       }
     },
+    hoverContinue: (entity: EntitySelectable) => {
+      const s = entity.selectable;
+      logger.log(`hoverContinue`, { name: entity.name, key: entity.key, s: s.state });
+      s.observeStateChange.onStateChange({ entity, event: `hoverContinue` });
+    },
     hoverEnd: (entity: EntitySelectable) => {
       const s = entity.selectable;
       logger.log(`hoverEnd`, { name: entity.name, key: entity.key, s: s.state });
@@ -109,6 +127,11 @@ export const EntitySelectable = defineComponent<EntitySelectable>()
         s.state = `down`;
         s.observeStateChange.onStateChange({ entity, event: `downStart` });
       }
+    },
+    downContinue: (entity: EntitySelectable) => {
+      const s = entity.selectable;
+      logger.log(`downStart`, { name: entity.name, key: entity.key, s: s.state });
+      s.observeStateChange.onStateChange({ entity, event: `downContinue` });
     },
     downEnd: (entity: EntitySelectable) => {
       const s = entity.selectable;

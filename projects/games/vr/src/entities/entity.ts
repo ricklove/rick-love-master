@@ -1,5 +1,6 @@
 import type {} from '@react-three/cannon';
 import type {} from 'three';
+import { EntityForce } from './components/force';
 import { EntityGravity } from './components/gravity';
 import { EntityAdjustToGround, EntityGround } from './components/ground';
 import { EntityGroundView } from './components/ground-view';
@@ -24,6 +25,7 @@ type EntityUnion = EntityBase & (
 | EntityRaycastSelectorThree
 | EntityRaycastSelectorPhysics
 | EntityRaycastSelectorCollider
+| EntityForce
 );
 
 export type Entity = SimplifyEntity<EntityUnion>;

@@ -1,10 +1,11 @@
-import React, { useRef } from 'react';
+import React, { useRef, useState } from 'react';
 import { Triplet, useBox } from '@react-three/cannon';
 import { useFrame } from '@react-three/fiber';
 import { Matrix4, Mesh, Quaternion, Vector3 } from 'three';
 import { calculateRotationMatrix } from '../../gestures/helpers';
 import { logger } from '../../utils/logger';
 import { defineComponent, EntityBase } from '../core';
+import { SelectorMode } from './selectable';
 import { EntityRaycastSelector } from './selectable-raycast-selector';
 
 export type EntityRaycastSelectorCollider = EntityRaycastSelector & {
@@ -35,6 +36,7 @@ export const EntityRaycastSelectorColliderComponent = ({
   color?: number;
   length?: number;
 }) => {
+  const [mode, setMode] = useState(`none` as SelectorMode);
   const size = [0.1, 0.1, 100] as Triplet;
   const [refTrigger, apiTrigger] = useBox(
     () => ({
@@ -101,30 +103,7 @@ export const EntityRaycastSelectorColliderComponent = ({
       mode: entity.selector.mode,
     });
 
-    // setRayProps((s) => {
-    //   const visible = r.mode !== `none`;
-    //   if (!visible && !s.visible) {
-    //     return s;
-    //   }
-    //   return {
-    //     ...s,
-    //     visible,
-    //     from:
-    //       w.a
-    //         .set(...s.from)
-    //         .sub(w.from)
-    //         .lengthSq() > 0.001
-    //         ? w.from.toArray()
-    //         : s.from,
-    //     to:
-    //       w.a
-    //         .set(...s.to)
-    //         .sub(w.to)
-    //         .lengthSq() > 0.01
-    //         ? w.to.toArray()
-    //         : s.to,
-    //   };
-    // });
+    setMode(entity.selector.mode);
 
     if (!r.activeTarget) {
       return;
@@ -139,11 +118,11 @@ export const EntityRaycastSelectorColliderComponent = ({
     <>
       <mesh ref={refTrigger}>
         <boxBufferGeometry args={size} />
-        <meshStandardMaterial wireframe color={0xff00ff} />
+        <meshStandardMaterial wireframe color={mode === `down` ? 0xff0000 : mode === `hover` ? 0xff00ff : 0x0000ff} />
       </mesh>
       <mesh ref={refTarget}>
-        <sphereGeometry args={[1]} />
-        <meshBasicMaterial color={`#00ff00`} transparent={true} opacity={0.5} />
+        <sphereGeometry args={[5]} />
+        <meshBasicMaterial color={`#00ff00`} transparent={true} opacity={0.15} />
       </mesh>
     </>
   );

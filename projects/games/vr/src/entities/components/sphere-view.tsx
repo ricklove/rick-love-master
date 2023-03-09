@@ -29,8 +29,7 @@ export const EntitySphereView = defineComponent<EntitySphereView>()
     radius,
   }))
   .with(`transform`, ({ startPosition }: { startPosition?: [number, number, number] }) => ({
-    // Will be created by the component
-    position: startPosition ? new Vector3(...startPosition) : (undefined as unknown as Vector3),
+    position: startPosition ? new Vector3(...startPosition) : new Vector3(),
   }))
   .with(`physics`, ({ mass }: { mass: number }) => ({
     mass,
@@ -58,6 +57,7 @@ const EntityPhysicalSpheres = ({ entities }: { entities: EntitySphereView[] }) =
         entities[index].transform.position.z,
       ],
       onCollideBegin: (e) => EntitySelectable.onCollideBegin(entities[index], e),
+      onCollide: (e) => EntitySelectable.onCollide(entities[index], e),
       onCollideEnd: (e) => EntitySelectable.onCollideEnd(entities[index], e),
     }),
     useRef<InstancedMesh>(null),
@@ -79,6 +79,9 @@ const EntityPhysicalSpheres = ({ entities }: { entities: EntitySphereView[] }) =
     const r = ref.current;
 
     entities.forEach((x, i) => {
+      api.at(i).position.subscribe((p) => {
+        x.transform.position.set(...p);
+      });
       x.selectable.target = r;
       x.selectable.targetInstanceId = i;
       x.physics.api = api.at(i);

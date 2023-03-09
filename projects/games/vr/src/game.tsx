@@ -2,6 +2,7 @@ import React, { useMemo, useState } from 'react';
 import { Physics } from '@react-three/cannon';
 import { useFrame } from '@react-three/fiber';
 import { Vector3 } from 'three';
+import { EntityForce } from './entities/components/force';
 import { EntityGravity } from './entities/components/gravity';
 import { EntityAdjustToGround, EntityGround } from './entities/components/ground';
 import { EntityGroundView } from './entities/components/ground-view';
@@ -40,16 +41,21 @@ const raycastSelectorRight = Entity.create(`raycastSelectorRight`)
 // GestureHandler: Gun shoot to select
 const handleGestures = (() => {
   const handleHandGesture = (hand: Gestures[`left`], raycastSelector: EntityRaycastSelector, v: Vector3) => {
-    if (!hand.pointingIndexFinger.active) {
+    if (!hand.pointingHand.active) {
       return EntitySelector.changeSelectionMode(raycastSelector, `none`);
     }
 
-    const thumbUp = hand.fingerExtendedThumb.active;
+    const fist =
+      hand.fingerExtendedIndex.state === `closed` &&
+      hand.fingerExtendedMiddle.state === `closed` &&
+      hand.fingerExtendedRing.state === `closed` &&
+      hand.fingerExtendedPinky.state === `closed`;
+
     EntityRaycastSelector.changeSource(raycastSelector, {
-      position: v.copy(player.transform.position).add(hand.pointingIndexFinger.position),
-      direction: hand.pointingIndexFinger.direction,
+      position: v.copy(player.transform.position).add(hand.pointingHand.position),
+      direction: hand.pointingHand.direction,
     });
-    EntitySelector.changeSelectionMode(raycastSelector, thumbUp ? `hover` : `down`);
+    EntitySelector.changeSelectionMode(raycastSelector, fist ? `down` : `hover`);
   };
 
   const vLeft = new Vector3();
@@ -99,6 +105,7 @@ const balls = [...new Array(100)].map(() => {
         startPosition: [50 - 100 * Math.random(), 100 + 100 * Math.random(), 50 - 100 * Math.random()],
       })
       .addComponent(EntitySelectable, {})
+      .addComponent(EntityForce, {})
       // .addComponent(EntityAdjustToGround, {
       //   minGroundHeight: radius,
       // })
@@ -175,6 +182,14 @@ export const WorldContainer = ({}: {}) => {
     handleGestures();
 
     for (const e of active) {
+      if (e.transform && !e.transform.position) {
+        // Make sure views are ready
+        continue;
+      }
+
+      if (e.force) {
+        EntityForce.impulseUp(e as EntityForce, `down`);
+      }
       if (e.gravity) {
         EntityGravity.fall(e as EntityGravity);
       }
@@ -193,7 +208,7 @@ export const WorldContainer = ({}: {}) => {
 
   return (
     <>
-      <Physics allowSleep={true} iterations={15} gravity={[0, -9.8, 0]}>
+      <Physics allowSleep={false} iterations={15} gravity={[0, -9.8, 0]}>
         {activeViews.map((x) => (
           <React.Fragment key={x.key}>{x.view && <x.view.Component entity={x} />}</React.Fragment>
         ))}
