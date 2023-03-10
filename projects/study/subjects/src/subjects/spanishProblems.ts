@@ -103,7 +103,7 @@ export const createSpanishSubject = (): StudySubject<SpanishProblemType, 'spanis
         responseMessage: isCorrect ? undefined : `${p.word} = ${p.correctAnswer}`,
       };
     },
-    getReviewProblemSequence: (p, reviewLevel) => {
+    getReviewProblemSequence: (p, _reviewLevel) => {
       return [
         // TODO: Reverse order
         // ...p.wordGroup.words.map(x => getProblemFromEntry(x, 'chat-only', p.sectionKey)).filter(x => x?.word !== p.word),
