@@ -158,6 +158,7 @@ specifiers:
   remark-gfm: ~3.0.1
   rimraf: ~3.0.2
   rollup: ^2.77.2
+  rxjs: 7.8.0
   sharp: 0.30.7
   solidity-coverage: ^0.7.17
   three: 0.149.0
@@ -329,6 +330,7 @@ dependencies:
   remark-gfm: 3.0.1
   rimraf: 3.0.2
   rollup: 2.77.2
+  rxjs: 7.8.0
   sharp: 0.30.7
   solidity-coverage: 0.7.17
   three: 0.149.0
@@ -13874,6 +13876,12 @@ packages:
     resolution: {integrity: sha512-4VlvkRUuCJvr2J6Y0ImW7NvTCriMi7ErOAqWk1y69vAdoNIzCF3yPmgeNzx+RQTLEDFq5sHfscn1MwHxP9hNfA==}
     dev: false
 
+  /rxjs/7.8.0:
+    resolution: {integrity: sha512-F2+gxDshqmIub1KdvZkaEfGDwLNpPvk9Fs6LD/MyQxNgMds/WH9OdDDXOmxUZpME+iSK3rQCctkL0DYyytUqMg==}
+    dependencies:
+      tslib: 2.4.0
+    dev: false
+
   /sade/1.8.1:
     resolution: {integrity: sha512-xal3CZX1Xlo/k4ApwCFrHVACi9fBqJ7V+mwhBsuf/1IOKbBy098Fex+Wa/5QMubw09pSZ/u8EY8PWgevJsXp1A==}
     engines: {node: '>=6'}
@@ -18111,7 +18119,7 @@ packages:
     dev: false
 
   file:projects/vr-games.tgz_b77eceae350969a91c333e9cb57a6b88:
-    resolution: {integrity: sha512-ceUUQlVhDH01BDNhdjRnvmsRfFc/Bd64miG1RcKMxZ8NBoMvbRtKkLpIdk/eE7WS3OrZ2CtPr30FcgqP+UgKhQ==, tarball: file:projects/vr-games.tgz}
+    resolution: {integrity: sha512-wTlwaun0SGLpIyqfJbiIHsj2v7lz1K7R6/Jij8kAQzX+/UFgwouOHi8+rQlVVNgiqh9TiKrvNha+5Yl46R1ySQ==, tarball: file:projects/vr-games.tgz}
     id: file:projects/vr-games.tgz
     name: '@rush-temp/vr-games'
     version: 0.0.0
@@ -18127,6 +18135,7 @@ packages:
       html2canvas: 1.4.1
       react: 18.2.0
       react-merge-refs: 2.0.1
+      rxjs: 7.8.0
       three: 0.149.0
       three-stdlib: 2.21.1_three@0.149.0
     transitivePeerDependencies:

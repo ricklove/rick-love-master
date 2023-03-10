@@ -5,17 +5,22 @@ import { createPortal, useFrame } from '@react-three/fiber';
 import { Box, Flex } from '@react-three/flex';
 import { Group, Matrix4, Mesh, Object3D, Vector3 } from 'three';
 import { createProblemEngine, ProblemEngine, ProblemEnginePlayerState } from '@ricklove/study-subjects';
-import { delay } from '@ricklove/utils-core';
+import { createSubscribable, delay, randomItem, randomOrder, Subscribable } from '@ricklove/utils-core';
 import { Hud } from '../../components/hud';
 import { formatVector } from '../../utils/formatters';
 import { useIsomorphicLayoutEffect } from '../../utils/layoutEffect';
 import { logger } from '../../utils/logger';
 import { defineComponent, EntityBase } from '../core';
+import { Choice, ChoiceEvent, EntityChooser } from './chooser';
 
 export type EntityProblemEngine = EntityBase & {
   problemEngine: {
     problemEngine: ProblemEngine;
     playerState?: ProblemEnginePlayerState;
+    choicesObserver: Subscribable<{ choices: Choice[]; event: ChoiceEvent }>;
+    _chooser?: EntityChooser;
+    _choices?: { choices: Choice[]; isMultiChoice: boolean };
+    _sub?: { unsubscribe: () => void };
   };
   view: {
     Component: (props: { entity: EntityBase }) => JSX.Element;
@@ -31,10 +36,38 @@ export const EntityProblemEngine = defineComponent<EntityProblemEngine>()
       delay,
       logger,
     }),
+    choicesObserver: createSubscribable(),
   }))
   .with(`view`, () => ({
     Component: (x) => <EntityProblemEngineComponent entity={x.entity as EntityProblemEngine} />,
-  }));
+  }))
+  .attach({
+    setChooser: (entity: EntityProblemEngine, chooser: EntityChooser) => {
+      const oldChoices = entity.problemEngine._choices;
+      if (oldChoices) {
+        EntityChooser.setChoices(
+          chooser,
+          entity.problemEngine._chooser?.chooser.choices ?? oldChoices.choices,
+          oldChoices.isMultiChoice,
+        );
+        entity.problemEngine._sub?.unsubscribe();
+      }
+      entity.problemEngine._chooser = chooser;
+      entity.problemEngine._sub = chooser.chooser.choicesObserver.subscribe((x) => {
+        entity.problemEngine.choicesObserver.onStateChange(x);
+      });
+    },
+    setChoices: (entity: EntityProblemEngine, choiceTexts: string[], isMultiChoice = false) => {
+      const choices = choiceTexts.map((x) => ({ text: x, active: false }));
+      entity.problemEngine._choices = {
+        choices,
+        isMultiChoice,
+      };
+      if (entity.problemEngine._chooser) {
+        EntityChooser.setChoices(entity.problemEngine._chooser, choices, isMultiChoice);
+      }
+    },
+  });
 
 export const EntityProblemEngineComponent = ({ entity }: { entity: EntityProblemEngine }) => {
   const [ui, setUi] = useState({
@@ -86,7 +119,21 @@ export const EntityProblemEngineComponent = ({ entity }: { entity: EntityProblem
           setUi((s) => (s.message !== args.questionPreview ? s : { ...s, visible: false }));
         },
         presentOptions: async (p, { title, label, options }) => {
-          return await new Promise((resolve, reject) => {
+          let sub = {
+            unsubscribe: () => {
+              /* empty */
+            },
+          };
+          const result = await new Promise<{ choices: string[] }>((resolve, reject) => {
+            sub = entity.problemEngine.choicesObserver.subscribe((s) => {
+              if (s.event !== `done`) {
+                return;
+              }
+              const choices = s.choices.filter((x) => x.active).map((x) => x.text);
+              resolve({ choices });
+            });
+            EntityProblemEngine.setChoices(entity, options, true);
+
             const key = String(Math.random());
             setUi({
               key,
@@ -103,9 +150,26 @@ export const EntityProblemEngineComponent = ({ entity }: { entity: EntityProblem
               },
             });
           });
+
+          sub.unsubscribe();
+          return result;
         },
         presentMultipleChoiceProblem: async (p, { subjectTitle, question, choices }) => {
-          return await new Promise((resolve, reject) => {
+          let sub = {
+            unsubscribe: () => {
+              /* empty */
+            },
+          };
+          const result = await new Promise<{ answer: string }>((resolve, reject) => {
+            sub = entity.problemEngine.choicesObserver.subscribe((s) => {
+              if (s.event !== `toggle`) {
+                return;
+              }
+              const choices = s.choices.filter((x) => x.active).map((x) => x.text);
+              resolve({ answer: choices[0] });
+            });
+            EntityProblemEngine.setChoices(entity, choices);
+
             const key = String(Math.random());
             setUi({
               key,
@@ -122,9 +186,42 @@ export const EntityProblemEngineComponent = ({ entity }: { entity: EntityProblem
               },
             });
           });
+          sub.unsubscribe();
+          return result;
         },
         presentShortAnswerProblem: async (p, { subjectTitle, question, correctAnswer }) => {
-          return await new Promise((resolve, reject) => {
+          let sub = {
+            unsubscribe: () => {
+              /* empty */
+            },
+          };
+          const result = await new Promise<{ answer: string }>((resolve, reject) => {
+            // TODO: Choice via:
+            // First letters(1-3)?
+            // Every letter?
+            // Whole answer (needs wordbank)?
+            // Full choice keyboard (not suitable for most games)?
+            const firstLetter = correctAnswer.substring(0, 1);
+
+            const altOptions = [...new Array(10)].map((x) => {
+              if (Number.isInteger(firstLetter)) {
+                return String(Math.abs(Math.round(Number(firstLetter) * (1.5 - Math.random()))));
+              }
+              const altLetter = randomItem(`rrrssstttlllnnneeeabcdefghijklmnopqrstuvwxyz`.split(``));
+              return firstLetter === firstLetter.toLowerCase() ? altLetter.toLowerCase() : altLetter.toUpperCase();
+            });
+            const falseOptions = altOptions.filter((x) => !correctAnswer.startsWith(x)).slice(3);
+            const options = randomOrder([firstLetter, ...falseOptions]);
+
+            sub = entity.problemEngine.choicesObserver.subscribe((s) => {
+              if (s.event !== `toggle`) {
+                return;
+              }
+              const choices = s.choices.filter((x) => x.active).map((x) => x.text);
+              resolve({ answer: correctAnswer.startsWith(choices[0]) ? correctAnswer : choices[0] });
+            });
+            EntityProblemEngine.setChoices(entity, options);
+
             const key = String(Math.random());
             setUi({
               key,
@@ -140,6 +237,8 @@ export const EntityProblemEngineComponent = ({ entity }: { entity: EntityProblem
               },
             });
           });
+          sub.unsubscribe();
+          return result;
         },
       },
     });

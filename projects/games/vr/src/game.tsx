@@ -1,8 +1,9 @@
 import React, { useMemo, useState } from 'react';
 import { Physics } from '@react-three/cannon';
 import { useFrame } from '@react-three/fiber';
+import { filter, map } from 'rxjs';
 import { Vector3 } from 'three';
-import { EntityForce } from './entities/components/force';
+import { EntityForce, EntityForceImpulseUp } from './entities/components/force';
 import { EntityGravity } from './entities/components/gravity';
 import { EntityAdjustToGround, EntityGround } from './entities/components/ground';
 import { EntityGroundView } from './entities/components/ground-view';
@@ -96,22 +97,30 @@ const ground = Entity.create(`ground`)
 
 const balls = [...new Array(100)].map(() => {
   const radius = 3 * Math.random();
-  return (
-    Entity.create(`ball`)
-      .addComponent(EntitySphereView, {
-        mass: 1,
-        radius,
-        color: 0xffffff * Math.random(),
-        startPosition: [50 - 100 * Math.random(), 100 + 100 * Math.random(), 50 - 100 * Math.random()],
-      })
-      .addComponent(EntitySelectable, {})
-      .addComponent(EntityForce, {})
-      // .addComponent(EntityAdjustToGround, {
-      //   minGroundHeight: radius,
-      // })
-      // .addComponent(EntityGravity, {})
-      .build()
-  );
+  const ball = Entity.create(`ball`)
+    .addComponent(EntitySphereView, {
+      mass: 1,
+      radius,
+      color: 0xffffff * Math.random(),
+      startPosition: [50 - 100 * Math.random(), 100 + 100 * Math.random(), 50 - 100 * Math.random()],
+    })
+    .addComponent(EntitySelectable, {})
+    .addComponent(EntityForce, {})
+    .addComponent(EntityForceImpulseUp, {
+      args: { strength: 10 },
+      condition: (e: EntitySelectable) =>
+        e.selectable.observeStateChange.pipe(
+          filter((x) => x.event === `downStart` || x.event === `downEnd`),
+          map((x) => x.event === `downStart`),
+        ),
+    })
+    // .addComponent(EntityAdjustToGround, {
+    //   minGroundHeight: radius,
+    // })
+    // .addComponent(EntityGravity, {})
+    .build();
+
+  return ball;
 });
 
 const world: World = {
@@ -188,7 +197,7 @@ export const WorldContainer = ({}: {}) => {
       }
 
       if (e.force) {
-        EntityForce.impulseUp(e as EntityForce, `down`);
+        EntityForce.applyForces(e as EntityForce);
       }
       if (e.gravity) {
         EntityGravity.fall(e as EntityGravity);

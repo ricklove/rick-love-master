@@ -19,7 +19,8 @@
     "three-stdlib": "2.21.1",
     "three": "0.149.0",
     "react-merge-refs": "~2.0.1",
-    "html2canvas": "1.4.1"
+    "html2canvas": "1.4.1",
+    "rxjs": "7.8.0"
   },
   "devDependencies": {
     "@ricklove/config-lib-rig": "*",
