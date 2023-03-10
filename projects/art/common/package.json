@@ -7,9 +7,8 @@
     "build": "heft test --clean",
     "build:watch": "heft build"
   },
-  "dependencies": {},
   "devDependencies": {
-    "@ricklove/config-lib-rig": "*",
+    "@ricklove/config-lib-rig": "workspace:*",
     "@types/p5": "1.3.1"
   }
 }

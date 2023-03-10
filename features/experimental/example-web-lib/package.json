@@ -8,7 +8,7 @@
     "build:watch": "heft build"
   },
   "devDependencies": {
-    "@ricklove/config-lib-rig": "*",
-    "@ricklove/example-lib-lib": "*"
+    "@ricklove/config-lib-rig": "workspace:*",
+    "@ricklove/example-lib-lib": "workspace:*"
   }
 }

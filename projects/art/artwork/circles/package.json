@@ -8,9 +8,9 @@
     "build:watch": "heft build"
   },
   "dependencies": {
-    "@ricklove/art-common": "*"
+    "@ricklove/art-common": "workspace:*"
   },
   "devDependencies": {
-    "@ricklove/config-lib-rig": "*"
+    "@ricklove/config-lib-rig": "workspace:*"
   }
 }

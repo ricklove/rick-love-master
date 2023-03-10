@@ -9,17 +9,17 @@
   },
   "dependencies": {
     "@emotion/react": "~11.4.1",
-    "@ricklove/church-join-the-journey-common": "*",
-    "@ricklove/react-controls": "*",
-    "@ricklove/user-data-service": "*",
-    "@ricklove/utils-core": "*",
-    "@ricklove/utils-fetch": "*",
-    "@ricklove/utils-react": "*",
+    "@ricklove/church-join-the-journey-common": "workspace:*",
+    "@ricklove/react-controls": "workspace:*",
+    "@ricklove/user-data-service": "workspace:*",
+    "@ricklove/utils-core": "workspace:*",
+    "@ricklove/utils-fetch": "workspace:*",
+    "@ricklove/utils-react": "workspace:*",
     "react": "18.2.0",
     "react-markdown": "~8.0.3"
   },
   "devDependencies": {
-    "@ricklove/config-lib-rig": "*",
+    "@ricklove/config-lib-rig": "workspace:*",
     "@types/react": "18.0.14"
   }
 }

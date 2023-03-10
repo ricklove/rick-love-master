@@ -8,11 +8,11 @@
     "build:watch": "heft build"
   },
   "dependencies": {
-    "@ricklove/utils-core": "*"
+    "@ricklove/utils-core": "workspace:*"
   },
   "devDependencies": {
-    "@ricklove/config-lib-rig": "*",
-    "@ricklove/example-lib-lib": "*",
+    "@ricklove/config-lib-rig": "workspace:*",
+    "@ricklove/example-lib-lib": "workspace:*",
     "@types/node": "12.12.6"
   }
 }

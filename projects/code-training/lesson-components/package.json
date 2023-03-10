@@ -9,19 +9,19 @@
   },
   "dependencies": {
     "@emotion/react": "~11.4.1",
-    "@ricklove/code-training-lesson-common": "*",
-    "@ricklove/github-comments": "*",
-    "@ricklove/react-controls": "*",
-    "@ricklove/react-native-lite": "*",
-    "@ricklove/utils-core": "*",
-    "@ricklove/utils-react": "*",
+    "@ricklove/code-training-lesson-common": "workspace:*",
+    "@ricklove/github-comments": "workspace:*",
+    "@ricklove/react-controls": "workspace:*",
+    "@ricklove/react-native-lite": "workspace:*",
+    "@ricklove/utils-core": "workspace:*",
+    "@ricklove/utils-react": "workspace:*",
     "prism-themes": "^1.4.0",
     "prismjs": "^1.21.0",
     "react": "18.2.0",
     "react-icons": "^3.10.0"
   },
   "devDependencies": {
-    "@ricklove/config-lib-rig": "*",
+    "@ricklove/config-lib-rig": "workspace:*",
     "@types/prismjs": "^1.16.1",
     "@types/react": "18.0.14"
   }

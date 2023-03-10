@@ -8,11 +8,11 @@
     "build:watch": "heft build"
   },
   "dependencies": {
-    "@ricklove/utils-fetch": "*",
+    "@ricklove/utils-fetch": "workspace:*",
     "node-fetch": "^3.2.10"
   },
   "devDependencies": {
-    "@ricklove/config-lib-rig": "*",
+    "@ricklove/config-lib-rig": "workspace:*",
     "@types/node": "12.12.6",
     "@types/node-fetch": "^2.6.2"
   }

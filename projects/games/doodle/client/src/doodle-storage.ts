@@ -113,6 +113,7 @@ export const createDoodleDrawingStorageService = async (config: DoodleConfig) =>
       memory.doodles.push(doodle);
 
       // Save to server
+      // eslint-disable-next-line @typescript-eslint/no-misused-promises
       setTimeout(async () => {
         await remoteDoodle.save({
           doodles: memory.doodles.map((x) => ({
@@ -141,6 +142,7 @@ export const createDoodleDrawingStorageService = async (config: DoodleConfig) =>
       d.score = (d.score ?? 0) + 1;
 
       // Save to server
+      // eslint-disable-next-line @typescript-eslint/no-misused-promises
       setTimeout(async () => {
         await remoteVotes.save({
           doodleVotes: memory.doodleVotes,

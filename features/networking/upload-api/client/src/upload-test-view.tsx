@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-misused-promises */
 import React, { useRef, useState } from 'react';
 import { Text, TouchableOpacity, View } from '@ricklove/react-native-lite';
 import { createUploadApiClient, createUploader, UploadApiConfig, UploadUrl } from '@ricklove/upload-api-common-client';

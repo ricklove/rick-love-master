@@ -8,8 +8,8 @@
     "build:watch": "heft build"
   },
   "devDependencies": {
-    "@ricklove/config-lib-rig": "*",
-    "@ricklove/utils-core": "*"
+    "@ricklove/config-lib-rig": "workspace:*",
+    "@ricklove/utils-core": "workspace:*"
   },
   "dependencies": {
     "vscode-diff": "~2.0.1"

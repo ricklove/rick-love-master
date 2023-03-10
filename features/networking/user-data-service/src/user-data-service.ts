@@ -214,6 +214,7 @@ const createUserDataService = (uploadApiConfig: UploadApiConfig) => {
   const service = {
     setup: async (defaultUserName = `Player 1`) => {
       if (isSetupStarted) {
+        // eslint-disable-next-line no-unmodified-loop-condition
         while (!isSetupDone) {
           // eslint-disable-next-line no-await-in-loop
           await delay(10);
