@@ -61,7 +61,7 @@ const EntityPhysicsViewSphereBatchComponent = ({ entities }: { entities: EntityP
       api.at(i).position.subscribe((p) => {
         x.transform.position.set(...p);
       });
-      EntityPhysicsView.register(x, api);
+      EntityPhysicsView.register(x, api.at(i));
     });
   }, [!ref.current?.instanceColor, count]);
 
