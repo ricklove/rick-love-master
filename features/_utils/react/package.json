@@ -9,12 +9,12 @@
   },
   "dependencies": {
     "@loadable/component": "^5.12.0",
-    "@ricklove/utils-core": "*",
+    "@ricklove/utils-core": "workspace:*",
     "react": "18.2.0"
   },
   "devDependencies": {
     "@types/loadable__component": "^5.10.0",
-    "@ricklove/config-lib-rig": "*",
+    "@ricklove/config-lib-rig": "workspace:*",
     "@types/react": "18.0.14"
   }
 }

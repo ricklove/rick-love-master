@@ -9,10 +9,10 @@
     "build:shaders": "npm --prefix ../../../../tools/glsl-file-to-string run cli -- --d ../../projects/art/artwork/hashing/src/"
   },
   "dependencies": {
-    "@ricklove/art-common": "*"
+    "@ricklove/art-common": "workspace:*"
   },
   "devDependencies": {
-    "@ricklove/config-lib-rig": "*",
-    "@ricklove/glsl-file-to-string": "*"
+    "@ricklove/config-lib-rig": "workspace:*",
+    "@ricklove/glsl-file-to-string": "workspace:*"
   }
 }

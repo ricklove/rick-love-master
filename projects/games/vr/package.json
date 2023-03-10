@@ -8,14 +8,15 @@
     "build:watch": "heft build"
   },
   "dependencies": {
-    "@ricklove/utils-core": "*",
-    "@ricklove/study-subjects": "*",
+    "@ricklove/utils-core": "workspace:*",
+    "@ricklove/study-subjects": "workspace:*",
     "@react-three/cannon": "6.5.2",
     "@react-three/drei": "9.13.2",
     "@react-three/fiber": "8.0.27",
     "@react-three/flex": "1.0.1",
     "@react-three/xr": "5.2.0",
     "react": "18.2.0",
+    "react-dom": "18.2.0",
     "three-stdlib": "2.21.1",
     "three": "0.149.0",
     "react-merge-refs": "~2.0.1",
@@ -23,7 +24,7 @@
     "rxjs": "7.8.0"
   },
   "devDependencies": {
-    "@ricklove/config-lib-rig": "*",
+    "@ricklove/config-lib-rig": "workspace:*",
     "@types/react": "18.0.14",
     "@types/react-dom": "18.0.5",
     "@types/three": "0.149.0"

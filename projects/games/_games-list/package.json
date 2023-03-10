@@ -8,13 +8,13 @@
     "build:watch": "heft build"
   },
   "dependencies": {
-    "@ricklove/doodle-client": "*",
-    "@ricklove/educational-games": "*",
-    "@ricklove/vr-games": "*",
+    "@ricklove/doodle-client": "workspace:*",
+    "@ricklove/educational-games": "workspace:*",
+    "@ricklove/vr-games": "workspace:*",
     "react": "18.2.0"
   },
   "devDependencies": {
-    "@ricklove/config-lib-rig": "*",
+    "@ricklove/config-lib-rig": "workspace:*",
     "@types/react": "18.0.14"
   }
 }

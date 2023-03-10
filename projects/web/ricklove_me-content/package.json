@@ -10,13 +10,14 @@
   },
   "dependencies": {
     "@emotion/react": "~11.4.1",
-    "@ricklove/art-components": "*",
-    "@ricklove/console-simulator": "*",
-    "@ricklove/code-training-lesson-player": "*",
-    "@ricklove/games-list": "*",
-    "@ricklove/github-comments": "*",
-    "@ricklove/utils-core": "*",
+    "@ricklove/art-components": "workspace:*",
+    "@ricklove/console-simulator": "workspace:*",
+    "@ricklove/code-training-lesson-player": "workspace:*",
+    "@ricklove/games-list": "workspace:*",
+    "@ricklove/github-comments": "workspace:*",
+    "@ricklove/utils-core": "workspace:*",
     "react": "18.2.0",
+    "react-dom": "18.2.0",
     "react-markdown": "~8.0.3",
     "react-lowlight": "~2.0.0",
     "highlight.js": "~9.1.0",
@@ -24,15 +25,16 @@
     "remark-gfm": "~3.0.1"
   },
   "devDependencies": {
-    "@ricklove/art-build": "*",
-    "@ricklove/code-training-lesson-build": "*",
-    "@ricklove/code-training-lesson-editor-common": "*",
-    "@ricklove/code-training-lesson-editor-client": "*",
-    "@ricklove/config-lib-rig": "*",
-    "@ricklove/utils-files": "*",
-    "@ricklove/utils-react": "*",
+    "@ricklove/art-build": "workspace:*",
+    "@ricklove/code-training-lesson-build": "workspace:*",
+    "@ricklove/code-training-lesson-editor-common": "workspace:*",
+    "@ricklove/code-training-lesson-editor-client": "workspace:*",
+    "@ricklove/config-lib-rig": "workspace:*",
+    "@ricklove/utils-files": "workspace:*",
+    "@ricklove/utils-react": "workspace:*",
     "@types/node": "12.12.6",
     "@types/react": "18.0.14",
-    "ts-node": "~10.9.1"
+    "ts-node": "~10.9.1",
+    "typescript": "~4.3.5"
   }
 }

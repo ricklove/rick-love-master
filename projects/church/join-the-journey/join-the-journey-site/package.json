@@ -15,7 +15,7 @@
   "dependencies": {
     "react": "18.2.0",
     "react-dom": "18.2.0",
-    "@ricklove/church-join-the-journey-components": "*"
+    "@ricklove/church-join-the-journey-components": "workspace:*"
   },
   "devDependencies": {
     "@types/react": "18.0.14",

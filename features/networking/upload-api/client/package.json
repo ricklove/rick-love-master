@@ -9,14 +9,14 @@
   },
   "dependencies": {
     "@emotion/react": "~11.4.1",
-    "@ricklove/react-native-lite": "*",
-    "@ricklove/upload-api-common-client": "*",
-    "@ricklove/utils-core": "*",
-    "@ricklove/utils-fetch": "*",
+    "@ricklove/react-native-lite": "workspace:*",
+    "@ricklove/upload-api-common-client": "workspace:*",
+    "@ricklove/utils-core": "workspace:*",
+    "@ricklove/utils-fetch": "workspace:*",
     "react": "18.2.0"
   },
   "devDependencies": {
-    "@ricklove/config-lib-rig": "*",
+    "@ricklove/config-lib-rig": "workspace:*",
     "@types/react": "18.0.14"
   }
 }

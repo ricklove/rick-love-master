@@ -8,8 +8,8 @@
     "build:watch": "heft build"
   },
   "devDependencies": {
-    "@ricklove/config-lib-rig": "*",
-    "@ricklove/upload-api-common": "*",
-    "@ricklove/websockets-api-common": "*"
+    "@ricklove/config-lib-rig": "workspace:*",
+    "@ricklove/upload-api-common": "workspace:*",
+    "@ricklove/websockets-api-common": "workspace:*"
   }
 }

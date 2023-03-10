@@ -14,13 +14,13 @@
     "next-dev-https": "0.1.1",
     "react": "18.2.0",
     "react-dom": "18.2.0",
-    "@ricklove/example-node-lib": "*",
-    "@ricklove/ricklove_me-content": "*",
+    "@ricklove/example-node-lib": "workspace:*",
+    "@ricklove/ricklove_me-content": "workspace:*",
     "next-transpile-modules": "~8.0.0"
   },
   "devDependencies": {
     "@babel/core": "^7.0.0",
-    "@ricklove/config-lib-rig": "*",
+    "@ricklove/config-lib-rig": "workspace:*",
     "@types/react": "18.0.14",
     "copyfiles": "~2.4.1",
     "rimraf": "~3.0.2",

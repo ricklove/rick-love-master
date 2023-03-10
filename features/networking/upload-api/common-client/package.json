@@ -7,11 +7,10 @@
     "build": "heft test --clean",
     "build:watch": "heft build"
   },
-  "dependencies": {},
   "devDependencies": {
-    "@ricklove/config-lib-rig": "*",
-    "@ricklove/utils-core": "*",
-    "@ricklove/utils-fetch": "*",
-    "@ricklove/upload-api-common": "*"
+    "@ricklove/config-lib-rig": "workspace:*",
+    "@ricklove/utils-core": "workspace:*",
+    "@ricklove/utils-fetch": "workspace:*",
+    "@ricklove/upload-api-common": "workspace:*"
   }
 }

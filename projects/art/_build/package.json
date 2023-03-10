@@ -8,13 +8,13 @@
     "build:watch": "heft build"
   },
   "dependencies": {
-    "@ricklove/art-common": "*",
-    "@ricklove/art-components": "*",
-    "@ricklove/artwork-circles": "*",
-    "@ricklove/artwork-hashing": "*"
+    "@ricklove/art-common": "workspace:*",
+    "@ricklove/art-components": "workspace:*",
+    "@ricklove/artwork-circles": "workspace:*",
+    "@ricklove/artwork-hashing": "workspace:*"
   },
   "devDependencies": {
-    "@ricklove/config-lib-rig": "*",
+    "@ricklove/config-lib-rig": "workspace:*",
     "@types/node": "12.12.6"
   }
 }
