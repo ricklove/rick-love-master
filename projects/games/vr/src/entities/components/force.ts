@@ -34,10 +34,14 @@ export const EntityForce = defineComponent<EntityForce>()
       condition.subscribe((active) => {
         const hasEffect = isActiveEffect[id];
         if (active && !hasEffect) {
+          // logger.log(`force effect active`, { id, key: entity.key });
           activeEffects.push(effect);
+          isActiveEffect[id] = true;
         }
         if (!active && hasEffect) {
-          activeEffects.push(effect);
+          // logger.log(`force effect NOT active`, { id, key: entity.key });
+          activeEffects.splice(activeEffects.indexOf(effect), 1);
+          isActiveEffect[id] = false;
         }
       });
     },
