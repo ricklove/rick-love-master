@@ -147,7 +147,9 @@ const useWorldFilter = <T extends Entity>(filter: (item: Entity) => boolean, gro
             return out;
           }, {} as { [key: string]: Entity[] });
 
-      console.log(`useWorldFilter`, { items, grouped });
+      // if (groupKey) {
+      //   console.log(`useWorldFilter`, { items, grouped });
+      // }
       return {
         items: items as T[],
         grouped: [

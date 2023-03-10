@@ -15,8 +15,8 @@ export const EntityPhysicsViewSphere = cloneComponent<EntityPhysicsViewSphere>()
   .with(`sphere`, ({ radius }: { radius: number }) => ({
     radius,
   }))
-  .with(`view`, ({ color }: { color?: number }) => ({
-    color,
+  .with(`view`, ({ debugColor }: { debugColor?: number }) => ({
+    debugColor,
     Component: () => <></>,
     batchKey: `EntityPhysicsViewSphere`,
     BatchComponent: ({ entities }: { entities: EntityBase[] }) => (

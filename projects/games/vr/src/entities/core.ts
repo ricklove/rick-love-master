@@ -70,7 +70,8 @@ export const defineComponent = <TEntityWithComponent extends Record<string, unkn
     ): SimplifyFields<TBefore & TAllComponents> => {
       const e = entity as unknown as TAllComponents;
       // if (e[name]) {
-      //   return entity as TBefore & TAllComponents;
+      //   console.log(`Replacing component`, { name, e });
+      //   // return entity as TBefore & TAllComponents;
       // }
       e[name] = createComponent(args, e as TEntityWithComponent);
 
@@ -107,7 +108,15 @@ export const cloneComponent =
   <TEntityWithComponent extends Record<string, unknown>>() =>
   <TClone>(component: TClone) => {
     const t = defineComponent<TEntityWithComponent>();
-    return { ...component } as TClone & typeof t;
+    const cloned = { ...component } as TClone & typeof t;
+
+    Object.values(cloned).forEach((f) => {
+      if (typeof f === `function`) {
+        f.bind(cloned);
+      }
+    });
+
+    return cloned;
   };
 
 let nextEntityId = 0;

@@ -1,4 +1,3 @@
-import React from 'react';
 import { WorkerApi } from '@react-three/cannon';
 import { CollideBeginEvent, CollideEndEvent, CollideEvent } from '@react-three/cannon';
 import { Subject } from 'rxjs';
@@ -17,10 +16,10 @@ export type EntityPhysicsView = EntityBase & {
     collideSubject: Subject<{ entity: EntityPhysicsView; event: CollideBeginEvent | CollideEndEvent | CollideEvent }>;
   };
   view: {
-    Component: (props: { entity: EntityBase }) => JSX.Element;
-    BatchComponent?: (props: { entities: EntityBase[] }) => JSX.Element;
-    batchKey?: string;
     debugColor?: number;
+    Component: (props: { entity: EntityBase }) => JSX.Element;
+    batchKey?: string;
+    BatchComponent?: (props: { entities: EntityBase[] }) => JSX.Element;
   };
 };
 
@@ -35,10 +34,10 @@ export const EntityPhysicsView = defineComponent<EntityPhysicsView>()
     api: undefined as unknown as WorkerApi,
     uuid: ``,
   }))
-  .with(`view`, ({ debugColor }: { debugColor?: number }) => ({
-    debugColor,
-    Component: () => <></>,
-  }))
+  // .with(`view`, ({ debugColor }: { debugColor?: number }) => ({
+  //   debugColor,
+  //   Component: () => <></>,
+  // }))
   .attach({
     collide: (entity: EntityPhysicsView, event: CollideBeginEvent | CollideEndEvent | CollideEvent) => {
       logger.log(`collide`, { data: event.data });
