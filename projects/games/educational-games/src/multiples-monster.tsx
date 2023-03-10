@@ -1,5 +1,5 @@
-import React, { useState, useEffect, useRef } from 'react';
-import { View, Text, TouchableOpacity } from '@ricklove/react-native-lite';
+import React, { useEffect, useRef, useState } from 'react';
+import { Text, TouchableOpacity, View } from '@ricklove/react-native-lite';
 import { shuffle } from '@ricklove/utils-core';
 import { randomIndex } from '@ricklove/utils-core';
 import { createLeaderboard } from './components/leaderboard';
