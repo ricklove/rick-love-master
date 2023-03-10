@@ -1,4 +1,4 @@
-import { createSubscribable, Subscribable } from '@ricklove/utils-core';
+import { Subject } from 'rxjs';
 import { EntityBase } from '../core';
 import { defineComponent } from '../core';
 
@@ -12,7 +12,7 @@ export type EntityChooser = EntityBase & {
     maxChoiceCount: number;
     isMultiChoice: boolean;
     choices: Choice[];
-    choicesObserver: Subscribable<{ choices: Choice[]; event: ChoiceEvent }>;
+    choicesSubject: Subject<{ choices: Choice[]; event: ChoiceEvent }>;
   };
 };
 
@@ -21,17 +21,17 @@ export const EntityChooser = defineComponent<EntityChooser>()
     maxChoiceCount,
     isMultiChoice: false,
     choices: [],
-    choicesObserver: createSubscribable(),
+    choicesSubject: new Subject(),
   }))
   .attach({
     setChoices: (entity: EntityChooser, choices: Choice[], isMultiChoice?: boolean) => {
       const { chooser } = entity;
       chooser.choices = choices;
       chooser.isMultiChoice = isMultiChoice ?? false;
-      chooser.choicesObserver.onStateChange({ choices, event: `new` });
+      chooser.choicesSubject.next({ choices, event: `new` });
     },
     toggleChoice: (entity: EntityChooser, choice: Choice) => {
-      const { isMultiChoice, choices, choicesObserver: onChange } = entity.chooser;
+      const { isMultiChoice, choices, choicesSubject: onChange } = entity.chooser;
       const c = choices.find((x) => x.text === choice.text);
       if (!c) {
         return;
@@ -44,10 +44,10 @@ export const EntityChooser = defineComponent<EntityChooser>()
       }
 
       c.active = !c.active;
-      onChange.onStateChange({ choices, event: `toggle` });
+      onChange.next({ choices, event: `toggle` });
     },
     submitChoices: (entity: EntityChooser) => {
-      const { choices, choicesObserver: onChange } = entity.chooser;
-      onChange.onStateChange({ choices, event: `done` });
+      const { choices, choicesSubject: onChange } = entity.chooser;
+      onChange.next({ choices, event: `done` });
     },
   });

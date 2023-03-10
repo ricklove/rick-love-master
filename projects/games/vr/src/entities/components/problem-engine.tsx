@@ -53,7 +53,7 @@ export const EntityProblemEngine = defineComponent<EntityProblemEngine>()
         entity.problemEngine._sub?.unsubscribe();
       }
       entity.problemEngine._chooser = chooser;
-      entity.problemEngine._sub = chooser.chooser.choicesObserver.subscribe((x) => {
+      entity.problemEngine._sub = chooser.chooser.choicesSubject.subscribe((x) => {
         entity.problemEngine.choicesObserver.onStateChange(x);
       });
     },

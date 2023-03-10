@@ -69,9 +69,9 @@ export const defineComponent = <TEntityWithComponent extends Record<string, unkn
       args: TAllArgs,
     ): SimplifyFields<TBefore & TAllComponents> => {
       const e = entity as unknown as TAllComponents;
-      if (e[name]) {
-        return entity as TBefore & TAllComponents;
-      }
+      // if (e[name]) {
+      //   return entity as TBefore & TAllComponents;
+      // }
       e[name] = createComponent(args, e as TEntityWithComponent);
 
       // call inner
@@ -102,6 +102,13 @@ export const defineComponent = <TEntityWithComponent extends Record<string, unkn
   cf.with.bind(cf);
   return cf;
 };
+
+export const cloneComponent =
+  <TEntityWithComponent extends Record<string, unknown>>() =>
+  <TClone>(component: TClone) => {
+    const t = defineComponent<TEntityWithComponent>();
+    return { ...component } as TClone & typeof t;
+  };
 
 let nextEntityId = 0;
 export const defineEntity = <TEntity>() => ({

@@ -3,7 +3,6 @@ import { Triplet, useBox } from '@react-three/cannon';
 import { useFrame } from '@react-three/fiber';
 import { Matrix4, Mesh, Quaternion, Vector3 } from 'three';
 import { calculateRotationMatrix } from '../../gestures/helpers';
-import { logger } from '../../utils/logger';
 import { defineComponent, EntityBase } from '../core';
 import { SelectorMode } from './selectable';
 import { EntityRaycastSelector } from './selectable-raycast-selector';
@@ -43,15 +42,6 @@ export const EntityRaycastSelectorColliderComponent = ({
       args: size,
       type: `Static`,
       isTrigger: true,
-      onCollide: (e) => {
-        logger.log(`r hit`, { target: e.target.userData, body: e.body.userData, op: e.op });
-
-        const t = entity.selector.targets?.find((t) => t.selectable.target === e.body);
-        if (!t) {
-          return;
-        }
-        logger.log(`r hit`, { name: t.name, key: t.key });
-      },
       position: [0, 0, 0],
       userData: {
         key: entity.key,

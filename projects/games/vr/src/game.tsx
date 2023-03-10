@@ -7,13 +7,13 @@ import { EntityForce, EntityForceImpulseUp } from './entities/components/force';
 import { EntityGravity } from './entities/components/gravity';
 import { EntityAdjustToGround, EntityGround } from './entities/components/ground';
 import { EntityGroundView } from './entities/components/ground-view';
+import { EntityPhysicsViewSphere } from './entities/components/physics-view-sphere';
 import { EntityPlayer } from './entities/components/player';
 import { EntityProblemEngine } from './entities/components/problem-engine';
 import { EntitySelectable, EntitySelector } from './entities/components/selectable';
 import { EntityRaycastSelector } from './entities/components/selectable-raycast-selector';
 import { EntityRaycastSelectorCollider } from './entities/components/selectable-raycast-selector-collider';
-import { EntityRaycastSelectorThree } from './entities/components/selectable-raycast-selector-three';
-import { EntitySphereView } from './entities/components/sphere-view';
+import { EntityBase } from './entities/core';
 import { Entity, World } from './entities/entity';
 import { Gestures } from './gestures/gestures';
 
@@ -35,7 +35,8 @@ const raycastSelectorLeft = Entity.create(`raycastSelectorLeft`)
 const raycastSelectorRight = Entity.create(`raycastSelectorRight`)
   .addComponent(EntitySelector, {})
   .addComponent(EntityRaycastSelector, {})
-  .addComponent(EntityRaycastSelectorThree, {})
+  .addComponent(EntityRaycastSelectorCollider, {})
+  // .addComponent(EntityRaycastSelectorThree, {})
   .build();
 
 // TODO: Gesture component?
@@ -98,10 +99,10 @@ const ground = Entity.create(`ground`)
 const balls = [...new Array(100)].map(() => {
   const radius = 3 * Math.random();
   const ball = Entity.create(`ball`)
-    .addComponent(EntitySphereView, {
+    .addComponent(EntityPhysicsViewSphere, {
       mass: 1,
       radius,
-      color: 0xffffff * Math.random(),
+      debugColor: 0xffffff * Math.random(),
       startPosition: [50 - 100 * Math.random(), 100 + 100 * Math.random(), 50 - 100 * Math.random()],
     })
     .addComponent(EntitySelectable, {})
@@ -109,7 +110,7 @@ const balls = [...new Array(100)].map(() => {
     .addComponent(EntityForceImpulseUp, {
       args: { strength: 10 },
       condition: (e: EntitySelectable) =>
-        e.selectable.observeStateChange.pipe(
+        e.selectable.stateSubject.pipe(
           filter((x) => x.event === `downStart` || x.event === `downEnd`),
           map((x) => x.event === `downStart`),
         ),
@@ -120,6 +121,10 @@ const balls = [...new Array(100)].map(() => {
     // .addComponent(EntityGravity, {})
     .build();
 
+  //ball.active = false;
+  ball.physics.collideSubject.subscribe((x) => {
+    EntitySelectable.handleCollideEvent(x.entity as EntityBase as EntitySelectable, x.event);
+  });
   return ball;
 });
 
@@ -206,9 +211,9 @@ export const WorldContainer = ({}: {}) => {
         EntityAdjustToGround.adjustToGround(e as EntityAdjustToGround, ground);
       }
 
-      if (e.raycastSelectorThree && e.selector?.mode !== `none`) {
-        EntityRaycastSelectorThree.raycast(e as EntityRaycastSelectorThree);
-      }
+      // if (e.raycastSelectorThree && e.selector?.mode !== `none`) {
+      //   EntityRaycastSelectorThree.raycast(e as EntityRaycastSelectorThree);
+      // }
       // if (e.raycastSelectorPhysics && e.raycastSelector?.mode !== `none`) {
       //   EntityRaycastSelectorPhysics.raycast(e as EntityRaycastSelectorPhysics);
       // }

@@ -1,6 +1,6 @@
 import { CollideBeginEvent, CollideEndEvent, CollideEvent } from '@react-three/cannon';
 import { Subject } from 'rxjs';
-import { Object3D, Vector3 } from 'three';
+import { Vector3 } from 'three';
 import { logger } from '../../utils/logger';
 import { defineComponent, EntityBase } from '../core';
 
@@ -9,16 +9,13 @@ export type SelectionEvent = `hoverStart` | `hoverContinue` | `hoverEnd` | `down
 export type EntitySelectable = EntityBase & {
   selectable: {
     state: SelectionState;
-    hoverCount: number;
-    downCount: number;
-    observeStateChange: Subject<{
+    stateSubject: Subject<{
       entity: EntitySelectable;
       event: SelectionEvent;
     }>;
-    target?: Object3D;
-    targetInstanceId?: number;
-    targetPhysicsObject?: unknown;
-    radius?: number;
+    hoverCount: number;
+    downCount: number;
+
     /** Selectors that are targetting this selectable */
     selectors?: EntitySelector[];
   };
@@ -37,18 +34,16 @@ export type EntitySelector = EntityBase & {
 };
 
 export const EntitySelectable = defineComponent<EntitySelectable>()
-  .with(`selectable`, ({ target, radius }: { target?: Object3D; radius?: number }) => {
+  .with(`selectable`, ({}: {}) => {
     return {
       state: `inactive`,
       hoverCount: 0,
       downCount: 0,
-      observeStateChange: new Subject(),
-      target,
-      radius,
+      stateSubject: new Subject(),
     };
   })
   .attach({
-    _getCollideSelectorMode: (entity: EntitySelectable, e: CollideBeginEvent | CollideEndEvent | CollideEvent) => {
+    handleCollideEvent: (entity: EntitySelectable, e: CollideEvent | CollideBeginEvent | CollideEndEvent) => {
       const selectorKey = e.body.userData.key as undefined | string;
       if (!selectorKey) {
         return;
@@ -58,40 +53,13 @@ export const EntitySelectable = defineComponent<EntitySelectable>()
         return;
       }
       const mode = selector.selector.mode;
-      return mode;
-    },
-    onCollideBegin: (entity: EntitySelectable, e: CollideBeginEvent) => {
-      const mode = EntitySelectable._getCollideSelectorMode(entity, e);
-      if (mode === `hover`) {
-        EntitySelectable.hoverStart(entity);
+
+      const Suffix = e.type === `collideBegin` ? `Start` : e.type === `collideEnd` ? `End` : `Continue`;
+      if (!mode || mode === `none`) {
         return;
       }
-      if (mode === `down`) {
-        EntitySelectable.downStart(entity);
-        return;
-      }
-    },
-    onCollide: (entity: EntitySelectable, e: CollideEvent) => {
-      const mode = EntitySelectable._getCollideSelectorMode(entity, e);
-      if (mode === `hover`) {
-        EntitySelectable.hoverContinue(entity);
-        return;
-      }
-      if (mode === `down`) {
-        EntitySelectable.downContinue(entity);
-        return;
-      }
-    },
-    onCollideEnd: (entity: EntitySelectable, e: CollideEndEvent) => {
-      const mode = EntitySelectable._getCollideSelectorMode(entity, e);
-      if (mode === `hover`) {
-        EntitySelectable.hoverEnd(entity);
-        return;
-      }
-      if (mode === `down`) {
-        EntitySelectable.downEnd(entity);
-        return;
-      }
+      const name = `${mode}${Suffix}` as const;
+      EntitySelectable[name](entity);
     },
     hoverStart: (entity: EntitySelectable) => {
       const s = entity.selectable;
@@ -100,13 +68,13 @@ export const EntitySelectable = defineComponent<EntitySelectable>()
       s.hoverCount++;
       if (s.hoverCount === 1 && s.state === `inactive`) {
         s.state = `hover`;
-        s.observeStateChange.next({ entity, event: `hoverStart` });
+        s.stateSubject.next({ entity, event: `hoverStart` });
       }
     },
     hoverContinue: (entity: EntitySelectable) => {
       const s = entity.selectable;
       logger.log(`hoverContinue`, { name: entity.name, key: entity.key, s: s.state });
-      s.observeStateChange.next({ entity, event: `hoverContinue` });
+      s.stateSubject.next({ entity, event: `hoverContinue` });
     },
     hoverEnd: (entity: EntitySelectable) => {
       const s = entity.selectable;
@@ -115,7 +83,7 @@ export const EntitySelectable = defineComponent<EntitySelectable>()
       s.hoverCount--;
       if (s.hoverCount === 0 && s.state === `hover`) {
         s.state = `inactive`;
-        s.observeStateChange.next({ entity, event: `hoverEnd` });
+        s.stateSubject.next({ entity, event: `hoverEnd` });
       }
     },
     downStart: (entity: EntitySelectable) => {
@@ -125,13 +93,13 @@ export const EntitySelectable = defineComponent<EntitySelectable>()
       s.downCount++;
       if (s.downCount === 1 && s.state !== `down`) {
         s.state = `down`;
-        s.observeStateChange.next({ entity, event: `downStart` });
+        s.stateSubject.next({ entity, event: `downStart` });
       }
     },
     downContinue: (entity: EntitySelectable) => {
       const s = entity.selectable;
       logger.log(`downStart`, { name: entity.name, key: entity.key, s: s.state });
-      s.observeStateChange.next({ entity, event: `downContinue` });
+      s.stateSubject.next({ entity, event: `downContinue` });
     },
     downEnd: (entity: EntitySelectable) => {
       const s = entity.selectable;
@@ -144,7 +112,7 @@ export const EntitySelectable = defineComponent<EntitySelectable>()
         } else {
           s.state = `inactive`;
         }
-        s.observeStateChange.next({ entity, event: `downEnd` });
+        s.stateSubject.next({ entity, event: `downEnd` });
       }
     },
   });
