@@ -62,7 +62,7 @@ const EntityPhysicsViewSphereBatchComponent = ({ entities }: { entities: EntityP
         x.transform.position.set(...p);
       });
       x.physics.api = api.at(i);
-      x.physics.uuid = api.at(i).uuid;
+      x.physics.uuid = api.at(i).uuid ?? ``;
     });
   }, [!ref.current?.instanceColor, count]);
 

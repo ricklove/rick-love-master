@@ -148,39 +148,6 @@ index 888cc2121ab5a3588ef126592f11b92be9b0fa14..1289fdeb924396592729729983a66e6e
        body: refs[bodyA],
        op: 'event',
        target: refs[bodyB],
-diff --git a/dist/physics-context.d.ts b/dist/physics-context.d.ts
-index 634f048057e80152a215604b194cb4595848b563..3ffd351924cc117ed5804f505d4276fb1303a8fa 100644
---- a/dist/physics-context.d.ts
-+++ b/dist/physics-context.d.ts
-@@ -1,7 +1,27 @@
- /// <reference types="react" />
- import type { CannonWorkerAPI, CollideBeginEvent, CollideEndEvent, CollideEvent, RayhitEvent, Refs, Subscriptions } from '@pmndrs/cannon-worker-api';
- import type { Vector3 } from 'three';
--declare type CannonEvent = CollideBeginEvent | CollideEndEvent | CollideEvent | RayhitEvent;
-+export declare type CollideEventWithData = CollideEvent & {
-+    data: {
-+        bi: string;
-+        bj: string;
-+        body: string;
-+        target: string;
-+    };
-+};
-+export declare type CollideBeginEventWithData = CollideBeginEvent & {
-+    data: {
-+        body: string;
-+        target: string;
-+    };
-+};
-+export declare type CollideEndEventWithData = CollideEndEvent & {
-+    data: {
-+        body: string;
-+        target: string;
-+    };
-+};
-+declare type CannonEvent = CollideBeginEventWithData | CollideEndEventWithData | CollideEventWithData | RayhitEvent;
- declare type CallbackByType<T extends {
-     type: string;
- }> = {
 diff --git a/src/hooks.ts b/src/hooks.ts
 index 7acaba89ff5d55bccd2c5f761ba560c6e8074f11..25cff01d24e0a9e30c35a94b7776275e06ea5e53 100644
 --- a/src/hooks.ts
@@ -201,40 +168,6 @@ index 7acaba89ff5d55bccd2c5f761ba560c6e8074f11..25cff01d24e0a9e30c35a94b7776275e
          velocity: makeVec('velocity', index),
          wakeUp() {
            const uuid = getUUID(ref, index)
-diff --git a/src/physics-context.ts b/src/physics-context.ts
-index eaa65b9cd74a0b0e389318ae08ba7580adf4d486..5f033de106358cb9af2ae4b92d759ea7b63da7d5 100644
---- a/src/physics-context.ts
-+++ b/src/physics-context.ts
-@@ -10,7 +10,28 @@ import type {
- import { createContext, useContext } from 'react'
- import type { Vector3 } from 'three'
- 
--type CannonEvent = CollideBeginEvent | CollideEndEvent | CollideEvent | RayhitEvent
-+export type CollideEventWithData = CollideEvent & {
-+  data: {
-+    bi: string
-+    bj: string
-+    body: string
-+    target: string
-+  }
-+}
-+export type CollideBeginEventWithData = CollideBeginEvent & {
-+  data: {
-+    body: string
-+    target: string
-+  }
-+}
-+export type CollideEndEventWithData = CollideEndEvent & {
-+  data: {
-+    body: string
-+    target: string
-+  }
-+}
-+
-+type CannonEvent = CollideBeginEventWithData | CollideEndEventWithData | CollideEventWithData | RayhitEvent
- type CallbackByType<T extends { type: string }> = {
-   [K in T['type']]?: T extends { type: K } ? (e: T) => void : never
- }
 diff --git a/src/physics-provider.tsx b/src/physics-provider.tsx
 index c5ac21c1ceb8f5dc547d82bb4540ae137d239258..50887bbe668d8142d0e43ff41ceb648de27bef93 100644
 --- a/src/physics-provider.tsx
