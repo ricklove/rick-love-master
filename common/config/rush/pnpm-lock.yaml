@@ -2,7 +2,7 @@ lockfileVersion: 5.4
 
 patchedDependencies:
   '@react-three/cannon@6.5.2':
-    hash: vv3763qr5joan6bqty7rwzm3ju
+    hash: bijcwmvm66nz23y3c7pbaebvs4
     path: patches/@react-three__cannon@6.5.2.patch
   '@pmndrs/cannon-worker-api@2.3.2':
     hash: jpnpvp3tuziudpoz7erxdptpce
@@ -1062,7 +1062,7 @@ importers:
       three: 0.149.0
       three-stdlib: 2.21.1
     dependencies:
-      '@react-three/cannon': 6.5.2_vv3763qr5joan6bqty7rwzm3ju_27iurrnctcpvpfynfer6qw7uxe
+      '@react-three/cannon': 6.5.2_bijcwmvm66nz23y3c7pbaebvs4_27iurrnctcpvpfynfer6qw7uxe
       '@react-three/drei': 9.13.2_ctvyxywqwxm6spaialajtm5yf4
       '@react-three/fiber': 8.0.27_xor7byvqlg4baqj6ymfbcmaax4
       '@react-three/flex': 1.0.1_27iurrnctcpvpfynfer6qw7uxe
@@ -3210,7 +3210,7 @@ packages:
     resolution: {integrity: sha512-yBcyfKUeZv9wf/ZFrQszvhSPuDx6Py6yMJzpMnS+zxcZmhXPeOCKZSHwqrUz1WxvuRckUhlgb7eNI/x5e1e8CA==}
     dev: false
 
-  /@react-three/cannon/6.5.2_vv3763qr5joan6bqty7rwzm3ju_27iurrnctcpvpfynfer6qw7uxe:
+  /@react-three/cannon/6.5.2_bijcwmvm66nz23y3c7pbaebvs4_27iurrnctcpvpfynfer6qw7uxe:
     resolution: {integrity: sha512-d7qH2XMVtHRkCaMUWpLkWSD9JPiE570gy8LoP7WBw+Ui+hI9ZiFx9HDaX5+Y6wzbGJd1WvELWaG9O0cOtk2rmw==}
     peerDependencies:
       '@react-three/fiber': '>=8'

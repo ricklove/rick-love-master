@@ -96,14 +96,15 @@ const ground = Entity.create(`ground`)
 //   })
 //   .build();
 
-const balls = [...new Array(100)].map(() => {
+const balls = [...new Array(1)].map(() => {
   const radius = 3 * Math.random();
   const ball = Entity.create(`ball`)
     .addComponent(EntityPhysicsViewSphere, {
       mass: 1,
       radius,
       debugColor: 0xffffff * Math.random(),
-      startPosition: [50 - 100 * Math.random(), 100 + 100 * Math.random(), 50 - 100 * Math.random()],
+      startPosition: [5 - 10 * Math.random(), 10 + 10 * Math.random(), 5 - 10 * Math.random()],
+      // startPosition: [50 - 100 * Math.random(), 100 + 100 * Math.random(), 50 - 100 * Math.random()],
     })
     .addComponent(EntitySelectable, {})
     .addComponent(EntityForce, {})

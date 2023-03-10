@@ -3,20 +3,23 @@ import { Triplet, useBox } from '@react-three/cannon';
 import { useFrame } from '@react-three/fiber';
 import { Matrix4, Mesh, Quaternion, Vector3 } from 'three';
 import { calculateRotationMatrix } from '../../gestures/helpers';
-import { defineComponent, EntityBase } from '../core';
+import { useIsomorphicLayoutEffect } from '../../utils/layoutEffect';
+import { cloneComponent, EntityBase } from '../core';
+import { EntityPhysicsView } from './physics-view';
 import { SelectorMode } from './selectable';
 import { EntityRaycastSelector } from './selectable-raycast-selector';
 
-export type EntityRaycastSelectorCollider = EntityRaycastSelector & {
-  raycastSelectorCollider: {
-    // raycaster: Raycaster;
+export type EntityRaycastSelectorCollider = EntityRaycastSelector &
+  EntityPhysicsView & {
+    raycastSelectorCollider: {
+      // raycaster: Raycaster;
+    };
+    view: {
+      Component: (props: { entity: EntityBase }) => JSX.Element;
+    };
   };
-  view: {
-    Component: (props: { entity: EntityBase }) => JSX.Element;
-  };
-};
 
-export const EntityRaycastSelectorCollider = defineComponent<EntityRaycastSelectorCollider>()
+export const EntityRaycastSelectorCollider = cloneComponent<EntityRaycastSelectorCollider>()(EntityPhysicsView)
   .with(`raycastSelectorCollider`, () => {
     return {
       //raycaster: new Raycaster(),
@@ -47,6 +50,9 @@ export const EntityRaycastSelectorColliderComponent = ({
         key: entity.key,
         name: entity.name,
       },
+      onCollideBegin: (e) => EntityPhysicsView.collide(entity, e),
+      onCollide: (e) => EntityPhysicsView.collide(entity, e),
+      onCollideEnd: (e) => EntityPhysicsView.collide(entity, e),
     }),
     useRef<Mesh>(null),
   );
@@ -64,6 +70,10 @@ export const EntityRaycastSelectorColliderComponent = ({
   });
 
   // logger.log(`EntityRaycastSelectorColliderComponent RENDER`, {});
+
+  useIsomorphicLayoutEffect(() => {
+    EntityPhysicsView.register(entity, apiTrigger);
+  }, []);
 
   useFrame(() => {
     if (!refTarget.current) {

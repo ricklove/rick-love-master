@@ -1,12 +1,12 @@
 diff --git a/dist/debug/index.js b/dist/debug/index.js
-index 888cc2121ab5a3588ef126592f11b92be9b0fa14..1289fdeb924396592729729983a66e6ee7802e18 100644
+index 888cc2121ab5a3588ef126592f11b92be9b0fa14..5142077ebd3fb3d62d938ffa0549e3582fa9bee0 100644
 --- a/dist/debug/index.js
 +++ b/dist/debug/index.js
 @@ -11553,6 +11553,7 @@ function useBody(type, fn, argsFn, fwdRef, deps) {
          sleepSpeedLimit: makeAtomic('sleepSpeedLimit', index),
          sleepTimeLimit: makeAtomic('sleepTimeLimit', index),
          userData: makeAtomic('userData', index),
-+        uuid: getUUID(ref, index),
++        uuid: () => getUUID(ref, index),
          velocity: makeVec('velocity', index),
          wakeUp() {
            const uuid = getUUID(ref, index);
@@ -68,26 +68,26 @@ index 888cc2121ab5a3588ef126592f11b92be9b0fa14..1289fdeb924396592729729983a66e6e
        op: 'event',
        target: refs[bodyB],
 diff --git a/dist/hooks.d.ts b/dist/hooks.d.ts
-index 889f8b7fa6a2720b471ffa673ea809193466fc21..e100943c50092296a5fb5734a377ee77db2eb161 100644
+index 889f8b7fa6a2720b471ffa673ea809193466fc21..4bb0795973a75babfbdda7ce9970143f8772fe92 100644
 --- a/dist/hooks.d.ts
 +++ b/dist/hooks.d.ts
 @@ -30,6 +30,7 @@ export declare type WorkerApi = {
      rotation: VectorApi;
      scaleOverride: (scale: Triplet) => void;
      sleep: () => void;
-+    uuid: string | null;
++    uuid: () => string | null;
      wakeUp: () => void;
  };
  export interface PublicApi extends WorkerApi {
 diff --git a/dist/index.js b/dist/index.js
-index 888cc2121ab5a3588ef126592f11b92be9b0fa14..1289fdeb924396592729729983a66e6ee7802e18 100644
+index 888cc2121ab5a3588ef126592f11b92be9b0fa14..5142077ebd3fb3d62d938ffa0549e3582fa9bee0 100644
 --- a/dist/index.js
 +++ b/dist/index.js
 @@ -11553,6 +11553,7 @@ function useBody(type, fn, argsFn, fwdRef, deps) {
          sleepSpeedLimit: makeAtomic('sleepSpeedLimit', index),
          sleepTimeLimit: makeAtomic('sleepTimeLimit', index),
          userData: makeAtomic('userData', index),
-+        uuid: getUUID(ref, index),
++        uuid: () => getUUID(ref, index),
          velocity: makeVec('velocity', index),
          wakeUp() {
            const uuid = getUUID(ref, index);
@@ -149,14 +149,14 @@ index 888cc2121ab5a3588ef126592f11b92be9b0fa14..1289fdeb924396592729729983a66e6e
        op: 'event',
        target: refs[bodyB],
 diff --git a/src/hooks.ts b/src/hooks.ts
-index 7acaba89ff5d55bccd2c5f761ba560c6e8074f11..25cff01d24e0a9e30c35a94b7776275e06ea5e53 100644
+index 7acaba89ff5d55bccd2c5f761ba560c6e8074f11..0fed62df100b58b0db5cb40761700af14bf25cb9 100644
 --- a/src/hooks.ts
 +++ b/src/hooks.ts
 @@ -77,6 +77,7 @@ export type WorkerApi = {
    rotation: VectorApi
    scaleOverride: (scale: Triplet) => void
    sleep: () => void
-+  uuid: string | null
++  uuid: () => string | null
    wakeUp: () => void
  }
  
@@ -164,7 +164,7 @@ index 7acaba89ff5d55bccd2c5f761ba560c6e8074f11..25cff01d24e0a9e30c35a94b7776275e
          sleepSpeedLimit: makeAtomic('sleepSpeedLimit', index),
          sleepTimeLimit: makeAtomic('sleepTimeLimit', index),
          userData: makeAtomic('userData', index),
-+        uuid: getUUID(ref, index),
++        uuid: () => getUUID(ref, index),
          velocity: makeVec('velocity', index),
          wakeUp() {
            const uuid = getUUID(ref, index)
