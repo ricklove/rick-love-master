@@ -10,6 +10,7 @@ export type EntityPhysicsView = EntityBase & {
     position: Vector3;
   };
   physics: {
+    uuid: string;
     api: WorkerApi;
     mass: number;
     collideSubject: Subject<{ entity: EntityPhysicsView; event: CollideBeginEvent | CollideEndEvent | CollideEvent }>;
@@ -31,6 +32,7 @@ export const EntityPhysicsView = defineComponent<EntityPhysicsView>()
     collideSubject: new Subject(),
     // Will be created by the component
     api: undefined as unknown as WorkerApi,
+    uuid: ``,
   }))
   .with(`view`, ({ debugColor }: { debugColor?: number }) => ({
     debugColor,

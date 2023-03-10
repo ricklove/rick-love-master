@@ -23,6 +23,8 @@
         "jointhejourney:deploy": "cd projects/church/join-the-journey/join-the-journey-site && npm run deploy",
         "bible:dev": "cd projects/bible/bible-site && npm run dev",
         "bible:deploy": "cd projects/bible/bible-site && npm run deploy",
+        "___ utils": "",
+        "patch": "rush-pnpm patch",
         "---": ""
     }
 }
