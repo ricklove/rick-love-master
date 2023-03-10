@@ -1,9 +1,9 @@
 import React, { useMemo, useState } from 'react';
-import { Physics } from '@react-three/cannon';
+import { Physics, Triplet } from '@react-three/cannon';
 import { useFrame } from '@react-three/fiber';
-import { filter, map } from 'rxjs';
+import { BehaviorSubject, filter, map } from 'rxjs';
 import { Vector3 } from 'three';
-import { EntityForce, EntityForceImpulseUp } from './entities/components/force';
+import { EntityForce } from './entities/components/force';
 import { EntityGravity } from './entities/components/gravity';
 import { EntityAdjustToGround, EntityGround } from './entities/components/ground';
 import { EntityGroundView } from './entities/components/ground-view';
@@ -13,9 +13,9 @@ import { EntityProblemEngine } from './entities/components/problem-engine';
 import { EntitySelectable, EntitySelector } from './entities/components/selectable';
 import { EntityRaycastSelector } from './entities/components/selectable-raycast-selector';
 import { EntityRaycastSelectorCollider } from './entities/components/selectable-raycast-selector-collider';
-import { EntityBase } from './entities/core';
 import { Entity, World } from './entities/entity';
 import { Gestures } from './gestures/gestures';
+import { logger } from './utils/logger';
 
 const problemEngine = Entity.create(`problemEngine`).addComponent(EntityProblemEngine, {}).build();
 
@@ -96,36 +96,103 @@ const ground = Entity.create(`ground`)
 //   })
 //   .build();
 
-const balls = [...new Array(1)].map(() => {
+const balls = [...new Array(100)].map(() => {
   const radius = 3 * Math.random();
+  const getRandomStartposition = () =>
+    [50 - 100 * Math.random(), 100 + 100 * Math.random(), 50 - 100 * Math.random()] as Triplet;
+
   const ball = Entity.create(`ball`)
     .addComponent(EntityPhysicsViewSphere, {
       mass: 1,
       radius,
       debugColor: 0xffffff * Math.random(),
-      startPosition: [5 - 10 * Math.random(), 10 + 10 * Math.random(), 5 - 10 * Math.random()],
-      // startPosition: [50 - 100 * Math.random(), 100 + 100 * Math.random(), 50 - 100 * Math.random()],
+      startPosition: getRandomStartposition(),
     })
     .addComponent(EntitySelectable, {})
     .addComponent(EntityForce, {})
-    .addComponent(EntityForceImpulseUp, {
-      args: { strength: 10 },
-      condition: (e: EntitySelectable) =>
-        e.selectable.stateSubject.pipe(
-          filter((x) => x.event === `downStart` || x.event === `downEnd`),
-          map((x) => x.event === `downStart`),
-        ),
-    })
+    // .addComponent(EntityForceImpulseUp, {
+    //   args: { strength: 10 },
+    //   condition: (e: EntitySelectable) =>
+    //     e.selectable.stateSubject.pipe(
+    //       filter((x) => x.event === `downStart` || x.event === `downEnd`),
+    //       map((x) => x.event === `downStart`),
+    //     ),
+    // })
     // .addComponent(EntityAdjustToGround, {
     //   minGroundHeight: radius,
     // })
-    // .addComponent(EntityGravity, {})
+    .extend((entity) => {
+      // physics to selection
+      EntitySelectable.subscribeToEvent(
+        entity.physics.collideSubject.pipe(
+          map((x) => {
+            if (x.entity.name !== x.other?.name) {
+              logger.log(`phyToSub`, { e: x.entity.name, o: x.other?.name });
+            }
+            return x;
+          }),
+          filter((x) => !!(x.entity as Entity).selectable && !!(x.other as Entity)?.selector),
+          map((x) => ({
+            sequence: x.sequence,
+            selectable: x.entity as Entity as EntitySelectable,
+            selector: x.other as Entity as EntitySelector,
+          })),
+        ),
+      );
+
+      // ball fell
+      EntityForce.register(entity, new BehaviorSubject(true), (_, api, position) => {
+        const [x, y, z] = position;
+        if (y > -10) {
+          return;
+        }
+        // Redrop
+        api.velocity.set(0, 0, 0);
+        api.position.set(...getRandomStartposition());
+      });
+
+      // // ball collisions
+      // EntityForce.register(
+      //   entity,
+      //   entity.physics.collideSubject.pipe(
+      //     filter((x) => x.entity.name === x.other?.name),
+      //     map((x) => x.sequence === `begin`),
+      //   ),
+      //   (_, api, position) => {
+      //     // shoot up small
+      //     const strength = 1;
+      //     api.applyImpulse([0, strength, 0], position);
+      //   },
+      // );
+
+      // Selection effects
+      EntityForce.register(
+        entity,
+        entity.selectable.stateSubject.pipe(
+          filter((x) => x.mode === `hover`),
+          map((x) => x.sequence === `continue`),
+        ),
+        (_, api, position) => {
+          // vibrate
+          const strength = 0.1;
+          api.applyImpulse([strength * Math.random(), strength * Math.random(), strength * Math.random()], position);
+        },
+      );
+      EntityForce.register(
+        entity,
+        entity.selectable.stateSubject.pipe(
+          filter((x) => x.mode === `down`),
+          map((x) => x.sequence === `begin`),
+        ),
+        (_, api, position) => {
+          // shoot up
+          const strength = 10;
+          api.applyImpulse([0, strength, 0], position);
+        },
+      );
+    })
     .build();
 
-  //ball.active = false;
-  ball.physics.collideSubject.subscribe((x) => {
-    EntitySelectable.handleCollideEvent(x.entity as EntityBase as EntitySelectable, x.event);
-  });
   return ball;
 });
 

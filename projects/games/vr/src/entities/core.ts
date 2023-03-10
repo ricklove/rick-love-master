@@ -163,10 +163,15 @@ function addComponent<
   },
 >(this: TEntityFactory, component: TComponentFactory, args: ArgsOfComponentFactory<TComponentFactory>) {
   type TEntityBefore = EntityOfEntityFactory<TEntityFactory>;
-
+  type TEntityAfter = TEntityBefore & ComponentOfComponentFactory<TComponentFactory>;
+  const entityAfter = component.addComponent(this.entity, args) as TEntityAfter;
   const result = {
-    entity: component.addComponent(this.entity, args) as TEntityBefore & ComponentOfComponentFactory<TComponentFactory>,
+    entity: entityAfter,
     addComponent,
+    extend: (callback: (entity: TEntityAfter) => void) => {
+      callback(entityAfter);
+      return result;
+    },
     build,
   };
   result.addComponent.bind(result);

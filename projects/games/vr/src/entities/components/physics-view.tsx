@@ -15,6 +15,7 @@ export type EntityPhysicsView = EntityBase & {
     collideSubject: Subject<{
       entity: EntityPhysicsView;
       other?: EntityPhysicsView;
+      sequence: `begin` | `end` | `continue`;
       event: CollideBeginEvent | CollideEndEvent | CollideEvent;
     }>;
     mass: number;
@@ -55,23 +56,24 @@ export const EntityPhysicsView = defineComponent<EntityPhysicsView>()
       globalState.physicsViews[entity.physics.uuid] = entity;
     },
     collide: (entity: EntityPhysicsView, event: CollideBeginEvent | CollideEndEvent | CollideEvent) => {
-      const eReg = globalState.physicsViews[event.data.body];
-      const other = globalState.physicsViews[event.data.target];
-      logger.log(`collide`, {
-        e: { n: entity.name, k: entity.key },
-        r: { n: eReg?.name, k: eReg?.key },
-        o: { n: other?.name, k: other?.key },
-      });
-      logger.log(`enti uuid`, {
-        e: entity.physics.uuid,
-      });
-      logger.log(`body uuid`, {
-        b: event.data.body,
-      });
-      logger.log(`targ uuid`, {
-        t: event.data.target,
-      });
-      entity.physics.collideSubject.next({ entity, event, other });
+      const eReg = globalState.physicsViews[event.data.target];
+      const other = globalState.physicsViews[event.data.body];
+      const sequence = event.type === `collideBegin` ? `begin` : event.type === `collideEnd` ? `end` : `continue`;
+      // logger.log(`collide`, {
+      //   e: { n: entity.name, k: entity.key },
+      //   r: { n: eReg?.name, k: eReg?.key },
+      //   o: { n: other?.name, k: other?.key },
+      // });
+      // logger.log(`enti uuid`, {
+      //   e: entity.physics.uuid,
+      // });
+      // logger.log(`body uuid`, {
+      //   b: event.data.body,
+      // });
+      // logger.log(`targ uuid`, {
+      //   t: event.data.target,
+      // });
+      entity.physics.collideSubject.next({ entity, event, other, sequence });
     },
     // getEntityKey: (o:Object3D)=>{
     //   return `${o.uuid}${suffix}`;

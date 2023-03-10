@@ -1,5 +1,4 @@
-import { CollideBeginEvent, CollideEndEvent, CollideEvent } from '@react-three/cannon';
-import { Subject } from 'rxjs';
+import { Observable, Subject } from 'rxjs';
 import { Vector3 } from 'three';
 import { logger } from '../../utils/logger';
 import { defineComponent, EntityBase } from '../core';
@@ -12,6 +11,8 @@ export type EntitySelectable = EntityBase & {
     stateSubject: Subject<{
       entity: EntitySelectable;
       event: SelectionEvent;
+      mode: SelectorMode;
+      sequence: SelectorSequence;
     }>;
     hoverCount: number;
     downCount: number;
@@ -25,6 +26,7 @@ export type EntitySelectable = EntityBase & {
 };
 
 export type SelectorMode = `none` | `hover` | `down`;
+export type SelectorSequence = `begin` | `end` | `continue`;
 export type EntitySelector = EntityBase & {
   selector: {
     mode: SelectorMode;
@@ -43,23 +45,34 @@ export const EntitySelectable = defineComponent<EntitySelectable>()
     };
   })
   .attach({
-    handleCollideEvent: (entity: EntitySelectable, e: CollideEvent | CollideBeginEvent | CollideEndEvent) => {
-      const selectorKey = e.body.userData.key as undefined | string;
-      if (!selectorKey) {
-        return;
-      }
-      const selector = entity.selectable.selectors?.find((s) => s.key === selectorKey);
-      if (!selector) {
-        return;
-      }
+    subscribeToEvent: (
+      eventObservable: Observable<{
+        selectable: EntitySelectable;
+        selector: EntitySelector;
+        sequence: SelectorSequence;
+      }>,
+    ) => {
+      eventObservable.subscribe(EntitySelectable.handleEvent);
+    },
+    handleEvent: ({
+      selectable,
+      selector,
+      sequence,
+    }: {
+      selectable: EntitySelectable;
+      selector: EntitySelector;
+      sequence: SelectorSequence;
+    }) => {
+      const Suffix = sequence === `begin` ? `Start` : sequence === `end` ? `End` : `Continue`;
       const mode = selector.selector.mode;
 
-      const Suffix = e.type === `collideBegin` ? `Start` : e.type === `collideEnd` ? `End` : `Continue`;
+      logger.log(`handleEvent`, { mode, Suffix, n: selectable.name, k: selectable.key });
+
       if (!mode || mode === `none`) {
         return;
       }
       const name = `${mode}${Suffix}` as const;
-      EntitySelectable[name](entity);
+      EntitySelectable[name](selectable);
     },
     hoverStart: (entity: EntitySelectable) => {
       const s = entity.selectable;
@@ -68,13 +81,13 @@ export const EntitySelectable = defineComponent<EntitySelectable>()
       s.hoverCount++;
       if (s.hoverCount === 1 && s.state === `inactive`) {
         s.state = `hover`;
-        s.stateSubject.next({ entity, event: `hoverStart` });
+        s.stateSubject.next({ entity, event: `hoverStart`, mode: `hover`, sequence: `begin` });
       }
     },
     hoverContinue: (entity: EntitySelectable) => {
       const s = entity.selectable;
       logger.log(`hoverContinue`, { name: entity.name, key: entity.key, s: s.state });
-      s.stateSubject.next({ entity, event: `hoverContinue` });
+      s.stateSubject.next({ entity, event: `hoverContinue`, mode: `hover`, sequence: `continue` });
     },
     hoverEnd: (entity: EntitySelectable) => {
       const s = entity.selectable;
@@ -83,7 +96,7 @@ export const EntitySelectable = defineComponent<EntitySelectable>()
       s.hoverCount--;
       if (s.hoverCount === 0 && s.state === `hover`) {
         s.state = `inactive`;
-        s.stateSubject.next({ entity, event: `hoverEnd` });
+        s.stateSubject.next({ entity, event: `hoverEnd`, mode: `hover`, sequence: `end` });
       }
     },
     downStart: (entity: EntitySelectable) => {
@@ -93,13 +106,13 @@ export const EntitySelectable = defineComponent<EntitySelectable>()
       s.downCount++;
       if (s.downCount === 1 && s.state !== `down`) {
         s.state = `down`;
-        s.stateSubject.next({ entity, event: `downStart` });
+        s.stateSubject.next({ entity, event: `downStart`, mode: `down`, sequence: `begin` });
       }
     },
     downContinue: (entity: EntitySelectable) => {
       const s = entity.selectable;
       logger.log(`downStart`, { name: entity.name, key: entity.key, s: s.state });
-      s.stateSubject.next({ entity, event: `downContinue` });
+      s.stateSubject.next({ entity, event: `downContinue`, mode: `down`, sequence: `continue` });
     },
     downEnd: (entity: EntitySelectable) => {
       const s = entity.selectable;
@@ -112,7 +125,7 @@ export const EntitySelectable = defineComponent<EntitySelectable>()
         } else {
           s.state = `inactive`;
         }
-        s.stateSubject.next({ entity, event: `downEnd` });
+        s.stateSubject.next({ entity, event: `downEnd`, mode: `down`, sequence: `end` });
       }
     },
   });

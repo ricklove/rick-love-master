@@ -1,4 +1,4 @@
-import { WorkerApi } from '@react-three/cannon';
+import { Triplet, WorkerApi } from '@react-three/cannon';
 import { Observable } from 'rxjs';
 import { Vector3 } from 'three';
 import { defineComponent } from '../core';
@@ -13,7 +13,7 @@ export type EntityForce = EntitySelectable & {
   };
   force: {
     isActiveEffect: boolean[];
-    activeEffects: ((entity: EntityForce, api: WorkerApi) => void)[];
+    activeEffects: ((entity: EntityForce, api: WorkerApi, position: Triplet) => void)[];
   };
 };
 export const EntityForce = defineComponent<EntityForce>()
@@ -25,7 +25,7 @@ export const EntityForce = defineComponent<EntityForce>()
     register: (
       entity: EntityForce,
       condition: Observable<boolean>,
-      effect: (entity: EntityForce, api: WorkerApi) => void,
+      effect: (entity: EntityForce, api: WorkerApi, position: Triplet) => void,
     ) => {
       const { activeEffects, isActiveEffect } = entity.force;
       const id = isActiveEffect.length;
@@ -48,7 +48,8 @@ export const EntityForce = defineComponent<EntityForce>()
     applyForces: (entity: EntityForce) => {
       const { api } = entity.physics;
       const { activeEffects } = entity.force;
-      activeEffects.forEach((x) => x(entity, api));
+      const position = entity.transform.position.toArray();
+      activeEffects.forEach((x) => x(entity, api, position));
     },
   });
 
