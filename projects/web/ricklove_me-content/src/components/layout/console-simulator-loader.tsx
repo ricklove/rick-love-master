@@ -26,6 +26,7 @@ export const ConsoleSimulatorLoader = ({ initialPrompt }: { initialPrompt: strin
       {!ConsoleSimulatorComp && (
         <ConsoleSimulatorPlaceholder
           initialPrompt={`${initialPrompt}> ${loading ? `Loading...` : ``}`}
+          // eslint-disable-next-line @typescript-eslint/no-misused-promises
           onClick={() => load()}
         />
       )}
