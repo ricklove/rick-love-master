@@ -1,5 +1,10 @@
 lockfileVersion: 5.4
 
+patchedDependencies:
+  '@react-three/cannon@6.5.2':
+    hash: udrt33t6bfornmju4scjeroicm
+    path: patches/@react-three__cannon@6.5.2.patch
+
 importers:
 
   .:
@@ -1054,7 +1059,7 @@ importers:
       three: 0.149.0
       three-stdlib: 2.21.1
     dependencies:
-      '@react-three/cannon': 6.5.2_27iurrnctcpvpfynfer6qw7uxe
+      '@react-three/cannon': 6.5.2_udrt33t6bfornmju4scjeroicm_27iurrnctcpvpfynfer6qw7uxe
       '@react-three/drei': 9.13.2_ctvyxywqwxm6spaialajtm5yf4
       '@react-three/fiber': 8.0.27_xor7byvqlg4baqj6ymfbcmaax4
       '@react-three/flex': 1.0.1_27iurrnctcpvpfynfer6qw7uxe
@@ -3201,7 +3206,7 @@ packages:
     resolution: {integrity: sha512-yBcyfKUeZv9wf/ZFrQszvhSPuDx6Py6yMJzpMnS+zxcZmhXPeOCKZSHwqrUz1WxvuRckUhlgb7eNI/x5e1e8CA==}
     dev: false
 
-  /@react-three/cannon/6.5.2_27iurrnctcpvpfynfer6qw7uxe:
+  /@react-three/cannon/6.5.2_udrt33t6bfornmju4scjeroicm_27iurrnctcpvpfynfer6qw7uxe:
     resolution: {integrity: sha512-d7qH2XMVtHRkCaMUWpLkWSD9JPiE570gy8LoP7WBw+Ui+hI9ZiFx9HDaX5+Y6wzbGJd1WvELWaG9O0cOtk2rmw==}
     peerDependencies:
       '@react-three/fiber': '>=8'
@@ -3217,6 +3222,7 @@ packages:
     transitivePeerDependencies:
       - typescript
     dev: false
+    patched: true
 
   /@react-three/drei/9.13.2_ctvyxywqwxm6spaialajtm5yf4:
     resolution: {integrity: sha512-Nrq3PimdvcmY8089qzUmCGiQfmEzpUTJIlHdrzuLtYsI7Npt5exC7121rd+I6TnzcAEei3uhEBlOj9wOmeO5Aw==}

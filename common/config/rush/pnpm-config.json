@@ -70,5 +70,8 @@
      *
      * This option is experimental. The default value is false.
      */
-    "useWorkspaces": true
+    "useWorkspaces": true,
+    "globalPatchedDependencies": {
+      "@react-three/cannon@6.5.2": "patches/@react-three__cannon@6.5.2.patch"
+    }
 }
