@@ -15,7 +15,6 @@ import { EntityRaycastSelector } from './entities/components/selectable-raycast-
 import { EntityRaycastSelectorCollider } from './entities/components/selectable-raycast-selector-collider';
 import { Entity, World } from './entities/entity';
 import { Gestures } from './gestures/gestures';
-import { logger } from './utils/logger';
 
 const problemEngine = Entity.create(`problemEngine`).addComponent(EntityProblemEngine, {}).build();
 
@@ -125,12 +124,6 @@ const balls = [...new Array(100)].map(() => {
       // physics to selection
       EntitySelectable.subscribeToEvent(
         entity.physics.collideSubject.pipe(
-          map((x) => {
-            if (x.entity.name !== x.other?.name) {
-              logger.log(`phyToSub`, { e: x.entity.name, o: x.other?.name });
-            }
-            return x;
-          }),
           filter((x) => !!(x.entity as Entity).selectable && !!(x.other as Entity)?.selector),
           map((x) => ({
             sequence: x.sequence,
@@ -264,6 +257,8 @@ export const WorldContainer = ({}: {}) => {
   activeSelectors.forEach((e) => EntitySelector.changeTargets(e as EntitySelector, activeSelectables));
 
   useFrame(() => {
+    EntityPlayer.updateInput(player);
+
     const active = world.entities.filter((x) => x.active);
     const ground = active.find((x) => x.ground) as EntityGround;
 

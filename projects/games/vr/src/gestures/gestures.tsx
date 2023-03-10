@@ -46,7 +46,7 @@ const useGesturesInstance = (options: GestureOptions) => {
       gestureResultR.current,
       gestureResultBody.current,
     );
-  });
+  }, -1000);
 
   return {
     left: gestureResultL.current,
