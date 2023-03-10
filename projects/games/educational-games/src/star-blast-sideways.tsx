@@ -1,15 +1,15 @@
+/* eslint-disable @typescript-eslint/naming-convention */
 /* eslint-disable react/no-array-index-key */
-/* eslint-disable jsx-a11y/accessible-emoji */
-import React, { useState, useEffect, useRef } from 'react';
-import { View, Text, Pressable, TouchableOpacity, Platform } from '@ricklove/react-native-lite';
-import { createMultiplesProblemService } from './problems/multiples';
-import { ProblemService, Problem } from './problems/problems-service';
+import React, { useEffect, useRef, useState } from 'react';
+import { Text, TouchableOpacity, View } from '@ricklove/react-native-lite';
 import { GamepadAnalogStateful, GamepadPressState } from './components/game-pad-analog';
-import { getDistanceSq, Vector2 } from './utils/vectors';
-import { createReviewProblemService } from './problems/problems-reviewer';
-import { createProgressGameProblemService } from './progress-games/progress-game';
+import { createMultiplesProblemService } from './problems/multiples';
 import { createAutoSavedProblemService } from './problems/problem-state-storage';
+import { createReviewProblemService } from './problems/problems-reviewer';
+import { Problem, ProblemService } from './problems/problems-service';
+import { createProgressGameProblemService } from './progress-games/progress-game';
 import { SubjectNavigator } from './utils/subject-navigator';
+import { getDistanceSq, Vector2 } from './utils/vectors';
 
 export const EducationalGame_StarBlastSideways_Multiples = (props: {}) => {
   return (

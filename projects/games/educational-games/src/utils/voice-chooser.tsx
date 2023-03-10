@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from 'react';
-import { Text, View, ActivityIndicator, TouchableOpacity } from '@ricklove/react-native-lite';
+import React, { useEffect, useState } from 'react';
+import { ActivityIndicator, Text, TouchableOpacity, View } from '@ricklove/react-native-lite';
 import { SpeechService } from './speech';
 
 export const VoiceChooser = ({ languange, speechService }: { languange: string; speechService: SpeechService }) => {

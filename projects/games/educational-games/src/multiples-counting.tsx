@@ -1,5 +1,5 @@
-import React, { useState, useEffect, useRef } from 'react';
-import { View, Text, TouchableOpacity } from '@ricklove/react-native-lite';
+import React, { useEffect, useRef, useState } from 'react';
+import { Text, TouchableOpacity, View } from '@ricklove/react-native-lite';
 import { distinct, shuffle } from '@ricklove/utils-core';
 import { createLeaderboard } from './components/leaderboard';
 import { ProgressGameService } from './progress-games/progress-game';
