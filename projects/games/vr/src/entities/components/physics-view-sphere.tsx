@@ -35,9 +35,9 @@ const EntityPhysicsViewSphereBatchComponent = ({ entities }: { entities: EntityP
         entities[index].transform.position.y,
         entities[index].transform.position.z,
       ],
-      onCollideBegin: (e) => entities[index].physics.collideSubject.next({ entity: entities[index], event: e }),
-      onCollide: (e) => entities[index].physics.collideSubject.next({ entity: entities[index], event: e }),
-      onCollideEnd: (e) => entities[index].physics.collideSubject.next({ entity: entities[index], event: e }),
+      onCollideBegin: (e) => EntityPhysicsView.collide(entities[index], e),
+      onCollide: (e) => EntityPhysicsView.collide(entities[index], e),
+      onCollideEnd: (e) => EntityPhysicsView.collide(entities[index], e),
     }),
     useRef<InstancedMesh>(null),
   );

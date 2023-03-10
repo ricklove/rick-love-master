@@ -147,6 +147,7 @@ const useWorldFilter = <T extends Entity>(filter: (item: Entity) => boolean, gro
             return out;
           }, {} as { [key: string]: Entity[] });
 
+      console.log(`useWorldFilter`, { items, grouped });
       return {
         items: items as T[],
         grouped: [
@@ -184,7 +185,10 @@ const useWorldFilter = <T extends Entity>(filter: (item: Entity) => boolean, gro
 
 export const WorldContainer = ({}: {}) => {
   const activeViews = useWorldFilter((x) => !!x.view && !x.view.BatchComponent).items;
-  const activeBatchViews = useWorldFilter((x) => !!x.view && !!x.view.BatchComponent).grouped;
+  const activeBatchViews = useWorldFilter(
+    (x) => !!x.view && !!x.view.BatchComponent && !!x.view.batchKey,
+    (x) => x.view?.batchKey!,
+  ).grouped;
   const activeSelectables = useWorldFilter<EntitySelectable>((x) => !!x.selectable).items;
   const activeSelectors = useWorldFilter<EntityRaycastSelector>((x) => !!x.raycastSelector).items;
   activeSelectors.forEach((e) => EntitySelector.changeTargets(e as EntitySelector, activeSelectables));

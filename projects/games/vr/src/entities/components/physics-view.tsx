@@ -3,6 +3,7 @@ import { WorkerApi } from '@react-three/cannon';
 import { CollideBeginEvent, CollideEndEvent, CollideEvent } from '@react-three/cannon';
 import { Subject } from 'rxjs';
 import { Vector3 } from 'three';
+import { logger } from '../../utils/logger';
 import { defineComponent, EntityBase } from '../core';
 
 export type EntityPhysicsView = EntityBase & {
@@ -39,6 +40,10 @@ export const EntityPhysicsView = defineComponent<EntityPhysicsView>()
     Component: () => <></>,
   }))
   .attach({
+    collide: (entity: EntityPhysicsView, event: CollideBeginEvent | CollideEndEvent | CollideEvent) => {
+      logger.log(`collide`, { data: event.data });
+      entity.physics.collideSubject.next({ entity, event });
+    },
     // getEntityKey: (o:Object3D)=>{
     //   return `${o.uuid}${suffix}`;
     // },
