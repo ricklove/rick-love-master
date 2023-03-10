@@ -1,5 +1,13 @@
 lockfileVersion: 5.4
 
+patchedDependencies:
+  '@react-three/cannon@6.5.2':
+    hash: bijcwmvm66nz23y3c7pbaebvs4
+    path: patches/@react-three__cannon@6.5.2.patch
+  '@pmndrs/cannon-worker-api@2.3.2':
+    hash: jpnpvp3tuziudpoz7erxdptpce
+    path: patches/@pmndrs__cannon-worker-api@2.3.2.patch
+
 importers:
 
   .:
@@ -1054,7 +1062,7 @@ importers:
       three: 0.149.0
       three-stdlib: 2.21.1
     dependencies:
-      '@react-three/cannon': 6.5.2_27iurrnctcpvpfynfer6qw7uxe
+      '@react-three/cannon': 6.5.2_bijcwmvm66nz23y3c7pbaebvs4_27iurrnctcpvpfynfer6qw7uxe
       '@react-three/drei': 9.13.2_ctvyxywqwxm6spaialajtm5yf4
       '@react-three/fiber': 8.0.27_xor7byvqlg4baqj6ymfbcmaax4
       '@react-three/flex': 1.0.1_27iurrnctcpvpfynfer6qw7uxe
@@ -3128,13 +3136,14 @@ packages:
       hardhat: 2.13.0_daawx4elpbylxess4r3yktt5hu
     dev: true
 
-  /@pmndrs/cannon-worker-api/2.3.2_three@0.149.0:
+  /@pmndrs/cannon-worker-api/2.3.2_jpnpvp3tuziudpoz7erxdptpce_three@0.149.0:
     resolution: {integrity: sha512-+4YGTH7XfSvUYUa65LoltcDMRLu3lr7rFtHT9dmeCeu2JJ7Zg2xBFJ5wiWSJmcM1ECh2R0YDcROdEQ1JKpOgFA==}
     peerDependencies:
       three: '>=0.139'
     dependencies:
       three: 0.149.0
     dev: false
+    patched: true
 
   /@polka/url/1.0.0-next.21:
     resolution: {integrity: sha512-a5Sab1C4/icpTZVzZc5Ghpz88yQtGOyNqYXcZgOssB2uuAr+wF/MvN6bgtW32q7HHrvBki+BsZ0OuNv6EV3K9g==}
@@ -3201,14 +3210,14 @@ packages:
     resolution: {integrity: sha512-yBcyfKUeZv9wf/ZFrQszvhSPuDx6Py6yMJzpMnS+zxcZmhXPeOCKZSHwqrUz1WxvuRckUhlgb7eNI/x5e1e8CA==}
     dev: false
 
-  /@react-three/cannon/6.5.2_27iurrnctcpvpfynfer6qw7uxe:
+  /@react-three/cannon/6.5.2_bijcwmvm66nz23y3c7pbaebvs4_27iurrnctcpvpfynfer6qw7uxe:
     resolution: {integrity: sha512-d7qH2XMVtHRkCaMUWpLkWSD9JPiE570gy8LoP7WBw+Ui+hI9ZiFx9HDaX5+Y6wzbGJd1WvELWaG9O0cOtk2rmw==}
     peerDependencies:
       '@react-three/fiber': '>=8'
       react: '>=18'
       three: '>=0.139'
     dependencies:
-      '@pmndrs/cannon-worker-api': 2.3.2_three@0.149.0
+      '@pmndrs/cannon-worker-api': 2.3.2_jpnpvp3tuziudpoz7erxdptpce_three@0.149.0
       '@react-three/fiber': 8.0.27_xor7byvqlg4baqj6ymfbcmaax4
       cannon-es: 0.20.0
       cannon-es-debugger: 1.0.0_rchlmfkv4ovdt5uhd5epdu7shy
@@ -3217,6 +3226,7 @@ packages:
     transitivePeerDependencies:
       - typescript
     dev: false
+    patched: true
 
   /@react-three/drei/9.13.2_ctvyxywqwxm6spaialajtm5yf4:
     resolution: {integrity: sha512-Nrq3PimdvcmY8089qzUmCGiQfmEzpUTJIlHdrzuLtYsI7Npt5exC7121rd+I6TnzcAEei3uhEBlOj9wOmeO5Aw==}

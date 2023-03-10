@@ -15,8 +15,8 @@ export const EntityPhysicsViewSphere = cloneComponent<EntityPhysicsViewSphere>()
   .with(`sphere`, ({ radius }: { radius: number }) => ({
     radius,
   }))
-  .with(`view`, ({ color }: { color?: number }) => ({
-    color,
+  .with(`view`, ({ debugColor }: { debugColor?: number }) => ({
+    debugColor,
     Component: () => <></>,
     batchKey: `EntityPhysicsViewSphere`,
     BatchComponent: ({ entities }: { entities: EntityBase[] }) => (
@@ -35,9 +35,9 @@ const EntityPhysicsViewSphereBatchComponent = ({ entities }: { entities: EntityP
         entities[index].transform.position.y,
         entities[index].transform.position.z,
       ],
-      onCollideBegin: (e) => entities[index].physics.collideSubject.next({ entity: entities[index], event: e }),
-      onCollide: (e) => entities[index].physics.collideSubject.next({ entity: entities[index], event: e }),
-      onCollideEnd: (e) => entities[index].physics.collideSubject.next({ entity: entities[index], event: e }),
+      onCollideBegin: (e) => EntityPhysicsView.collide(entities[index], e),
+      onCollide: (e) => EntityPhysicsView.collide(entities[index], e),
+      onCollideEnd: (e) => EntityPhysicsView.collide(entities[index], e),
     }),
     useRef<InstancedMesh>(null),
   );
@@ -61,8 +61,7 @@ const EntityPhysicsViewSphereBatchComponent = ({ entities }: { entities: EntityP
       api.at(i).position.subscribe((p) => {
         x.transform.position.set(...p);
       });
-      x.physics.api = api.at(i);
-      x.physics.uuid = api.at(i).uuid;
+      EntityPhysicsView.register(x, api);
     });
   }, [!ref.current?.instanceColor, count]);
 

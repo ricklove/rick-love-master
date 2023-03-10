@@ -96,14 +96,15 @@ const ground = Entity.create(`ground`)
 //   })
 //   .build();
 
-const balls = [...new Array(100)].map(() => {
+const balls = [...new Array(1)].map(() => {
   const radius = 3 * Math.random();
   const ball = Entity.create(`ball`)
     .addComponent(EntityPhysicsViewSphere, {
       mass: 1,
       radius,
       debugColor: 0xffffff * Math.random(),
-      startPosition: [50 - 100 * Math.random(), 100 + 100 * Math.random(), 50 - 100 * Math.random()],
+      startPosition: [5 - 10 * Math.random(), 10 + 10 * Math.random(), 5 - 10 * Math.random()],
+      // startPosition: [50 - 100 * Math.random(), 100 + 100 * Math.random(), 50 - 100 * Math.random()],
     })
     .addComponent(EntitySelectable, {})
     .addComponent(EntityForce, {})
@@ -147,6 +148,9 @@ const useWorldFilter = <T extends Entity>(filter: (item: Entity) => boolean, gro
             return out;
           }, {} as { [key: string]: Entity[] });
 
+      // if (groupKey) {
+      //   console.log(`useWorldFilter`, { items, grouped });
+      // }
       return {
         items: items as T[],
         grouped: [
@@ -184,7 +188,10 @@ const useWorldFilter = <T extends Entity>(filter: (item: Entity) => boolean, gro
 
 export const WorldContainer = ({}: {}) => {
   const activeViews = useWorldFilter((x) => !!x.view && !x.view.BatchComponent).items;
-  const activeBatchViews = useWorldFilter((x) => !!x.view && !!x.view.BatchComponent).grouped;
+  const activeBatchViews = useWorldFilter(
+    (x) => !!x.view && !!x.view.BatchComponent && !!x.view.batchKey,
+    (x) => x.view?.batchKey!,
+  ).grouped;
   const activeSelectables = useWorldFilter<EntitySelectable>((x) => !!x.selectable).items;
   const activeSelectors = useWorldFilter<EntityRaycastSelector>((x) => !!x.raycastSelector).items;
   activeSelectors.forEach((e) => EntitySelector.changeTargets(e as EntitySelector, activeSelectables));
