@@ -101,7 +101,7 @@ export const EntityProblemEngineComponent = ({ entity }: { entity: EntityProblem
     void entity.problemEngine.problemEngine.startStudyGame({
       playerState,
       options: {
-        nextProblemIntervalTimeMs: 10,
+        nextProblemIntervalTimeMs: 10000,
       },
       presenter: {
         presentMessage: async (p, message) => {

@@ -42,7 +42,12 @@ const problemChooserManager = Entity.create(`problemChooser`)
       });
     };
     e.chooser.choicesSubject.subscribe((s) => {
+      if (s.event === `none`) {
+        return;
+      }
+
       logger.log(`choicesSubject`, { s });
+      const DONE = `DONE`;
 
       if (s.event === `clear`) {
         reset();
@@ -50,12 +55,13 @@ const problemChooserManager = Entity.create(`problemChooser`)
       }
       if (s.event === `new`) {
         reset();
-
-        s.choices.forEach((c, i) => {
+        [...s.choices, ...(s.isMultiChoice ? [{ active: false, text: DONE }] : [])].forEach((c, i) => {
           const b = balls[i];
+
           // b.active = true;
-          b.textView.text = `${c.active ? `[x]` : `[ ]`} ${c.text}`;
+          b.textView.text = c.text === DONE ? DONE : `${c.active ? `[x]` : `[ ]`} ${c.text}`;
           logger.log(`choice`, { text: b.textView.text });
+
           const fSub = EntityForce.register(b, new BehaviorSubject(true), (_, api, position) => {
             const [x, y, z] = position;
             if (v.set(x, y, z).sub(player.transform.position).lengthSq() > 10) {
@@ -67,13 +73,19 @@ const problemChooserManager = Entity.create(`problemChooser`)
           subs.push(fSub);
 
           const sub = b.selectable.stateSubject.subscribe((x) => {
-            if (x.event !== `downStart`) {
+            if (x.event !== `down-begin`) {
               return;
             }
-            logger.log(`toggle`, { c });
+            if (c.text === DONE) {
+              EntityChooser.submitChoices(e);
+              return;
+            }
 
-            c.active = !c.active;
-            EntityChooser.setChoices(e, s.choices);
+            logger.log(`toggle`, { c });
+            EntityChooser.toggleChoice(e, c);
+            if (!s.isMultiChoice) {
+              EntityChooser.submitChoices(e);
+            }
           });
           subs.push(sub);
         });
@@ -83,7 +95,7 @@ const problemChooserManager = Entity.create(`problemChooser`)
 
       s.choices.forEach((c, i) => {
         const b = balls[i];
-        b.textView.text = `${c.active ? `✔` : `❌`}${c.text}`;
+        b.textView.text = c.text === DONE ? DONE : `${c.active ? `[x]` : `[ ]`} ${c.text}`;
       });
     });
   })
@@ -180,8 +192,8 @@ const balls = [...new Array(ballCount)].map(() => {
     //   args: { strength: 10 },
     //   condition: (e: EntitySelectable) =>
     //     e.selectable.stateSubject.pipe(
-    //       filter((x) => x.event === `downStart` || x.event === `downEnd`),
-    //       map((x) => x.event === `downStart`),
+    //       filter((x) => x.event === `down-begin` || x.event === `down-end`),
+    //       map((x) => x.event === `down-begin`),
     //     ),
     // })
     // .addComponent(EntityAdjustToGround, {
@@ -329,9 +341,9 @@ export const WorldContainer = ({}: {}) => {
     (x) => !!x.view && !!x.view.BatchComponent && !!x.view.batchKey,
     (x) => x.view?.batchKey!,
   ).grouped;
-  const activeSelectables = useWorldFilter<EntitySelectable>((x) => !!x.selectable).items;
-  const activeSelectors = useWorldFilter<EntityRaycastSelector>((x) => !!x.raycastSelector).items;
-  activeSelectors.forEach((e) => EntitySelector.changeTargets(e as EntitySelector, activeSelectables));
+  // const activeSelectables = useWorldFilter<EntitySelectable>((x) => !!x.selectable).items;
+  // const activeSelectors = useWorldFilter<EntityRaycastSelector>((x) => !!x.raycastSelector).items;
+  // activeSelectors.forEach((e) => EntitySelector.changeTargets(e as EntitySelector, activeSelectables));
 
   useFrame(() => {
     EntityPlayer.updateInput(player);

@@ -60,6 +60,12 @@ export const EntityPhysicsView = defineComponent<EntityPhysicsView>()
       const other = globalState.physicsViews[event.data.body];
       const sequence = event.type === `collideBegin` ? `begin` : event.type === `collideEnd` ? `end` : `continue`;
       // logger.log(`collide`, {
+      //   e: entity.name,
+      //   o: other?.name,
+      //   sequence,
+      //   type: event.type,
+      // });
+      // logger.log(`collide`, {
       //   e: { n: entity.name, k: entity.key },
       //   r: { n: eReg?.name, k: eReg?.key },
       //   o: { n: other?.name, k: other?.key },

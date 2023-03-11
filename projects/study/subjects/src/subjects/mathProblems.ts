@@ -139,7 +139,7 @@ const getNewProblem = (selectedCategories: { categoryKey: string }[]) => {
       choices.push(x);
     }
   });
-  const operator = choices[Math.floor(choices.length * Math.random())].operator ?? (`*` as const);
+  const operator = choices[Math.floor(choices.length * Math.random())]?.operator ?? (`*` as const);
 
   if (operator === `^`) {
     const a = (Math.random() < 0.1 ? -1 : 1) * Math.floor(Math.random() * (MAX_MULTIPLICATION + 1));

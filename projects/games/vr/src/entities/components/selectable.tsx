@@ -1,47 +1,50 @@
-import { Observable, Subject } from 'rxjs';
+import { BehaviorSubject, Observable } from 'rxjs';
 import { Vector3 } from 'three';
 import { logger } from '../../utils/logger';
 import { defineComponent, EntityBase } from '../core';
 
-export type SelectionState = `inactive` | `hover` | `down`;
-export type SelectionEvent = `hoverStart` | `hoverContinue` | `hoverEnd` | `downStart` | `downContinue` | `downEnd`;
-export type EntitySelectable = EntityBase & {
-  selectable: {
-    state: SelectionState;
-    stateSubject: Subject<{
-      entity: EntitySelectable;
-      event: SelectionEvent;
-      mode: SelectorMode;
-      sequence: SelectorSequence;
-    }>;
-    hoverCount: number;
-    downCount: number;
+export type SelectionMode = `none` | `hover` | `down`;
+export type SelectionSequence = `none` | `begin` | `end` | `continue`;
+export type SelectionEvent = `none` | `hover-begin` | `hover-end` | `down-begin` | `down-end`;
 
-    /** Selectors that are targetting this selectable */
-    selectors?: EntitySelector[];
-  };
+export type EntitySelectable = EntityBase & {
   transform: {
     position: Vector3;
   };
+  selectable: {
+    stateSubject: BehaviorSubject<{
+      entity: EntitySelectable;
+      event: SelectionEvent;
+      mode: SelectionMode;
+      sequence: SelectionSequence;
+    }>;
+
+    /** Active selections */
+    selectors: { [key: string]: { selector: EntitySelector; mode: SelectionMode } };
+  };
 };
 
-export type SelectorMode = `none` | `hover` | `down`;
-export type SelectorSequence = `begin` | `end` | `continue`;
 export type EntitySelector = EntityBase & {
   selector: {
-    mode: SelectorMode;
+    mode: SelectionMode;
     targets?: EntitySelectable[];
-    activeTarget?: EntitySelectable;
+
+    /** Active selections */
+    selectables: { [key: string]: { selectable: EntitySelectable } };
   };
 };
 
 export const EntitySelectable = defineComponent<EntitySelectable>()
-  .with(`selectable`, ({}: {}) => {
+  .with(`selectable`, () => {
     return {
       state: `inactive`,
-      hoverCount: 0,
-      downCount: 0,
-      stateSubject: new Subject(),
+      stateSubject: new BehaviorSubject({
+        entity: undefined as unknown as EntitySelectable,
+        event: `none` as SelectionEvent,
+        mode: `none` as SelectionMode,
+        sequence: `none` as SelectionSequence,
+      }),
+      selectors: {},
     };
   })
   .attach({
@@ -49,7 +52,7 @@ export const EntitySelectable = defineComponent<EntitySelectable>()
       eventObservable: Observable<{
         selectable: EntitySelectable;
         selector: EntitySelector;
-        sequence: SelectorSequence;
+        sequence: SelectionSequence;
       }>,
     ) => {
       eventObservable.subscribe(EntitySelectable.handleEvent);
@@ -58,75 +61,97 @@ export const EntitySelectable = defineComponent<EntitySelectable>()
       selectable,
       selector,
       sequence,
+      mode: newMode,
     }: {
       selectable: EntitySelectable;
       selector: EntitySelector;
-      sequence: SelectorSequence;
+      sequence: SelectionSequence;
+      mode?: SelectionMode;
     }) => {
-      const Suffix = sequence === `begin` ? `Start` : sequence === `end` ? `End` : `Continue`;
-      const mode = selector.selector.mode;
+      const mode = newMode ?? selector.selector.mode;
+      const oldMode = selectable.selectable.selectors[selector.key]?.mode ?? `none`;
 
-      logger.log(`handleEvent`, { mode, Suffix, n: selectable.name, k: selectable.key });
+      logger.log(`handleEvent`, { mode, oldMode, sequence });
 
-      if (!mode || mode === `none`) {
+      const emit = (m: `hover` | `down`, s: `begin` | `end`) => {
+        logger.log(`emit`, { event: `${m}-${s}` });
+
+        selectable.selectable.stateSubject.next({
+          entity: selectable,
+          event: `${m}-${s}`,
+          mode: m,
+          sequence: s,
+        });
+      };
+
+      if (sequence === `end`) {
+        delete selectable.selectable.selectors[selector.key];
+        delete selector.selector.selectables[selectable.key];
+        if (oldMode === `down`) {
+          emit(`down`, `end`);
+          emit(`hover`, `end`);
+          return;
+        }
+        if (oldMode === `hover`) {
+          emit(`hover`, `end`);
+          return;
+        }
+        const _none: `none` = oldMode;
         return;
       }
-      const name = `${mode}${Suffix}` as const;
-      EntitySelectable[name](selectable);
-    },
-    hoverStart: (entity: EntitySelectable) => {
-      const s = entity.selectable;
-      logger.log(`hoverStart`, { name: entity.name, key: entity.key, s: s.state });
 
-      s.hoverCount++;
-      if (s.hoverCount === 1 && s.state === `inactive`) {
-        s.state = `hover`;
-        s.stateSubject.next({ entity, event: `hoverStart`, mode: `hover`, sequence: `begin` });
+      if (mode === oldMode) {
+        return;
       }
-    },
-    hoverContinue: (entity: EntitySelectable) => {
-      const s = entity.selectable;
-      logger.log(`hoverContinue`, { name: entity.name, key: entity.key, s: s.state });
-      s.stateSubject.next({ entity, event: `hoverContinue`, mode: `hover`, sequence: `continue` });
-    },
-    hoverEnd: (entity: EntitySelectable) => {
-      const s = entity.selectable;
-      logger.log(`hoverEnd`, { name: entity.name, key: entity.key, s: s.state });
 
-      s.hoverCount--;
-      if (s.hoverCount === 0 && s.state === `hover`) {
-        s.state = `inactive`;
-        s.stateSubject.next({ entity, event: `hoverEnd`, mode: `hover`, sequence: `end` });
-      }
-    },
-    downStart: (entity: EntitySelectable) => {
-      const s = entity.selectable;
-      logger.log(`downStart`, { name: entity.name, key: entity.key, s: s.state });
-
-      s.downCount++;
-      if (s.downCount === 1 && s.state !== `down`) {
-        s.state = `down`;
-        s.stateSubject.next({ entity, event: `downStart`, mode: `down`, sequence: `begin` });
-      }
-    },
-    downContinue: (entity: EntitySelectable) => {
-      const s = entity.selectable;
-      logger.log(`downStart`, { name: entity.name, key: entity.key, s: s.state });
-      s.stateSubject.next({ entity, event: `downContinue`, mode: `down`, sequence: `continue` });
-    },
-    downEnd: (entity: EntitySelectable) => {
-      const s = entity.selectable;
-      logger.log(`downEnd`, { name: entity.name, key: entity.key, s: s.state });
-
-      s.downCount--;
-      if (s.downCount === 0) {
-        if (s.hoverCount) {
-          s.state = `hover`;
-        } else {
-          s.state = `inactive`;
+      selectable.selectable.selectors[selector.key] = { mode, selector };
+      selector.selector.selectables[selectable.key] = { selectable };
+      if (mode === `none`) {
+        if (oldMode === `down`) {
+          emit(`down`, `end`);
+          emit(`hover`, `end`);
+          return;
         }
-        s.stateSubject.next({ entity, event: `downEnd`, mode: `down`, sequence: `end` });
+        if (oldMode === `hover`) {
+          emit(`hover`, `end`);
+          return;
+        }
+        const _same: typeof mode = oldMode;
+        return;
       }
+
+      if (sequence === `continue` || sequence === `begin`) {
+        if (mode === `down`) {
+          if (oldMode === `hover`) {
+            emit(`down`, `begin`);
+            return;
+          }
+          if (oldMode === `none`) {
+            emit(`hover`, `begin`);
+            emit(`down`, `begin`);
+            return;
+          }
+          const _same: typeof mode = oldMode;
+          return;
+        }
+
+        if (mode === `hover`) {
+          if (oldMode === `down`) {
+            emit(`down`, `end`);
+            return;
+          }
+          if (oldMode === `none`) {
+            emit(`hover`, `begin`);
+            return;
+          }
+          const _same: typeof mode = oldMode;
+          return;
+        }
+        const _never: never = mode;
+        return;
+      }
+
+      const _none: `none` = `none`;
     },
   });
 
@@ -134,6 +159,7 @@ export const EntitySelector = defineComponent<EntitySelector>()
   .with(`selector`, () => {
     return {
       mode: `none`,
+      selectables: {},
     };
   })
   .attach({
@@ -143,61 +169,11 @@ export const EntitySelector = defineComponent<EntitySelector>()
         return;
       }
 
-      logger.log(`changeSelectionMode`, { mode });
-
-      if (r.activeTarget) {
-        if (mode === `down`) {
-          EntitySelectable.downStart(r.activeTarget);
-        }
-        if (mode === `hover`) {
-          EntitySelectable.hoverStart(r.activeTarget);
-        }
-        if (r.mode === `down`) {
-          EntitySelectable.downEnd(r.activeTarget);
-        }
-        if (r.mode === `hover`) {
-          EntitySelectable.hoverEnd(r.activeTarget);
-        }
-      }
+      logger.log(`changeSelectionMode`, { mode, old: r.mode });
 
       r.mode = mode;
-    },
-    changeTargets: (entity: EntitySelector, targets: EntitySelectable[]) => {
-      const r = entity.selector;
-      logger.log(`changeTargets`, { targets: targets.length });
-
-      // Update selectors
-      const oldTargetsSet = new Set(r.targets ?? []);
-      const newTargetsSet = new Set(targets ?? []);
-      const added = targets.filter((x) => !oldTargetsSet.has(x));
-      const removed = r.targets?.filter((x) => !newTargetsSet.has(x)) ?? [];
-      removed.forEach((x) => {
-        const selectors = (x.selectable.selectors = x.selectable.selectors ?? []);
-        selectors.splice(selectors.indexOf(entity), 1);
+      Object.entries(entity.selector.selectables).forEach(([k, { selectable }]) => {
+        EntitySelectable.handleEvent({ selector: entity, selectable, sequence: `continue`, mode });
       });
-      added.forEach((x) => {
-        const selectors = (x.selectable.selectors = x.selectable.selectors ?? []);
-        selectors.push(entity);
-      });
-
-      r.targets = targets;
-    },
-    changeActiveTarget: (entity: EntitySelector, target: undefined | EntitySelectable) => {
-      const r = entity.selector;
-      const s = target;
-      if (s === r.activeTarget) {
-        return;
-      }
-
-      if (r.activeTarget) {
-        (r.mode === `hover` ? EntitySelectable.hoverEnd : EntitySelectable.downEnd)(r.activeTarget);
-      }
-
-      r.activeTarget = s;
-      if (!r.activeTarget) {
-        return;
-      }
-
-      (r.mode === `hover` ? EntitySelectable.hoverStart : EntitySelectable.downStart)(r.activeTarget);
     },
   });

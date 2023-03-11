@@ -6,7 +6,7 @@ import { calculateRotationMatrix } from '../../gestures/helpers';
 import { useIsomorphicLayoutEffect } from '../../utils/layoutEffect';
 import { cloneComponent, EntityBase } from '../core';
 import { EntityPhysicsView } from './physics-view';
-import { SelectorMode } from './selectable';
+import { SelectionMode } from './selectable';
 import { EntityRaycastSelector } from './selectable-raycast-selector';
 
 export type EntityRaycastSelectorCollider = EntityRaycastSelector &
@@ -38,7 +38,7 @@ export const EntityRaycastSelectorColliderComponent = ({
   color?: number;
   length?: number;
 }) => {
-  const [mode, setMode] = useState(`none` as SelectorMode);
+  const [mode, setMode] = useState(`none` as SelectionMode);
   const size = [0.1, 0.1, 100] as Triplet;
   const [refTrigger, apiTrigger] = useBox(
     () => ({
@@ -105,11 +105,11 @@ export const EntityRaycastSelectorColliderComponent = ({
 
     setMode(entity.selector.mode);
 
-    if (!r.activeTarget) {
+    if (!Object.keys(r.selectables).length) {
       return;
     }
 
-    const a = r.activeTarget;
+    const a = Object.values(r.selectables)[0].selectable;
     const t = refTarget.current;
     t.position.copy(a.transform.position);
   });
