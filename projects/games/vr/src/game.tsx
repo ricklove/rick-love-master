@@ -48,6 +48,9 @@ const problemChooserManager = Entity.create(`problemChooser`)
 
       logger.log(`choicesSubject`, { s });
       const DONE = `DONE`;
+      const getText = (c: typeof s.choices[number]) => {
+        return !s.isMultiChoice || c.text === DONE ? c.text : `${c.active ? `[x]` : `[ ]`} ${c.text}`;
+      };
 
       if (s.event === `clear`) {
         reset();
@@ -55,11 +58,11 @@ const problemChooserManager = Entity.create(`problemChooser`)
       }
       if (s.event === `new`) {
         reset();
-        [...s.choices, ...(s.isMultiChoice ? [{ active: false, text: DONE }] : [])].forEach((c, i) => {
+        [...(s.isMultiChoice ? [{ active: false, text: DONE }] : []), ...s.choices].forEach((c, i) => {
           const b = balls[i];
 
           // b.active = true;
-          b.textView.text = c.text === DONE ? DONE : `${c.active ? `[x]` : `[ ]`} ${c.text}`;
+          b.textView.text = getText(c);
           logger.log(`choice`, { text: b.textView.text });
 
           const fSub = EntityForce.register(b, new BehaviorSubject(true), (_, api, position) => {
@@ -95,7 +98,7 @@ const problemChooserManager = Entity.create(`problemChooser`)
 
       s.choices.forEach((c, i) => {
         const b = balls[i];
-        b.textView.text = c.text === DONE ? DONE : `${c.active ? `[x]` : `[ ]`} ${c.text}`;
+        b.textView.text = getText(c);
       });
     });
   })

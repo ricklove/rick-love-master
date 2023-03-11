@@ -297,7 +297,7 @@ export const createProblemEngine = ({
       }
 
       const selectedSubjectCategories = subjectCategories.filter((x) =>
-        selectedSubjects.choices.includes(x.categoryTitle),
+        selectedCategories.choices.includes(x.categoryTitle),
       );
       allSelectedSubjectCategories.push(
         ...selectedSubjectCategories.map((x) => ({ subjectKey: s.subjectKey, categoryKey: x.categoryKey })),
@@ -315,7 +315,7 @@ export const createProblemEngine = ({
     playerState: ProblemEnginePlayerState;
     presenter: ProblemEngineProblemEnginePresenter;
     options: Partial<ProblemEngineOptions>;
-  }) => {
+  }): Promise<void> => {
     const options = { ...defaultProblemEngineOptions, ...(optionsRaw ?? {}) };
 
     logger.log(`continueStudyGame`, { playerName: playerState.playerName });
@@ -341,8 +341,13 @@ export const createProblemEngine = ({
     if (!isReady) {
       const result = await showSubjectSelection({ playerState, presenter });
 
+      if (!result?.length) {
+        await delay(10000);
+        return await continueStudyGame({ playerState, presenter, options: optionsRaw });
+      }
+
       // eslint-disable-next-line require-atomic-updates
-      playerState.selectedSubjectCategories = result ?? [];
+      playerState.selectedSubjectCategories = result;
       // eslint-disable-next-line require-atomic-updates
       gameState.isReady = true;
 

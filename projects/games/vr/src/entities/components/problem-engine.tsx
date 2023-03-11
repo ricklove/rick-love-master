@@ -101,7 +101,7 @@ export const EntityProblemEngineComponent = ({ entity }: { entity: EntityProblem
     void entity.problemEngine.problemEngine.startStudyGame({
       playerState,
       options: {
-        nextProblemIntervalTimeMs: 10000,
+        nextProblemIntervalTimeMs: 3000,
       },
       presenter: {
         presentMessage: async (p, message) => {
@@ -158,8 +158,14 @@ export const EntityProblemEngineComponent = ({ entity }: { entity: EntityProblem
             });
           });
 
+          logger.log(`opt`, { result });
           sub.unsubscribe();
           EntityProblemEngine.clearChoices(entity);
+          setUi({
+            key: String(Math.random()),
+            kind: `message`,
+            visible: false,
+          });
           return result;
         },
         presentMultipleChoiceProblem: async (p, { subjectTitle, question, choices }) => {
@@ -196,6 +202,11 @@ export const EntityProblemEngineComponent = ({ entity }: { entity: EntityProblem
           });
           sub.unsubscribe();
           EntityProblemEngine.clearChoices(entity);
+          setUi({
+            key: String(Math.random()),
+            kind: `message`,
+            visible: false,
+          });
           return result;
         },
         presentShortAnswerProblem: async (p, { subjectTitle, question, correctAnswer }) => {
@@ -248,6 +259,11 @@ export const EntityProblemEngineComponent = ({ entity }: { entity: EntityProblem
           });
           sub.unsubscribe();
           EntityProblemEngine.clearChoices(entity);
+          setUi({
+            key: String(Math.random()),
+            kind: `message`,
+            visible: false,
+          });
           return result;
         },
       },
