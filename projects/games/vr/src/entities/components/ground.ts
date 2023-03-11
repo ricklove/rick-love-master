@@ -1,4 +1,3 @@
-import { logger } from '../../utils/logger';
 import { defineComponent, Vector3 } from '../core';
 
 export type EntityAdjustToGround = {
@@ -30,7 +29,7 @@ export const EntityAdjustToGround = defineComponent<EntityAdjustToGround>()
       const yGround = EntityGround.getWorldHeightAtPoint(ground, pos.x, pos.z);
       const { minGroundHeight, maxGroundHeight } = entity.adjustToGround;
 
-      logger.log(`adjustToGround`, { y, yGround });
+      // logger.log(`adjustToGround`, { y, yGround });
       if (minGroundHeight != null && y < yGround + minGroundHeight) {
         pos.setY(yGround + minGroundHeight);
       }
@@ -168,42 +167,42 @@ const getHeightAtPoint = (ground: EntityGround, x: number, z: number): number =>
 
   const y = ave * (maxHeight - minHeight) + minHeight + position.y;
 
-  logger.log(`h`, {
-    x: x.toFixed(3),
-    z: z.toFixed(3),
-    i: i.toFixed(3),
-    j: j.toFixed(3),
-  });
-  logger.log(`h`, {
-    t: t,
-    l: l,
-    b: b,
-    r: r,
-  });
-  logger.log(`h`, {
-    tR: tRatio.toFixed(3),
-    lR: lRatio.toFixed(3),
-    bR: bRatio.toFixed(3),
-    rR: rRatio.toFixed(3),
-  });
-  logger.log(`h`, {
-    tl: tl.toFixed(3),
-    tr: tr.toFixed(3),
-    bl: bl.toFixed(3),
-    br: br.toFixed(3),
-  });
-  logger.log(`h`, {
-    tlR: tlRatio.toFixed(3),
-    trR: trRatio.toFixed(3),
-    blR: blRatio.toFixed(3),
-    brR: brRatio.toFixed(3),
-  });
-  logger.log(`h`, {
-    y: y.toFixed(3),
-    ave: ave.toFixed(3),
-    gy: position.y.toFixed(3),
-    min: minHeight.toFixed(3),
-    max: maxHeight.toFixed(3),
-  });
+  // logger.log(`h`, {
+  //   x: x.toFixed(3),
+  //   z: z.toFixed(3),
+  //   i: i.toFixed(3),
+  //   j: j.toFixed(3),
+  // });
+  // logger.log(`h`, {
+  //   t: t,
+  //   l: l,
+  //   b: b,
+  //   r: r,
+  // });
+  // logger.log(`h`, {
+  //   tR: tRatio.toFixed(3),
+  //   lR: lRatio.toFixed(3),
+  //   bR: bRatio.toFixed(3),
+  //   rR: rRatio.toFixed(3),
+  // });
+  // logger.log(`h`, {
+  //   tl: tl.toFixed(3),
+  //   tr: tr.toFixed(3),
+  //   bl: bl.toFixed(3),
+  //   br: br.toFixed(3),
+  // });
+  // logger.log(`h`, {
+  //   tlR: tlRatio.toFixed(3),
+  //   trR: trRatio.toFixed(3),
+  //   blR: blRatio.toFixed(3),
+  //   brR: brRatio.toFixed(3),
+  // });
+  // logger.log(`h`, {
+  //   y: y.toFixed(3),
+  //   ave: ave.toFixed(3),
+  //   gy: position.y.toFixed(3),
+  //   min: minHeight.toFixed(3),
+  //   max: maxHeight.toFixed(3),
+  // });
   return y;
 };
