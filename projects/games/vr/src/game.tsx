@@ -1,8 +1,9 @@
 import React, { useMemo, useState } from 'react';
 import { Physics, Triplet } from '@react-three/cannon';
 import { useFrame } from '@react-three/fiber';
-import { BehaviorSubject, filter, map } from 'rxjs';
+import { BehaviorSubject, filter, map, timer } from 'rxjs';
 import { Vector3 } from 'three';
+import { EntityChooser } from './entities/components/chooser';
 import { EntityForce } from './entities/components/force';
 import { EntityAdjustToGround, EntityGround } from './entities/components/ground';
 import { EntityGroundView } from './entities/components/ground-view';
@@ -12,10 +13,81 @@ import { EntityProblemEngine } from './entities/components/problem-engine';
 import { EntitySelectable, EntitySelector } from './entities/components/selectable';
 import { EntityRaycastSelector } from './entities/components/selectable-raycast-selector';
 import { EntityRaycastSelectorCollider } from './entities/components/selectable-raycast-selector-collider';
+import { EntityTextView } from './entities/components/text-view';
 import { Entity, World } from './entities/entity';
 import { Gestures } from './gestures/gestures';
+import { logger } from './utils/logger';
 
 const problemEngine = Entity.create(`problemEngine`).addComponent(EntityProblemEngine, {}).build();
+
+const ballCount = 6;
+const problemChooserManager = Entity.create(`problemChooser`)
+  .addComponent(EntityChooser, {
+    maxChoiceCount: ballCount,
+  })
+  .extend((e) => {
+    const v = new Vector3();
+    // delay setup
+    timer(3000).subscribe(() => {
+      logger.log(`set chooser`, {});
+      EntityProblemEngine.setChooser(problemEngine, e);
+    });
+
+    const subs = [] as { unsubscribe: () => void }[];
+    const reset = () => {
+      subs.forEach((x) => x.unsubscribe());
+      subs.splice(0, subs.length);
+      balls.forEach((b, i) => {
+        b.textView.text = ``;
+      });
+    };
+    e.chooser.choicesSubject.subscribe((s) => {
+      logger.log(`choicesSubject`, { s });
+
+      if (s.event === `clear`) {
+        reset();
+        return;
+      }
+      if (s.event === `new`) {
+        reset();
+
+        s.choices.forEach((c, i) => {
+          const b = balls[i];
+          // b.active = true;
+          b.textView.text = `${c.active ? `[x]` : `[ ]`} ${c.text}`;
+          logger.log(`choice`, { text: b.textView.text });
+          const fSub = EntityForce.register(b, new BehaviorSubject(true), (_, api, position) => {
+            const [x, y, z] = position;
+            if (v.set(x, y, z).sub(player.transform.position).lengthSq() > 10) {
+              return;
+            }
+            api.position.set(0, 5 + 5 * Math.random(), 0);
+            api.velocity.set(0, 0, 0);
+          });
+          subs.push(fSub);
+
+          const sub = b.selectable.stateSubject.subscribe((x) => {
+            if (x.event !== `downStart`) {
+              return;
+            }
+            logger.log(`toggle`, { c });
+
+            c.active = !c.active;
+            EntityChooser.setChoices(e, s.choices);
+          });
+          subs.push(sub);
+        });
+
+        return;
+      }
+
+      s.choices.forEach((c, i) => {
+        const b = balls[i];
+        b.textView.text = `${c.active ? `✔` : `❌`}${c.text}`;
+      });
+    });
+  })
+  .build();
 
 const player = Entity.create(`player`)
   .addComponent(EntityPlayer, {})
@@ -85,7 +157,7 @@ const ground = Entity.create(`ground`)
 //   })
 //   .build();
 
-const balls = [...new Array(100)].map(() => {
+const balls = [...new Array(ballCount)].map(() => {
   const radius = 3 * Math.random();
   const getRandomStartposition = () =>
     [50 - 100 * Math.random(), 100 + 100 * Math.random(), 50 - 100 * Math.random()] as Triplet;
@@ -98,6 +170,11 @@ const balls = [...new Array(100)].map(() => {
       startPosition: getRandomStartposition(),
     })
     .addComponent(EntitySelectable, {})
+    .addComponent(EntityTextView, {
+      offset: new Vector3(0, radius + 0.25, 0),
+      defaultText: `.`,
+      fontSize: 1,
+    })
     .addComponent(EntityForce, {})
     // .addComponent(EntityForceImpulseUp, {
     //   args: { strength: 10 },
@@ -149,38 +226,47 @@ const balls = [...new Array(100)].map(() => {
       // );
 
       // Selection effects
-      EntityForce.register(
-        entity,
-        entity.selectable.stateSubject.pipe(
-          filter((x) => x.mode === `hover`),
-          map((x) => x.sequence === `continue`),
-        ),
-        (_, api, position) => {
-          // vibrate
-          const strength = 0.1;
-          api.applyImpulse([strength * Math.random(), strength * Math.random(), strength * Math.random()], position);
-        },
-      );
-      EntityForce.register(
-        entity,
-        entity.selectable.stateSubject.pipe(
-          filter((x) => x.mode === `down`),
-          map((x) => x.sequence === `begin`),
-        ),
-        (_, api, position) => {
-          // shoot up
-          const strength = 10;
-          api.applyImpulse([0, strength, 0], position);
-        },
-      );
+      // EntityForce.register(
+      //   entity,
+      //   entity.selectable.stateSubject.pipe(
+      //     filter((x) => x.mode === `hover`),
+      //     map((x) => x.sequence === `continue`),
+      //   ),
+      //   (_, api, position) => {
+      //     // vibrate
+      //     const strength = 0.1;
+      //     api.applyImpulse([strength * Math.random(), strength * Math.random(), strength * Math.random()], position);
+      //   },
+      // );
+      // EntityForce.register(
+      //   entity,
+      //   entity.selectable.stateSubject.pipe(
+      //     filter((x) => x.mode === `down`),
+      //     map((x) => x.sequence === `begin`),
+      //   ),
+      //   (_, api, position) => {
+      //     // shoot up
+      //     const strength = 10;
+      //     api.applyImpulse([0, strength, 0], position);
+      //   },
+      // );
     })
     .build();
 
+  // ball.active = false;
   return ball;
 });
 
 const world: World = {
-  entities: [problemEngine, player, raycastSelectorLeft, raycastSelectorRight, ground, ...balls] as Entity[],
+  entities: [
+    player,
+    problemEngine,
+    problemChooserManager,
+    raycastSelectorLeft,
+    raycastSelectorRight,
+    ground,
+    ...balls,
+  ] as Entity[],
 };
 
 export const game = {
@@ -238,6 +324,7 @@ const useWorldFilter = <T extends Entity>(filter: (item: Entity) => boolean, gro
 
 export const WorldContainer = ({}: {}) => {
   const activeViews = useWorldFilter((x) => !!x.view && !x.view.BatchComponent).items;
+  const activeTextViews = useWorldFilter((x) => !!x.textView).items;
   const activeBatchViews = useWorldFilter(
     (x) => !!x.view && !!x.view.BatchComponent && !!x.view.batchKey,
     (x) => x.view?.batchKey!,
@@ -282,6 +369,9 @@ export const WorldContainer = ({}: {}) => {
       <Physics allowSleep={false} iterations={15} gravity={[0, -9.8, 0]}>
         {activeViews.map((x) => (
           <React.Fragment key={x.key}>{x.view && <x.view.Component entity={x} />}</React.Fragment>
+        ))}
+        {activeTextViews.map((x) => (
+          <React.Fragment key={x.key}>{x.textView && <x.textView.Component entity={x} />}</React.Fragment>
         ))}
         {activeBatchViews.map((g) => (
           <React.Fragment key={g.key}>

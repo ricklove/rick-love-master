@@ -65,6 +65,14 @@ const EntityPhysicsViewSphereBatchComponent = ({ entities }: { entities: EntityP
     });
   }, [!ref.current?.instanceColor, count]);
 
+  // useFrame(() => {
+  //   entities.forEach((x, i) => {
+  //     api.at(i).position.subscribe((p) => {
+  //       x.transform.position.set(...p);
+  //     });
+  //   });
+  // });
+
   return (
     <instancedMesh ref={ref} castShadow receiveShadow args={[undefined, undefined, count]}>
       <sphereBufferGeometry args={[undefined, 16, 16]}>

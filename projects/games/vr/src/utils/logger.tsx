@@ -3,15 +3,14 @@ import { Text } from '@react-three/drei';
 import { filter, interval, map } from 'rxjs';
 
 const formatDetails = (details?: unknown): string => {
-  // eslint-disable-next-line eqeqeq
-  if (details == undefined) {
+  if (details == null) {
     return ``;
   }
   if (Array.isArray(details)) {
-    return details.map((x) => formatDetails(x)).join(`,`);
+    return `[${details.map((x) => formatDetails(x)).join(`,`)}]`;
   }
   if (typeof details === `object`) {
-    return `{${Object.entries(details)
+    return `{${Object.entries(details as Record<string, unknown>)
       .map(([k, v]) => `${k}:${formatDetails(v)}`)
       .join(`,`)}}`;
   }

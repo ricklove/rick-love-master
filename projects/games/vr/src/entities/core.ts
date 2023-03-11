@@ -5,7 +5,7 @@ export type EntityBase = {
   active: boolean;
   name: string;
   key: string;
-  // transform?: {
+  // transform: {
   //   position: Vector3;
   // };
   // physics?: {

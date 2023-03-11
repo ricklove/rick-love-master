@@ -7,13 +7,17 @@ import { EntityAdjustToGround, EntityGround } from './components/ground';
 import { EntityGroundView } from './components/ground-view';
 import { EntityPhysicsView } from './components/physics-view';
 import { EntityPhysicsViewSphere } from './components/physics-view-sphere';
+import { EntityProblemEngine } from './components/problem-engine';
 import { EntitySelectable, EntitySelector } from './components/selectable';
 import { EntityRaycastSelector } from './components/selectable-raycast-selector';
 import { EntityRaycastSelectorCollider } from './components/selectable-raycast-selector-collider';
+import { EntityTextView } from './components/text-view';
 import { defineEntity, EntityBase, SimplifyEntity } from './core';
 
 // prettier-ignore
 type EntityUnion = EntityBase & (
+| EntityTextView
+| EntityProblemEngine
 | EntityGround
 | EntityGroundView
 | EntityAdjustToGround

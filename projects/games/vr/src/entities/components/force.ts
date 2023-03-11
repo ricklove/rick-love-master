@@ -31,7 +31,7 @@ export const EntityForce = defineComponent<EntityForce>()
       const id = isActiveEffect.length;
       isActiveEffect[id] = false;
 
-      condition.subscribe((active) => {
+      const sub = condition.subscribe((active) => {
         const hasEffect = isActiveEffect[id];
         if (active && !hasEffect) {
           // logger.log(`force effect active`, { id, key: entity.key });
@@ -44,6 +44,17 @@ export const EntityForce = defineComponent<EntityForce>()
           isActiveEffect[id] = false;
         }
       });
+
+      return {
+        unsubscribe: () => {
+          sub.unsubscribe();
+          if (isActiveEffect[id]) {
+            const i = activeEffects.indexOf(effect);
+            activeEffects.splice(i, 1);
+          }
+          isActiveEffect[id] = false;
+        },
+      };
     },
     applyForces: (entity: EntityForce) => {
       const { api } = entity.physics;

@@ -6,13 +6,13 @@ export type Choice = {
   active: boolean;
   text: string;
 };
-export type ChoiceEvent = `new` | `toggle` | `done`;
+export type ChoiceEvent = `new` | `toggle` | `done` | `clear`;
 export type EntityChooser = EntityBase & {
   chooser: {
     maxChoiceCount: number;
     isMultiChoice: boolean;
     choices: Choice[];
-    choicesSubject: Subject<{ choices: Choice[]; event: ChoiceEvent }>;
+    choicesSubject: Subject<{ choices: Choice[]; isMultiChoice: boolean; event: ChoiceEvent }>;
   };
 };
 
@@ -28,7 +28,12 @@ export const EntityChooser = defineComponent<EntityChooser>()
       const { chooser } = entity;
       chooser.choices = choices;
       chooser.isMultiChoice = isMultiChoice ?? false;
-      chooser.choicesSubject.next({ choices, event: `new` });
+      chooser.choicesSubject.next({ choices, isMultiChoice: isMultiChoice ?? false, event: `new` });
+    },
+    clearChoices: (entity: EntityChooser) => {
+      const { chooser } = entity;
+      chooser.choices = [];
+      chooser.choicesSubject.next({ choices: [], isMultiChoice: false, event: `clear` });
     },
     toggleChoice: (entity: EntityChooser, choice: Choice) => {
       const { isMultiChoice, choices, choicesSubject: onChange } = entity.chooser;
@@ -44,10 +49,10 @@ export const EntityChooser = defineComponent<EntityChooser>()
       }
 
       c.active = !c.active;
-      onChange.next({ choices, event: `toggle` });
+      onChange.next({ choices, isMultiChoice, event: `toggle` });
     },
     submitChoices: (entity: EntityChooser) => {
-      const { choices, choicesSubject: onChange } = entity.chooser;
-      onChange.next({ choices, event: `done` });
+      const { isMultiChoice, choices, choicesSubject: onChange } = entity.chooser;
+      onChange.next({ choices, isMultiChoice, event: `done` });
     },
   });

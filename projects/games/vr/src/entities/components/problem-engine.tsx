@@ -44,18 +44,16 @@ export const EntityProblemEngine = defineComponent<EntityProblemEngine>()
   .attach({
     setChooser: (entity: EntityProblemEngine, chooser: EntityChooser) => {
       const oldChoices = entity.problemEngine._choices;
-      if (oldChoices) {
-        EntityChooser.setChoices(
-          chooser,
-          entity.problemEngine._chooser?.chooser.choices ?? oldChoices.choices,
-          oldChoices.isMultiChoice,
-        );
+      if (entity.problemEngine._sub) {
         entity.problemEngine._sub?.unsubscribe();
       }
       entity.problemEngine._chooser = chooser;
       entity.problemEngine._sub = chooser.chooser.choicesSubject.subscribe((x) => {
         entity.problemEngine.choicesObserver.onStateChange(x);
       });
+      if (oldChoices?.choices.length) {
+        EntityChooser.setChoices(chooser, oldChoices.choices, oldChoices.isMultiChoice);
+      }
     },
     setChoices: (entity: EntityProblemEngine, choiceTexts: string[], isMultiChoice = false) => {
       const choices = choiceTexts.map((x) => ({ text: x, active: false }));
@@ -65,6 +63,15 @@ export const EntityProblemEngine = defineComponent<EntityProblemEngine>()
       };
       if (entity.problemEngine._chooser) {
         EntityChooser.setChoices(entity.problemEngine._chooser, choices, isMultiChoice);
+      }
+    },
+    clearChoices: (entity: EntityProblemEngine) => {
+      entity.problemEngine._choices = {
+        choices: [],
+        isMultiChoice: false,
+      };
+      if (entity.problemEngine._chooser) {
+        EntityChooser.clearChoices(entity.problemEngine._chooser);
       }
     },
   });
@@ -152,6 +159,7 @@ export const EntityProblemEngineComponent = ({ entity }: { entity: EntityProblem
           });
 
           sub.unsubscribe();
+          EntityProblemEngine.clearChoices(entity);
           return result;
         },
         presentMultipleChoiceProblem: async (p, { subjectTitle, question, choices }) => {
@@ -187,6 +195,7 @@ export const EntityProblemEngineComponent = ({ entity }: { entity: EntityProblem
             });
           });
           sub.unsubscribe();
+          EntityProblemEngine.clearChoices(entity);
           return result;
         },
         presentShortAnswerProblem: async (p, { subjectTitle, question, correctAnswer }) => {
@@ -238,6 +247,7 @@ export const EntityProblemEngineComponent = ({ entity }: { entity: EntityProblem
             });
           });
           sub.unsubscribe();
+          EntityProblemEngine.clearChoices(entity);
           return result;
         },
       },
