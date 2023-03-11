@@ -4,7 +4,6 @@ import { useFrame } from '@react-three/fiber';
 import { BehaviorSubject, filter, map } from 'rxjs';
 import { Vector3 } from 'three';
 import { EntityForce } from './entities/components/force';
-import { EntityGravity } from './entities/components/gravity';
 import { EntityAdjustToGround, EntityGround } from './entities/components/ground';
 import { EntityGroundView } from './entities/components/ground-view';
 import { EntityPhysicsViewSphere } from './entities/components/physics-view-sphere';
@@ -35,12 +34,10 @@ const raycastSelectorRight = Entity.create(`raycastSelectorRight`)
   .addComponent(EntitySelector, {})
   .addComponent(EntityRaycastSelector, {})
   .addComponent(EntityRaycastSelectorCollider, {})
-  // .addComponent(EntityRaycastSelectorThree, {})
   .build();
 
-// TODO: Gesture component?
 // GestureHandler: Gun shoot to select
-const handleGestures = (() => {
+(() => {
   const handleHandGesture = (hand: Gestures[`left`], raycastSelector: EntityRaycastSelector, v: Vector3) => {
     if (!hand.pointingHand.active) {
       return EntitySelector.changeSelectionMode(raycastSelector, `none`);
@@ -62,15 +59,8 @@ const handleGestures = (() => {
   const vLeft = new Vector3();
   const vRight = new Vector3();
 
-  return () => {
-    const g = player.player.gestures;
-    if (!g) {
-      return;
-    }
-
-    handleHandGesture(g.left, raycastSelectorLeft, vLeft);
-    handleHandGesture(g.right, raycastSelectorRight, vRight);
-  };
+  player.player.gesturesSubject.subscribe((g) => handleHandGesture(g.left, raycastSelectorLeft, vLeft));
+  player.player.gesturesSubject.subscribe((g) => handleHandGesture(g.right, raycastSelectorRight, vRight));
 })();
 
 const ground = Entity.create(`ground`)
@@ -262,8 +252,6 @@ export const WorldContainer = ({}: {}) => {
     const active = world.entities.filter((x) => x.active);
     const ground = active.find((x) => x.ground) as EntityGround;
 
-    handleGestures();
-
     for (const e of active) {
       if (e.transform && !e.transform.position) {
         // Make sure views are ready
@@ -273,9 +261,9 @@ export const WorldContainer = ({}: {}) => {
       if (e.force) {
         EntityForce.applyForces(e as EntityForce);
       }
-      if (e.gravity) {
-        EntityGravity.fall(e as EntityGravity);
-      }
+      // if (e.gravity) {
+      //   EntityGravity.fall(e as EntityGravity);
+      // }
       if (e.adjustToGround) {
         EntityAdjustToGround.adjustToGround(e as EntityAdjustToGround, ground);
       }
