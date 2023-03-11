@@ -607,7 +607,7 @@
     },
     {
       "packageName": "@ricklove/vr-games",
-      "projectFolder": "projects/games/vr"
+      "projectFolder": "projects/games/vr/vr-games"
     },
     {
       "packageName": "@ricklove/study-subjects",

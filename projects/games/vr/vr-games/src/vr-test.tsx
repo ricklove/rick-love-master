@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/naming-convention */
 import React, { useRef, useState } from 'react';
-import { Box, Sphere, Text } from '@react-three/drei';
+import { Box, Environment, Sphere, Text } from '@react-three/drei';
 import { Canvas } from '@react-three/fiber';
 import { useFrame } from '@react-three/fiber';
 import { ARButton, Controllers, Interactive, VRButton, XR } from '@react-three/xr';
@@ -18,8 +18,10 @@ import { DebugConsole, logger } from './utils/logger';
 export const VrTestGame = () => {
   return (
     <>
-      {/* <ARPage /> */}
-      <VRPage />
+      <div style={{ position: `fixed`, bottom: 0, top: 0, left: 0, right: 0 }}>
+        {/* <ARPage /> */}
+        <VRPage />
+      </div>
     </>
   );
 };
@@ -205,9 +207,14 @@ const Scene_05_WithEntities = () => {
         <Hud position={[0, 1, 4]}>
           <DebugConsole />
         </Hud>
+        <SkyBox />
       </GesturesProvider>
     </>
   );
+};
+
+const SkyBox = () => {
+  return <Environment background near={1} far={1000} resolution={256} preset='warehouse' />;
 };
 
 // old
