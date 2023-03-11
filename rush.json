@@ -610,6 +610,10 @@
       "projectFolder": "projects/games/vr/vr-games"
     },
     {
+      "packageName": "@ricklove/vr-test-site",
+      "projectFolder": "projects/games/vr/vr-test"
+    },
+    {
       "packageName": "@ricklove/study-subjects",
       "projectFolder": "projects/study/subjects"
     },
