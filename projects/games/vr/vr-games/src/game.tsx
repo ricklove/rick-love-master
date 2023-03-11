@@ -217,7 +217,7 @@ const balls = [...new Array(ballCount)].map(() => {
     .addComponent(EntitySelectable, {})
     .addComponent(EntityTextView, {
       offset: new Vector3(0, radius + 0.25, 0),
-      defaultText: `.`,
+      defaultText: ``,
       fontSize: 1,
     })
     .addComponent(EntityForce, {})

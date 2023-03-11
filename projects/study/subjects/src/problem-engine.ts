@@ -45,6 +45,7 @@ type ProblemEngineProblemEnginePresenter = {
   ) => Promise<{ choices: string[] }>;
   presentMessage: (playerName: string, message: string) => Promise<void>;
   sayMessage?: (playerName: string, message: string) => Promise<void>;
+  presentAnswerFeedback: (args: StudyProblemAnswer) => Promise<void>;
 };
 
 type ProblemEngineDependencies = {
@@ -266,6 +267,7 @@ export const createProblemEngine = ({
     }
 
     // Handle result
+    await presenter.presentAnswerFeedback(result);
 
     // If Correct
     if (result.wasCorrect) {
@@ -289,8 +291,6 @@ export const createProblemEngine = ({
       playerState.reviewProblems = newReviewProblems;
       playerState.problemQueue = newProblemQueue;
 
-      // gameConsequences.onCorrect(player);
-
       logger.log(`Right Answer`, {
         playerName: playerState.playerName,
         result,
@@ -310,7 +310,28 @@ export const createProblemEngine = ({
       return;
     }
 
-    return result;
+    // If Wrong
+    const problemToReview = result.problem._reviewProblemSource ?? result.problem;
+    const inReview = playerState.reviewProblems.find((x) => x.problem.key === problemToReview.key);
+    if (inReview) {
+      // If wrong again, go back to level 0
+      inReview.reviewLevel = 0;
+    } else {
+      // On first review, start with level 1
+      playerState.reviewProblems.push({ problem: problemToReview, reviewLevel: 1 });
+    }
+
+    logger.log(`Wrong Answer`, {
+      playerName: playerState.playerName,
+      result,
+      wrongHistory: playerState.answerHistory
+        .filter((x) => !x.wasCorrect)
+        .map((x) => `${x.time} ${x.timeToAnswerMs} ${x.problem.key} != ${x.answerRaw}`),
+      reviewProblems: playerState.reviewProblems,
+      problemQueue: playerState.problemQueue,
+    });
+
+    return;
   };
 
   const showSubjectSelection = async ({

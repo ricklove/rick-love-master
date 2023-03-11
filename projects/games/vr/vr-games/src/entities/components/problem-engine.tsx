@@ -3,9 +3,10 @@ import { useSphere, useSpring } from '@react-three/cannon';
 import { Text } from '@react-three/drei';
 import { createPortal, useFrame } from '@react-three/fiber';
 import { Box, Flex } from '@react-three/flex';
+import { Subject } from 'rxjs';
 import { Group, Matrix4, Mesh, Object3D, Vector3 } from 'three';
 import { createProblemEngine, ProblemEngine, ProblemEnginePlayerState } from '@ricklove/study-subjects';
-import { createSubscribable, delay, randomItem, randomOrder, Subscribable } from '@ricklove/utils-core';
+import { delay, randomItem, randomOrder } from '@ricklove/utils-core';
 import { Hud } from '../../components/hud';
 import { formatVector } from '../../utils/formatters';
 import { useIsomorphicLayoutEffect } from '../../utils/layoutEffect';
@@ -17,7 +18,8 @@ export type EntityProblemEngine = EntityBase & {
   problemEngine: {
     problemEngine: ProblemEngine;
     playerState?: ProblemEnginePlayerState;
-    choicesObserver: Subscribable<{ choices: Choice[]; event: ChoiceEvent }>;
+    choicesObserver: Subject<{ choices: Choice[]; event: ChoiceEvent }>;
+    feedbackSubject: Subject<{ wasCorrect: boolean }>;
     _chooser?: EntityChooser;
     _choices?: { choices: Choice[]; isMultiChoice: boolean };
     _sub?: { unsubscribe: () => void };
@@ -36,7 +38,8 @@ export const EntityProblemEngine = defineComponent<EntityProblemEngine>()
       delay,
       logger,
     }),
-    choicesObserver: createSubscribable(),
+    choicesObserver: new Subject(),
+    feedbackSubject: new Subject(),
   }))
   .with(`view`, () => ({
     Component: (x) => <EntityProblemEngineComponent entity={x.entity as EntityProblemEngine} />,
@@ -49,7 +52,7 @@ export const EntityProblemEngine = defineComponent<EntityProblemEngine>()
       }
       entity.problemEngine._chooser = chooser;
       entity.problemEngine._sub = chooser.chooser.choicesSubject.subscribe((x) => {
-        entity.problemEngine.choicesObserver.onStateChange(x);
+        entity.problemEngine.choicesObserver.next(x);
       });
       if (oldChoices?.choices.length) {
         EntityChooser.setChoices(chooser, oldChoices.choices, oldChoices.isMultiChoice);
@@ -101,9 +104,22 @@ export const EntityProblemEngineComponent = ({ entity }: { entity: EntityProblem
     void entity.problemEngine.problemEngine.startStudyGame({
       playerState,
       options: {
-        nextProblemIntervalTimeMs: 3000,
+        nextProblemIntervalTimeMs: 1000,
       },
       presenter: {
+        presentAnswerFeedback: async (result) => {
+          entity.problemEngine.feedbackSubject.next(result);
+          if (!result.wasCorrect) {
+            setUi({
+              key: String(Math.random()),
+              visible: true,
+              kind: `message`,
+              message: `NO!\n${result.responseMessage ?? ``}`,
+            });
+            await delay(3000);
+            setUi((s) => ({ ...s, visible: false }));
+          }
+        },
         presentMessage: async (p, message) => {
           setUi({
             key: String(Math.random()),
