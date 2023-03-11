@@ -1,3 +1,4 @@
+/* eslint-disable max-lines */
 // https://raw.githubusercontent.com/ps-kostikov/english-word-frequency/master/data/frequency_list.txt
 
 export const englishWords = {

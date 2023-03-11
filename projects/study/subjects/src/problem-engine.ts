@@ -1,4 +1,4 @@
-import { allSubjects, getSubject } from './all-subjects';
+import { allSubjects, getSubject, StudySubjectTypes } from './all-subjects';
 import { ProblemEnginePlayerSaveState, StudyProblemAnswer } from './types';
 
 const defaultProblemEngineOptions = {
@@ -69,14 +69,16 @@ export const createProblemEngine = ({
     playerState,
     presenter,
     options,
+    includedSubjects,
   }: {
     playerState: ProblemEnginePlayerState;
     presenter: ProblemEngineProblemEnginePresenter;
     options: ProblemEngineOptions;
+    includedSubjects: StudySubjectTypes[];
   }): Promise<undefined | StudyProblemAnswer> => {
     const { playerName } = playerState;
-    const problem = getNextProblem(playerState, options);
-    const problemSubject = getSubject(problem.subjectKey);
+    const problem = await getNextProblem(playerState, options, includedSubjects);
+    const problemSubject = await getSubject(problem.subjectKey);
 
     // For Text to speech
     let textToSpeechRepeaterId = undefined as undefined | ReturnType<typeof setInterval>;
@@ -176,7 +178,11 @@ export const createProblemEngine = ({
     return result;
   };
 
-  const getNextProblem = (playerState: ProblemEnginePlayerState, { reviewRatio }: ProblemEngineOptions) => {
+  const getNextProblem = async (
+    playerState: ProblemEnginePlayerState,
+    { reviewRatio }: ProblemEngineOptions,
+    includedSubjects: StudySubjectTypes[],
+  ) => {
     const getQueuedProblem = () => {
       // return playerState.problemQueue.shift();
 
@@ -190,7 +196,7 @@ export const createProblemEngine = ({
       return playerState.problemQueue[0];
     };
 
-    const getReviewProblem = () => {
+    const getReviewProblem = async () => {
       // Remove reviews that are at mastery level
       playerState.reviewProblems = playerState.reviewProblems.filter((x) => x.reviewLevel < 3);
 
@@ -210,7 +216,7 @@ export const createProblemEngine = ({
       }
 
       // Add to queue and run queue
-      const reviewSubject = getSubject(reviewProblem.problem.subjectKey);
+      const reviewSubject = await getSubject(reviewProblem.problem.subjectKey);
       const reviewSequence = reviewSubject.getReviewProblemSequence(reviewProblem.problem, reviewProblem.reviewLevel);
 
       // Increase review level (it will reset on wrong answer)
@@ -236,15 +242,12 @@ export const createProblemEngine = ({
       return qProblem;
     }
 
-    const wProblem = getReviewProblem();
+    const wProblem = await getReviewProblem();
     if (wProblem) {
       return wProblem;
     }
 
-    const includedSubjects = allSubjects.filter((x) =>
-      playerState.selectedSubjectCategories.some((s) => s.subjectKey === x.subjectKey),
-    );
-    const randomSubject = includedSubjects[Math.floor(Math.random() * includedSubjects.length)] ?? allSubjects[0];
+    const randomSubject = includedSubjects[Math.floor(Math.random() * includedSubjects.length)];
     const problem = randomSubject.getNewProblem(
       playerState.selectedSubjectCategories.filter((x) => x.subjectKey === randomSubject.subjectKey),
     );
@@ -285,7 +288,7 @@ export const createProblemEngine = ({
     }[];
 
     for (const s of enabledSubjects) {
-      const subjectCategories = s.getCategories();
+      const subjectCategories = (await s.loadSubject()).getCategories();
       const selectedCategories = await presenter.presentOptions(playerState.playerName, {
         title: `Choose Subjects`,
         label: `Select your subjects below:`,
@@ -360,7 +363,13 @@ export const createProblemEngine = ({
     // Start player timer
     gameState.nextProblemTimeoutId = setTimeout(() => {
       (async () => {
-        await showNextProblem({ playerState, presenter, options });
+        const includedSubjects = await Promise.all(
+          allSubjects
+            .filter((x) => playerState.selectedSubjectCategories.some((s) => s.subjectKey === x.subjectKey))
+            .map((x) => x.loadSubject()),
+        );
+
+        await showNextProblem({ playerState, presenter, options, includedSubjects });
 
         // // Report
         // const report = [...gameState.playerStates.values()]

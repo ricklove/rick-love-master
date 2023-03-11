@@ -1,3 +1,4 @@
+/* eslint-disable max-lines */
 import { englishWords } from './englishFrequentWords';
 
 export const getSpellingEntries = (): { word: string; mispellings: string[]; wordGroup: { words: string[] } }[] => {

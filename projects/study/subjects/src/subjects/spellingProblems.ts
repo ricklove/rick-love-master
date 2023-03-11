@@ -36,7 +36,7 @@ const createLevels = (entries: ReturnType<typeof getSpellingEntries>, levelCount
   });
 };
 
-const getUnderlines = (length: number) => [...new Array(length)].map((x) => `_`).join(``);
+const getUnderlines = (length: number) => [...new Array(length)].map(() => `_`).join(``);
 
 export const createSpellingSubject = (): StudySubject<SpellingProblemType, 'spelling'> => {
   const spellingEntries = getSpellingEntries();

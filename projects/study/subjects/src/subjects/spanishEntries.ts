@@ -1,3 +1,4 @@
+/* eslint-disable max-lines */
 /* eslint-disable no-tabs */
 import { parseDefinitionDocument } from './definition-problem-service';
 
