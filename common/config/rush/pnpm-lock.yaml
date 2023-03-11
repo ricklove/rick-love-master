@@ -23,7 +23,7 @@ importers:
       eslint-plugin-import-quotes: ~0.0.1
       eslint-plugin-simple-import-sort: ^7.0.0
       eslint-plugin-unused-imports: ^1.1.4
-      typescript: ~4.3.5
+      typescript: ~4.9.5
     dependencies:
       '@rushstack/eslint-config': 2.6.2_cl6qtdo3npn4kngw26aibg642e
       '@rushstack/heft': 0.49.7
@@ -43,7 +43,7 @@ importers:
       '@rushstack/heft-web-rig': ^0.14.5
       '@types/heft-jest': 1.0.3
       eslint: ~7.32.0
-      typescript: ~4.3.5
+      typescript: ~4.9.5
     dependencies:
       '@ricklove/config-eslint': link:../eslint
       '@rushstack/eslint-config': 2.6.2_cl6qtdo3npn4kngw26aibg642e
@@ -495,7 +495,7 @@ importers:
       solidity-coverage: ^0.7.17
       ts-node: ~10.9.1
       typechain: ^5.1.2
-      typescript: ~4.3.5
+      typescript: ~4.9.5
     dependencies:
       hardhat-contract-sizer: 2.1.1_hardhat@2.13.0
     devDependencies:
@@ -552,7 +552,7 @@ importers:
       esbuild: ~0.12.25
       puppeteer: ~10.2.0
       ts-node: ~10.9.1
-      typescript: ~4.3.5
+      typescript: ~4.9.5
     dependencies:
       '@ricklove/art-build': link:../_build
       '@ricklove/art-common': link:../common
@@ -574,7 +574,7 @@ importers:
       '@ricklove/utils-core': workspace:*
       '@types/node': 12.12.6
       ts-node: ~10.9.1
-      typescript: ~4.3.5
+      typescript: ~4.9.5
     dependencies:
       '@ricklove/bible-types': link:../bible-types
       '@ricklove/utils-core': link:../../../features/_utils/core
@@ -632,7 +632,7 @@ importers:
       react: 18.2.0
       react-dom: 18.2.0
       rimraf: ~3.0.2
-      typescript: ~4.3.5
+      typescript: ~4.9.5
       vite: ^3.0.7
     dependencies:
       '@ricklove/bible-components': link:../bible-components
@@ -698,7 +698,7 @@ importers:
       html5parser: 2.0.2
       sharp: 0.30.7
       ts-node: ~10.9.1
-      typescript: ~4.3.5
+      typescript: ~4.9.5
     dependencies:
       '@ricklove/church-join-the-journey-common': link:../common
       '@ricklove/upload-api-common-client': link:../../../../features/networking/upload-api/common-client
@@ -723,7 +723,7 @@ importers:
       react: 18.2.0
       react-dom: 18.2.0
       rimraf: ~3.0.2
-      typescript: ~4.3.5
+      typescript: ~4.9.5
       vite: ^3.0.7
     dependencies:
       '@ricklove/church-join-the-journey-components': link:../components
@@ -847,7 +847,7 @@ importers:
       '@types/node': 12.12.6
       express: ^4.17.1
       ts-node: ~10.9.1
-      typescript: ~4.3.5
+      typescript: ~4.9.5
     dependencies:
       '@ricklove/code-training-lesson-common': link:../lesson-common
       '@ricklove/code-training-lesson-editor-common': link:../lesson-editor-common
@@ -900,7 +900,7 @@ importers:
       '@types/node': 12.12.6
       hash-wasm: ~4.9.0
       ts-node: ~10.9.1
-      typescript: ~4.3.5
+      typescript: ~4.9.5
     dependencies:
       hash-wasm: 4.9.0
     devDependencies:
@@ -1090,7 +1090,7 @@ importers:
       '@vitejs/plugin-react': ^2.0.1
       react: 18.2.0
       react-dom: 18.2.0
-      typescript: ~4.3.5
+      typescript: ~4.9.5
       vite: ^3.0.7
     dependencies:
       '@ricklove/vr-games': link:../vr-games
@@ -1131,7 +1131,7 @@ importers:
       rollup: ^2.77.2
       ts-node: ~10.9.1
       tslib: 2.4.0
-      typescript: ~4.3.5
+      typescript: ~4.9.5
     dependencies:
       '@babel/core': 7.21.0
       '@babel/polyfill': 7.12.1
@@ -1213,7 +1213,7 @@ importers:
       react-markdown: ~8.0.3
       remark-gfm: ~3.0.1
       ts-node: ~10.9.1
-      typescript: ~4.3.5
+      typescript: ~4.9.5
     dependencies:
       '@emotion/react': 11.4.1_luyos4mouogwq6z3wafb3re4ce
       '@ricklove/art-components': link:../../art/components
@@ -1249,7 +1249,7 @@ importers:
       '@ricklove/utils-files': workspace:*
       '@types/node': 12.12.6
       ts-node: ~10.9.1
-      typescript: ~4.3.5
+      typescript: ~4.9.5
     dependencies:
       '@ricklove/utils-core': link:../../features/_utils/core
       '@ricklove/utils-files': link:../../features/_utils/files
@@ -1266,7 +1266,7 @@ importers:
       '@ricklove/utils-files': workspace:*
       '@types/node': 12.12.6
       ts-node: ~10.9.1
-      typescript: ~4.3.5
+      typescript: ~4.9.5
     dependencies:
       '@ricklove/utils-core': link:../../features/_utils/core
       '@ricklove/utils-files': link:../../features/_utils/files
@@ -1290,7 +1290,7 @@ importers:
       eslint: ~7.32.0
       glob: ^7.1.7
       mocha: ^8.4.0
-      typescript: ~4.3.5
+      typescript: ~4.9.5
       vscode-test: ^1.5.2
     devDependencies:
       '@ricklove/config-lib-rig': link:../../../config/lib-rig

@@ -14,7 +14,7 @@
     "@ricklove/utils-core": "workspace:*",
     "@ricklove/utils-files": "workspace:*",
     "puppeteer": "~10.2.0",
-    "typescript": "~4.3.5",
+    "typescript": "~4.9.5",
     "esbuild": "~0.12.25"
   },
   "devDependencies": {
