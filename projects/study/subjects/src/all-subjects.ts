@@ -1,21 +1,24 @@
-import type { MathProblemType } from './subjects/mathProblems';
-import type { SpanishProblemType } from './subjects/spanishProblems';
-import type { SpellingProblemType } from './subjects/spellingProblems';
+import { createMathSubject, MathProblemType } from './subjects/mathProblems';
+import { createSpanishSubject, SpanishProblemType } from './subjects/spanishProblems';
+import { createSpellingSubject, SpellingProblemType } from './subjects/spellingProblems';
 import { StudySubject } from './types';
 
 export type StudyProblemType = MathProblemType | SpellingProblemType | SpanishProblemType;
 const allSubjectImports = {
   math: {
     title: `Math`,
-    load: async () => (await import(`./subjects/mathProblems`)).createMathSubject(),
+    load: async () => createMathSubject(),
+    // load: async () => (await import(`./subjects/mathProblems`)).createMathSubject(),
   },
   spelling: {
     title: `Spelling`,
-    load: async () => (await import(`./subjects/spellingProblems`)).createSpellingSubject(),
+    load: async () => createSpellingSubject(),
+    // load: async () => (await import(`./subjects/spellingProblems`)).createSpellingSubject(),
   },
   spanish: {
     title: `Spanish`,
-    load: async () => (await import(`./subjects/spanishProblems`)).createSpanishSubject(),
+    load: async () => createSpanishSubject(),
+    // load: async () => (await import(`./subjects/spanishProblems`)).createSpanishSubject(),
   },
 } as const;
 export const allSubjects = Object.entries(allSubjectImports).map(([subjectKey, v]) => ({

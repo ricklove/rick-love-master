@@ -87,7 +87,7 @@ export const EntityProblemEngineComponent = ({ entity }: { entity: EntityProblem
     kind: `message` | `answer` | `options`;
     title?: string;
     message?: string;
-    choices?: string[];
+    choices?: { text: string; active: boolean }[];
     answerCallback?: (key: string, answer: string) => void;
     selectionCallback?: (key: string, choices: string[]) => void;
   });
@@ -132,11 +132,12 @@ export const EntityProblemEngineComponent = ({ entity }: { entity: EntityProblem
             },
           };
           const result = await new Promise<{ choices: string[] }>((resolve, reject) => {
-            sub = entity.problemEngine.choicesObserver.subscribe((s) => {
-              if (s.event !== `done`) {
+            sub = entity.problemEngine.choicesObserver.subscribe((c) => {
+              if (c.event !== `done`) {
+                setUi((s) => ({ ...s, choices: [...c.choices] }));
                 return;
               }
-              const choices = s.choices.filter((x) => x.active).map((x) => x.text);
+              const choices = c.choices.filter((x) => x.active).map((x) => x.text);
               resolve({ choices });
             });
             EntityProblemEngine.setChoices(entity, options, true);
@@ -148,7 +149,7 @@ export const EntityProblemEngineComponent = ({ entity }: { entity: EntityProblem
               visible: true,
               title,
               message: label,
-              choices: options,
+              choices: options.map((x) => ({ text: x, active: false })),
               selectionCallback: (k, choices) => {
                 if (key !== k) {
                   return;
@@ -175,11 +176,12 @@ export const EntityProblemEngineComponent = ({ entity }: { entity: EntityProblem
             },
           };
           const result = await new Promise<{ answer: string }>((resolve, reject) => {
-            sub = entity.problemEngine.choicesObserver.subscribe((s) => {
-              if (s.event !== `toggle`) {
+            sub = entity.problemEngine.choicesObserver.subscribe((c) => {
+              if (c.event !== `toggle`) {
+                setUi((s) => ({ ...s, choices: [...c.choices] }));
                 return;
               }
-              const choices = s.choices.filter((x) => x.active).map((x) => x.text);
+              const choices = c.choices.filter((x) => x.active).map((x) => x.text);
               resolve({ answer: choices[0] });
             });
             EntityProblemEngine.setChoices(entity, choices);
@@ -191,7 +193,7 @@ export const EntityProblemEngineComponent = ({ entity }: { entity: EntityProblem
               visible: true,
               title: subjectTitle,
               message: question,
-              choices: choices,
+              choices: choices.map((x) => ({ text: x, active: false })),
               answerCallback: (k, answer) => {
                 if (key !== k) {
                   return;
@@ -234,11 +236,12 @@ export const EntityProblemEngineComponent = ({ entity }: { entity: EntityProblem
             const falseOptions = altOptions.filter((x) => !correctAnswer.startsWith(x)).slice(3);
             const options = randomOrder([firstLetter, ...falseOptions]);
 
-            sub = entity.problemEngine.choicesObserver.subscribe((s) => {
-              if (s.event !== `toggle`) {
+            sub = entity.problemEngine.choicesObserver.subscribe((c) => {
+              if (c.event !== `toggle`) {
+                // setUi((s) => ({ ...s, choices: [...c.choices] }));
                 return;
               }
-              const choices = s.choices.filter((x) => x.active).map((x) => x.text);
+              const choices = c.choices.filter((x) => x.active).map((x) => x.text);
               resolve({ answer: correctAnswer.startsWith(choices[0]) ? correctAnswer : choices[0] });
             });
             EntityProblemEngine.setChoices(entity, options);
@@ -299,11 +302,15 @@ export const EntityProblemEngineComponent = ({ entity }: { entity: EntityProblem
               {ui.choices?.map((c, i) => (
                 <Box key={i} dir='row' justifyContent='flex-start' alignItems='center'>
                   <Box centerAnchor height={20} width={20}>
-                    <PhysicsBulletPoint size={20 * flexScale} worldPortal={portalTargetRef} />
+                    <PhysicsBulletPoint
+                      size={20 * flexScale}
+                      worldPortal={portalTargetRef}
+                      color={c.active ? 0x00ff00 : 0xff0000}
+                    />
                   </Box>
                   <Box height={16} margin={4}>
                     <Text anchorX='left' anchorY='top' fontSize={16}>
-                      {c}
+                      {c.text}
                     </Text>
                   </Box>
                 </Box>
@@ -343,11 +350,19 @@ const WorldSpacePortal = ({
   );
 };
 
-const PhysicsBulletPoint = ({ size, worldPortal }: { size: number; worldPortal: RefObject<Object3D> }) => {
+const PhysicsBulletPoint = ({
+  size,
+  color,
+  worldPortal,
+}: {
+  size: number;
+  color: number;
+  worldPortal: RefObject<Object3D>;
+}) => {
   return (
     <>
       <WorldSpacePortal worldPortal={worldPortal}>
-        {({ worldMatrixRef }) => <PhysicsBulletPointInner worldMatrixRef={worldMatrixRef} size={size} />}
+        {({ worldMatrixRef }) => <PhysicsBulletPointInner worldMatrixRef={worldMatrixRef} size={size} color={color} />}
       </WorldSpacePortal>
     </>
   );
@@ -383,9 +398,11 @@ const PhysicsBulletPointInnerSimple = ({
 
 export const PhysicsBulletPointInner = ({
   size,
+  color,
   worldMatrixRef,
 }: {
   size: number;
+  color: number;
   worldMatrixRef: RefObject<Matrix4>;
 }) => {
   const radius = size * 0.5;
@@ -442,11 +459,11 @@ export const PhysicsBulletPointInner = ({
     <>
       <mesh ref={refAnchor as Ref<Mesh>}>
         <sphereGeometry args={[radius * 0.1]} />
-        <meshStandardMaterial color={`#00ff00`} transparent={true} opacity={1} />
+        <meshStandardMaterial color={color} transparent={true} opacity={1} />
       </mesh>
       <mesh ref={ref as Ref<Mesh>}>
         <sphereGeometry args={[radius * 0.8]} />
-        <meshBasicMaterial color={`#00ff00`} />
+        <meshBasicMaterial color={color} />
       </mesh>
     </>
   );

@@ -12,7 +12,7 @@ import { EntityRaycastSelector } from './selectable-raycast-selector';
 export type EntityRaycastSelectorCollider = EntityRaycastSelector &
   EntityPhysicsView & {
     raycastSelectorCollider: {
-      // raycaster: Raycaster;
+      length: number;
     };
     view: {
       Component: (props: { entity: EntityBase }) => JSX.Element;
@@ -20,26 +20,18 @@ export type EntityRaycastSelectorCollider = EntityRaycastSelector &
   };
 
 export const EntityRaycastSelectorCollider = cloneComponent<EntityRaycastSelectorCollider>()(EntityPhysicsView)
-  .with(`raycastSelectorCollider`, () => {
+  .with(`raycastSelectorCollider`, ({ length = 100 }: { length?: number }) => {
     return {
-      //raycaster: new Raycaster(),
+      length,
     };
   })
   .with(`view`, () => ({
     Component: (x) => <EntityRaycastSelectorColliderComponent entity={x.entity as EntityRaycastSelectorCollider} />,
   }));
 
-export const EntityRaycastSelectorColliderComponent = ({
-  entity,
-  color,
-  length,
-}: {
-  entity: EntityRaycastSelectorCollider;
-  color?: number;
-  length?: number;
-}) => {
+export const EntityRaycastSelectorColliderComponent = ({ entity }: { entity: EntityRaycastSelectorCollider }) => {
   const [mode, setMode] = useState(`none` as SelectionMode);
-  const size = [0.1, 0.1, 100] as Triplet;
+  const size = [0.1, 0.1, entity.raycastSelectorCollider.length] as Triplet;
   const [refTrigger, apiTrigger] = useBox(
     () => ({
       args: size,

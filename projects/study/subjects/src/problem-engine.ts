@@ -64,6 +64,91 @@ export const createProblemEngine = ({
   delay,
   logger,
 }: ProblemEngineDependencies) => {
+  const getNextProblem = async (
+    playerState: ProblemEnginePlayerState,
+    { reviewRatio }: ProblemEngineOptions,
+    includedSubjects: StudySubjectTypes[],
+  ) => {
+    const getQueuedProblem = () => {
+      // return playerState.problemQueue.shift();
+
+      if (playerState.problemQueue.length <= 0) {
+        return;
+      }
+
+      // logger.log(`getQueuedProblem`, { playerName: playerState.playerName, problemQueue: playerState.problemQueue });
+
+      // Don't remove from queue
+      return playerState.problemQueue[0];
+    };
+
+    const getReviewProblem = async () => {
+      // Remove reviews that are at mastery level
+      playerState.reviewProblems = playerState.reviewProblems.filter((x) => x.reviewLevel < 3);
+
+      if (playerState.reviewProblems.length <= 0) {
+        return;
+      }
+      // Chance for new problem
+      if (playerState.reviewProblems.length < 3 && Math.random() > reviewRatio) {
+        return;
+      }
+
+      const lowestReviewLevel = Math.min(...playerState.reviewProblems.map((x) => x.reviewLevel));
+      const w = playerState.reviewProblems.filter((x) => x.reviewLevel === lowestReviewLevel);
+      const reviewProblem = w[0];
+      if (!reviewProblem) {
+        return;
+      }
+
+      // Add to queue and run queue
+      const reviewSubject = await getSubject(reviewProblem.problem.subjectKey);
+      const reviewSequence = reviewSubject.getReviewProblemSequence(reviewProblem.problem, reviewProblem.reviewLevel);
+
+      // Increase review level (it will reset on wrong answer)
+      reviewProblem.reviewLevel++;
+
+      // Mark sequence as review problems
+      reviewSequence.forEach((x) => (x._isReviewProblem = true));
+      playerState.problemQueue.push(...reviewSequence);
+
+      // logger.log(`getReviewProblem - sequence added`, {
+      //   playerName: playerState.playerName,
+      //   reviewSequence,
+      //   reviewProblems: playerState.reviewProblems.map((x) => ({ reviewLevel: x.reviewLevel, ...x.problem })),
+      //   // problemQueue: playerState.problemQueue,
+      // });
+
+      // Run as queued problem
+      return getQueuedProblem();
+    };
+
+    const qProblem = getQueuedProblem();
+    if (qProblem) {
+      logger.log(`queued problem`, { qProblem });
+      return qProblem;
+    }
+
+    const wProblem = await getReviewProblem();
+    if (wProblem) {
+      logger.log(`review problem`, { wProblem });
+      return wProblem;
+    }
+
+    const randomSubject = includedSubjects[Math.floor(Math.random() * includedSubjects.length)];
+    const problem = randomSubject.getNewProblem(
+      playerState.selectedSubjectCategories.filter((x) => x.subjectKey === randomSubject.subjectKey),
+    );
+
+    logger.log(`new problem`, { problem });
+
+    // Add to problem queue
+    playerState.problemQueue.push(problem);
+
+    // Run as queued problem (so it will auto-repeat if skipped)
+    return getQueuedProblem() ?? problem;
+  };
+
   // show problem
   const showNextProblem = async ({
     playerState,
@@ -151,15 +236,19 @@ export const createProblemEngine = ({
 
       // Re-issue question on accidental tap
       if (!answerRaw) {
+        logger.log(`not answered - repeating`, { answerRaw });
         return await presentProblemWithReissueOnAccidentalAnswer();
       }
       if (timeToAnswerMs < 0.5 * options.accidentalAnswerAllowedTimeMs) {
+        logger.log(`accidently answered right - repeating`, { answerRaw });
         return await presentProblemWithReissueOnAccidentalAnswer();
       }
       if (timeToAnswerMs < options.accidentalAnswerAllowedTimeMs && !isCorrect) {
+        logger.log(`accidently answered wrong - repeating`, { answerRaw });
         return await presentProblemWithReissueOnAccidentalAnswer();
       }
 
+      // logger.log(`next problem`, { answerRaw });
       return {
         wasCorrect: isCorrect,
         responseMessage,
@@ -175,88 +264,53 @@ export const createProblemEngine = ({
     if (textToSpeechRepeaterId) {
       clearInterval(textToSpeechRepeaterId);
     }
+
+    // Handle result
+
+    // If Correct
+    if (result.wasCorrect) {
+      // Leave wrong answers (remove on create review problem)
+      const newReviewProblems = playerState.reviewProblems;
+
+      // Remove correct answers
+      //const newReviewProblems = playerState.reviewProblems.filter(x => x.key !== result.problem.key);
+      const newProblemQueue = playerState.problemQueue.filter((x) => x.key !== result.problem.key);
+
+      // if (playerState.reviewProblems.length - newReviewProblems.length > 1
+      //     || playerState.problemQueue.length - newProblemQueue.length > 1) {
+      //     console.log(`✅ Answer correct - Removed multiple items from review`, {
+      //         newReviewProblems,
+      //         oldReviewProblems: playerState.reviewProblems,
+      //         newProblemQueue,
+      //         oldProblemQueue: playerState.problemQueue,
+      //     });
+      // }
+
+      playerState.reviewProblems = newReviewProblems;
+      playerState.problemQueue = newProblemQueue;
+
+      // gameConsequences.onCorrect(player);
+
+      logger.log(`Right Answer`, {
+        playerName: playerState.playerName,
+        result,
+        wrongHistory: playerState.answerHistory
+          .filter((x) => !x.wasCorrect)
+          .map((x) => `${x.time} ${x.timeToAnswerMs} ${x.problem.key}!=${x.answerRaw}`),
+        reviewProblems: playerState.reviewProblems,
+        problemQueue: playerState.problemQueue,
+      });
+
+      // if (result.problem._isReviewProblem) {
+      //   return {
+      //     nextTimeMs: 10 * 1000,
+      //   };
+      // }
+
+      return;
+    }
+
     return result;
-  };
-
-  const getNextProblem = async (
-    playerState: ProblemEnginePlayerState,
-    { reviewRatio }: ProblemEngineOptions,
-    includedSubjects: StudySubjectTypes[],
-  ) => {
-    const getQueuedProblem = () => {
-      // return playerState.problemQueue.shift();
-
-      if (playerState.problemQueue.length <= 0) {
-        return;
-      }
-
-      // logger.log(`getQueuedProblem`, { playerName: playerState.playerName, problemQueue: playerState.problemQueue });
-
-      // Don't remove from queue
-      return playerState.problemQueue[0];
-    };
-
-    const getReviewProblem = async () => {
-      // Remove reviews that are at mastery level
-      playerState.reviewProblems = playerState.reviewProblems.filter((x) => x.reviewLevel < 3);
-
-      if (playerState.reviewProblems.length <= 0) {
-        return;
-      }
-      // Chance for new problem
-      if (playerState.reviewProblems.length < 3 && Math.random() > reviewRatio) {
-        return;
-      }
-
-      const lowestReviewLevel = Math.min(...playerState.reviewProblems.map((x) => x.reviewLevel));
-      const w = playerState.reviewProblems.filter((x) => x.reviewLevel === lowestReviewLevel);
-      const reviewProblem = w[0];
-      if (!reviewProblem) {
-        return;
-      }
-
-      // Add to queue and run queue
-      const reviewSubject = await getSubject(reviewProblem.problem.subjectKey);
-      const reviewSequence = reviewSubject.getReviewProblemSequence(reviewProblem.problem, reviewProblem.reviewLevel);
-
-      // Increase review level (it will reset on wrong answer)
-      reviewProblem.reviewLevel++;
-
-      // Mark sequence as review problems
-      reviewSequence.forEach((x) => (x._isReviewProblem = true));
-      playerState.problemQueue.push(...reviewSequence);
-
-      // logger.log(`getReviewProblem - sequence added`, {
-      //   playerName: playerState.playerName,
-      //   reviewSequence,
-      //   reviewProblems: playerState.reviewProblems.map((x) => ({ reviewLevel: x.reviewLevel, ...x.problem })),
-      //   // problemQueue: playerState.problemQueue,
-      // });
-
-      // Run as queued problem
-      return getQueuedProblem();
-    };
-
-    const qProblem = getQueuedProblem();
-    if (qProblem) {
-      return qProblem;
-    }
-
-    const wProblem = await getReviewProblem();
-    if (wProblem) {
-      return wProblem;
-    }
-
-    const randomSubject = includedSubjects[Math.floor(Math.random() * includedSubjects.length)];
-    const problem = randomSubject.getNewProblem(
-      playerState.selectedSubjectCategories.filter((x) => x.subjectKey === randomSubject.subjectKey),
-    );
-
-    // Add to problem queue
-    playerState.problemQueue.push(problem);
-
-    // Run as queued problem (so it will auto-repeat if skipped)
-    return getQueuedProblem() ?? problem;
   };
 
   const showSubjectSelection = async ({
@@ -345,7 +399,7 @@ export const createProblemEngine = ({
       const result = await showSubjectSelection({ playerState, presenter });
 
       if (!result?.length) {
-        await delay(10000);
+        await delay(1000);
         return await continueStudyGame({ playerState, presenter, options: optionsRaw });
       }
 

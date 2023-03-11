@@ -32,17 +32,23 @@ export const logger = {
   logState,
 };
 
-export const DebugConsole = ({ maxLines = 10 }: { maxLines?: number }) => {
+export const DebugConsole = ({ maxLines = 10, visible = true }: { maxLines?: number; visible?: boolean }) => {
   const [text, setText] = useState(``);
 
   useLayoutEffect(() => {
     interval(100)
       .pipe(
         filter(() => !!logger.logState),
-        map(() => `${logger.logState.slice(0, maxLines).join(`\n`)}`),
+        map(
+          () =>
+            `${logger.logState
+              .slice(0, maxLines)
+              .map((x) => x.substring(0, 100))
+              .join(`\n`)}`,
+        ),
       )
       .subscribe(setText);
   }, []);
 
-  return <Text>{text}</Text>;
+  return <Text visible={visible}>{text}</Text>;
 };

@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/naming-convention */
 import React, { useRef, useState } from 'react';
-import { Box, Environment, Sphere, Text } from '@react-three/drei';
+import { ArcballControls, Box, Environment, Sphere, Text } from '@react-three/drei';
 import { Canvas } from '@react-three/fiber';
 import { useFrame } from '@react-three/fiber';
 import { ARButton, Controllers, Interactive, VRButton, XR } from '@react-three/xr';
@@ -20,7 +20,8 @@ export const VrTestGame = () => {
     <>
       <div style={{ position: `fixed`, bottom: 0, top: 0, left: 0, right: 0 }}>
         {/* <ARPage /> */}
-        <VRPage />
+        {/* <VRPage /> */}
+        <NonVrPage />
       </div>
     </>
   );
@@ -56,6 +57,26 @@ const VRPage = () => {
           {/* <Scene_03_PerfGesturesMover /> */}
           {/* <Scene_04_PerfGesturesMoverWithGround /> */}
           <Scene_05_WithEntities />
+          {/* <Scene_Experiment_01_Html /> */}
+        </XR>
+      </Canvas>
+    </>
+  );
+};
+
+const NonVrPage = () => {
+  return (
+    <>
+      {/* <XRButton mode='inline' onError={(e) => console.error(e)} /> */}
+      <Canvas>
+        <XR referenceSpace={`local-floor`}>
+          <ArcballControls />
+          {/* <Scene_GesturesSetup /> */}
+          {/* <Scene_01_Minimal /> */}
+          {/* <Scene_02_PerfGestures /> */}
+          {/* <Scene_03_PerfGesturesMover /> */}
+          {/* <Scene_04_PerfGesturesMoverWithGround /> */}
+          <Scene_05_WithEntities debugVisible={false} />
           {/* <Scene_Experiment_01_Html /> */}
         </XR>
       </Canvas>
@@ -178,7 +199,7 @@ const Scene_04_PerfGesturesMoverWithGround = () => {
 };
 
 // ?
-const Scene_05_WithEntities = () => {
+const Scene_05_WithEntities = ({ debugVisible = true }: { debugVisible?: boolean }) => {
   return (
     <>
       <GesturesProvider options={GestureOptions.all}>
@@ -205,7 +226,7 @@ const Scene_05_WithEntities = () => {
         </ScenePerspective>
 
         <Hud position={[0, 1, 4]}>
-          <DebugConsole />
+          <DebugConsole visible={debugVisible} />
         </Hud>
         <SkyBox />
       </GesturesProvider>

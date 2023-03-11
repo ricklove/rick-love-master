@@ -7,6 +7,7 @@ import { EntityChooser } from './entities/components/chooser';
 import { EntityForce } from './entities/components/force';
 import { EntityAdjustToGround, EntityGround } from './entities/components/ground';
 import { EntityGroundView } from './entities/components/ground-view';
+import { EntityMouseInput } from './entities/components/mouse-input';
 import { EntityPhysicsViewSphere } from './entities/components/physics-view-sphere';
 import { EntityPlayer } from './entities/components/player';
 import { EntityProblemEngine } from './entities/components/problem-engine';
@@ -34,12 +35,19 @@ const problemChooserManager = Entity.create(`problemChooser`)
     });
 
     const subs = [] as { unsubscribe: () => void }[];
+    let previousBallCount = 0;
     const reset = () => {
       subs.forEach((x) => x.unsubscribe());
       subs.splice(0, subs.length);
       balls.forEach((b, i) => {
+        if (i > previousBallCount) {
+          return;
+        }
         b.textView.text = ``;
+        b.physics.api.position.set(...getBallRandomStartposition());
+        b.physics.api.velocity.set(0, 0, 0);
       });
+      previousBallCount = 0;
     };
     e.chooser.choicesSubject.subscribe((s) => {
       if (s.event === `none`) {
@@ -58,40 +66,45 @@ const problemChooserManager = Entity.create(`problemChooser`)
       }
       if (s.event === `new`) {
         reset();
-        [...s.choices, ...(s.isMultiChoice ? [{ active: false, text: DONE }] : [])].forEach((c, i) => {
-          const b = balls[i];
+        setTimeout(() => {
+          previousBallCount = s.choices.length + 1;
+          [...s.choices, ...(s.isMultiChoice ? [{ active: false, text: DONE }] : [])].forEach((c, i) => {
+            const b = balls[i];
 
-          // b.active = true;
-          b.textView.text = getText(c);
-          logger.log(`choice`, { text: b.textView.text });
+            // b.active = true;
+            b.textView.text = getText(c);
+            logger.log(`choice`, { text: b.textView.text });
 
-          const fSub = EntityForce.register(b, new BehaviorSubject(true), (_, api, position) => {
-            const [x, y, z] = position;
-            if (v.set(x, y, z).sub(player.transform.position).lengthSq() > 10) {
-              return;
-            }
-            api.position.set(0, 5 + 5 * Math.random(), 0);
-            api.velocity.set(0, 0, 0);
+            const fSub = EntityForce.register(b, new BehaviorSubject(true), (_, api, position) => {
+              const [x, y, z] = position;
+              // logger.log(`choice pos`, { text: c.text, position });
+              const MAX_DIST = 30;
+              if (v.set(x, y, z).lengthSq() < MAX_DIST * MAX_DIST) {
+                return;
+              }
+              api.position.set(...getBallRandomStartposition(10));
+              api.velocity.set(0, 0, 0);
+            });
+            subs.push(fSub);
+
+            const sub = b.selectable.stateSubject.subscribe((x) => {
+              if (x.event !== `down-begin`) {
+                return;
+              }
+              if (c.text === DONE) {
+                EntityChooser.submitChoices(e);
+                return;
+              }
+
+              logger.log(`toggle`, { c });
+              EntityChooser.toggleChoice(e, c);
+              if (!s.isMultiChoice) {
+                EntityChooser.submitChoices(e);
+              }
+            });
+            subs.push(sub);
           });
-          subs.push(fSub);
-
-          const sub = b.selectable.stateSubject.subscribe((x) => {
-            if (x.event !== `down-begin`) {
-              return;
-            }
-            if (c.text === DONE) {
-              EntityChooser.submitChoices(e);
-              return;
-            }
-
-            logger.log(`toggle`, { c });
-            EntityChooser.toggleChoice(e, c);
-            if (!s.isMultiChoice) {
-              EntityChooser.submitChoices(e);
-            }
-          });
-          subs.push(sub);
-        });
+        }, 100);
 
         return;
       }
@@ -150,6 +163,19 @@ const raycastSelectorRight = Entity.create(`raycastSelectorRight`)
   player.player.gesturesSubject.subscribe((g) => handleHandGesture(g.right, raycastSelectorRight, vRight));
 })();
 
+const mouseInput = Entity.create(`mouseInput`).addComponent(EntityMouseInput, {}).build();
+const mouseRaycastSelector = Entity.create(`mouseRaycastSelector`)
+  .addComponent(EntitySelector, {})
+  .addComponent(EntityRaycastSelector, {})
+  .addComponent(EntityRaycastSelectorCollider, { length: 1000 })
+  .extend((e) => {
+    EntityRaycastSelector.changeSource(e, mouseInput.mouseInput);
+    mouseInput.mouseInput.buttonsSubject.pipe(filter((x) => x.kind === `left`)).subscribe((x) => {
+      EntitySelector.changeSelectionMode(e, x.sequence === `begin` ? `down` : `hover`);
+    });
+  })
+  .build();
+
 const ground = Entity.create(`ground`)
   .addComponent(EntityGround, {
     segmentCount: 16,
@@ -172,17 +198,21 @@ const ground = Entity.create(`ground`)
 //   })
 //   .build();
 
+const getBallRandomStartposition = (distance: number = 100) =>
+  [
+    distance * (0.5 - 1 * Math.random()),
+    5 + distance * (0.25 * Math.random()),
+    distance * (0.5 - 1 * Math.random()),
+  ] as Triplet;
 const balls = [...new Array(ballCount)].map(() => {
   const radius = 3 * Math.random();
-  const getRandomStartposition = () =>
-    [50 - 100 * Math.random(), 100 + 100 * Math.random(), 50 - 100 * Math.random()] as Triplet;
 
   const ball = Entity.create(`ball`)
     .addComponent(EntityPhysicsViewSphere, {
       mass: 1,
       radius,
       debugColor: 0xffffff * Math.random(),
-      startPosition: getRandomStartposition(),
+      startPosition: getBallRandomStartposition(),
     })
     .addComponent(EntitySelectable, {})
     .addComponent(EntityTextView, {
@@ -223,7 +253,7 @@ const balls = [...new Array(ballCount)].map(() => {
         }
         // Redrop
         api.velocity.set(0, 0, 0);
-        api.position.set(...getRandomStartposition());
+        api.position.set(...getBallRandomStartposition());
       });
 
       // // ball collisions
@@ -275,6 +305,8 @@ const balls = [...new Array(ballCount)].map(() => {
 const world: World = {
   entities: [
     player,
+    mouseInput,
+    mouseRaycastSelector,
     problemEngine,
     problemChooserManager,
     raycastSelectorLeft,
