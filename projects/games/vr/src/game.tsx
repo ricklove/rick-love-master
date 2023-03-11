@@ -20,7 +20,7 @@ import { logger } from './utils/logger';
 
 const problemEngine = Entity.create(`problemEngine`).addComponent(EntityProblemEngine, {}).build();
 
-const ballCount = 6;
+const ballCount = 20;
 const problemChooserManager = Entity.create(`problemChooser`)
   .addComponent(EntityChooser, {
     maxChoiceCount: ballCount,
@@ -58,7 +58,7 @@ const problemChooserManager = Entity.create(`problemChooser`)
       }
       if (s.event === `new`) {
         reset();
-        [...(s.isMultiChoice ? [{ active: false, text: DONE }] : []), ...s.choices].forEach((c, i) => {
+        [...s.choices, ...(s.isMultiChoice ? [{ active: false, text: DONE }] : [])].forEach((c, i) => {
           const b = balls[i];
 
           // b.active = true;

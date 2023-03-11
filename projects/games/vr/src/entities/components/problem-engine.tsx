@@ -168,7 +168,7 @@ export const EntityProblemEngineComponent = ({ entity }: { entity: EntityProblem
           });
           return result;
         },
-        presentMultipleChoiceProblem: async (p, { subjectTitle, question, choices }) => {
+        presentMultipleChoiceProblem: async (p, { subjectTitle, question, choices, correctAnswer }) => {
           let sub = {
             unsubscribe: () => {
               /* empty */
@@ -200,6 +200,7 @@ export const EntityProblemEngineComponent = ({ entity }: { entity: EntityProblem
               },
             });
           });
+          logger.log(`multi`, { answer: result.answer, correct: correctAnswer });
           sub.unsubscribe();
           EntityProblemEngine.clearChoices(entity);
           setUi({
