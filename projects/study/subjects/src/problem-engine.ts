@@ -3,7 +3,7 @@ import { ProblemEnginePlayerSaveState, StudyProblemAnswer } from './types';
 
 const defaultProblemEngineOptions = {
   nextProblemIntervalTimeMs: 30,
-  reviewRatio: 0.9,
+  reviewRatio: 0.7,
   previewTimeMultiplier: 1,
   accidentalAnswerAllowedTimeMs: 1000,
 };
