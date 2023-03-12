@@ -1,5 +1,4 @@
 import type {} from '@react-three/cannon';
-import type {} from 'rxjs';
 import type {} from 'three';
 import { EntityForce } from './components/force';
 import { EntityGravity } from './components/gravity';
@@ -11,11 +10,16 @@ import { EntityProblemEngine } from './components/problem-engine';
 import { EntitySelectable, EntitySelector } from './components/selectable';
 import { EntityRaycastSelector } from './components/selectable-raycast-selector';
 import { EntityRaycastSelectorCollider } from './components/selectable-raycast-selector-collider';
+import { EntitySpawnable } from './components/spawnable';
+import { EntitySpawner } from './components/spawner';
 import { EntityTextView } from './components/text-view';
-import { defineEntity, EntityBase, SimplifyEntity } from './core';
+import { defineEntity, EntityBase, EntityWithChildren, SimplifyEntity } from './core';
 
 // prettier-ignore
 type EntityUnion = EntityBase & (
+| EntityWithChildren
+| EntitySpawnable
+| EntitySpawner
 | EntityTextView
 | EntityProblemEngine
 | EntityGround
@@ -35,6 +39,4 @@ export type Entity = SimplifyEntity<EntityUnion>;
 
 export const Entity = defineEntity<Entity>();
 
-export type World = {
-  entities: Entity[];
-};
+export type World = Entity & EntityWithChildren;

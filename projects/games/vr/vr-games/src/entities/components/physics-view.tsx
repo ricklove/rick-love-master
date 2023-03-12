@@ -2,7 +2,6 @@ import { WorkerApi } from '@react-three/cannon';
 import { CollideBeginEvent, CollideEndEvent, CollideEvent } from '@react-three/cannon';
 import { Subject } from 'rxjs';
 import { Vector3 } from 'three';
-import { logger } from '../../utils/logger';
 import { defineComponent, EntityBase } from '../core';
 
 export type EntityPhysicsView = EntityBase & {
@@ -51,7 +50,7 @@ export const EntityPhysicsView = defineComponent<EntityPhysicsView>()
     register: (entity: EntityPhysicsView, api: WorkerApi) => {
       entity.physics.api = api;
       entity.physics.uuid = api?.uuid() ?? ``;
-      logger.log(`register`, { n: entity.name, e: entity.key, uuid: entity.physics.uuid ?? `` });
+      // logger.log(`register`, { n: entity.name, e: entity.key, uuid: entity.physics.uuid ?? `` });
 
       globalState.physicsViews[entity.physics.uuid] = entity;
     },

@@ -23,7 +23,7 @@ const formatDetails = (details?: unknown): string => {
 const logState = [] as string[];
 const log = (message: string, details?: unknown) => {
   const d = formatDetails(details);
-  console.log(message, d);
+  console.log(message, { details, d });
   logState.unshift(`${logState.length} ${Date.now() % 1000000}: ${message} ${d}`);
 };
 

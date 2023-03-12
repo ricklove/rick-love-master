@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { Physics, Triplet } from '@react-three/cannon';
 import { useFrame } from '@react-three/fiber';
 import { BehaviorSubject, filter, map, timer } from 'rxjs';
@@ -15,6 +15,7 @@ import { EntitySelectable, EntitySelector } from './entities/components/selectab
 import { EntityRaycastSelector } from './entities/components/selectable-raycast-selector';
 import { EntityRaycastSelectorCollider } from './entities/components/selectable-raycast-selector-collider';
 import { EntityTextView } from './entities/components/text-view';
+import { calculateAllEntities as calculateActiveEntities, EntityList as EntityList } from './entities/core';
 import { Entity, World } from './entities/entity';
 import { Gestures } from './gestures/gestures';
 import { logger } from './utils/logger';
@@ -303,7 +304,10 @@ const balls = [...new Array(ballCount)].map(() => {
 });
 
 const world: World = {
-  entities: [
+  active: new BehaviorSubject(true),
+  key: `world`,
+  name: `world`,
+  children: new EntityList([
     player,
     mouseInput,
     mouseRaycastSelector,
@@ -313,12 +317,19 @@ const world: World = {
     raycastSelectorRight,
     ground,
     ...balls,
-  ] as Entity[],
+  ] as Entity[]),
 };
 
 export const game = {
   world,
+  activeEntities: calculateActiveEntities<Entity>(world),
 };
+
+// const allEntities = world.children.pipe(map(c=>{
+
+//   c.filter(x=>x.active)
+
+// })))
 
 const useWorldFilter = <T extends Entity>(filter: (item: Entity) => boolean, groupKey?: (item: Entity) => string) => {
   const groupItems = useMemo(
@@ -348,23 +359,38 @@ const useWorldFilter = <T extends Entity>(filter: (item: Entity) => boolean, gro
     [],
   );
 
-  const [activeEntities, setActiveEntities] = useState(groupItems(world.entities.filter((x) => x.active && filter(x))));
+  const [activeEntities, setActiveEntities] = useState(
+    groupItems(game.activeEntities.items.filter((x) => x.active && filter(x))),
+  );
 
-  useFrame(() => {
-    const items = world.entities.filter((x) => x.active).filter(filter);
-    setActiveEntities((s) => {
-      if (s.items.length !== items.length) {
-        return groupItems(items);
-      }
-      for (let i = 0; i < items.length; i++) {
-        if (s.items[i] !== items[i]) {
-          return groupItems(items);
-        }
-      }
+  useEffect(() => {
+    const sub = game.activeEntities.itemsSubject.subscribe((a) => {
+      const filtered = groupItems(game.activeEntities.items.filter((x) => x.active && filter(x)));
+      setActiveEntities(filtered);
 
-      return s;
+      logger.log(`useWorldFilter updated`, {
+        items: a.length,
+        filtered: filtered.items.length,
+      });
     });
-  });
+    return () => sub.unsubscribe();
+  }, []);
+
+  // useFrame(() => {
+  //   const items = world.entities.filter((x) => x.active).filter(filter);
+  //   setActiveEntities((s) => {
+  //     if (s.items.length !== items.length) {
+  //       return groupItems(items);
+  //     }
+  //     for (let i = 0; i < items.length; i++) {
+  //       if (s.items[i] !== items[i]) {
+  //         return groupItems(items);
+  //       }
+  //     }
+
+  //     return s;
+  //   });
+  // });
 
   return activeEntities;
 };
@@ -381,9 +407,14 @@ export const WorldContainer = ({}: {}) => {
   // activeSelectors.forEach((e) => EntitySelector.changeTargets(e as EntitySelector, activeSelectables));
 
   useFrame(() => {
+    // logger.log(`WorldContainer useFrame`, {
+    //   entitiesCount: game.activeEntities.items.length,
+    //   worldChildrenCount: world.children.items.length,
+    // });
+
     EntityPlayer.updateInput(player);
 
-    const active = world.entities.filter((x) => x.active);
+    const active = game.activeEntities.items;
     const ground = active.find((x) => x.ground) as EntityGround;
 
     for (const e of active) {
@@ -409,6 +440,17 @@ export const WorldContainer = ({}: {}) => {
       //   EntityRaycastSelectorPhysics.raycast(e as EntityRaycastSelectorPhysics);
       // }
     }
+
+    game.activeEntities.frozen = false;
+    game.activeEntities.frozen = true;
+  });
+
+  logger.log(`WorldContainer RENDER`, {
+    entitiesCount: game.activeEntities.items.map((x) => x.key),
+    worldChildrenCount: world.children.items.map((x) => x.key),
+    activeViews: activeViews.map((x) => x.key),
+    activeTextViews: activeTextViews.map((x) => x.key),
+    activeBatchViews: activeBatchViews.map((x) => x.key),
   });
 
   return (

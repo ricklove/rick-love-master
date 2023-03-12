@@ -1,6 +1,5 @@
 import { BehaviorSubject, Observable } from 'rxjs';
 import { Vector3 } from 'three';
-import { logger } from '../../utils/logger';
 import { defineComponent, EntityBase } from '../core';
 
 export type SelectionMode = `none` | `hover` | `down`;
@@ -71,10 +70,10 @@ export const EntitySelectable = defineComponent<EntitySelectable>()
       const mode = newMode ?? selector.selector.mode;
       const oldMode = selectable.selectable.selectors[selector.key]?.mode ?? `none`;
 
-      logger.log(`handleEvent`, { mode, oldMode, sequence });
+      // logger.log(`handleEvent`, { mode, oldMode, sequence });
 
       const emit = (m: `hover` | `down`, s: `begin` | `end`) => {
-        logger.log(`emit`, { event: `${m}-${s}` });
+        // logger.log(`emit`, { event: `${m}-${s}` });
 
         selectable.selectable.stateSubject.next({
           entity: selectable,
@@ -169,7 +168,7 @@ export const EntitySelector = defineComponent<EntitySelector>()
         return;
       }
 
-      logger.log(`changeSelectionMode`, { mode, old: r.mode });
+      // logger.log(`changeSelectionMode`, { mode, old: r.mode });
 
       r.mode = mode;
       Object.entries(entity.selector.selectables).forEach(([k, { selectable }]) => {

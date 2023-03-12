@@ -1,10 +1,13 @@
+import { BehaviorSubject } from 'rxjs';
 import type { Vector3 as Vector3Three } from 'three';
+import { ObservableList } from '../utils/ObservableArray';
 
 export type Vector3 = Vector3Three;
 export type EntityBase = {
-  active: boolean;
+  active: BehaviorSubject<boolean>;
   name: string;
   key: string;
+  children?: EntityList<EntityBase>;
   // transform: {
   //   position: Vector3;
   // };
@@ -18,13 +21,62 @@ export type EntityBase = {
   //   color?: number;
   // };
 };
+export type EntityWithChildren = EntityBase & {
+  children: EntityList<EntityBase>;
+};
+
+export class EntityList<T extends EntityBase> extends ObservableList<T> {
+  public constructor(entities: T[] = []) {
+    super((x) => x.key, entities);
+  }
+}
+
+export const calculateAllEntities = <T extends EntityBase>(world: T) => {
+  const activeEntities = new EntityList<T>();
+  activeEntities.frozen = true;
+  const addEntity = (entity: T) => {
+    entity.active.subscribe((a) => {
+      if (a) {
+        activeEntities.add(entity);
+        if (!entity.children) {
+          return;
+        }
+
+        entity.children.items.forEach((c) => {
+          addEntity(c as T);
+        });
+        entity.children.added.subscribe((changes) => {
+          changes.forEach((c) => addEntity(c as T));
+        });
+        entity.children.removed.subscribe((changes) => {
+          changes.forEach((c) => removeEntity(c as T));
+        });
+      } else {
+        removeEntity(entity);
+      }
+    });
+  };
+  const removeEntity = (entity: T) => {
+    activeEntities.remove(entity);
+    if (!entity.children) {
+      return;
+    }
+    entity.children.items.forEach((c) => {
+      removeEntity(c as T);
+    });
+  };
+  addEntity(world);
+
+  activeEntities.frozen = false;
+  return activeEntities;
+};
 
 export type Simplify<T> = {} & {
   [K in keyof T]: T[K];
 };
 
 export type SimplifyFields<T> = {} & {
-  [K in keyof T]: Simplify<T[K]>;
+  [K in keyof T]: K extends `children` | `active` ? T[K] : Simplify<T[K]>;
 };
 
 type UnionToIntersection<T> = (T extends unknown ? (k: T) => void : never) extends (k: infer I) => void ? I : never;
@@ -80,7 +132,7 @@ export const defineComponent = <TEntityWithComponent extends Record<string, unkn
         inner.addComponent(e, args);
       }
 
-      return entity as TBefore & TAllComponents;
+      return entity as SimplifyFields<TBefore & TAllComponents>;
     };
 
     const result = {
@@ -126,7 +178,7 @@ export const defineEntity = <TEntity>() => ({
       _type: undefined as unknown as Simplify<TEntity>,
       entity: {
         name,
-        active: true,
+        active: new BehaviorSubject(true),
         key: `${nextEntityId++}`,
       } as EntityBase,
       addComponent,
