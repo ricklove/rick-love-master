@@ -51,6 +51,7 @@ export const EntityPlayerComponent = ({ entity }: { entity: EntityPlayer }) => {
     // Assign transform
     entity.transform.position = player.position;
     entity.player.gestures = gestures;
+    entity.ready.next(true);
   }, []);
 
   return <></>;

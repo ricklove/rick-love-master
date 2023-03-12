@@ -1,6 +1,5 @@
 import React, { useMemo, useRef } from 'react';
 import { useSphere } from '@react-three/cannon';
-import {} from 'rxjs';
 import { Color, InstancedMesh } from 'three';
 import { useIsomorphicLayoutEffect } from '../../utils/layoutEffect';
 import { cloneComponent, EntityBase } from '../core';
@@ -17,6 +16,7 @@ export const EntityPhysicsViewSphere = cloneComponent<EntityPhysicsViewSphere>()
   }))
   .with(`view`, ({ debugColor }: { debugColor?: number }) => ({
     debugColor,
+
     Component: () => <></>,
     batchKey: `EntityPhysicsViewSphere`,
     BatchComponent: ({ entities }: { entities: EntityBase[] }) => (
@@ -62,6 +62,7 @@ const EntityPhysicsViewSphereBatchComponent = ({ entities }: { entities: EntityP
         x.transform.position.set(...p);
       });
       EntityPhysicsView.register(x, api.at(i));
+      x.ready.next(true);
     });
   }, [!ref.current?.instanceColor, count]);
 

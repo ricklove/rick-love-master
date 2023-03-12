@@ -65,6 +65,7 @@ export const EntityRaycastSelectorColliderComponent = ({ entity }: { entity: Ent
 
   useIsomorphicLayoutEffect(() => {
     EntityPhysicsView.register(entity, apiTrigger);
+    entity.ready.next(true);
   }, []);
 
   useFrame(() => {

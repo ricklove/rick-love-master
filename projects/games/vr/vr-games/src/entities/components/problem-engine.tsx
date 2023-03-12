@@ -96,6 +96,8 @@ export const EntityProblemEngineComponent = ({ entity }: { entity: EntityProblem
   });
 
   useIsomorphicLayoutEffect(() => {
+    entity.ready.next(true);
+
     const playerState = (entity.problemEngine.playerState =
       entity.problemEngine.problemEngine.createPlayer(`Player 1`));
 

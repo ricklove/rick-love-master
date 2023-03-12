@@ -34,6 +34,8 @@ export const EntityMouseInputComponent = ({ entity }: { entity: EntityMouseInput
   const camera = useCamera();
 
   useIsomorphicLayoutEffect(() => {
+    entity.ready.next(true);
+
     const getButtonKind = (button: number) => {
       switch (button) {
         case 0:

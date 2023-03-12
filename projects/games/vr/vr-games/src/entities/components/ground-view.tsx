@@ -107,6 +107,7 @@ const EntityHeightFieldComponent = ({ entity }: { entity: EntityGroundView }) =>
     }
     // Assign mesh
     entity.transform.position = new Vector3();
+    entity.ready.next(true);
   }, []);
 
   return (

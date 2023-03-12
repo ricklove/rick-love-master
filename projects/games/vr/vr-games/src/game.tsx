@@ -1,7 +1,7 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { Physics, Triplet } from '@react-three/cannon';
 import { useFrame } from '@react-three/fiber';
-import { BehaviorSubject, filter, map, timer } from 'rxjs';
+import { BehaviorSubject, delay, filter, map, timer } from 'rxjs';
 import { Vector3 } from 'three';
 import { EntityChooser } from './entities/components/chooser';
 import { EntityForce } from './entities/components/force';
@@ -14,6 +14,8 @@ import { EntityProblemEngine } from './entities/components/problem-engine';
 import { EntitySelectable, EntitySelector } from './entities/components/selectable';
 import { EntityRaycastSelector } from './entities/components/selectable-raycast-selector';
 import { EntityRaycastSelectorCollider } from './entities/components/selectable-raycast-selector-collider';
+import { EntitySpawnable } from './entities/components/spawnable';
+import { EntitySpawner } from './entities/components/spawner';
 import { EntityTextView } from './entities/components/text-view';
 import { calculateAllEntities as calculateActiveEntities, EntityList as EntityList } from './entities/core';
 import { Entity, World } from './entities/entity';
@@ -36,19 +38,18 @@ const problemChooserManager = Entity.create(`problemChooser`)
     });
 
     const subs = [] as { unsubscribe: () => void }[];
-    let previousBallCount = 0;
+    let balls = [] as ReturnType<typeof createBall>[];
     const reset = () => {
       subs.forEach((x) => x.unsubscribe());
       subs.splice(0, subs.length);
       balls.forEach((b, i) => {
-        if (i > previousBallCount) {
-          return;
-        }
         b.textView.text = ``;
-        b.physics.api.position.set(...getBallRandomStartposition());
-        b.physics.api.velocity.set(0, 0, 0);
+        EntitySpawner.despawn(ballSpawner, b);
+        // ballSpawner.despawn(b);
+        // b.physics.api.position.set(...getBallRandomStartposition());
+        // b.physics.api.velocity.set(0, 0, 0);
       });
-      previousBallCount = 0;
+      balls = [];
     };
     e.chooser.choicesSubject.subscribe((s) => {
       if (s.event === `none`) {
@@ -68,9 +69,12 @@ const problemChooserManager = Entity.create(`problemChooser`)
       if (s.event === `new`) {
         reset();
         setTimeout(() => {
-          previousBallCount = s.choices.length + 1;
-          [...s.choices, ...(s.isMultiChoice ? [{ active: false, text: DONE }] : [])].forEach((c, i) => {
-            const b = balls[i];
+          const items = [...s.choices, ...(s.isMultiChoice ? [{ active: false, text: DONE }] : [])];
+          items.forEach((c, i) => {
+            const b = EntitySpawner.spawn(ballSpawner, new Vector3(...getBallRandomStartPosition(10))) as ReturnType<
+              typeof createBall
+            >;
+            balls.push(b);
 
             // b.active = true;
             b.textView.text = getText(c);
@@ -83,7 +87,7 @@ const problemChooserManager = Entity.create(`problemChooser`)
               if (v.set(x, y, z).lengthSq() < MAX_DIST * MAX_DIST) {
                 return;
               }
-              api.position.set(...getBallRandomStartposition(10));
+              api.position.set(...getBallRandomStartPosition(10));
               api.velocity.set(0, 0, 0);
             });
             subs.push(fSub);
@@ -199,21 +203,35 @@ const ground = Entity.create(`ground`)
 //   })
 //   .build();
 
-const getBallRandomStartposition = (distance: number = 100) =>
+const getBallRandomStartPosition = (distance: number = 100) =>
   [
     distance * (0.5 - 1 * Math.random()),
     5 + distance * (0.25 * Math.random()),
     distance * (0.5 - 1 * Math.random()),
   ] as Triplet;
-const balls = [...new Array(ballCount)].map(() => {
+const createBall = () => {
   const radius = 3 * Math.random();
 
   const ball = Entity.create(`ball`)
+    .addComponent(EntitySpawnable, {
+      doSpawn: (e, pos) => {
+        const b = e as typeof ball;
+        b.ready
+          .pipe(
+            filter((x) => !!x),
+            delay(100),
+          )
+          .subscribe(() => {
+            b.physics.api.position.set(...pos.toArray());
+            b.physics.api.velocity.set(0, 0, 0);
+          });
+      },
+    })
     .addComponent(EntityPhysicsViewSphere, {
       mass: 1,
       radius,
       debugColor: 0xffffff * Math.random(),
-      startPosition: getBallRandomStartposition(),
+      startPosition: getBallRandomStartPosition(),
     })
     .addComponent(EntitySelectable, {})
     .addComponent(EntityTextView, {
@@ -254,7 +272,7 @@ const balls = [...new Array(ballCount)].map(() => {
         }
         // Redrop
         api.velocity.set(0, 0, 0);
-        api.position.set(...getBallRandomStartposition());
+        api.position.set(...getBallRandomStartPosition());
       });
 
       // // ball collisions
@@ -301,10 +319,17 @@ const balls = [...new Array(ballCount)].map(() => {
 
   // ball.active = false;
   return ball;
-});
+};
+
+const ballSpawner = Entity.create(`ballSpawner`)
+  .addComponent(EntitySpawner, {
+    createSpawnable: createBall,
+  })
+  .build();
 
 const world: World = {
   active: new BehaviorSubject(true),
+  ready: new BehaviorSubject(true),
   key: `world`,
   name: `world`,
   children: new EntityList([
@@ -316,7 +341,7 @@ const world: World = {
     raycastSelectorLeft,
     raycastSelectorRight,
     ground,
-    ...balls,
+    ballSpawner,
   ] as Entity[]),
 };
 

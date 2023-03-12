@@ -75,6 +75,7 @@ export const EntityRaycastSelectorMousePhysicsColliderComponent = ({
 
   useIsomorphicLayoutEffect(() => {
     EntityPhysicsView.register(entity, apiTrigger);
+    entity.ready.next(true);
   }, []);
 
   useFrame(() => {

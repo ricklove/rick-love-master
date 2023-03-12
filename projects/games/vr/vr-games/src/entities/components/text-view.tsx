@@ -2,6 +2,7 @@ import React, { useRef, useState } from 'react';
 import { Billboard, Text } from '@react-three/drei';
 import { useFrame } from '@react-three/fiber';
 import { Group, Vector3 } from 'three';
+import { useIsomorphicLayoutEffect } from '../../utils/layoutEffect';
 import { defineComponent, EntityBase } from '../core';
 
 export type EntityTextView = EntityBase & {
@@ -36,6 +37,7 @@ export const EntityTextView = defineComponent<EntityTextView>().with(
       text: defaultText,
       fontSize,
       color,
+
       Component: (x) => <EntityTextViewComponent entity={x.entity as EntityTextView} />,
     };
   },
@@ -47,6 +49,10 @@ export const EntityTextViewComponent = ({ entity }: { entity: EntityTextView }) 
   const [text, setText] = useState(``);
   const [fontSize, setFontSize] = useState(0.05);
   const [color, setColor] = useState(0xffffff);
+
+  useIsomorphicLayoutEffect(() => {
+    entity.ready.next(true);
+  }, []);
 
   useFrame(() => {
     if (!ref.current) {

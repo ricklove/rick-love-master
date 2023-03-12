@@ -5,6 +5,7 @@ import { ObservableList } from '../utils/ObservableArray';
 export type Vector3 = Vector3Three;
 export type EntityBase = {
   active: BehaviorSubject<boolean>;
+  ready: BehaviorSubject<boolean>;
   name: string;
   key: string;
   children?: EntityList<EntityBase>;
@@ -76,7 +77,7 @@ export type Simplify<T> = {} & {
 };
 
 export type SimplifyFields<T> = {} & {
-  [K in keyof T]: K extends `children` | `active` ? T[K] : Simplify<T[K]>;
+  [K in keyof T]: K extends `children` | `active` | `ready` ? T[K] : Simplify<T[K]>;
 };
 
 type UnionToIntersection<T> = (T extends unknown ? (k: T) => void : never) extends (k: infer I) => void ? I : never;
@@ -179,6 +180,7 @@ export const defineEntity = <TEntity>() => ({
       entity: {
         name,
         active: new BehaviorSubject(true),
+        ready: new BehaviorSubject(false),
         key: `${nextEntityId++}`,
       } as EntityBase,
       addComponent,
