@@ -152,7 +152,7 @@ export const humanJointData = [
     label: `nose-tip`,
   },
   {
-    cx: `-2.4519999`,
+    cx: `2.4519999`,
     cy: `-94.300583`,
     label: `eye-lens`,
   },

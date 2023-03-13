@@ -74,7 +74,7 @@ const EntityPhysicsViewSphereBatchComponent = ({ entities }: { entities: EntityP
 
   return (
     <instancedMesh ref={ref} castShadow receiveShadow args={[undefined, undefined, count]}>
-      <sphereBufferGeometry args={[undefined, 16, 16]}>
+      <sphereBufferGeometry args={[1, 16, 16]}>
         <instancedBufferAttribute attach='attributes-color' args={[colors, 3]} />
       </sphereBufferGeometry>
       <meshPhongMaterial vertexColors />

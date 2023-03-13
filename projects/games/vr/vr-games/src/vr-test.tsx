@@ -219,8 +219,8 @@ const Scene_05_WithEntities = ({ debugVisible = true }: { debugVisible?: boolean
           {/* <PlayerAvatarInSceneSpace /> */}
 
           {/* <Sphere position={[-2, 1, 0]} scale={0.02} />
-          <Sphere position={[0, 1, -10]} scale={0.05} />
-          <Sphere position={[0, 1, -90]} /> */}
+          <Sphere position={[0, 1, -10]} scale={0.05} />*/}
+          <Sphere position={[0, 1, -90]} />
 
           <WorldContainer />
         </ScenePerspective>

@@ -235,7 +235,6 @@
       "cy": "-87.641876",
       "r": "0.5",
       "label": "chin-tip",
-      "transform": "scale(-1,1)"
     },
     {
       "style": "opacity:1;fill:#000000;fill-opacity:1;stroke:none;stroke-width:10.5833;stroke-linecap:round;stroke-linejoin:round;paint-order:stroke markers fill;stop-color:#000000",
@@ -244,16 +243,14 @@
       "cy": "-92.383156",
       "r": "0.5",
       "label": "nose-tip",
-      "transform": "scale(-1,1)"
     },
     {
       "style": "opacity:1;fill:#000000;fill-opacity:1;stroke:none;stroke-width:10.5833;stroke-linecap:round;stroke-linejoin:round;paint-order:stroke markers fill;stop-color:#000000",
       "id": "circle2628",
-      "cx": "-2.4519999",
+      "cx": "2.4519999",
       "cy": "-94.300583",
       "r": "0.5",
       "label": "eye-lens",
-      "transform": "scale(-1,1)"
     },
     {
       "style": "opacity:1;fill:#000000;fill-opacity:1;stroke:none;stroke-width:10.5833;stroke-linecap:round;stroke-linejoin:round;paint-order:stroke markers fill;stop-color:#000000",
