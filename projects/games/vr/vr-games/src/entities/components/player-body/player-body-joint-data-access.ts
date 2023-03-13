@@ -87,6 +87,17 @@ const createPlayerBody = () => {
     ...createPlayerSide(`left`),
     ...createPlayerSide(`right`),
     ...createPlayerHead(),
+    {
+      ...getNonHandJointData(`center`, 0.005, 0, `core`, `pelvis-top`, [
+        `neck-base`,
+        `pelvis-bottom`,
+        `hip-socket`,
+        `shoulder-socket`,
+      ]),
+    },
+    {
+      ...getNonHandJointData(`center`, 0.005, 0, `core`, `pelvis-bottom`, []),
+    },
 
     // createPlayerHandNode({ ...getJointData(`left`, `neck-base`) }),
     // createPlayerHandNode({ ...getJointData(side, `thumb-metacarpal`) }),

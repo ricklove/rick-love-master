@@ -3,6 +3,8 @@ import { Entity } from '../../entity';
 import { EntityPhysicsViewSphere } from '../physics-view-sphere';
 import { getHumanJointData, HumanJointData } from './player-body-joint-data-access';
 
+// constraints Reference: https://enable3d.io/examples/types-of-constraints.html
+
 export type EntityPlayerBody = EntityWithChildren & {
   playerBody: {
     parts: { entity: EntityBase; joint: HumanJointData }[];
@@ -12,9 +14,10 @@ export const EntityPlayerBody = defineComponent<EntityPlayerBody>()
   .with(`children`, () => new EntityList())
   .with(`playerBody`, ({}: {}, e) => {
     const joints = getHumanJointData();
-    const parts = joints.map((x) => ({ entity: createSphereNode(x), joint: x }));
-    e.children.add(...parts.map((x) => x.entity));
-    return { parts };
+    const jointEntities = joints.map((x) => ({ entity: createSphereNode(x), joint: x }));
+
+    e.children.add(...jointEntities.map((x) => x.entity));
+    return { parts: jointEntities };
   })
   .attach({});
 

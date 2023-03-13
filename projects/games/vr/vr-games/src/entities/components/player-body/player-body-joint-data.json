@@ -254,6 +254,22 @@
     },
     {
       "style": "opacity:1;fill:#000000;fill-opacity:1;stroke:none;stroke-width:10.5833;stroke-linecap:round;stroke-linejoin:round;paint-order:stroke markers fill;stop-color:#000000",
+      "id": "circle3051",
+      "cx": "0",
+      "cy": "-57.892391",
+      "r": "0.5",
+      "label": "pelvis-top"
+    },
+    {
+      "style": "opacity:1;fill:#000000;fill-opacity:1;stroke:none;stroke-width:10.5833;stroke-linecap:round;stroke-linejoin:round;paint-order:stroke markers fill;stop-color:#000000",
+      "id": "circle3102",
+      "cx": "0",
+      "cy": "-48.619011",
+      "r": "0.5",
+      "label": "pelvis-bottom"
+    },
+    {
+      "style": "opacity:1;fill:#000000;fill-opacity:1;stroke:none;stroke-width:10.5833;stroke-linecap:round;stroke-linejoin:round;paint-order:stroke markers fill;stop-color:#000000",
       "id": "circle2708",
       "cx": "5.5866961",
       "cy": "-51.737373",

@@ -26,7 +26,7 @@
      showgrid="false"
      inkscape:zoom="3.7946873"
      inkscape:cx="13.571606"
-     inkscape:cy="91.443634"
+     inkscape:cy="154.68995"
      inkscape:window-width="1398"
      inkscape:window-height="790"
      inkscape:window-x="1913"
@@ -17184,6 +17184,20 @@ Err+EcLS+jdej8MLL7zwwgsvvAAAAABonf8Pd1rpa7P5zIcAAAAASUVORK5CYII=
        cy="-94.300583"
        r="0.5"
        inkscape:label="eye-lens" />
+    <circle
+       style="opacity:1;fill:#000000;fill-opacity:1;stroke:none;stroke-width:10.5833;stroke-linecap:round;stroke-linejoin:round;paint-order:stroke markers fill;stop-color:#000000"
+       id="circle3102"
+       cx="0"
+       cy="-48.619011"
+       r="0.5"
+       inkscape:label="pelvis-bottom" />
+    <circle
+       style="opacity:1;fill:#000000;fill-opacity:1;stroke:none;stroke-width:10.5833;stroke-linecap:round;stroke-linejoin:round;paint-order:stroke markers fill;stop-color:#000000"
+       id="circle3051"
+       cx="0"
+       cy="-57.892391"
+       r="0.5"
+       inkscape:label="pelvis-top" />
     <circle
        style="opacity:1;fill:#000000;fill-opacity:1;stroke:none;stroke-width:10.5833;stroke-linecap:round;stroke-linejoin:round;paint-order:stroke markers fill;stop-color:#000000"
        id="circle2708"
