@@ -109,7 +109,7 @@ export const defineComponent = <TEntityWithComponent extends Record<string, unkn
   >(
     this: TComponentFactoryBefore,
     name: TName,
-    createComponent: (args: TArgs, e?: TEntityWithComponent) => TEntityWithComponent[TName],
+    createComponent: (args: TArgs, e: TEntityWithComponent) => TEntityWithComponent[TName],
   ) {
     type TAllComponents = Pick<TEntityWithComponent, TName> & TComponentFactoryBefore[`_componentType`];
     type TAllArgs = TArgs & TComponentFactoryBefore[`_argsType`];
@@ -122,16 +122,16 @@ export const defineComponent = <TEntityWithComponent extends Record<string, unkn
       args: TAllArgs,
     ): SimplifyFields<TBefore & TAllComponents> => {
       const e = entity as unknown as TAllComponents;
+      // call inner first
+      if (inner.addComponent) {
+        inner.addComponent(e, args);
+      }
+
       // if (e[name]) {
       //   console.log(`Replacing component`, { name, e });
       //   // return entity as TBefore & TAllComponents;
       // }
       e[name] = createComponent(args, e as TEntityWithComponent);
-
-      // call inner
-      if (inner.addComponent) {
-        inner.addComponent(e, args);
-      }
 
       return entity as SimplifyFields<TBefore & TAllComponents>;
     };

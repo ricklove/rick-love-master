@@ -205,22 +205,22 @@ const Scene_05_WithEntities = ({ debugVisible = true }: { debugVisible?: boolean
       <GesturesProvider options={GestureOptions.all}>
         <ambientLight intensity={0.5} />
         <ScenePerspective perspective={`1st`}>
-          {[...new Array(3)].map((_, i) => (
+          {/* {[...new Array(3)].map((_, i) => (
             <pointLight
               key={i}
               position={[500 - 1000 * Math.random(), 50 * Math.random(), 500 - 1000 * Math.random()]}
               color={Math.round(0xffffff * Math.random())}
               distance={300}
             />
-          ))}
+          ))} */}
           <gridHelper args={[100, 100]} />
-          <Mover_Running />
+          {/* <Mover_Running /> */}
           {/* <RandomGround /> */}
-          <PlayerAvatarInSceneSpace />
+          {/* <PlayerAvatarInSceneSpace /> */}
 
-          <Sphere position={[-2, 1, 0]} scale={0.02} />
+          {/* <Sphere position={[-2, 1, 0]} scale={0.02} />
           <Sphere position={[0, 1, -10]} scale={0.05} />
-          <Sphere position={[0, 1, -90]} />
+          <Sphere position={[0, 1, -90]} /> */}
 
           <WorldContainer />
         </ScenePerspective>

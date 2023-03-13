@@ -294,7 +294,7 @@ export const EntityProblemEngineComponent = ({ entity }: { entity: EntityProblem
 
   // TODO: Answer questions in hud
 
-  logger.log(`EntityProblemEngineComponent: render`);
+  // logger.log(`EntityProblemEngineComponent: render`);
 
   const portalTargetRef = useRef<Group>(null);
 

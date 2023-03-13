@@ -10,6 +10,7 @@ import { EntityGroundView } from './entities/components/ground-view';
 import { EntityMouseInput } from './entities/components/mouse-input';
 import { EntityPhysicsViewSphere } from './entities/components/physics-view-sphere';
 import { EntityPlayer } from './entities/components/player';
+import { EntityPlayerBody } from './entities/components/player-body/player-body';
 import { EntityProblemEngine } from './entities/components/problem-engine';
 import { EntitySelectable, EntitySelector } from './entities/components/selectable';
 import { EntityRaycastSelector } from './entities/components/selectable-raycast-selector';
@@ -124,6 +125,7 @@ const problemChooserManager = Entity.create(`problemChooser`)
 
 const player = Entity.create(`player`)
   .addComponent(EntityPlayer, {})
+  .addComponent(EntityPlayerBody, {})
   .addComponent(EntityAdjustToGround, {
     minGroundHeight: 0,
     maxGroundHeight: 0,
