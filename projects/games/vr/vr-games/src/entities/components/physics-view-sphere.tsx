@@ -1,8 +1,7 @@
 import React, { useMemo, useRef } from 'react';
 import { useSphere } from '@react-three/cannon';
-import { Color, InstancedMesh, Matrix4, Quaternion, Vector3 } from 'three';
+import { Color, InstancedMesh } from 'three';
 import { useIsomorphicLayoutEffect } from '../../utils/layoutEffect';
-import { logger } from '../../utils/logger';
 import { cloneComponent, EntityBase } from '../core';
 import { EntityPhysicsView } from './physics-view';
 
@@ -27,7 +26,7 @@ export const EntityPhysicsViewSphere = cloneComponent<EntityPhysicsViewSphere>()
 
 const EntityPhysicsViewSphereBatchComponent = ({ entities }: { entities: EntityPhysicsViewSphere[] }) => {
   const count = entities.length;
-  logger.log(`EntityPhysicsViewSphereBatchComponent`, { count, entities });
+  // logger.log(`EntityPhysicsViewSphereBatchComponent`, { count, entities });
   const [ref, api] = useSphere(
     (index) => ({
       args: [entities[index].sphere.radius],
@@ -53,50 +52,13 @@ const EntityPhysicsViewSphereBatchComponent = ({ entities }: { entities: EntityP
     return array;
   }, [count]);
 
-  const calculateMatrix = useMemo(() => {
-    // const rotation = new Euler();
-    const quaternion = new Quaternion();
-    const scale = new Vector3();
-
-    return (position: Vector3, radius: number, out: Matrix4) => {
-      // const position = entities[i].transform.position;
-
-      // rotation.x = 0;
-      // rotation.y = 0;
-      // rotation.z = 0;
-      // quaternion.setFromEuler(rotation);
-
-      // default is radius 1
-      scale.x = scale.y = scale.z = radius;
-
-      out.compose(position, quaternion, scale);
-    };
-  }, []);
-
-  const matrices = useMemo(() => {
-    const matrix = new Matrix4();
-
-    const array = new Float32Array(count * 16);
-    for (let i = 0; i < count; i++) {
-      calculateMatrix(entities[i].transform.position, entities[i].sphere.radius, matrix);
-      matrix.toArray(array, i * 16);
-    }
-    return array;
-  }, [count]);
-
   useIsomorphicLayoutEffect(() => {
     if (!ref.current) {
       return;
     }
 
     const r = ref.current;
-    const matrix = new Matrix4();
-
     entities.forEach((x, i) => {
-      // calculateMatrix(entities[i].transform.position, entities[i].sphere.radius, matrix);
-      // logger.log(`matrix`, { matrix });
-      // r.setMatrixAt(i, matrix);
-
       api.at(i).position.subscribe((p) => {
         x.transform.position.set(...p);
       });
@@ -110,19 +72,10 @@ const EntityPhysicsViewSphereBatchComponent = ({ entities }: { entities: EntityP
     r.instanceMatrix.needsUpdate = true;
   }, [!ref.current?.instanceColor, count]);
 
-  // useFrame(() => {
-  //   entities.forEach((x, i) => {
-  //     api.at(i).position.subscribe((p) => {
-  //       x.transform.position.set(...p);
-  //     });
-  //   });
-  // });
-
   return (
     <instancedMesh ref={ref} castShadow receiveShadow args={[undefined, undefined, count]}>
       <sphereBufferGeometry args={[undefined, 16, 16]}>
         <instancedBufferAttribute attach='attributes-color' args={[colors, 3]} />
-        {/* <instancedBufferAttribute attach='attributes-matrix' args={[matrices, 16]} /> */}
       </sphereBufferGeometry>
       <meshPhongMaterial vertexColors />
     </instancedMesh>

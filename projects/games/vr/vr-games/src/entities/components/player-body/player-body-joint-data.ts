@@ -1,6 +1,6 @@
 // json-transform: circle[].{cx: cx, cy:cy, label: label}
 /** scaled to top of head at 100 cm, origin at center between feet, cy in negative */
-export const humanJointData: { cx: string; cy: string; label: string }[] = [
+export const humanJointData = [
   {
     cx: `21.194036`,
     cy: `-43.232384`,
@@ -169,7 +169,7 @@ export const humanJointData: { cx: string; cy: string; label: string }[] = [
   {
     cx: `4.9940367`,
     cy: `-25.416311`,
-    label: `femur-top`,
+    label: `knee`,
   },
   {
     cx: `4.2270651`,
@@ -201,4 +201,4 @@ export const humanJointData: { cx: string; cy: string; label: string }[] = [
     cy: `2.6478693`,
     label: `pinky-toe-tip`,
   },
-];
+] as const;
