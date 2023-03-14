@@ -14,9 +14,11 @@ const humanoidOffset = Entity.create(`humanoid`)
   .addComponent(EntityHumanoidBody, { scale: 1, offset: new Vector3(1, 0, 0) })
   .build();
 
-const humanoids = [...new Array(2)].map((_, i) =>
+const rows = 4;
+const cols = 4;
+const humanoids = [...new Array(rows * cols)].map((_, i) =>
   Entity.create(`humanoid-${i}`)
-    .addComponent(EntityHumanoidBody, { scale: 1, offset: new Vector3(i % 10, 0, Math.floor(i / 10)) })
+    .addComponent(EntityHumanoidBody, { scale: 1, offset: new Vector3(i % rows, 0, Math.floor(i / rows)) })
     .build(),
 );
 
@@ -34,8 +36,8 @@ export const scene02: SceneDefinition = {
   debugPhysics: true,
   rootEntities: [
     // humanoid,
-    humanoidOffset,
-    //...humanoids,
+    // humanoidOffset,
+    ...humanoids,
     ground,
   ],
   gravity: [0, -0.1, 0] as Triplet,

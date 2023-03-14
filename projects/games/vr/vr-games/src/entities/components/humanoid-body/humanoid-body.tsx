@@ -39,7 +39,7 @@ export const EntityHumanoidBody = defineComponent<EntityHumanoidBody>()
     // );
 
     e.children.add(...bodyPartEntities.map((x) => x.entity));
-    e.children.add(...bodyPartEntities.flatMap((x) => x.pivotEntities));
+    // e.children.add(...bodyPartEntities.flatMap((x) => x.pivotEntities));
 
     logger.log(`bodyPartEntities`, { bodyPartEntities });
 
