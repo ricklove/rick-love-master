@@ -5,6 +5,7 @@ import { logger } from '../../../utils/logger';
 import { defineComponent, EntityBase, EntityList, EntityWithChildren } from '../../core';
 import { Entity } from '../../entity';
 import { EntityForce } from '../force';
+import { EntityPhysicsConstraintConeTwist } from '../physics-constraint';
 import { EntityPhysicsView } from '../physics-view';
 import { EntityPhysicsViewBox } from '../physics-view-box';
 import { EntityPhysicsViewSphere } from '../physics-view-sphere';
@@ -30,7 +31,7 @@ export const EntityPlayerBody = defineComponent<EntityPlayerBody>()
     );
 
     e.children.add(...bodyPartEntities.map((x) => x.entity));
-    e.children.add(...bodyPartEntities.flatMap((x) => x.pivotEntities));
+    // e.children.add(...bodyPartEntities.flatMap((x) => x.pivotEntities));
 
     logger.log(`bodyPartEntities`, { bodyPartEntities });
 
@@ -73,6 +74,7 @@ const createBodyJoint = (
   const createJointEntity = (parent: typeof connectedToJoint[number], child?: typeof connectedToJoint[number]) => {
     const e = Entity.create(`bodyJoint:${joint}:${side}`)
       .addComponent(EntityPhysicsViewSphere, {
+        enablePhysics: false,
         mass: 0,
         radius: radius * scale,
         debugColorRgba: side === `left` ? 0x0000ffff : side === `right` ? 0xff0000ff : 0x880088ff,
@@ -82,41 +84,43 @@ const createBodyJoint = (
       .extend((e) => {
         // TODO: Use a point to point constraint
         // Follow parent position
+        const pos = new Vector3();
         EntityForce.register(e, new BehaviorSubject(true), (e) => {
-          if (!e.physics.api) {
-            return;
-          }
+          pos
+            .set(...parent.pivot.position)
+            .applyQuaternion((parent.part.entity as EntityPhysicsViewBox).box.quaternion)
+            .add(parent.part.entity.transform.position);
 
-          e.physics.api.sleep();
-          e.physics.api.position.set(
-            ...new Vector3(...parent.pivot.position)
-              .applyQuaternion((parent.part.entity as EntityPhysicsViewBox).box.quaternion)
-              .add(parent.part.entity.transform.position)
-              .toArray(),
-          );
+          EntityPhysicsViewSphere.move(e as unknown as EntityPhysicsViewSphere, pos);
+
+          // e.physics.api.sleep();
+          // e.physics.api.position.set(
+          //   ...new Vector3(...parent.pivot.position)
+          //     .applyQuaternion((parent.part.entity as EntityPhysicsViewBox).box.quaternion)
+          //     .add(parent.part.entity.transform.position)
+          //     .toArray(),
+          // );
         });
       });
 
     if (!child) {
       return e.build();
     }
-    return (
-      e
-        // .addComponent(EntityPhysicsConstraintConeTwist, {
-        //   entityA: child.part.entity,
-        //   entityB: parent.part.entity,
-        //   options: {
-        //     pivotA: child.pivot.position,
-        //     pivotB: parent.pivot.position,
-        //     // axisA: [0, 1, 0] as Triplet,
-        //     // axisB: [0, 1, 0] as Triplet,
-        //     // angle: Math.PI * 0.25,
-        //     // twistAngle: Math.PI * 0.25,
-        //     // maxForce: 1000000,
-        //   },
-        // })
-        .build()
-    );
+    return e
+      .addComponent(EntityPhysicsConstraintConeTwist, {
+        entityA: child.part.entity,
+        entityB: parent.part.entity,
+        options: {
+          pivotA: child.pivot.position,
+          pivotB: parent.pivot.position,
+          // axisA: [0, 1, 0] as Triplet,
+          // axisB: [0, 1, 0] as Triplet,
+          // angle: Math.PI * 0.25,
+          // twistAngle: Math.PI * 0.25,
+          // maxForce: 1000000,
+        },
+      })
+      .build();
   };
 
   if (!connectedToJoint.length) {
@@ -195,6 +199,7 @@ const createBodyPartEntity = ({
         return (
           Entity.create(`bodyPart:${part}:${side}:pivot:${p.joint}:${p.side}`)
             .addComponent(EntityPhysicsViewSphere, {
+              enablePhysics: false,
               mass: 0,
               radius: 0.011 * scale,
               debugColorRgba: p.side === `left` ? 0x0000ff80 : p.side === `right` ? 0xff000080 : 0x88008880,
@@ -230,7 +235,7 @@ const createBodyPartEntity = ({
 
               const updatePivot = () => {
                 pos.copy(relativePosition).applyQuaternion(eQuat).add(ePos);
-                e.physics.api.position.set(pos.x, pos.y, pos.z);
+                EntityPhysicsViewSphere.move(e, pos);
               };
 
               e.ready.subscribe((r) => {
@@ -238,8 +243,6 @@ const createBodyPartEntity = ({
                   return;
                 }
                 setTimeout(() => {
-                  e.physics.api.sleep();
-
                   entity.physics.api.position.subscribe((x) => {
                     ePos.set(...x);
                     updatePivot();

@@ -9,6 +9,7 @@ export type EntityPhysicsView = EntityBase & {
     position: Vector3;
   };
   physics: {
+    enabled: boolean;
     uuid: string;
     api: WorkerApi;
     collideSubject: Subject<{
@@ -36,6 +37,7 @@ export const EntityPhysicsView = defineComponent<EntityPhysicsView>()
     position: startPosition ? new Vector3(...startPosition) : new Vector3(),
   }))
   .with(`physics`, ({ mass }: { mass?: number }) => ({
+    enabled: true,
     mass: mass ?? 0,
     collideSubject: new Subject(),
     // Will be created by the component

@@ -1,6 +1,7 @@
 import React, { useMemo, useRef } from 'react';
 import { useSphere } from '@react-three/cannon';
-import { Color, InstancedMesh } from 'three';
+import { useFrame } from '@react-three/fiber';
+import { Color, InstancedMesh, Matrix4, Quaternion, Vector3 } from 'three';
 import { useIsomorphicLayoutEffect } from '../../utils/layoutEffect';
 import { cloneComponent, EntityBase } from '../core';
 import { EntityPhysicsView } from './physics-view';
@@ -9,20 +10,42 @@ export type EntityPhysicsViewSphere = EntityPhysicsView & {
   sphere: {
     radius: number;
   };
+  three: {
+    matrix: Matrix4;
+  };
 };
 export const EntityPhysicsViewSphere = cloneComponent<EntityPhysicsViewSphere>()(EntityPhysicsView)
   .with(`sphere`, ({ radius }: { radius: number }) => ({
     radius,
   }))
-  .with(`view`, ({ debugColorRgba }: { debugColorRgba?: number }) => ({
-    debugColorRgba,
+  .with(`three`, ({}: {}) => ({
+    matrix: new Matrix4(),
+  }))
+  .with(`view`, ({ debugColorRgba, enablePhysics = true }: { debugColorRgba?: number; enablePhysics?: boolean }, e) => {
+    e.physics.enabled = enablePhysics;
 
-    Component: () => <></>,
-    batchKey: `EntityPhysicsViewSphere`,
-    BatchComponent: ({ entities }: { entities: EntityBase[] }) => (
-      <EntityPhysicsViewSphereBatchComponent entities={entities as EntityPhysicsViewSphere[]} />
-    ),
-  }));
+    return {
+      debugColorRgba,
+
+      Component: () => <></>,
+      batchKey: enablePhysics ? `EntityPhysicsViewSphere` : `EntityViewSphere`,
+      BatchComponent: ({ entities }: { entities: EntityBase[] }) =>
+        enablePhysics ? (
+          <EntityPhysicsViewSphereBatchComponent entities={entities as EntityPhysicsViewSphere[]} />
+        ) : (
+          <EntityViewSphereBatchComponent entities={entities as EntityPhysicsViewSphere[]} />
+        ),
+    };
+  })
+  .attach({
+    move: (e: EntityPhysicsViewSphere, pos: Vector3) => {
+      if (e.physics.enabled) {
+        e.physics.api.position.set(pos.x, pos.y, pos.z);
+        return;
+      }
+      e.transform.position.copy(pos);
+    },
+  });
 
 const EntityPhysicsViewSphereBatchComponent = ({ entities }: { entities: EntityPhysicsViewSphere[] }) => {
   const count = entities.length;
@@ -73,6 +96,63 @@ const EntityPhysicsViewSphereBatchComponent = ({ entities }: { entities: EntityP
 
     r.instanceMatrix.needsUpdate = true;
   }, [!ref.current?.instanceColor, count]);
+
+  return (
+    <instancedMesh ref={ref} castShadow receiveShadow args={[undefined, undefined, count]}>
+      <sphereBufferGeometry args={[1, 16, 16]}>
+        <instancedBufferAttribute attach='attributes-color' args={[colors, 4]} />
+      </sphereBufferGeometry>
+      <meshPhongMaterial vertexColors />
+    </instancedMesh>
+  );
+};
+
+const EntityViewSphereBatchComponent = ({ entities }: { entities: EntityPhysicsViewSphere[] }) => {
+  const count = entities.length;
+  const ref = useRef<InstancedMesh>(null);
+  const colors = useMemo(() => {
+    const array = new Float32Array(count * 4);
+    const color = new Color();
+    for (let i = 0; i < count; i++) {
+      const c = entities[i].view.debugColorRgba ?? 0xffffffff;
+      color.set(c >> 8).toArray(array, i * 4);
+      array[i * 4 + 3] = c % 0x100;
+    }
+    return array;
+  }, [count]);
+
+  useIsomorphicLayoutEffect(() => {
+    if (!ref.current) {
+      return;
+    }
+
+    const r = ref.current;
+    entities.forEach((x, i) => {
+      const rad = entities[i].sphere.radius;
+      x.three.matrix.compose(x.transform.position, new Quaternion(), new Vector3(rad, rad, rad));
+
+      // x.three.matrix.fromArray(r.instanceMatrix.array, i * 16);
+
+      x.ready.next(true);
+    });
+
+    r.instanceMatrix.needsUpdate = true;
+  }, [!ref.current?.instanceColor, count]);
+
+  useFrame(() => {
+    if (!ref.current) {
+      return;
+    }
+
+    const r = ref.current;
+    entities.forEach((x, i) => {
+      // move to data
+      const rad = entities[i].sphere.radius;
+      x.three.matrix.compose(x.transform.position, new Quaternion(), new Vector3(rad, rad, rad));
+      r.setMatrixAt(i, x.three.matrix);
+      r.instanceMatrix.needsUpdate = true;
+    });
+  });
 
   return (
     <instancedMesh ref={ref} castShadow receiveShadow args={[undefined, undefined, count]}>

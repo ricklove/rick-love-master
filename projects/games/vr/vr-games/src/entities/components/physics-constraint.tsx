@@ -4,6 +4,7 @@ import { CollideBeginEvent, CollideEndEvent, CollideEvent } from '@react-three/c
 import { Subject } from 'rxjs';
 import { Object3D, Vector3 } from 'three';
 import { useIsomorphicLayoutEffect } from '../../utils/layoutEffect';
+import { logger } from '../../utils/logger';
 import { cloneComponent, defineComponent, EntityBase } from '../core';
 import { EntityPhysicsView } from './physics-view';
 
@@ -78,7 +79,10 @@ const EntityPhysicsConstraintViewConeTwist = ({ entity }: { entity: EntityPhysic
   const [ready, setReady] = useState(false);
 
   useIsomorphicLayoutEffect(() => {
-    const sub = entity.coneTwist.entityA.ready.subscribe(() => {
+    const sub = entity.coneTwist.entityA.ready.subscribe((r) => {
+      if (!r) {
+        return;
+      }
       setReady(true);
     });
     return () => sub.unsubscribe();
@@ -92,7 +96,12 @@ const EntityPhysicsConstraintViewConeTwist = ({ entity }: { entity: EntityPhysic
 
 const EntityPhysicsConstraintViewConeTwistInner = ({ entity }: { entity: EntityPhysicsConstraintConeTwist }) => {
   const bodyARef = useRef({ uuid: entity.coneTwist.entityA.physics.api.uuid() } as Object3D);
-  const bodyBRef = useRef({ uuid: entity.coneTwist.entityA.physics.api.uuid() } as Object3D);
+  const bodyBRef = useRef({ uuid: entity.coneTwist.entityB.physics.api.uuid() } as Object3D);
   useConeTwistConstraint(bodyARef, bodyBRef, entity.coneTwist.options);
+
+  logger.log(`EntityPhysicsConstraintViewConeTwistInner`, {
+    bodyARef: bodyARef.current.uuid,
+    bodyBRef: bodyBRef.current.uuid,
+  });
   return <></>;
 };
