@@ -4,7 +4,6 @@ import { CollideBeginEvent, CollideEndEvent, CollideEvent } from '@react-three/c
 import { Subject } from 'rxjs';
 import { Object3D, Vector3 } from 'three';
 import { useIsomorphicLayoutEffect } from '../../utils/layoutEffect';
-import { logger } from '../../utils/logger';
 import { cloneComponent, defineComponent, EntityBase } from '../core';
 import { EntityPhysicsView } from './physics-view';
 
@@ -99,9 +98,9 @@ const EntityPhysicsConstraintViewConeTwistInner = ({ entity }: { entity: EntityP
   const bodyBRef = useRef({ uuid: entity.coneTwist.entityB.physics.api.uuid() } as Object3D);
   useConeTwistConstraint(bodyARef, bodyBRef, entity.coneTwist.options);
 
-  logger.log(`EntityPhysicsConstraintViewConeTwistInner`, {
-    bodyARef: bodyARef.current.uuid,
-    bodyBRef: bodyBRef.current.uuid,
-  });
+  // logger.log(`EntityPhysicsConstraintViewConeTwistInner`, {
+  //   bodyARef: bodyARef.current.uuid,
+  //   bodyBRef: bodyBRef.current.uuid,
+  // });
   return <></>;
 };

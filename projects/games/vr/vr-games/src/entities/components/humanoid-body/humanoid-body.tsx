@@ -26,12 +26,20 @@ export type EntityHumanoidBody = EntityWithChildren & {
 export const EntityHumanoidBody = defineComponent<EntityHumanoidBody>()
   .with(`children`, () => new EntityList())
   .with(`humanoidBody`, ({ scale, offset }: { scale: number; offset: Vector3 }, e) => {
-    const bodyPartEntities = Object.keys(humanBodyParts).flatMap(
+    const bodyPartEntitiesAll = Object.keys(humanBodyParts).flatMap(
       (k) => createBodyPartEntity({ part: k as HumanBodyPartName, scale, offset, thicknessScale: 0.7 }) ?? [],
     );
 
+    const bodyPartEntities = bodyPartEntitiesAll;
+    // .filter(
+    //   (x) =>
+    //     // x.part === `head` ||
+    //     // x.part === `neck` ||
+    //     x.part === `upper-torso` || (x.part === `upper-arm` && x.side === `left`),
+    // );
+
     e.children.add(...bodyPartEntities.map((x) => x.entity));
-    // e.children.add(...bodyPartEntities.flatMap((x) => x.pivotEntities));
+    e.children.add(...bodyPartEntities.flatMap((x) => x.pivotEntities));
 
     logger.log(`bodyPartEntities`, { bodyPartEntities });
 
@@ -106,6 +114,33 @@ const createBodyJoint = (
     if (!child) {
       return e.build();
     }
+
+    logger.log(`createJointEntity`, {
+      joint,
+      side,
+      child,
+      parent,
+      pivotA: child.pivot.position,
+      pivotB: parent.pivot.position,
+      childPos: child.part.entity.transform.position.clone(),
+      childPivotPos: new Vector3(...child.pivot.position)
+        .applyQuaternion((child.part.entity as EntityPhysicsViewBox).box.quaternion)
+        .add(child.part.entity.transform.position),
+      parentPos: parent.part.entity.transform.position.clone(),
+      parentPivotPos: new Vector3(...parent.pivot.position)
+        .applyQuaternion((parent.part.entity as EntityPhysicsViewBox).box.quaternion)
+        .add(parent.part.entity.transform.position),
+      distanceExpected: 0,
+      distanceActual: new Vector3(...child.pivot.position)
+        .applyQuaternion((child.part.entity as EntityPhysicsViewBox).box.quaternion)
+        .add(child.part.entity.transform.position)
+        .sub(
+          new Vector3(...parent.pivot.position)
+            .applyQuaternion((parent.part.entity as EntityPhysicsViewBox).box.quaternion)
+            .add(parent.part.entity.transform.position),
+        )
+        .length(),
+    });
     return e
       .addComponent(EntityPhysicsConstraintConeTwist, {
         entityA: child.part.entity,
@@ -117,16 +152,15 @@ const createBodyJoint = (
           axisB: [0, 1, 0] as Triplet,
           angle: coneAngle ?? Math.PI * 0.5,
           twistAngle: twistAngle ?? Math.PI * 0.025,
-          // angle: joint.includes(`socket`) ? Math.PI * 0.75 : Math.PI * 0.5,
-          // twistAngle: joint.includes(`socket`) ? Math.PI * 0.025 : Math.PI * 0.025,
-          // maxForce: 1000000,
+          // funny! - for disturbing effects!
+          // collideConnected: true,
         },
       })
       .build();
   };
 
   if (!connectedToJoint.length) {
-    logger.log(`createBodyJoint - No matches for ${joint}:${side}`);
+    // logger.log(`createBodyJoint - No matches for ${joint}:${side}`);
     return [];
   }
 
@@ -167,7 +201,7 @@ const createBodyPartEntity = ({
   offset: Vector3;
   thicknessScale: number;
 }) => {
-  const d = calculateBodyPartData(part, scale, offset);
+  const d = calculateBodyPartData(part, scale);
   if (!d) {
     return;
   }
@@ -182,11 +216,15 @@ const createBodyPartEntity = ({
         position: [mirror * p.position.x, p.position.y, p.position.z] as Triplet,
       })) ?? [];
 
+    const pos = new Vector3()
+      .copy(d.position)
+      .setX(mirror * d.position.x)
+      .add(offset);
     const entity = Entity.create(`bodyPart:${part}:${side}`)
       .addComponent(EntityPhysicsViewBox, {
         mass: 10,
         debugColorRgba: 0x00ff0080,
-        startPosition: [mirror * d.position.x, d.position.y, d.position.z] as Triplet,
+        startPosition: [pos.x, pos.y, pos.z] as Triplet,
         startRotation: [d.rotation.x, d.rotation.y, mirror * d.rotation.z] as Triplet,
         scale: d.scale.clone().multiplyScalar(thicknessScale).toArray() as Triplet,
       })
@@ -281,7 +319,7 @@ const working = {
   b: new Vector3(),
   c: new Vector3(),
 };
-const calculateBodyPartData = (part: HumanBodyPartName, scale: number, offset: Vector3) => {
+const calculateBodyPartData = (part: HumanBodyPartName, scale: number) => {
   const { a, b, c } = working;
   const bodyPart = humanBodyParts[part];
   const humanJoints = getHumanJointData();
@@ -313,7 +351,7 @@ const calculateBodyPartData = (part: HumanBodyPartName, scale: number, offset: V
     const rotationReverse = new Euler(-rotation.x, -rotation.y, -rotation.z);
     return {
       sides,
-      position: center.clone().multiplyScalar(scale).add(offset),
+      position: center.clone().multiplyScalar(scale),
       rotation,
       scale: new Vector3(thickness * 2, length, thickness * 2).multiplyScalar(scale),
       pivots: joints.map((j) => ({
@@ -392,7 +430,7 @@ const calculateBodyPartData = (part: HumanBodyPartName, scale: number, offset: V
 
   return {
     sides,
-    position: center.clone().multiplyScalar(scale).add(offset),
+    position: center.clone().multiplyScalar(scale),
     rotation,
     scale: b.clone().sub(a).multiplyScalar(scale),
     pivots: allJoints.map((j) => ({

@@ -1,13 +1,13 @@
 import React, { useEffect, useMemo, useState } from 'react';
-import { Physics } from '@react-three/cannon';
+import { Debug, Physics } from '@react-three/cannon';
 import { useFrame } from '@react-three/fiber';
 import { BehaviorSubject } from 'rxjs';
-import { EntityForce } from './entities/components/force';
-import { EntityAdjustToGround, EntityGround } from './entities/components/ground';
-import { EntityPlayer } from './entities/components/player';
-import { calculateActiveEntities, EntityList as EntityList } from './entities/core';
-import { Entity, SceneDefinition, World } from './entities/entity';
-import { logger } from './utils/logger';
+import { logger } from '../utils/logger';
+import { EntityForce } from './components/force';
+import { EntityAdjustToGround, EntityGround } from './components/ground';
+import { EntityPlayer } from './components/player';
+import { calculateActiveEntities, EntityList as EntityList } from './core';
+import { Entity, SceneDefinition, World } from './entity';
 
 const world: World = {
   active: new BehaviorSubject(true),
@@ -86,7 +86,7 @@ const useWorldFilter = <T extends Entity>(filter: (item: Entity) => boolean, gro
   return activeEntities;
 };
 
-export const WorldContainer = ({ rootEntities, gravity }: SceneDefinition) => {
+export const WorldContainer = ({ rootEntities, gravity, debugPhysics }: SceneDefinition) => {
   useMemo(() => {
     world.children.add(...rootEntities);
   }, []);
@@ -143,12 +143,33 @@ export const WorldContainer = ({ rootEntities, gravity }: SceneDefinition) => {
   });
 
   logger.log(`WorldContainer RENDER`, {
+    debugPhysics,
     entitiesCount: worldState.activeEntities.items.map((x) => x.key),
     worldChildrenCount: world.children.items.map((x) => x.key),
     activeViews: activeViews.map((x) => x.key),
     activeTextViews: activeTextViews.map((x) => x.key),
     activeBatchViews: activeBatchViews.map((x) => x.key),
   });
+
+  if (debugPhysics) {
+    <>
+      <Physics allowSleep={false} iterations={15} gravity={gravity ?? [0, -9.8, 0]}>
+        <Debug color='red' scale={1.1}>
+          {activeViews.map((x) => (
+            <React.Fragment key={x.key}>{x.view && <x.view.Component entity={x} />}</React.Fragment>
+          ))}
+          {activeTextViews.map((x) => (
+            <React.Fragment key={x.key}>{x.textView && <x.textView.Component entity={x} />}</React.Fragment>
+          ))}
+          {activeBatchViews.map((g) => (
+            <React.Fragment key={g.key}>
+              {g.first.view?.BatchComponent && <g.first.view.BatchComponent entities={g.items} />}
+            </React.Fragment>
+          ))}
+        </Debug>
+      </Physics>
+    </>;
+  }
 
   return (
     <>
