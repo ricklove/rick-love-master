@@ -18,14 +18,13 @@ export type EntityPlayerBody = EntityWithChildren & {
   playerBody: {
     parts: { entity: EntityBase }[];
     joints: { entities: EntityBase[] }[];
+    scale: number;
+    offset: Vector3;
   };
 };
 export const EntityPlayerBody = defineComponent<EntityPlayerBody>()
   .with(`children`, () => new EntityList())
-  .with(`playerBody`, ({}: {}, e) => {
-    const scale = 10;
-    const offset = new Vector3(0, 5, 1);
-
+  .with(`playerBody`, ({ scale, offset }: { scale: number; offset: Vector3 }, e) => {
     const bodyPartEntities = Object.keys(humanBodyParts).flatMap(
       (k) => createBodyPartEntity({ part: k as HumanBodyPartName, scale, offset, thicknessScale: 0.7 }) ?? [],
     );
@@ -43,6 +42,8 @@ export const EntityPlayerBody = defineComponent<EntityPlayerBody>()
     e.children.add(...jointEntities.flatMap((x) => x.entities));
 
     return {
+      scale,
+      offset,
       parts: bodyPartEntities,
       joints: jointEntities,
     };

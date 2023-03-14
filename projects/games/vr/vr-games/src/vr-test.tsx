@@ -11,9 +11,10 @@ import { PerspectiveKind, ScenePerspective, togglePerspective } from './componen
 import { PlayerAvatarInSceneSpace } from './components/player-avatar';
 import { RandomGround } from './environment/ground';
 import { ExampleHtmlObject, ExampleHtmlObject_Dynamic } from './experiments/html/html-to-string-component';
-import { WorldContainer } from './game';
 import { GestureOptions, GesturesProvider, useGestures } from './gestures/gestures';
+import { scene02 } from './scenes/scene02-playerBody';
 import { DebugConsole, logger } from './utils/logger';
+import { WorldContainer } from './world';
 
 export const VrTestGame = () => {
   return (
@@ -222,7 +223,7 @@ const Scene_05_WithEntities = ({ debugVisible = true }: { debugVisible?: boolean
           <Sphere position={[0, 1, -10]} scale={0.05} />*/}
           <Sphere position={[0, 1, -90]} />
 
-          <WorldContainer />
+          <WorldContainer rootEntities={scene02.entities} />
         </ScenePerspective>
 
         <Hud position={[0, 1, 4]}>

@@ -1,27 +1,24 @@
-import React, { useEffect, useMemo, useState } from 'react';
-import { Physics, Triplet } from '@react-three/cannon';
-import { useFrame } from '@react-three/fiber';
+import { Triplet } from '@react-three/cannon';
 import { BehaviorSubject, delay, filter, map, timer } from 'rxjs';
 import { Vector3 } from 'three';
-import { EntityChooser } from './entities/components/chooser';
-import { EntityForce } from './entities/components/force';
-import { EntityAdjustToGround, EntityGround } from './entities/components/ground';
-import { EntityGroundView } from './entities/components/ground-view';
-import { EntityMouseInput } from './entities/components/mouse-input';
-import { EntityPhysicsViewSphere } from './entities/components/physics-view-sphere';
-import { EntityPlayer } from './entities/components/player';
-import { EntityPlayerBody } from './entities/components/player-body/player-body';
-import { EntityProblemEngine } from './entities/components/problem-engine';
-import { EntitySelectable, EntitySelector } from './entities/components/selectable';
-import { EntityRaycastSelector } from './entities/components/selectable-raycast-selector';
-import { EntityRaycastSelectorCollider } from './entities/components/selectable-raycast-selector-collider';
-import { EntitySpawnable } from './entities/components/spawnable';
-import { EntitySpawner } from './entities/components/spawner';
-import { EntityTextView } from './entities/components/text-view';
-import { calculateAllEntities as calculateActiveEntities, EntityList as EntityList } from './entities/core';
-import { Entity, World } from './entities/entity';
-import { Gestures } from './gestures/gestures';
-import { logger } from './utils/logger';
+import { EntityChooser } from '../entities/components/chooser';
+import { EntityForce } from '../entities/components/force';
+import { EntityAdjustToGround, EntityGround } from '../entities/components/ground';
+import { EntityGroundView } from '../entities/components/ground-view';
+import { EntityMouseInput } from '../entities/components/mouse-input';
+import { EntityPhysicsViewSphere } from '../entities/components/physics-view-sphere';
+import { EntityPlayer } from '../entities/components/player';
+import { EntityPlayerBody } from '../entities/components/player-body/player-body';
+import { EntityProblemEngine } from '../entities/components/problem-engine';
+import { EntitySelectable, EntitySelector } from '../entities/components/selectable';
+import { EntityRaycastSelector } from '../entities/components/selectable-raycast-selector';
+import { EntityRaycastSelectorCollider } from '../entities/components/selectable-raycast-selector-collider';
+import { EntitySpawnable } from '../entities/components/spawnable';
+import { EntitySpawner } from '../entities/components/spawner';
+import { EntityTextView } from '../entities/components/text-view';
+import { Entity } from '../entities/entity';
+import { Gestures } from '../gestures/gestures';
+import { logger } from '../utils/logger';
 
 const problemEngine = Entity.create(`problemEngine`).addComponent(EntityProblemEngine, {}).build();
 
@@ -125,7 +122,7 @@ const problemChooserManager = Entity.create(`problemChooser`)
 
 const player = Entity.create(`player`)
   .addComponent(EntityPlayer, {})
-  .addComponent(EntityPlayerBody, {})
+  .addComponent(EntityPlayerBody, { scale: 10, offset: new Vector3(0, 5, 0) })
   .addComponent(EntityAdjustToGround, {
     minGroundHeight: 0,
     maxGroundHeight: 0,
@@ -329,12 +326,8 @@ const ballSpawner = Entity.create(`ballSpawner`)
   })
   .build();
 
-const world: World = {
-  active: new BehaviorSubject(true),
-  ready: new BehaviorSubject(true),
-  key: `world`,
-  name: `world`,
-  children: new EntityList([
+export const scene01 = {
+  entities: [
     player,
     mouseInput,
     mouseRaycastSelector,
@@ -344,157 +337,5 @@ const world: World = {
     raycastSelectorRight,
     ground,
     ballSpawner,
-  ] as Entity[]),
-};
-
-export const game = {
-  world,
-  activeEntities: calculateActiveEntities<Entity>(world),
-};
-
-// const allEntities = world.children.pipe(map(c=>{
-
-//   c.filter(x=>x.active)
-
-// })))
-
-const useWorldFilter = <T extends Entity>(filter: (item: Entity) => boolean, groupKey?: (item: Entity) => string) => {
-  const groupItems = useMemo(
-    () => (items: Entity[]) => {
-      const grouped = !groupKey
-        ? { items }
-        : items.reduce((out, x) => {
-            const k = groupKey(x);
-            (out[k] ?? (out[k] = [])).push(x);
-            return out;
-          }, {} as { [key: string]: Entity[] });
-
-      // if (groupKey) {
-      //   console.log(`useWorldFilter`, { items, grouped });
-      // }
-      return {
-        items: items as T[],
-        grouped: [
-          ...Object.entries(grouped).map(([k, v]) => ({
-            key: k,
-            first: v[0] as T,
-            items: v as T[],
-          })),
-        ],
-      };
-    },
-    [],
-  );
-
-  const [activeEntities, setActiveEntities] = useState(
-    groupItems(game.activeEntities.items.filter((x) => x.active && filter(x))),
-  );
-
-  useEffect(() => {
-    const sub = game.activeEntities.itemsSubject.subscribe((a) => {
-      const filtered = groupItems(game.activeEntities.items.filter((x) => x.active && filter(x)));
-      setActiveEntities(filtered);
-
-      logger.log(`useWorldFilter updated`, {
-        items: a.length,
-        filtered: filtered.items.length,
-      });
-    });
-    return () => sub.unsubscribe();
-  }, []);
-
-  // useFrame(() => {
-  //   const items = world.entities.filter((x) => x.active).filter(filter);
-  //   setActiveEntities((s) => {
-  //     if (s.items.length !== items.length) {
-  //       return groupItems(items);
-  //     }
-  //     for (let i = 0; i < items.length; i++) {
-  //       if (s.items[i] !== items[i]) {
-  //         return groupItems(items);
-  //       }
-  //     }
-
-  //     return s;
-  //   });
-  // });
-
-  return activeEntities;
-};
-
-export const WorldContainer = ({}: {}) => {
-  const activeViews = useWorldFilter((x) => !!x.view && !x.view.BatchComponent).items;
-  const activeTextViews = useWorldFilter((x) => !!x.textView).items;
-  const activeBatchViews = useWorldFilter(
-    (x) => !!x.view && !!x.view.BatchComponent && !!x.view.batchKey,
-    (x) => x.view?.batchKey!,
-  ).grouped;
-  // const activeSelectables = useWorldFilter<EntitySelectable>((x) => !!x.selectable).items;
-  // const activeSelectors = useWorldFilter<EntityRaycastSelector>((x) => !!x.raycastSelector).items;
-  // activeSelectors.forEach((e) => EntitySelector.changeTargets(e as EntitySelector, activeSelectables));
-
-  useFrame(() => {
-    // logger.log(`WorldContainer useFrame`, {
-    //   entitiesCount: game.activeEntities.items.length,
-    //   worldChildrenCount: world.children.items.length,
-    // });
-
-    EntityPlayer.updateInput(player);
-
-    const active = game.activeEntities.items;
-    const ground = active.find((x) => x.ground) as EntityGround;
-
-    for (const e of active) {
-      if (e.transform && !e.transform.position) {
-        // Make sure views are ready
-        continue;
-      }
-
-      if (e.force) {
-        EntityForce.applyForces(e as EntityForce);
-      }
-      // if (e.gravity) {
-      //   EntityGravity.fall(e as EntityGravity);
-      // }
-      if (e.adjustToGround) {
-        EntityAdjustToGround.adjustToGround(e as EntityAdjustToGround, ground);
-      }
-
-      // if (e.raycastSelectorThree && e.selector?.mode !== `none`) {
-      //   EntityRaycastSelectorThree.raycast(e as EntityRaycastSelectorThree);
-      // }
-      // if (e.raycastSelectorPhysics && e.raycastSelector?.mode !== `none`) {
-      //   EntityRaycastSelectorPhysics.raycast(e as EntityRaycastSelectorPhysics);
-      // }
-    }
-
-    game.activeEntities.frozen = false;
-    game.activeEntities.frozen = true;
-  });
-
-  logger.log(`WorldContainer RENDER`, {
-    entitiesCount: game.activeEntities.items.map((x) => x.key),
-    worldChildrenCount: world.children.items.map((x) => x.key),
-    activeViews: activeViews.map((x) => x.key),
-    activeTextViews: activeTextViews.map((x) => x.key),
-    activeBatchViews: activeBatchViews.map((x) => x.key),
-  });
-
-  return (
-    <>
-      <Physics allowSleep={false} iterations={15} gravity={[0, -9.8, 0]}>
-        {activeViews.map((x) => (
-          <React.Fragment key={x.key}>{x.view && <x.view.Component entity={x} />}</React.Fragment>
-        ))}
-        {activeTextViews.map((x) => (
-          <React.Fragment key={x.key}>{x.textView && <x.textView.Component entity={x} />}</React.Fragment>
-        ))}
-        {activeBatchViews.map((g) => (
-          <React.Fragment key={g.key}>
-            {g.first.view?.BatchComponent && <g.first.view.BatchComponent entities={g.items} />}
-          </React.Fragment>
-        ))}
-      </Physics>
-    </>
-  );
+  ],
 };

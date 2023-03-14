@@ -32,7 +32,7 @@ export class EntityList<T extends EntityBase> extends ObservableList<T> {
   }
 }
 
-export const calculateAllEntities = <T extends EntityBase>(world: T) => {
+export const calculateActiveEntities = <T extends EntityBase>(world: T) => {
   const activeEntities = new EntityList<T>();
   activeEntities.frozen = true;
   const addEntity = (entity: T) => {

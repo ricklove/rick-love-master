@@ -6,6 +6,8 @@ import { EntityAdjustToGround, EntityGround } from './components/ground';
 import { EntityGroundView } from './components/ground-view';
 import { EntityPhysicsView } from './components/physics-view';
 import { EntityPhysicsViewSphere } from './components/physics-view-sphere';
+import { EntityPlayer } from './components/player';
+import { EntityPlayerBody } from './components/player-body/player-body';
 import { EntityProblemEngine } from './components/problem-engine';
 import { EntitySelectable, EntitySelector } from './components/selectable';
 import { EntityRaycastSelector } from './components/selectable-raycast-selector';
@@ -20,6 +22,8 @@ type EntityUnion = EntityBase & (
 | EntityWithChildren
 | EntitySpawnable
 | EntitySpawner
+| EntityPlayer
+| EntityPlayerBody
 | EntityTextView
 | EntityProblemEngine
 | EntityGround
