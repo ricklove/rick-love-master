@@ -222,7 +222,7 @@ const createBodyPartEntity = ({
       .add(offset);
     const entity = Entity.create(`bodyPart:${part}:${side}`)
       .addComponent(EntityPhysicsViewBox, {
-        mass: 10,
+        mass: d.mass,
         debugColorRgba: 0x00ff0080,
         startPosition: [pos.x, pos.y, pos.z] as Triplet,
         startRotation: [d.rotation.x, d.rotation.y, mirror * d.rotation.z] as Triplet,
@@ -350,6 +350,7 @@ const calculateBodyPartData = (part: HumanBodyPartName, scale: number) => {
     const rotation = new Euler(-Math.asin(direction.z), 0, Math.asin(direction.x));
     const rotationReverse = new Euler(-rotation.x, -rotation.y, -rotation.z);
     return {
+      mass: bodyPart.mass * scale,
       sides,
       position: center.clone().multiplyScalar(scale),
       rotation,
@@ -429,6 +430,7 @@ const calculateBodyPartData = (part: HumanBodyPartName, scale: number) => {
   const center = a.clone().add(b).multiplyScalar(0.5);
 
   return {
+    mass: bodyPart.mass * scale,
     sides,
     position: center.clone().multiplyScalar(scale),
     rotation,

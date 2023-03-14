@@ -86,7 +86,7 @@ const useWorldFilter = <T extends Entity>(filter: (item: Entity) => boolean, gro
   return activeEntities;
 };
 
-export const WorldContainer = ({ rootEntities, gravity, debugPhysics }: SceneDefinition) => {
+export const WorldContainer = ({ rootEntities, gravity, iterations, debugPhysics }: SceneDefinition) => {
   useMemo(() => {
     world.children.add(...rootEntities);
   }, []);
@@ -153,7 +153,7 @@ export const WorldContainer = ({ rootEntities, gravity, debugPhysics }: SceneDef
 
   if (debugPhysics) {
     <>
-      <Physics allowSleep={false} iterations={15} gravity={gravity ?? [0, -9.8, 0]}>
+      <Physics allowSleep={false} iterations={iterations ?? 15} gravity={gravity ?? [0, -9.8, 0]}>
         <Debug color='red' scale={1.1}>
           {activeViews.map((x) => (
             <React.Fragment key={x.key}>{x.view && <x.view.Component entity={x} />}</React.Fragment>
@@ -173,7 +173,7 @@ export const WorldContainer = ({ rootEntities, gravity, debugPhysics }: SceneDef
 
   return (
     <>
-      <Physics allowSleep={false} iterations={15} gravity={gravity ?? [0, -9.8, 0]}>
+      <Physics allowSleep={false} iterations={iterations ?? 15} gravity={gravity ?? [0, -9.8, 0]}>
         {activeViews.map((x) => (
           <React.Fragment key={x.key}>{x.view && <x.view.Component entity={x} />}</React.Fragment>
         ))}

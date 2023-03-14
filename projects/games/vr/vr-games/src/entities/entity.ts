@@ -45,4 +45,9 @@ export const Entity = defineEntity<Entity>();
 
 export type World = Entity & EntityWithChildren;
 
-export type SceneDefinition = { rootEntities: Entity[]; gravity?: Triplet; debugPhysics?: boolean };
+export type SceneDefinition = {
+  rootEntities: Entity[];
+  gravity?: Triplet;
+  iterations?: number;
+  debugPhysics?: boolean;
+};

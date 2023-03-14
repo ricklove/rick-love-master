@@ -26,7 +26,8 @@ const ground = Entity.create(`ground`)
   .addComponent(EntityGround, {
     segmentCount: 16,
     segmentSize: 16,
-    minHeight: 0,
+    // Physics needs ground to have some height
+    minHeight: -0.1,
     maxHeight: 0,
   })
   .addComponent(EntityGroundView, {})
@@ -34,11 +35,12 @@ const ground = Entity.create(`ground`)
 
 export const scene02: SceneDefinition = {
   debugPhysics: true,
+  iterations: 15,
   rootEntities: [
     // humanoid,
     // humanoidOffset,
     ...humanoids,
     ground,
   ],
-  gravity: [0, -0.1, 0] as Triplet,
+  gravity: [0, -9.8, 0] as Triplet,
 };
