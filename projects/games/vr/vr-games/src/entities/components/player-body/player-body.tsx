@@ -1,4 +1,5 @@
 import { Triplet } from '@react-three/cannon';
+import { BehaviorSubject } from 'rxjs';
 import { Euler, Quaternion, Vector3 } from 'three';
 import { logger } from '../../../utils/logger';
 import { defineComponent, EntityBase, EntityList, EntityWithChildren } from '../../core';
@@ -30,7 +31,7 @@ export const EntityPlayerBody = defineComponent<EntityPlayerBody>()
     );
 
     e.children.add(...bodyPartEntities.map((x) => x.entity));
-    e.children.add(...bodyPartEntities.flatMap((x) => x.pivotEntities));
+    // e.children.add(...bodyPartEntities.flatMap((x) => x.pivotEntities));
 
     logger.log(`bodyPartEntities`, { bodyPartEntities });
 
@@ -39,7 +40,7 @@ export const EntityPlayerBody = defineComponent<EntityPlayerBody>()
       entities: createBodyJoint(x, scale, offset, bodyPartEntities),
       joint: x,
     }));
-    // e.children.add(...jointEntities.flatMap((x) => x.entities));
+    e.children.add(...jointEntities.flatMap((x) => x.entities));
 
     return {
       parts: bodyPartEntities,
@@ -76,24 +77,24 @@ const createBodyJoint = (
         debugColorRgba: side === `left` ? 0x0000ffff : side === `right` ? 0xff0000ff : 0x880088ff,
         startPosition: new Vector3(...position).multiplyScalar(scale).add(offset).toArray() as Triplet,
       })
-      .addComponent(EntityForce, {});
-    // .extend((e) => {
-    //   // TODO: Use a point to point constraint
-    //   // Follow parent position
-    //   EntityForce.register(e, new BehaviorSubject(true), (e) => {
-    //     if (!e.physics.api) {
-    //       return;
-    //     }
+      .addComponent(EntityForce, {})
+      .extend((e) => {
+        // TODO: Use a point to point constraint
+        // Follow parent position
+        EntityForce.register(e, new BehaviorSubject(true), (e) => {
+          if (!e.physics.api) {
+            return;
+          }
 
-    //     e.physics.api.sleep();
-    //     e.physics.api.position.set(
-    //       ...parent.part.entity.transform.position
-    //         .clone()
-    //         .add(new Vector3(...parent.pivot.position))
-    //         .toArray(),
-    //     );
-    //   });
-    // });
+          e.physics.api.sleep();
+          e.physics.api.position.set(
+            ...new Vector3(...parent.pivot.position)
+              .applyQuaternion((parent.part.entity as EntityPhysicsViewBox).box.quaternion)
+              .add(parent.part.entity.transform.position)
+              .toArray(),
+          );
+        });
+      });
 
     if (!child) {
       return e.build();
@@ -333,15 +334,26 @@ const calculateBodyPartData = (part: HumanBodyPartName, scale: number, offset: V
           .map((x) => ({ ...x, position: [-x.position[0], x.position[1], x.position[2]] as Triplet }))),
   ];
 
-  const centerOfMass = a.clone();
-  allJoints.forEach((j) => centerOfMass.add(b.set(...j.position)));
-  centerOfMass.multiplyScalar(1 / allJoints.length);
-
   const rotationTriplet = (bodyPart as { rotation?: Triplet }).rotation;
   const rotation = rotationTriplet ? new Euler(...rotationTriplet) : new Euler();
   const rotationReverse = new Euler(-rotation.x, -rotation.y, -rotation.z);
 
-  const basePos = c.copy(centerOfMass);
+  const minBounds = [
+    Math.min(...allJoints.map((j) => j.position[0] - j.radius)),
+    Math.min(...allJoints.map((j) => j.position[1] - j.radius)),
+    Math.min(...allJoints.map((j) => j.position[2] - j.radius)),
+  ] as Triplet;
+  const maxBounds = [
+    Math.max(...allJoints.map((j) => j.position[0] + j.radius)),
+    Math.max(...allJoints.map((j) => j.position[1] + j.radius)),
+    Math.max(...allJoints.map((j) => j.position[2] + j.radius)),
+  ] as Triplet;
+  a.set(...minBounds);
+  b.set(...maxBounds);
+
+  const centerOrig = a.clone().add(b).multiplyScalar(0.5);
+
+  const basePos = c.copy(centerOrig);
   const allJointsRotated = allJoints.map((j) => ({
     ...j,
     // rotate all j pos

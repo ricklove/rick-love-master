@@ -1,6 +1,6 @@
 import React, { useMemo, useRef } from 'react';
 import { Triplet, useBox } from '@react-three/cannon';
-import { Color, InstancedMesh } from 'three';
+import { Color, InstancedMesh, Quaternion } from 'three';
 import { useIsomorphicLayoutEffect } from '../../utils/layoutEffect';
 import { cloneComponent, EntityBase } from '../core';
 import { EntityPhysicsView } from './physics-view';
@@ -9,12 +9,14 @@ export type EntityPhysicsViewBox = EntityPhysicsView & {
   box: {
     scale: Triplet;
     startRotation: Triplet;
+    quaternion: Quaternion;
   };
 };
 export const EntityPhysicsViewBox = cloneComponent<EntityPhysicsViewBox>()(EntityPhysicsView)
   .with(`box`, ({ scale, startRotation }: { scale: Triplet; startRotation: Triplet }) => ({
     scale,
     startRotation,
+    quaternion: new Quaternion(),
   }))
   .with(`view`, ({ debugColorRgba }: { debugColorRgba?: number }) => ({
     debugColorRgba,
@@ -66,6 +68,9 @@ const EntityPhysicsViewBoxBatchComponent = ({ entities }: { entities: EntityPhys
     entities.forEach((x, i) => {
       api.at(i).position.subscribe((p) => {
         x.transform.position.set(...p);
+      });
+      api.at(i).quaternion.subscribe((p) => {
+        x.box.quaternion.set(...p);
       });
       api.at(i).scaleOverride(entities[i].box.scale);
 
