@@ -20,4 +20,4 @@ const ground = Entity.create(`ground`)
   .addComponent(EntityGroundView, {})
   .build();
 
-export const scene02: SceneDefinition = { rootEntities: [player, ground], gravity: [0, 0, 0] as Triplet };
+export const scene02: SceneDefinition = { rootEntities: [player, ground], gravity: [0, -0.1, 0] as Triplet };

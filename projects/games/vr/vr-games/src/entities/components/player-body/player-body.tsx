@@ -52,7 +52,7 @@ export const EntityPlayerBody = defineComponent<EntityPlayerBody>()
   .attach({});
 
 const createBodyJoint = (
-  { position, joint, radius, side }: HumanJointData,
+  { position, joint, radius, side, coneAngle, twistAngle }: HumanJointData,
   scale: number,
   offset: Vector3,
   bodyPartEntities: {
@@ -113,10 +113,12 @@ const createBodyJoint = (
         options: {
           pivotA: child.pivot.position,
           pivotB: parent.pivot.position,
-          // axisA: [0, 1, 0] as Triplet,
-          // axisB: [0, 1, 0] as Triplet,
-          angle: Math.PI * 0.5,
-          twistAngle: Math.PI * 0.5,
+          axisA: [0, 1, 0] as Triplet,
+          axisB: [0, 1, 0] as Triplet,
+          angle: coneAngle ?? Math.PI * 0.5,
+          twistAngle: twistAngle ?? Math.PI * 0.025,
+          // angle: joint.includes(`socket`) ? Math.PI * 0.75 : Math.PI * 0.5,
+          // twistAngle: joint.includes(`socket`) ? Math.PI * 0.025 : Math.PI * 0.025,
           // maxForce: 1000000,
         },
       })

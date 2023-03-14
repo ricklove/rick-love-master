@@ -12,6 +12,8 @@ export type HumanJointData = {
   radius: number;
   position: Triplet;
   limb: HumanLimbName;
+  coneAngle?: number;
+  twistAngle?: number;
 };
 
 const getJointData = (side: `left` | `right`, joint: HumanJointDataName) => {
@@ -94,6 +96,8 @@ const createPlayerBody = () => {
         `hip-socket`,
         `shoulder-socket`,
       ]),
+      coneAngle: Math.PI * 0.2,
+      twistAngle: Math.PI * 0.2,
     },
     {
       ...getNonHandJointData(`center`, 0.02, 0, `core`, `pelvis-bottom`, []),
@@ -113,10 +117,16 @@ const createPlayerHead = () => {
   const zHeadFace = zHeadCenter - 0.75 * centerToTopDistance;
 
   const joints: HumanJointData[] = [
-    { ...getNonHandJointData(`center`, 0.02, 0, `neck`, `neck-base`, [`neck-head-base`]) },
+    {
+      ...getNonHandJointData(`center`, 0.02, 0, `neck`, `neck-base`, [`neck-head-base`]),
+      coneAngle: Math.PI * 0.25,
+      twistAngle: Math.PI * 0.25,
+    },
     {
       ...getNonHandJointData(`center`, 0.02, 0, `head`, `nose-tip`, [`head-center`]),
       joint: `neck-head-base` as const,
+      coneAngle: Math.PI * 0.25,
+      twistAngle: Math.PI * 0.25,
     },
     {
       // head-center is only slightly forward than body center (shoulder to knee)
@@ -160,11 +170,26 @@ const createPlayerSide = (side: `left` | `right`) => {
   ]);
   const joints: HumanJointData[] = [
     ...createPlayerHand(side),
-    { ...getNonHandJointData(side, 0.02, 0, `arm`, `elbow`, [`wrist`]) },
-    { ...getNonHandJointData(side, 0.02, 0, `arm`, `shoulder-socket`, [`elbow`]) },
-    { ...getNonHandJointData(side, 0.02, 0, `leg`, `hip-socket`, [`femur-top`]) },
+    {
+      ...getNonHandJointData(side, 0.02, 0, `arm`, `elbow`, [`wrist`]),
+      coneAngle: Math.PI * 0.8,
+    },
+    {
+      ...getNonHandJointData(side, 0.02, 0, `arm`, `shoulder-socket`, [`elbow`]),
+      coneAngle: Math.PI * 0.8,
+      twistAngle: Math.PI * 0.5,
+    },
+    {
+      ...getNonHandJointData(side, 0.02, 0, `leg`, `hip-socket`, [`femur-top`]),
+      coneAngle: Math.PI * 0.6,
+      twistAngle: Math.PI * 0.4,
+    },
     { ...getNonHandJointData(side, 0.02, 0, `leg`, `femur-top`, [`knee`]) },
-    { ...getNonHandJointData(side, 0.02, 0, `leg`, `knee`, [`ankle`]) },
+    {
+      ...getNonHandJointData(side, 0.02, 0, `leg`, `knee`, [`ankle`]),
+      coneAngle: Math.PI * 0.7,
+      twistAngle: Math.PI * 0.15,
+    },
     {
       ...ankle,
     },
@@ -195,6 +220,8 @@ const createPlayerHand = (side: `left` | `right`) => {
         `ring-finger-metacarpal`,
         `pinky-finger-metacarpal`,
       ]),
+      coneAngle: Math.PI * 0.4,
+      twistAngle: Math.PI * 0.4,
     },
     { ...getHandJointData(side, `thumb-metacarpal`, [`thumb-phalanx-proximal`]) },
     { ...getHandJointData(side, `thumb-phalanx-proximal`, [`thumb-phalanx-distal`]) },
