@@ -6,7 +6,7 @@ import { EntityForce } from './entities/components/force';
 import { EntityAdjustToGround, EntityGround } from './entities/components/ground';
 import { EntityPlayer } from './entities/components/player';
 import { calculateActiveEntities, EntityList as EntityList } from './entities/core';
-import { Entity, World } from './entities/entity';
+import { Entity, SceneDefinition, World } from './entities/entity';
 import { logger } from './utils/logger';
 
 const world: World = {
@@ -86,7 +86,7 @@ const useWorldFilter = <T extends Entity>(filter: (item: Entity) => boolean, gro
   return activeEntities;
 };
 
-export const WorldContainer = ({ rootEntities }: { rootEntities: Entity[] }) => {
+export const WorldContainer = ({ rootEntities, gravity }: SceneDefinition) => {
   useMemo(() => {
     world.children.add(...rootEntities);
   }, []);
@@ -152,7 +152,7 @@ export const WorldContainer = ({ rootEntities }: { rootEntities: Entity[] }) => 
 
   return (
     <>
-      <Physics allowSleep={false} iterations={15} gravity={[0, -9.8, 0]}>
+      <Physics allowSleep={false} iterations={15} gravity={gravity ?? [0, -9.8, 0]}>
         {activeViews.map((x) => (
           <React.Fragment key={x.key}>{x.view && <x.view.Component entity={x} />}</React.Fragment>
         ))}

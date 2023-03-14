@@ -16,7 +16,7 @@ import { EntityRaycastSelectorCollider } from '../entities/components/selectable
 import { EntitySpawnable } from '../entities/components/spawnable';
 import { EntitySpawner } from '../entities/components/spawner';
 import { EntityTextView } from '../entities/components/text-view';
-import { Entity } from '../entities/entity';
+import { Entity, SceneDefinition } from '../entities/entity';
 import { Gestures } from '../gestures/gestures';
 import { logger } from '../utils/logger';
 
@@ -326,8 +326,8 @@ const ballSpawner = Entity.create(`ballSpawner`)
   })
   .build();
 
-export const scene01 = {
-  entities: [
+export const scene01: SceneDefinition = {
+  rootEntities: [
     player,
     mouseInput,
     mouseRaycastSelector,

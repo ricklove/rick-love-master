@@ -115,8 +115,8 @@ const createBodyJoint = (
           pivotB: parent.pivot.position,
           // axisA: [0, 1, 0] as Triplet,
           // axisB: [0, 1, 0] as Triplet,
-          // angle: Math.PI * 0.25,
-          // twistAngle: Math.PI * 0.25,
+          angle: Math.PI * 0.5,
+          twistAngle: Math.PI * 0.5,
           // maxForce: 1000000,
         },
       })

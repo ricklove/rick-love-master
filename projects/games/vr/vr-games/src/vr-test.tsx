@@ -223,7 +223,7 @@ const Scene_05_WithEntities = ({ debugVisible = true }: { debugVisible?: boolean
           <Sphere position={[0, 1, -10]} scale={0.05} />*/}
           <Sphere position={[0, 1, -90]} />
 
-          <WorldContainer rootEntities={scene02.entities} />
+          <WorldContainer {...scene02} />
         </ScenePerspective>
 
         <Hud position={[0, 1, 4]}>
