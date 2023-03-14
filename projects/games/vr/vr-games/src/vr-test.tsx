@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/naming-convention */
 import React, { useRef, useState } from 'react';
-import { ArcballControls, Box, Environment, Sphere, Text } from '@react-three/drei';
+import { Box, Environment, Sphere, Text, TrackballControls } from '@react-three/drei';
 import { Canvas } from '@react-three/fiber';
 import { useFrame } from '@react-three/fiber';
 import { ARButton, Controllers, Interactive, VRButton, XR } from '@react-three/xr';
@@ -70,7 +70,7 @@ const NonVrPage = () => {
       {/* <XRButton mode='inline' onError={(e) => console.error(e)} /> */}
       <Canvas>
         <XR referenceSpace={`local-floor`}>
-          <ArcballControls />
+          <TrackballControls />
           {/* <Scene_GesturesSetup /> */}
           {/* <Scene_01_Minimal /> */}
           {/* <Scene_02_PerfGestures /> */}

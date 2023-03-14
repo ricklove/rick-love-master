@@ -11,6 +11,7 @@ export type HumanBodyPartName =
   | `upper-arm`
   | `lower-arm`
   | `hand`
+  | `finger-thumb-0`
   | `finger-thumb-1`
   | `finger-thumb-2`
   | `finger-index-1`
@@ -60,12 +61,15 @@ export const humanBodyParts = {
       `middle-finger-metacarpal`,
       `ring-finger-metacarpal`,
       `pinky-finger-metacarpal`,
-      `thumb-phalanx-proximal`,
+      //   `thumb-phalanx-proximal`,
       `index-finger-phalanx-proximal`,
       `middle-finger-phalanx-proximal`,
       `ring-finger-phalanx-proximal`,
       `pinky-finger-phalanx-proximal`,
     ],
+  },
+  'finger-thumb-0': {
+    joints: [`thumb-metacarpal`, `thumb-phalanx-proximal`],
   },
   'finger-thumb-1': {
     joints: [`thumb-phalanx-proximal`, `thumb-phalanx-distal`],

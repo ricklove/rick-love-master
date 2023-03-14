@@ -20,7 +20,7 @@ export type EntityPhysicsView = EntityBase & {
     mass: number;
   };
   view: {
-    debugColor?: number;
+    debugColorRgba?: number;
     Component: (props: { entity: EntityBase }) => JSX.Element;
     batchKey?: string;
     BatchComponent?: (props: { entities: EntityBase[] }) => JSX.Element;

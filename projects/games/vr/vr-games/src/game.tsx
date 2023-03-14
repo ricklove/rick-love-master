@@ -232,7 +232,7 @@ const createBall = () => {
     .addComponent(EntityPhysicsViewSphere, {
       mass: 1,
       radius,
-      debugColor: 0xffffff * Math.random(),
+      debugColorRgba: ((0xffffff * Math.random()) << 8) + 0xff,
       startPosition: getBallRandomStartPosition(),
     })
     .addComponent(EntitySelectable, {})

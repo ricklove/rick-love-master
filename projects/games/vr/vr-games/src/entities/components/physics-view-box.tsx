@@ -16,8 +16,8 @@ export const EntityPhysicsViewBox = cloneComponent<EntityPhysicsViewBox>()(Entit
     scale,
     startRotation,
   }))
-  .with(`view`, ({ debugColor }: { debugColor?: number }) => ({
-    debugColor,
+  .with(`view`, ({ debugColorRgba }: { debugColorRgba?: number }) => ({
+    debugColorRgba,
 
     Component: () => <></>,
     batchKey: `EntityPhysicsViewBox`,
@@ -47,10 +47,12 @@ const EntityPhysicsViewBoxBatchComponent = ({ entities }: { entities: EntityPhys
     [count],
   );
   const colors = useMemo(() => {
-    const array = new Float32Array(count * 3);
+    const array = new Float32Array(count * 4);
     const color = new Color();
     for (let i = 0; i < count; i++) {
-      color.set(entities[i].view.debugColor ?? 0xffffff).toArray(array, i * 3);
+      const c = entities[i].view.debugColorRgba ?? 0xffffffff;
+      color.set(c >> 8).toArray(array, i * 4);
+      array[i * 4 + 3] = c % 0x100;
     }
     return array;
   }, [count]);
@@ -77,7 +79,7 @@ const EntityPhysicsViewBoxBatchComponent = ({ entities }: { entities: EntityPhys
   return (
     <instancedMesh ref={ref} castShadow receiveShadow args={[undefined, undefined, count]}>
       <boxBufferGeometry args={[1, 1, 1]}>
-        <instancedBufferAttribute attach='attributes-color' args={[colors, 3]} />
+        <instancedBufferAttribute attach='attributes-color' args={[colors, 4]} />
       </boxBufferGeometry>
       <meshPhongMaterial vertexColors />
     </instancedMesh>

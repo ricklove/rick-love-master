@@ -14,8 +14,8 @@ export const EntityPhysicsViewSphere = cloneComponent<EntityPhysicsViewSphere>()
   .with(`sphere`, ({ radius }: { radius: number }) => ({
     radius,
   }))
-  .with(`view`, ({ debugColor }: { debugColor?: number }) => ({
-    debugColor,
+  .with(`view`, ({ debugColorRgba }: { debugColorRgba?: number }) => ({
+    debugColorRgba,
 
     Component: () => <></>,
     batchKey: `EntityPhysicsViewSphere`,
@@ -44,10 +44,12 @@ const EntityPhysicsViewSphereBatchComponent = ({ entities }: { entities: EntityP
     [count],
   );
   const colors = useMemo(() => {
-    const array = new Float32Array(count * 3);
+    const array = new Float32Array(count * 4);
     const color = new Color();
     for (let i = 0; i < count; i++) {
-      color.set(entities[i].view.debugColor ?? 0xffffff).toArray(array, i * 3);
+      const c = entities[i].view.debugColorRgba ?? 0xffffffff;
+      color.set(c >> 8).toArray(array, i * 4);
+      array[i * 4 + 3] = c % 0x100;
     }
     return array;
   }, [count]);
@@ -75,7 +77,7 @@ const EntityPhysicsViewSphereBatchComponent = ({ entities }: { entities: EntityP
   return (
     <instancedMesh ref={ref} castShadow receiveShadow args={[undefined, undefined, count]}>
       <sphereBufferGeometry args={[1, 16, 16]}>
-        <instancedBufferAttribute attach='attributes-color' args={[colors, 3]} />
+        <instancedBufferAttribute attach='attributes-color' args={[colors, 4]} />
       </sphereBufferGeometry>
       <meshPhongMaterial vertexColors />
     </instancedMesh>
