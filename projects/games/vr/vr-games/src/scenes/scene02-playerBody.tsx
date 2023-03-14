@@ -7,7 +7,7 @@ import { Entity } from '../entities/entity';
 
 const player = Entity.create(`player`)
   .addComponent(EntityPlayer, {})
-  .addComponent(EntityPlayerBody, { scale: 1, offset: new Vector3() })
+  .addComponent(EntityPlayerBody, { scale: 1, offset: new Vector3(0, 10, 0) })
   .build();
 const ground = Entity.create(`ground`)
   .addComponent(EntityGround, {
