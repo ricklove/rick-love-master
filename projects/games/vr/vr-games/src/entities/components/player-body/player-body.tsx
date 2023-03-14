@@ -23,8 +23,8 @@ export type EntityPlayerBody = EntityWithChildren & {
 export const EntityPlayerBody = defineComponent<EntityPlayerBody>()
   .with(`children`, () => new EntityList())
   .with(`playerBody`, ({}: {}, e) => {
-    const scale = 1;
-    const offset = new Vector3(0, 0, 0);
+    const scale = 10;
+    const offset = new Vector3(0, 5, 1);
 
     const bodyPartEntities = Object.keys(humanBodyParts).flatMap(
       (k) => createBodyPartEntity({ part: k as HumanBodyPartName, scale, offset, thicknessScale: 0.7 }) ?? [],
@@ -73,7 +73,7 @@ const createBodyJoint = (
     const e = Entity.create(`bodyJoint:${joint}:${side}`)
       .addComponent(EntityPhysicsViewSphere, {
         mass: 0,
-        radius,
+        radius: radius * scale,
         debugColorRgba: side === `left` ? 0x0000ffff : side === `right` ? 0xff0000ff : 0x880088ff,
         startPosition: new Vector3(...position).multiplyScalar(scale).add(offset).toArray() as Triplet,
       })
@@ -178,7 +178,7 @@ const createBodyPartEntity = ({
     const entity = Entity.create(`bodyPart:${part}:${side}`)
       .addComponent(EntityPhysicsViewBox, {
         mass: 0,
-        debugColorRgba: 0x00330080,
+        debugColorRgba: 0x00ff0080,
         startPosition: [mirror * d.position.x, d.position.y, d.position.z] as Triplet,
         startRotation: [d.rotation.x, d.rotation.y, mirror * d.rotation.z] as Triplet,
         scale: d.scale.clone().multiplyScalar(thicknessScale).toArray() as Triplet,
@@ -195,7 +195,7 @@ const createBodyPartEntity = ({
           Entity.create(`bodyPart:${part}:${side}:pivot:${p.joint}:${p.side}`)
             .addComponent(EntityPhysicsViewSphere, {
               mass: 0,
-              radius: 0.011,
+              radius: 0.011 * scale,
               debugColorRgba: p.side === `left` ? 0x0000ff80 : p.side === `right` ? 0xff000080 : 0x88008880,
               startPosition: new Vector3(...p.position).multiplyScalar(scale).add(offset).toArray() as Triplet,
             })
@@ -318,8 +318,7 @@ const calculateBodyPartData = (part: HumanBodyPartName, scale: number, offset: V
           .set(...(j.position as Triplet))
           .sub(center)
           .applyEuler(rotationReverse)
-          .multiplyScalar(scale)
-          .add(offset),
+          .multiplyScalar(scale),
       })),
     };
   }
@@ -393,8 +392,7 @@ const calculateBodyPartData = (part: HumanBodyPartName, scale: number, offset: V
         .set(...(j.position as Triplet))
         .sub(center)
         .applyEuler(rotationReverse)
-        .multiplyScalar(scale)
-        .add(offset),
+        .multiplyScalar(scale),
     })),
   };
 };
