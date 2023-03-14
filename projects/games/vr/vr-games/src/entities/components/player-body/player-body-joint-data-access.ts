@@ -181,7 +181,7 @@ const createPlayerSide = (side: `left` | `right`) => {
     },
     {
       ...getNonHandJointData(side, 0.02, 0, `leg`, `hip-socket`, [`femur-top`]),
-      coneAngle: Math.PI * 0.6,
+      coneAngle: Math.PI * 0.7,
       twistAngle: Math.PI * 0.4,
     },
     { ...getNonHandJointData(side, 0.02, 0, `leg`, `femur-top`, [`knee`]) },
