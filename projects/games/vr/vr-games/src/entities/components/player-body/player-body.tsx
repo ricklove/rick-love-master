@@ -31,7 +31,7 @@ export const EntityPlayerBody = defineComponent<EntityPlayerBody>()
     );
 
     e.children.add(...bodyPartEntities.map((x) => x.entity));
-    // e.children.add(...bodyPartEntities.flatMap((x) => x.pivotEntities));
+    e.children.add(...bodyPartEntities.flatMap((x) => x.pivotEntities));
 
     logger.log(`bodyPartEntities`, { bodyPartEntities });
 
@@ -107,10 +107,10 @@ const createBodyJoint = (
         //   options: {
         //     pivotA: child.pivot.position,
         //     pivotB: parent.pivot.position,
-        //     axisA: [0, 1, 0] as Triplet,
-        //     axisB: [0, 1, 0] as Triplet,
-        //     angle: Math.PI * 0.25,
-        //     twistAngle: Math.PI * 0.25,
+        //     // axisA: [0, 1, 0] as Triplet,
+        //     // axisB: [0, 1, 0] as Triplet,
+        //     // angle: Math.PI * 0.25,
+        //     // twistAngle: Math.PI * 0.25,
         //     // maxForce: 1000000,
         //   },
         // })
@@ -177,7 +177,7 @@ const createBodyPartEntity = ({
 
     const entity = Entity.create(`bodyPart:${part}:${side}`)
       .addComponent(EntityPhysicsViewBox, {
-        mass: 0,
+        mass: 10,
         debugColorRgba: 0x00ff0080,
         startPosition: [mirror * d.position.x, d.position.y, d.position.z] as Triplet,
         startRotation: [d.rotation.x, d.rotation.y, mirror * d.rotation.z] as Triplet,
