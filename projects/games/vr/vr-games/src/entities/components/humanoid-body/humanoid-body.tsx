@@ -10,22 +10,22 @@ import { EntityPhysicsView } from '../physics-view';
 import { EntityPhysicsViewBox } from '../physics-view-box';
 import { EntityPhysicsViewSphere } from '../physics-view-sphere';
 import { EntityTextView } from '../text-view';
-import { getHumanJointData, HumanJointData, HumanJointName } from './player-body-joint-data-access';
-import { HumanBodyPartName, humanBodyParts } from './player-body-parts';
+import { getHumanJointData, HumanJointData, HumanJointName } from './humanoid-body-joint-data-access';
+import { HumanBodyPartName, humanBodyParts } from './humanoid-body-parts';
 
 // constraints Reference: https://enable3d.io/examples/types-of-constraints.html
 
-export type EntityPlayerBody = EntityWithChildren & {
-  playerBody: {
+export type EntityHumanoidBody = EntityWithChildren & {
+  humanoidBody: {
     parts: { entity: EntityBase }[];
     joints: { entities: EntityBase[] }[];
     scale: number;
     offset: Vector3;
   };
 };
-export const EntityPlayerBody = defineComponent<EntityPlayerBody>()
+export const EntityHumanoidBody = defineComponent<EntityHumanoidBody>()
   .with(`children`, () => new EntityList())
-  .with(`playerBody`, ({ scale, offset }: { scale: number; offset: Vector3 }, e) => {
+  .with(`humanoidBody`, ({ scale, offset }: { scale: number; offset: Vector3 }, e) => {
     const bodyPartEntities = Object.keys(humanBodyParts).flatMap(
       (k) => createBodyPartEntity({ part: k as HumanBodyPartName, scale, offset, thicknessScale: 0.7 }) ?? [],
     );

@@ -12,7 +12,7 @@ import { PlayerAvatarInSceneSpace } from './components/player-avatar';
 import { RandomGround } from './environment/ground';
 import { ExampleHtmlObject, ExampleHtmlObject_Dynamic } from './experiments/html/html-to-string-component';
 import { GestureOptions, GesturesProvider, useGestures } from './gestures/gestures';
-import { scene02 } from './scenes/scene02-playerBody';
+import { scene02 } from './scenes/scene02-humanoidBody';
 import { DebugConsole, logger } from './utils/logger';
 import { WorldContainer } from './world';
 

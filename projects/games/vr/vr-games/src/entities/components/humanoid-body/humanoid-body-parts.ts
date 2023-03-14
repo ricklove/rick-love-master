@@ -1,4 +1,4 @@
-import { HumanJointName } from './player-body-joint-data-access';
+import { HumanJointName } from './humanoid-body-joint-data-access';
 
 export type HumanBodyPartName =
   | `head`

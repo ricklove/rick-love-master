@@ -4,10 +4,10 @@ import { EntityForce } from './components/force';
 import { EntityGravity } from './components/gravity';
 import { EntityAdjustToGround, EntityGround } from './components/ground';
 import { EntityGroundView } from './components/ground-view';
+import { EntityHumanoidBody } from './components/humanoid-body/humanoid-body';
 import { EntityPhysicsView } from './components/physics-view';
 import { EntityPhysicsViewSphere } from './components/physics-view-sphere';
 import { EntityPlayer } from './components/player';
-import { EntityPlayerBody } from './components/player-body/player-body';
 import { EntityProblemEngine } from './components/problem-engine';
 import { EntitySelectable, EntitySelector } from './components/selectable';
 import { EntityRaycastSelector } from './components/selectable-raycast-selector';
@@ -23,7 +23,7 @@ type EntityUnion = EntityBase & (
 | EntitySpawnable
 | EntitySpawner
 | EntityPlayer
-| EntityPlayerBody
+| EntityHumanoidBody
 | EntityTextView
 | EntityProblemEngine
 | EntityGround

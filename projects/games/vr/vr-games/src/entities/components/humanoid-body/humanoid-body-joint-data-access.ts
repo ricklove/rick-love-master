@@ -1,5 +1,5 @@
 import { Triplet } from '@react-three/cannon';
-import { humanJointData } from './player-body-joint-data';
+import { humanJointData } from './humanoid-body-joint-data';
 
 type HumanJointExtraName = `neck-head-base` | `head-back` | `head-center` | `head-top` | `foot-ball-bottom`;
 type HumanJointDataName = typeof humanJointData[number][`label`];
@@ -84,7 +84,7 @@ const getHandJointData = (side: `left` | `right`, joint: XRHandJoint, children: 
   };
 };
 
-const createPlayerBody = () => {
+const createHumanoidBody = () => {
   const joints: HumanJointData[] = [
     ...createPlayerSide(`left`),
     ...createPlayerSide(`right`),
@@ -259,5 +259,5 @@ export const getHumanJointData = () => {
   if (cache.humanJoints) {
     return cache.humanJoints;
   }
-  return (cache.humanJoints = createPlayerBody());
+  return (cache.humanJoints = createHumanoidBody());
 };

@@ -5,10 +5,10 @@ import { EntityChooser } from '../entities/components/chooser';
 import { EntityForce } from '../entities/components/force';
 import { EntityAdjustToGround, EntityGround } from '../entities/components/ground';
 import { EntityGroundView } from '../entities/components/ground-view';
+import { EntityHumanoidBody } from '../entities/components/humanoid-body/humanoid-body';
 import { EntityMouseInput } from '../entities/components/mouse-input';
 import { EntityPhysicsViewSphere } from '../entities/components/physics-view-sphere';
 import { EntityPlayer } from '../entities/components/player';
-import { EntityPlayerBody } from '../entities/components/player-body/player-body';
 import { EntityProblemEngine } from '../entities/components/problem-engine';
 import { EntitySelectable, EntitySelector } from '../entities/components/selectable';
 import { EntityRaycastSelector } from '../entities/components/selectable-raycast-selector';
@@ -122,7 +122,7 @@ const problemChooserManager = Entity.create(`problemChooser`)
 
 const player = Entity.create(`player`)
   .addComponent(EntityPlayer, {})
-  .addComponent(EntityPlayerBody, { scale: 10, offset: new Vector3(0, 5, 0) })
+  .addComponent(EntityHumanoidBody, { scale: 10, offset: new Vector3(0, 5, 0) })
   .addComponent(EntityAdjustToGround, {
     minGroundHeight: 0,
     maxGroundHeight: 0,
