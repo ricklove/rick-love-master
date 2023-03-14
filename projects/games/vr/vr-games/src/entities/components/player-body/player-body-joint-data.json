@@ -254,6 +254,14 @@
     },
     {
       "style": "opacity:1;fill:#000000;fill-opacity:1;stroke:none;stroke-width:10.5833;stroke-linecap:round;stroke-linejoin:round;paint-order:stroke markers fill;stop-color:#000000",
+      "id": "circle3377",
+      "cx": "4.5806942",
+      "cy": "-92.008049",
+      "r": "0.5",
+      "label": "ear"
+    },
+    {
+      "style": "opacity:1;fill:#000000;fill-opacity:1;stroke:none;stroke-width:10.5833;stroke-linecap:round;stroke-linejoin:round;paint-order:stroke markers fill;stop-color:#000000",
       "id": "circle3051",
       "cx": "0",
       "cy": "-57.892391",

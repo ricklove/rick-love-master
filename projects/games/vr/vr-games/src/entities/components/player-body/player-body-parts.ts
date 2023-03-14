@@ -26,7 +26,9 @@ export type HumanBodyPartName =
   | `finger-pinky-2`
   | `finger-pinky-3`;
 export const humanBodyParts = {
-  head: { joints: [`neck-head-base`, `head-center`, `head-back`, `head-top`, `eye-lens`, `nose-tip`, `chin-tip`] },
+  head: {
+    joints: [`neck-head-base`, `head-center`, `head-back`, `head-top`, `eye-lens`, `nose-tip`, `chin-tip`, `ear`],
+  },
   neck: { joints: [`neck-base`, `neck-head-base`] },
   'upper-torso': { joints: [`neck-base`, `shoulder-socket`, `pelvis-top`] },
   'lower-torso': { joints: [`pelvis-top`, `pelvis-bottom`, `hip-socket`] },
@@ -106,4 +108,8 @@ export const humanBodyParts = {
   'finger-pinky-3': {
     joints: [`pinky-finger-phalanx-distal`, `pinky-finger-tip`],
   },
-} as const satisfies { [name in HumanBodyPartName]: { joints: readonly HumanJointName[] } };
+} as const satisfies {
+  [name in HumanBodyPartName]: {
+    joints: readonly HumanJointName[];
+  };
+};

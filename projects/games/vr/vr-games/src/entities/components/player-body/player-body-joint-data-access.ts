@@ -88,7 +88,7 @@ const createPlayerBody = () => {
     ...createPlayerSide(`right`),
     ...createPlayerHead(),
     {
-      ...getNonHandJointData(`center`, 0.005, 0, `core`, `pelvis-top`, [
+      ...getNonHandJointData(`center`, 0.02, 0, `core`, `pelvis-top`, [
         `neck-base`,
         `pelvis-bottom`,
         `hip-socket`,
@@ -96,7 +96,7 @@ const createPlayerBody = () => {
       ]),
     },
     {
-      ...getNonHandJointData(`center`, 0.005, 0, `core`, `pelvis-bottom`, []),
+      ...getNonHandJointData(`center`, 0.02, 0, `core`, `pelvis-bottom`, []),
     },
 
     // createPlayerHandNode({ ...getJointData(`left`, `neck-base`) }),
@@ -107,15 +107,15 @@ const createPlayerBody = () => {
 };
 
 const createPlayerHead = () => {
-  const centerToTopDistance = 1 - getNonHandJointData(`center`, 0.01, 0, `head`, `nose-tip`, []).startPosition[1];
+  const centerToTopDistance = 1 - getNonHandJointData(`center`, 0.005, 0, `head`, `nose-tip`, []).startPosition[1];
   const zHeadCenter = -0.01;
   const zHeadBack = zHeadCenter + 0.75 * centerToTopDistance;
   const zHeadFace = zHeadCenter - 0.75 * centerToTopDistance;
 
   const joints: HumanJointData[] = [
-    { ...getNonHandJointData(`center`, 0.01, 0, `neck`, `neck-base`, [`neck-head-base`]) },
+    { ...getNonHandJointData(`center`, 0.02, 0, `neck`, `neck-base`, [`neck-head-base`]) },
     {
-      ...getNonHandJointData(`center`, 0.01, 0, `head`, `nose-tip`, [`head-center`]),
+      ...getNonHandJointData(`center`, 0.02, 0, `head`, `nose-tip`, [`head-center`]),
       joint: `neck-head-base` as const,
     },
     {
@@ -126,6 +126,7 @@ const createPlayerHead = () => {
         `chin-tip`,
         `nose-tip`,
         `eye-lens`,
+        `ear`,
       ]),
       joint: `head-center` as const,
     },
@@ -142,12 +143,14 @@ const createPlayerHead = () => {
     { ...getNonHandJointData(`center`, 0.005, zHeadFace - 0.01, `head`, `nose-tip`, []) },
     { ...getNonHandJointData(`left`, 0.005, zHeadFace, `head`, `eye-lens`, []) },
     { ...getNonHandJointData(`right`, 0.005, zHeadFace, `head`, `eye-lens`, []) },
+    { ...getNonHandJointData(`left`, 0.005, zHeadFace, `head`, `ear`, []) },
+    { ...getNonHandJointData(`right`, 0.005, zHeadFace, `head`, `ear`, []) },
   ];
   return joints;
 };
 
 const createPlayerSide = (side: `left` | `right`) => {
-  const ankle = getNonHandJointData(side, 0.01, 0.01, `leg`, `ankle`, [
+  const ankle = getNonHandJointData(side, 0.015, 0.01, `leg`, `ankle`, [
     `foot-ball-bottom`,
     `big-toe-tip`,
     `index-toe-tip`,
@@ -157,11 +160,11 @@ const createPlayerSide = (side: `left` | `right`) => {
   ]);
   const joints: HumanJointData[] = [
     ...createPlayerHand(side),
-    { ...getNonHandJointData(side, 0.01, 0, `arm`, `elbow`, [`wrist`]) },
-    { ...getNonHandJointData(side, 0.01, 0, `arm`, `shoulder-socket`, [`elbow`]) },
-    { ...getNonHandJointData(side, 0.01, 0, `leg`, `hip-socket`, [`femur-top`]) },
-    { ...getNonHandJointData(side, 0.01, 0, `leg`, `femur-top`, [`knee`]) },
-    { ...getNonHandJointData(side, 0.01, 0, `leg`, `knee`, [`ankle`]) },
+    { ...getNonHandJointData(side, 0.02, 0, `arm`, `elbow`, [`wrist`]) },
+    { ...getNonHandJointData(side, 0.02, 0, `arm`, `shoulder-socket`, [`elbow`]) },
+    { ...getNonHandJointData(side, 0.02, 0, `leg`, `hip-socket`, [`femur-top`]) },
+    { ...getNonHandJointData(side, 0.02, 0, `leg`, `femur-top`, [`knee`]) },
+    { ...getNonHandJointData(side, 0.02, 0, `leg`, `knee`, [`ankle`]) },
     {
       ...ankle,
     },

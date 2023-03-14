@@ -1,4 +1,4 @@
-import { WorkerApi } from '@react-three/cannon';
+import { Triplet, WorkerApi } from '@react-three/cannon';
 import { CollideBeginEvent, CollideEndEvent, CollideEvent } from '@react-three/cannon';
 import { Subject } from 'rxjs';
 import { Vector3 } from 'three';
@@ -32,7 +32,7 @@ const globalState = {
 };
 
 export const EntityPhysicsView = defineComponent<EntityPhysicsView>()
-  .with(`transform`, ({ startPosition }: { startPosition?: [number, number, number] }) => ({
+  .with(`transform`, ({ startPosition }: { startPosition?: Triplet }) => ({
     position: startPosition ? new Vector3(...startPosition) : new Vector3(),
   }))
   .with(`physics`, ({ mass }: { mass?: number }) => ({

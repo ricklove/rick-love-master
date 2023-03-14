@@ -157,6 +157,11 @@ export const humanJointData = [
     label: `eye-lens`,
   },
   {
+    cx: `4.5806942`,
+    cy: `-92.008049`,
+    label: `ear`,
+  },
+  {
     cx: `0`,
     cy: `-57.892391`,
     label: `pelvis-top`,
