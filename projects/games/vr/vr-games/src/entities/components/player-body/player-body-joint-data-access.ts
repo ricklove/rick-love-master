@@ -192,6 +192,7 @@ const createPlayerSide = (side: `left` | `right`) => {
     },
     {
       ...ankle,
+      coneAngle: Math.PI * 0.25,
     },
     {
       ...ankle,
