@@ -52,6 +52,7 @@ export const humanBodyParts = {
     joints: [`elbow`, `wrist`],
   },
   hand: {
+    rotation: [0, 0, Math.PI / 8],
     joints: [
       `wrist`,
       `thumb-metacarpal`,
@@ -111,5 +112,6 @@ export const humanBodyParts = {
 } as const satisfies {
   [name in HumanBodyPartName]: {
     joints: readonly HumanJointName[];
+    rotation?: readonly [number, number, number];
   };
 };

@@ -33,13 +33,13 @@ export const EntityPlayerBody = defineComponent<EntityPlayerBody>()
   })
   .attach({});
 
-const createSphereNode = ({ startPosition, joint, radius, side }: HumanJointData) => {
+const createSphereNode = ({ position, joint, radius, side }: HumanJointData) => {
   const ball = Entity.create(`ball`)
     .addComponent(EntityPhysicsViewSphere, {
       mass: 0,
       radius,
       debugColor: side === `left` ? 0x0000ff : side === `right` ? 0xff0000 : 0x00ff00,
-      startPosition,
+      startPosition: position,
     })
     .build();
 
@@ -60,7 +60,7 @@ const createBodyPartEntity = ({ part, scale }: { part: HumanBodyPartName; scale:
         debugColor: 0x00ff00,
         startPosition: [mirror * d.position.x, d.position.y, d.position.z] as Triplet,
         startRotation: [d.rotation.x, d.rotation.y, mirror * d.rotation.z] as Triplet,
-        scale: d.scale.toArray() as Triplet,
+        scale: d.scale.clone().multiplyScalar(0.8).toArray() as Triplet,
       })
       .build();
   };
@@ -77,7 +77,9 @@ const calculateBodyPartDimensions = (part: HumanBodyPartName, scale: number) => 
   const { a, b, c } = working;
   const bodyPart = humanBodyParts[part];
   const humanJoints = getHumanJointData();
-  const joints = bodyPart.joints.map((j) => humanJoints.find((x) => x.joint === j));
+  const joints = bodyPart.joints
+    .map((j) => humanJoints.find((x) => x.joint === j && x.side !== `left`)!)
+    .filter((x) => !!x);
   if (joints.length !== bodyPart.joints.length) {
     logger.log(`ERROR: Missing joints`, { joints, bodyPart, humanJoints });
     return;
@@ -85,15 +87,15 @@ const calculateBodyPartDimensions = (part: HumanBodyPartName, scale: number) => 
 
   const sides = joints.some((x) => x?.side === `center`) ? ([`center`] as const) : ([`left`, `right`] as const);
 
-  const autoAlign = joints.length === 2;
   if (joints.length === 2) {
+    // Auto align
     const [aJoint, bJoint] = joints;
     if (!aJoint || !bJoint) {
       return;
     }
 
-    a.set(...aJoint.startPosition);
-    b.set(...bJoint.startPosition);
+    a.set(...aJoint.position);
+    b.set(...bJoint.position);
     const length = c.clone().copy(b).sub(a).length() + aJoint.radius + bJoint.radius;
     const direction = c.clone().copy(b).sub(a).clone().normalize();
     const thickness = Math.max(aJoint.radius, bJoint.radius);
@@ -103,7 +105,37 @@ const calculateBodyPartDimensions = (part: HumanBodyPartName, scale: number) => 
       // direction: b.sub(a).clone().normalize(),
       position: a.clone().add(b).multiplyScalar(0.5).multiplyScalar(scale),
       rotation: new Euler(-Math.asin(direction.z), 0, Math.asin(direction.x)),
-      scale: new Vector3(thickness, length, thickness).multiplyScalar(scale),
+      scale: new Vector3(thickness * 2, length, thickness * 2).multiplyScalar(scale),
     };
   }
+
+  // Bounding box
+  const allJoints = [
+    ...joints,
+    ...(sides[0] !== `center`
+      ? []
+      : joints
+          .filter((x) => x.side === `right`)
+          .map((x) => ({ ...x, position: [-x.position[0], x.position[1], x.position[2]] }))),
+  ];
+  const minBounds = [
+    Math.min(...allJoints.map((j) => j.position[0] - j.radius)),
+    Math.min(...allJoints.map((j) => j.position[1] - j.radius)),
+    Math.min(...allJoints.map((j) => j.position[2] - j.radius)),
+  ] as Triplet;
+  const maxBounds = [
+    Math.max(...allJoints.map((j) => j.position[0] + j.radius)),
+    Math.max(...allJoints.map((j) => j.position[1] + j.radius)),
+    Math.max(...allJoints.map((j) => j.position[2] + j.radius)),
+  ] as Triplet;
+  a.set(...minBounds);
+  b.set(...maxBounds);
+
+  const rotation = (bodyPart as { rotation?: Triplet }).rotation;
+  return {
+    sides,
+    position: a.clone().add(b).multiplyScalar(0.5).multiplyScalar(scale),
+    rotation: rotation ? new Euler(...rotation) : new Euler(),
+    scale: b.clone().sub(a).multiplyScalar(scale),
+  };
 };

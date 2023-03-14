@@ -10,7 +10,7 @@ export type HumanJointData = {
   joint: HumanJointName;
   children: HumanJointName[];
   radius: number;
-  startPosition: Triplet;
+  position: Triplet;
   limb: HumanLimbName;
 };
 
@@ -20,7 +20,7 @@ const getJointData = (side: `left` | `right`, joint: HumanJointDataName) => {
 
   return {
     joint,
-    startPosition: pos,
+    position: pos,
   };
 };
 
@@ -34,7 +34,7 @@ const getNonHandJointData = (
 ) => {
   const j = getJointData(side === `center` ? `left` : side, joint) as {
     joint: Exclude<HumanJointDataName, XRHandJoint>;
-    startPosition: Triplet;
+    position: Triplet;
   };
   return {
     side,
@@ -42,7 +42,7 @@ const getNonHandJointData = (
     joint: j.joint as Exclude<HumanJointDataName, XRHandJoint>,
     children,
     radius,
-    startPosition: [j.startPosition[0], j.startPosition[1], z] as Triplet,
+    position: [j.position[0], j.position[1], z] as Triplet,
   };
 };
 
@@ -55,7 +55,7 @@ const getFootJointData = (
 ) => {
   const j = getJointData(side, joint) as {
     joint: Exclude<HumanJointDataName, XRHandJoint>;
-    startPosition: Triplet;
+    position: Triplet;
   };
   return {
     side,
@@ -63,14 +63,14 @@ const getFootJointData = (
     joint: j.joint,
     children,
     radius,
-    startPosition: [j.startPosition[0], 0, 3 * j.startPosition[1]] as Triplet,
+    position: [j.position[0], 0, 3 * j.position[1]] as Triplet,
   };
 };
 
 const getHandJointData = (side: `left` | `right`, joint: XRHandJoint, children: HumanJointName[]) => {
   const j = getJointData(side, joint) as {
     joint: XRHandJoint;
-    startPosition: Triplet;
+    position: Triplet;
   };
   return {
     side,
@@ -78,7 +78,7 @@ const getHandJointData = (side: `left` | `right`, joint: XRHandJoint, children: 
     joint: j.joint,
     children,
     radius: 0.005,
-    startPosition: j.startPosition,
+    position: j.position,
   };
 };
 
@@ -107,7 +107,7 @@ const createPlayerBody = () => {
 };
 
 const createPlayerHead = () => {
-  const centerToTopDistance = 1 - getNonHandJointData(`center`, 0.005, 0, `head`, `nose-tip`, []).startPosition[1];
+  const centerToTopDistance = 1 - getNonHandJointData(`center`, 0.005, 0, `head`, `nose-tip`, []).position[1];
   const zHeadCenter = -0.01;
   const zHeadBack = zHeadCenter + 0.75 * centerToTopDistance;
   const zHeadFace = zHeadCenter - 0.75 * centerToTopDistance;
@@ -136,15 +136,15 @@ const createPlayerHead = () => {
     },
     {
       ...getNonHandJointData(`center`, 0.005, 0, `head`, `nose-tip`, []),
-      startPosition: [0, 1, -0.01],
+      position: [0, 1, -0.01],
       joint: `head-top` as const,
     },
     { ...getNonHandJointData(`center`, 0.005, zHeadFace, `head`, `chin-tip`, []) },
     { ...getNonHandJointData(`center`, 0.005, zHeadFace - 0.01, `head`, `nose-tip`, []) },
     { ...getNonHandJointData(`left`, 0.005, zHeadFace, `head`, `eye-lens`, []) },
     { ...getNonHandJointData(`right`, 0.005, zHeadFace, `head`, `eye-lens`, []) },
-    { ...getNonHandJointData(`left`, 0.005, zHeadFace, `head`, `ear`, []) },
-    { ...getNonHandJointData(`right`, 0.005, zHeadFace, `head`, `ear`, []) },
+    { ...getNonHandJointData(`left`, 0.005, zHeadCenter, `head`, `ear`, []) },
+    { ...getNonHandJointData(`right`, 0.005, zHeadCenter, `head`, `ear`, []) },
   ];
   return joints;
 };
@@ -172,7 +172,7 @@ const createPlayerSide = (side: `left` | `right`) => {
       ...ankle,
       radius: 0.005,
       limb: `foot`,
-      startPosition: [ankle.startPosition[0], 0, ankle.startPosition[2] + 0.01],
+      position: [ankle.position[0], 0, ankle.position[2] + 0.01],
       joint: `foot-ball-bottom` as const,
     },
     { ...getFootJointData(side, 0.005, 0, `big-toe-tip`, []) },
