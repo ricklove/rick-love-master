@@ -176,7 +176,7 @@ const createBodyPartEntity = ({
     const pivots =
       d.pivots?.map((p) => ({
         ...p,
-        side,
+        side: side === `center` ? p.side : side,
         position: [mirror * p.position.x, p.position.y, p.position.z] as Triplet,
       })) ?? [];
 
@@ -332,9 +332,14 @@ const calculateBodyPartData = (part: HumanBodyPartName, scale: number, offset: V
     ...joints,
     ...(sides[0] !== `center`
       ? []
-      : joints
+      : // add left joints for center
+        joints
           .filter((x) => x.side === `right`)
-          .map((x) => ({ ...x, position: [-x.position[0], x.position[1], x.position[2]] as Triplet }))),
+          .map((x) => ({
+            ...x,
+            side: `left` as const,
+            position: [-x.position[0], x.position[1], x.position[2]] as Triplet,
+          }))),
   ];
 
   const rotationTriplet = (bodyPart as { rotation?: Triplet }).rotation;

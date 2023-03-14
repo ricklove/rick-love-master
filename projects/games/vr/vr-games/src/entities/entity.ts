@@ -1,4 +1,4 @@
-import type {} from '@react-three/cannon';
+import type { Triplet } from '@react-three/cannon';
 import type {} from 'three';
 import { EntityForce } from './components/force';
 import { EntityGravity } from './components/gravity';
@@ -44,3 +44,5 @@ export type Entity = SimplifyEntity<EntityUnion>;
 export const Entity = defineEntity<Entity>();
 
 export type World = Entity & EntityWithChildren;
+
+export type SceneDefinition = { rootEntities: Entity[]; gravity?: Triplet };
