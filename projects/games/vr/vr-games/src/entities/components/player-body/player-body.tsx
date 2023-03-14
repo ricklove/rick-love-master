@@ -5,67 +5,136 @@ import { defineComponent, EntityBase, EntityList, EntityWithChildren } from '../
 import { Entity } from '../../entity';
 import { EntityPhysicsViewBox } from '../physics-view-box';
 import { EntityPhysicsViewSphere } from '../physics-view-sphere';
-import { getHumanJointData, HumanJointData } from './player-body-joint-data-access';
+import { getHumanJointData, HumanJointData, HumanJointName } from './player-body-joint-data-access';
 import { HumanBodyPartName, humanBodyParts } from './player-body-parts';
 
 // constraints Reference: https://enable3d.io/examples/types-of-constraints.html
 
 export type EntityPlayerBody = EntityWithChildren & {
   playerBody: {
-    parts: { entity: EntityBase; joint: HumanJointData }[];
+    parts: { entity: EntityBase }[];
+    joints: { entities: EntityBase[] }[];
   };
 };
 export const EntityPlayerBody = defineComponent<EntityPlayerBody>()
   .with(`children`, () => new EntityList())
   .with(`playerBody`, ({}: {}, e) => {
     const scale = 1;
+
+    const bodyPartEntities = Object.keys(humanBodyParts).flatMap(
+      (k) => createBodyPartEntity({ part: k as HumanBodyPartName, scale, thicknessScale: 0.7 }) ?? [],
+    );
+
+    e.children.add(...bodyPartEntities.map((x) => x.entity));
+
+    logger.log(`bodyPartEntities`, { bodyPartEntities });
+
     const joints = getHumanJointData();
-    const jointEntities = joints.map((x) => ({ entity: createSphereNode(x), joint: x }));
-    e.children.add(...jointEntities.map((x) => x.entity));
+    const jointEntities = joints.map((x) => ({ entities: createBodyJoint(x, bodyPartEntities), joint: x }));
+    e.children.add(...jointEntities.flatMap((x) => x.entities));
 
-    const bodyPartEntities = Object.keys(humanBodyParts)
-      .map((k) => createBodyPartEntity({ part: k as HumanBodyPartName, scale }))
-      .filter((x) => !!x)
-      .map((x) => x!);
-    e.children.add(...bodyPartEntities.flatMap((x) => x.entities));
-
-    return { parts: jointEntities };
+    return {
+      parts: bodyPartEntities,
+      joints: jointEntities,
+    };
   })
   .attach({});
 
-const createSphereNode = ({ position, joint, radius, side }: HumanJointData) => {
-  const ball = Entity.create(`ball`)
-    .addComponent(EntityPhysicsViewSphere, {
-      mass: 0,
-      radius,
-      debugColor: side === `left` ? 0x0000ff : side === `right` ? 0xff0000 : 0x00ff00,
-      startPosition: position,
-    })
-    .build();
+const createBodyJoint = (
+  { position, joint, radius, side }: HumanJointData,
+  bodyPartEntities: { pivots: { side: `center` | `left` | `right`; joint: HumanJointName; position: Triplet }[] }[],
+) => {
+  const connectedToJoint = bodyPartEntities
+    .map((part) => ({
+      part,
+      pivot: part.pivots.find((p) => p.joint === joint && p.side === side),
+    }))
+    .filter((x) => x.pivot)
+    .map((x) => ({
+      part: x.part,
+      pivot: x.pivot!,
+    }));
 
-  return ball;
+  const createJointMarker = () => {
+    return Entity.create(`bodyJoint:${joint}:${side}`)
+      .addComponent(EntityPhysicsViewSphere, {
+        mass: 0,
+        radius,
+        debugColor: side === `left` ? 0x0000ff : side === `right` ? 0xff0000 : 0x880088,
+        startPosition: position,
+      })
+      .build();
+  };
+
+  if (!connectedToJoint.length) {
+    logger.log(`createBodyJoint - No matches for ${joint}:${side}`);
+    return [];
+  }
+
+  return connectedToJoint
+    .map((c, i) => {
+      if (i === 0) {
+        return createJointMarker();
+      }
+    })
+    .filter((x) => !!x)
+    .map((x) => x!);
+
+  // const pairs = connectedToJoint.slice(1).map((x) => [connectedToJoint[0], x]);
+
+  // const jointEntity = Entity.create(`bodyJoint:${joint}:${side}`)
+  //   .addComponent(EntityPhysicsViewSphere, {
+  //     mass: 0,
+  //     radius,
+  //     debugColor: side === `left` ? 0x0000ff : side === `right` ? 0xff0000 : 0x00ffff,
+  //     startPosition: position,
+  //   })
+  //   .build();
+
+  // return jointEntity;
 };
 
-const createBodyPartEntity = ({ part, scale }: { part: HumanBodyPartName; scale: number }) => {
-  const d = calculateBodyPartDimensions(part, scale);
+const createBodyPartEntity = ({
+  part,
+  scale,
+  thicknessScale,
+}: {
+  part: HumanBodyPartName;
+  scale: number;
+  thicknessScale: number;
+}) => {
+  const d = calculateBodyPartData(part, scale);
   if (!d) {
     return;
   }
 
   const createEntity = (side: `center` | `left` | `right`) => {
     const mirror = side === `left` ? -1 : 1;
-    return Entity.create(`bodyPart`)
-      .addComponent(EntityPhysicsViewBox, {
-        mass: 0,
-        debugColor: 0x00ff00,
-        startPosition: [mirror * d.position.x, d.position.y, d.position.z] as Triplet,
-        startRotation: [d.rotation.x, d.rotation.y, mirror * d.rotation.z] as Triplet,
-        scale: d.scale.clone().multiplyScalar(0.8).toArray() as Triplet,
-      })
-      .build();
+    return {
+      entity: Entity.create(`bodyPart:${part}:${side}`)
+        .addComponent(EntityPhysicsViewBox, {
+          mass: 0,
+          debugColor: 0x00ff00,
+          startPosition: [mirror * d.position.x, d.position.y, d.position.z] as Triplet,
+          startRotation: [d.rotation.x, d.rotation.y, mirror * d.rotation.z] as Triplet,
+          scale: d.scale.clone().multiplyScalar(thicknessScale).toArray() as Triplet,
+        })
+        .build(),
+      pivots:
+        d.pivots?.map((p) => ({
+          ...p,
+          side,
+          position: [mirror * p.position.x, p.position.y, p.position.z] as Triplet,
+        })) ?? [],
+    };
   };
 
-  return { scale, part, entities: d.sides.map((s) => createEntity(s)) };
+  return d.sides.map((s) => ({
+    scale,
+    part,
+    side: s,
+    ...createEntity(s),
+  }));
 };
 
 const working = {
@@ -73,7 +142,7 @@ const working = {
   b: new Vector3(),
   c: new Vector3(),
 };
-const calculateBodyPartDimensions = (part: HumanBodyPartName, scale: number) => {
+const calculateBodyPartData = (part: HumanBodyPartName, scale: number) => {
   const { a, b, c } = working;
   const bodyPart = humanBodyParts[part];
   const humanJoints = getHumanJointData();
@@ -99,13 +168,22 @@ const calculateBodyPartDimensions = (part: HumanBodyPartName, scale: number) => 
     const length = c.clone().copy(b).sub(a).length() + aJoint.radius + bJoint.radius;
     const direction = c.clone().copy(b).sub(a).clone().normalize();
     const thickness = Math.max(aJoint.radius, bJoint.radius);
+
+    const center = a.clone().add(b).multiplyScalar(0.5).multiplyScalar(scale);
+    const rotation = new Euler(-Math.asin(direction.z), 0, Math.asin(direction.x));
     return {
       sides,
-      // origin: a.clone(),
-      // direction: b.sub(a).clone().normalize(),
-      position: a.clone().add(b).multiplyScalar(0.5).multiplyScalar(scale),
-      rotation: new Euler(-Math.asin(direction.z), 0, Math.asin(direction.x)),
+      position: center,
+      rotation,
       scale: new Vector3(thickness * 2, length, thickness * 2).multiplyScalar(scale),
+      pivots: joints.map((j) => ({
+        side: j.side,
+        joint: j.joint,
+        position: a
+          .set(...(j.position as Triplet))
+          .sub(center)
+          .applyEuler(rotation),
+      })),
     };
   }
 
@@ -116,26 +194,55 @@ const calculateBodyPartDimensions = (part: HumanBodyPartName, scale: number) => 
       ? []
       : joints
           .filter((x) => x.side === `right`)
-          .map((x) => ({ ...x, position: [-x.position[0], x.position[1], x.position[2]] }))),
+          .map((x) => ({ ...x, position: [-x.position[0], x.position[1], x.position[2]] as Triplet }))),
   ];
-  const minBounds = [
-    Math.min(...allJoints.map((j) => j.position[0] - j.radius)),
-    Math.min(...allJoints.map((j) => j.position[1] - j.radius)),
-    Math.min(...allJoints.map((j) => j.position[2] - j.radius)),
-  ] as Triplet;
-  const maxBounds = [
-    Math.max(...allJoints.map((j) => j.position[0] + j.radius)),
-    Math.max(...allJoints.map((j) => j.position[1] + j.radius)),
-    Math.max(...allJoints.map((j) => j.position[2] + j.radius)),
-  ] as Triplet;
-  a.set(...minBounds);
-  b.set(...maxBounds);
 
-  const rotation = (bodyPart as { rotation?: Triplet }).rotation;
+  const centerOfMass = a.clone();
+  allJoints.forEach((j) => centerOfMass.add(b.set(...j.position)));
+  centerOfMass.multiplyScalar(1 / allJoints.length);
+
+  const rotationTriplet = (bodyPart as { rotation?: Triplet }).rotation;
+  const rotation = rotationTriplet ? new Euler(...rotationTriplet) : new Euler();
+
+  const basePos = c.copy(centerOfMass);
+  const allJointsRotated = allJoints.map((j) => ({
+    ...j,
+    // rotate all j pos
+    position: a
+      .set(...j.position)
+      .sub(basePos)
+      .applyEuler(rotation)
+      .add(basePos)
+      .toArray() as Triplet,
+  }));
+
+  const minBoundsRotated = [
+    Math.min(...allJointsRotated.map((j) => j.position[0] - j.radius)),
+    Math.min(...allJointsRotated.map((j) => j.position[1] - j.radius)),
+    Math.min(...allJointsRotated.map((j) => j.position[2] - j.radius)),
+  ] as Triplet;
+  const maxBoundsRotated = [
+    Math.max(...allJointsRotated.map((j) => j.position[0] + j.radius)),
+    Math.max(...allJointsRotated.map((j) => j.position[1] + j.radius)),
+    Math.max(...allJointsRotated.map((j) => j.position[2] + j.radius)),
+  ] as Triplet;
+  a.set(...minBoundsRotated);
+  b.set(...maxBoundsRotated);
+
+  const centerRotated = a.clone().add(b).multiplyScalar(0.5).multiplyScalar(scale);
+
   return {
     sides,
-    position: a.clone().add(b).multiplyScalar(0.5).multiplyScalar(scale),
-    rotation: rotation ? new Euler(...rotation) : new Euler(),
+    position: centerRotated,
+    rotation,
     scale: b.clone().sub(a).multiplyScalar(scale),
+    pivots: allJoints.map((j) => ({
+      side: j.side,
+      joint: j.joint,
+      position: a
+        .set(...(j.position as Triplet))
+        .sub(centerRotated)
+        .applyEuler(rotation),
+    })),
   };
 };

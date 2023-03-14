@@ -52,7 +52,7 @@ export const humanBodyParts = {
     joints: [`elbow`, `wrist`],
   },
   hand: {
-    rotation: [0, 0, Math.PI / 8],
+    rotation: [0, 0, Math.PI / 12],
     joints: [
       `wrist`,
       `thumb-metacarpal`,
