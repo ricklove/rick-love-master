@@ -1,8 +1,12 @@
 import { Triplet } from '@react-three/cannon';
+import { BehaviorSubject } from 'rxjs';
 import { Euler, Vector3 } from 'three';
 import { logger } from '../../../utils/logger';
 import { defineComponent, EntityBase, EntityList, EntityWithChildren } from '../../core';
 import { Entity } from '../../entity';
+import { EntityForce } from '../force';
+import { EntityPhysicsConstraintConeTwist } from '../physics-constraint';
+import { EntityPhysicsView } from '../physics-view';
 import { EntityPhysicsViewBox } from '../physics-view-box';
 import { EntityPhysicsViewSphere } from '../physics-view-sphere';
 import { getHumanJointData, HumanJointData, HumanJointName } from './player-body-joint-data-access';
@@ -42,7 +46,10 @@ export const EntityPlayerBody = defineComponent<EntityPlayerBody>()
 
 const createBodyJoint = (
   { position, joint, radius, side }: HumanJointData,
-  bodyPartEntities: { pivots: { side: `center` | `left` | `right`; joint: HumanJointName; position: Triplet }[] }[],
+  bodyPartEntities: {
+    entity: EntityPhysicsView;
+    pivots: { side: `center` | `left` | `right`; joint: HumanJointName; position: Triplet }[];
+  }[],
 ) => {
   const connectedToJoint = bodyPartEntities
     .map((part) => ({
@@ -55,13 +62,36 @@ const createBodyJoint = (
       pivot: x.pivot!,
     }));
 
-  const createJointMarker = () => {
-    return Entity.create(`bodyJoint:${joint}:${side}`)
+  const createJointEntity = (parent: typeof connectedToJoint[number], child?: typeof connectedToJoint[number]) => {
+    const e = Entity.create(`bodyJoint:${joint}:${side}`)
       .addComponent(EntityPhysicsViewSphere, {
         mass: 0,
         radius,
         debugColor: side === `left` ? 0x0000ff : side === `right` ? 0xff0000 : 0x880088,
         startPosition: position,
+      })
+      .addComponent(EntityForce, {})
+      .extend((e) => {
+        // TODO: Use a point to point constraint
+        // Follow parent position
+        EntityForce.register(e, new BehaviorSubject(true), (e) => {
+          e.physics.api?.position.set(...parent.part.entity.transform.position.toArray());
+        });
+      });
+
+    if (!child) {
+      return e.build();
+    }
+    return e
+      .addComponent(EntityPhysicsConstraintConeTwist, {
+        entityA: child.part.entity,
+        entityB: parent.part.entity,
+        options: {
+          pivotA: child.pivot.position,
+          pivotB: parent.pivot.position,
+          axisA: [0, 1, 0] as Triplet,
+          axisB: [0, 1, 0] as Triplet,
+        },
       })
       .build();
   };
@@ -71,11 +101,14 @@ const createBodyJoint = (
     return [];
   }
 
+  const cFirst = connectedToJoint[0];
   return connectedToJoint
     .map((c, i) => {
       if (i === 0) {
-        return createJointMarker();
+        return createJointEntity(cFirst);
       }
+
+      return createJointEntity(cFirst, c);
     })
     .filter((x) => !!x)
     .map((x) => x!);
@@ -113,7 +146,7 @@ const createBodyPartEntity = ({
     return {
       entity: Entity.create(`bodyPart:${part}:${side}`)
         .addComponent(EntityPhysicsViewBox, {
-          mass: 0,
+          mass: 1,
           debugColor: 0x00ff00,
           startPosition: [mirror * d.position.x, d.position.y, d.position.z] as Triplet,
           startRotation: [d.rotation.x, d.rotation.y, mirror * d.rotation.z] as Triplet,

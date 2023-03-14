@@ -1,10 +1,9 @@
 import { Triplet, WorkerApi } from '@react-three/cannon';
 import { Observable } from 'rxjs';
 import { Vector3 } from 'three';
-import { defineComponent } from '../core';
-import { EntitySelectable } from './selectable';
+import { defineComponent, EntityBase } from '../core';
 
-export type EntityForce = EntitySelectable & {
+export type EntityForce = EntityBase & {
   transform: {
     position: Vector3;
   };
