@@ -20,13 +20,15 @@ const humanoidStaticChest = Entity.create(`humanoid`)
     const mainPart = e.humanoidBody.parts.find((x) => x.part === `upper-torso`)!;
     const partsToMove = [
       `head`,
+      // `foot`,
+      // `neck`,
       `upper-leg`,
       `lower-leg`,
       `upper-torso`,
       // `foot`,
       `lower-torso`,
       `upper-arm`,
-      // `lower-leg`,
+      `lower-leg`,
     ]
       // const partsToMove = [`neck`, `upper-torso`, `lower-torso`]
       .flatMap((partName) => e.humanoidBody.parts.filter((x) => x.part === partName)!)
@@ -48,8 +50,11 @@ const humanoidStaticChest = Entity.create(`humanoid`)
 
       let step = 0;
 
-      const speed = 0.5;
-      const cycleSpeed = 0.5;
+      const speed = 1;
+      const cycleSpeed = 1;
+      const yMult = 8;
+      const yTargetMult = 1.5;
+      let maxHeight = 0;
 
       setTimeout(() => {
         partsToMove.forEach((p, iPart) => {
@@ -59,12 +64,18 @@ const humanoidStaticChest = Entity.create(`humanoid`)
           let targetHeight = 0;
 
           p.entity.physics.api.position.subscribe((pos) => {
+            if (p.part === `head`) {
+              vel.set(0, 0.1, -0.2 * speed).applyAxisAngle(up, dirAngle);
+              p.entity.physics.api.velocity.set(vel.x, vel.y, vel.z);
+              p.entity.physics.api.angularVelocity.set(0, 0, 0);
+            }
             if (iPart === 0) {
               step++;
             }
 
             if (step === 1) {
               targetHeight = pos[1];
+              maxHeight = Math.max(targetHeight, maxHeight);
             }
 
             if (step % partsToMove.length !== iPart) {
@@ -74,14 +85,21 @@ const humanoidStaticChest = Entity.create(`humanoid`)
             // p.entity.physics.api.position.set(pos[0], 0.7, pos[2] - 0.01);
             const iTimeDelta = (45617 * iPart) % 31;
 
-            const yTarget = 1.6 * targetHeight;
+            const heightRatio = targetHeight / maxHeight;
+            const forwardBoostMult = 1 + 0.2 * (1 - heightRatio);
+            const heightBoostMult = 1 + 0.2 * (1 - heightRatio);
+
+            const yTarget = yTargetMult * targetHeight;
             const yDelta =
               yTarget * (0.8 + 0.2 * Math.sin((1 / 0.3) * cycleSpeed * ((Date.now() + iTimeDelta) / 1000))) - pos[1];
             const yDeltaRatio = yDelta / yTarget;
             const yStrength = 1 - Math.pow(yDeltaRatio, 3);
-            const yVel = 0.05 + yDelta * yStrength;
+            const yVel = heightBoostMult * yMult * (0.05 + yDelta * yStrength);
             const zVel =
-              speed * -0.3 * (0.6 + 0.4 * Math.sin(((1 / 0.7) * cycleSpeed * (Date.now() + iTimeDelta)) / 1000));
+              forwardBoostMult *
+              speed *
+              -0.3 *
+              (0.6 + 0.4 * Math.sin(((1 / 0.7) * cycleSpeed * (Date.now() + iTimeDelta)) / 1000));
             const angle = Math.PI * 0.25 * Math.sin(((1 / 3) * cycleSpeed * (Date.now() + iTimeDelta)) / 1000);
             vel.set(0, yVel, zVel).applyAxisAngle(up, dirAngle);
             rot.set(angle * 0.7, dirAngle + angle, angle * 0.3);
@@ -89,7 +107,7 @@ const humanoidStaticChest = Entity.create(`humanoid`)
             p.entity.physics.api.velocity.set(vel.x, vel.y, vel.z);
             p.entity.physics.api.angularVelocity.set(rot.x / 60, rot.y / 60, rot.z / 60);
 
-            if (Math.floor(step / partsToMove.length) % 30 === (57 * iPart) % 30) {
+            if (Math.floor(step / partsToMove.length) % 20 === (57 * iPart) % 20) {
               p.entity.physics.api.rotation.set(rot.x, rot.y, rot.z);
             }
 
@@ -137,6 +155,6 @@ export const scene02: SceneDefinition = {
     // ...humanoids,
     ground,
   ],
-  gravity: [0, 0.1 * -9.8, 0] as Triplet,
+  gravity: [0, 1 * -9.8, 0] as Triplet,
   // gravity: [0, 0, 0] as Triplet,
 };
