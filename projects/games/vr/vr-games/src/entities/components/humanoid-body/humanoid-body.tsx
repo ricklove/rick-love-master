@@ -17,6 +17,7 @@ import { HumanBodyPartName, humanBodyParts } from './humanoid-body-parts';
 
 export type EntityHumanoidBody = EntityWithChildren & {
   humanoidBody: {
+    upperTorso: EntityPhysicsViewBox;
     parts: { entity: EntityBase }[];
     joints: { entities: EntityBase[] }[];
     scale: number;
@@ -53,6 +54,7 @@ export const EntityHumanoidBody = defineComponent<EntityHumanoidBody>()
     return {
       scale,
       offset,
+      upperTorso: bodyPartEntities.find((x) => x.part === `upper-torso`)!.entity,
       parts: bodyPartEntities,
       joints: jointEntities,
     };

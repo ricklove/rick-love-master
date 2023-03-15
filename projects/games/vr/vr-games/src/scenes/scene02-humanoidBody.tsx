@@ -9,9 +9,28 @@ const humanoid = Entity.create(`humanoid`)
   .addComponent(EntityHumanoidBody, { scale: 1, offset: new Vector3(0, 0, 0) })
   .build();
 
-// broken constraint positions?
 const humanoidOffset = Entity.create(`humanoid`)
   .addComponent(EntityHumanoidBody, { scale: 1, offset: new Vector3(1, 0, 0) })
+  .build();
+
+const humanoidStaticChest = Entity.create(`humanoid`)
+  .addComponent(EntityHumanoidBody, { scale: 1, offset: new Vector3(1, 0, 0) })
+  .extend((e) => {
+    // Make the check static
+    e.humanoidBody.upperTorso.ready.subscribe((r) => {
+      if (!r) {
+        return;
+      }
+      const api = e.humanoidBody.upperTorso?.physics?.api;
+      api.mass.set(0);
+
+      setInterval(() => {
+        api.mass.set(10);
+        api.applyImpulse([0, 0, -0.1], e.humanoidBody.upperTorso.transform.position.toArray());
+        api.mass.set(0);
+      }, 1000);
+    });
+  })
   .build();
 
 const rows = 4;
@@ -39,9 +58,10 @@ export const scene02: SceneDefinition = {
   rootEntities: [
     // humanoid,
     // humanoidOffset,
-    ...humanoids,
+    humanoidStaticChest,
+    // ...humanoids,
     ground,
   ],
-  // gravity: [0, -0.098, 0] as Triplet,
-  gravity: [0, 0, 0] as Triplet,
+  gravity: [0, -9.8, 0] as Triplet,
+  // gravity: [0, 0, 0] as Triplet,
 };

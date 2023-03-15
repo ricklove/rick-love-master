@@ -204,9 +204,9 @@ const mainBodyParts = {
 
 export const humanBodyParts = {
   ...mainBodyParts,
-  ...complexHand,
+  // ...complexHand,
   // ...mediumHand,
-  // ...simpleHand,
+  ...simpleHand,
 } as const satisfies {
   [name in string]: {
     joints: readonly HumanJointName[];
