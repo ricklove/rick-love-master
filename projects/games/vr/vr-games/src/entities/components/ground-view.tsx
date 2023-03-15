@@ -1,16 +1,22 @@
 import React, { useMemo, useRef } from 'react';
 import { Triplet, useHeightfield } from '@react-three/cannon';
-import { BufferAttribute, BufferGeometry, DoubleSide, DynamicDrawUsage, Mesh, PlaneGeometry, Vector3 } from 'three';
+import {
+  BufferAttribute,
+  BufferGeometry,
+  DoubleSide,
+  DynamicDrawUsage,
+  Mesh,
+  PlaneGeometry,
+  Quaternion,
+  Vector3,
+} from 'three';
 import { Float32BufferAttribute } from 'three';
 import { useIsomorphicLayoutEffect } from '../../utils/layoutEffect';
-import { defineComponent, EntityBase } from '../core';
+import { defineComponent, EntityBase, EntityWithTransform } from '../core';
 import { EntityGround } from './ground';
 
-export type EntityGroundView = EntityBase &
+export type EntityGroundView = EntityWithTransform &
   EntityGround & {
-    transform: {
-      position: Vector3;
-    };
     view: {
       Component: (props: { entity: EntityBase }) => JSX.Element;
     };
@@ -31,6 +37,7 @@ export const EntityGroundView = defineComponent<EntityGroundView>()
   .with(`transform`, () => ({
     // Will be created by the component
     position: undefined as unknown as Vector3,
+    quaternion: new Quaternion(),
   }));
 
 export const EntityGroundViewComponent = ({ entity }: { entity: EntityGroundView }) => {

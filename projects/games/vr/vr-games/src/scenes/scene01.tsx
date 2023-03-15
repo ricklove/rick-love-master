@@ -1,5 +1,5 @@
 import { Triplet } from '@react-three/cannon';
-import { BehaviorSubject, delay, filter, map, timer } from 'rxjs';
+import { BehaviorSubject, filter, map, timer } from 'rxjs';
 import { Vector3 } from 'three';
 import { EntityChooser } from '../entities/components/chooser';
 import { EntityForce } from '../entities/components/force';
@@ -215,15 +215,10 @@ const createBall = () => {
     .addComponent(EntitySpawnable, {
       doSpawn: (e, pos) => {
         const b = e as typeof ball;
-        b.ready
-          .pipe(
-            filter((x) => !!x),
-            delay(100),
-          )
-          .subscribe(() => {
-            b.physics.api.position.set(...pos.toArray());
-            b.physics.api.velocity.set(0, 0, 0);
-          });
+        b.ready.subscribe(() => {
+          b.physics.api.position.copy(pos);
+          b.physics.api.velocity.set(0, 0, 0);
+        });
       },
     })
     .addComponent(EntityPhysicsViewSphere, {

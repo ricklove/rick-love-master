@@ -3,12 +3,9 @@ import { Billboard, Text } from '@react-three/drei';
 import { useFrame } from '@react-three/fiber';
 import { Euler, Group, Vector3 } from 'three';
 import { useIsomorphicLayoutEffect } from '../../utils/layoutEffect';
-import { defineComponent, EntityBase } from '../core';
+import { defineComponent, EntityBase, EntityWithTransform } from '../core';
 
-export type EntityTextView = EntityBase & {
-  transform: {
-    position: Vector3;
-  };
+export type EntityTextView = EntityWithTransform & {
   textView: {
     text: string;
     fontSize: number;

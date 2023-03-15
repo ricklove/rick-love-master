@@ -66,14 +66,7 @@ const EntityPhysicsViewBoxBatchComponent = ({ entities }: { entities: EntityPhys
 
     const r = ref.current;
     entities.forEach((x, i) => {
-      api.at(i).position.subscribe((p) => {
-        x.transform.position.set(...p);
-      });
-      api.at(i).quaternion.subscribe((p) => {
-        x.box.quaternion.set(...p);
-      });
       api.at(i).scaleOverride(entities[i].box.scale);
-
       EntityPhysicsView.register(x, api.at(i));
       x.ready.next(true);
     });

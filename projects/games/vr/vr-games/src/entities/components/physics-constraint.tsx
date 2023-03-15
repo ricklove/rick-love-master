@@ -2,15 +2,12 @@ import React, { useRef, useState } from 'react';
 import { ConeTwistConstraintOpts, Triplet, useConeTwistConstraint, WorkerApi } from '@react-three/cannon';
 import { CollideBeginEvent, CollideEndEvent, CollideEvent } from '@react-three/cannon';
 import { Subject } from 'rxjs';
-import { Object3D, Vector3 } from 'three';
+import { Object3D, Quaternion, Vector3 } from 'three';
 import { useIsomorphicLayoutEffect } from '../../utils/layoutEffect';
-import { cloneComponent, defineComponent, EntityBase } from '../core';
+import { cloneComponent, defineComponent, EntityBase, EntityWithTransform } from '../core';
 import { EntityPhysicsView } from './physics-view';
 
-export type EntityPhysicsConstraint = EntityBase & {
-  transform: {
-    position: Vector3;
-  };
+export type EntityPhysicsConstraint = EntityWithTransform & {
   physicsConstraint: {
     uuid: string;
     api: WorkerApi;
@@ -33,6 +30,7 @@ export type EntityPhysicsConstraint = EntityBase & {
 export const EntityPhysicsConstraint = defineComponent<EntityPhysicsConstraint>()
   .with(`transform`, ({ startPosition }: { startPosition?: Triplet }) => ({
     position: startPosition ? new Vector3(...startPosition) : new Vector3(),
+    quaternion: new Quaternion(),
   }))
   .with(`physicsConstraint`, ({ mass }: { mass?: number }) => ({
     mass: mass ?? 0,

@@ -1,19 +1,16 @@
 import React from 'react';
 import { Subject } from 'rxjs';
-import { Vector3 } from 'three';
+import { Quaternion, Vector3 } from 'three';
 import { useCamera, usePlayer } from '../../components/camera';
 import { Gestures, useGestures } from '../../gestures/gestures';
 import { useIsomorphicLayoutEffect } from '../../utils/layoutEffect';
-import { defineComponent, EntityBase } from '../core';
+import { defineComponent, EntityBase, EntityWithTransform } from '../core';
 
-export type EntityPlayer = EntityBase & {
+export type EntityPlayer = EntityWithTransform & {
   player: {
     active: boolean;
     gestures?: Gestures;
     gesturesSubject: Subject<Gestures>;
-  };
-  transform: {
-    position: Vector3;
   };
   view: {
     Component: (props: { entity: EntityBase }) => JSX.Element;
@@ -32,6 +29,7 @@ export const EntityPlayer = defineComponent<EntityPlayer>()
   .with(`transform`, ({ startPosition }: { startPosition?: [number, number, number] }) => ({
     // Will be created by the component
     position: startPosition ? new Vector3(...startPosition) : (undefined as unknown as Vector3),
+    quaternion: new Quaternion(),
   }))
   .attach({
     updateInput: (entity: EntityPlayer) => {

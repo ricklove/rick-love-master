@@ -61,6 +61,7 @@ export class ObservableList<T> {
 
     this.itemsSubject.next(this._frozenItems);
     logger.log(`ObservableList _emit`, {
+      dirty,
       items: this._frozenItems.length,
       map: Object.keys(this._map),
     });

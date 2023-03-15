@@ -1,9 +1,6 @@
-import { defineComponent, Vector3 } from '../core';
+import { defineComponent, EntityWithTransform } from '../core';
 
-export type EntityGravity = {
-  transform: {
-    position: Vector3;
-  };
+export type EntityGravity = EntityWithTransform & {
   gravity: {
     acceleration: number;
     velocity: number;

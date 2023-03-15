@@ -1,15 +1,11 @@
 import { BehaviorSubject, Observable } from 'rxjs';
-import { Vector3 } from 'three';
-import { defineComponent, EntityBase } from '../core';
+import { defineComponent, EntityBase, EntityWithTransform } from '../core';
 
 export type SelectionMode = `none` | `hover` | `down`;
 export type SelectionSequence = `none` | `begin` | `end` | `continue`;
 export type SelectionEvent = `none` | `hover-begin` | `hover-end` | `down-begin` | `down-end`;
 
-export type EntitySelectable = EntityBase & {
-  transform: {
-    position: Vector3;
-  };
+export type EntitySelectable = EntityWithTransform & {
   selectable: {
     stateSubject: BehaviorSubject<{
       entity: EntitySelectable;

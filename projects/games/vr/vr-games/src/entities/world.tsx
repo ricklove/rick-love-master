@@ -1,6 +1,7 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { Debug, Physics } from '@react-three/cannon';
 import { useFrame } from '@react-three/fiber';
+import { of, Subject } from 'rxjs';
 import { logger } from '../utils/logger';
 import { EntityForce } from './components/force';
 import { EntityAdjustToGround, EntityGround } from './components/ground';
@@ -13,12 +14,20 @@ const world: World = {
   children: new EntityList([] as Entity[]),
 };
 world.ready.next(true);
-world.ready.trigger();
+world.ready.setFrameTrigger(of(true));
 
 const worldState = {
   world,
   activeEntities: calculateActiveEntities<Entity>(world),
+  frameTrigger: new Subject<void>(),
 };
+
+worldState.activeEntities.added.subscribe((entities) => {
+  entities.forEach((e) => {
+    e.ready.setFrameTrigger(worldState.frameTrigger);
+    e.frameTrigger = worldState.frameTrigger;
+  });
+});
 
 const useWorldFilter = <T extends Entity>(filter: (item: Entity) => boolean, groupKey?: (item: Entity) => string) => {
   const groupItems = useMemo(
@@ -136,7 +145,7 @@ export const WorldContainer = ({ rootEntities, gravity, iterations, debugPhysics
       // }
     }
 
-    worldState.activeEntities.items.forEach((e) => e.ready.trigger());
+    worldState.frameTrigger.next();
     worldState.activeEntities.frozen = false;
     worldState.activeEntities.frozen = true;
   });

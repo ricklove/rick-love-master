@@ -1,28 +1,15 @@
-import { BehaviorSubject, Subject } from 'rxjs';
-import type { Vector3 as Vector3Three } from 'three';
+import { BehaviorSubject, of, Subject } from 'rxjs';
+import type { Quaternion, Vector3 as Vector3Three } from 'three';
 import { ObservableList } from '../utils/ObservableArray';
 
 export type Vector3 = Vector3Three;
 export type EntityBase = {
   active: BehaviorSubject<boolean>;
-  ready: {
-    /** Called at end of frame after entity is created and setup, i.e. views, physics, etc. */
-    subscribe: (cb: (ready: true) => void) => { unsubscribe: () => void };
-    /** Call after the entity is created and setup */
-    next: (ready: true) => void;
-    /** Called by the system at end of frame */
-    trigger: () => void;
-  };
+  ready: EntityReadyType;
+  frameTrigger: { subscribe: (cb: () => void) => { unsubscribe: () => void } };
   name: string;
   key: string;
   children?: EntityList<EntityBase>;
-  // transform: {
-  //   position: Vector3;
-  // };
-  // physics?: {
-  //   api: WorkerApi;
-  //   mass: number;
-  // };
   // view?: {
   //   Component?: (props: { entity: EntityBase }) => JSX.Element;
   //   isBatchComponent?: true;
@@ -31,6 +18,12 @@ export type EntityBase = {
 };
 export type EntityWithChildren = EntityBase & {
   children: EntityList<EntityBase>;
+};
+export type EntityWithTransform = EntityBase & {
+  transform: {
+    position: Vector3;
+    quaternion: Quaternion;
+  };
 };
 
 export class EntityList<T extends EntityBase> extends ObservableList<T> {
@@ -187,6 +180,7 @@ export const defineEntity = <TEntity>() => ({
       entity: {
         name,
         active: new BehaviorSubject(true),
+        frameTrigger: of(false),
         ready: new EntityReady(),
         key: `${nextEntityId++}`,
       } as EntityBase,
@@ -199,7 +193,16 @@ export const defineEntity = <TEntity>() => ({
   },
 });
 
-class EntityReady {
+type EntityReadyType = {
+  /** Called at end of frame after entity is created and setup, i.e. views, physics, etc. */
+  subscribe: (cb: (ready: true) => void) => { unsubscribe: () => void };
+  /** Call after the entity is created and setup */
+  next: (ready: true) => void;
+  /** Called by the system at end of frame */
+  setFrameTrigger: (trigger: { subscribe: (cb: () => void) => { unsubscribe: () => void } }) => void;
+};
+
+class EntityReady implements EntityReadyType {
   private _emptyUnsubscribe = {
     unsubscribe: () => {
       /** empty */
@@ -219,15 +222,26 @@ class EntityReady {
     return this._inner.subscribe(cb);
   };
   /** Called by the engine at end of frame */
-  public trigger = () => {
+  public setFrameTrigger = (trigger: { subscribe: (cb: () => void) => { unsubscribe: () => void } }) => {
     if (this._inner.closed) {
       return;
     }
-    if (!this._isReady) {
-      return;
-    }
-    this._inner.next(true);
-    this._inner.complete();
+    const sub = trigger.subscribe(() => {
+      if (this._inner.closed) {
+        setTimeout(() => {
+          sub.unsubscribe();
+        });
+        return;
+      }
+      if (!this._isReady) {
+        return;
+      }
+      this._inner.next(true);
+      this._inner.complete();
+      setTimeout(() => {
+        sub.unsubscribe();
+      });
+    });
   };
 }
 

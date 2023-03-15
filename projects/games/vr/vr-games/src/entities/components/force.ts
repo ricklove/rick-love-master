@@ -1,12 +1,8 @@
 import { Triplet, WorkerApi } from '@react-three/cannon';
 import { Observable } from 'rxjs';
-import { Vector3 } from 'three';
-import { defineComponent, EntityBase } from '../core';
+import { defineComponent, EntityWithTransform } from '../core';
 
-export type EntityForce = EntityBase & {
-  transform: {
-    position: Vector3;
-  };
+export type EntityForce = EntityWithTransform & {
   physics: {
     api: WorkerApi;
   };

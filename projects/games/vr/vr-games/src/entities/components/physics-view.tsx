@@ -1,13 +1,10 @@
 import { Triplet, WorkerApi } from '@react-three/cannon';
 import { CollideBeginEvent, CollideEndEvent, CollideEvent } from '@react-three/cannon';
 import { Subject } from 'rxjs';
-import { Vector3 } from 'three';
-import { defineComponent, EntityBase } from '../core';
+import { Quaternion, Vector3 } from 'three';
+import { defineComponent, EntityBase, EntityWithTransform } from '../core';
 
-export type EntityPhysicsView = EntityBase & {
-  transform: {
-    position: Vector3;
-  };
+export type EntityPhysicsView = EntityWithTransform & {
   physics: {
     enabled: boolean;
     uuid: string;
@@ -35,6 +32,8 @@ const globalState = {
 export const EntityPhysicsView = defineComponent<EntityPhysicsView>()
   .with(`transform`, ({ startPosition }: { startPosition?: Triplet }) => ({
     position: startPosition ? new Vector3(...startPosition) : new Vector3(),
+    quaternion: new Quaternion(),
+    // scale: new Vector3(1, 1, 1),
   }))
   .with(`physics`, ({ mass }: { mass?: number }) => ({
     enabled: true,
@@ -49,10 +48,21 @@ export const EntityPhysicsView = defineComponent<EntityPhysicsView>()
   //   Component: () => <></>,
   // }))
   .attach({
-    register: (entity: EntityPhysicsView, api: WorkerApi) => {
+    register: (
+      entity: EntityPhysicsView,
+      api: WorkerApi,
+      { shouldSubscribeTransformUpdates = true }: { shouldSubscribeTransformUpdates?: boolean } = {},
+    ) => {
       entity.physics.api = api;
       entity.physics.uuid = api?.uuid() ?? ``;
-      // logger.log(`register`, { n: entity.name, e: entity.key, uuid: entity.physics.uuid ?? `` });
+      if (shouldSubscribeTransformUpdates) {
+        api.position.subscribe((x) => {
+          entity.transform.position.set(...x);
+        });
+        api.quaternion.subscribe((x) => {
+          entity.transform.quaternion.set(...x);
+        });
+      }
 
       globalState.physicsViews[entity.physics.uuid] = entity;
     },

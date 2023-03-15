@@ -1,9 +1,6 @@
-import { defineComponent, Vector3 } from '../core';
+import { defineComponent, EntityWithTransform } from '../core';
 
-export type EntityAdjustToGround = {
-  transform: {
-    position: Vector3;
-  };
+export type EntityAdjustToGround = EntityWithTransform & {
   adjustToGround: {
     active: true;
     minGroundHeight?: number;
@@ -39,10 +36,7 @@ export const EntityAdjustToGround = defineComponent<EntityAdjustToGround>()
     },
   });
 
-export type EntityGround = {
-  transform: {
-    position: Vector3;
-  };
+export type EntityGround = EntityWithTransform & {
   ground: {
     grid: Float32Array;
     segmentCount: number;

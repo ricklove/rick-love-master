@@ -1,7 +1,7 @@
 import React, { useMemo, useRef } from 'react';
 import { useSphere } from '@react-three/cannon';
 import { useFrame } from '@react-three/fiber';
-import { Color, InstancedMesh, Matrix4, Quaternion, Vector3 } from 'three';
+import { Color, InstancedMesh, Matrix4, Vector3 } from 'three';
 import { useIsomorphicLayoutEffect } from '../../utils/layoutEffect';
 import { cloneComponent, EntityBase } from '../core';
 import { EntityPhysicsView } from './physics-view';
@@ -9,6 +9,7 @@ import { EntityPhysicsView } from './physics-view';
 export type EntityPhysicsViewSphere = EntityPhysicsView & {
   sphere: {
     radius: number;
+    _scale: Vector3;
   };
   three: {
     matrix: Matrix4;
@@ -17,6 +18,7 @@ export type EntityPhysicsViewSphere = EntityPhysicsView & {
 export const EntityPhysicsViewSphere = cloneComponent<EntityPhysicsViewSphere>()(EntityPhysicsView)
   .with(`sphere`, ({ radius }: { radius: number }) => ({
     radius,
+    _scale: new Vector3(radius, radius, radius),
   }))
   .with(`three`, ({}: {}) => ({
     matrix: new Matrix4(),
@@ -40,7 +42,7 @@ export const EntityPhysicsViewSphere = cloneComponent<EntityPhysicsViewSphere>()
   .attach({
     move: (e: EntityPhysicsViewSphere, pos: Vector3) => {
       if (e.physics.enabled) {
-        e.physics.api.position.set(pos.x, pos.y, pos.z);
+        e.physics.api.position.copy(pos);
         return;
       }
       e.transform.position.copy(pos);
@@ -84,12 +86,8 @@ const EntityPhysicsViewSphereBatchComponent = ({ entities }: { entities: EntityP
 
     const r = ref.current;
     entities.forEach((x, i) => {
-      api.at(i).position.subscribe((p) => {
-        x.transform.position.set(...p);
-      });
       const rad = entities[i].sphere.radius;
       api.at(i).scaleOverride([rad, rad, rad]);
-
       EntityPhysicsView.register(x, api.at(i));
       x.ready.next(true);
     });
@@ -129,13 +127,13 @@ const EntityViewSphereBatchComponent = ({ entities }: { entities: EntityPhysicsV
     const r = ref.current;
     entities.forEach((x, i) => {
       const rad = entities[i].sphere.radius;
-      x.three.matrix.compose(x.transform.position, new Quaternion(), new Vector3(rad, rad, rad));
+      const scale = entities[i].sphere._scale.set(rad, rad, rad);
+      x.three.matrix.compose(x.transform.position, x.transform.quaternion, scale);
 
       // x.three.matrix.fromArray(r.instanceMatrix.array, i * 16);
 
       x.ready.next(true);
     });
-
     r.instanceMatrix.needsUpdate = true;
   }, [!ref.current?.instanceColor, count]);
 
@@ -148,10 +146,11 @@ const EntityViewSphereBatchComponent = ({ entities }: { entities: EntityPhysicsV
     entities.forEach((x, i) => {
       // move to data
       const rad = entities[i].sphere.radius;
-      x.three.matrix.compose(x.transform.position, new Quaternion(), new Vector3(rad, rad, rad));
+      const scale = entities[i].sphere._scale.set(rad, rad, rad);
+      x.three.matrix.compose(x.transform.position, x.transform.quaternion, scale);
       r.setMatrixAt(i, x.three.matrix);
-      r.instanceMatrix.needsUpdate = true;
     });
+    r.instanceMatrix.needsUpdate = true;
   });
 
   return (
