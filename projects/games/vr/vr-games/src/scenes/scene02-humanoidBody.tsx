@@ -17,18 +17,29 @@ const humanoidStaticChest = Entity.create(`humanoid`)
   .addComponent(EntityHumanoidBody, { scale: 1, offset: new Vector3(1, 0, 0) })
   .extend((e) => {
     // Make the check static
-    e.humanoidBody.upperTorso.ready.subscribe((r) => {
+    const mainPart = e.humanoidBody.parts.find((x) => x.part === `upper-torso`)!;
+    const partsToMove = [`head`, `neck`, `upper-torso`, `lower-torso`, `upper-arm`, `upper-leg`]
+      .flatMap((partName) => e.humanoidBody.parts.filter((x) => x.part === partName)!)
+      .filter((x) => !!x);
+    mainPart.entity.ready.subscribe((r) => {
       if (!r) {
         return;
       }
-      const api = e.humanoidBody.upperTorso?.physics?.api;
-      api.mass.set(0);
+      // const api = mainPart.entity.physics.api;
+      // api.applyForce([0, 100, -10], e.humanoidBody.upperTorso.transform.position.toArray());
+      // setInterval(() => {
+      //   api.applyImpulse([0, 10, -10], e.humanoidBody.upperTorso.transform.position.toArray());
+      // }, 1000);
+      setTimeout(() => {
+        partsToMove.forEach((p) => {
+          p.entity.physics.api.position.subscribe((pos) => {
+            p.entity.physics.api.applyImpulse([0, 1.0 / p.entity.physics.mass, -0.0001 / p.entity.physics.mass], pos);
+          });
+        });
+      }, 100);
 
-      setInterval(() => {
-        api.mass.set(10);
-        api.applyImpulse([0, 0, -0.1], e.humanoidBody.upperTorso.transform.position.toArray());
-        api.mass.set(0);
-      }, 1000);
+      // mainPart.entity.physics.api.applyImpulse([0, 10, -1], mainPart.entity.transform.position.toArray());
+      // }, 50);
     });
   })
   .build();
