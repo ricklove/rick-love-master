@@ -14,6 +14,7 @@ module.exports = {
 
   rules: {
     '@rushstack/typedef-var': 'off',
+    '@typescript-eslint/typedef': 'off',
     '@rushstack/no-new-null': 'off',
     'react/jsx-no-bind': 'off',
     eqeqeq: ['error', 'always', { null: 'ignore' }],

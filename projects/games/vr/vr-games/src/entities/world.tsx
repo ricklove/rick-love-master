@@ -1,7 +1,6 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { Debug, Physics } from '@react-three/cannon';
 import { useFrame } from '@react-three/fiber';
-import { BehaviorSubject } from 'rxjs';
 import { logger } from '../utils/logger';
 import { EntityForce } from './components/force';
 import { EntityAdjustToGround, EntityGround } from './components/ground';
@@ -10,12 +9,11 @@ import { calculateActiveEntities, EntityList as EntityList } from './core';
 import { Entity, SceneDefinition, World } from './entity';
 
 const world: World = {
-  active: new BehaviorSubject(true),
-  ready: new BehaviorSubject(true),
-  key: `world`,
-  name: `world`,
+  ...Entity.create(`world`).build(),
   children: new EntityList([] as Entity[]),
 };
+world.ready.next(true);
+world.ready.trigger();
 
 const worldState = {
   world,
@@ -138,6 +136,7 @@ export const WorldContainer = ({ rootEntities, gravity, iterations, debugPhysics
       // }
     }
 
+    worldState.activeEntities.items.forEach((e) => e.ready.trigger());
     worldState.activeEntities.frozen = false;
     worldState.activeEntities.frozen = true;
   });

@@ -31,15 +31,7 @@ const setupMovement = (e: EntityHumanoidBody) => {
     // const partsToMove = [`neck`, `upper-torso`, `lower-torso`]
     .flatMap((partName) => e.humanoidBody.parts.filter((x) => x.part === partName)!)
     .filter((x) => !!x);
-  mainPart.entity.ready.subscribe((r) => {
-    if (!r) {
-      return;
-    }
-    // const api = mainPart.entity.physics.api;
-    // api.applyForce([0, 100, -10], e.humanoidBody.upperTorso.transform.position.toArray());
-    // setInterval(() => {
-    //   api.applyImpulse([0, 10, -10], e.humanoidBody.upperTorso.transform.position.toArray());
-    // }, 1000);
+  mainPart.entity.ready.subscribe(() => {
     const dir = new Vector3(-1, 0, 1);
     const dirAngle = new Vector3(0, 0, -1).angleTo(dir);
     const up = new Vector3(0, 1, 0);
@@ -54,72 +46,61 @@ const setupMovement = (e: EntityHumanoidBody) => {
     const yTargetMult = 0.6 + 1 * Math.random();
     let maxHeight = 0;
 
-    setTimeout(() => {
-      partsToMove.forEach((p, iPart) => {
-        // p.entity.physics.api.mass.set(100000);
-        // p.entity.physics.api.mass.set(0);
+    partsToMove.forEach((p, iPart) => {
+      // p.entity.physics.api.mass.set(100000);
+      // p.entity.physics.api.mass.set(0);
 
-        let targetHeight = 0;
+      let targetHeight = 0;
 
-        p.entity.physics.api.position.subscribe((pos) => {
-          if (p.part === `head` && step % 2 === 0) {
-            vel.set(0, 0.1, -0.2 * speed).applyAxisAngle(up, dirAngle);
-            p.entity.physics.api.velocity.set(vel.x, vel.y, vel.z);
-            p.entity.physics.api.angularVelocity.set(0, 0, 0);
-          }
-          if (iPart === 0) {
-            step++;
-          }
-
-          if (step === 1) {
-            targetHeight = pos[1];
-            maxHeight = Math.max(targetHeight, maxHeight);
-          }
-
-          if (step % partsToMove.length !== iPart) {
-            return;
-          }
-
-          // p.entity.physics.api.position.set(pos[0], 0.7, pos[2] - 0.01);
-          const iTimeDelta = (45617 * iPart) % 31;
-
-          const heightRatio = targetHeight / maxHeight;
-          const forwardBoostMult = 1 + 0.2 * (1 - heightRatio);
-          const heightBoostMult = 1 + 0.2 * (1 - heightRatio);
-
-          const yTarget = yTargetMult * targetHeight;
-          const yDelta =
-            yTarget * (0.8 + 0.2 * Math.sin((1 / 0.3) * cycleSpeed * ((Date.now() + iTimeDelta) / 1000))) - pos[1];
-          const yDeltaRatio = yDelta / yTarget;
-          const yStrength = 1 - Math.pow(yDeltaRatio, 3);
-          const yVel = heightBoostMult * yMult * (0.05 + yDelta * yStrength);
-          const zVel =
-            forwardBoostMult *
-            speed *
-            -0.3 *
-            (0.6 + 0.4 * Math.sin(((1 / 0.7) * cycleSpeed * (Date.now() + iTimeDelta)) / 1000));
-          const angle = Math.PI * 0.25 * Math.sin(((1 / 3) * cycleSpeed * (Date.now() + iTimeDelta)) / 1000);
-          vel.set(0, yVel, zVel).applyAxisAngle(up, dirAngle);
-          rot.set(angle * 0.7, dirAngle + angle, angle * 0.3);
-
+      p.entity.physics.api.position.subscribe((pos) => {
+        if (p.part === `head` && step % 2 === 0) {
+          vel.set(0, 0.1, -0.2 * speed).applyAxisAngle(up, dirAngle);
           p.entity.physics.api.velocity.set(vel.x, vel.y, vel.z);
-          p.entity.physics.api.angularVelocity.set(rot.x / 60, rot.y / 60, rot.z / 60);
+          p.entity.physics.api.angularVelocity.set(0, 0, 0);
+        }
+        if (iPart === 0) {
+          step++;
+        }
 
-          if (Math.floor(step / partsToMove.length) % 20 === (57 * iPart) % 20) {
-            p.entity.physics.api.rotation.set(rot.x, rot.y, rot.z);
-          }
+        if (step === 1) {
+          targetHeight = pos[1];
+          maxHeight = Math.max(targetHeight, maxHeight);
+        }
 
-          // p.entity.physics.api.rotation.set(rot.x, rot.y, rot.z);
-          // p.entity.physics.api.angularVelocity.set(0, 0, 0);
+        if (step % partsToMove.length !== iPart) {
+          return;
+        }
 
-          // p.entity.physics.api.applyImpulse([0, 1000, -10], [pos[0], pos[1] + 0.2, pos[2]]);
-          // p.entity.physics.api.angularVelocity.set(0, 0, 0);
-        });
+        // p.entity.physics.api.position.set(pos[0], 0.7, pos[2] - 0.01);
+        const iTimeDelta = (45617 * iPart) % 31;
+
+        const heightRatio = targetHeight / maxHeight;
+        const forwardBoostMult = 1 + 0.2 * (1 - heightRatio);
+        const heightBoostMult = 1 + 0.2 * (1 - heightRatio);
+
+        const yTarget = yTargetMult * targetHeight;
+        const yDelta =
+          yTarget * (0.8 + 0.2 * Math.sin((1 / 0.3) * cycleSpeed * ((Date.now() + iTimeDelta) / 1000))) - pos[1];
+        const yDeltaRatio = yDelta / yTarget;
+        const yStrength = 1 - Math.pow(yDeltaRatio, 3);
+        const yVel = heightBoostMult * yMult * (0.05 + yDelta * yStrength);
+        const zVel =
+          forwardBoostMult *
+          speed *
+          -0.3 *
+          (0.6 + 0.4 * Math.sin(((1 / 0.7) * cycleSpeed * (Date.now() + iTimeDelta)) / 1000));
+        const angle = Math.PI * 0.25 * Math.sin(((1 / 3) * cycleSpeed * (Date.now() + iTimeDelta)) / 1000);
+        vel.set(0, yVel, zVel).applyAxisAngle(up, dirAngle);
+        rot.set(angle * 0.7, dirAngle + angle, angle * 0.3);
+
+        p.entity.physics.api.velocity.set(vel.x, vel.y, vel.z);
+        p.entity.physics.api.angularVelocity.set(rot.x / 60, rot.y / 60, rot.z / 60);
+
+        if (Math.floor(step / partsToMove.length) % 20 === (57 * iPart) % 20) {
+          p.entity.physics.api.rotation.set(rot.x, rot.y, rot.z);
+        }
       });
-    }, 100);
-
-    // mainPart.entity.physics.api.applyImpulse([0, 10, -1], mainPart.entity.transform.position.toArray());
-    // }, 50);
+    });
   });
 };
 

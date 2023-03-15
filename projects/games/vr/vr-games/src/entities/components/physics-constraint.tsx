@@ -78,10 +78,7 @@ const EntityPhysicsConstraintViewConeTwist = ({ entity }: { entity: EntityPhysic
   const [ready, setReady] = useState(false);
 
   useIsomorphicLayoutEffect(() => {
-    const sub = entity.coneTwist.entityA.ready.subscribe((r) => {
-      if (!r) {
-        return;
-      }
+    const sub = entity.coneTwist.entityA.ready.subscribe(() => {
       setReady(true);
     });
     return () => sub.unsubscribe();

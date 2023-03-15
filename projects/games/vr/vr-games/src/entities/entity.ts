@@ -43,7 +43,7 @@ export type Entity = SimplifyEntity<EntityUnion>;
 
 export const Entity = defineEntity<Entity>();
 
-export type World = Entity & EntityWithChildren;
+export type World = EntityWithChildren;
 
 export type SceneDefinition = {
   rootEntities: Entity[];

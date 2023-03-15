@@ -39,7 +39,7 @@ export const EntityHumanoidBody = defineComponent<EntityHumanoidBody>()
     // );
 
     e.children.add(...bodyPartEntities.map((x) => x.entity));
-    // e.children.add(...bodyPartEntities.flatMap((x) => x.pivotEntities));
+    // e.children.add(...bodyPartEntities.flatMap((x) => x.debugPivotEntities));
 
     logger.log(`bodyPartEntities`, { bodyPartEntities });
 
@@ -230,7 +230,7 @@ const createBodyPartEntity = ({
       })
       .build();
 
-    const pivotEntities = pivots
+    const debugPivotEntities = pivots
       .filter((p) => !p.joint.includes(`finger`) && !p.joint.includes(`thumb`) && !p.joint.includes(`toe`))
       // .filter((p) => part === `upper-arm`)
       // .filter((p) => part === `upper-leg`)
@@ -278,20 +278,15 @@ const createBodyPartEntity = ({
                 EntityPhysicsViewSphere.move(e, pos);
               };
 
-              e.ready.subscribe((r) => {
-                if (!r) {
-                  return;
-                }
-                setTimeout(() => {
-                  entity.physics.api.position.subscribe((x) => {
-                    ePos.set(...x);
-                    updatePivot();
-                  });
-                  entity.physics.api.quaternion.subscribe((x) => {
-                    eQuat.set(...x);
-                    updatePivot();
-                  });
-                }, 1000);
+              e.ready.subscribe(() => {
+                entity.physics.api.position.subscribe((x) => {
+                  ePos.set(...x);
+                  updatePivot();
+                });
+                entity.physics.api.quaternion.subscribe((x) => {
+                  eQuat.set(...x);
+                  updatePivot();
+                });
               });
             })
             .build()
@@ -301,7 +296,7 @@ const createBodyPartEntity = ({
     return {
       entity,
       pivots,
-      pivotEntities,
+      debugPivotEntities,
     };
   };
 

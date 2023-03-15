@@ -1,11 +1,18 @@
-import { BehaviorSubject } from 'rxjs';
+import { BehaviorSubject, Subject } from 'rxjs';
 import type { Vector3 as Vector3Three } from 'three';
 import { ObservableList } from '../utils/ObservableArray';
 
 export type Vector3 = Vector3Three;
 export type EntityBase = {
   active: BehaviorSubject<boolean>;
-  ready: BehaviorSubject<boolean>;
+  ready: {
+    /** Called at end of frame after entity is created and setup, i.e. views, physics, etc. */
+    subscribe: (cb: (ready: true) => void) => { unsubscribe: () => void };
+    /** Call after the entity is created and setup */
+    next: (ready: true) => void;
+    /** Called by the system at end of frame */
+    trigger: () => void;
+  };
   name: string;
   key: string;
   children?: EntityList<EntityBase>;
@@ -180,7 +187,7 @@ export const defineEntity = <TEntity>() => ({
       entity: {
         name,
         active: new BehaviorSubject(true),
-        ready: new BehaviorSubject(false),
+        ready: new EntityReady(),
         key: `${nextEntityId++}`,
       } as EntityBase,
       addComponent,
@@ -191,6 +198,38 @@ export const defineEntity = <TEntity>() => ({
     return result;
   },
 });
+
+class EntityReady {
+  private _emptyUnsubscribe = {
+    unsubscribe: () => {
+      /** empty */
+    },
+  };
+  private _inner = new Subject<true>();
+  private _isReady = false;
+  public next = (ready: true) => {
+    this._isReady = ready;
+  };
+  /** This will be delayed until end of frame */
+  public subscribe = (cb: (ready: true) => void) => {
+    if (this._isReady) {
+      cb(true);
+      return this._emptyUnsubscribe;
+    }
+    return this._inner.subscribe(cb);
+  };
+  /** Called by the engine at end of frame */
+  public trigger = () => {
+    if (this._inner.closed) {
+      return;
+    }
+    if (!this._isReady) {
+      return;
+    }
+    this._inner.next(true);
+    this._inner.complete();
+  };
+}
 
 type ComponentOfComponentFactory<T> = T extends {
   _componentType: infer U;
