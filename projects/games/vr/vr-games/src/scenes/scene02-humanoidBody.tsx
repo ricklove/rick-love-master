@@ -37,17 +37,27 @@ const humanoidStaticChest = Entity.create(`humanoid`)
       const vel = new Vector3();
       const rot = new Vector3();
 
-      setTimeout(() => {
-        partsToMove.forEach((p) => {
-          // p.entity.physics.api.mass.set(100000);
-          p.entity.physics.api.mass.set(0);
-          p.entity.physics.api.position.subscribe((pos) => {
-            // p.entity.physics.api.position.set(pos[0], 0.7, pos[2] - 0.01);
-            const speed = 0.5;
-            const cycleSpeed = 0.5;
+      const step = 0;
 
-            const yDelta = 1.1 * (0.5 + 0.5 * Math.sin(((1 / 0.3) * cycleSpeed * Date.now()) / 1000)) - pos[1];
-            const yVel = yDelta / 20;
+      setTimeout(() => {
+        partsToMove.forEach((p, iPart) => {
+          // p.entity.physics.api.mass.set(100000);
+          // p.entity.physics.api.mass.set(0);
+
+          p.entity.physics.api.position.subscribe((pos) => {
+            if (step % partsToMove.length !== iPart) {
+              return;
+            }
+
+            // p.entity.physics.api.position.set(pos[0], 0.7, pos[2] - 0.01);
+            const speed = 1;
+            const cycleSpeed = 1;
+
+            const yTarget = 0.9;
+            const yDelta = yTarget * (0.8 + 0.2 * Math.sin(((1 / 0.3) * cycleSpeed * Date.now()) / 1000)) - pos[1];
+            const yDeltaRatio = yDelta / yTarget;
+            const yStrength = 1 - Math.pow(yDeltaRatio, 3);
+            const yVel = 0.05 + yDelta * yStrength;
             const zVel = speed * -0.3 * (0.6 + 0.4 * Math.sin(((1 / 0.7) * cycleSpeed * Date.now()) / 1000));
             const angle = Math.PI * 0.25 * Math.sin(((1 / 3) * cycleSpeed * Date.now()) / 1000);
             vel.set(0, yVel, zVel).applyAxisAngle(up, dirAngle);
