@@ -25,7 +25,15 @@ const worldState = {
 worldState.activeEntities.added.subscribe((entities) => {
   entities.forEach((e) => {
     e.ready.setFrameTrigger(worldState.frameTrigger);
-    e.frameTrigger = worldState.frameTrigger;
+    e.ready.subscribe(() => {
+      logger.log(`entity ready ${e.name} ${e.key}`);
+      const old = e.frameTrigger as Subject<void>;
+      e.frameTrigger = worldState.frameTrigger;
+      if (old.observed) {
+        // TODO: this might cause a memory leak
+        e.frameTrigger.subscribe(() => old.next());
+      }
+    });
   });
 });
 

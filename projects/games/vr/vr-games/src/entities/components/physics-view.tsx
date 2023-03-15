@@ -54,7 +54,7 @@ export const EntityPhysicsView = defineComponent<EntityPhysicsView>()
       { shouldSubscribeTransformUpdates = true }: { shouldSubscribeTransformUpdates?: boolean } = {},
     ) => {
       entity.physics.api = api;
-      entity.physics.uuid = api?.uuid() ?? ``;
+      entity.physics.uuid = api.uuid() ?? ``;
       if (shouldSubscribeTransformUpdates) {
         api.position.subscribe((x) => {
           entity.transform.position.set(...x);

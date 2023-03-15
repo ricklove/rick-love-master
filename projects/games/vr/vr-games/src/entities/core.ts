@@ -1,4 +1,4 @@
-import { BehaviorSubject, of, Subject } from 'rxjs';
+import { BehaviorSubject, Subject } from 'rxjs';
 import type { Quaternion, Vector3 as Vector3Three } from 'three';
 import { ObservableList } from '../utils/ObservableArray';
 
@@ -180,7 +180,7 @@ export const defineEntity = <TEntity>() => ({
       entity: {
         name,
         active: new BehaviorSubject(true),
-        frameTrigger: of(false),
+        frameTrigger: new Subject(),
         ready: new EntityReady(),
         key: `${nextEntityId++}`,
       } as EntityBase,
@@ -208,6 +208,7 @@ class EntityReady implements EntityReadyType {
       /** empty */
     },
   };
+  private _completed = false;
   private _inner = new Subject<true>();
   private _isReady = false;
   public next = (ready: true) => {
@@ -223,11 +224,11 @@ class EntityReady implements EntityReadyType {
   };
   /** Called by the engine at end of frame */
   public setFrameTrigger = (trigger: { subscribe: (cb: () => void) => { unsubscribe: () => void } }) => {
-    if (this._inner.closed) {
+    if (this._completed) {
       return;
     }
     const sub = trigger.subscribe(() => {
-      if (this._inner.closed) {
+      if (this._completed) {
         setTimeout(() => {
           sub.unsubscribe();
         });
@@ -237,6 +238,7 @@ class EntityReady implements EntityReadyType {
         return;
       }
       this._inner.next(true);
+      this._completed = true;
       this._inner.complete();
       setTimeout(() => {
         sub.unsubscribe();

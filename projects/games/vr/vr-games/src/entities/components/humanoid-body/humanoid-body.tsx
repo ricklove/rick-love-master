@@ -1,5 +1,4 @@
 import { Triplet } from '@react-three/cannon';
-import { BehaviorSubject } from 'rxjs';
 import { Euler, Quaternion, Vector3 } from 'three';
 import { logger } from '../../../utils/logger';
 import { defineComponent, EntityBase, EntityList, EntityWithChildren } from '../../core';
@@ -88,26 +87,16 @@ const createBodyJoint = (
         debugColorRgba: side === `left` ? 0x0000ffff : side === `right` ? 0xff0000ff : 0x880088ff,
         startPosition: new Vector3(...position).multiplyScalar(scale).add(offset).toArray() as Triplet,
       })
-      .addComponent(EntityForce, {})
       .extend((e) => {
-        // TODO: Use a point to point constraint
         // Follow parent position
         const pos = new Vector3();
-        EntityForce.register(e, new BehaviorSubject(true), (e) => {
+        parent.part.entity.frameTrigger.subscribe(() => {
           pos
             .set(...parent.pivot.position)
-            .applyQuaternion((parent.part.entity as EntityPhysicsViewBox).box.quaternion)
+            .applyQuaternion(parent.part.entity.transform.quaternion)
             .add(parent.part.entity.transform.position);
 
           EntityPhysicsViewSphere.move(e as unknown as EntityPhysicsViewSphere, pos);
-
-          // e.physics.api.sleep();
-          // e.physics.api.position.set(
-          //   ...new Vector3(...parent.pivot.position)
-          //     .applyQuaternion((parent.part.entity as EntityPhysicsViewBox).box.quaternion)
-          //     .add(parent.part.entity.transform.position)
-          //     .toArray(),
-          // );
         });
       });
 
@@ -124,19 +113,19 @@ const createBodyJoint = (
       pivotB: parent.pivot.position,
       childPos: child.part.entity.transform.position.clone(),
       childPivotPos: new Vector3(...child.pivot.position)
-        .applyQuaternion((child.part.entity as EntityPhysicsViewBox).box.quaternion)
+        .applyQuaternion(child.part.entity.transform.quaternion)
         .add(child.part.entity.transform.position),
       parentPos: parent.part.entity.transform.position.clone(),
       parentPivotPos: new Vector3(...parent.pivot.position)
-        .applyQuaternion((parent.part.entity as EntityPhysicsViewBox).box.quaternion)
+        .applyQuaternion(parent.part.entity.transform.quaternion)
         .add(parent.part.entity.transform.position),
       distanceExpected: 0,
       distanceActual: new Vector3(...child.pivot.position)
-        .applyQuaternion((child.part.entity as EntityPhysicsViewBox).box.quaternion)
+        .applyQuaternion(child.part.entity.transform.quaternion)
         .add(child.part.entity.transform.position)
         .sub(
           new Vector3(...parent.pivot.position)
-            .applyQuaternion((parent.part.entity as EntityPhysicsViewBox).box.quaternion)
+            .applyQuaternion(parent.part.entity.transform.quaternion)
             .add(parent.part.entity.transform.position),
         )
         .length(),
@@ -278,16 +267,22 @@ const createBodyPartEntity = ({
                 EntityPhysicsViewSphere.move(e, pos);
               };
 
-              e.ready.subscribe(() => {
-                entity.physics.api.position.subscribe((x) => {
-                  ePos.set(...x);
-                  updatePivot();
-                });
-                entity.physics.api.quaternion.subscribe((x) => {
-                  eQuat.set(...x);
-                  updatePivot();
-                });
+              e.frameTrigger.subscribe(() => {
+                ePos.copy(entity.transform.position);
+                eQuat.copy(entity.transform.quaternion);
+                updatePivot();
               });
+
+              // e.ready.subscribe(() => {
+              //   entity.physics.api.position.subscribe((x) => {
+              //     ePos.set(...x);
+              //     updatePivot();
+              //   });
+              //   entity.physics.api.quaternion.subscribe((x) => {
+              //     eQuat.set(...x);
+              //     updatePivot();
+              //   });
+              // });
             })
             .build()
         );
