@@ -18,7 +18,7 @@ const humanoidStaticChest = Entity.create(`humanoid`)
   .extend((e) => {
     // Make the check static
     const mainPart = e.humanoidBody.parts.find((x) => x.part === `upper-torso`)!;
-    const partsToMove = [`upper-torso`]
+    const partsToMove = [`head`, `upper-torso`, `lower-torso`]
       // const partsToMove = [`neck`, `upper-torso`, `lower-torso`]
       .flatMap((partName) => e.humanoidBody.parts.filter((x) => x.part === partName)!)
       .filter((x) => !!x);
@@ -37,7 +37,7 @@ const humanoidStaticChest = Entity.create(`humanoid`)
       const vel = new Vector3();
       const rot = new Vector3();
 
-      const step = 0;
+      let step = 0;
 
       setTimeout(() => {
         partsToMove.forEach((p, iPart) => {
@@ -45,6 +45,9 @@ const humanoidStaticChest = Entity.create(`humanoid`)
           // p.entity.physics.api.mass.set(0);
 
           p.entity.physics.api.position.subscribe((pos) => {
+            if (iPart === 0) {
+              step++;
+            }
             if (step % partsToMove.length !== iPart) {
               return;
             }
@@ -52,20 +55,29 @@ const humanoidStaticChest = Entity.create(`humanoid`)
             // p.entity.physics.api.position.set(pos[0], 0.7, pos[2] - 0.01);
             const speed = 1;
             const cycleSpeed = 1;
+            const iTimeDelta = (45617 * iPart) % 31;
 
             const yTarget = 0.9;
-            const yDelta = yTarget * (0.8 + 0.2 * Math.sin(((1 / 0.3) * cycleSpeed * Date.now()) / 1000)) - pos[1];
+            const yDelta =
+              yTarget * (0.8 + 0.2 * Math.sin((1 / 0.3) * cycleSpeed * ((Date.now() + iTimeDelta) / 1000))) - pos[1];
             const yDeltaRatio = yDelta / yTarget;
             const yStrength = 1 - Math.pow(yDeltaRatio, 3);
             const yVel = 0.05 + yDelta * yStrength;
-            const zVel = speed * -0.3 * (0.6 + 0.4 * Math.sin(((1 / 0.7) * cycleSpeed * Date.now()) / 1000));
-            const angle = Math.PI * 0.25 * Math.sin(((1 / 3) * cycleSpeed * Date.now()) / 1000);
+            const zVel =
+              speed * -0.3 * (0.6 + 0.4 * Math.sin(((1 / 0.7) * cycleSpeed * (Date.now() + iTimeDelta)) / 1000));
+            const angle = Math.PI * 0.25 * Math.sin(((1 / 3) * cycleSpeed * (Date.now() + iTimeDelta)) / 1000);
             vel.set(0, yVel, zVel).applyAxisAngle(up, dirAngle);
             rot.set(angle * 0.7, dirAngle + angle, angle * 0.3);
 
             p.entity.physics.api.velocity.set(vel.x, vel.y, vel.z);
-            p.entity.physics.api.rotation.set(rot.x, rot.y, rot.z);
-            p.entity.physics.api.angularVelocity.set(0, 0, 0);
+            p.entity.physics.api.angularVelocity.set(rot.x / 60, rot.y / 60, rot.z / 60);
+
+            if (Math.floor(step / partsToMove.length) % 30 === (57 * iPart) % 30) {
+              p.entity.physics.api.rotation.set(rot.x, rot.y, rot.z);
+            }
+
+            // p.entity.physics.api.rotation.set(rot.x, rot.y, rot.z);
+            // p.entity.physics.api.angularVelocity.set(0, 0, 0);
 
             // p.entity.physics.api.applyImpulse([0, 1000, -10], [pos[0], pos[1] + 0.2, pos[2]]);
             // p.entity.physics.api.angularVelocity.set(0, 0, 0);
