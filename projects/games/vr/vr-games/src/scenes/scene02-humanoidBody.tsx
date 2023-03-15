@@ -18,7 +18,8 @@ const humanoidStaticChest = Entity.create(`humanoid`)
   .extend((e) => {
     // Make the check static
     const mainPart = e.humanoidBody.parts.find((x) => x.part === `upper-torso`)!;
-    const partsToMove = [`head`, `neck`, `upper-torso`, `lower-torso`, `upper-arm`, `upper-leg`]
+    const partsToMove = [`upper-torso`]
+      // const partsToMove = [`neck`, `upper-torso`, `lower-torso`]
       .flatMap((partName) => e.humanoidBody.parts.filter((x) => x.part === partName)!)
       .filter((x) => !!x);
     mainPart.entity.ready.subscribe((r) => {
@@ -30,10 +31,34 @@ const humanoidStaticChest = Entity.create(`humanoid`)
       // setInterval(() => {
       //   api.applyImpulse([0, 10, -10], e.humanoidBody.upperTorso.transform.position.toArray());
       // }, 1000);
+      const dir = new Vector3(-1, 0, 1);
+      const dirAngle = new Vector3(0, 0, -1).angleTo(dir);
+      const up = new Vector3(0, 1, 0);
+      const vel = new Vector3();
+      const rot = new Vector3();
+
       setTimeout(() => {
         partsToMove.forEach((p) => {
+          // p.entity.physics.api.mass.set(100000);
+          p.entity.physics.api.mass.set(0);
           p.entity.physics.api.position.subscribe((pos) => {
-            p.entity.physics.api.applyImpulse([0, 1.0 / p.entity.physics.mass, -0.0001 / p.entity.physics.mass], pos);
+            // p.entity.physics.api.position.set(pos[0], 0.7, pos[2] - 0.01);
+            const speed = 0.5;
+            const cycleSpeed = 0.5;
+
+            const yDelta = 1.1 * (0.5 + 0.5 * Math.sin(((1 / 0.3) * cycleSpeed * Date.now()) / 1000)) - pos[1];
+            const yVel = yDelta / 20;
+            const zVel = speed * -0.3 * (0.6 + 0.4 * Math.sin(((1 / 0.7) * cycleSpeed * Date.now()) / 1000));
+            const angle = Math.PI * 0.25 * Math.sin(((1 / 3) * cycleSpeed * Date.now()) / 1000);
+            vel.set(0, yVel, zVel).applyAxisAngle(up, dirAngle);
+            rot.set(angle * 0.7, dirAngle + angle, angle * 0.3);
+
+            p.entity.physics.api.velocity.set(vel.x, vel.y, vel.z);
+            p.entity.physics.api.rotation.set(rot.x, rot.y, rot.z);
+            p.entity.physics.api.angularVelocity.set(0, 0, 0);
+
+            // p.entity.physics.api.applyImpulse([0, 1000, -10], [pos[0], pos[1] + 0.2, pos[2]]);
+            // p.entity.physics.api.angularVelocity.set(0, 0, 0);
           });
         });
       }, 100);
@@ -73,6 +98,6 @@ export const scene02: SceneDefinition = {
     // ...humanoids,
     ground,
   ],
-  gravity: [0, -9.8, 0] as Triplet,
+  gravity: [0, 0.1 * -9.8, 0] as Triplet,
   // gravity: [0, 0, 0] as Triplet,
 };
