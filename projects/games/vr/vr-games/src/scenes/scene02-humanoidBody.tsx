@@ -18,7 +18,16 @@ const humanoidStaticChest = Entity.create(`humanoid`)
   .extend((e) => {
     // Make the check static
     const mainPart = e.humanoidBody.parts.find((x) => x.part === `upper-torso`)!;
-    const partsToMove = [`head`, `upper-torso`, `lower-torso`, `upper-arm`]
+    const partsToMove = [
+      `head`,
+      `upper-leg`,
+      `lower-leg`,
+      `upper-torso`,
+      // `foot`,
+      `lower-torso`,
+      `upper-arm`,
+      // `lower-leg`,
+    ]
       // const partsToMove = [`neck`, `upper-torso`, `lower-torso`]
       .flatMap((partName) => e.humanoidBody.parts.filter((x) => x.part === partName)!)
       .filter((x) => !!x);
@@ -39,25 +48,33 @@ const humanoidStaticChest = Entity.create(`humanoid`)
 
       let step = 0;
 
+      const speed = 0.5;
+      const cycleSpeed = 0.5;
+
       setTimeout(() => {
         partsToMove.forEach((p, iPart) => {
           // p.entity.physics.api.mass.set(100000);
           // p.entity.physics.api.mass.set(0);
 
+          let targetHeight = 0;
+
           p.entity.physics.api.position.subscribe((pos) => {
             if (iPart === 0) {
               step++;
             }
+
+            if (step === 1) {
+              targetHeight = pos[1];
+            }
+
             if (step % partsToMove.length !== iPart) {
               return;
             }
 
             // p.entity.physics.api.position.set(pos[0], 0.7, pos[2] - 0.01);
-            const speed = 10;
-            const cycleSpeed = 10;
             const iTimeDelta = (45617 * iPart) % 31;
 
-            const yTarget = 1;
+            const yTarget = 1.6 * targetHeight;
             const yDelta =
               yTarget * (0.8 + 0.2 * Math.sin((1 / 0.3) * cycleSpeed * ((Date.now() + iTimeDelta) / 1000))) - pos[1];
             const yDeltaRatio = yDelta / yTarget;
