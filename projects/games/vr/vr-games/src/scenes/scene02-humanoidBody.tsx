@@ -64,7 +64,7 @@ const humanoidStaticChest = Entity.create(`humanoid`)
           let targetHeight = 0;
 
           p.entity.physics.api.position.subscribe((pos) => {
-            if (p.part === `head`) {
+            if (p.part === `head` && step % 2 === 0) {
               vel.set(0, 0.1, -0.2 * speed).applyAxisAngle(up, dirAngle);
               p.entity.physics.api.velocity.set(vel.x, vel.y, vel.z);
               p.entity.physics.api.angularVelocity.set(0, 0, 0);
