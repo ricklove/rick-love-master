@@ -1,4 +1,5 @@
 import { Vector3 } from 'three';
+import { logger } from '../../../utils/logger';
 import { defineComponent } from '../../core';
 import { EntityHumanoidBody } from './humanoid-body';
 
@@ -84,8 +85,12 @@ const setupMovement = (e: EntityHumanoidBodyMoverGroovy) => {
           p.entity.frameTrigger.subscribe(() => {
             const speed = e.humanoidBodyMoverGroovy.speed;
             const cycleSpeed = speed;
+            const dirAngle =
+              -Math.sign(e.humanoidBodyMoverGroovy.direction.x) *
+              dir.copy(forward).angleTo(e.humanoidBodyMoverGroovy.direction);
             const pos = p.entity.transform.position;
-            const dirAngle = dir.copy(forward).angleTo(e.humanoidBodyMoverGroovy.direction);
+
+            // logger.log(`dirAngle`, { dirAngle, pos });
 
             if (p.part === `head` && step % 2 === 0) {
               vel.set(0, 0.1, -0.2 * speed).applyAxisAngle(up, dirAngle);
@@ -126,6 +131,8 @@ const setupMovement = (e: EntityHumanoidBodyMoverGroovy) => {
             const angle = Math.PI * 0.25 * Math.sin(((1 / 3) * cycleSpeed * (Date.now() + iTimeDelta)) / 1000);
             vel.set(0, yVel, zVel).applyAxisAngle(up, dirAngle);
             rot.set(angle * 0.7, dirAngle + angle, angle * 0.3);
+
+            logger.log(`vel`, { vel, dirAngle, yVel, zVel });
 
             p.entity.physics.api.velocity.set(vel.x, vel.y, vel.z);
             p.entity.physics.api.angularVelocity.set(rot.x / 60, rot.y / 60, rot.z / 60);

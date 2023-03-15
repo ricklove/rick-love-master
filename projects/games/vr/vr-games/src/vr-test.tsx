@@ -229,7 +229,7 @@ const Scene_05_WithEntities = ({ debugVisible = true }: { debugVisible?: boolean
         <Hud position={[0, 1, 4]}>
           <DebugConsole visible={debugVisible} />
         </Hud>
-        <SkyBox />
+        {/* <SkyBox /> */}
       </GesturesProvider>
     </>
   );
