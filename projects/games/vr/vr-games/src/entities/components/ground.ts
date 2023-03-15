@@ -36,6 +36,7 @@ export const EntityAdjustToGround = defineComponent<EntityAdjustToGround>()
     },
   });
 
+export type GroundShape = `mountains` | `hills` | `wavy` | `plane` | `bowl`;
 export type EntityGround = EntityWithTransform & {
   ground: {
     grid: Float32Array;
@@ -43,6 +44,7 @@ export type EntityGround = EntityWithTransform & {
     segmentSize: number;
     minHeight: number;
     maxHeight: number;
+    shape: GroundShape;
   };
 };
 
@@ -54,11 +56,13 @@ export const EntityGround = defineComponent<EntityGround>()
       segmentSize,
       minHeight,
       maxHeight,
+      shape,
     }: {
       segmentCount: number;
       segmentSize: number;
       minHeight: number;
       maxHeight: number;
+      shape: GroundShape;
     }) => {
       // positions are row (x), then column (z)
 
@@ -72,17 +76,37 @@ export const EntityGround = defineComponent<EntityGround>()
           // grid values should be between 0-1
 
           // Rolling Mountains
-          grid[j * edgeCount + i] = 0.5 + 0.5 * (Math.cos(0.73 * i) * Math.sin(0.31 * j));
+          if (shape === `hills`) {
+            grid[j * edgeCount + i] = 0.5 + 0.5 * (Math.cos(0.73 * i) * Math.sin(0.31 * j));
+            continue;
+          }
 
-          // // Sharp Mountains
-          // grid[j * edgeCount + i] = 0.5 +0.5*(Math.sin(j * edgeCount + i));
+          // Sharp Mountains
+          if (shape === `mountains`) {
+            grid[j * edgeCount + i] = 0.5 + 0.5 * Math.sin(j * edgeCount + i);
+            // grid[j * edgeCount + i] = 0.5 + 0.5 * (Math.cos(0.73 * i) * Math.sin(0.31 * j));
+            continue;
+          }
 
-          // Wavy
-          // grid[j * edgeCount + i] = 0.5 +0.5*(Math.sin(i));
+          if (shape === `bowl`) {
+            const iEdgeRatio = Math.abs(i - iCenter) / iCenter;
+            const jEdgeRatio = Math.abs(j - jCenter) / jCenter;
+            grid[j * edgeCount + i] =
+              1 - Math.cos(Math.PI * 0.5 * Math.sqrt(iEdgeRatio * iEdgeRatio + jEdgeRatio * jEdgeRatio));
+            // grid[j * edgeCount + i] = 0.5 + 0.5 * (Math.cos(0.73 * i) * Math.sin(0.31 * j));
+            continue;
+          }
 
-          // Plane
-          // grid[j * edgeCount + i] = j / segmentCount;
-          // grid[j * edgeCount + i] = i / segmentCount;
+          if (shape === `wavy`) {
+            grid[j * edgeCount + i] = 0.5 + 0.5 * Math.sin(i);
+            continue;
+          }
+
+          if (shape === `plane`) {
+            grid[j * edgeCount + i] = j / segmentCount;
+            // grid[j * edgeCount + i] = i / segmentCount;
+            continue;
+          }
         }
       }
 
@@ -92,6 +116,7 @@ export const EntityGround = defineComponent<EntityGround>()
         segmentSize,
         minHeight,
         maxHeight,
+        shape,
       };
     },
   )

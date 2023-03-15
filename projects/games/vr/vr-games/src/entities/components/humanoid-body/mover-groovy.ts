@@ -7,13 +7,22 @@ export type EntityHumanoidBodyMoverGroovy = EntityHumanoidBody & {
   humanoidBodyMoverGroovy: {
     direction: Vector3;
     speed: number;
+    yRatio: number;
     _subscription?: { unsubscribe: () => void };
   };
 };
 export const EntityHumanoidBodyMoverGroovy = defineComponent<EntityHumanoidBodyMoverGroovy>()
   .with(
     `humanoidBodyMoverGroovy`,
-    ({ direction, speed, autoStart = true }: { direction?: Vector3; speed?: number; autoStart?: boolean }, e) => {
+    (
+      {
+        direction,
+        speed,
+        autoStart = true,
+        yRatio = 1,
+      }: { direction?: Vector3; speed?: number; autoStart?: boolean; yRatio?: number },
+      e,
+    ) => {
       if (autoStart) {
         setTimeout(() => {
           setupMovement(e);
@@ -22,6 +31,7 @@ export const EntityHumanoidBodyMoverGroovy = defineComponent<EntityHumanoidBodyM
       return {
         direction: direction ?? new Vector3(),
         speed: speed ?? 1,
+        yRatio,
       };
     },
   )
@@ -71,8 +81,8 @@ const setupMovement = (e: EntityHumanoidBodyMoverGroovy) => {
 
       let step = 0;
 
-      const yMult = 2 + 10 * Math.random();
-      const yTargetMult = 0.6 + 1 * Math.random();
+      const yMult = e.humanoidBodyMoverGroovy.yRatio * 2 + 10 * Math.random();
+      const yTargetMult = e.humanoidBodyMoverGroovy.yRatio * 0.6 + 1 * Math.random();
       let maxHeight = 0;
 
       partsToMove.forEach((p, iPart) => {
