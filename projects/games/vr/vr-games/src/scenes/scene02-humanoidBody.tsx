@@ -52,8 +52,8 @@ const humanoidStaticChest = Entity.create(`humanoid`)
 
       const speed = 1;
       const cycleSpeed = 1;
-      const yMult = 8;
-      const yTargetMult = 1.5;
+      const yMult = 4;
+      const yTargetMult = 1.3;
       let maxHeight = 0;
 
       setTimeout(() => {
@@ -155,6 +155,6 @@ export const scene02: SceneDefinition = {
     // ...humanoids,
     ground,
   ],
-  gravity: [0, 1 * -9.8, 0] as Triplet,
+  gravity: [0, 0.1 * -9.8, 0] as Triplet,
   // gravity: [0, 0, 0] as Triplet,
 };
