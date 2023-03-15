@@ -50,8 +50,8 @@ const humanoidStaticChest = Entity.create(`humanoid`)
 
       let step = 0;
 
-      const speed = 1;
-      const cycleSpeed = 1;
+      const speed = 10;
+      const cycleSpeed = 10;
       const yMult = 4;
       const yTargetMult = 1.3;
       let maxHeight = 0;
