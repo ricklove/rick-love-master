@@ -42,5 +42,6 @@ export const scene02: SceneDefinition = {
     ...humanoids,
     ground,
   ],
-  gravity: [0, -9.8, 0] as Triplet,
+  // gravity: [0, -0.098, 0] as Triplet,
+  gravity: [0, 0, 0] as Triplet,
 };
