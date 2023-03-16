@@ -1,10 +1,17 @@
 import { Triplet } from '@react-three/cannon';
+import { filter, map } from 'rxjs';
 import { Vector3 } from 'three';
 import { EntityGround } from '../entities/components/ground';
 import { EntityGroundView } from '../entities/components/ground-view';
 import { EntityHumanoidBody } from '../entities/components/humanoid-body/humanoid-body';
 import { EntityHumanoidBodyMoverGroovy } from '../entities/components/humanoid-body/mover-groovy';
+import { EntityMouseInput } from '../entities/components/mouse-input';
+import { EntityCollisionFilterGroup } from '../entities/components/physics-view';
+import { EntityPhysicsViewBox } from '../entities/components/physics-view-box';
 import { EntityPhysicsViewSphere } from '../entities/components/physics-view-sphere';
+import { EntitySelectable, EntitySelector } from '../entities/components/selectable';
+import { EntityRaycastSelector } from '../entities/components/selectable-raycast-selector';
+import { EntityRaycastSelectorCollider } from '../entities/components/selectable-raycast-selector-collider';
 import { Entity, SceneDefinition } from '../entities/entity';
 
 const humanoid = Entity.create(`humanoid`)
@@ -20,22 +27,93 @@ const humanoidMovement = Entity.create(`humanoid`)
   .addComponent(EntityHumanoidBodyMoverGroovy, { direction: new Vector3(-1, 0, 1) })
   .build();
 
+const GROUP_DEFAULT = 1 << 0;
+const GROUP_SELECTABLE = 1 << 1;
+const GROUP_SELECTOR = 1 << 2;
+
 const MAX_DISTANCE = 10;
 const rows = 4;
 const cols = 4;
+// const rows = 1;
+// const cols = 1;
 const humanoids = [...new Array(rows * cols)].map((_, i) =>
   Entity.create(`humanoid-${i}`)
-    .addComponent(EntityHumanoidBody, { scale: 1, offset: new Vector3(i % rows, 0, Math.floor(i / rows)) })
+    .addComponent(EntityHumanoidBody, {
+      scale: 1,
+      offset: new Vector3(i % rows, 0, Math.floor(i / rows)),
+    })
     .addComponent(EntityHumanoidBodyMoverGroovy, {
       direction: new Vector3(-1, 0, 1),
       speed: 0.5 + 10 * Math.random(),
       yRatio: 2,
     })
+
     .extend((e) => {
       const posFuture = new Vector3();
       const newDir = new Vector3();
 
       const mainPart = e.humanoidBody.parts.find((x) => x.part === `upper-torso`);
+
+      const selectableOffset = new Vector3(0, 0, 0);
+      const a = new Vector3(0, 2, 0);
+      const selectableHover = Entity.create(`humanoid-selectable-${i}`)
+        .addComponent(EntityCollisionFilterGroup, {
+          group: GROUP_SELECTABLE,
+          mask: GROUP_SELECTOR,
+        })
+        .addComponent(EntityPhysicsViewBox, {
+          mass: 0.0001,
+          scale: [0.25, 0.4, 0.25],
+          startRotation: [0, 0, 0],
+          debugColorRgba: 0x997744ff,
+        })
+        .addComponent(EntitySelectable, {})
+        .extend((selectable) => {
+          // physics to selection
+          EntitySelectable.subscribeToEvent(
+            selectable.physics.collideSubject.pipe(
+              filter((x) => !!(x.entity as Entity).selectable && !!(x.other as Entity)?.selector),
+              map((x) => ({
+                sequence: x.sequence,
+                selectable: x.entity as Entity as EntitySelectable,
+                selector: x.other as Entity as EntitySelector,
+              })),
+            ),
+          );
+
+          // follow mainPart position
+          selectable.frameTrigger.subscribe(() => {
+            if (!mainPart?.entity) {
+              return;
+            }
+            selectable.physics.api.velocity.set(0, 0, 0);
+            selectable.physics.api.angularVelocity.set(0, 0, 0);
+            selectable.physics.api.position.copy(a.copy(mainPart.entity.transform.position).add(selectableOffset));
+            selectable.physics.api.quaternion.copy(mainPart.entity.transform.quaternion);
+            // logger.log(`selectable`, { a, selectable });
+          });
+
+          // handle selection
+          selectable.selectable.stateSubject
+            .pipe(filter((x) => x.mode === `down` && x.sequence === `begin`))
+            .subscribe((s) => {
+              // add force
+              e.humanoidBodyMoverGroovy.enabled = false;
+              e.humanoidBody.parts.forEach((p) => {
+                p.entity.physics.api.velocity.set(
+                  5 - 10 * Math.random(),
+                  10 * (0.5 + 0.5 * Math.random()),
+                  5 - 10 * Math.random(),
+                );
+              });
+
+              setTimeout(() => {
+                e.humanoidBodyMoverGroovy.enabled = true;
+              }, 10 * 1000);
+            });
+        })
+        .build();
+      e.children.add(selectableHover);
 
       mainPart?.entity.frameTrigger.subscribe(() => {
         const pos = mainPart?.entity.transform.position;
@@ -98,6 +176,23 @@ const ball2 = Entity.create(`ball`)
   })
   .build();
 
+const mouseInput = Entity.create(`mouseInput`).addComponent(EntityMouseInput, {}).build();
+const mouseRaycastSelector = Entity.create(`mouseRaycastSelector`)
+  .addComponent(EntityCollisionFilterGroup, {
+    group: GROUP_SELECTOR,
+    mask: GROUP_SELECTABLE,
+  })
+  .addComponent(EntitySelector, {})
+  .addComponent(EntityRaycastSelector, {})
+  .addComponent(EntityRaycastSelectorCollider, { length: 100 })
+  .extend((e) => {
+    EntityRaycastSelector.changeSource(e, mouseInput.mouseInput);
+    mouseInput.mouseInput.buttonsSubject.pipe(filter((x) => x.kind === `left`)).subscribe((x) => {
+      EntitySelector.changeSelectionMode(e, x.sequence === `begin` ? `down` : `hover`);
+    });
+  })
+  .build();
+
 // const ball3 = Entity.create(`ball`)
 //   .addComponent(EntityPhysicsViewSphere, {
 //     mass: 1000,
@@ -139,6 +234,8 @@ export const scene02: SceneDefinition = {
     ground,
     ball,
     ball2,
+    mouseInput,
+    mouseRaycastSelector,
     // ball3,
     // ball4,
   ],

@@ -1,10 +1,10 @@
 import { Vector3 } from 'three';
-import { logger } from '../../../utils/logger';
 import { defineComponent } from '../../core';
 import { EntityHumanoidBody } from './humanoid-body';
 
 export type EntityHumanoidBodyMoverGroovy = EntityHumanoidBody & {
   humanoidBodyMoverGroovy: {
+    enabled: boolean;
     direction: Vector3;
     speed: number;
     yRatio: number;
@@ -16,11 +16,12 @@ export const EntityHumanoidBodyMoverGroovy = defineComponent<EntityHumanoidBodyM
     `humanoidBodyMoverGroovy`,
     (
       {
+        enabled = true,
         direction,
         speed,
         autoStart = true,
         yRatio = 1,
-      }: { direction?: Vector3; speed?: number; autoStart?: boolean; yRatio?: number },
+      }: { direction?: Vector3; speed?: number; autoStart?: boolean; yRatio?: number; enabled?: boolean },
       e,
     ) => {
       if (autoStart) {
@@ -29,6 +30,7 @@ export const EntityHumanoidBodyMoverGroovy = defineComponent<EntityHumanoidBodyM
         });
       }
       return {
+        enabled,
         direction: direction ?? new Vector3(),
         speed: speed ?? 1,
         yRatio,
@@ -93,6 +95,10 @@ const setupMovement = (e: EntityHumanoidBodyMoverGroovy) => {
 
         subs.push(
           p.entity.frameTrigger.subscribe(() => {
+            if (!e.humanoidBodyMoverGroovy.enabled) {
+              return;
+            }
+
             const speed = e.humanoidBodyMoverGroovy.speed;
             const cycleSpeed = speed;
             const dirAngle =
@@ -142,7 +148,7 @@ const setupMovement = (e: EntityHumanoidBodyMoverGroovy) => {
             vel.set(0, yVel, zVel).applyAxisAngle(up, dirAngle);
             rot.set(angle * 0.7, dirAngle + angle, angle * 0.3);
 
-            logger.log(`vel`, { vel, dirAngle, yVel, zVel });
+            // logger.log(`vel`, { vel, dirAngle, yVel, zVel });
 
             p.entity.physics.api.velocity.set(vel.x, vel.y, vel.z);
             p.entity.physics.api.angularVelocity.set(rot.x / 60, rot.y / 60, rot.z / 60);

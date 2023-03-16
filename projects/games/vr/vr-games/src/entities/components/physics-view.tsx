@@ -2,7 +2,23 @@ import { Triplet, WorkerApi } from '@react-three/cannon';
 import { CollideBeginEvent, CollideEndEvent, CollideEvent } from '@react-three/cannon';
 import { Subject } from 'rxjs';
 import { Quaternion, Vector3 } from 'three';
+import { logger } from '../../utils/logger';
 import { defineComponent, EntityBase, EntityWithTransform } from '../core';
+
+export type EntityCollisionFilterGroup = EntityBase & {
+  collisionFilterGroup: {
+    group: number;
+    mask: number;
+  };
+};
+
+export const EntityCollisionFilterGroup = defineComponent<EntityCollisionFilterGroup>().with(
+  `collisionFilterGroup`,
+  ({ group = 1, mask = -1 }: { group?: number; mask?: number }) => ({
+    group,
+    mask,
+  }),
+);
 
 export type EntityPhysicsView = EntityWithTransform & {
   physics: {
@@ -16,6 +32,10 @@ export type EntityPhysicsView = EntityWithTransform & {
       event: CollideBeginEvent | CollideEndEvent | CollideEvent;
     }>;
     mass: number;
+  };
+  collisionFilterGroup?: {
+    group: number;
+    mask: number;
   };
   view: {
     debugColorRgba?: number;
@@ -64,32 +84,37 @@ export const EntityPhysicsView = defineComponent<EntityPhysicsView>()
         });
       }
 
+      logger.log(`EntityPhysicsView.register`, { name: entity.name, key: entity.key });
+
       globalState.physicsViews[entity.physics.uuid] = entity;
     },
     collide: (entity: EntityPhysicsView, event: CollideBeginEvent | CollideEndEvent | CollideEvent) => {
       const eReg = globalState.physicsViews[event.data.target];
       const other = globalState.physicsViews[event.data.body];
       const sequence = event.type === `collideBegin` ? `begin` : event.type === `collideEnd` ? `end` : `continue`;
-      // logger.log(`collide`, {
-      //   e: entity.name,
-      //   o: other?.name,
-      //   sequence,
-      //   type: event.type,
-      // });
-      // logger.log(`collide`, {
-      //   e: { n: entity.name, k: entity.key },
-      //   r: { n: eReg?.name, k: eReg?.key },
-      //   o: { n: other?.name, k: other?.key },
-      // });
-      // logger.log(`enti uuid`, {
-      //   e: entity.physics.uuid,
-      // });
-      // logger.log(`body uuid`, {
-      //   b: event.data.body,
-      // });
-      // logger.log(`targ uuid`, {
-      //   t: event.data.target,
-      // });
+
+      if (!entity.name.includes(`body`) && !other?.name.includes(`body`)) {
+        logger.log(`collide`, {
+          e: entity.name,
+          o: other?.name,
+          sequence,
+          type: event.type,
+        });
+        // logger.log(`collide`, {
+        //   e: { n: entity.name, k: entity.key },
+        //   r: { n: eReg?.name, k: eReg?.key },
+        //   o: { n: other?.name, k: other?.key },
+        // });
+        // logger.log(`enti uuid`, {
+        //   e: entity.physics.uuid,
+        // });
+        // logger.log(`body uuid`, {
+        //   b: event.data.body,
+        // });
+        // logger.log(`targ uuid`, {
+        //   t: event.data.target,
+        // });
+      }
       entity.physics.collideSubject.next({ entity, event, other, sequence });
     },
     // getEntityKey: (o:Object3D)=>{

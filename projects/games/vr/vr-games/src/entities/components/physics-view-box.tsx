@@ -31,6 +31,8 @@ const EntityPhysicsViewBoxBatchComponent = ({ entities }: { entities: EntityPhys
   // logger.log(`EntityPhysicsViewBoxBatchComponent`, { count, entities });
   const [ref, api] = useBox(
     (index) => ({
+      collisionFilterGroup: entities[index].collisionFilterGroup?.group,
+      collisionFilterMask: entities[index].collisionFilterGroup?.mask,
       args: entities[index].box.scale,
       mass: entities[index].physics.mass,
       position: [

@@ -54,6 +54,8 @@ const EntityPhysicsViewSphereBatchComponent = ({ entities }: { entities: EntityP
   // logger.log(`EntityPhysicsViewSphereBatchComponent`, { count, entities });
   const [ref, api] = useSphere(
     (index) => ({
+      collisionFilterGroup: entities[index].collisionFilterGroup?.group,
+      collisionFilterMask: entities[index].collisionFilterGroup?.mask,
       args: [entities[index].sphere.radius],
       mass: entities[index].physics.mass,
       position: [

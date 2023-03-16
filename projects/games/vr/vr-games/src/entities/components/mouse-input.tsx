@@ -54,11 +54,21 @@ export const EntityMouseInputComponent = ({ entity }: { entity: EntityMouseInput
     const onMouseUp = (ev: MouseEvent) => {
       entity.mouseInput.buttonsSubject.next({ kind: getButtonKind(ev.button), sequence: `end` });
     };
+    const onTouchStart = (ev: TouchEvent) => {
+      entity.mouseInput.buttonsSubject.next({ kind: `left`, sequence: `begin` });
+    };
+    const onTouchEnd = (ev: TouchEvent) => {
+      entity.mouseInput.buttonsSubject.next({ kind: `left`, sequence: `end` });
+    };
     document.addEventListener(`mousedown`, onMouseDown, false);
+    document.addEventListener(`touchstart`, onTouchStart, false);
     document.addEventListener(`mouseup`, onMouseUp, false);
+    document.addEventListener(`touchend`, onTouchEnd, false);
     return () => {
       document.removeEventListener(`mousedown`, onMouseDown, false);
+      document.removeEventListener(`touchstart`, onTouchStart, false);
       document.removeEventListener(`mouseup`, onMouseUp, false);
+      document.addEventListener(`touchend`, onTouchEnd, false);
     };
   }, []);
 

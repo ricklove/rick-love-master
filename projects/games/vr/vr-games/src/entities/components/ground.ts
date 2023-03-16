@@ -56,13 +56,13 @@ export const EntityGround = defineComponent<EntityGround>()
       segmentSize,
       minHeight,
       maxHeight,
-      shape,
+      shape = `hills`,
     }: {
       segmentCount: number;
       segmentSize: number;
       minHeight: number;
       maxHeight: number;
-      shape: GroundShape;
+      shape?: GroundShape;
     }) => {
       // positions are row (x), then column (z)
 

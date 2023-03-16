@@ -34,6 +34,8 @@ export const EntityRaycastSelectorColliderComponent = ({ entity }: { entity: Ent
   const size = [0.1, 0.1, entity.raycastSelectorCollider.length] as Triplet;
   const [refTrigger, apiTrigger] = useBox(
     () => ({
+      collisionFilterGroup: entity.collisionFilterGroup?.group,
+      collisionFilterMask: entity.collisionFilterGroup?.mask,
       args: size,
       type: `Static`,
       isTrigger: true,
@@ -83,7 +85,7 @@ export const EntityRaycastSelectorColliderComponent = ({ entity }: { entity: Ent
     // logger.log(`r comp phy`, { pos: formatVector(s.position), mode: r.mode });
 
     w.from.copy(s.position);
-    w.toMid.copy(s.position).add(w.a.copy(s.direction).multiplyScalar(50));
+    w.toMid.copy(s.position).add(w.a.copy(s.direction).multiplyScalar(0.5 * entity.raycastSelectorCollider.length));
 
     w.direction.copy(s.direction);
     calculateRotationMatrix(w);
@@ -114,7 +116,7 @@ export const EntityRaycastSelectorColliderComponent = ({ entity }: { entity: Ent
         <meshStandardMaterial wireframe color={mode === `down` ? 0xff0000 : mode === `hover` ? 0xff00ff : 0x0000ff} />
       </mesh>
       <mesh ref={refTarget}>
-        <sphereGeometry args={[5]} />
+        <sphereGeometry args={[1]} />
         <meshBasicMaterial color={`#00ff00`} transparent={true} opacity={0.15} />
       </mesh>
     </>

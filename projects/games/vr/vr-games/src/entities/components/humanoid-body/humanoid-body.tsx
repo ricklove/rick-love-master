@@ -5,7 +5,7 @@ import { defineComponent, EntityBase, EntityList, EntityWithChildren } from '../
 import { Entity } from '../../entity';
 import { EntityForce } from '../force';
 import { EntityPhysicsConstraintConeTwist } from '../physics-constraint';
-import { EntityPhysicsView } from '../physics-view';
+import { EntityCollisionFilterGroup, EntityPhysicsView } from '../physics-view';
 import { EntityPhysicsViewBox } from '../physics-view-box';
 import { EntityPhysicsViewSphere } from '../physics-view-sphere';
 import { EntityTextView } from '../text-view';
@@ -22,11 +22,12 @@ export type EntityHumanoidBody = EntityWithChildren & {
     offset: Vector3;
   };
 };
+type Args = { scale: number; offset: Vector3 } & Partial<EntityCollisionFilterGroup[`collisionFilterGroup`]>;
 export const EntityHumanoidBody = defineComponent<EntityHumanoidBody>()
   .with(`children`, () => new EntityList())
-  .with(`humanoidBody`, ({ scale, offset }: { scale: number; offset: Vector3 }, e) => {
+  .with(`humanoidBody`, (args: Args, e) => {
     const bodyPartEntitiesAll = Object.keys(humanBodyParts).flatMap(
-      (k) => createBodyPartEntity({ part: k as HumanBodyPartName, scale, offset, thicknessScale: 0.7 }) ?? [],
+      (k) => createBodyPartEntity({ part: k as HumanBodyPartName, args, thicknessScale: 0.7 }) ?? [],
     );
 
     const bodyPartEntities = bodyPartEntitiesAll;
@@ -44,14 +45,13 @@ export const EntityHumanoidBody = defineComponent<EntityHumanoidBody>()
 
     const joints = getHumanJointData();
     const jointEntities = joints.map((x) => ({
-      entities: createBodyJoint(x, scale, offset, bodyPartEntities),
+      entities: createBodyJoint(x, args, bodyPartEntities),
       joint: x,
     }));
     e.children.add(...jointEntities.flatMap((x) => x.entities));
 
     return {
-      scale,
-      offset,
+      ...args,
       parts: bodyPartEntities,
       joints: jointEntities,
     };
@@ -60,8 +60,7 @@ export const EntityHumanoidBody = defineComponent<EntityHumanoidBody>()
 
 const createBodyJoint = (
   { position, joint, radius, side, coneAngle, twistAngle }: HumanJointData,
-  scale: number,
-  offset: Vector3,
+  args: Args,
   bodyPartEntities: {
     entity: EntityPhysicsView;
     pivots: { side: `center` | `left` | `right`; joint: HumanJointName; position: Triplet }[];
@@ -83,9 +82,9 @@ const createBodyJoint = (
       .addComponent(EntityPhysicsViewSphere, {
         enablePhysics: false,
         mass: 0,
-        radius: radius * scale,
+        radius: radius * args.scale,
         debugColorRgba: side === `left` ? 0x0000ffff : side === `right` ? 0xff0000ff : 0x880088ff,
-        startPosition: new Vector3(...position).multiplyScalar(scale).add(offset).toArray() as Triplet,
+        startPosition: new Vector3(...position).multiplyScalar(args.scale).add(args.offset).toArray() as Triplet,
       })
       .extend((e) => {
         // Follow parent position
@@ -181,16 +180,14 @@ const createBodyJoint = (
 
 const createBodyPartEntity = ({
   part,
-  scale,
-  offset,
+  args,
   thicknessScale,
 }: {
   part: HumanBodyPartName;
-  scale: number;
-  offset: Vector3;
+  args: Args;
   thicknessScale: number;
 }) => {
-  const d = calculateBodyPartData(part, scale);
+  const d = calculateBodyPartData(part, args.scale);
   if (!d) {
     return;
   }
@@ -208,8 +205,9 @@ const createBodyPartEntity = ({
     const pos = new Vector3()
       .copy(d.position)
       .setX(mirror * d.position.x)
-      .add(offset);
+      .add(args.offset);
     const entity = Entity.create(`bodyPart:${part}:${side}`)
+      .addComponent(EntityCollisionFilterGroup, { ...args })
       .addComponent(EntityPhysicsViewBox, {
         mass: d.mass,
         debugColorRgba: 0x00ff0080,
@@ -230,9 +228,12 @@ const createBodyPartEntity = ({
             .addComponent(EntityPhysicsViewSphere, {
               enablePhysics: false,
               mass: 0,
-              radius: 0.011 * scale,
+              radius: 0.011 * args.scale,
               debugColorRgba: p.side === `left` ? 0x0000ff80 : p.side === `right` ? 0xff000080 : 0x88008880,
-              startPosition: new Vector3(...p.position).multiplyScalar(scale).add(offset).toArray() as Triplet,
+              startPosition: new Vector3(...p.position)
+                .multiplyScalar(args.scale)
+                .add(args.offset)
+                .toArray() as Triplet,
             })
             .addComponent(EntityTextView, {
               offset: new Vector3(0, i * 0.01, 0.05 + i * 0.01),
@@ -296,8 +297,7 @@ const createBodyPartEntity = ({
   };
 
   return d.sides.map((s) => ({
-    scale,
-    offset,
+    ...args,
     part,
     side: s,
     ...createEntity(s),

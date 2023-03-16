@@ -5,7 +5,7 @@ import { EntityGravity } from './components/gravity';
 import { EntityAdjustToGround, EntityGround } from './components/ground';
 import { EntityGroundView } from './components/ground-view';
 import { EntityHumanoidBody } from './components/humanoid-body/humanoid-body';
-import { EntityPhysicsView } from './components/physics-view';
+import { EntityCollisionFilterGroup, EntityPhysicsView } from './components/physics-view';
 import { EntityPhysicsViewSphere } from './components/physics-view-sphere';
 import { EntityPlayer } from './components/player';
 import { EntityProblemEngine } from './components/problem-engine';
@@ -34,6 +34,7 @@ type EntityUnion = EntityBase & (
 | EntitySelector
 | EntityRaycastSelector
 | EntityRaycastSelectorCollider
+| EntityCollisionFilterGroup
 | EntityPhysicsView
 | EntityPhysicsViewSphere
 | EntityForce
