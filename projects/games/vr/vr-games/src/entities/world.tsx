@@ -178,7 +178,7 @@ export const WorldContainer = ({ rootEntities, gravity, iterations, debugPhysics
             <React.Fragment key={x.key}>{x.textView && <x.textView.Component entity={x} />}</React.Fragment>
           ))}
           {activeBatchViews.map((g) => (
-            <React.Fragment key={g.key}>
+            <React.Fragment key={`${g.key}`}>
               {g.first.view?.BatchComponent && <g.first.view.BatchComponent entities={g.items} />}
             </React.Fragment>
           ))}

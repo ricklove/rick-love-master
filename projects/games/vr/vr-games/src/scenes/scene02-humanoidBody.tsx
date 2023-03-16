@@ -10,6 +10,7 @@ import { EntityCollisionFilterGroup } from '../entities/components/physics-view'
 import { EntityPhysicsViewBox } from '../entities/components/physics-view-box';
 import { EntityPhysicsViewSphere } from '../entities/components/physics-view-sphere';
 import { EntityPlayer } from '../entities/components/player';
+import { EntityPlayerPhysicsGloves } from '../entities/components/player-physics-gloves';
 import { EntitySelectable, EntitySelector } from '../entities/components/selectable';
 import { EntityRaycastSelector } from '../entities/components/selectable-raycast-selector';
 import { EntityRaycastSelectorCollider } from '../entities/components/selectable-raycast-selector-collider';
@@ -17,6 +18,7 @@ import { Entity, SceneDefinition } from '../entities/entity';
 
 const player = Entity.create(`player`)
   .addComponent(EntityPlayer, {})
+  .addComponent(EntityPlayerPhysicsGloves, {})
   // .addComponent(EntityHumanoidBody, { scale: 10, offset: new Vector3(0, 5, 0) })
   .addComponent(EntityAdjustToGround, {
     minGroundHeight: 0,

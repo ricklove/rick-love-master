@@ -2,7 +2,6 @@ import React from 'react';
 import { Subject } from 'rxjs';
 import { Quaternion, Vector3 } from 'three';
 import { useCamera, usePlayer } from '../../components/camera';
-import { PlayerAvatarInSceneSpace } from '../../components/player-avatar';
 import { Gestures, useGestures } from '../../gestures/gestures';
 import { useIsomorphicLayoutEffect } from '../../utils/layoutEffect';
 import { defineComponent, EntityBase, EntityWithTransform } from '../core';
@@ -49,15 +48,12 @@ export const EntityPlayerComponent = ({ entity }: { entity: EntityPlayer }) => {
   useIsomorphicLayoutEffect(() => {
     // Assign transform
     entity.transform.position = player.position;
+    entity.transform.quaternion = camera.quaternion;
     entity.player.gestures = gestures;
     entity.ready.next(true);
   }, []);
 
-  return (
-    <>
-      <PlayerAvatarInSceneSpace />
-    </>
-  );
+  return <>{/* <PlayerAvatarInSceneSpace debug={false} /> */}</>;
 };
 
 // const Mover_Running = () => {

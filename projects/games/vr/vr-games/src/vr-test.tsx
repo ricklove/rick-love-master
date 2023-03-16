@@ -13,7 +13,7 @@ import { WorldContainer } from './entities/world';
 import { RandomGround } from './environment/ground';
 import { ExampleHtmlObject, ExampleHtmlObject_Dynamic } from './experiments/html/html-to-string-component';
 import { GestureOptions, GesturesProvider, useGestures } from './gestures/gestures';
-import { scene02 } from './scenes/scene02-humanoidBody';
+import { scene02a } from './scenes/scene02a-player-physics-hands';
 import { DebugConsole, logger } from './utils/logger';
 
 export const VrTestGame = () => {
@@ -81,6 +81,41 @@ const NonVrPage = () => {
           {/* <Scene_Experiment_01_Html /> */}
         </XR>
       </Canvas>
+    </>
+  );
+};
+
+const Scene_05_WithEntities = ({ debugVisible = true }: { debugVisible?: boolean }) => {
+  return (
+    <>
+      <GesturesProvider options={GestureOptions.all}>
+        <ambientLight intensity={0.5} />
+        <ScenePerspective perspective={`1st`}>
+          {/* {[...new Array(3)].map((_, i) => (
+            <pointLight
+              key={i}
+              position={[500 - 1000 * Math.random(), 50 * Math.random(), 500 - 1000 * Math.random()]}
+              color={Math.round(0xffffff * Math.random())}
+              distance={300}
+            />
+          ))} */}
+          <gridHelper args={[100, 100]} />
+          {/* <Mover_Running /> */}
+          {/* <RandomGround /> */}
+          {/* <PlayerAvatarInSceneSpace /> */}
+
+          {/* <Sphere position={[-2, 1, 0]} scale={0.02} />
+          <Sphere position={[0, 1, -10]} scale={0.05} />*/}
+          <Sphere position={[0, 1, -90]} />
+
+          <WorldContainer {...scene02a} />
+        </ScenePerspective>
+
+        <Hud position={[0, 1, 4]}>
+          <DebugConsole visible={debugVisible} />
+        </Hud>
+        <SkyBox />
+      </GesturesProvider>
     </>
   );
 };
@@ -194,42 +229,6 @@ const Scene_04_PerfGesturesMoverWithGround = () => {
         {/* <Hud position={[0, 1, 4]}>
           <DebugConsole />
         </Hud> */}
-      </GesturesProvider>
-    </>
-  );
-};
-
-// ?
-const Scene_05_WithEntities = ({ debugVisible = true }: { debugVisible?: boolean }) => {
-  return (
-    <>
-      <GesturesProvider options={GestureOptions.all}>
-        <ambientLight intensity={0.5} />
-        <ScenePerspective perspective={`1st`}>
-          {/* {[...new Array(3)].map((_, i) => (
-            <pointLight
-              key={i}
-              position={[500 - 1000 * Math.random(), 50 * Math.random(), 500 - 1000 * Math.random()]}
-              color={Math.round(0xffffff * Math.random())}
-              distance={300}
-            />
-          ))} */}
-          <gridHelper args={[100, 100]} />
-          {/* <Mover_Running /> */}
-          {/* <RandomGround /> */}
-          {/* <PlayerAvatarInSceneSpace /> */}
-
-          {/* <Sphere position={[-2, 1, 0]} scale={0.02} />
-          <Sphere position={[0, 1, -10]} scale={0.05} />*/}
-          <Sphere position={[0, 1, -90]} />
-
-          <WorldContainer {...scene02} />
-        </ScenePerspective>
-
-        <Hud position={[0, 1, 4]}>
-          <DebugConsole visible={debugVisible} />
-        </Hud>
-        <SkyBox />
       </GesturesProvider>
     </>
   );

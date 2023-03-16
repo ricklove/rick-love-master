@@ -31,6 +31,12 @@ const EntityPhysicsViewBoxBatchComponent = ({ entities }: { entities: EntityPhys
   // logger.log(`EntityPhysicsViewBoxBatchComponent`, { count, entities });
   const [ref, api] = useBox(
     (index) => ({
+      type:
+        entities[index].physics.kind === `static`
+          ? `Static`
+          : entities[index].physics.kind === `kinematic`
+          ? `Kinematic`
+          : undefined,
       collisionFilterGroup: entities[index].collisionFilterGroup?.group,
       collisionFilterMask: entities[index].collisionFilterGroup?.mask,
       args: entities[index].box.scale,

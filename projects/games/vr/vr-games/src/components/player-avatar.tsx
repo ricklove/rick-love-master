@@ -6,7 +6,7 @@ import { Group, Object3D } from 'three';
 import { PlayerGestures } from '../gestures/gestures-view';
 import { useCamera, usePlayer } from './camera';
 
-export const PlayerAvatarInSceneSpace = () => {
+export const PlayerAvatarInSceneSpace = (props: { debug?: boolean }) => {
   const player = usePlayer();
   const playerDollyRef = useRef<Group>(null);
 
@@ -16,13 +16,13 @@ export const PlayerAvatarInSceneSpace = () => {
 
   return (
     <group ref={playerDollyRef}>
-      <PlayerAvatar />
+      <PlayerAvatar {...props} />
     </group>
   );
 };
 
 /** The player relative to camera dolly */
-export const PlayerAvatar = () => {
+export const PlayerAvatar = (props: { debug?: boolean }) => {
   const camera = useCamera();
 
   const handLSource = useController(`left`);
@@ -65,7 +65,7 @@ export const PlayerAvatar = () => {
           <meshStandardMaterial color={`#55ff55`} transparent={true} opacity={0.5} />
         </Sphere>
       ))} */}
-      <PlayerGestures />
+      {props.debug && <PlayerGestures />}
     </group>
   );
 };

@@ -3,6 +3,7 @@ import { useSphere } from '@react-three/cannon';
 import { useFrame } from '@react-three/fiber';
 import { Color, InstancedMesh, Matrix4, Vector3 } from 'three';
 import { useIsomorphicLayoutEffect } from '../../utils/layoutEffect';
+import { logger } from '../../utils/logger';
 import { cloneComponent, EntityBase } from '../core';
 import { EntityPhysicsView } from './physics-view';
 
@@ -54,6 +55,12 @@ const EntityPhysicsViewSphereBatchComponent = ({ entities }: { entities: EntityP
   // logger.log(`EntityPhysicsViewSphereBatchComponent`, { count, entities });
   const [ref, api] = useSphere(
     (index) => ({
+      type:
+        entities[index].physics.kind === `static`
+          ? `Static`
+          : entities[index].physics.kind === `kinematic`
+          ? `Kinematic`
+          : undefined,
       collisionFilterGroup: entities[index].collisionFilterGroup?.group,
       collisionFilterMask: entities[index].collisionFilterGroup?.mask,
       args: [entities[index].sphere.radius],
@@ -90,6 +97,8 @@ const EntityPhysicsViewSphereBatchComponent = ({ entities }: { entities: EntityP
     entities.forEach((x, i) => {
       const rad = entities[i].sphere.radius;
       api.at(i).scaleOverride([rad, rad, rad]);
+      logger.log(`EntityPhysicsViewSphereBatchComponent scale`, { i, rad, n: x.name, k: x.key });
+
       EntityPhysicsView.register(x, api.at(i));
       x.ready.next(true);
     });
@@ -99,7 +108,7 @@ const EntityPhysicsViewSphereBatchComponent = ({ entities }: { entities: EntityP
 
   return (
     <instancedMesh ref={ref} castShadow receiveShadow args={[undefined, undefined, count]}>
-      <sphereBufferGeometry args={[1, 16, 16]}>
+      <sphereBufferGeometry args={[undefined, 16, 16]}>
         <instancedBufferAttribute attach='attributes-color' args={[colors, 4]} />
       </sphereBufferGeometry>
       <meshPhongMaterial vertexColors />
