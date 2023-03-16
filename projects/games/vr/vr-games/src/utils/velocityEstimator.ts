@@ -7,11 +7,13 @@ export const createCalculatorEstimateVelocityFromPosition = () => {
   const inActualQuanternion = new Quaternion();
   const outVelocity = new Vector3();
   const outAngularVelocity = new Vector3();
+  const lastOutVelocity = new Vector3();
+  const lastOutAngularVelocity = new Vector3();
 
   const lastTargetPosition = new Vector3();
   const targetVelocity = new Vector3();
   const runningVelocity = new Vector3();
-  const missingFrames = { count: 0 };
+  const missingFrames = { startTime: 0 };
   const delta = new Vector3();
   const a = new Vector3();
   const b = new Vector3();
@@ -42,10 +44,21 @@ export const createCalculatorEstimateVelocityFromPosition = () => {
   }) => {
     const hasMoved = a.copy(lastTargetPosition).sub(targetPosition).lengthSq() > 0;
 
-    missingFrames.count = hasMoved ? 0 : missingFrames.count++;
-    lastTargetPosition.copy(targetPosition);
+    const deltaTimeSec = (Date.now() - missingFrames.startTime) / 1000;
+    const mult = (0.5 * 1) / deltaTimeSec;
+    const deltaTimeCutoffSec = 0.5;
 
-    const mult = (0.5 * 60) / (missingFrames.count + 1);
+    lastTargetPosition.copy(targetPosition);
+    if (!hasMoved) {
+      outVelocity.copy(lastOutVelocity).multiplyScalar(1 - Math.min(1, deltaTimeSec / deltaTimeCutoffSec));
+      outAngularVelocity
+        .copy(lastOutAngularVelocity)
+        .multiplyScalar(1 - Math.min(1, deltaTimeSec / deltaTimeCutoffSec));
+      return;
+    }
+
+    missingFrames.startTime = Date.now();
+
     // const ratio = missingFrames.count + 1;
     // const ratio = 0.5;
     // const mult = 0.5;
@@ -53,14 +66,16 @@ export const createCalculatorEstimateVelocityFromPosition = () => {
     delta.copy(targetPosition).sub(actualPosition);
     targetVelocity.copy(delta).multiplyScalar(mult);
     runningVelocity.lerp(targetVelocity, 0.8);
-    outVelocity.copy(runningVelocity);
+    lastOutVelocity.copy(runningVelocity);
+    outVelocity.copy(lastOutVelocity);
 
     // https://gamedev.stackexchange.com/q/30926
     // angular velocity is usually represented as a 3d vector where the direction is the axis and the magnitude is the angular speed
     a.copy(forward).applyQuaternion(targetQuanternion);
     b.copy(forward).applyQuaternion(actualQuanternion);
     rotationAxisFromCross.crossVectors(a, b);
-    outAngularVelocity.copy(rotationAxisFromCross).multiplyScalar(mult);
+    lastOutAngularVelocity.copy(rotationAxisFromCross).multiplyScalar(mult);
+    outAngularVelocity.copy(lastOutAngularVelocity);
 
     // qActualInverse.copy(actualQuanternion).invert();
     // qDiff.copy(qActualInverse).multiply(targetQuanternion);
