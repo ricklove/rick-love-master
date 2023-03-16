@@ -1,5 +1,6 @@
 import { Material } from 'cannon-es';
 import { Vector3 } from 'three';
+import { createCalculatorEstimateVelocityFromPosition } from '../../utils/velocityEstimator';
 import { defineComponent, EntityList, EntityWithChildren } from '../core';
 import { Entity } from '../entity';
 import { EntityCollisionFilterGroup, EntityPhysicsView, GROUP_SELECTABLE, GROUP_SELECTOR } from './physics-view';
@@ -52,6 +53,7 @@ export const EntityPlayerPhysicsGloves = defineComponent<EntityPlayerPhysicsGlov
 
         const club = Entity.create(`playerPhysicsGloves:${side}:club`)
           .addComponent(EntityPhysicsViewBox, {
+            kind: `kinematic`,
             // enablePhysics: true,
             material,
             mass: 0,
@@ -133,7 +135,7 @@ export const EntityPlayerPhysicsGloves = defineComponent<EntityPlayerPhysicsGlov
           {
             joints,
             weapon,
-            _w: new Vector3(),
+            _calculator: createCalculatorEstimateVelocityFromPosition(),
           },
         ];
       }),
@@ -151,13 +153,28 @@ export const EntityPlayerPhysicsGloves = defineComponent<EntityPlayerPhysicsGlov
       }
 
       [`left` as const, `right` as const].forEach((side) => {
-        gloves[side]._w
+        const { calculate, inTargetPosition, inTargetQuanternion, outVelocity, outAngularVelocity } =
+          gloves[side]._calculator;
+        inTargetPosition
           .copy(g[side].pointingHand.direction)
           .multiplyScalar(0.5)
           .add(g[side].pointingHand.position)
           .add(e.transform.position);
-        gloves[side].weapon[0].physics.api.position.copy(gloves[side]._w);
-        gloves[side].weapon[0].physics.api.quaternion.copy(g[side].pointingHand.quaternion);
+        inTargetQuanternion.copy(g[side].pointingHand.quaternion);
+        calculate({
+          inTargetPosition,
+          inTargetQuanternion,
+          inActualPosition: gloves[side].weapon[0].transform.position,
+          inActualQuanternion: gloves[side].weapon[0].transform.quaternion,
+          outVelocity,
+          outAngularVelocity,
+        });
+
+        gloves[side].weapon[0].physics.api.velocity.copy(outVelocity);
+        gloves[side].weapon[0].physics.api.angularVelocity.copy(outAngularVelocity);
+
+        // gloves[side].weapon[0].physics.api.position.copy(inTargetPosition);
+        // gloves[side].weapon[0].physics.api.quaternion.copy(inTargetQuanternion);
 
         jointNames.forEach((jointName) => {
           const { entity, _v } = gloves[side]?.joints[jointName] ?? {};
