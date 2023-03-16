@@ -66,6 +66,8 @@ const EntityPhysicsViewSphereBatchComponent = ({ entities }: { entities: EntityP
       args: [entities[index].sphere.radius],
       mass: entities[index].physics.mass,
       material: entities[index].physics.material,
+      linearDamping: entities[index].physics.linearDamping,
+      angularDamping: entities[index].physics.angularDamping,
       position: [
         entities[index].transform.position.x,
         entities[index].transform.position.y,

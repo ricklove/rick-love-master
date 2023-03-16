@@ -35,6 +35,8 @@ export type EntityPhysicsView = EntityWithTransform & {
     mass: number;
     kind?: `dynamic` | `static` | `kinematic`;
     material?: Material;
+    linearDamping?: number;
+    angularDamping?: number;
   };
   collisionFilterGroup?: {
     group: number;
@@ -60,15 +62,20 @@ export const EntityPhysicsView = defineComponent<EntityPhysicsView>()
   }))
   .with(
     `physics`,
-    ({ mass, kind, material }: { mass?: number; kind?: `dynamic` | `static` | `kinematic`; material?: Material }) => ({
-      kind,
+    (args: {
+      mass?: number;
+      kind?: `dynamic` | `static` | `kinematic`;
+      material?: Material;
+      linearDamping?: number;
+      angularDamping?: number;
+    }) => ({
+      ...args,
       enabled: true,
-      mass: mass ?? 0,
+      mass: args.mass ?? 0,
       collideSubject: new Subject(),
       // Will be created by the component
       api: undefined as unknown as WorkerApi,
       uuid: ``,
-      material,
     }),
   )
   // .with(`view`, ({ debugColor }: { debugColor?: number }) => ({

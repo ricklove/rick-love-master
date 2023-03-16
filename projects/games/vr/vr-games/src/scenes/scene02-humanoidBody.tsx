@@ -39,6 +39,14 @@ export const materialSettings = [
       restitution: 100.1,
     },
   },
+  {
+    a: humanoidMaterial,
+    b: handMaterial,
+    options: {
+      //explode
+      restitution: 100.1,
+    },
+  },
 ] satisfies SceneMaterialOptions[];
 
 const player = Entity.create(`player`)
@@ -86,7 +94,7 @@ const cols = 3;
 const humanoids = [...new Array(rows * cols)].map((_, i) =>
   Entity.create(`humanoid-${i}`)
     .addComponent(EntityHumanoidBody, {
-      scale: 1,
+      scale: 1.5,
       offset: new Vector3(i % rows, 0, Math.floor(i / rows)),
       material: humanoidMaterial,
     })
@@ -111,7 +119,8 @@ const humanoids = [...new Array(rows * cols)].map((_, i) =>
         })
         .addComponent(EntityPhysicsViewBox, {
           mass: 0.0001,
-          scale: [0.25, 0.4, 0.25],
+          // scale: [0.25, 0.4, 0.25],
+          scale: [0.35, 0.7, 0.35],
           startRotation: [0, 0, 0],
           debugColorRgba: 0x997744ff,
         })
