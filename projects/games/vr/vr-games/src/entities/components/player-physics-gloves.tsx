@@ -2,19 +2,21 @@ import { Material } from 'cannon-es';
 import { Vector3 } from 'three';
 import { defineComponent, EntityList, EntityWithChildren } from '../core';
 import { Entity } from '../entity';
+import { EntityPhysicsConstraintSpring } from './physics-constraint';
+import { EntityPhysicsView } from './physics-view';
 import { EntityPhysicsViewSphere } from './physics-view-sphere';
 import { EntityPlayer } from './player';
 
 export type EntityPlayerPhysicsGloves = EntityWithChildren &
   EntityPlayer & {
     playerPhysicsGloves: {
-      joints: {
-        [side in `left` | `right`]: {
-          [name in XRHandJoint | `hand-orb`]?: {
+      [side in `left` | `right`]: {
+        joints: {
+          [name in XRHandJoint]?: {
             entity: EntityPhysicsViewSphere;
-            _v: Vector3;
           };
         };
+        weapon: EntityPhysicsView[];
       };
     };
   };
@@ -22,52 +24,83 @@ export type EntityPlayerPhysicsGloves = EntityWithChildren &
 export const EntityPlayerPhysicsGloves = defineComponent<EntityPlayerPhysicsGloves>()
   .with(`children`, () => new EntityList())
   .with(`playerPhysicsGloves`, ({ material }: { material?: Material }, e) => {
-    const joints = { left: {}, right: {} } as {
-      [side in `left` | `right`]: {
-        [name in XRHandJoint | `hand-orb`]: {
-          entity: EntityPhysicsViewSphere;
-          _v: Vector3;
-        };
-      };
-    };
+    const gloves = Object.fromEntries(
+      [`left` as const, `right` as const].map((side) => {
+        const joints = Object.fromEntries(
+          jointNames.map((jointName) => [
+            jointName,
+            {
+              _v: new Vector3(),
+              entity: Entity.create(`playerPhysicsGloves:${side}:${jointName}`)
+                .addComponent(EntityPhysicsViewSphere, {
+                  enablePhysics: false,
+                  // jointName === `index-finger-tip` ||
+                  // jointName === `thumb-tip` ||
+                  // jointName === `index-finger-phalanx-proximal`,
+                  // kind: `static`,
+                  material,
+                  mass: 0,
+                  radius: 0.01,
+                  debugColorRgba: 0xff0000ff,
+                  startPosition: [1, 1, 1],
+                })
+                .build(),
+            },
+          ]),
+        );
 
-    [`left` as const, `right` as const].forEach((side) => {
-      jointNames.forEach((jointName) => {
-        joints[side][jointName] = {
-          _v: new Vector3(),
-          entity:
-            jointName === `hand-orb`
-              ? Entity.create(`playerPhysicsGloves:handOrb`)
-                  .addComponent(EntityPhysicsViewSphere, {
-                    enablePhysics: true,
-                    material,
-                    mass: 10,
-                    radius: 0.1,
-                    debugColorRgba: 0xcc000020,
-                    startPosition: [1, 1, 1],
-                    linearDamping: 0.99,
-                  })
-                  .build()
-              : Entity.create(`playerPhysicsGloves:${side}:${jointName}`)
-                  .addComponent(EntityPhysicsViewSphere, {
-                    enablePhysics: false,
-                    // jointName === `index-finger-tip` ||
-                    // jointName === `thumb-tip` ||
-                    // jointName === `index-finger-phalanx-proximal`,
-                    // kind: `static`,
-                    material,
-                    mass: 0,
-                    radius: 0.01,
-                    debugColorRgba: 0xff0000ff,
-                    startPosition: [1, 1, 1],
-                  })
-                  .build(),
-        };
-      });
-    });
+        const handOrb = Entity.create(`playerPhysicsGloves:${side}:handOrb`)
+          .addComponent(EntityPhysicsViewSphere, {
+            enablePhysics: true,
+            material,
+            mass: 0,
+            radius: 0.01,
+            debugColorRgba: 0xcc000020,
+            startPosition: [1, 1, 1],
+            linearDamping: 0.99,
+          })
+          .build();
 
-    e.children.add(...Object.values(joints.left).map((x) => x.entity));
-    e.children.add(...Object.values(joints.right).map((x) => x.entity));
+        const handOrbAttachment = Entity.create(`playerPhysicsGloves:${side}:handOrbAttachment`)
+          .addComponent(EntityPhysicsViewSphere, {
+            enablePhysics: true,
+            material,
+            mass: 10,
+            radius: 0.1,
+            debugColorRgba: 0xcc000020,
+            startPosition: [1, 1, 1],
+            linearDamping: 0.99,
+          })
+          .build();
+
+        const handOrbSpring = Entity.create(`playerPhysicsGloves:${side}:handOrbSpring`)
+          .addComponent(EntityPhysicsConstraintSpring, {
+            entityA: handOrb as EntityPhysicsView,
+            entityB: handOrbAttachment as EntityPhysicsView,
+            options: {
+              restLength: 0.1,
+              stiffness: 100,
+            },
+          })
+          .build();
+
+        const weapon = [handOrb, handOrbAttachment, handOrbSpring] as EntityPhysicsView[];
+
+        return [
+          side,
+          {
+            joints,
+            weapon,
+            _w: new Vector3(),
+          },
+        ];
+      }),
+    );
+
+    e.children.add(...Object.values(gloves.left.joints).map((x) => x.entity));
+    e.children.add(...Object.values(gloves.right.joints).map((x) => x.entity));
+    e.children.add(...Object.values(gloves.left.weapon));
+    e.children.add(...Object.values(gloves.right.weapon));
 
     e.frameTrigger.subscribe(() => {
       const g = e.player.gestures;
@@ -76,25 +109,19 @@ export const EntityPlayerPhysicsGloves = defineComponent<EntityPlayerPhysicsGlov
       }
 
       [`left` as const, `right` as const].forEach((side) => {
+        gloves[side]._w.copy(g[side].pointingHand._proximalAverage).add(e.transform.position);
+        gloves[side].weapon[0].physics.api.position.copy(gloves[side]._w);
+
         jointNames.forEach((jointName) => {
-          const { entity, _v } = joints[side][jointName];
-          if (jointName === `hand-orb`) {
-            const delta = _v
-              .copy(g[side].pointingHand._proximalAverage)
-              .add(e.transform.position)
-              .sub(entity.transform.position);
-            delta.multiplyScalar(10);
-            entity.physics.api.applyImpulse(delta.toArray(), entity.transform.position.toArray());
+          const { entity, _v } = gloves[side]?.joints[jointName] ?? {};
+          if (!entity) {
             return;
           }
-
           const joint = g[side]._joints[jointName];
           if (!joint) {
             return;
           }
 
-          // v.copy(joint.position);
-          // jEntity.transform.position
           _v.copy(joint.position).add(e.transform.position);
           EntityPhysicsViewSphere.move(entity, _v);
         });
@@ -102,12 +129,11 @@ export const EntityPlayerPhysicsGloves = defineComponent<EntityPlayerPhysicsGlov
     });
 
     return {
-      joints,
+      ...(gloves as unknown as EntityPlayerPhysicsGloves[`playerPhysicsGloves`]),
     };
   });
 
 const jointNames = [
-  `hand-orb`,
   `wrist`,
   `thumb-metacarpal`,
   `thumb-phalanx-proximal`,
@@ -133,4 +159,4 @@ const jointNames = [
   `pinky-finger-phalanx-intermediate`,
   `pinky-finger-phalanx-distal`,
   `pinky-finger-tip`,
-] as (XRHandJoint | `hand-orb`)[];
+] as XRHandJoint[];
