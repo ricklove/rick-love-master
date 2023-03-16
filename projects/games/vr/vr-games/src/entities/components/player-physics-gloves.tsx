@@ -2,8 +2,8 @@ import { Material } from 'cannon-es';
 import { Vector3 } from 'three';
 import { defineComponent, EntityList, EntityWithChildren } from '../core';
 import { Entity } from '../entity';
-import { EntityPhysicsConstraintSpring } from './physics-constraint';
 import { EntityCollisionFilterGroup, EntityPhysicsView, GROUP_SELECTABLE, GROUP_SELECTOR } from './physics-view';
+import { EntityPhysicsViewBox } from './physics-view-box';
 import { EntityPhysicsViewSphere } from './physics-view-sphere';
 import { EntityPlayer } from './player';
 import { EntitySelector } from './selectable';
@@ -50,27 +50,17 @@ export const EntityPlayerPhysicsGloves = defineComponent<EntityPlayerPhysicsGlov
           ]),
         );
 
-        const handOrb = Entity.create(`playerPhysicsGloves:${side}:handOrb`)
-          .addComponent(EntityPhysicsViewSphere, {
-            enablePhysics: true,
+        const club = Entity.create(`playerPhysicsGloves:${side}:club`)
+          .addComponent(EntityPhysicsViewBox, {
+            // enablePhysics: true,
             material,
             mass: 0,
-            radius: 0.01,
+            scale: [0.1, 0.1, 1],
+            // radius: 0.1,
             debugColorRgba: 0xcc000020,
             startPosition: [1, 1, 1],
-            linearDamping: 0.99,
-          })
-          .build();
-
-        const handOrbAttachment = Entity.create(`playerPhysicsGloves:${side}:handOrbAttachment`)
-          .addComponent(EntityPhysicsViewSphere, {
-            enablePhysics: true,
-            material,
-            mass: 20,
-            radius: 0.1,
-            debugColorRgba: 0xcc000020,
-            startPosition: [1, 1, 1],
-            linearDamping: 0.5,
+            startRotation: [0, 0, 0],
+            // linearDamping: 0.99,
           })
           .addComponent(EntityCollisionFilterGroup, {
             group: GROUP_SELECTOR,
@@ -82,19 +72,61 @@ export const EntityPlayerPhysicsGloves = defineComponent<EntityPlayerPhysicsGlov
           })
           .build();
 
-        const handOrbSpring = Entity.create(`playerPhysicsGloves:${side}:handOrbSpring`)
-          .addComponent(EntityPhysicsConstraintSpring, {
-            entityA: handOrb as EntityPhysicsView,
-            entityB: handOrbAttachment as EntityPhysicsView,
-            options: {
-              restLength: 0.5,
-              stiffness: 1000,
-              damping: 0.3,
-            },
-          })
-          .build();
+        // const handOrb = Entity.create(`playerPhysicsGloves:${side}:handOrb`)
+        //   .addComponent(EntityPhysicsViewSphere, {
+        //     enablePhysics: true,
+        //     material,
+        //     mass: 0,
+        //     radius: 0.1,
+        //     debugColorRgba: 0xcc000020,
+        //     startPosition: [1, 1, 1],
+        //     linearDamping: 0.99,
+        //   })
+        //   .addComponent(EntityCollisionFilterGroup, {
+        //     group: GROUP_SELECTOR,
+        //     mask: GROUP_SELECTABLE,
+        //   })
+        //   .addComponent(EntitySelector, {})
+        //   .extend((e) => {
+        //     EntitySelector.changeSelectionMode(e, `down`);
+        //   })
+        //   .build();
 
-        const weapon = [handOrb, handOrbAttachment, handOrbSpring] as EntityPhysicsView[];
+        // const handOrbAttachment = Entity.create(`playerPhysicsGloves:${side}:handOrbAttachment`)
+        //   .addComponent(EntityPhysicsViewSphere, {
+        //     enablePhysics: true,
+        //     material,
+        //     mass: 20,
+        //     radius: 0.1,
+        //     debugColorRgba: 0xcc000020,
+        //     startPosition: [1, 1, 1],
+        //     linearDamping: 0.5,
+        //   })
+        //   .addComponent(EntityCollisionFilterGroup, {
+        //     group: GROUP_SELECTOR,
+        //     mask: GROUP_SELECTABLE,
+        //   })
+        //   .addComponent(EntitySelector, {})
+        //   .extend((e) => {
+        //     EntitySelector.changeSelectionMode(e, `down`);
+        //   })
+        //   .build();
+
+        // const handOrbSpring = Entity.create(`playerPhysicsGloves:${side}:handOrbSpring`)
+        //   .addComponent(EntityPhysicsConstraintSpring, {
+        //     entityA: handOrb as EntityPhysicsView,
+        //     entityB: handOrbAttachment as EntityPhysicsView,
+        //     options: {
+        //       restLength: 0.5,
+        //       stiffness: 1000,
+        //       damping: 0.3,
+        //     },
+        //   })
+        //   .build();
+
+        const weapon = [
+          club, //handOrbAttachment, handOrbSpring
+        ] as EntityPhysicsView[];
 
         return [
           side,
@@ -119,8 +151,13 @@ export const EntityPlayerPhysicsGloves = defineComponent<EntityPlayerPhysicsGlov
       }
 
       [`left` as const, `right` as const].forEach((side) => {
-        gloves[side]._w.set(0, 0.25, 0).add(g[side].pointingHand._proximalAverage).add(e.transform.position);
+        gloves[side]._w
+          .copy(g[side].pointingHand.direction)
+          .multiplyScalar(0.5)
+          .add(g[side].pointingHand.position)
+          .add(e.transform.position);
         gloves[side].weapon[0].physics.api.position.copy(gloves[side]._w);
+        gloves[side].weapon[0].physics.api.quaternion.copy(g[side].pointingHand.quaternion);
 
         jointNames.forEach((jointName) => {
           const { entity, _v } = gloves[side]?.joints[jointName] ?? {};

@@ -147,6 +147,9 @@ const humanoids = [...new Array(rows * cols)].map((_, i) =>
           });
 
           // handle selection
+          let id = setTimeout(() => {
+            /**/
+          }, 0);
           selectable.selectable.stateSubject
             .pipe(filter((x) => x.mode === `down` && x.sequence === `begin`))
             .subscribe((s) => {
@@ -159,8 +162,8 @@ const humanoids = [...new Array(rows * cols)].map((_, i) =>
                   5 - 10 * Math.random(),
                 );
               });
-
-              setTimeout(() => {
+              clearTimeout(id);
+              id = setTimeout(() => {
                 e.humanoidBodyMoverGroovy.enabled = true;
               }, 10 * 1000);
             });
