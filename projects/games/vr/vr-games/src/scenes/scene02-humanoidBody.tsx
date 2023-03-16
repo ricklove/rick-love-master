@@ -7,7 +7,7 @@ import { EntityGroundView } from '../entities/components/ground-view';
 import { EntityHumanoidBody } from '../entities/components/humanoid-body/humanoid-body';
 import { EntityHumanoidBodyMoverGroovy } from '../entities/components/humanoid-body/mover-groovy';
 import { EntityMouseInput } from '../entities/components/mouse-input';
-import { EntityCollisionFilterGroup } from '../entities/components/physics-view';
+import { EntityCollisionFilterGroup, GROUP_SELECTABLE, GROUP_SELECTOR } from '../entities/components/physics-view';
 import { EntityPhysicsViewBox } from '../entities/components/physics-view-box';
 import { EntityPhysicsViewSphere } from '../entities/components/physics-view-sphere';
 import { EntityPlayer } from '../entities/components/player';
@@ -82,10 +82,6 @@ const humanoidMovement = Entity.create(`humanoid`)
   .addComponent(EntityHumanoidBodyMoverGroovy, { direction: new Vector3(-1, 0, 1) })
   .build();
 
-const GROUP_DEFAULT = 1 << 0;
-const GROUP_SELECTABLE = 1 << 1;
-const GROUP_SELECTOR = 1 << 2;
-
 const MAX_DISTANCE = 10;
 const rows = 2;
 const cols = 2;
@@ -113,16 +109,16 @@ const humanoids = [...new Array(rows * cols)].map((_, i) =>
       const selectableOffset = new Vector3(0, 0, 0);
       const a = new Vector3(0, 2, 0);
       const selectableHover = Entity.create(`humanoid-selectable-${i}`)
-        .addComponent(EntityCollisionFilterGroup, {
-          group: GROUP_SELECTABLE,
-          mask: GROUP_SELECTOR,
-        })
         .addComponent(EntityPhysicsViewBox, {
           mass: 0.0001,
           // scale: [0.25, 0.4, 0.25],
           scale: [0.35, 0.7, 0.35],
           startRotation: [0, 0, 0],
           debugColorRgba: 0x997744ff,
+        })
+        .addComponent(EntityCollisionFilterGroup, {
+          group: GROUP_SELECTABLE,
+          mask: GROUP_SELECTOR,
         })
         .addComponent(EntitySelectable, {})
         .extend((selectable) => {
@@ -293,13 +289,13 @@ export const scene02: SceneDefinition = {
     // humanoidMovement,
     ...humanoids,
     ground,
-    ball,
-    ball2,
+    // ball,
+    // ball2,
     // mouseInput,
     // mouseRaycastSelector,
     // ball3,
     // ball4,
   ],
-  gravity: [0, 1 * -9.8, 0] as Triplet,
+  gravity: [0, 0.5 * -9.8, 0] as Triplet,
   // gravity: [0, 0, 0] as Triplet,
 };

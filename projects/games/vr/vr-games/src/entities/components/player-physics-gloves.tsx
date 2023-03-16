@@ -3,9 +3,10 @@ import { Vector3 } from 'three';
 import { defineComponent, EntityList, EntityWithChildren } from '../core';
 import { Entity } from '../entity';
 import { EntityPhysicsConstraintSpring } from './physics-constraint';
-import { EntityPhysicsView } from './physics-view';
+import { EntityCollisionFilterGroup, EntityPhysicsView, GROUP_SELECTABLE, GROUP_SELECTOR } from './physics-view';
 import { EntityPhysicsViewSphere } from './physics-view-sphere';
 import { EntityPlayer } from './player';
+import { EntitySelector } from './selectable';
 
 export type EntityPlayerPhysicsGloves = EntityWithChildren &
   EntityPlayer & {
@@ -65,11 +66,19 @@ export const EntityPlayerPhysicsGloves = defineComponent<EntityPlayerPhysicsGlov
           .addComponent(EntityPhysicsViewSphere, {
             enablePhysics: true,
             material,
-            mass: 50,
+            mass: 20,
             radius: 0.1,
             debugColorRgba: 0xcc000020,
             startPosition: [1, 1, 1],
-            linearDamping: 0.7,
+            linearDamping: 0.5,
+          })
+          .addComponent(EntityCollisionFilterGroup, {
+            group: GROUP_SELECTOR,
+            mask: GROUP_SELECTABLE,
+          })
+          .addComponent(EntitySelector, {})
+          .extend((e) => {
+            EntitySelector.changeSelectionMode(e, `down`);
           })
           .build();
 
@@ -78,8 +87,8 @@ export const EntityPlayerPhysicsGloves = defineComponent<EntityPlayerPhysicsGlov
             entityA: handOrb as EntityPhysicsView,
             entityB: handOrbAttachment as EntityPhysicsView,
             options: {
-              restLength: 0.25,
-              stiffness: 5000,
+              restLength: 0.5,
+              stiffness: 1000,
               damping: 0.3,
             },
           })
