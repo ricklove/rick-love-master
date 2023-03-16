@@ -87,8 +87,8 @@ const GROUP_SELECTABLE = 1 << 1;
 const GROUP_SELECTOR = 1 << 2;
 
 const MAX_DISTANCE = 10;
-const rows = 3;
-const cols = 3;
+const rows = 2;
+const cols = 2;
 // const rows = 1;
 // const cols = 1;
 const humanoids = [...new Array(rows * cols)].map((_, i) =>

@@ -65,11 +65,11 @@ export const EntityPlayerPhysicsGloves = defineComponent<EntityPlayerPhysicsGlov
           .addComponent(EntityPhysicsViewSphere, {
             enablePhysics: true,
             material,
-            mass: 10,
+            mass: 50,
             radius: 0.1,
             debugColorRgba: 0xcc000020,
             startPosition: [1, 1, 1],
-            linearDamping: 0.99,
+            linearDamping: 0.7,
           })
           .build();
 
@@ -78,8 +78,9 @@ export const EntityPlayerPhysicsGloves = defineComponent<EntityPlayerPhysicsGlov
             entityA: handOrb as EntityPhysicsView,
             entityB: handOrbAttachment as EntityPhysicsView,
             options: {
-              restLength: 0.1,
-              stiffness: 100,
+              restLength: 0.25,
+              stiffness: 5000,
+              damping: 0.3,
             },
           })
           .build();
@@ -109,7 +110,7 @@ export const EntityPlayerPhysicsGloves = defineComponent<EntityPlayerPhysicsGlov
       }
 
       [`left` as const, `right` as const].forEach((side) => {
-        gloves[side]._w.copy(g[side].pointingHand._proximalAverage).add(e.transform.position);
+        gloves[side]._w.set(0, 0.25, 0).add(g[side].pointingHand._proximalAverage).add(e.transform.position);
         gloves[side].weapon[0].physics.api.position.copy(gloves[side]._w);
 
         jointNames.forEach((jointName) => {
