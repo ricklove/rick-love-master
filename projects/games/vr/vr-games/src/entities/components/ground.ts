@@ -1,3 +1,4 @@
+import { Material } from 'cannon-es';
 import { defineComponent, EntityWithTransform } from '../core';
 
 export type EntityAdjustToGround = EntityWithTransform & {
@@ -45,6 +46,7 @@ export type EntityGround = EntityWithTransform & {
     minHeight: number;
     maxHeight: number;
     shape: GroundShape;
+    material?: Material;
   };
 };
 
@@ -57,12 +59,14 @@ export const EntityGround = defineComponent<EntityGround>()
       minHeight,
       maxHeight,
       shape = `hills`,
+      material,
     }: {
       segmentCount: number;
       segmentSize: number;
       minHeight: number;
       maxHeight: number;
       shape?: GroundShape;
+      material?: Material;
     }) => {
       // positions are row (x), then column (z)
 
@@ -117,6 +121,7 @@ export const EntityGround = defineComponent<EntityGround>()
         minHeight,
         maxHeight,
         shape,
+        material,
       };
     },
   )

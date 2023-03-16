@@ -41,6 +41,7 @@ const EntityPhysicsViewBoxBatchComponent = ({ entities }: { entities: EntityPhys
       collisionFilterMask: entities[index].collisionFilterGroup?.mask,
       args: entities[index].box.scale,
       mass: entities[index].physics.mass,
+      material: entities[index].physics.material,
       position: [
         entities[index].transform.position.x,
         entities[index].transform.position.y,

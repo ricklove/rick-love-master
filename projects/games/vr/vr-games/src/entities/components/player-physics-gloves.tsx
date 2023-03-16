@@ -1,3 +1,4 @@
+import { Material } from 'cannon-es';
 import { Vector3 } from 'three';
 import { defineComponent, EntityList, EntityWithChildren } from '../core';
 import { Entity } from '../entity';
@@ -19,7 +20,7 @@ export type EntityPlayerPhysicsGloves = EntityWithChildren &
 
 export const EntityPlayerPhysicsGloves = defineComponent<EntityPlayerPhysicsGloves>()
   .with(`children`, () => new EntityList())
-  .with(`playerPhysicsGloves`, ({}: {}, e) => {
+  .with(`playerPhysicsGloves`, ({ material }: { material: Material }, e) => {
     const joints = { left: {}, right: {} } as {
       [side in `left` | `right`]: {
         [name in XRHandJoint]: {
@@ -27,10 +28,24 @@ export const EntityPlayerPhysicsGloves = defineComponent<EntityPlayerPhysicsGlov
         };
       };
     };
-    jointNames.forEach((jointName) => {
-      addJoint(e, `left`, jointName as XRHandJoint, joints);
-      addJoint(e, `right`, jointName as XRHandJoint, joints);
+
+    [`left` as const, `right` as const].forEach((side) => {
+      jointNames.forEach((jointName) => {
+        joints[side][jointName] = {
+          entity: Entity.create(`playerPhysicsGloves:${side}:${jointName}`)
+            .addComponent(EntityPhysicsViewSphere, {
+              // kind: `static`,
+              material,
+              mass: 0,
+              radius: 0.01,
+              debugColorRgba: 0xff0000ff,
+              startPosition: [1, 1, 1],
+            })
+            .build(),
+        };
+      });
     });
+
     e.children.add(...Object.values(joints.left).map((x) => x.entity));
     e.children.add(...Object.values(joints.right).map((x) => x.entity));
 
@@ -90,23 +105,3 @@ const jointNames = [
   `pinky-finger-phalanx-distal`,
   `pinky-finger-tip`,
 ] as XRHandJoint[];
-
-const addJoint = (
-  e: EntityPlayerPhysicsGloves,
-  side: `left` | `right`,
-  jointName: XRHandJoint,
-  joints: EntityPlayerPhysicsGloves[`playerPhysicsGloves`][`joints`],
-) => {
-  const newEntity = Entity.create(`playerPhysicsGloves:${side}:${jointName}`)
-    .addComponent(EntityPhysicsViewSphere, {
-      // kind: `static`,
-      mass: 0,
-      radius: 0.01,
-      debugColorRgba: 0xff0000ff,
-      startPosition: [1, 1, 1],
-    })
-    .build();
-  joints[side][jointName] = {
-    entity: newEntity,
-  };
-};

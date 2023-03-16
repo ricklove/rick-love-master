@@ -104,6 +104,7 @@ const EntityHeightFieldComponent = ({ entity }: { entity: EntityGroundView }) =>
       ],
       position,
       rotation,
+      material: entity.ground.material,
     }),
     useRef<Mesh>(null),
   );

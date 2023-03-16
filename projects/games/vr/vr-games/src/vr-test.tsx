@@ -13,7 +13,7 @@ import { WorldContainer } from './entities/world';
 import { RandomGround } from './environment/ground';
 import { ExampleHtmlObject, ExampleHtmlObject_Dynamic } from './experiments/html/html-to-string-component';
 import { GestureOptions, GesturesProvider, useGestures } from './gestures/gestures';
-import { scene02a } from './scenes/scene02a-player-physics-hands';
+import { scene02 } from './scenes/scene02-humanoidBody';
 import { DebugConsole, logger } from './utils/logger';
 
 export const VrTestGame = () => {
@@ -108,7 +108,7 @@ const Scene_05_WithEntities = ({ debugVisible = true }: { debugVisible?: boolean
           <Sphere position={[0, 1, -10]} scale={0.05} />*/}
           <Sphere position={[0, 1, -90]} />
 
-          <WorldContainer {...scene02a} />
+          <WorldContainer {...scene02} />
         </ScenePerspective>
 
         <Hud position={[0, 1, 4]}>

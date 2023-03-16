@@ -1,5 +1,6 @@
 import { Triplet, WorkerApi } from '@react-three/cannon';
 import { CollideBeginEvent, CollideEndEvent, CollideEvent } from '@react-three/cannon';
+import { Material } from 'cannon-es';
 import { Subject } from 'rxjs';
 import { Quaternion, Vector3 } from 'three';
 import { logger } from '../../utils/logger';
@@ -33,6 +34,7 @@ export type EntityPhysicsView = EntityWithTransform & {
     }>;
     mass: number;
     kind?: `dynamic` | `static` | `kinematic`;
+    material?: Material;
   };
   collisionFilterGroup?: {
     group: number;
@@ -56,15 +58,19 @@ export const EntityPhysicsView = defineComponent<EntityPhysicsView>()
     quaternion: new Quaternion(),
     // scale: new Vector3(1, 1, 1),
   }))
-  .with(`physics`, ({ mass, kind }: { mass?: number; kind?: `dynamic` | `static` | `kinematic` }) => ({
-    kind,
-    enabled: true,
-    mass: mass ?? 0,
-    collideSubject: new Subject(),
-    // Will be created by the component
-    api: undefined as unknown as WorkerApi,
-    uuid: ``,
-  }))
+  .with(
+    `physics`,
+    ({ mass, kind, material }: { mass?: number; kind?: `dynamic` | `static` | `kinematic`; material?: Material }) => ({
+      kind,
+      enabled: true,
+      mass: mass ?? 0,
+      collideSubject: new Subject(),
+      // Will be created by the component
+      api: undefined as unknown as WorkerApi,
+      uuid: ``,
+      material,
+    }),
+  )
   // .with(`view`, ({ debugColor }: { debugColor?: number }) => ({
   //   debugColor,
   //   Component: () => <></>,

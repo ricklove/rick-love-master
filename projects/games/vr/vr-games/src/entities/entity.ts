@@ -1,4 +1,5 @@
 import type { Triplet } from '@react-three/cannon';
+import { ContactMaterialOptions, Material } from 'cannon-es';
 import type {} from 'three';
 import { EntityForce } from './components/force';
 import { EntityGravity } from './components/gravity';
@@ -51,4 +52,11 @@ export type SceneDefinition = {
   gravity?: Triplet;
   iterations?: number;
   debugPhysics?: boolean;
+  materials?: SceneMaterialOptions[];
+};
+
+export type SceneMaterialOptions = {
+  a: Material;
+  b: Material;
+  options: ContactMaterialOptions;
 };

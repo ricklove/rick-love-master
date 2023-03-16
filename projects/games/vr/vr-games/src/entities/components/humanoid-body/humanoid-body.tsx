@@ -1,4 +1,5 @@
 import { Triplet } from '@react-three/cannon';
+import { Material } from 'cannon-es';
 import { Euler, Quaternion, Vector3 } from 'three';
 import { logger } from '../../../utils/logger';
 import { defineComponent, EntityBase, EntityList, EntityWithChildren } from '../../core';
@@ -22,7 +23,10 @@ export type EntityHumanoidBody = EntityWithChildren & {
     offset: Vector3;
   };
 };
-type Args = { scale: number; offset: Vector3 } & Partial<EntityCollisionFilterGroup[`collisionFilterGroup`]>;
+
+type Args = { scale: number; offset: Vector3; material?: Material } & Partial<
+  EntityCollisionFilterGroup[`collisionFilterGroup`]
+>;
 export const EntityHumanoidBody = defineComponent<EntityHumanoidBody>()
   .with(`children`, () => new EntityList())
   .with(`humanoidBody`, (args: Args, e) => {
@@ -210,6 +214,7 @@ const createBodyPartEntity = ({
       .addComponent(EntityCollisionFilterGroup, { ...args })
       .addComponent(EntityPhysicsViewBox, {
         mass: d.mass,
+        material: args.material,
         debugColorRgba: 0x00ff0080,
         startPosition: [pos.x, pos.y, pos.z] as Triplet,
         startRotation: [d.rotation.x, d.rotation.y, mirror * d.rotation.z] as Triplet,

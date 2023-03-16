@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useState } from 'react';
-import { Debug, Physics } from '@react-three/cannon';
+import { Debug, Physics, useContactMaterial } from '@react-three/cannon';
 import { useFrame } from '@react-three/fiber';
 import { of, Subject } from 'rxjs';
 import { logger } from '../utils/logger';
@@ -101,7 +101,7 @@ const useWorldFilter = <T extends Entity>(filter: (item: Entity) => boolean, gro
   return activeEntities;
 };
 
-export const WorldContainer = ({ rootEntities, gravity, iterations, debugPhysics }: SceneDefinition) => {
+export const WorldContainer = ({ rootEntities, gravity, iterations, debugPhysics, materials }: SceneDefinition) => {
   useMemo(() => {
     world.children.add(...rootEntities);
   }, []);
@@ -114,6 +114,10 @@ export const WorldContainer = ({ rootEntities, gravity, iterations, debugPhysics
   // const activeSelectables = useWorldFilter<EntitySelectable>((x) => !!x.selectable).items;
   // const activeSelectors = useWorldFilter<EntityRaycastSelector>((x) => !!x.raycastSelector).items;
   // activeSelectors.forEach((e) => EntitySelector.changeTargets(e as EntitySelector, activeSelectables));
+
+  materials?.forEach((m) => {
+    useContactMaterial(m.a, m.b, m.options);
+  });
 
   useFrame(() => {
     // logger.log(`WorldContainer useFrame`, {

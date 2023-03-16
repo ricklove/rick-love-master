@@ -65,6 +65,7 @@ const EntityPhysicsViewSphereBatchComponent = ({ entities }: { entities: EntityP
       collisionFilterMask: entities[index].collisionFilterGroup?.mask,
       args: [entities[index].sphere.radius],
       mass: entities[index].physics.mass,
+      material: entities[index].physics.material,
       position: [
         entities[index].transform.position.x,
         entities[index].transform.position.y,

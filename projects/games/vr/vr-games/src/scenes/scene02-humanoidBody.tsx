@@ -1,4 +1,5 @@
 import { Triplet } from '@react-three/cannon';
+import { Material } from 'cannon-es';
 import { filter, map } from 'rxjs';
 import { Vector3 } from 'three';
 import { EntityAdjustToGround, EntityGround } from '../entities/components/ground';
@@ -14,11 +15,37 @@ import { EntityPlayerPhysicsGloves } from '../entities/components/player-physics
 import { EntitySelectable, EntitySelector } from '../entities/components/selectable';
 import { EntityRaycastSelector } from '../entities/components/selectable-raycast-selector';
 import { EntityRaycastSelectorCollider } from '../entities/components/selectable-raycast-selector-collider';
-import { Entity, SceneDefinition } from '../entities/entity';
+import { Entity, SceneDefinition, SceneMaterialOptions } from '../entities/entity';
+
+export const groundMaterial = new Material(`groundMaterial`);
+export const ballMaterial = new Material(`ballMaterial`);
+export const handMaterial = new Material(`handMaterial`);
+export const humanoidMaterial = new Material(`humanoidMaterial`);
+
+export const materialSettings = [
+  {
+    a: ballMaterial,
+    b: groundMaterial,
+    options: {
+      friction: 0.3,
+      restitution: 0.5,
+    },
+  },
+  {
+    a: ballMaterial,
+    b: handMaterial,
+    options: {
+      //explode
+      restitution: 100.1,
+    },
+  },
+] satisfies SceneMaterialOptions[];
 
 const player = Entity.create(`player`)
   .addComponent(EntityPlayer, {})
-  .addComponent(EntityPlayerPhysicsGloves, {})
+  .addComponent(EntityPlayerPhysicsGloves, {
+    material: handMaterial,
+  })
   // .addComponent(EntityHumanoidBody, { scale: 10, offset: new Vector3(0, 5, 0) })
   .addComponent(EntityAdjustToGround, {
     minGroundHeight: 0,
@@ -35,15 +62,15 @@ const player = Entity.create(`player`)
   .build();
 
 const humanoid = Entity.create(`humanoid`)
-  .addComponent(EntityHumanoidBody, { scale: 1, offset: new Vector3(0, 0, 0) })
+  .addComponent(EntityHumanoidBody, { scale: 1, offset: new Vector3(0, 0, 0), material: humanoidMaterial })
   .build();
 
 const humanoidOffset = Entity.create(`humanoid`)
-  .addComponent(EntityHumanoidBody, { scale: 1, offset: new Vector3(1, 0, 0) })
+  .addComponent(EntityHumanoidBody, { scale: 1, offset: new Vector3(1, 0, 0), material: humanoidMaterial })
   .build();
 
 const humanoidMovement = Entity.create(`humanoid`)
-  .addComponent(EntityHumanoidBody, { scale: 1, offset: new Vector3(1, 0, 0) })
+  .addComponent(EntityHumanoidBody, { scale: 1, offset: new Vector3(1, 0, 0), material: humanoidMaterial })
   .addComponent(EntityHumanoidBodyMoverGroovy, { direction: new Vector3(-1, 0, 1) })
   .build();
 
@@ -61,6 +88,7 @@ const humanoids = [...new Array(rows * cols)].map((_, i) =>
     .addComponent(EntityHumanoidBody, {
       scale: 1,
       offset: new Vector3(i % rows, 0, Math.floor(i / rows)),
+      material: humanoidMaterial,
     })
     .addComponent(EntityHumanoidBodyMoverGroovy, {
       direction: new Vector3(-1, 0, 1),
@@ -180,8 +208,9 @@ const humanoids = [...new Array(rows * cols)].map((_, i) =>
 
 const ball = Entity.create(`ball`)
   .addComponent(EntityPhysicsViewSphere, {
+    material: ballMaterial,
     mass: 1000,
-    radius: 1,
+    radius: 2,
     debugColorRgba: ((0xffffff * Math.random()) << 8) + 0xff,
     startPosition: [40, 5, -40],
   })
@@ -189,8 +218,9 @@ const ball = Entity.create(`ball`)
 
 const ball2 = Entity.create(`ball`)
   .addComponent(EntityPhysicsViewSphere, {
+    material: ballMaterial,
     mass: 1000,
-    radius: 1,
+    radius: 2,
     debugColorRgba: ((0xffffff * Math.random()) << 8) + 0xff,
     startPosition: [-60, 5, -60],
   })
@@ -233,6 +263,7 @@ const mouseRaycastSelector = Entity.create(`mouseRaycastSelector`)
 
 const ground = Entity.create(`ground`)
   .addComponent(EntityGround, {
+    material: groundMaterial,
     segmentCount: 16,
     segmentSize: 16,
     // Physics needs ground to have some height
