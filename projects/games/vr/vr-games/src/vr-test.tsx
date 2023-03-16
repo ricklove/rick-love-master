@@ -21,8 +21,8 @@ export const VrTestGame = () => {
     <>
       <div style={{ position: `fixed`, bottom: 0, top: 0, left: 0, right: 0 }}>
         {/* <ARPage /> */}
-        {/* <VRPage /> */}
-        <NonVrPage />
+        <VRPage />
+        {/* <NonVrPage /> */}
       </div>
     </>
   );

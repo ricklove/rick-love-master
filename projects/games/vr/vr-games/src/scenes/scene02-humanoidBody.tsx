@@ -1,7 +1,7 @@
 import { Triplet } from '@react-three/cannon';
 import { filter, map } from 'rxjs';
 import { Vector3 } from 'three';
-import { EntityGround } from '../entities/components/ground';
+import { EntityAdjustToGround, EntityGround } from '../entities/components/ground';
 import { EntityGroundView } from '../entities/components/ground-view';
 import { EntityHumanoidBody } from '../entities/components/humanoid-body/humanoid-body';
 import { EntityHumanoidBodyMoverGroovy } from '../entities/components/humanoid-body/mover-groovy';
@@ -9,10 +9,28 @@ import { EntityMouseInput } from '../entities/components/mouse-input';
 import { EntityCollisionFilterGroup } from '../entities/components/physics-view';
 import { EntityPhysicsViewBox } from '../entities/components/physics-view-box';
 import { EntityPhysicsViewSphere } from '../entities/components/physics-view-sphere';
+import { EntityPlayer } from '../entities/components/player';
 import { EntitySelectable, EntitySelector } from '../entities/components/selectable';
 import { EntityRaycastSelector } from '../entities/components/selectable-raycast-selector';
 import { EntityRaycastSelectorCollider } from '../entities/components/selectable-raycast-selector-collider';
 import { Entity, SceneDefinition } from '../entities/entity';
+
+const player = Entity.create(`player`)
+  .addComponent(EntityPlayer, {})
+  // .addComponent(EntityHumanoidBody, { scale: 10, offset: new Vector3(0, 5, 0) })
+  .addComponent(EntityAdjustToGround, {
+    minGroundHeight: 0,
+    maxGroundHeight: 0,
+  })
+  .extend((p) => {
+    p.frameTrigger.subscribe(() => {
+      if (!p.player.gestures) {
+        return;
+      }
+      p.transform.position.add(p.player.gestures.body.moving._velocity.clone().multiplyScalar((0.5 * 1) / 60));
+    });
+  })
+  .build();
 
 const humanoid = Entity.create(`humanoid`)
   .addComponent(EntityHumanoidBody, { scale: 1, offset: new Vector3(0, 0, 0) })
@@ -32,8 +50,8 @@ const GROUP_SELECTABLE = 1 << 1;
 const GROUP_SELECTOR = 1 << 2;
 
 const MAX_DISTANCE = 10;
-const rows = 4;
-const cols = 4;
+const rows = 3;
+const cols = 3;
 // const rows = 1;
 // const cols = 1;
 const humanoids = [...new Array(rows * cols)].map((_, i) =>
@@ -227,6 +245,7 @@ export const scene02: SceneDefinition = {
   debugPhysics: true,
   iterations: 15,
   rootEntities: [
+    player,
     // humanoid,
     // humanoidOffset,
     // humanoidMovement,
@@ -234,8 +253,8 @@ export const scene02: SceneDefinition = {
     ground,
     ball,
     ball2,
-    mouseInput,
-    mouseRaycastSelector,
+    // mouseInput,
+    // mouseRaycastSelector,
     // ball3,
     // ball4,
   ],

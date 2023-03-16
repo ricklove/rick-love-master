@@ -74,10 +74,10 @@ export const moving = defineBodyGesture({
     // });
 
     const instantMovement = g._instantMovement.set(0, 0, -1).applyEuler(head.rotation).multiplyScalar(instantSpeed);
-    g._velocityRunningAverage._runningAverageBase = Math.min(1 / 2, 0.05 / g._velocityRaw.length());
+    // g._velocityRunningAverage._runningAverageBase = Math.min(1 / 2, 0.05 / g._velocityRaw.length());
     g._velocityRaw.copy(runningAverage(instantMovement, g._velocityRunningAverage));
 
-    const CUTOFF_SPEED = 5;
+    const CUTOFF_SPEED = 3;
     const MAX_SPEED = 20;
 
     if (g._velocityRaw.lengthSq() > MAX_SPEED * MAX_SPEED) {

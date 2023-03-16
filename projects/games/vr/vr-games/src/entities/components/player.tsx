@@ -2,6 +2,7 @@ import React from 'react';
 import { Subject } from 'rxjs';
 import { Quaternion, Vector3 } from 'three';
 import { useCamera, usePlayer } from '../../components/camera';
+import { PlayerAvatarInSceneSpace } from '../../components/player-avatar';
 import { Gestures, useGestures } from '../../gestures/gestures';
 import { useIsomorphicLayoutEffect } from '../../utils/layoutEffect';
 import { defineComponent, EntityBase, EntityWithTransform } from '../core';
@@ -52,5 +53,25 @@ export const EntityPlayerComponent = ({ entity }: { entity: EntityPlayer }) => {
     entity.ready.next(true);
   }, []);
 
-  return <></>;
+  return (
+    <>
+      <PlayerAvatarInSceneSpace />
+    </>
+  );
 };
+
+// const Mover_Running = () => {
+//   // const camera = useCamera();
+//   const player = usePlayer();
+//   const gestures = useGestures();
+//   const velocity = useRef(new Vector3());
+
+//   useFrame(() => {
+//     const DISABLE = false;
+//     if (DISABLE) {
+//       return;
+//     }
+//     player.position.add(gestures.body.moving._velocity.clone().multiplyScalar((10 * 1) / 60));
+//   });
+//   return <></>;
+// };
