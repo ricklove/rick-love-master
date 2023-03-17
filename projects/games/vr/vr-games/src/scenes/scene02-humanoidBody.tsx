@@ -2,6 +2,9 @@ import { Triplet } from '@react-three/cannon';
 import { Material } from 'cannon-es';
 import { filter, map } from 'rxjs';
 import { Vector3 } from 'three';
+import { randomItem } from '@ricklove/utils-core';
+import { ambientSoundFiles, popSoundFiles } from '../assets/sounds';
+import { EntityAudioListener, EntityAudioPlayer } from '../entities/components/audio';
 import { EntityAdjustToGround, EntityGround } from '../entities/components/ground';
 import { EntityGroundView } from '../entities/components/ground-view';
 import { EntityHumanoidBody } from '../entities/components/humanoid-body/humanoid-body';
@@ -69,6 +72,41 @@ const player = Entity.create(`player`)
   })
   .build();
 
+const ambientMusic = ambientSoundFiles.map((x, i) => ({ key: `ambient-${i}`, url: x }));
+const popSounds = popSoundFiles.map((x, i) => ({ key: `pop-${i}`, url: x }));
+
+const audioListener = Entity.create(`audioListener`)
+  .addComponent(EntityAudioListener, {
+    sounds: Object.fromEntries([...ambientMusic, ...popSounds].map((x) => [x.key, { ...x }])),
+  })
+  .build();
+const audioMusic1 = Entity.create(`audioMusic1`)
+  .addComponent(EntityAudioPlayer, { listener: audioListener })
+  .extend((e) => {
+    const playRandomMusic = () => {
+      EntityAudioPlayer.playSound(e, randomItem(ambientMusic).key, {
+        soundPositionTarget: player,
+        onDone: () => playRandomMusic(),
+      });
+    };
+    playRandomMusic();
+  })
+  .build();
+const audioMusic2 = Entity.create(`audioMusic2`)
+  .addComponent(EntityAudioPlayer, { listener: audioListener })
+  .extend((e) => {
+    setTimeout(() => {
+      const playRandomMusic = () => {
+        EntityAudioPlayer.playSound(e, randomItem(ambientMusic).key, {
+          soundPositionTarget: player,
+          onDone: () => playRandomMusic(),
+        });
+      };
+      playRandomMusic();
+    }, 10000);
+  })
+  .build();
+
 const humanoid = Entity.create(`humanoid`)
   .addComponent(EntityHumanoidBody, { scale: 1, offset: new Vector3(0, 0, 0), material: humanoidMaterial })
   .build();
@@ -101,10 +139,23 @@ const humanoids = [...new Array(rows * cols)].map((_, i) =>
     })
 
     .extend((e) => {
+      const sound = Entity.create(`humanoid-sound-${i}`)
+        .addComponent(EntityAudioPlayer, { listener: audioListener })
+        // .extend((e) => {
+        //   setTimeout(() => {
+        //     const playRandomMusic = () => {
+        //       EntityAudioPlayer.playSound(e, randomItem(ambientMusic).key, () => playRandomMusic(), player);
+        //     };
+        //     playRandomMusic();
+        //   }, 10000);
+        // })
+        .build();
+      e.children.add(sound);
+
       const posFuture = new Vector3();
       const newDir = new Vector3();
 
-      const mainPart = e.humanoidBody.parts.find((x) => x.part === `upper-torso`);
+      const mainPart = e.humanoidBody.parts.find((x) => x.part === `upper-torso`)!;
 
       const selectableOffset = new Vector3(0, 0, 0);
       const a = new Vector3(0, 2, 0);
@@ -156,6 +207,9 @@ const humanoids = [...new Array(rows * cols)].map((_, i) =>
               // add force
               e.humanoidBodyMoverGroovy.enabled = false;
               e.humanoidBody.parts.forEach((p) => {
+                EntityAudioPlayer.playSound(sound, randomItem(popSounds).key, {
+                  soundPositionTarget: mainPart.entity,
+                });
                 p.entity.physics.api.velocity.set(
                   5 - 10 * Math.random(),
                   10 * (0.5 + 0.5 * Math.random()),
@@ -286,6 +340,9 @@ export const scene02: SceneDefinition = {
   debugPhysics: true,
   iterations: 15,
   rootEntities: [
+    audioListener,
+    audioMusic1,
+    audioMusic2,
     player,
     // humanoid,
     // humanoidOffset,

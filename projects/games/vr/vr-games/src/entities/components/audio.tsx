@@ -5,7 +5,7 @@ import { AudioListener, AudioLoader } from 'three';
 import { useIsomorphicLayoutEffect } from '../../utils/layoutEffect';
 import { loadOnce } from '../../utils/loadOnce';
 import { logger } from '../../utils/logger';
-import { defineComponent, EntityBase } from '../core';
+import { defineComponent, EntityBase, EntityWithTransform } from '../core';
 
 export type EntityAudioListener = EntityBase & {
   audioListener: {
@@ -84,6 +84,7 @@ export type EntityAudioPlayer = EntityBase & {
   audioPlayer: {
     listener: EntityAudioListener;
     playTrigger: BehaviorSubject<{ soundKey: string; onDone?: () => void }>;
+    soundPositionTarget?: EntityWithTransform;
   };
   view: {
     debugColorRgba?: number;
@@ -106,9 +107,14 @@ export const EntityAudioPlayer = defineComponent<EntityAudioPlayer>()
     ),
   }))
   .attach({
-    playSound: (entity: EntityAudioPlayer, soundKey: string, onDone?: () => void) => {
-      logger.log(`playSound`, { soundKey, onDone });
-      entity.audioPlayer.playTrigger.next({ soundKey, onDone });
+    playSound: (
+      entity: EntityAudioPlayer,
+      soundKey: string,
+      options?: { soundPositionTarget?: EntityWithTransform; onDone?: () => void },
+    ) => {
+      logger.log(`playSound`, { soundKey, onDone: options?.onDone });
+      entity.audioPlayer.soundPositionTarget = options?.soundPositionTarget;
+      entity.audioPlayer.playTrigger.next({ soundKey, onDone: options?.onDone });
     },
   });
 
@@ -130,20 +136,29 @@ export const EntityAudioPlayerComponent = ({ entity }: { entity: EntityAudioPlay
           if (!sound.current) {
             return;
           }
+          const s = sound.current;
 
-          sound.current.setBuffer(b);
-          sound.current.setRefDistance(1);
-          sound.current.setLoop(false);
-          sound.current.play();
-          if (onDone) {
-            const isDoneCheckId = setInterval(() => {
-              if (sound.current?.isPlaying) {
-                return;
-              }
-              clearInterval(isDoneCheckId);
-              onDone();
-            }, 100);
+          const target = entity.audioPlayer.soundPositionTarget;
+          const subs = [] as { unsubscribe: () => void }[];
+          if (target) {
+            subs.push(
+              target.frameTrigger.subscribe(() => {
+                s.position.copy(target.transform.position);
+              }),
+            );
           }
+          s.setBuffer(b);
+          s.setRefDistance(1);
+          s.setLoop(false);
+          s.play();
+          const isDoneCheckId = setInterval(() => {
+            if (s.isPlaying) {
+              return;
+            }
+            clearInterval(isDoneCheckId);
+            subs.forEach((x) => x.unsubscribe());
+            onDone?.();
+          }, 100);
 
           setTimeout(() => {
             subBuffer.unsubscribe();

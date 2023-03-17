@@ -18,7 +18,7 @@ const audioMusic1 = Entity.create(`audioListener`)
   .addComponent(EntityAudioPlayer, { listener: audioListener })
   .extend((e) => {
     const playRandomMusic = () => {
-      EntityAudioPlayer.playSound(e, randomItem(ambientMusic).key, () => playRandomMusic());
+      EntityAudioPlayer.playSound(e, randomItem(ambientMusic).key, { onDone: () => playRandomMusic() });
     };
     playRandomMusic();
   })
@@ -28,7 +28,7 @@ const audioMusic2 = Entity.create(`audioListener`)
   .extend((e) => {
     setTimeout(() => {
       const playRandomMusic = () => {
-        EntityAudioPlayer.playSound(e, randomItem(ambientMusic).key, () => playRandomMusic());
+        EntityAudioPlayer.playSound(e, randomItem(ambientMusic).key, { onDone: () => playRandomMusic() });
       };
       playRandomMusic();
     }, 10000);
