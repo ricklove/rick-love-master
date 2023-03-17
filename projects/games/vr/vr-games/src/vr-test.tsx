@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/naming-convention */
 import React, { useRef, useState } from 'react';
-import { Box, Environment, Sphere, Text, TrackballControls } from '@react-three/drei';
+import { Box, Sphere, Stars, Text, TrackballControls } from '@react-three/drei';
 import { Canvas } from '@react-three/fiber';
 import { useFrame } from '@react-three/fiber';
 import { ARButton, Controllers, Interactive, VRButton, XR } from '@react-three/xr';
@@ -57,7 +57,7 @@ const VRPage = () => {
           {/* <Scene_02_PerfGestures /> */}
           {/* <Scene_03_PerfGesturesMover /> */}
           {/* <Scene_04_PerfGesturesMoverWithGround /> */}
-          <Scene_05_WithEntities />
+          <Scene_05_WithEntities debugVisible={false} />
           {/* <Scene_Experiment_01_Html /> */}
         </XR>
       </Canvas>
@@ -235,7 +235,9 @@ const Scene_04_PerfGesturesMoverWithGround = () => {
 };
 
 const SkyBox = () => {
-  return <Environment background near={1} far={1000} resolution={256} preset='city' />;
+  // return <Environment background near={1} far={1000} resolution={256} preset='city' />;
+  return <Stars radius={100} depth={50} count={5000} factor={4} saturation={0} fade speed={1} />;
+  // return <Environment background near={1} far={1000} resolution={256}  />;
 };
 
 // old

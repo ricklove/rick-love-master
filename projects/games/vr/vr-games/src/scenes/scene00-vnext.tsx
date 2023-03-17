@@ -387,9 +387,10 @@ const problemChooserManager = Entity.create(`problemChooser`)
         const NEXT = `NEXT`;
 
         const getText = (c: typeof s.choices[number]) => {
-          return !s.isMultiChoice || c.text === DONE || c.text === NEXT
-            ? c.text
-            : `${c.active ? `[x]` : `[ ]`} ${c.text}`;
+          return c.text;
+          // return !s.isMultiChoice || c.text === DONE || c.text === NEXT
+          //   ? c.text
+          //   : `${c.active ? `[x]` : `[ ]`} ${c.text}`;
         };
 
         if (s.event === `clear`) {
