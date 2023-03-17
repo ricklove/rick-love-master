@@ -1,19 +1,37 @@
 import { Triplet } from '@react-three/cannon';
-import { ambientSoundFiles } from '../assets/sounds';
+import { randomItem } from '@ricklove/utils-core';
+import { ambientSoundFiles, popSoundFiles } from '../assets/sounds';
 import { EntityAudioListener, EntityAudioPlayer } from '../entities/components/audio';
 import { EntityGround } from '../entities/components/ground';
 import { EntityGroundView } from '../entities/components/ground-view';
 import { Entity, SceneDefinition } from '../entities/entity';
 
+const ambientMusic = ambientSoundFiles.map((x, i) => ({ key: `ambient-${i}`, url: x }));
+const popSounds = popSoundFiles.map((x, i) => ({ key: `pop-${i}`, url: x }));
+
 const audioListener = Entity.create(`audioListener`)
   .addComponent(EntityAudioListener, {
-    sounds: Object.fromEntries(ambientSoundFiles.map((x, i) => [`ambient-${i}`, { url: x }])),
+    sounds: Object.fromEntries([...ambientMusic, ...popSounds].map((x) => [x.key, { ...x }])),
   })
   .build();
-const audioMusic = Entity.create(`audioListener`)
+const audioMusic1 = Entity.create(`audioListener`)
   .addComponent(EntityAudioPlayer, { listener: audioListener })
   .extend((e) => {
-    EntityAudioPlayer.playSound(e, `ambient-0`);
+    const playRandomMusic = () => {
+      EntityAudioPlayer.playSound(e, randomItem(ambientMusic).key, () => playRandomMusic());
+    };
+    playRandomMusic();
+  })
+  .build();
+const audioMusic2 = Entity.create(`audioListener`)
+  .addComponent(EntityAudioPlayer, { listener: audioListener })
+  .extend((e) => {
+    setTimeout(() => {
+      const playRandomMusic = () => {
+        EntityAudioPlayer.playSound(e, randomItem(ambientMusic).key, () => playRandomMusic());
+      };
+      playRandomMusic();
+    }, 10000);
   })
   .build();
 
@@ -31,7 +49,7 @@ const ground = Entity.create(`ground`)
 export const scene04: SceneDefinition = {
   debugPhysics: true,
   iterations: 15,
-  rootEntities: [audioListener, audioMusic, ground],
+  rootEntities: [audioListener, audioMusic1, audioMusic2, ground],
   gravity: [0, 0.1 * -9.8, 0] as Triplet,
   // gravity: [0, 0, 0] as Triplet,
 };

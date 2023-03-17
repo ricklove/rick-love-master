@@ -1,6 +1,6 @@
 import React from 'react';
 import { useThree } from '@react-three/fiber';
-import { BehaviorSubject, Observable, Subject } from 'rxjs';
+import { BehaviorSubject, Observable } from 'rxjs';
 import { AudioListener, AudioLoader } from 'three';
 import { useIsomorphicLayoutEffect } from '../../utils/layoutEffect';
 import { loadOnce } from '../../utils/loadOnce';
@@ -83,7 +83,7 @@ export const EntityAudioListenerComponent = ({ entity }: { entity: EntityAudioLi
 export type EntityAudioPlayer = EntityBase & {
   audioPlayer: {
     listener: EntityAudioListener;
-    playTrigger: Subject<string>;
+    playTrigger: BehaviorSubject<{ soundKey: string; onDone?: () => void }>;
   };
   view: {
     debugColorRgba?: number;
@@ -96,7 +96,7 @@ export type EntityAudioPlayer = EntityBase & {
 export const EntityAudioPlayer = defineComponent<EntityAudioPlayer>()
   .with(`audioPlayer`, ({ listener }: { listener: EntityAudioListener }) => ({
     listener,
-    playTrigger: new BehaviorSubject<string>(``),
+    playTrigger: new BehaviorSubject<{ soundKey: string; onDone?: () => void }>({ soundKey: `` }),
   }))
   .with(`view`, () => ({
     Component: ({ entity }) => (
@@ -106,9 +106,9 @@ export const EntityAudioPlayer = defineComponent<EntityAudioPlayer>()
     ),
   }))
   .attach({
-    playSound: (entity: EntityAudioPlayer, soundKey: string) => {
-      logger.log(`playSound`, { soundKey });
-      entity.audioPlayer.playTrigger.next(soundKey);
+    playSound: (entity: EntityAudioPlayer, soundKey: string, onDone?: () => void) => {
+      logger.log(`playSound`, { soundKey, onDone });
+      entity.audioPlayer.playTrigger.next({ soundKey, onDone });
     },
   });
 
@@ -118,7 +118,7 @@ export const EntityAudioPlayerComponent = ({ entity }: { entity: EntityAudioPlay
     entity.audioPlayer.listener.ready.subscribe(() => {
       entity.ready.next(true);
 
-      const sub = entity.audioPlayer.playTrigger.subscribe((soundKey: string) => {
+      const sub = entity.audioPlayer.playTrigger.subscribe(({ soundKey, onDone }) => {
         logger.log(`playTrigger`, { sound });
 
         const soundItem = entity.audioPlayer.listener.audioListener.sounds[soundKey];
@@ -130,11 +130,24 @@ export const EntityAudioPlayerComponent = ({ entity }: { entity: EntityAudioPlay
           if (!sound.current) {
             return;
           }
+
           sound.current.setBuffer(b);
           sound.current.setRefDistance(1);
           sound.current.setLoop(false);
           sound.current.play();
-          subBuffer.unsubscribe();
+          if (onDone) {
+            const isDoneCheckId = setInterval(() => {
+              if (sound.current?.isPlaying) {
+                return;
+              }
+              clearInterval(isDoneCheckId);
+              onDone();
+            }, 100);
+          }
+
+          setTimeout(() => {
+            subBuffer.unsubscribe();
+          });
         });
       });
     });
