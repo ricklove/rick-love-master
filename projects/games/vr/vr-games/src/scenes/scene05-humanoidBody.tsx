@@ -336,7 +336,7 @@ const ground = Entity.create(`ground`)
   .addComponent(EntityGroundView, {})
   .build();
 
-export const scene02: SceneDefinition = {
+export const scene05: SceneDefinition = {
   debugPhysics: true,
   iterations: 15,
   rootEntities: [
