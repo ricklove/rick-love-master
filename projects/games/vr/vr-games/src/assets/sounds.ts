@@ -1,0 +1,56 @@
+export const ambientSoundFiles = `
+261032__erh__string-cbn2-b1-2.ogg
+217742__erh__eerie-ph1-2o2c-13-6.ogg
+217741__erh__eerie-ph1-2o2c-13-7.ogg
+42369__ERH__p_b8_56_tappa.ogg
+42332__ERH__p_b8_105_HUGE_AEC.ogg
+42286__ERH__f_eh_angelic_3.ogg
+42285__ERH__p_b8_112_long.ogg
+42124__ERH__p1.2_o_2b_b9_63_enig_retry.ogg
+42102__ERH__p1.2_o_2b_b9_15_stormy.ogg
+40724__ERH__erh_drone_wind.ogg
+40165__ERH__O_SPACE_PAD_2e.ogg
+39224__ERH__ew_46_rumble.ogg
+38681__ERH__owl_10.ogg
+38680__ERH__gong_30.ogg
+38544__ERH__rhythm_2.2_own_b7_21.ogg
+38543__ERH__emergency_1.ogg
+38368__ERH__Meg_s_storm.ogg
+37740__ERH__synth_horizons.ogg
+37551__ERH__O_SPACE_PAD_2ec.ogg
+37403__ERH__storm_distortion.ogg
+37224__ERH__slow_atmosphere_5.ogg
+36320__ERH__ominous_b.ogg
+36319__ERH__crescendo_b8_17.ogg
+35898__ERH__Nine_Lies_the_Heart_ed_5.ogg
+35615__ERH__atmosphere_6_74.ogg
+34662__ERH__Nine_Lies_the_Heart_ed_4.ogg
+34663__ERH__reverbbells.ogg
+34588__ERH__Nine_Lies_the_Heart_ed_1.ogg
+34421__ERH__Nine_Lies_the_Heart_ed_3.ogg
+34384__ERH__Nine_Lies_the_Heart_ed_2.ogg
+34377__ERH__discordant_voices_ew54b_6.ogg
+34345__ERH__voices_ew54b.ogg
+34344__ERH__voices_ew54_2.ogg
+34338__ERH__wind.ogg
+34187__ERH__deep_bass_rumble_3.ogg
+34186__ERH__deep_bass_rumble_2.ogg
+34141__ERH__swell_pad.ogg
+34140__ERH__discordant_voices_ew54b.ogg
+34139__ERH__discordant_voices_ew54b_5f.ogg
+34015__ERH__discordant_voices_ew54b_4.ogg
+34016__ERH__voices_ew54.ogg
+34014__ERH__discordant_voices_ew54b_3.ogg
+34013__ERH__discordant_voices_ew54b_2.ogg
+34012__ERH__cinematic_deep_bass_rumble.ogg
+33987__ERH__slow_atmosphere_4.ogg
+33888__ERH__Negative_Future_edit_2.ogg
+33887__ERH__N_F_orchestral_2f.ogg
+33839__ERH__Negative_Future_edit_4.ogg
+33838__ERH__Negative_Future_edit_1f.ogg
+33837__ERH__N_F_orchestral_f.ogg
+33836__ERH__N_F_orchestral_4f.ogg
+`
+  .split(`\n`)
+  .filter((x) => !!x)
+  .map((x) => `./sounds/ambient/ogg/${x}`);
