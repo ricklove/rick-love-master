@@ -3,8 +3,9 @@ import { Material } from 'cannon-es';
 import { filter, map } from 'rxjs';
 import { Vector3 } from 'three';
 import { randomItem } from '@ricklove/utils-core';
-import { ambientSoundFiles, popSoundFiles } from '../assets/sounds';
+import { ambientSoundFiles, creatureSoundFiles, popSoundFiles } from '../assets/sounds';
 import { EntityAudioListener, EntityAudioPlayer } from '../entities/components/audio';
+import { EntityChooser } from '../entities/components/chooser';
 import { EntityAdjustToGround, EntityGround } from '../entities/components/ground';
 import { EntityGroundView } from '../entities/components/ground-view';
 import { EntityHumanoidBody } from '../entities/components/humanoid-body/humanoid-body';
@@ -15,10 +16,13 @@ import { EntityPhysicsViewBox } from '../entities/components/physics-view-box';
 import { EntityPhysicsViewSphere } from '../entities/components/physics-view-sphere';
 import { EntityPlayer } from '../entities/components/player';
 import { EntityPlayerPhysicsGloves } from '../entities/components/player-physics-gloves';
+import { EntityProblemEngine } from '../entities/components/problem-engine';
 import { EntitySelectable, EntitySelector } from '../entities/components/selectable';
 import { EntityRaycastSelector } from '../entities/components/selectable-raycast-selector';
 import { EntityRaycastSelectorCollider } from '../entities/components/selectable-raycast-selector-collider';
+import { EntityTextView } from '../entities/components/text-view';
 import { Entity, SceneDefinition, SceneMaterialOptions } from '../entities/entity';
+import { logger } from '../utils/logger';
 
 export const groundMaterial = new Material(`groundMaterial`);
 export const ballMaterial = new Material(`ballMaterial`);
@@ -74,6 +78,7 @@ const player = Entity.create(`player`)
 
 const ambientMusic = ambientSoundFiles.map((x, i) => ({ key: `ambient-${i}`, url: x }));
 const popSounds = popSoundFiles.map((x, i) => ({ key: `pop-${i}`, url: x }));
+const creatureSounds = creatureSoundFiles.map((x, i) => ({ key: `creature-${i}`, url: x }));
 
 const audioListener = Entity.create(`audioListener`)
   .addComponent(EntityAudioListener, {
@@ -137,6 +142,16 @@ const humanoids = [...new Array(rows * cols)].map((_, i) =>
       speed: 0.5 + 10 * Math.random(),
       yRatio: 2,
     })
+    .addComponent(EntityPhysicsViewSphere, {
+      enablePhysics: false,
+      radius: 0.01,
+    })
+    .addComponent(EntityTextView, {
+      defaultText: `*-"*`,
+      offset: new Vector3(0, 0.5, 0),
+      color: 0xffffff,
+      fontSize: 0.2,
+    })
 
     .extend((e) => {
       const sound = Entity.create(`humanoid-sound-${i}`)
@@ -156,6 +171,9 @@ const humanoids = [...new Array(rows * cols)].map((_, i) =>
       const newDir = new Vector3();
 
       const mainPart = e.humanoidBody.parts.find((x) => x.part === `upper-torso`)!;
+      mainPart.entity.frameTrigger.subscribe(() => {
+        e.transform.position.copy(mainPart.entity.transform.position);
+      });
 
       const selectableOffset = new Vector3(0, 0, 0);
       const a = new Vector3(0, 2, 0);
@@ -219,17 +237,17 @@ const humanoids = [...new Array(rows * cols)].map((_, i) =>
               clearTimeout(id);
               id = setTimeout(() => {
                 e.humanoidBodyMoverGroovy.enabled = true;
+                EntityAudioPlayer.playSound(sound, randomItem(creatureSounds).key, {
+                  soundPositionTarget: mainPart.entity,
+                });
               }, 10 * 1000);
             });
         })
         .build();
       e.children.add(selectableHover);
 
-      mainPart?.entity.frameTrigger.subscribe(() => {
-        const pos = mainPart?.entity.transform.position;
-        if (!pos) {
-          return;
-        }
+      mainPart.entity.frameTrigger.subscribe(() => {
+        const pos = mainPart.entity.transform.position;
 
         // Change random direction back towards center if outside zone
         const posLengthSq = pos.lengthSq();
@@ -336,10 +354,114 @@ const ground = Entity.create(`ground`)
   .addComponent(EntityGroundView, {})
   .build();
 
+const problemEngine = Entity.create(`problemEngine`).addComponent(EntityProblemEngine, {}).build();
+const problemChooserManager = Entity.create(`problemChooser`)
+  .addComponent(EntityChooser, {
+    maxChoiceCount: 4,
+  })
+  .extend((e) => {
+    problemEngine.ready.subscribe(() => {
+      logger.log(`problemChooserManager problemEngine ready`, {});
+      EntityProblemEngine.setChooser(problemEngine, e);
+
+      const subs = [] as { unsubscribe: () => void }[];
+      const eChoosers = humanoids;
+
+      const maxChoiceCount = e.chooser.maxChoiceCount;
+
+      const reset = () => {
+        subs.forEach((x) => x.unsubscribe());
+        subs.splice(0, subs.length);
+        eChoosers.forEach((b, i) => {
+          b.textView.text = ``;
+        });
+      };
+
+      e.chooser.choicesSubject.subscribe((s) => {
+        if (s.event === `none`) {
+          return;
+        }
+
+        logger.log(`choicesSubject`, { s });
+        const DONE = `DONE`;
+        const NEXT = `NEXT`;
+
+        const getText = (c: typeof s.choices[number]) => {
+          return !s.isMultiChoice || c.text === DONE || c.text === NEXT
+            ? c.text
+            : `${c.active ? `[x]` : `[ ]`} ${c.text}`;
+        };
+
+        if (s.event === `clear`) {
+          reset();
+          return;
+        }
+        if (s.event === `new`) {
+          reset();
+          let iChoice = 0;
+          const refreshChoices = () => {
+            reset();
+            const iChoiceAfter = s.choices.length <= maxChoiceCount ? s.choices.length : iChoice + maxChoiceCount - 1;
+            const items = [
+              ...s.choices.slice(iChoice, iChoiceAfter),
+              ...(iChoiceAfter < s.choices.length
+                ? [{ active: false, text: NEXT }]
+                : s.isMultiChoice
+                ? [{ active: false, text: DONE }]
+                : []),
+            ];
+            items.forEach((c, i) => {
+              const b = eChoosers[i];
+              const bSelectable = b.children.items.find((x) => (x as EntitySelectable).selectable)! as EntitySelectable;
+
+              // b.active = true;
+              b.textView.text = getText(c);
+              logger.log(`choice`, { text: b.textView.text });
+
+              const sub = bSelectable.selectable.stateSubject.subscribe((x) => {
+                if (x.event !== `down-begin`) {
+                  return;
+                }
+                if (c.text === NEXT) {
+                  iChoice = iChoiceAfter;
+                  refreshChoices();
+                  return;
+                }
+                if (c.text === DONE) {
+                  EntityChooser.submitChoices(e);
+                  return;
+                }
+
+                logger.log(`toggle`, { c });
+                EntityChooser.toggleChoice(e, c);
+                if (!s.isMultiChoice) {
+                  EntityChooser.submitChoices(e);
+                }
+              });
+              subs.push(sub);
+            });
+          };
+
+          setTimeout(() => {
+            refreshChoices();
+          }, 100);
+          return;
+        }
+        // s.choices.forEach((c, i) => {
+        //   const b = eChoosers[i];
+        //   b.textView.text = getText(c);
+        // });
+      });
+    });
+  })
+  .build();
+
 export const scene00: SceneDefinition = {
   debugPhysics: true,
   iterations: 15,
   rootEntities: [
+    problemEngine,
+    problemChooserManager,
     audioListener,
     audioMusic1,
     audioMusic2,
@@ -349,12 +471,8 @@ export const scene00: SceneDefinition = {
     // humanoidMovement,
     ...humanoids,
     ground,
-    // ball,
-    // ball2,
     // mouseInput,
     // mouseRaycastSelector,
-    // ball3,
-    // ball4,
   ],
   gravity: [0, 0.5 * -9.8, 0] as Triplet,
   // gravity: [0, 0, 0] as Triplet,

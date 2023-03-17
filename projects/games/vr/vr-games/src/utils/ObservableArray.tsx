@@ -2,7 +2,6 @@
 /* eslint-disable @typescript-eslint/no-parameter-properties */
 /* eslint-disable @typescript-eslint/typedef */
 import { buffer, Subject } from 'rxjs';
-import { logger } from './logger';
 
 export class ObservableList<T> {
   public constructor(private _getItemKey: (item: T) => string, items: T[] = []) {
@@ -60,11 +59,11 @@ export class ObservableList<T> {
     this._emitter.next();
 
     this.itemsSubject.next(this._frozenItems);
-    logger.log(`ObservableList _emit`, {
-      dirty,
-      items: this._frozenItems.length,
-      map: Object.keys(this._map),
-    });
+    // logger.log(`ObservableList _emit`, {
+    //   dirty,
+    //   items: this._frozenItems.length,
+    //   map: Object.keys(this._map),
+    // });
   };
 
   public add = (...items: T[]) => {

@@ -4,7 +4,6 @@ import { BehaviorSubject, Observable } from 'rxjs';
 import { AudioListener, AudioLoader } from 'three';
 import { useIsomorphicLayoutEffect } from '../../utils/layoutEffect';
 import { loadOnce } from '../../utils/loadOnce';
-import { logger } from '../../utils/logger';
 import { defineComponent, EntityBase, EntityWithTransform } from '../core';
 
 export type EntityAudioListener = EntityBase & {
@@ -45,11 +44,11 @@ export const EntityAudioListener = defineComponent<EntityAudioListener>()
   }));
 
 const loadAudio = async (url: string) => {
-  logger.log(`loadAudio`, { url });
+  // logger.log(`loadAudio`, { url });
   const loader = new AudioLoader();
   return await new Promise<AudioBuffer>((resolve) => {
     loader.load(url, (buffer) => {
-      logger.log(`loadAudio - LOADED`, { url });
+      // logger.log(`loadAudio - LOADED`, { url });
       resolve(buffer);
     });
   });
@@ -112,7 +111,7 @@ export const EntityAudioPlayer = defineComponent<EntityAudioPlayer>()
       soundKey: string,
       options?: { soundPositionTarget?: EntityWithTransform; onDone?: () => void },
     ) => {
-      logger.log(`playSound`, { soundKey, onDone: options?.onDone });
+      // logger.log(`playSound`, { soundKey, onDone: options?.onDone });
       entity.audioPlayer.soundPositionTarget = options?.soundPositionTarget;
       entity.audioPlayer.playTrigger.next({ soundKey, onDone: options?.onDone });
     },
@@ -125,7 +124,7 @@ export const EntityAudioPlayerComponent = ({ entity }: { entity: EntityAudioPlay
       entity.ready.next(true);
 
       const sub = entity.audioPlayer.playTrigger.subscribe(({ soundKey, onDone }) => {
-        logger.log(`playTrigger`, { sound });
+        // logger.log(`playTrigger`, { soundKey });
 
         const soundItem = entity.audioPlayer.listener.audioListener.sounds[soundKey];
         if (!soundItem) {

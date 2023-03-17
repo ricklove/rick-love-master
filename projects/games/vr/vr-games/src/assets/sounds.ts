@@ -70,3 +70,13 @@ pop9.ogg
   .split(`\n`)
   .filter((x) => !!x)
   .map((x) => `./sounds/pop/${x}`);
+
+export const creatureSoundFiles = `
+179309__martian__cute-creature-look-out.ogg
+469066__hawkeye_sprout__cute-creature-01.ogg
+469067__hawkeye_sprout__cute-creature-02.ogg
+469091__hawkeye_sprout__cute-creature-humming.ogg
+  `
+  .split(`\n`)
+  .filter((x) => !!x)
+  .map((x) => `./sounds/creature/${x}`);

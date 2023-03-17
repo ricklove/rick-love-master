@@ -45,7 +45,7 @@ export const EntityHumanoidBody = defineComponent<EntityHumanoidBody>()
     e.children.add(...bodyPartEntities.map((x) => x.entity));
     // e.children.add(...bodyPartEntities.flatMap((x) => x.debugPivotEntities));
 
-    logger.log(`bodyPartEntities`, { bodyPartEntities });
+    // logger.log(`bodyPartEntities`, { bodyPartEntities });
 
     const joints = getHumanJointData();
     const jointEntities = joints.map((x) => ({
@@ -107,32 +107,32 @@ const createBodyJoint = (
       return e.build();
     }
 
-    logger.log(`createJointEntity`, {
-      joint,
-      side,
-      child,
-      parent,
-      pivotA: child.pivot.position,
-      pivotB: parent.pivot.position,
-      childPos: child.part.entity.transform.position.clone(),
-      childPivotPos: new Vector3(...child.pivot.position)
-        .applyQuaternion(child.part.entity.transform.quaternion)
-        .add(child.part.entity.transform.position),
-      parentPos: parent.part.entity.transform.position.clone(),
-      parentPivotPos: new Vector3(...parent.pivot.position)
-        .applyQuaternion(parent.part.entity.transform.quaternion)
-        .add(parent.part.entity.transform.position),
-      distanceExpected: 0,
-      distanceActual: new Vector3(...child.pivot.position)
-        .applyQuaternion(child.part.entity.transform.quaternion)
-        .add(child.part.entity.transform.position)
-        .sub(
-          new Vector3(...parent.pivot.position)
-            .applyQuaternion(parent.part.entity.transform.quaternion)
-            .add(parent.part.entity.transform.position),
-        )
-        .length(),
-    });
+    // logger.log(`createJointEntity`, {
+    //   joint,
+    //   side,
+    //   child,
+    //   parent,
+    //   pivotA: child.pivot.position,
+    //   pivotB: parent.pivot.position,
+    //   childPos: child.part.entity.transform.position.clone(),
+    //   childPivotPos: new Vector3(...child.pivot.position)
+    //     .applyQuaternion(child.part.entity.transform.quaternion)
+    //     .add(child.part.entity.transform.position),
+    //   parentPos: parent.part.entity.transform.position.clone(),
+    //   parentPivotPos: new Vector3(...parent.pivot.position)
+    //     .applyQuaternion(parent.part.entity.transform.quaternion)
+    //     .add(parent.part.entity.transform.position),
+    //   distanceExpected: 0,
+    //   distanceActual: new Vector3(...child.pivot.position)
+    //     .applyQuaternion(child.part.entity.transform.quaternion)
+    //     .add(child.part.entity.transform.position)
+    //     .sub(
+    //       new Vector3(...parent.pivot.position)
+    //         .applyQuaternion(parent.part.entity.transform.quaternion)
+    //         .add(parent.part.entity.transform.position),
+    //     )
+    //     .length(),
+    // });
     return e
       .addComponent(EntityPhysicsConstraintConeTwist, {
         entityA: child.part.entity,
