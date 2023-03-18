@@ -4,7 +4,6 @@ import { Sphere, Stars, TrackballControls } from '@react-three/drei';
 import { Canvas } from '@react-three/fiber';
 import { VRButton, XR } from '@react-three/xr';
 import { Hud } from './components/hud';
-import { ScenePerspective } from './components/perspective';
 import { GestureOptions, GesturesProvider } from './gestures/gestures';
 import { Scene00ReactWithRapier } from './react-with-rapier/scenes/scene00/scene';
 import { DebugConsole } from './utils/logger';
@@ -52,7 +51,13 @@ const Scene_B_WithReactAndRapier = ({ debugVisible = true }: { debugVisible?: bo
     <>
       <GesturesProvider options={GestureOptions.all}>
         <ambientLight intensity={0.5} />
-        <ScenePerspective perspective={`1st`}>
+        <pointLight
+          position={[5 - 10 * Math.random(), 10 + 5 * Math.random(), 5 - 10 * Math.random()]}
+          color={Math.round(0xffffff * Math.random())}
+          distance={30}
+        />
+        <group>
+          {/* <ScenePerspective perspective={`1st`}> */}
           {/* {[...new Array(3)].map((_, i) => (
             <pointLight
               key={i}
@@ -61,7 +66,7 @@ const Scene_B_WithReactAndRapier = ({ debugVisible = true }: { debugVisible?: bo
               distance={300}
             />
           ))} */}
-          <gridHelper args={[100, 100]} />
+          {/* <gridHelper args={[100, 100]} /> */}
           {/* <Mover_Running /> */}
           {/* <RandomGround /> */}
           {/* <PlayerAvatarInSceneSpace /> */}
@@ -71,7 +76,8 @@ const Scene_B_WithReactAndRapier = ({ debugVisible = true }: { debugVisible?: bo
           <Sphere position={[0, 1, -90]} />
 
           <Scene00ReactWithRapier />
-        </ScenePerspective>
+          {/* </ScenePerspective> */}
+        </group>
 
         <Hud position={[0, 1, 4]}>
           <DebugConsole visible={debugVisible} />
