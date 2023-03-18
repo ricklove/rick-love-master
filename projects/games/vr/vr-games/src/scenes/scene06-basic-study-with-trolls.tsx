@@ -136,15 +136,6 @@ const humanoids = [...new Array(rows * cols)].map((_, i) =>
       scale: 1.5,
       offset: new Vector3(i % rows, 0.2, -10 + Math.floor(i / rows)),
       material: humanoidMaterial,
-      bodyPartFilter: (x) =>
-        x.part === `head` ||
-        x.part === `neck` ||
-        x.part === `upper-torso` ||
-        x.part === `lower-torso` ||
-        (x.part === `upper-arm` && x.side === `left`) ||
-        (x.part === `upper-leg` && x.side === `left`) ||
-        (x.part === `lower-leg` && x.side === `left`) ||
-        (x.part === `foot` && x.side === `left`),
     })
     .addComponent(EntityHumanoidBodyMoverGroovy, {
       direction: new Vector3(-1, 0, 1),

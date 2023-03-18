@@ -24,9 +24,12 @@ export type EntityHumanoidBody = EntityWithChildren & {
   };
 };
 
-type Args = { scale: number; offset: Vector3; material?: Material } & Partial<
-  EntityCollisionFilterGroup[`collisionFilterGroup`]
->;
+type Args = {
+  scale: number;
+  offset: Vector3;
+  material?: Material;
+  bodyPartFilter?: (args: { part: HumanBodyPartName; side: `center` | `left` | `right` }) => boolean;
+} & Partial<EntityCollisionFilterGroup[`collisionFilterGroup`]>;
 export const EntityHumanoidBody = defineComponent<EntityHumanoidBody>()
   .with(`children`, () => new EntityList())
   .with(`humanoidBody`, (args: Args, e) => {
@@ -34,12 +37,16 @@ export const EntityHumanoidBody = defineComponent<EntityHumanoidBody>()
       (k) => createBodyPartEntity({ part: k as HumanBodyPartName, args, thicknessScale: 0.7 }) ?? [],
     );
 
-    const bodyPartEntities = bodyPartEntitiesAll;
-    // .filter(
+    const bodyPartEntities = bodyPartEntitiesAll.filter((x) => args.bodyPartFilter?.(x) ?? true);
     //   (x) =>
-    //     // x.part === `head` ||
-    //     // x.part === `neck` ||
-    //     x.part === `upper-torso` || (x.part === `upper-arm` && x.side === `left`),
+    //     x.part === `head` ||
+    //     x.part === `neck` ||
+    //     x.part === `upper-torso` ||
+    //     x.part === `lower-torso` ||
+    //     (x.part === `upper-arm` && x.side === `left`) ||
+    //     (x.part === `upper-leg` && x.side === `left`) ||
+    //     (x.part === `lower-leg` && x.side === `left`) ||
+    //     (x.part === `foot` && x.side === `left`),
     // );
 
     e.children.add(...bodyPartEntities.map((x) => x.entity));
