@@ -1,10 +1,10 @@
 import { Triplet } from '@react-three/cannon';
 import { randomItem } from '@ricklove/utils-core';
-import { ambientSoundFiles, popSoundFiles } from '../assets/sounds';
-import { EntityAudioListener, EntityAudioPlayer } from '../entities/components/audio';
-import { EntityGround } from '../entities/components/ground';
-import { EntityGroundView } from '../entities/components/ground-view';
-import { Entity, SceneDefinition } from '../entities/entity';
+import { ambientSoundFiles, popSoundFiles } from '../../assets/sounds';
+import { EntityAudioListener, EntityAudioPlayer } from '../components/audio';
+import { EntityGround } from '../components/ground';
+import { EntityGroundView } from '../components/ground-view';
+import { Entity, SceneDefinition } from '../entity';
 
 const ambientMusic = ambientSoundFiles.map((x, i) => ({ key: `ambient-${i}`, url: x }));
 const popSounds = popSoundFiles.map((x, i) => ({ key: `pop-${i}`, url: x }));

@@ -50,7 +50,7 @@ export const Hud = (props: JSX.IntrinsicElements['group']) => {
     const positionOriginal = Array.isArray(props.position)
       ? new Vector3(...props.position)
       : typeof props.position === `object`
-      ? props.position
+      ? (props.position as Vector3)
       : undefined ?? new Vector3();
     const positionOriginalMirrored = positionOriginal.clone().multiply(new Vector3(-1, -1, 1));
     const projectedOrignalPosition = new Vector3().sub(positionOriginalMirrored.clone().applyEuler(camera.rotation));

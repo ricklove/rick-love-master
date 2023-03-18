@@ -3,17 +3,18 @@ import React, { useRef, useState } from 'react';
 import { Box, Sphere, Stars, Text, TrackballControls } from '@react-three/drei';
 import { Canvas } from '@react-three/fiber';
 import { useFrame } from '@react-three/fiber';
-import { ARButton, Controllers, Interactive, VRButton, XR } from '@react-three/xr';
+import { Controllers, Interactive, VRButton, XR } from '@react-three/xr';
 import { Vector3 } from 'three';
 import { usePlayer } from './components/camera';
 import { Hud } from './components/hud';
 import { PerspectiveKind, ScenePerspective, togglePerspective } from './components/perspective';
 import { PlayerAvatarInSceneSpace } from './components/player-avatar';
+import { scene00 } from './entities/scenes/scene00-vnext';
 import { WorldContainer } from './entities/world';
 import { RandomGround } from './environment/ground';
 import { ExampleHtmlObject, ExampleHtmlObject_Dynamic } from './experiments/html/html-to-string-component';
 import { GestureOptions, GesturesProvider, useGestures } from './gestures/gestures';
-import { scene00 } from './scenes/scene00-vnext';
+import { Scene00ReactWithRapier } from './react-with-rapier/scenes/scene00/scene';
 import { DebugConsole, logger } from './utils/logger';
 
 export const VrTestGame = () => {
@@ -28,23 +29,23 @@ export const VrTestGame = () => {
   );
 };
 
-const ARPage = () => {
-  return (
-    <>
-      <ARButton onError={(e) => console.error(e)} />
-      <Canvas>
-        <XR referenceSpace={`local-floor`}>
-          {/* <Scene_GesturesSetup /> */}
-          {/* <Scene_01_Minimal /> */}
-          {/* <Scene_02_PerfGestures /> */}
-          {/* <Scene_03_PerfGesturesMover /> */}
-          {/* <Scene_04_PerfGesturesMoverWithGround /> */}
-          <Scene_05_WithEntities />
-        </XR>
-      </Canvas>
-    </>
-  );
-};
+// const ARPage = () => {
+//   return (
+//     <>
+//       <ARButton onError={(e) => console.error(e)} />
+//       <Canvas>
+//         <XR referenceSpace={`local-floor`}>
+//           {/* <Scene_GesturesSetup /> */}
+//           {/* <Scene_01_Minimal /> */}
+//           {/* <Scene_02_PerfGestures /> */}
+//           {/* <Scene_03_PerfGesturesMover /> */}
+//           {/* <Scene_04_PerfGesturesMoverWithGround /> */}
+//           <Scene_A_WithEntities />
+//         </XR>
+//       </Canvas>
+//     </>
+//   );
+// };
 
 const VRPage = () => {
   return (
@@ -57,7 +58,8 @@ const VRPage = () => {
           {/* <Scene_02_PerfGestures /> */}
           {/* <Scene_03_PerfGesturesMover /> */}
           {/* <Scene_04_PerfGesturesMoverWithGround /> */}
-          <Scene_05_WithEntities debugVisible={false} />
+          {/* <Scene_A_WithEntities debugVisible={false} /> */}
+          <Scene_B_WithReactAndRapier />
           {/* <Scene_Experiment_01_Html /> */}
         </XR>
       </Canvas>
@@ -77,7 +79,8 @@ const NonVrPage = () => {
           {/* <Scene_02_PerfGestures /> */}
           {/* <Scene_03_PerfGesturesMover /> */}
           {/* <Scene_04_PerfGesturesMoverWithGround /> */}
-          <Scene_05_WithEntities debugVisible={false} />
+          {/* <Scene_A_WithEntities debugVisible={false} /> */}
+          <Scene_B_WithReactAndRapier />
           {/* <Scene_Experiment_01_Html /> */}
         </XR>
       </Canvas>
@@ -85,7 +88,42 @@ const NonVrPage = () => {
   );
 };
 
-const Scene_05_WithEntities = ({ debugVisible = true }: { debugVisible?: boolean }) => {
+const Scene_B_WithReactAndRapier = ({ debugVisible = true }: { debugVisible?: boolean }) => {
+  return (
+    <>
+      <GesturesProvider options={GestureOptions.all}>
+        <ambientLight intensity={0.5} />
+        <ScenePerspective perspective={`1st`}>
+          {/* {[...new Array(3)].map((_, i) => (
+            <pointLight
+              key={i}
+              position={[500 - 1000 * Math.random(), 50 * Math.random(), 500 - 1000 * Math.random()]}
+              color={Math.round(0xffffff * Math.random())}
+              distance={300}
+            />
+          ))} */}
+          <gridHelper args={[100, 100]} />
+          {/* <Mover_Running /> */}
+          {/* <RandomGround /> */}
+          {/* <PlayerAvatarInSceneSpace /> */}
+
+          {/* <Sphere position={[-2, 1, 0]} scale={0.02} />
+          <Sphere position={[0, 1, -10]} scale={0.05} />*/}
+          <Sphere position={[0, 1, -90]} />
+
+          <Scene00ReactWithRapier />
+        </ScenePerspective>
+
+        <Hud position={[0, 1, 4]}>
+          <DebugConsole visible={debugVisible} />
+        </Hud>
+        <SkyBox />
+      </GesturesProvider>
+    </>
+  );
+};
+
+const Scene_A_WithEntities = ({ debugVisible = true }: { debugVisible?: boolean }) => {
   return (
     <>
       <GesturesProvider options={GestureOptions.all}>

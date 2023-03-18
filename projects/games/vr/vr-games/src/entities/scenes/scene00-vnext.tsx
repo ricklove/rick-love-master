@@ -3,26 +3,26 @@ import { Material } from 'cannon-es';
 import { filter, first, map, throttleTime } from 'rxjs';
 import { Vector3 } from 'three';
 import { randomItem } from '@ricklove/utils-core';
-import { ambientSoundFiles, creatureSoundFiles, popSoundFiles } from '../assets/sounds';
-import { EntityAudioListener, EntityAudioPlayer } from '../entities/components/audio';
-import { EntityChooser } from '../entities/components/chooser';
-import { EntityAdjustToGround, EntityGround } from '../entities/components/ground';
-import { EntityGroundView } from '../entities/components/ground-view';
-import { EntityHumanoidBody } from '../entities/components/humanoid-body/humanoid-body';
-import { EntityHumanoidBodyMoverGroovy } from '../entities/components/humanoid-body/mover-groovy';
-import { EntityMouseInput } from '../entities/components/mouse-input';
-import { EntityCollisionFilterGroup, GROUP_SELECTABLE, GROUP_SELECTOR } from '../entities/components/physics-view';
-import { EntityPhysicsViewBox } from '../entities/components/physics-view-box';
-import { EntityPhysicsViewSphere } from '../entities/components/physics-view-sphere';
-import { EntityPlayer } from '../entities/components/player';
-import { EntityPlayerPhysicsGloves } from '../entities/components/player-physics-gloves';
-import { EntityProblemEngine } from '../entities/components/problem-engine';
-import { EntitySelectable, EntitySelector } from '../entities/components/selectable';
-import { EntityRaycastSelector } from '../entities/components/selectable-raycast-selector';
-import { EntityRaycastSelectorCollider } from '../entities/components/selectable-raycast-selector-collider';
-import { EntityTextView } from '../entities/components/text-view';
-import { Entity, SceneDefinition, SceneMaterialOptions } from '../entities/entity';
-import { logger } from '../utils/logger';
+import { ambientSoundFiles, creatureSoundFiles, popSoundFiles } from '../../assets/sounds';
+import { logger } from '../../utils/logger';
+import { EntityAudioListener, EntityAudioPlayer } from '../components/audio';
+import { EntityChooser } from '../components/chooser';
+import { EntityAdjustToGround, EntityGround } from '../components/ground';
+import { EntityGroundView } from '../components/ground-view';
+import { EntityHumanoidBody } from '../components/humanoid-body/humanoid-body';
+import { EntityHumanoidBodyMoverGroovy } from '../components/humanoid-body/mover-groovy';
+import { EntityMouseInput } from '../components/mouse-input';
+import { EntityCollisionFilterGroup, GROUP_SELECTABLE, GROUP_SELECTOR } from '../components/physics-view';
+import { EntityPhysicsViewBox } from '../components/physics-view-box';
+import { EntityPhysicsViewSphere } from '../components/physics-view-sphere';
+import { EntityPlayer } from '../components/player';
+import { EntityPlayerPhysicsGloves } from '../components/player-physics-gloves';
+import { EntityProblemEngine } from '../components/problem-engine';
+import { EntitySelectable, EntitySelector } from '../components/selectable';
+import { EntityRaycastSelector } from '../components/selectable-raycast-selector';
+import { EntityRaycastSelectorCollider } from '../components/selectable-raycast-selector-collider';
+import { EntityTextView } from '../components/text-view';
+import { Entity, SceneDefinition, SceneMaterialOptions } from '../entity';
 
 export const groundMaterial = new Material(`groundMaterial`);
 export const ballMaterial = new Material(`ballMaterial`);
@@ -136,15 +136,15 @@ const humanoids = [...new Array(rows * cols)].map((_, i) =>
       scale: 1.5,
       offset: new Vector3(i % rows, 0.2, -10 + Math.floor(i / rows)),
       material: humanoidMaterial,
-      bodyPartFilter: (x) =>
-        x.part === `head` ||
-        x.part === `neck` ||
-        x.part === `upper-torso` ||
-        x.part === `lower-torso` ||
-        (x.part === `upper-arm` && x.side === `left`) ||
-        (x.part === `upper-leg` && x.side === `left`) ||
-        (x.part === `lower-leg` && x.side === `left`) ||
-        (x.part === `foot` && x.side === `left`),
+      // bodyPartFilter: (x) =>
+      //   x.part === `head` ||
+      //   x.part === `neck` ||
+      //   x.part === `upper-torso` ||
+      //   x.part === `lower-torso` ||
+      //   (x.part === `upper-arm` && x.side === `left`) ||
+      //   (x.part === `upper-leg` && x.side === `left`) ||
+      //   (x.part === `lower-leg` && x.side === `left`) ||
+      //   (x.part === `foot` && x.side === `left`),
     })
     .addComponent(EntityHumanoidBodyMoverGroovy, {
       direction: new Vector3(-1, 0, 1),

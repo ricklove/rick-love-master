@@ -1,13 +1,13 @@
 import { Triplet } from '@react-three/cannon';
 import { Vector3 } from 'three';
-import { EntityGround } from '../entities/components/ground';
-import { EntityGroundView } from '../entities/components/ground-view';
-import { EntityHumanoidBody } from '../entities/components/humanoid-body/humanoid-body';
-import { EntityHumanoidBodyMoverGroovy } from '../entities/components/humanoid-body/mover-groovy';
-import { EntityPhysicsViewSphere } from '../entities/components/physics-view-sphere';
-import { EntityTextView } from '../entities/components/text-view';
-import { Entity, SceneDefinition } from '../entities/entity';
-import { logger } from '../utils/logger';
+import { logger } from '../../utils/logger';
+import { EntityGround } from '../components/ground';
+import { EntityGroundView } from '../components/ground-view';
+import { EntityHumanoidBody } from '../components/humanoid-body/humanoid-body';
+import { EntityHumanoidBodyMoverGroovy } from '../components/humanoid-body/mover-groovy';
+import { EntityPhysicsViewSphere } from '../components/physics-view-sphere';
+import { EntityTextView } from '../components/text-view';
+import { Entity, SceneDefinition } from '../entity';
 
 const humanoid = Entity.create(`humanoid`)
   .addComponent(EntityHumanoidBody, { scale: 1, offset: new Vector3(0, 0, 0) })

@@ -6,7 +6,7 @@ export type Vector3 = Vector3Three;
 export type EntityBase = {
   active: BehaviorSubject<boolean>;
   ready: EntityReadyType;
-  frameTrigger: { subscribe: (cb: () => void) => { unsubscribe: () => void } };
+  frameTrigger: { next: () => void; subscribe: (cb: () => void) => { unsubscribe: () => void } };
   name: string;
   key: string;
   children?: EntityList<EntityBase>;
@@ -180,7 +180,7 @@ export const defineEntity = <TEntity>() => ({
       entity: {
         name,
         active: new BehaviorSubject(true),
-        frameTrigger: new Subject(),
+        frameTrigger: new Subject<void>(),
         ready: new EntityReady(),
         key: `${nextEntityId++}`,
       } as EntityBase,

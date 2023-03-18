@@ -1,10 +1,10 @@
 import { Triplet } from '@react-three/cannon';
-import { EntityAdjustToGround, EntityGround } from '../entities/components/ground';
-import { EntityGroundView } from '../entities/components/ground-view';
-import { EntityPhysicsViewSphere } from '../entities/components/physics-view-sphere';
-import { EntityPlayer } from '../entities/components/player';
-import { EntityPlayerPhysicsGloves } from '../entities/components/player-physics-gloves';
-import { Entity, SceneDefinition } from '../entities/entity';
+import { EntityAdjustToGround, EntityGround } from '../components/ground';
+import { EntityGroundView } from '../components/ground-view';
+import { EntityPhysicsViewSphere } from '../components/physics-view-sphere';
+import { EntityPlayer } from '../components/player';
+import { EntityPlayerPhysicsGloves } from '../components/player-physics-gloves';
+import { Entity, SceneDefinition } from '../entity';
 
 const player = Entity.create(`player`)
   .addComponent(EntityPlayer, {})

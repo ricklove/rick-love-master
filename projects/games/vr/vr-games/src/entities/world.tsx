@@ -26,16 +26,57 @@ worldState.activeEntities.added.subscribe((entities) => {
   entities.forEach((e) => {
     e.ready.setFrameTrigger(worldState.frameTrigger);
     e.ready.subscribe(() => {
-      // logger.log(`entity ready ${e.name} ${e.key}`);
-      const old = e.frameTrigger as Subject<void>;
-      e.frameTrigger = worldState.frameTrigger;
-      if (old.observed) {
-        // TODO: this might cause a memory leak
-        e.frameTrigger.subscribe(() => old.next());
-      }
+      // // logger.log(`entity ready ${e.name} ${e.key}`);
+      // const old = e.frameTrigger as Subject<void>;
+      // e.frameTrigger = worldState.frameTrigger;
+      // if (old.observed) {
+      //   // TODO: this might cause a memory leak
+      //   e.frameTrigger.subscribe(() => old.next());
+      // }
+
+      const perf = { key: e.key, name: e.name, callCount: 0, timeElapsedMs: 0 };
+      performanceData.entities.push(perf);
+      worldState.frameTrigger.subscribe(() => {
+        const timeStart = window.performance.now();
+
+        e.frameTrigger.next();
+
+        perf.callCount++;
+        const timeElapsedMs = window.performance.now() - timeStart;
+        perf.timeElapsedMs += timeElapsedMs;
+      });
     });
   });
 });
+
+const performanceData = {
+  worldFrame: {
+    key: `worldFrame`,
+    name: `worldFrame`,
+    callCount: 0,
+    timeElapsedMs: 0,
+    timeStart: window.performance.now(),
+  },
+  entities: [] as { name: string; callCount: number; timeElapsedMs: number }[],
+};
+(window as unknown as Record<string, unknown>).__getPerformanceReport = () => {
+  const totals = [performanceData.worldFrame, ...performanceData.entities].reduce((out, x) => {
+    const p = (out[x.name] ??= { name: x.name, entityCount: 0, callCount: 0, timeElapsedMs: 0, timePerCallMs: 0 });
+    p.entityCount++;
+    p.callCount += x.callCount;
+    p.timeElapsedMs += x.timeElapsedMs;
+    p.timePerCallMs = p.timeElapsedMs / p.callCount;
+    return out;
+  }, {} as { [name: string]: { name: string; entityCount: number; callCount: number; timeElapsedMs: number; timePerCallMs: number } });
+
+  const timeSinceStartMs = window.performance.now() - performanceData.worldFrame.timeStart;
+  console.log(`performanceData`, {
+    timeSinceStartMs,
+    averageFps: (performanceData.worldFrame.callCount * 1000) / timeSinceStartMs,
+    totalsByTotalTime: Object.values(totals).sort((a, b) => -(a.timeElapsedMs - b.timeElapsedMs)),
+    totalsByAveTime: Object.values(totals).sort((a, b) => -(a.timePerCallMs - b.timePerCallMs)),
+  });
+};
 
 const useWorldFilter = <T extends Entity>(filter: (item: Entity) => boolean, groupKey?: (item: Entity) => string) => {
   const groupItems = useMemo(
@@ -104,6 +145,7 @@ const useWorldFilter = <T extends Entity>(filter: (item: Entity) => boolean, gro
 export const WorldContainer = ({ rootEntities, gravity, iterations, debugPhysics, materials }: SceneDefinition) => {
   useMemo(() => {
     world.children.add(...rootEntities);
+    performanceData.worldFrame.timeStart = window.performance.now();
   }, []);
   const activeViews = useWorldFilter((x) => !!x.view && !x.view.BatchComponent).items;
   const activeTextViews = useWorldFilter((x) => !!x.textView).items;
@@ -157,7 +199,12 @@ export const WorldContainer = ({ rootEntities, gravity, iterations, debugPhysics
       // }
     }
 
+    const timeStart = window.performance.now();
     worldState.frameTrigger.next();
+    performanceData.worldFrame.callCount++;
+    const timeElapsedMs = window.performance.now() - timeStart;
+    performanceData.worldFrame.timeElapsedMs += timeElapsedMs;
+
     worldState.activeEntities.frozen = false;
     worldState.activeEntities.frozen = true;
   });
