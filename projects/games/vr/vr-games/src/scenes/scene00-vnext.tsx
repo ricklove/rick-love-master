@@ -1,6 +1,6 @@
 import { Triplet } from '@react-three/cannon';
 import { Material } from 'cannon-es';
-import { filter, map } from 'rxjs';
+import { filter, first, map, throttleTime } from 'rxjs';
 import { Vector3 } from 'three';
 import { randomItem } from '@ricklove/utils-core';
 import { ambientSoundFiles, creatureSoundFiles, popSoundFiles } from '../assets/sounds';
@@ -126,15 +126,15 @@ const humanoidMovement = Entity.create(`humanoid`)
   .build();
 
 const MAX_DISTANCE = 10;
-const rows = 2;
-const cols = 2;
+const rows = 5;
+const cols = 1;
 // const rows = 1;
 // const cols = 1;
 const humanoids = [...new Array(rows * cols)].map((_, i) =>
   Entity.create(`humanoid-${i}`)
     .addComponent(EntityHumanoidBody, {
       scale: 1.5,
-      offset: new Vector3(i % rows, 0, Math.floor(i / rows)),
+      offset: new Vector3(i % rows, 0.2, -10 + Math.floor(i / rows)),
       material: humanoidMaterial,
     })
     .addComponent(EntityHumanoidBodyMoverGroovy, {
@@ -148,9 +148,9 @@ const humanoids = [...new Array(rows * cols)].map((_, i) =>
     })
     .addComponent(EntityTextView, {
       defaultText: `*-"*`,
-      offset: new Vector3(0, 0.5, 0),
+      offset: new Vector3(0, 1, 0),
       color: 0xffffff,
-      fontSize: 0.2,
+      fontSize: 0.3,
     })
 
     .extend((e) => {
@@ -214,34 +214,6 @@ const humanoids = [...new Array(rows * cols)].map((_, i) =>
             selectable.physics.api.quaternion.copy(mainPart.entity.transform.quaternion);
             // logger.log(`selectable`, { a, selectable });
           });
-
-          // handle selection
-          let id = setTimeout(() => {
-            /**/
-          }, 0);
-          selectable.selectable.stateSubject
-            .pipe(filter((x) => x.mode === `down` && x.sequence === `begin`))
-            .subscribe((s) => {
-              // add force
-              e.humanoidBodyMoverGroovy.enabled = false;
-              e.humanoidBody.parts.forEach((p) => {
-                EntityAudioPlayer.playSound(sound, randomItem(popSounds).key, {
-                  soundPositionTarget: mainPart.entity,
-                });
-                p.entity.physics.api.velocity.set(
-                  5 - 10 * Math.random(),
-                  10 * (0.5 + 0.5 * Math.random()),
-                  5 - 10 * Math.random(),
-                );
-              });
-              clearTimeout(id);
-              id = setTimeout(() => {
-                e.humanoidBodyMoverGroovy.enabled = true;
-                EntityAudioPlayer.playSound(sound, randomItem(creatureSounds).key, {
-                  soundPositionTarget: mainPart.entity,
-                });
-              }, 10 * 1000);
-            });
         })
         .build();
       e.children.add(selectableHover);
@@ -285,6 +257,63 @@ const humanoids = [...new Array(rows * cols)].map((_, i) =>
     })
     .build(),
 );
+
+// handle selection
+const timeoutIds = {} as { [key: string]: NodeJS.Timeout };
+
+const playSoundConfirmSelection = (e: typeof humanoids[0]) => {
+  const eSound = e.children.items.find((x) => (x as EntityAudioPlayer).audioPlayer)! as EntityAudioPlayer;
+  const mainPart = e.humanoidBody.parts.find((x) => x.part === `upper-torso`)!;
+  EntityAudioPlayer.playSound(eSound, randomItem(popSounds).key, {
+    soundPositionTarget: mainPart.entity,
+  });
+};
+
+const hitHumaniodUp = (e: typeof humanoids[0]) => {
+  const eSound = e.children.items.find((x) => (x as EntityAudioPlayer).audioPlayer)! as EntityAudioPlayer;
+  const mainPart = e.humanoidBody.parts.find((x) => x.part === `upper-torso`)!;
+
+  // add force
+  e.humanoidBodyMoverGroovy.enabled = false;
+  e.humanoidBody.parts.forEach((p) => {
+    p.entity.physics.api.velocity.set(5 - 10 * Math.random(), 10 * (0.5 + 0.5 * Math.random()), 5 - 10 * Math.random());
+  });
+  clearTimeout(timeoutIds[e.key]);
+  timeoutIds[e.key] = setTimeout(() => {
+    e.humanoidBodyMoverGroovy.enabled = true;
+    EntityAudioPlayer.playSound(eSound, randomItem(creatureSounds).key, {
+      soundPositionTarget: mainPart.entity,
+    });
+  }, 10 * 1000);
+};
+
+const t = new Vector3();
+const throwPlayer = (e: typeof player, eHumanoid: typeof humanoids[0]) => {
+  // e.adjustToGround.active = false;
+
+  // move towards own weapon for a time
+  // const weapon = e.playerPhysicsGloves.right.weapon[0];
+  // t.copy(weapon.transform.position).sub(e.transform.position).multiplyScalar(10);
+  t.copy(e.transform.position)
+    .sub(eHumanoid.humanoidBody.parts.find((x) => x.part === `upper-torso`)!.entity.transform.position)
+    .setY(0)
+    .normalize()
+    .multiplyScalar(5);
+  e.transform.position.add(t);
+
+  // const frameSub = e.frameTrigger.subscribe(() => {
+  //   t.copy(weapon.transform.position).sub(e.transform.position).multiplyScalar(0.2);
+  //   e.transform.position.add(t);
+  //   e.transform.quaternion.copy(weapon.transform.quaternion);
+  // });
+
+  // clearTimeout(timeoutIds[e.key]);
+  // timeoutIds[e.key] = setTimeout(() => {
+  //   frameSub.unsubscribe();
+  //   e.transform.quaternion.identity();
+  //   e.adjustToGround.active = true;
+  // }, 5 * 100);
+};
 
 const ball = Entity.create(`ball`)
   .addComponent(EntityPhysicsViewSphere, {
@@ -369,6 +398,9 @@ const problemChooserManager = Entity.create(`problemChooser`)
 
       const maxChoiceCount = e.chooser.maxChoiceCount;
 
+      let refreshId = setTimeout(() => {
+        /**/
+      }, 0);
       const reset = () => {
         subs.forEach((x) => x.unsubscribe());
         subs.splice(0, subs.length);
@@ -419,33 +451,49 @@ const problemChooserManager = Entity.create(`problemChooser`)
               b.textView.text = getText(c);
               logger.log(`choice`, { text: b.textView.text });
 
-              const sub = bSelectable.selectable.stateSubject.subscribe((x) => {
-                if (x.event !== `down-begin`) {
-                  return;
-                }
-                if (c.text === NEXT) {
-                  iChoice = iChoiceAfter;
-                  refreshChoices();
-                  return;
-                }
-                if (c.text === DONE) {
-                  EntityChooser.submitChoices(e);
-                  return;
-                }
+              const sub = bSelectable.selectable.stateSubject
+                .pipe(
+                  filter((x) => x.event === `down-begin`),
+                  throttleTime(3000),
+                )
+                .subscribe((x) => {
+                  playSoundConfirmSelection(b);
 
-                logger.log(`toggle`, { c });
-                EntityChooser.toggleChoice(e, c);
-                if (!s.isMultiChoice) {
-                  EntityChooser.submitChoices(e);
-                }
-              });
+                  if (c.text === NEXT) {
+                    hitHumaniodUp(b);
+                    iChoice = iChoiceAfter;
+                    refreshChoices();
+                    return;
+                  }
+                  if (c.text === DONE) {
+                    hitHumaniodUp(b);
+                    EntityChooser.submitChoices(e);
+                    return;
+                  }
+
+                  problemEngine.problemEngine.feedbackSubject.pipe(first()).subscribe(({ wasCorrect }) => {
+                    if (wasCorrect) {
+                      hitHumaniodUp(b);
+                      return;
+                    }
+
+                    throwPlayer(player, b);
+                  });
+
+                  logger.log(`toggle`, { c });
+                  EntityChooser.toggleChoice(e, c);
+                  if (!s.isMultiChoice) {
+                    EntityChooser.submitChoices(e);
+                  }
+                });
               subs.push(sub);
             });
           };
 
-          setTimeout(() => {
+          clearTimeout(refreshId);
+          refreshId = setTimeout(() => {
             refreshChoices();
-          }, 100);
+          }, 500);
           return;
         }
         // s.choices.forEach((c, i) => {

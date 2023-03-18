@@ -307,27 +307,27 @@ export const EntityProblemEngineComponent = ({ entity }: { entity: EntityProblem
         <Hud position={[-0.3, 0.3, 2]}>
           <Flex scale={flexScale} size={[200, 200, 0]}>
             <Box dir='column' justifyContent='flex-start' alignItems='flex-start'>
-              <Box height={20}>
-                <Text anchorX='left' anchorY='top' fontSize={20}>
+              <Box height={30}>
+                <Text anchorX='left' anchorY='top' fontSize={30}>
                   {ui.title ?? ``}
                 </Text>
               </Box>
-              <Box height={18}>
-                <Text anchorX='left' anchorY='top' fontSize={16}>
+              <Box height={24}>
+                <Text anchorX='left' anchorY='top' fontSize={24}>
                   {ui.message ?? ``}
                 </Text>
               </Box>
               {ui.choices?.map((c, i) => (
                 <Box key={i} dir='row' justifyContent='flex-start' alignItems='center'>
-                  <Box centerAnchor height={20} width={20}>
+                  <Box centerAnchor height={30} width={30}>
                     <PhysicsBulletPoint
-                      size={20 * flexScale}
+                      size={30 * flexScale}
                       worldPortal={portalTargetRef}
                       color={c.active ? 0x00ff00 : 0xff0000}
                     />
                   </Box>
-                  <Box height={16} margin={4}>
-                    <Text anchorX='left' anchorY='top' fontSize={16}>
+                  <Box height={24} margin={4}>
+                    <Text anchorX='left' anchorY='top' fontSize={24}>
                       {c.text}
                     </Text>
                   </Box>

@@ -3,7 +3,7 @@ import { defineComponent, EntityWithTransform } from '../core';
 
 export type EntityAdjustToGround = EntityWithTransform & {
   adjustToGround: {
-    active: true;
+    active: boolean;
     minGroundHeight?: number;
     maxGroundHeight?: number;
   };
