@@ -1,8 +1,8 @@
 import React, { useMemo, useRef } from 'react';
-import { Box, Cylinder } from '@react-three/drei';
+import { Box, Cylinder, Sphere } from '@react-three/drei';
 import { useFrame } from '@react-three/fiber';
 import { RapierRigidBody, RigidBody } from '@react-three/rapier';
-import { Quaternion, Vector3, XRJointSpace } from 'three';
+import { Quaternion, Vector3 } from 'three';
 import { usePlayer } from '../../components/camera';
 import { HandGestureResult, handJointNames, useGestures } from '../../gestures/gestures';
 import { createContextWithDefault } from '../../utils/contextWithDefault';
@@ -61,27 +61,26 @@ export const Player = () => {
 };
 
 const PlayerHand = ({ side, hand }: { side: `left` | `right`; hand: HandGestureResult }) => {
-  // const joints = useMemo(() => {
-  //   return handJointNames.map((x) => ({ joint: x, ref: createRef<typeof Sphere>() }));
-  // }, []);
-  // useFrame(() => {
-  //   handJointNames.forEach(x=>{
-  //     joints.
-  //   });
-  // });
-
   return (
     <>
       {handJointNames.map((x) => (
         <React.Fragment key={x}>
-          {hand._joints[x] && <PlayerHandJoint side={side} name={x} joint={hand._joints[x]!} />}
+          <PlayerHandJoint side={side} hand={hand} joint={x} />
         </React.Fragment>
       ))}
       <PlayerHandWeaponAttachments side={side} hand={hand} />
     </>
   );
 };
-const PlayerHandJoint = ({ side, name, joint }: { side: `left` | `right`; name: XRHandJoint; joint: XRJointSpace }) => {
+const PlayerHandJoint = ({
+  side,
+  hand,
+  joint,
+}: {
+  side: `left` | `right`;
+  hand: HandGestureResult;
+  joint: XRHandJoint;
+}) => {
   const ref = useRef<RapierRigidBody>(null);
   const player = usePlayer();
   const w = useMemo(() => ({ v: new Vector3() }), []);
@@ -90,12 +89,16 @@ const PlayerHandJoint = ({ side, name, joint }: { side: `left` | `right`; name: 
     if (!ref.current) {
       return;
     }
-    ref.current.setTranslation(w.v.copy(joint.position).add(player.position), true);
-    ref.current.setRotation(joint.quaternion, true);
+    const j = hand._joints[joint];
+    if (!j) {
+      return;
+    }
+    ref.current.setTranslation(w.v.copy(j.position).add(player.position), true);
+    ref.current.setRotation(j.quaternion, true);
   });
   return (
     <>
-      <RigidBody ref={ref} type='kinematicPosition' position={joint.position} colliders='cuboid'>
+      <RigidBody ref={ref} type='kinematicPosition' colliders='cuboid'>
         {/* <Sphere args={[0.01]}>
           <meshStandardMaterial color={0xff0000} transparent={true} opacity={0.5} />
         </Sphere> */}
@@ -127,6 +130,12 @@ const PlayerHandWeaponAttachments = ({ side, hand }: { side: `left` | `right`; h
     if (!ref.current) {
       return;
     }
+    if (!hand.pointingHand._handPalmDirection) {
+      return;
+    }
+    if (!hand._joints[`middle-finger-metacarpal`]?.quaternion) {
+      return;
+    }
     // TODO: add weapon attechments to gestures
     ref.current.setTranslation(
       w.v
@@ -136,7 +145,7 @@ const PlayerHandWeaponAttachments = ({ side, hand }: { side: `left` | `right`; h
         .add(player.position),
       true,
     );
-    ref.current.setRotation(w.q.copy(hand._joints[`middle-finger-metacarpal`]?.quaternion!), true);
+    ref.current.setRotation(w.q.copy(hand._joints[`middle-finger-metacarpal`].quaternion), true);
   });
   return (
     <>
@@ -145,8 +154,18 @@ const PlayerHandWeaponAttachments = ({ side, hand }: { side: `left` | `right`; h
           rotation={[0, (side === `right` ? 1 : -1) * Math.PI * -0.15, (side === `right` ? 1 : -1) * Math.PI * 0.5]}
           position={[(side === `right` ? 1 : -1) * 0.1, 0, 0.05]}
         >
-          <Cylinder args={[0.03, 0.03, 1]} position={[0, 0.5, 0]}>
+          {/* <Cylinder args={[0.03, 0.03, 1]} position={[0, 0.5, 0]}>
             <meshStandardMaterial color={`#c1782f`} transparent={true} opacity={0.5} />
+          </Cylinder> */}
+
+          <Sphere args={[0.05]} position={[0, 0.025, 0]}>
+            <meshStandardMaterial color={`#c1782f`} />
+          </Sphere>
+          <Cylinder args={[0.03, 0.03, 1]} position={[0, 0.5, 0]}>
+            <meshStandardMaterial color={`#c1782f`} />
+          </Cylinder>
+          <Cylinder args={[0.2, 0.2, 0.018]} position={[0, 0.8, -0.1]} rotation={[0, 0, Math.PI * 0.5]}>
+            <meshStandardMaterial color={`#959595`} />
           </Cylinder>
         </group>
       </RigidBody>
