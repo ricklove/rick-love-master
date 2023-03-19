@@ -1,18 +1,11 @@
-import React, { Suspense, useEffect, useMemo, useRef, useState } from 'react';
+import React, { Suspense, useEffect, useState } from 'react';
 import { Box, Sphere } from '@react-three/drei';
-import { useFrame, Vector3 as Vector3Like } from '@react-three/fiber';
-import { Physics, RapierRigidBody, RigidBody } from '@react-three/rapier';
-import { Vector3, XRJointSpace } from 'three';
-import { usePlayer } from '../../../components/camera';
+import { Vector3 as Vector3Like } from '@react-three/fiber';
+import { Physics, RigidBody } from '@react-three/rapier';
 import { ScenePerspective } from '../../../components/perspective';
-import {
-  GestureOptions,
-  GesturesProvider,
-  HandGestureResult,
-  handJointNames,
-  useGestures,
-} from '../../../gestures/gestures';
-import { ThrottleSubject } from '../../../utils/throttleSubject';
+import { GestureOptions, GesturesProvider } from '../../../gestures/gestures';
+import { Player, PlayerComponentContext } from '../../components/player';
+import { Axe } from '../../components/weapon';
 
 export const Scene00ReactWithRapier = () => {
   return (
@@ -20,30 +13,33 @@ export const Scene00ReactWithRapier = () => {
       <GesturesProvider options={GestureOptions.all}>
         <ScenePerspective perspective={`1st`}>
           <Physics gravity={[0, -9.8, 0]} colliders='ball'>
-            <Player />
-            <group>
-              {/* <HangingThing position={[2, 3.5, 0]} />
+            <PlayerComponentContext.Provider>
+              <Player />
+              <group>
+                {/* <HangingThing position={[2, 3.5, 0]} />
         <HangingThing position={[5, 3.5, 0]} />
         <HangingThing position={[7, 3.5, 0]} />
 
         <Rope length={20} /> */}
 
-              <BallSpawner />
+                <Axe position={[0, 2, -1]} />
+                <BallSpawner />
 
-              <group rotation={[0, 0, Math.PI * 0.05]}>
-                {/* Floor */}
-                <RigidBody type='fixed' colliders='cuboid'>
-                  <Box position={[0, -100, 0]} args={[10000, 200, 10000]}>
-                    <meshStandardMaterial color={0x333333} />
-                  </Box>
-                </RigidBody>
+                <group rotation={[0, 0, Math.PI * 0.05]}>
+                  {/* Floor */}
+                  <RigidBody type='fixed' colliders='cuboid'>
+                    <Box position={[0, -100, 0]} args={[10000, 200, 10000]}>
+                      <meshStandardMaterial color={0x333333} />
+                    </Box>
+                  </RigidBody>
 
-                {/* <CuboidCollider position={[0, 0, 0]} args={[100, 1, 100]} /> */}
+                  {/* <CuboidCollider position={[0, 0, 0]} args={[100, 1, 100]} /> */}
+                </group>
+
+                {/* <ContactShadows scale={20} blur={0.4} opacity={0.2} position={[-0, -1.5, 0]} /> */}
               </group>
-
-              {/* <ContactShadows scale={20} blur={0.4} opacity={0.2} position={[-0, -1.5, 0]} /> */}
-            </group>
-            {/* <Debug /> */}
+              {/* <Debug /> */}
+            </PlayerComponentContext.Provider>
           </Physics>
         </ScenePerspective>
       </GesturesProvider>
@@ -125,87 +121,3 @@ const BallCreature = ({ position }: { position: Vector3Like }) => {
 //     });
 //   })
 //   .build();
-
-const Player = () => {
-  const gestures = useGestures();
-  const player = usePlayer();
-
-  const moveState = useMemo(
-    () => ({
-      mode: new ThrottleSubject(`walk` as `run` | `walk` | `stand`),
-    }),
-    [],
-  );
-  // const ref = useRef<Group>(null);
-
-  useFrame(() => {
-    // if (!ref.current) {
-    //   return;
-    // }
-    if (gestures.right.pointingIndexFinger.active) {
-      moveState.mode.value = moveState.mode.value === `walk` ? `run` : `walk`;
-    }
-    if (gestures.left.pointingIndexFinger.active) {
-      moveState.mode.value = `stand`;
-    }
-
-    if (moveState.mode.value === `stand`) {
-      return;
-    }
-
-    const speed = moveState.mode.value === `walk` ? 0.25 : 1;
-    player.position.add(gestures.body.moving._velocity.clone().multiplyScalar((speed * 1) / 60));
-    // ref.current.position.copy(player.position);
-  });
-
-  return (
-    <>
-      {/* <group ref={ref}> */}
-      <PlayerHand hand={gestures.left} />
-      <PlayerHand hand={gestures.right} />
-      {/* </group> */}
-    </>
-  );
-};
-
-const PlayerHand = ({ hand }: { hand: HandGestureResult }) => {
-  // const joints = useMemo(() => {
-  //   return handJointNames.map((x) => ({ joint: x, ref: createRef<typeof Sphere>() }));
-  // }, []);
-  // useFrame(() => {
-  //   handJointNames.forEach(x=>{
-  //     joints.
-  //   });
-  // });
-
-  return (
-    <>
-      {handJointNames.map((x) => (
-        <React.Fragment key={x}>
-          {hand._joints[x] && <PlayerHandJoint name={x} joint={hand._joints[x]!} />}
-        </React.Fragment>
-      ))}
-    </>
-  );
-};
-const PlayerHandJoint = ({ name, joint }: { name: XRHandJoint; joint: XRJointSpace }) => {
-  const ref = useRef<RapierRigidBody>(null);
-  const player = usePlayer();
-  const w = useMemo(() => ({ v: new Vector3() }), []);
-
-  useFrame(() => {
-    if (!ref.current) {
-      return;
-    }
-    ref.current.setTranslation(w.v.copy(joint.position).add(player.position), true);
-  });
-  return (
-    <>
-      <RigidBody ref={ref} type='kinematicPosition' position={joint.position}>
-        <Sphere args={[0.01]}>
-          <meshStandardMaterial color={0xff0000} transparent={true} opacity={0.5} />
-        </Sphere>
-      </RigidBody>
-    </>
-  );
-};
