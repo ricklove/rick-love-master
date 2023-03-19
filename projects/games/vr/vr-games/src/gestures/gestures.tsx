@@ -1,5 +1,5 @@
 /* eslint-disable no-bitwise */
-import React, { createContext, useRef } from 'react';
+import React, { createContext, ReactNode, useRef } from 'react';
 import { useContext } from 'react';
 import { useFrame } from '@react-three/fiber';
 import { useController } from '@react-three/xr';
@@ -8,7 +8,7 @@ import { useCamera, usePlayer } from '../components/camera';
 import { OptionsOf, ResultsOf } from './gestures-core';
 import { bodyGestures, gestures, handGestures } from './gestures-list';
 
-export const GesturesProvider = ({ children, options }: { children: JSX.Element[]; options: GestureOptions }) => {
+export const GesturesProvider = ({ children, options }: { children: ReactNode; options: GestureOptions }) => {
   const gestures = useGesturesInstance(options);
   return <gesturesContext.Provider value={gestures}>{children}</gesturesContext.Provider>;
 };
@@ -79,6 +79,33 @@ const createHandGestureResult = () => {
   };
 };
 export type HandGestureResult = ReturnType<typeof createHandGestureResult>;
+export const handJointNames = [
+  `wrist`,
+  `thumb-metacarpal`,
+  `thumb-phalanx-proximal`,
+  `thumb-phalanx-distal`,
+  `thumb-tip`,
+  `index-finger-metacarpal`,
+  `index-finger-phalanx-proximal`,
+  `index-finger-phalanx-intermediate`,
+  `index-finger-phalanx-distal`,
+  `index-finger-tip`,
+  `middle-finger-metacarpal`,
+  `middle-finger-phalanx-proximal`,
+  `middle-finger-phalanx-intermediate`,
+  `middle-finger-phalanx-distal`,
+  `middle-finger-tip`,
+  `ring-finger-metacarpal`,
+  `ring-finger-phalanx-proximal`,
+  `ring-finger-phalanx-intermediate`,
+  `ring-finger-phalanx-distal`,
+  `ring-finger-tip`,
+  `pinky-finger-metacarpal`,
+  `pinky-finger-phalanx-proximal`,
+  `pinky-finger-phalanx-intermediate`,
+  `pinky-finger-phalanx-distal`,
+  `pinky-finger-tip`,
+] as const satisfies readonly XRHandJoint[];
 
 const resetHandGestureResult = (result: HandGestureResult, hand: XRHandSpace | undefined) => {
   // result.active = false;
