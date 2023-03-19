@@ -12,6 +12,7 @@ import {
   handJointNames,
   useGestures,
 } from '../../../gestures/gestures';
+import { ThrottleSubject } from '../../../utils/throttleSubject';
 
 export const Scene00ReactWithRapier = () => {
   return (
@@ -128,13 +129,32 @@ const BallCreature = ({ position }: { position: Vector3Like }) => {
 const Player = () => {
   const gestures = useGestures();
   const player = usePlayer();
+
+  const moveState = useMemo(
+    () => ({
+      mode: new ThrottleSubject(`walk` as `run` | `walk` | `stand`),
+    }),
+    [],
+  );
   // const ref = useRef<Group>(null);
 
   useFrame(() => {
     // if (!ref.current) {
     //   return;
     // }
-    player.position.add(gestures.body.moving._velocity.clone().multiplyScalar((0.5 * 1) / 60));
+    if (gestures.right.pointingIndexFinger.active) {
+      moveState.mode.value = moveState.mode.value === `walk` ? `run` : `walk`;
+    }
+    if (gestures.left.pointingIndexFinger.active) {
+      moveState.mode.value = `stand`;
+    }
+
+    if (moveState.mode.value === `stand`) {
+      return;
+    }
+
+    const speed = moveState.mode.value === `walk` ? 0.25 : 1;
+    player.position.add(gestures.body.moving._velocity.clone().multiplyScalar((speed * 1) / 60));
     // ref.current.position.copy(player.position);
   });
 
