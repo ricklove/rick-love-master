@@ -5,7 +5,7 @@ import { CuboidCollider, Physics, RapierRigidBody, RigidBody } from '@react-thre
 import { Billboard, Hud } from '../../components/hud';
 import { ScenePerspective } from '../../components/perspective';
 import { GestureOptions, GesturesProvider, useGestures } from '../../gestures/gestures';
-import { DebugConsole } from '../../utils/logger';
+import { DebugConsole, logger } from '../../utils/logger';
 import { Player, PlayerComponentContext } from '../components/player';
 import { Scene00ReactWithRapier } from './scene00/scene';
 
@@ -27,7 +27,7 @@ export const SceneManager = () => {
         {!scene && <SceneSelector onChange={setScene} />}
       </ScenePerspective>
       <Hud position={[0, 1, 4]}>
-        <DebugConsole visible={false} />
+        <DebugConsole visible={true} />
       </Hud>
       <SkyBox />
     </GesturesProvider>
@@ -70,7 +70,7 @@ export const SceneSelector = ({ onChange }: { onChange: (scene: { SceneComponent
         <Physics colliders='ball' gravity={[0, 0, 0]}>
           <PlayerComponentContext.Provider>
             <Player />
-            <RigidBody type='fixed' colliders='cuboid'>
+            <RigidBody name={`Ground`} type='fixed' colliders='cuboid'>
               <Box position={[0, -100, 0]} args={[10000, 200, 10000]}>
                 <meshStandardMaterial color={`#333333`} />
               </Box>
@@ -93,11 +93,11 @@ export const SceneSelector = ({ onChange }: { onChange: (scene: { SceneComponent
 
 const scenes = [
   { name: `Scene 00 - Alien Eggs and Axes`, SceneComponent: Scene00ReactWithRapier },
-  { name: `Scene 01 - Alien Eggs and Axes`, SceneComponent: Scene00ReactWithRapier },
-  { name: `Scene 02 - Alien Eggs and Axes`, SceneComponent: Scene00ReactWithRapier },
-  { name: `Scene 03 - Alien Eggs and Axes`, SceneComponent: Scene00ReactWithRapier },
-  { name: `Scene 04 - Alien Eggs and Axes`, SceneComponent: Scene00ReactWithRapier },
-  { name: `Scene 05 - Alien Eggs and Axes`, SceneComponent: Scene00ReactWithRapier },
+  //   { name: `Scene 01 - Alien Eggs and Axes`, SceneComponent: Scene00ReactWithRapier },
+  //   { name: `Scene 02 - Alien Eggs and Axes`, SceneComponent: Scene00ReactWithRapier },
+  //   { name: `Scene 03 - Alien Eggs and Axes`, SceneComponent: Scene00ReactWithRapier },
+  //   { name: `Scene 04 - Alien Eggs and Axes`, SceneComponent: Scene00ReactWithRapier },
+  //   { name: `Scene 05 - Alien Eggs and Axes`, SceneComponent: Scene00ReactWithRapier },
 ];
 
 export const PhysicalSelection = ({
@@ -117,16 +117,18 @@ export const PhysicalSelection = ({
       <group position={[0, 0.5, 0]}>
         <RigidBody
           ref={ref}
+          name={`PhysicalSelection-${text}`}
           colliders={false}
           onCollisionEnter={(e) => {
-            if (!e.rigidBody) {
+            if (!e.other.rigidBody) {
               return;
             }
-            if (e.rigidBody === playerContext.player.staffPalmAttachment.left) {
+            logger.log(`onCollisionEnter`, { other: e.other.rigidBodyObject?.name, r: e.target.rigidBodyObject?.name });
+            if (playerContext.player.staffPalmAttachment.left.isAttachment(e.other.rigidBody)) {
               onSelect();
               return;
             }
-            if (e.rigidBody === playerContext.player.staffPalmAttachment.right) {
+            if (playerContext.player.staffPalmAttachment.right.isAttachment(e.other.rigidBody)) {
               onSelect();
               return;
             }

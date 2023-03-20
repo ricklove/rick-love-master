@@ -1,20 +1,23 @@
-import React, { createContext, ReactNode, useContext, useMemo } from 'react';
+import React, { createContext, ReactNode, useContext } from 'react';
 
-export const createContextWithDefault = <T extends Record<string, unknown>>(defaultValue: T) => {
-  const context = createContext(defaultValue);
+export const createContextWithDefault = <T extends Record<string, unknown>>(getDefaultValue: () => T) => {
+  const context = createContext<T>(undefined as unknown as T);
   const useContextTyped = () => useContext(context);
 
-  const Provider = ({ children }: { children: ReactNode }) => {
-    const playerContextValue = useMemo(() => {
-      return defaultValue;
-    }, []);
+  const state = {
+    value: getDefaultValue(),
+  };
 
-    return <context.Provider value={playerContextValue}>{children}</context.Provider>;
+  const Provider = ({ children }: { children: ReactNode }) => {
+    return <context.Provider value={state.value}>{children}</context.Provider>;
   };
 
   return {
     Provider,
     Consumer: context.Consumer,
     useContext: useContextTyped,
+    reset: () => {
+      state.value = getDefaultValue();
+    },
   };
 };

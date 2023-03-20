@@ -1,27 +1,170 @@
 import React, { useMemo, useRef } from 'react';
-import { Box, Cylinder, Sphere } from '@react-three/drei';
+import { Box, Cylinder } from '@react-three/drei';
 import { useFrame } from '@react-three/fiber';
 import { RapierRigidBody, RigidBody } from '@react-three/rapier';
-import { Quaternion, Vector3 } from 'three';
+import { Object3D, Quaternion, Vector3 } from 'three';
 import { usePlayer } from '../../components/camera';
 import { HandGestureResult, handJointNames, useGestures } from '../../gestures/gestures';
 import { createContextWithDefault } from '../../utils/contextWithDefault';
 import { useIsomorphicLayoutEffect } from '../../utils/layoutEffect';
+import { logger } from '../../utils/logger';
+import { RigidBodyType } from '../../utils/physics';
 import { ThrottleSubject } from '../../utils/throttleSubject';
 
-export const PlayerComponentContext = createContextWithDefault({
-  player: {
-    staffPalmAttachment: {
-      left: undefined as undefined | RapierRigidBody,
-      right: undefined as undefined | RapierRigidBody,
+const createAttachment = () => {
+  const attachWeapon = (weapon: RapierRigidBody, attachment: RapierRigidBody) => {
+    internalState.attached = weapon;
+    internalState.usedAttachment = internalState.attachments.find((x) => x.rigidBody === attachment);
+    internalState.attached.setBodyType(RigidBodyType.KinematicPositionBased, true);
+  };
+
+  const releaseWeapon = () => {
+    internalState.attached?.setBodyType(RigidBodyType.Dynamic, true);
+    internalState.attached = undefined;
+  };
+
+  const addAttachment = (rigidBody: RapierRigidBody, attachment: Object3D) => {
+    logger.log(`addAttachment`, {
+      n: rigidBody.handle,
+      a: attachment.name,
+    });
+    internalState.attachments.push({ rigidBody, attachment });
+  };
+
+  const internalState = {
+    attachments: [] as { rigidBody: RapierRigidBody; attachment: Object3D }[],
+    usedAttachment: undefined as undefined | { rigidBody: RapierRigidBody; attachment: Object3D },
+    attached: undefined as undefined | RapierRigidBody,
+  };
+
+  const state = {
+    attachWeapon,
+    clear: () => {
+      internalState.attached = undefined;
+      internalState.usedAttachment = undefined;
     },
-  },
-});
+    releaseWeapon,
+    addAttachment,
+    isAttachment: (rigidBody: RapierRigidBody) => {
+      logger.log(`isAttachment`, {
+        n: rigidBody.handle,
+        a: internalState.attachments.map((x) => x.rigidBody.handle).join(`,`),
+      });
+      return internalState.attachments.some((x) => x.rigidBody === rigidBody);
+    },
+    isWeaponAttached: (rigidBody: RapierRigidBody) => {
+      return internalState.attached === rigidBody;
+    },
+    getWeaponAttachment: (rigidBody: RapierRigidBody) => {
+      return internalState.attached === rigidBody ? internalState.usedAttachment : undefined;
+    },
+    attachWeaponIfCollided: (_args: { weapon: RapierRigidBody; other: RapierRigidBody }) => {
+      //will be replaced below
+    },
+  };
+
+  return state;
+};
+type Attachment = ReturnType<typeof createAttachment>;
+
+const createContextData = () => {
+  // if (!e.other.rigidBody) {
+  //   return;
+  // }
+  // if (playerContext.player.staffPalmAttachment.left.isAttachment(e.other.rigidBody)) {
+  //   return;
+  // }
+  // if (playerContext.player.staffPalmAttachment.right.isAttachment(e.other.rigidBody)) {
+  //   playerContext.player.staffPalmAttachment.right.attachWeapon(e.other.rigidBody);
+  //   return;
+  // }
+
+  const attachWeaponIfCollided =
+    (getAttachments: typeof getAllAttachments) =>
+    ({ weapon, other }: { weapon: null | undefined | RapierRigidBody; other: null | undefined | RapierRigidBody }) => {
+      if (!weapon || !other) {
+        return;
+      }
+      const a = getAttachments().find((x) => x.isAttachment(other));
+      if (!a) {
+        return;
+      }
+      if (a.isWeaponAttached(weapon)) {
+        return;
+      }
+
+      const oldAttachment = getAllAttachments().find((x) => x.isWeaponAttached(weapon));
+      if (oldAttachment) {
+        oldAttachment.clear();
+      }
+      a.attachWeapon(weapon, other);
+    };
+
+  const getAllAttachments = (): Attachment[] => state.allAttachments;
+
+  const worldPos = new Vector3();
+  const worldQuat = new Quaternion();
+  const updateAttachedWeaponTransform = (weapon: null | undefined | RapierRigidBody) => {
+    if (!weapon) {
+      return;
+    }
+    const { attachment } = state.getWeaponAttachment(weapon) ?? {};
+    if (!attachment) {
+      return;
+    }
+
+    weapon.setTranslation(attachment.getWorldPosition(worldPos), true);
+    weapon.setRotation(attachment.getWorldQuaternion(worldQuat), true);
+  };
+
+  const state = {
+    allAttachments: [] as Attachment[],
+    getWeaponAttachment: (weapon: null | undefined | RapierRigidBody) => {
+      if (!weapon) {
+        return;
+      }
+      return state.allAttachments.find((x) => x.isWeaponAttached(weapon))?.getWeaponAttachment(weapon);
+    },
+    player: {
+      staffPalmAttachment: {
+        left: createAttachment(),
+        right: createAttachment(),
+        attachWeaponIfCollided: attachWeaponIfCollided(() => []),
+      },
+      attachWeaponIfCollided: attachWeaponIfCollided(() => []),
+    },
+    updateAttachedWeaponTransform,
+  };
+
+  const visit = (node: undefined | Record<string, unknown>): Attachment[] => {
+    if (!node) {
+      return [];
+    }
+
+    const nodeAttachment = node as Partial<Attachment>;
+    if (nodeAttachment.isAttachment) {
+      nodeAttachment.attachWeaponIfCollided = attachWeaponIfCollided(() => [nodeAttachment as Attachment]);
+      return [nodeAttachment as Attachment];
+    }
+
+    const subAttachments = Object.values(node).flatMap((x) => visit(x as Record<string, unknown>));
+    node.attachWeaponIfCollided = attachWeaponIfCollided(() => subAttachments);
+    return subAttachments;
+  };
+  state.allAttachments = visit(state.player);
+
+  return state;
+};
+
+export const PlayerComponentContext = createContextWithDefault(createContextData);
 
 export const Player = () => {
   const gestures = useGestures();
   const player = usePlayer();
 
+  useIsomorphicLayoutEffect(() => {
+    PlayerComponentContext.reset();
+  }, []);
   const moveState = useMemo(
     () => ({
       mode: new ThrottleSubject(`walk` as `run` | `walk` | `stand`),
@@ -98,7 +241,7 @@ const PlayerHandJoint = ({
   });
   return (
     <>
-      <RigidBody ref={ref} type='kinematicPosition' colliders='cuboid'>
+      <RigidBody ref={ref} name={`PlayerHandJoint-${side}-${joint}`} type='kinematicPosition' colliders='cuboid'>
         {/* <Sphere args={[0.01]}>
           <meshStandardMaterial color={0xff0000} transparent={true} opacity={0.5} />
         </Sphere> */}
@@ -116,14 +259,21 @@ const PlayerHandJoint = ({
 const PlayerHandWeaponAttachments = ({ side, hand }: { side: `left` | `right`; hand: HandGestureResult }) => {
   const pContext = PlayerComponentContext.useContext();
   const ref = useRef<RapierRigidBody>(null);
+  const attachmentRef = useRef<Object3D>(null);
   const player = usePlayer();
-  const w = useMemo(() => ({ v: new Vector3(), q: new Quaternion() }), []);
+  const w = useMemo(
+    () => ({
+      v: new Vector3(),
+      q: new Quaternion(),
+    }),
+    [],
+  );
 
   useIsomorphicLayoutEffect(() => {
-    if (!ref.current) {
+    if (!ref.current || !attachmentRef.current) {
       return;
     }
-    pContext.player.staffPalmAttachment[side] = ref.current as RapierRigidBody;
+    pContext.player.staffPalmAttachment[side].addAttachment(ref.current, attachmentRef.current);
   }, []);
 
   useFrame(() => {
@@ -149,16 +299,16 @@ const PlayerHandWeaponAttachments = ({ side, hand }: { side: `left` | `right`; h
   });
   return (
     <>
-      <RigidBody ref={ref} type='kinematicPosition' colliders='cuboid'>
+      <RigidBody ref={ref} name={`PlayerHandWeaponAttachments-${side}`} type='kinematicPosition' colliders='cuboid'>
         <group
           rotation={[0, (side === `right` ? 1 : -1) * Math.PI * -0.15, (side === `right` ? 1 : -1) * Math.PI * 0.5]}
           position={[(side === `right` ? 1 : -1) * 0.1, 0, 0.05]}
         >
-          {/* <Cylinder args={[0.03, 0.03, 1]} position={[0, 0.5, 0]}>
+          <Cylinder ref={attachmentRef} args={[0.03, 0.03, 0.1]} position={[0, 0.1, 0]}>
             <meshStandardMaterial color={`#c1782f`} transparent={true} opacity={0.5} />
-          </Cylinder> */}
+          </Cylinder>
 
-          <Sphere args={[0.05]} position={[0, 0.025, 0]}>
+          {/* <Sphere args={[0.05]} position={[0, 0.025, 0]}>
             <meshStandardMaterial color={`#c1782f`} />
           </Sphere>
           <Cylinder args={[0.03, 0.03, 1]} position={[0, 0.5, 0]}>
@@ -166,7 +316,7 @@ const PlayerHandWeaponAttachments = ({ side, hand }: { side: `left` | `right`; h
           </Cylinder>
           <Cylinder args={[0.2, 0.2, 0.018]} position={[0, 0.8, -0.1]} rotation={[0, 0, Math.PI * 0.5]}>
             <meshStandardMaterial color={`#959595`} />
-          </Cylinder>
+          </Cylinder> */}
         </group>
       </RigidBody>
     </>

@@ -53,5 +53,9 @@ export const DebugConsole = ({ maxLines = 10, visible = true }: { maxLines?: num
       .subscribe(setText);
   }, []);
 
-  return <Text visible={visible}>{text}</Text>;
+  return (
+    <Text visible={visible} fontSize={0.1}>
+      {text}
+    </Text>
+  );
 };
