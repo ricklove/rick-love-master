@@ -9,25 +9,26 @@ export const createConditionSequence = (conditions: (() => boolean)[]) => {
 
     // if next condition, then progress
     const condNext = conditions[state.indexNext];
-    if (!condNext || !condNext()) {
-      // if not next condition, then make sure current condition is still valid
-      const cond = conditions[state.indexNext - 1];
-      if (cond && !cond()) {
-        // reset if current condition fails
+    if (condNext?.()) {
+      state.indexNext++;
+
+      // if at end, then success
+      if (state.indexNext >= conditions.length) {
         state.indexNext = 0;
-        return false;
+        return true;
       }
 
       return false;
     }
 
-    state.indexNext++;
-    if (state.indexNext >= conditions.length) {
-      state.indexNext = 0;
-      //   subject.next(true);
-      return true;
+    // Make sure current condition is still valid
+    const cond = conditions[state.indexNext - 1];
+    if (cond?.()) {
+      return false;
     }
 
+    // reset if current condition fails
+    state.indexNext = 0;
     return false;
   };
 
