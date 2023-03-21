@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/naming-convention */
 import React, { useEffect, useState } from 'react';
-import { TrackballControls } from '@react-three/drei';
+import { OrbitControls } from '@react-three/drei';
 import { Canvas } from '@react-three/fiber';
 import { VRButton, XR } from '@react-three/xr';
 import { SceneManager } from './react-with-rapier/scenes/scene-manager';
@@ -36,21 +36,11 @@ const VRPage = () => {
     <>
       {mode === `vr` && <VRButton onError={(e) => console.error(e)} />}
       <Canvas>
-        <XR referenceSpace={`local-floor`}>
-          {mode === `3d` && <TrackballControls />}
-          <Scene_B_WithReactAndRapier />
+        <XR referenceSpace={mode === `vr` ? `local-floor` : `unbounded`}>
+          {mode === `3d` && <OrbitControls />}
+          <SceneManager />
         </XR>
       </Canvas>
-    </>
-  );
-};
-
-const Scene_B_WithReactAndRapier = ({ debugVisible = true }: { debugVisible?: boolean }) => {
-  return (
-    <>
-      <group>
-        <SceneManager />
-      </group>
     </>
   );
 };

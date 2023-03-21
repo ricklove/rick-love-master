@@ -40,7 +40,12 @@ export const runningAverage = (value: Vector3, g: SmoothValues): Vector3 => {
   return g.out.copy(value).multiplyScalar(runningAverageFactorOrigin).add(keep);
 };
 
-export const calculateRotationMatrix = (g: { direction: Vector3; rotationMatrix: Matrix4; quaternion: Quaternion }) => {
-  g.rotationMatrix.lookAt(empty, g.direction, up);
+export const calculateRotationMatrix = (g: {
+  direction: Vector3;
+  upDirection?: Vector3;
+  rotationMatrix: Matrix4;
+  quaternion: Quaternion;
+}) => {
+  g.rotationMatrix.lookAt(empty, g.direction, g.upDirection ?? up);
   g.quaternion.setFromRotationMatrix(g.rotationMatrix);
 };

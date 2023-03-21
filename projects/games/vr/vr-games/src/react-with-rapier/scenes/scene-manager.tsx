@@ -1,12 +1,15 @@
-import React, { Suspense, useRef, useState } from 'react';
+import React, { Suspense, useState } from 'react';
 import { Box, Sphere, Stars, Stats, Text } from '@react-three/drei';
 import { useFrame, Vector3 } from '@react-three/fiber';
-import { CuboidCollider, Physics, RapierRigidBody, RigidBody } from '@react-three/rapier';
+import { CuboidCollider, Physics, RigidBody } from '@react-three/rapier';
 import { Billboard, Hud } from '../../components/hud';
 import { ScenePerspective } from '../../components/perspective';
 import { GestureOptions, GesturesProvider, useGestures } from '../../gestures/gestures';
 import { DebugConsole } from '../../utils/logger';
 import { Player, PlayerComponentContext } from '../components/player';
+import { SelectableContext } from '../components/selectable';
+import { SelectorStandardInput } from '../components/selector-standard-input';
+import { SceneCrafting } from './scene-crafting';
 import { Scene00ReactWithRapier } from './scene00/scene';
 
 export const SceneManager = () => {
@@ -68,23 +71,26 @@ export const SceneSelector = ({ onChange }: { onChange: (scene: { SceneComponent
       <Sphere position={[0, 1, -90]} />
       <Suspense>
         <Physics colliders='ball' gravity={[0, 0, 0]}>
-          <PlayerComponentContext.Provider>
-            <Player />
-            <RigidBody name={`Ground`} type='fixed' colliders='cuboid'>
-              <Box position={[0, -100, 0]} args={[10000, 200, 10000]}>
-                <meshStandardMaterial color={`#333333`} />
-              </Box>
-            </RigidBody>
-            {scenes.map((x, i) => (
-              <React.Fragment key={x.name}>
-                <PhysicalSelection
-                  text={x.name}
-                  onSelect={() => onChange(x)}
-                  position={[size * (i % cols), 0, -5 - size * Math.floor(i / cols)]}
-                />
-              </React.Fragment>
-            ))}
-          </PlayerComponentContext.Provider>
+          <SelectableContext.Provider>
+            <PlayerComponentContext.Provider>
+              <SelectorStandardInput />
+              <Player />
+              <RigidBody name={`Ground`} type='fixed' colliders='cuboid'>
+                <Box position={[0, -100, 0]} args={[10000, 200, 10000]}>
+                  <meshStandardMaterial color={`#333333`} />
+                </Box>
+              </RigidBody>
+              {scenes.map((x, i) => (
+                <React.Fragment key={x.name}>
+                  <PhysicalSelection
+                    text={x.name}
+                    onSelect={() => onChange(x)}
+                    position={[size * (i % cols), 0, -5 - size * Math.floor(i / cols)]}
+                  />
+                </React.Fragment>
+              ))}
+            </PlayerComponentContext.Provider>
+          </SelectableContext.Provider>
         </Physics>
       </Suspense>
     </>
@@ -92,6 +98,7 @@ export const SceneSelector = ({ onChange }: { onChange: (scene: { SceneComponent
 };
 
 const scenes = [
+  { name: `Scene Crafting`, SceneComponent: SceneCrafting },
   { name: `Scene 00 - Alien Eggs and Axes`, SceneComponent: Scene00ReactWithRapier },
   //   { name: `Scene 01 - Alien Eggs and Axes`, SceneComponent: Scene00ReactWithRapier },
   //   { name: `Scene 02 - Alien Eggs and Axes`, SceneComponent: Scene00ReactWithRapier },
@@ -109,31 +116,16 @@ export const PhysicalSelection = ({
   onSelect: () => void;
   position: Vector3;
 }) => {
-  const ref = useRef<RapierRigidBody>(null);
-  const playerContext = PlayerComponentContext.useContext();
+  const selectable = SelectableContext.useSelectable(({ event }) => {
+    if (event === `select-enter`) {
+      onSelect();
+    }
+  });
 
   return (
     <group position={position}>
       <group position={[0, 0.5, 0]}>
-        <RigidBody
-          ref={ref}
-          name={`PhysicalSelection-${text}`}
-          colliders={false}
-          onCollisionEnter={(e) => {
-            if (!e.other.rigidBody) {
-              return;
-            }
-            // logger.log(`onCollisionEnter`, { other: e.other.rigidBodyObject?.name, r: e.target.rigidBodyObject?.name });
-            if (playerContext.player.staffPalmAttachment.left.isAttachment(e.other.rigidBody)) {
-              onSelect();
-              return;
-            }
-            if (playerContext.player.staffPalmAttachment.right.isAttachment(e.other.rigidBody)) {
-              onSelect();
-              return;
-            }
-          }}
-        >
+        <RigidBody name={`PhysicalSelection-${text}`} colliders={false} {...selectable}>
           <CuboidCollider args={[0.5, 0.5, 0.5]} />
           <Box args={[1, 1, 1]}>
             <meshStandardMaterial color={`#706bff`} />
