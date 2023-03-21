@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/naming-convention */
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { TrackballControls } from '@react-three/drei';
 import { Canvas } from '@react-three/fiber';
 import { VRButton, XR } from '@react-three/xr';
@@ -17,24 +17,27 @@ export const VrTestGame = () => {
 };
 
 const VRPage = () => {
+  const [mode, setMode] = useState(undefined as undefined | `vr` | `3d`);
+  useEffect(() => {
+    (async () => {
+      try {
+        const isSupported = (await navigator.xr?.isSessionSupported(`immersive-vr`)) ?? false;
+        if (isSupported) {
+          setMode(`vr`);
+          return;
+        }
+      } catch {
+        // empty
+      }
+      setMode(`3d`);
+    })();
+  }, []);
   return (
     <>
-      <VRButton onError={(e) => console.error(e)} />
+      {mode === `vr` && <VRButton onError={(e) => console.error(e)} />}
       <Canvas>
         <XR referenceSpace={`local-floor`}>
-          <Scene_B_WithReactAndRapier />
-        </XR>
-      </Canvas>
-    </>
-  );
-};
-
-const NonVrPage = () => {
-  return (
-    <>
-      <Canvas>
-        <XR referenceSpace={`local-floor`}>
-          <TrackballControls />
+          {mode === `3d` && <TrackballControls />}
           <Scene_B_WithReactAndRapier />
         </XR>
       </Canvas>
@@ -46,26 +49,6 @@ const Scene_B_WithReactAndRapier = ({ debugVisible = true }: { debugVisible?: bo
   return (
     <>
       <group>
-        {/* <ScenePerspective perspective={`1st`}> */}
-        {/* {[...new Array(3)].map((_, i) => (
-            <pointLight
-              key={i}
-              position={[500 - 1000 * Math.random(), 50 * Math.random(), 500 - 1000 * Math.random()]}
-              color={Math.round(0xffffff * Math.random())}
-              distance={300}
-            />
-          ))} */}
-        {/* <gridHelper args={[100, 100]} /> */}
-        {/* <Mover_Running /> */}
-        {/* <RandomGround /> */}
-        {/* <PlayerAvatarInSceneSpace /> */}
-
-        {/* <Sphere position={[-2, 1, 0]} scale={0.02} />
-          <Sphere position={[0, 1, -10]} scale={0.05} />*/}
-        {/* <Sphere position={[0, 1, -90]} /> */}
-
-        {/* <Scene00ReactWithRapier /> */}
-        {/* </ScenePerspective> */}
         <SceneManager />
       </group>
     </>
