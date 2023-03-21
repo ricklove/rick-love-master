@@ -1,7 +1,7 @@
 import React, { useRef } from 'react';
 import { Box, Sphere } from '@react-three/drei';
 import { useFrame } from '@react-three/fiber';
-import { RapierRigidBody, RigidBody } from '@react-three/rapier';
+import { BallCollider, RapierRigidBody, RigidBody } from '@react-three/rapier';
 import { Matrix4, Quaternion, Vector3 } from 'three';
 import { useCamera } from '../../components/camera';
 import { calculateRotationMatrix } from '../../gestures/helpers';
@@ -40,7 +40,7 @@ export const SelectorStandardInput = ({ distance = 3 }: { distance?: number }) =
       selector.setMode(SelectionMode.select);
     };
     const onTouchEnd = (_ev: TouchEvent) => {
-      selector.setMode(SelectionMode.none);
+      selector.setMode(SelectionMode.hover);
     };
     document.addEventListener(`mousedown`, onMouseDown, false);
     document.addEventListener(`touchstart`, onTouchStart, false);
@@ -88,15 +88,19 @@ export const SelectorStandardInput = ({ distance = 3 }: { distance?: number }) =
 
   return (
     <>
-      <RigidBody ref={ref} type='kinematicPosition' name={`SelectorStandardInput`}>
-        <Sphere scale={0.05}>
-          <meshStandardMaterial color={0x00ff00} />
+      <RigidBody ref={ref} type='kinematicPosition' name={`SelectorStandardInput`} sensor colliders={false}>
+        <BallCollider args={[0.01]} />
+        <Sphere scale={0.01}>
+          <meshStandardMaterial color={0xffffff} />
         </Sphere>
-        <Box scale={[1, 0.01, 0.01]} position={[0, 0, 0]}>
+        <Box scale={[0.1, 0.01, 0.01]} position={[0, 0, 0]}>
+          <meshStandardMaterial color={0xff0000} />
+        </Box>
+        <Box scale={[0.01, 0.1, 0.01]} position={[0, 0, 0]}>
           <meshStandardMaterial color={0x00ff00} />
         </Box>
-        <Box scale={[0.01, 1, 0.01]} position={[0, 0, 0]}>
-          <meshStandardMaterial color={0x00ff00} />
+        <Box scale={[0.01, 0.01, 0.1]} position={[0, 0, 0]}>
+          <meshStandardMaterial color={0x0000ff} />
         </Box>
       </RigidBody>
     </>

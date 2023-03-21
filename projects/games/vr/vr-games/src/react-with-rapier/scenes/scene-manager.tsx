@@ -5,9 +5,9 @@ import { CuboidCollider, Physics, RigidBody } from '@react-three/rapier';
 import { Billboard, Hud } from '../../components/hud';
 import { ScenePerspective } from '../../components/perspective';
 import { GestureOptions, GesturesProvider, useGestures } from '../../gestures/gestures';
-import { DebugConsole } from '../../utils/logger';
+import { DebugConsole, logger } from '../../utils/logger';
 import { Player, PlayerComponentContext } from '../components/player';
-import { SelectableContext } from '../components/selectable';
+import { SelectableContext, SelectionMode } from '../components/selectable';
 import { SelectorStandardInput } from '../components/selector-standard-input';
 import { SceneCrafting } from './scene-crafting';
 import { Scene00ReactWithRapier } from './scene00/scene';
@@ -116,7 +116,12 @@ export const PhysicalSelection = ({
   onSelect: () => void;
   position: Vector3;
 }) => {
-  const selectable = SelectableContext.useSelectable(({ event }) => {
+  const [color, setColor] = useState(`#706bff`);
+  const selectable = SelectableContext.useSelectable(({ event, mode }) => {
+    const color = mode === SelectionMode.hover ? `#8c8acb` : mode === SelectionMode.select ? `#2e2d4d` : `#706bff`;
+    setColor(color);
+    logger.log(`useSelectable`, { mode, color });
+
     if (event === `select-enter`) {
       onSelect();
     }
@@ -128,7 +133,7 @@ export const PhysicalSelection = ({
         <RigidBody name={`PhysicalSelection-${text}`} colliders={false} {...selectable}>
           <CuboidCollider args={[0.5, 0.5, 0.5]} />
           <Box args={[1, 1, 1]}>
-            <meshStandardMaterial color={`#706bff`} />
+            <meshStandardMaterial color={color} />
           </Box>
           <Billboard>
             <Text position={[0, 0.75, 0]} fontSize={0.05}>

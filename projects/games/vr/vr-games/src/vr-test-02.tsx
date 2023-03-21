@@ -1,8 +1,8 @@
 /* eslint-disable @typescript-eslint/naming-convention */
 import React, { useEffect, useState } from 'react';
-import { OrbitControls } from '@react-three/drei';
 import { Canvas } from '@react-three/fiber';
 import { VRButton, XR } from '@react-three/xr';
+import { StandardInputPlayerControls } from './components/standard-input-player-controller';
 import { SceneManager } from './react-with-rapier/scenes/scene-manager';
 
 export const VrTestGame = () => {
@@ -37,7 +37,7 @@ const VRPage = () => {
       {mode === `vr` && <VRButton onError={(e) => console.error(e)} />}
       <Canvas>
         <XR referenceSpace={mode === `vr` ? `local-floor` : `unbounded`}>
-          {mode === `3d` && <OrbitControls />}
+          {mode === `3d` && <StandardInputPlayerControls />}
           <SceneManager />
         </XR>
       </Canvas>

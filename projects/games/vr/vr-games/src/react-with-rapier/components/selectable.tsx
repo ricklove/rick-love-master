@@ -1,5 +1,11 @@
 import { useMemo } from 'react';
-import { CollisionEnterPayload, CollisionExitPayload, RapierRigidBody } from '@react-three/rapier';
+import {
+  CollisionEnterPayload,
+  CollisionExitPayload,
+  IntersectionEnterPayload,
+  IntersectionExitPayload,
+  RapierRigidBody,
+} from '@react-three/rapier';
 import { BehaviorSubject } from 'rxjs';
 import { createContextWithDefault } from '../../utils/contextWithDefault';
 import { logger } from '../../utils/logger';
@@ -103,40 +109,54 @@ const useSelectable = (subscribe: (event: SelectableEvent) => void) => {
     };
   }, []);
 
+  const enter = (e: CollisionEnterPayload | IntersectionEnterPayload) => {
+    const other = e.other.rigidBody;
+    const selector = s.selectors.find((x) => x.rigidBody === other);
+    logger.log(`enter other`, { selector, other, selectors: s.selectors });
+
+    if (!selector) {
+      return;
+    }
+
+    if (selectable.activeSelectors.has(selector)) {
+      return;
+    }
+    const sub = selector.mode.subscribe(() => {
+      updateMode();
+    });
+    selectable.activeSelectors.set(selector, { selector, subscription: sub });
+    updateMode();
+  };
+
+  const exit = (e: CollisionExitPayload | IntersectionExitPayload) => {
+    const other = e.other.rigidBody;
+    const selector = s.selectors.find((x) => x.rigidBody === other);
+    logger.log(`exit other`, { selector, other, selectors: s.selectors });
+
+    if (!selector) {
+      return;
+    }
+    const selectorData = selectable.activeSelectors.get(selector);
+    if (!selectorData) {
+      return;
+    }
+    selectorData.subscription.unsubscribe();
+    selectable.activeSelectors.delete(selector);
+    updateMode();
+  };
+
   return {
     onCollisionEnter: (e: CollisionEnterPayload) => {
-      const other = e.other.rigidBody;
-      const selector = s.selectors.find((x) => x.rigidBody === other);
-
-      logger.log(`onCollisionEnter other`, { other, e, selectors: s.selectors });
-
-      if (!selector) {
-        return;
-      }
-      logger.log(`onCollisionEnter selector`, { selector, e });
-
-      if (selectable.activeSelectors.has(selector)) {
-        return;
-      }
-      const sub = selector.mode.subscribe(() => {
-        updateMode();
-      });
-      selectable.activeSelectors.set(selector, { selector, subscription: sub });
-      updateMode();
+      enter(e);
     },
     onCollisionExit: (e: CollisionExitPayload) => {
-      const other = e.other.rigidBody;
-      const selector = s.selectors.find((x) => x.rigidBody === other);
-      if (!selector) {
-        return;
-      }
-      const selectorData = selectable.activeSelectors.get(selector);
-      if (!selectorData) {
-        return;
-      }
-      selectorData.subscription.unsubscribe();
-      selectable.activeSelectors.delete(selector);
-      updateMode();
+      exit(e);
+    },
+    onIntersectionEnter: (e: IntersectionEnterPayload) => {
+      enter(e);
+    },
+    onIntersectionExit: (e: IntersectionExitPayload) => {
+      exit(e);
     },
   };
 };
