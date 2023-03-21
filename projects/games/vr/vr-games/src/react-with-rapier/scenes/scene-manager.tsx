@@ -1,15 +1,14 @@
-import React, { Suspense, useState } from 'react';
+import React, { useState } from 'react';
 import { Box, Sphere, Stars, Stats, Text } from '@react-three/drei';
 import { useFrame, Vector3 } from '@react-three/fiber';
-import { CuboidCollider, Physics, RigidBody } from '@react-three/rapier';
+import { CuboidCollider, RigidBody } from '@react-three/rapier';
 import { Billboard, Hud } from '../../components/hud';
 import { ScenePerspective } from '../../components/perspective';
 import { GestureOptions, GesturesProvider, useGestures } from '../../gestures/gestures';
 import { DebugConsole, logger } from '../../utils/logger';
-import { Player, PlayerComponentContext } from '../components/player';
 import { SelectableContext, SelectionMode } from '../components/selectable';
-import { SelectorFixedPointer } from '../components/selector-fixed-pointer';
 import { SceneCrafting } from './scene-crafting';
+import { SceneLayout } from './scene-layout';
 import { Scene00ReactWithRapier } from './scene00/scene';
 
 export const SceneManager = () => {
@@ -69,30 +68,22 @@ export const SceneSelector = ({ onChange }: { onChange: (scene: { SceneComponent
   return (
     <>
       <Sphere position={[0, 1, -90]} />
-      <Suspense>
-        <Physics colliders='ball' gravity={[0, 0, 0]}>
-          <SelectableContext.Provider>
-            <PlayerComponentContext.Provider>
-              <SelectorFixedPointer />
-              <Player />
-              <RigidBody name={`Ground`} type='fixed' colliders='cuboid'>
-                <Box position={[0, -100, 0]} args={[10000, 200, 10000]}>
-                  <meshStandardMaterial color={`#333333`} />
-                </Box>
-              </RigidBody>
-              {scenes.map((x, i) => (
-                <React.Fragment key={x.name}>
-                  <PhysicalSelection
-                    text={x.name}
-                    onSelect={() => onChange(x)}
-                    position={[size * (i % cols), 0, -5 - size * Math.floor(i / cols)]}
-                  />
-                </React.Fragment>
-              ))}
-            </PlayerComponentContext.Provider>
-          </SelectableContext.Provider>
-        </Physics>
-      </Suspense>
+      <SceneLayout>
+        <RigidBody name={`Ground`} type='fixed' colliders='cuboid'>
+          <Box position={[0, -100, 0]} args={[10000, 200, 10000]}>
+            <meshStandardMaterial color={`#333333`} />
+          </Box>
+        </RigidBody>
+        {scenes.map((x, i) => (
+          <React.Fragment key={x.name}>
+            <PhysicalSelection
+              text={x.name}
+              onSelect={() => onChange(x)}
+              position={[size * (i % cols), 0, -5 - size * Math.floor(i / cols)]}
+            />
+          </React.Fragment>
+        ))}
+      </SceneLayout>
     </>
   );
 };

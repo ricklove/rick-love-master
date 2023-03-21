@@ -1,46 +1,39 @@
-import React, { Suspense, useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Box, Sphere } from '@react-three/drei';
 import { Vector3 as Vector3Like } from '@react-three/fiber';
-import { Physics, RigidBody } from '@react-three/rapier';
-import { GestureOptions, GesturesProvider } from '../../../gestures/gestures';
-import { Player, PlayerComponentContext } from '../../components/player';
+import { RigidBody } from '@react-three/rapier';
+import { SelectableContext, SelectionMode } from '../../components/selectable';
 import { Axe } from '../../components/weapon';
+import { SceneLayout } from '../scene-layout';
 
 export const Scene00ReactWithRapier = () => {
   return (
-    <Suspense>
-      <GesturesProvider options={GestureOptions.all}>
-        <Physics gravity={[0, -9.8, 0]} colliders='ball'>
-          <PlayerComponentContext.Provider>
-            <Player />
-            <group>
-              {/* <HangingThing position={[2, 3.5, 0]} />
+    <SceneLayout>
+      <group>
+        {/* <HangingThing position={[2, 3.5, 0]} />
         <HangingThing position={[5, 3.5, 0]} />
         <HangingThing position={[7, 3.5, 0]} />
 
         <Rope length={20} /> */}
 
-              <Axe position={[0, 2, -1]} />
-              <BallSpawner />
+        <Axe position={[0, 2, -1]} />
+        <BallSpawner />
 
-              <group rotation={[0, 0, Math.PI * 0.05]}>
-                {/* Floor */}
-                <RigidBody type='fixed' colliders='cuboid'>
-                  <Box position={[0, -100, 0]} args={[10000, 200, 10000]}>
-                    <meshStandardMaterial color={0x333333} />
-                  </Box>
-                </RigidBody>
+        <group rotation={[0, 0, Math.PI * 0.05]}>
+          {/* Floor */}
+          <RigidBody type='fixed' colliders='cuboid'>
+            <Box position={[0, -100, 0]} args={[10000, 200, 10000]}>
+              <meshStandardMaterial color={0x333333} />
+            </Box>
+          </RigidBody>
 
-                {/* <CuboidCollider position={[0, 0, 0]} args={[100, 1, 100]} /> */}
-              </group>
+          {/* <CuboidCollider position={[0, 0, 0]} args={[100, 1, 100]} /> */}
+        </group>
 
-              {/* <ContactShadows scale={20} blur={0.4} opacity={0.2} position={[-0, -1.5, 0]} /> */}
-            </group>
-            {/* <Debug /> */}
-          </PlayerComponentContext.Provider>
-        </Physics>
-      </GesturesProvider>
-    </Suspense>
+        {/* <ContactShadows scale={20} blur={0.4} opacity={0.2} position={[-0, -1.5, 0]} /> */}
+      </group>
+      {/* <Debug /> */}
+    </SceneLayout>
   );
 };
 
@@ -69,12 +62,17 @@ const BallSpawner = () => {
 };
 
 const BallCreature = ({ position }: { position: Vector3Like }) => {
+  const [color, setColor] = useState(`#00ff00`);
+  const s = SelectableContext.useSelectable(({ mode }) => {
+    const color = mode === SelectionMode.hover ? `#ffe100` : mode === SelectionMode.select ? `#ff0000` : `#00ff00`;
+    setColor(color);
+  });
   return (
     <group position={position}>
       <group position={[0, 1, 0]} scale={0.25}>
-        <RigidBody>
+        <RigidBody {...s}>
           <Sphere>
-            <meshStandardMaterial color={0x00ff00} />
+            <meshStandardMaterial color={color} />
           </Sphere>
           <group position={[-0.75, -0.5, 0]}>
             <Sphere args={[0.5]} position={[0, 0, 0.3]}>

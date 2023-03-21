@@ -95,8 +95,9 @@ export const SelectorFixedPointer = ({ distance = 3 }: { distance?: number }) =>
 
     if (gesturesStepper.update()) {
       selector.setMode(SelectionMode.select);
-    } else {
-      selector.setMode(SelectionMode.hover);
+      setTimeout(() => {
+        selector.setMode(SelectionMode.hover);
+      }, 0);
     }
   });
 
