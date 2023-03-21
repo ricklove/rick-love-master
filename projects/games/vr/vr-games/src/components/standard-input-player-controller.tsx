@@ -3,6 +3,7 @@ import { useFrame } from '@react-three/fiber';
 import { Matrix4, Quaternion, Vector2, Vector3 } from 'three';
 import { calculateRotationMatrix } from '../gestures/helpers';
 import { useIsomorphicLayoutEffect } from '../utils/layoutEffect';
+import { logger } from '../utils/logger';
 import { useCamera, usePlayer } from './camera';
 
 export const StandardInputPlayerControls = ({}: {}) => {
@@ -14,6 +15,10 @@ export const StandardInputPlayerControls = ({}: {}) => {
       a: false,
       s: false,
       d: false,
+      up: false,
+      down: false,
+      left: false,
+      right: false,
     },
     mouse: {
       left: false,
@@ -42,15 +47,17 @@ export const StandardInputPlayerControls = ({}: {}) => {
       }
     };
     const onKeyDown = (e: KeyboardEvent) => {
-      const key = e.key as keyof typeof inputState.keys;
-      if (Object.keys(inputState.keys).includes(key)) {
+      const key = e.key.toLowerCase().replace(`arrow`, ``) as keyof typeof inputState.keys;
+      logger.log(`onKeyDown`, { e, key });
+      if (!Object.keys(inputState.keys).includes(key)) {
         return;
       }
       inputState.keys[key] = true;
     };
     const onKeyUp = (e: KeyboardEvent) => {
-      const key = e.key as keyof typeof inputState.keys;
-      if (Object.keys(inputState.keys).includes(key)) {
+      const key = e.key.toLowerCase().replace(`arrow`, ``) as keyof typeof inputState.keys;
+      logger.log(`onKeyUp`, { e, key });
+      if (!Object.keys(inputState.keys).includes(key)) {
         return;
       }
       inputState.keys[key] = false;
@@ -115,24 +122,15 @@ export const StandardInputPlayerControls = ({}: {}) => {
   const working = useRef({
     mouseDelta: new Vector2(),
     wheelMovement: new Vector3(),
+    keyMovement: new Vector3(),
     vAtScreen: new Vector3(),
-    // vAtDistance: new Vector3(),
     dir: new Vector3(),
     upDir: new Vector3(),
     q: new Quaternion(),
     rotationMatrix: new Matrix4(),
   });
   useFrame(({ pointer }) => {
-    const {
-      mouseDelta,
-      wheelMovement,
-      vAtScreen,
-      // vAtDistance,
-      dir,
-      upDir,
-      q,
-      rotationMatrix,
-    } = working.current;
+    const { mouseDelta, wheelMovement, keyMovement, vAtScreen, dir, upDir, q, rotationMatrix } = working.current;
 
     // Mouse camera angle
     // const { x, y } = pointer;
@@ -170,9 +168,26 @@ export const StandardInputPlayerControls = ({}: {}) => {
     // }
     player.position.add(wheelMovement);
 
-    // logger.log(`SelectorStandardInput v`, { vAtScreen, vAtDistance, distance, x, y });
-    // ref.current.setNextKinematicTranslation(vAtDistance);
-    // ref.current.setNextKinematicRotation(q);
+    // keyboard movement
+    const keyboardSpeed = 0.19;
+    keyMovement.set(0, 0, 0);
+    if (inputState.keys.w || inputState.keys.up) {
+      keyMovement.setZ(-1);
+    }
+    if (inputState.keys.s || inputState.keys.down) {
+      keyMovement.setZ(1);
+    }
+    if (inputState.keys.a || inputState.keys.left) {
+      keyMovement.setX(-1);
+    }
+    if (inputState.keys.d || inputState.keys.right) {
+      keyMovement.setX(1);
+    }
+    keyMovement.multiplyScalar(keyboardSpeed).applyQuaternion(camera.quaternion);
+    // if (keyMovement.x || keyMovement.z) {
+    //   console.log(`keyMovement`, { keyMovement, keys: { ...inputState.keys } });
+    // }
+    player.position.add(keyMovement);
   });
 
   return <></>;
