@@ -216,3 +216,20 @@ const calculateBodyGestures = (
   }
   return out;
 };
+
+type FingerCode = `o` | `c` | ` `;
+type HandFingerCode = `${FingerCode}${FingerCode}${FingerCode}${FingerCode}${FingerCode}`;
+export const checkGestureFinger = (finger: HandGestureResult[`fingerExtendedIndex`], code: FingerCode) => {
+  const s = finger.state;
+  return code === ` ` || (code === `o` && s === `extended`) || (code === `c` && s === `closed`);
+};
+export const checkGestureFingers = (hand: HandGestureResult, code: HandFingerCode) => {
+  const fingerCodes = code.split(``) as FingerCode[];
+  return (
+    checkGestureFinger(hand.fingerExtendedThumb, fingerCodes[0]) &&
+    checkGestureFinger(hand.fingerExtendedIndex, fingerCodes[1]) &&
+    checkGestureFinger(hand.fingerExtendedMiddle, fingerCodes[2]) &&
+    checkGestureFinger(hand.fingerExtendedRing, fingerCodes[3]) &&
+    checkGestureFinger(hand.fingerExtendedPinky, fingerCodes[4])
+  );
+};

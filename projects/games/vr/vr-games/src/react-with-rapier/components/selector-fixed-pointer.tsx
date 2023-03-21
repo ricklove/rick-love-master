@@ -4,13 +4,16 @@ import { useFrame } from '@react-three/fiber';
 import { BallCollider, RapierRigidBody, RigidBody } from '@react-three/rapier';
 import { Matrix4, Quaternion, Vector3 } from 'three';
 import { useCamera } from '../../components/camera';
+import { checkGestureFingers, useGestures } from '../../gestures/gestures';
 import { calculateRotationMatrix } from '../../gestures/helpers';
+import { createConditionSequence } from '../../utils/condition-sequence';
 import { useIsomorphicLayoutEffect } from '../../utils/layoutEffect';
 import { SelectableContext, SelectionMode } from './selectable';
 
-export const SelectorStandardInput = ({ distance = 3 }: { distance?: number }) => {
+export const SelectorFixedPointer = ({ distance = 3 }: { distance?: number }) => {
   const selector = SelectableContext.useSelector();
   const camera = useCamera();
+  const gestures = useGestures();
   const ref = useRef<RapierRigidBody>(null);
 
   useIsomorphicLayoutEffect(() => {
@@ -61,14 +64,19 @@ export const SelectorStandardInput = ({ distance = 3 }: { distance?: number }) =
     upDir: new Vector3(),
     q: new Quaternion(),
     rotationMatrix: new Matrix4(),
+    gesturesStepper: createConditionSequence([
+      () => checkGestureFingers(gestures.right, `occcc`),
+      () => checkGestureFingers(gestures.right, `ccccc`),
+    ]),
   });
   useFrame(({ pointer }) => {
     if (!ref.current) {
       return;
     }
-    const { vAtScreen, vAtDistance, dir, upDir, q, rotationMatrix } = working.current;
+    const { vAtScreen, vAtDistance, dir, upDir, q, rotationMatrix, gesturesStepper } = working.current;
 
-    const { x, y } = pointer;
+    const FOLLOW_MOUSE = false;
+    const { x, y } = FOLLOW_MOUSE ? pointer : { x: 0, y: 0 };
     vAtScreen.set(x, y, 0).unproject(camera);
     dir.set(x, y, 1).unproject(camera).sub(vAtScreen).normalize();
 
@@ -84,6 +92,12 @@ export const SelectorStandardInput = ({ distance = 3 }: { distance?: number }) =
     // logger.log(`SelectorStandardInput v`, { vAtScreen, vAtDistance, distance, x, y });
     ref.current.setNextKinematicTranslation(vAtDistance);
     ref.current.setNextKinematicRotation(q);
+
+    if (gesturesStepper.update()) {
+      selector.setMode(SelectionMode.select);
+    } else {
+      selector.setMode(SelectionMode.hover);
+    }
   });
 
   return (

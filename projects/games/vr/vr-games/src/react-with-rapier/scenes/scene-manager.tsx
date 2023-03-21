@@ -8,7 +8,7 @@ import { GestureOptions, GesturesProvider, useGestures } from '../../gestures/ge
 import { DebugConsole, logger } from '../../utils/logger';
 import { Player, PlayerComponentContext } from '../components/player';
 import { SelectableContext, SelectionMode } from '../components/selectable';
-import { SelectorStandardInput } from '../components/selector-standard-input';
+import { SelectorFixedPointer } from '../components/selector-fixed-pointer';
 import { SceneCrafting } from './scene-crafting';
 import { Scene00ReactWithRapier } from './scene00/scene';
 
@@ -73,7 +73,7 @@ export const SceneSelector = ({ onChange }: { onChange: (scene: { SceneComponent
         <Physics colliders='ball' gravity={[0, 0, 0]}>
           <SelectableContext.Provider>
             <PlayerComponentContext.Provider>
-              <SelectorStandardInput />
+              <SelectorFixedPointer />
               <Player />
               <RigidBody name={`Ground`} type='fixed' colliders='cuboid'>
                 <Box position={[0, -100, 0]} args={[10000, 200, 10000]}>
