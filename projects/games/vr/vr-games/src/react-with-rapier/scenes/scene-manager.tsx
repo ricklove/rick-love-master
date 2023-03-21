@@ -5,7 +5,7 @@ import { CuboidCollider, Physics, RapierRigidBody, RigidBody } from '@react-thre
 import { Billboard, Hud } from '../../components/hud';
 import { ScenePerspective } from '../../components/perspective';
 import { GestureOptions, GesturesProvider, useGestures } from '../../gestures/gestures';
-import { DebugConsole, logger } from '../../utils/logger';
+import { DebugConsole } from '../../utils/logger';
 import { Player, PlayerComponentContext } from '../components/player';
 import { Scene00ReactWithRapier } from './scene00/scene';
 
@@ -27,7 +27,7 @@ export const SceneManager = () => {
         {!scene && <SceneSelector onChange={setScene} />}
       </ScenePerspective>
       <Hud position={[0, 1, 4]}>
-        <DebugConsole visible={true} />
+        <DebugConsole visible={false} />
       </Hud>
       <SkyBox />
     </GesturesProvider>
@@ -123,7 +123,7 @@ export const PhysicalSelection = ({
             if (!e.other.rigidBody) {
               return;
             }
-            logger.log(`onCollisionEnter`, { other: e.other.rigidBodyObject?.name, r: e.target.rigidBodyObject?.name });
+            // logger.log(`onCollisionEnter`, { other: e.other.rigidBodyObject?.name, r: e.target.rigidBodyObject?.name });
             if (playerContext.player.staffPalmAttachment.left.isAttachment(e.other.rigidBody)) {
               onSelect();
               return;

@@ -7,7 +7,6 @@ import { usePlayer } from '../../components/camera';
 import { HandGestureResult, handJointNames, useGestures } from '../../gestures/gestures';
 import { createContextWithDefault } from '../../utils/contextWithDefault';
 import { useIsomorphicLayoutEffect } from '../../utils/layoutEffect';
-import { logger } from '../../utils/logger';
 import { RigidBodyType } from '../../utils/physics';
 import { ThrottleSubject } from '../../utils/throttleSubject';
 
@@ -24,10 +23,10 @@ const createAttachment = () => {
   };
 
   const addAttachment = (rigidBody: RapierRigidBody, attachment: Object3D) => {
-    logger.log(`addAttachment`, {
-      n: rigidBody.handle,
-      a: attachment.name,
-    });
+    // logger.log(`addAttachment`, {
+    //   n: rigidBody.handle,
+    //   a: attachment.name,
+    // });
     internalState.attachments.push({ rigidBody, attachment });
   };
 
@@ -46,10 +45,10 @@ const createAttachment = () => {
     releaseWeapon,
     addAttachment,
     isAttachment: (rigidBody: RapierRigidBody) => {
-      logger.log(`isAttachment`, {
-        n: rigidBody.handle,
-        a: internalState.attachments.map((x) => x.rigidBody.handle).join(`,`),
-      });
+      //   logger.log(`isAttachment`, {
+      //     n: rigidBody.handle,
+      //     a: internalState.attachments.map((x) => x.rigidBody.handle).join(`,`),
+      //   });
       return internalState.attachments.some((x) => x.rigidBody === rigidBody);
     },
     isWeaponAttached: (rigidBody: RapierRigidBody) => {
@@ -113,8 +112,8 @@ const createContextData = () => {
       return;
     }
 
-    weapon.setTranslation(attachment.getWorldPosition(worldPos), true);
-    weapon.setRotation(attachment.getWorldQuaternion(worldQuat), true);
+    weapon.setNextKinematicTranslation(attachment.getWorldPosition(worldPos));
+    weapon.setNextKinematicRotation(attachment.getWorldQuaternion(worldQuat));
   };
 
   const state = {
@@ -236,8 +235,8 @@ const PlayerHandJoint = ({
     if (!j) {
       return;
     }
-    ref.current.setTranslation(w.v.copy(j.position).add(player.position), true);
-    ref.current.setRotation(j.quaternion, true);
+    ref.current.setNextKinematicTranslation(w.v.copy(j.position).add(player.position));
+    ref.current.setNextKinematicRotation(j.quaternion);
   });
   return (
     <>
@@ -286,16 +285,14 @@ const PlayerHandWeaponAttachments = ({ side, hand }: { side: `left` | `right`; h
     if (!hand._joints[`middle-finger-metacarpal`]?.quaternion) {
       return;
     }
-    // TODO: add weapon attechments to gestures
-    ref.current.setTranslation(
+    ref.current.setNextKinematicTranslation(
       w.v
         .copy(hand.pointingHand._handPalmDirection)
         .multiplyScalar(0.02)
         .add(hand.pointingHand._proximalAverage)
         .add(player.position),
-      true,
     );
-    ref.current.setRotation(w.q.copy(hand._joints[`middle-finger-metacarpal`].quaternion), true);
+    ref.current.setNextKinematicRotation(w.q.copy(hand._joints[`middle-finger-metacarpal`].quaternion));
   });
   return (
     <>
