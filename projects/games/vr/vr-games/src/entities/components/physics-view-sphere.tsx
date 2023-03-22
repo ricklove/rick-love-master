@@ -3,7 +3,6 @@ import { useSphere } from '@react-three/cannon';
 import { useFrame } from '@react-three/fiber';
 import { Color, InstancedMesh, Matrix4, Vector3 } from 'three';
 import { useIsomorphicLayoutEffect } from '../../utils/layoutEffect';
-import { logger } from '../../utils/logger';
 import { cloneComponent, EntityBase } from '../core';
 import { EntityPhysicsView } from './physics-view';
 
@@ -100,7 +99,7 @@ const EntityPhysicsViewSphereBatchComponent = ({ entities }: { entities: EntityP
     entities.forEach((x, i) => {
       const rad = entities[i].sphere.radius;
       api.at(i).scaleOverride([rad, rad, rad]);
-      logger.log(`EntityPhysicsViewSphereBatchComponent scale`, { i, rad, n: x.name, k: x.key });
+      // logger.log(`EntityPhysicsViewSphereBatchComponent scale`, { i, rad, n: x.name, k: x.key });
 
       EntityPhysicsView.register(x, api.at(i));
       x.ready.next(true);

@@ -2,7 +2,6 @@ import React, { useEffect, useMemo, useState } from 'react';
 import { Debug, Physics, useContactMaterial } from '@react-three/cannon';
 import { useFrame } from '@react-three/fiber';
 import { of, Subject } from 'rxjs';
-import { logger } from '../utils/logger';
 import { EntityForce } from './components/force';
 import { EntityAdjustToGround, EntityGround } from './components/ground';
 import { EntityPlayer } from './components/player';
@@ -115,10 +114,10 @@ const useWorldFilter = <T extends Entity>(filter: (item: Entity) => boolean, gro
       const filtered = groupItems(worldState.activeEntities.items.filter((x) => x.active && filter(x)));
       setActiveEntities(filtered);
 
-      logger.log(`useWorldFilter updated`, {
-        items: a.length,
-        filtered: filtered.items.length,
-      });
+      // logger.log(`useWorldFilter updated`, {
+      //   items: a.length,
+      //   filtered: filtered.items.length,
+      // });
     });
     return () => sub.unsubscribe();
   }, []);
@@ -209,14 +208,14 @@ export const WorldContainer = ({ rootEntities, gravity, iterations, debugPhysics
     worldState.activeEntities.frozen = true;
   });
 
-  logger.log(`WorldContainer RENDER`, {
-    debugPhysics,
-    entitiesCount: worldState.activeEntities.items.map((x) => x.key),
-    worldChildrenCount: world.children.items.map((x) => x.key),
-    activeViews: activeViews.map((x) => x.key),
-    activeTextViews: activeTextViews.map((x) => x.key),
-    activeBatchViews: activeBatchViews.map((x) => x.key),
-  });
+  // logger.log(`WorldContainer RENDER`, {
+  //   debugPhysics,
+  //   entitiesCount: worldState.activeEntities.items.map((x) => x.key),
+  //   worldChildrenCount: world.children.items.map((x) => x.key),
+  //   activeViews: activeViews.map((x) => x.key),
+  //   activeTextViews: activeTextViews.map((x) => x.key),
+  //   activeBatchViews: activeBatchViews.map((x) => x.key),
+  // });
 
   if (debugPhysics) {
     <>

@@ -3,7 +3,6 @@ import { useFrame } from '@react-three/fiber';
 import { Matrix4, Quaternion, Vector2, Vector3 } from 'three';
 import { calculateRotationMatrix } from '../gestures/helpers';
 import { useIsomorphicLayoutEffect } from '../utils/layoutEffect';
-import { logger } from '../utils/logger';
 import { useCamera, usePlayer } from './camera';
 
 export const StandardInputPlayerControls = ({}: {}) => {
@@ -48,7 +47,7 @@ export const StandardInputPlayerControls = ({}: {}) => {
     };
     const onKeyDown = (e: KeyboardEvent) => {
       const key = e.key.toLowerCase().replace(`arrow`, ``) as keyof typeof inputState.keys;
-      logger.log(`onKeyDown`, { e, key });
+      // logger.log(`onKeyDown`, { e, key });
       if (!Object.keys(inputState.keys).includes(key)) {
         return;
       }
@@ -56,7 +55,7 @@ export const StandardInputPlayerControls = ({}: {}) => {
     };
     const onKeyUp = (e: KeyboardEvent) => {
       const key = e.key.toLowerCase().replace(`arrow`, ``) as keyof typeof inputState.keys;
-      logger.log(`onKeyUp`, { e, key });
+      // logger.log(`onKeyUp`, { e, key });
       if (!Object.keys(inputState.keys).includes(key)) {
         return;
       }

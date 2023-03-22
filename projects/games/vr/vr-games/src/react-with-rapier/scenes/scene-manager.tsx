@@ -5,7 +5,7 @@ import { CuboidCollider, RigidBody } from '@react-three/rapier';
 import { Billboard, Hud } from '../../components/hud';
 import { ScenePerspective } from '../../components/perspective';
 import { GestureOptions, GesturesProvider, useGestures } from '../../gestures/gestures';
-import { DebugConsole, logger } from '../../utils/logger';
+import { DebugConsole } from '../../utils/logger';
 import { SelectableContext, SelectionMode } from '../components/selectable';
 import { Scene00PlayerAvatar } from './scene-00-player-avatar';
 import { SceneCrafting } from './scene-crafting';
@@ -99,7 +99,8 @@ const scenes = [
   //   { name: `Scene 04 - Alien Eggs and Axes`, SceneComponent: Scene00ReactWithRapier },
   //   { name: `Scene 05 - Alien Eggs and Axes`, SceneComponent: Scene00ReactWithRapier },
 ];
-const defaultScene = undefined; // scenes[0];
+// const defaultScene = undefined; // scenes[0];
+const defaultScene = scenes[2];
 
 export const PhysicalSelection = ({
   text,
@@ -114,7 +115,7 @@ export const PhysicalSelection = ({
   const selectable = SelectableContext.useSelectable(({ event, mode }) => {
     const color = mode === SelectionMode.hover ? `#8c8acb` : mode === SelectionMode.select ? `#2e2d4d` : `#706bff`;
     setColor(color);
-    logger.log(`useSelectable`, { mode, color });
+    // logger.log(`useSelectable`, { mode, color });
 
     if (event === `select-enter`) {
       onSelect();

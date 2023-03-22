@@ -8,7 +8,6 @@ import {
 } from '@react-three/rapier';
 import { BehaviorSubject } from 'rxjs';
 import { createContextWithDefault } from '../../utils/contextWithDefault';
-import { logger } from '../../utils/logger';
 
 export enum SelectionMode {
   none = 0,
@@ -112,7 +111,7 @@ const useSelectable = (subscribe: (event: SelectableEvent) => void) => {
   const enter = (e: CollisionEnterPayload | IntersectionEnterPayload) => {
     const other = e.other.rigidBody;
     const selector = s.selectors.find((x) => x.rigidBody === other);
-    logger.log(`enter other`, { selector, other, selectors: s.selectors });
+    // logger.log(`enter other`, { selector, other, selectors: s.selectors });
 
     if (!selector) {
       return;
@@ -131,7 +130,7 @@ const useSelectable = (subscribe: (event: SelectableEvent) => void) => {
   const exit = (e: CollisionExitPayload | IntersectionExitPayload) => {
     const other = e.other.rigidBody;
     const selector = s.selectors.find((x) => x.rigidBody === other);
-    logger.log(`exit other`, { selector, other, selectors: s.selectors });
+    // logger.log(`exit other`, { selector, other, selectors: s.selectors });
 
     if (!selector) {
       return;

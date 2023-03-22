@@ -8,7 +8,6 @@ import { Group, Matrix4, Mesh, Object3D, Vector3 } from 'three';
 import { createProblemEngine, ProblemEngine, ProblemEnginePlayerState } from '@ricklove/study-subjects';
 import { delay, randomItem, randomOrder } from '@ricklove/utils-core';
 import { Hud } from '../../components/hud';
-import { formatVector } from '../../utils/formatters';
 import { useIsomorphicLayoutEffect } from '../../utils/layoutEffect';
 import { logger } from '../../utils/logger';
 import { defineComponent, EntityBase } from '../core';
@@ -101,7 +100,7 @@ export const EntityProblemEngineComponent = ({ entity }: { entity: EntityProblem
     const playerState = (entity.problemEngine.playerState =
       entity.problemEngine.problemEngine.createPlayer(`Player 1`));
 
-    logger.log(`Starting study game`);
+    // logger.log(`Starting study game`);
     // eslint-disable-next-line no-void
     void entity.problemEngine.problemEngine.startStudyGame({
       playerState,
@@ -177,7 +176,7 @@ export const EntityProblemEngineComponent = ({ entity }: { entity: EntityProblem
             });
           });
 
-          logger.log(`opt`, { result });
+          // logger.log(`opt`, { result });
           sub.unsubscribe();
           EntityProblemEngine.clearChoices(entity);
           setUi({
@@ -220,7 +219,7 @@ export const EntityProblemEngineComponent = ({ entity }: { entity: EntityProblem
               },
             });
           });
-          logger.log(`multi`, { answer: result.answer, correct: correctAnswer });
+          // logger.log(`multi`, { answer: result.answer, correct: correctAnswer });
           sub.unsubscribe();
           EntityProblemEngine.clearChoices(entity);
           setUi({
@@ -401,7 +400,7 @@ const PhysicsBulletPointInnerSimple = ({
     }
 
     ref.current.position.setFromMatrixPosition(worldMatrixRef.current);
-    logger.log(`bullet pos`, formatVector(ref.current.position));
+    // logger.log(`bullet pos`, formatVector(ref.current.position));
   });
 
   return (
