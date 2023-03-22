@@ -217,11 +217,14 @@ const calculateBodyGestures = (
   return out;
 };
 
+/**
+ * c == closed
+ * o == open == !closed == extended or partial */
 type FingerCode = `o` | `c` | ` `;
 type HandFingerCode = `${FingerCode}${FingerCode}${FingerCode}${FingerCode}${FingerCode}`;
 export const checkGestureFinger = (finger: HandGestureResult[`fingerExtendedIndex`], code: FingerCode) => {
   const s = finger.state;
-  return code === ` ` || (code === `o` && s === `extended`) || (code === `c` && s === `closed`);
+  return code === ` ` || (code === `o` && s !== `closed`) || (code === `c` && s === `closed`);
 };
 export const checkGestureFingers = (hand: HandGestureResult, code: HandFingerCode) => {
   const fingerCodes = code.split(``) as FingerCode[];

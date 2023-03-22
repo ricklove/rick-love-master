@@ -10,7 +10,7 @@ import { createConditionSequence } from '../../utils/condition-sequence';
 import { useIsomorphicLayoutEffect } from '../../utils/layoutEffect';
 import { SelectableContext, SelectionMode } from './selectable';
 
-export const SelectorFixedPointer = ({ distance = 3 }: { distance?: number }) => {
+export const SelectorFixedPointer = ({ distance = 1 }: { distance?: number }) => {
   const selector = SelectableContext.useSelector();
   const camera = useCamera();
   const gestures = useGestures();
@@ -21,6 +21,8 @@ export const SelectorFixedPointer = ({ distance = 3 }: { distance?: number }) =>
       return;
     }
     selector.setRigidbody(ref.current);
+    selector.setMode(SelectionMode.hover);
+
     const _getButtonKind = (button: number) => {
       switch (button) {
         case 0:

@@ -55,7 +55,7 @@ const getFingerExtended = <TKey extends `Thumb` | `Index` | `Middle` | `Ring` | 
   });
 };
 
-export const fingerExtendedThumb = getFingerExtended(`Thumb`, `thumb`, 1.2);
+export const fingerExtendedThumb = getFingerExtended(`Thumb`, `thumb`, 1.1);
 export const fingerExtendedIndex = getFingerExtended(`Index`, `index-finger`);
 export const fingerExtendedMiddle = getFingerExtended(`Middle`, `middle-finger`);
 export const fingerExtendedRing = getFingerExtended(`Ring`, `ring-finger`);

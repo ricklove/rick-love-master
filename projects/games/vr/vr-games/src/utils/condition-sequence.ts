@@ -1,3 +1,5 @@
+import { logger } from './logger';
+
 export const createConditionSequence = (conditions: (() => boolean)[]) => {
   //   const subject = new BehaviorSubject<boolean>(false);
   const state = {
@@ -6,6 +8,7 @@ export const createConditionSequence = (conditions: (() => boolean)[]) => {
 
   const update = () => {
     // subject.next(false);
+    // logger.log(`seq`, { i: state.indexNext });
 
     // if next condition, then progress
     const condNext = conditions[state.indexNext];
@@ -15,9 +18,11 @@ export const createConditionSequence = (conditions: (() => boolean)[]) => {
       // if at end, then success
       if (state.indexNext >= conditions.length) {
         state.indexNext = 0;
+        logger.log(`seq SUCCESS`, { i: state.indexNext });
         return true;
       }
 
+      logger.log(`seq NEXT`, { i: state.indexNext });
       return false;
     }
 
@@ -28,6 +33,7 @@ export const createConditionSequence = (conditions: (() => boolean)[]) => {
     }
 
     // reset if current condition fails
+    logger.log(`seq RESET`, { i: state.indexNext });
     state.indexNext = 0;
     return false;
   };

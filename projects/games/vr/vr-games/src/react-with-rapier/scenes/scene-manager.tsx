@@ -7,12 +7,13 @@ import { ScenePerspective } from '../../components/perspective';
 import { GestureOptions, GesturesProvider, useGestures } from '../../gestures/gestures';
 import { DebugConsole, logger } from '../../utils/logger';
 import { SelectableContext, SelectionMode } from '../components/selectable';
+import { Scene00PlayerAvatar } from './scene-00-player-avatar';
 import { SceneCrafting } from './scene-crafting';
 import { SceneLayout } from './scene-layout';
 import { Scene00ReactWithRapier } from './scene00/scene';
 
 export const SceneManager = () => {
-  const [scene, setScene] = useState(undefined as undefined | { SceneComponent: () => JSX.Element });
+  const [scene, setScene] = useState(defaultScene as undefined | { SceneComponent: () => JSX.Element });
 
   return (
     <GesturesProvider options={GestureOptions.all}>
@@ -89,6 +90,7 @@ export const SceneSelector = ({ onChange }: { onChange: (scene: { SceneComponent
 };
 
 const scenes = [
+  { name: `Player Avatar`, SceneComponent: Scene00PlayerAvatar },
   { name: `Scene Crafting`, SceneComponent: SceneCrafting },
   { name: `Scene 00 - Alien Eggs and Axes`, SceneComponent: Scene00ReactWithRapier },
   //   { name: `Scene 01 - Alien Eggs and Axes`, SceneComponent: Scene00ReactWithRapier },
@@ -97,6 +99,7 @@ const scenes = [
   //   { name: `Scene 04 - Alien Eggs and Axes`, SceneComponent: Scene00ReactWithRapier },
   //   { name: `Scene 05 - Alien Eggs and Axes`, SceneComponent: Scene00ReactWithRapier },
 ];
+const defaultScene = undefined; // scenes[0];
 
 export const PhysicalSelection = ({
   text,
