@@ -1,13 +1,13 @@
 import React from 'react';
 import { Box } from '@react-three/drei';
 import { RigidBody } from '@react-three/rapier';
-import { PlayerAvatarInSceneSpace } from '../../components/player-avatar';
-import { SceneLayout } from './scene-layout';
+import { Player } from '../../components/player';
+import { SceneLayout } from '../scene-layout';
 
-export const Scene00PlayerAvatar = () => {
+export const Scene01PlayerAvatar = () => {
   return (
     <SceneLayout includePlayer={false}>
-      <PlayerAvatarInSceneSpace debug={true} />
+      <Player />
       {/* Floor */}
       <RigidBody type='fixed' colliders='cuboid'>
         <Box position={[0, -100, 0]} args={[10000, 200, 10000]}>

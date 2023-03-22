@@ -1,25 +1,25 @@
-import React, { useState } from 'react';
+import React, { ReactNode, useState } from 'react';
 import { Box, Sphere, Stars, Stats, Text } from '@react-three/drei';
 import { useFrame, Vector3 } from '@react-three/fiber';
 import { CuboidCollider, RigidBody } from '@react-three/rapier';
+import { useCamera, usePlayer } from '../../components/camera';
 import { Billboard, Hud } from '../../components/hud';
 import { ScenePerspective } from '../../components/perspective';
 import { GestureOptions, GesturesProvider, useGestures } from '../../gestures/gestures';
 import { useIsomorphicLayoutEffect } from '../../utils/layoutEffect';
 import { DebugConsole } from '../../utils/logger';
 import { SelectableContext, SelectionMode } from '../components/selectable';
-import { Scene00PlayerAvatar } from './scene-00-player-avatar';
-import { Scene01PlayerAvatar } from './scene-01-player';
 import { SceneCrafting } from './scene-crafting';
 import { SceneLayout } from './scene-layout';
 import { Scene00ReactWithRapier } from './scene00/scene';
+import { Scene00PlayerAvatar } from './test-scenes/scene-00-player-avatar';
+import { Scene01PlayerAvatar } from './test-scenes/scene-01-player';
 
 export const SceneManager = () => {
   const [scene, setScene] = useState(defaultScene as undefined | { SceneComponent: () => JSX.Element });
 
   return (
     <GesturesProvider options={GestureOptions.all}>
-      <SceneExit onExitScene={() => setScene(undefined)} />
       <Stats showPanel={0} />
       <ambientLight intensity={0.5} />
       <pointLight
@@ -28,8 +28,17 @@ export const SceneManager = () => {
         distance={30}
       />
       <ScenePerspective perspective={`1st`}>
-        {!!scene && <scene.SceneComponent />}
-        {!scene && <SceneSelector onChange={setScene} />}
+        <SceneExit onExitScene={() => setScene(undefined)} />
+        {!!scene && (
+          <ScenePlayerReset>
+            <scene.SceneComponent />
+          </ScenePlayerReset>
+        )}
+        {!scene && (
+          <ScenePlayerReset>
+            <SceneSelector onChange={setScene} />
+          </ScenePlayerReset>
+        )}
       </ScenePerspective>
       <Hud position={[0, 1, 4]}>
         <DebugConsole visible={false} />
@@ -39,8 +48,23 @@ export const SceneManager = () => {
   );
 };
 
+const ScenePlayerReset = ({ children }: { children: ReactNode }) => {
+  const player = usePlayer();
+  const camera = useCamera();
+
+  useIsomorphicLayoutEffect(() => {
+    player.position.set(0, 0, 0);
+    if (camera.position.y === 0) {
+      camera.position.set(0, 1, 0);
+    }
+  }, []);
+
+  return <>{children}</>;
+};
+
 const SceneExit = ({ onExitScene }: { onExitScene: () => void }) => {
   const gestures = useGestures();
+
   useIsomorphicLayoutEffect(() => {
     const onKeyDown = (e: KeyboardEvent) => {
       if (e.key.toLowerCase().startsWith(`esc`)) {
