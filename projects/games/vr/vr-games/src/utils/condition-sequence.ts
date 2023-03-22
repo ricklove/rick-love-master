@@ -1,4 +1,4 @@
-export const createConditionSequence = (conditions: (() => boolean)[]) => {
+export const createConditionSequence = (conditions: (() => boolean)[], options?: { holdFinalCondition?: boolean }) => {
   //   const subject = new BehaviorSubject<boolean>(false);
   const state = {
     indexNext: 0,
@@ -15,7 +15,9 @@ export const createConditionSequence = (conditions: (() => boolean)[]) => {
 
       // if at end, then success
       if (state.indexNext >= conditions.length) {
-        state.indexNext = 0;
+        if (!options?.holdFinalCondition) {
+          state.indexNext = 0;
+        }
         // logger.log(`seq SUCCESS`, { i: state.indexNext });
         return true;
       }
@@ -27,6 +29,9 @@ export const createConditionSequence = (conditions: (() => boolean)[]) => {
     // Make sure current condition is still valid
     const cond = conditions[state.indexNext - 1];
     if (cond?.()) {
+      if (state.indexNext >= conditions.length && !options?.holdFinalCondition) {
+        return true;
+      }
       return false;
     }
 

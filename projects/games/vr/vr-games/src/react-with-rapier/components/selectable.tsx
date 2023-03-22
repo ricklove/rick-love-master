@@ -110,37 +110,42 @@ const useSelectable = (subscribe: (event: SelectableEvent) => void) => {
 
   const enter = (e: CollisionEnterPayload | IntersectionEnterPayload) => {
     const other = e.other.rigidBody;
-    const selector = s.selectors.find((x) => x.rigidBody === other);
+    const selectorsToAdd = s.selectors
+      .filter((x) => x.rigidBody === other)
+      .filter((x) => !selectable.activeSelectors.has(x));
     // logger.log(`enter other`, { selector, other, selectors: s.selectors });
 
-    if (!selector) {
+    if (!selectorsToAdd.length) {
       return;
     }
 
-    if (selectable.activeSelectors.has(selector)) {
-      return;
-    }
-    const sub = selector.mode.subscribe(() => {
-      updateMode();
+    selectorsToAdd.forEach((selector) => {
+      const sub = selector.mode.subscribe(() => {
+        updateMode();
+      });
+      selectable.activeSelectors.set(selector, { selector, subscription: sub });
     });
-    selectable.activeSelectors.set(selector, { selector, subscription: sub });
     updateMode();
   };
 
   const exit = (e: CollisionExitPayload | IntersectionExitPayload) => {
     const other = e.other.rigidBody;
-    const selector = s.selectors.find((x) => x.rigidBody === other);
+    const selectorsToRemove = s.selectors
+      .filter((x) => x.rigidBody === other)
+      .filter((x) => selectable.activeSelectors.has(x));
     // logger.log(`exit other`, { selector, other, selectors: s.selectors });
 
-    if (!selector) {
+    if (!selectorsToRemove.length) {
       return;
     }
-    const selectorData = selectable.activeSelectors.get(selector);
-    if (!selectorData) {
-      return;
-    }
-    selectorData.subscription.unsubscribe();
-    selectable.activeSelectors.delete(selector);
+    selectorsToRemove.forEach((selector) => {
+      const selectorData = selectable.activeSelectors.get(selector);
+      if (!selectorData) {
+        return;
+      }
+      selectorData.subscription.unsubscribe();
+      selectable.activeSelectors.delete(selector);
+    });
     updateMode();
   };
 

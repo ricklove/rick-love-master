@@ -5,9 +5,11 @@ import { CuboidCollider, RigidBody } from '@react-three/rapier';
 import { Billboard, Hud } from '../../components/hud';
 import { ScenePerspective } from '../../components/perspective';
 import { GestureOptions, GesturesProvider, useGestures } from '../../gestures/gestures';
+import { useIsomorphicLayoutEffect } from '../../utils/layoutEffect';
 import { DebugConsole } from '../../utils/logger';
 import { SelectableContext, SelectionMode } from '../components/selectable';
 import { Scene00PlayerAvatar } from './scene-00-player-avatar';
+import { Scene01PlayerAvatar } from './scene-01-player';
 import { SceneCrafting } from './scene-crafting';
 import { SceneLayout } from './scene-layout';
 import { Scene00ReactWithRapier } from './scene00/scene';
@@ -39,6 +41,17 @@ export const SceneManager = () => {
 
 const SceneExit = ({ onExitScene }: { onExitScene: () => void }) => {
   const gestures = useGestures();
+  useIsomorphicLayoutEffect(() => {
+    const onKeyDown = (e: KeyboardEvent) => {
+      if (e.key.toLowerCase().startsWith(`esc`)) {
+        onExitScene();
+      }
+    };
+    document.addEventListener(`keydown`, onKeyDown, false);
+    return () => {
+      document.removeEventListener(`keydown`, onKeyDown, false);
+    };
+  }, []);
   useFrame(() => {
     if (
       gestures.left.fingerExtendedThumb.state === `extended` &&
@@ -90,8 +103,10 @@ export const SceneSelector = ({ onChange }: { onChange: (scene: { SceneComponent
 };
 
 const scenes = [
-  { name: `Player Avatar`, SceneComponent: Scene00PlayerAvatar },
+  { name: `00 Player Avatar`, SceneComponent: Scene00PlayerAvatar },
+  { name: `01 Player`, SceneComponent: Scene01PlayerAvatar },
   { name: `Scene Crafting`, SceneComponent: SceneCrafting },
+  { name: `Scene 00 - Alien Eggs and Axes`, SceneComponent: Scene00ReactWithRapier },
   { name: `Scene 00 - Alien Eggs and Axes`, SceneComponent: Scene00ReactWithRapier },
   //   { name: `Scene 01 - Alien Eggs and Axes`, SceneComponent: Scene00ReactWithRapier },
   //   { name: `Scene 02 - Alien Eggs and Axes`, SceneComponent: Scene00ReactWithRapier },
@@ -99,8 +114,8 @@ const scenes = [
   //   { name: `Scene 04 - Alien Eggs and Axes`, SceneComponent: Scene00ReactWithRapier },
   //   { name: `Scene 05 - Alien Eggs and Axes`, SceneComponent: Scene00ReactWithRapier },
 ];
-// const defaultScene = undefined; // scenes[0];
-const defaultScene = scenes[2];
+const defaultScene = undefined;
+// const defaultScene = scenes[2];
 
 export const PhysicalSelection = ({
   text,

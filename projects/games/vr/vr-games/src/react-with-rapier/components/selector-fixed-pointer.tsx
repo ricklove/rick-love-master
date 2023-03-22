@@ -11,7 +11,10 @@ import { useIsomorphicLayoutEffect } from '../../utils/layoutEffect';
 import { SelectableContext, SelectionMode } from './selectable';
 
 export const SelectorFixedPointer = ({ distance = 1 }: { distance?: number }) => {
-  const selector = SelectableContext.useSelector();
+  const distanceRef = useRef(distance);
+  const mouseSelector = SelectableContext.useSelector();
+  const touchSelector = SelectableContext.useSelector();
+  const gestureSelector = SelectableContext.useSelector();
   const camera = useCamera();
   const gestures = useGestures();
   const ref = useRef<RapierRigidBody>(null);
@@ -20,8 +23,13 @@ export const SelectorFixedPointer = ({ distance = 1 }: { distance?: number }) =>
     if (!ref.current) {
       return;
     }
-    selector.setRigidbody(ref.current);
-    selector.setMode(SelectionMode.hover);
+    mouseSelector.setRigidbody(ref.current);
+    touchSelector.setRigidbody(ref.current);
+    gestureSelector.setRigidbody(ref.current);
+
+    mouseSelector.setMode(SelectionMode.hover);
+    touchSelector.setMode(SelectionMode.hover);
+    gestureSelector.setMode(SelectionMode.hover);
 
     const _getButtonKind = (button: number) => {
       switch (button) {
@@ -36,16 +44,22 @@ export const SelectorFixedPointer = ({ distance = 1 }: { distance?: number }) =>
       }
     };
     const onMouseDown = (_ev: MouseEvent) => {
-      selector.setMode(SelectionMode.select);
+      if (distanceRef.current === 1) {
+        distanceRef.current = 3;
+      }
+      mouseSelector.setMode(SelectionMode.select);
     };
     const onMouseUp = (_ev: MouseEvent) => {
-      selector.setMode(SelectionMode.hover);
+      mouseSelector.setMode(SelectionMode.hover);
     };
     const onTouchStart = (_ev: TouchEvent) => {
-      selector.setMode(SelectionMode.select);
+      if (distanceRef.current === 1) {
+        distanceRef.current = 3;
+      }
+      touchSelector.setMode(SelectionMode.select);
     };
     const onTouchEnd = (_ev: TouchEvent) => {
-      selector.setMode(SelectionMode.hover);
+      touchSelector.setMode(SelectionMode.hover);
     };
     document.addEventListener(`mousedown`, onMouseDown, false);
     document.addEventListener(`touchstart`, onTouchStart, false);
@@ -66,10 +80,10 @@ export const SelectorFixedPointer = ({ distance = 1 }: { distance?: number }) =>
     upDir: new Vector3(),
     q: new Quaternion(),
     rotationMatrix: new Matrix4(),
-    gesturesStepper: createConditionSequence([
-      () => checkGestureFingers(gestures.right, `occcc`),
-      () => checkGestureFingers(gestures.right, `ccccc`),
-    ]),
+    gesturesStepper: createConditionSequence(
+      [() => checkGestureFingers(gestures.right, `occcc`), () => checkGestureFingers(gestures.right, `ccccc`)],
+      { holdFinalCondition: true },
+    ),
   });
   useFrame(({ pointer }) => {
     if (!ref.current) {
@@ -82,7 +96,7 @@ export const SelectorFixedPointer = ({ distance = 1 }: { distance?: number }) =>
     vAtScreen.set(x, y, 0).unproject(camera);
     dir.set(x, y, 1).unproject(camera).sub(vAtScreen).normalize();
 
-    vAtDistance.copy(dir).multiplyScalar(distance).add(vAtScreen);
+    vAtDistance.copy(dir).multiplyScalar(distanceRef.current).add(vAtScreen);
 
     upDir
       .set(x, y + 1, 0)
@@ -96,10 +110,9 @@ export const SelectorFixedPointer = ({ distance = 1 }: { distance?: number }) =>
     ref.current.setNextKinematicRotation(q);
 
     if (gesturesStepper.update()) {
-      selector.setMode(SelectionMode.select);
-      setTimeout(() => {
-        selector.setMode(SelectionMode.hover);
-      }, 0);
+      gestureSelector.setMode(SelectionMode.select);
+    } else {
+      gestureSelector.setMode(SelectionMode.hover);
     }
   });
 
