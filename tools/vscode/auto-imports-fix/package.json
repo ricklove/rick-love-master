@@ -49,6 +49,6 @@
     "mocha": "^8.4.0",
     "typescript": "~4.9.5",
     "vscode-test": "^1.5.2",
-    "esbuild": "~0.12.25"
+    "esbuild": "0.17.12"
   }
 }

@@ -111,7 +111,11 @@ export const createBareThreeScene = () => {
 
   //
 
+  let stop = false;
   function animate() {
+    if (stop) {
+      return;
+    }
     requestAnimationFrame(animate);
 
     render();
@@ -141,4 +145,14 @@ export const createBareThreeScene = () => {
 
   init();
   animate();
+
+  return {
+    dispose: () => {
+      stop = true;
+      window.removeEventListener(`resize`, onWindowResize);
+      document.body.removeChild(renderer.domElement);
+      renderer.dispose();
+      scene.clear();
+    },
+  };
 };

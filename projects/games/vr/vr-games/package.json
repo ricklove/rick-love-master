@@ -2,10 +2,12 @@
   "name": "@ricklove/vr-games",
   "version": "1.0.0",
   "type": "module",
-  "main": "./lib/index.js",
+  "main": "./dist/index.js",
   "scripts": {
-    "build": "heft test --clean",
-    "build:watch": "heft build"
+    "build-old": "heft test --clean",
+    "build:watch-old": "heft build",
+    "build": "tsup index.ts --sourcemap --format esm",
+    "build:watch": "tsup index.ts --sourcemap --format esm"
   },
   "dependencies": {
     "@ricklove/utils-core": "workspace:*",
@@ -29,6 +31,8 @@
     "@ricklove/config-lib-rig": "workspace:*",
     "@types/react": "18.0.14",
     "@types/react-dom": "18.0.5",
-    "@types/three": "0.149.0"
+    "@types/three": "0.149.0",
+    "esbuild": "0.17.12",
+    "tsup": "6.7.0"
   }
 }
