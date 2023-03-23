@@ -65,7 +65,7 @@ export const createScene = () => {
 
     //
 
-    type TController = typeof controller;
+    type TController = ReturnType<typeof renderer.xr.getController>;
     function onSelectStart(this: TController) {
       this.userData.isSelecting = true;
     }
@@ -74,24 +74,28 @@ export const createScene = () => {
       this.userData.isSelecting = false;
     }
 
-    const controller = renderer.xr.getController(0);
-    controller.addEventListener(`selectstart`, onSelectStart);
-    controller.addEventListener(`selectend`, onSelectEnd);
-    // eslint-disable-next-line @typescript-eslint/space-before-function-paren
-    controller.addEventListener(`connected`, function (this: TController, event) {
-      this.add(buildController(event.data));
-    });
-    // eslint-disable-next-line @typescript-eslint/space-before-function-paren
-    controller.addEventListener(`disconnected`, function (this: TController) {
-      this.remove(this.children[0]);
-    });
-    scene.add(controller);
+    const controllers = [0, 1].map((iController) => {
+      const controller = renderer.xr.getController(iController);
+      controller.addEventListener(`selectstart`, onSelectStart);
+      controller.addEventListener(`selectend`, onSelectEnd);
+      // eslint-disable-next-line @typescript-eslint/space-before-function-paren
+      controller.addEventListener(`connected`, function (this: TController, event) {
+        this.add(buildController(event.data));
+      });
+      // eslint-disable-next-line @typescript-eslint/space-before-function-paren
+      controller.addEventListener(`disconnected`, function (this: TController) {
+        this.remove(this.children[0]);
+      });
+      scene.add(controller);
 
-    const controllerModelFactory = new XRControllerModelFactory();
+      const controllerModelFactory = new XRControllerModelFactory();
 
-    const controllerGrip = renderer.xr.getControllerGrip(0);
-    controllerGrip.add(controllerModelFactory.createControllerModel(controllerGrip));
-    scene.add(controllerGrip);
+      const controllerGrip = renderer.xr.getControllerGrip(iController);
+      controllerGrip.add(controllerModelFactory.createControllerModel(controllerGrip));
+      scene.add(controllerGrip);
+
+      return controller;
+    });
 
     window.addEventListener(`resize`, onWindowResize);
 
@@ -100,10 +104,10 @@ export const createScene = () => {
     const button = VRButton.createButton(renderer);
     document.body.appendChild(button);
 
-    return { camera, scene, renderer, controller, room, raycaster, container, button };
+    return { camera, scene, renderer, controllers, room, raycaster, container, button };
   }
 
-  const { camera, scene, renderer, controller, room, raycaster, container, button } = init();
+  const { camera, scene, renderer, controllers, room, raycaster, container, button } = init();
 
   function buildController(data: { targetRayMode: `tracked-pointer` | `gaze` }) {
     let geometry, material;
@@ -141,43 +145,44 @@ export const createScene = () => {
   function render() {
     const delta = clock.getDelta() * 60;
 
-    if (controller.userData.isSelecting === true) {
-      const cube = room.children[0];
-      room.remove(cube);
+    controllers.forEach((controller) => {
+      if (controller.userData.isSelecting === true) {
+        const cube = room.children[0];
+        room.remove(cube);
 
-      cube.position.copy(controller.position);
-      cube.userData.velocity.x = (Math.random() - 0.5) * 0.02 * delta;
-      cube.userData.velocity.y = (Math.random() - 0.5) * 0.02 * delta;
-      cube.userData.velocity.z = (Math.random() * 0.01 - 0.05) * delta;
-      cube.userData.velocity.applyQuaternion(controller.quaternion);
-      room.add(cube);
-    }
+        cube.position.copy(controller.position);
+        cube.userData.velocity.x = (Math.random() - 0.5) * 0.02 * delta;
+        cube.userData.velocity.y = (Math.random() - 0.5) * 0.02 * delta;
+        cube.userData.velocity.z = (Math.random() * 0.01 - 0.05) * delta;
+        cube.userData.velocity.applyQuaternion(controller.quaternion);
+        room.add(cube);
+      }
 
-    // find intersections
+      // find intersections
+      tempMatrix.identity().extractRotation(controller.matrixWorld);
 
-    tempMatrix.identity().extractRotation(controller.matrixWorld);
+      raycaster.ray.origin.setFromMatrixPosition(controller.matrixWorld);
+      raycaster.ray.direction.set(0, 0, -1).applyMatrix4(tempMatrix);
 
-    raycaster.ray.origin.setFromMatrixPosition(controller.matrixWorld);
-    raycaster.ray.direction.set(0, 0, -1).applyMatrix4(tempMatrix);
+      const intersects = raycaster.intersectObjects(room.children, false);
 
-    const intersects = raycaster.intersectObjects(room.children, false);
+      let INTERSECTED = undefined as
+        | undefined
+        | (Omit<THREE.Mesh, `material`> & { material: MeshLambertMaterial; currentHex: number });
+      if (intersects.length > 0) {
+        if (INTERSECTED !== intersects[0].object) {
+          if (INTERSECTED) INTERSECTED.material.emissive.setHex(INTERSECTED.currentHex);
 
-    let INTERSECTED = undefined as
-      | undefined
-      | (Omit<THREE.Mesh, `material`> & { material: MeshLambertMaterial; currentHex: number });
-    if (intersects.length > 0) {
-      if (INTERSECTED !== intersects[0].object) {
+          INTERSECTED = intersects[0].object as NonNullable<typeof INTERSECTED>;
+          INTERSECTED.currentHex = INTERSECTED.material.emissive.getHex();
+          INTERSECTED.material.emissive.setHex(0xff0000);
+        }
+      } else {
         if (INTERSECTED) INTERSECTED.material.emissive.setHex(INTERSECTED.currentHex);
 
-        INTERSECTED = intersects[0].object as NonNullable<typeof INTERSECTED>;
-        INTERSECTED.currentHex = INTERSECTED.material.emissive.getHex();
-        INTERSECTED.material.emissive.setHex(0xff0000);
+        INTERSECTED = undefined;
       }
-    } else {
-      if (INTERSECTED) INTERSECTED.material.emissive.setHex(INTERSECTED.currentHex);
-
-      INTERSECTED = undefined;
-    }
+    });
 
     // Keep cubes inside room
 
