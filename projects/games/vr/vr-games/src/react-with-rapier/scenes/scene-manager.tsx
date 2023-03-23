@@ -14,6 +14,8 @@ import { SceneLayout } from './scene-layout';
 import { Scene00ReactWithRapier } from './scene00/scene';
 import { Scene00PlayerAvatar } from './test-scenes/scene-00-player-avatar';
 import { Scene01PlayerAvatar } from './test-scenes/scene-01-player';
+import { Scene02NoPhysics } from './test-scenes/scene-02-no-physics';
+import { Scene03PhysicsOnly } from './test-scenes/scene-03-physics-only';
 
 export const SceneManager = () => {
   const [scene, setScene] = useState(defaultScene as undefined | { SceneComponent: () => JSX.Element });
@@ -127,9 +129,11 @@ export const SceneSelector = ({ onChange }: { onChange: (scene: { SceneComponent
 };
 
 const scenes = [
-  { name: `00 Player Avatar`, SceneComponent: Scene00PlayerAvatar },
-  { name: `01 Player`, SceneComponent: Scene01PlayerAvatar },
-  { name: `Scene Crafting`, SceneComponent: SceneCrafting },
+  { name: Scene00PlayerAvatar.name, SceneComponent: Scene00PlayerAvatar },
+  { name: Scene01PlayerAvatar.name, SceneComponent: Scene01PlayerAvatar },
+  { name: Scene02NoPhysics.name, SceneComponent: Scene02NoPhysics },
+  { name: Scene03PhysicsOnly.name, SceneComponent: Scene03PhysicsOnly },
+  { name: SceneCrafting.name, SceneComponent: SceneCrafting },
   { name: `Scene 00 - Alien Eggs and Axes`, SceneComponent: Scene00ReactWithRapier },
   { name: `Scene 00 - Alien Eggs and Axes`, SceneComponent: Scene00ReactWithRapier },
   //   { name: `Scene 01 - Alien Eggs and Axes`, SceneComponent: Scene00ReactWithRapier },
@@ -164,7 +168,7 @@ export const PhysicalSelection = ({
   return (
     <group position={position}>
       <group position={[0, 0.5, 0]}>
-        <RigidBody name={`PhysicalSelection-${text}`} colliders={false} {...selectable}>
+        <RigidBody name={`PhysicalSelection-${text}`} colliders={false} {...selectable} sensor gravityScale={0}>
           <CuboidCollider args={[0.5, 0.5, 0.5]} />
           <Box args={[1, 1, 1]}>
             <meshStandardMaterial color={color} />
