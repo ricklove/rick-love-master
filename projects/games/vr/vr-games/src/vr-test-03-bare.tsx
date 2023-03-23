@@ -1,10 +1,12 @@
 /* eslint-disable @typescript-eslint/naming-convention */
 import React, { useEffect } from 'react';
-import { createBareThreeScene } from './bare/00-bare-three';
+// import { createBareVRScene } from './bare/01-bare-vr';
+import { createScene } from './bare/00-bare-three-vr';
 
 export const VrTestGame = () => {
   useEffect(() => {
-    const scene = createBareThreeScene();
+    const scene = createScene();
+    scene.animate();
     return () => scene.dispose();
   }, []);
 

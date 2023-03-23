@@ -2,15 +2,11 @@ import * as THREE from 'three';
 import { Mesh, Object3D } from 'three';
 
 export const createBareThreeScene = () => {
-  let camera: THREE.PerspectiveCamera;
-  let scene: THREE.Scene;
-  let renderer: THREE.WebGLRenderer;
-
   function init() {
-    camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 1, 2000);
+    const camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 1, 2000);
     camera.position.y = 400;
 
-    scene = new THREE.Scene();
+    const scene = new THREE.Scene();
 
     let object;
 
@@ -89,7 +85,7 @@ export const createBareThreeScene = () => {
 
     //
 
-    renderer = new THREE.WebGLRenderer({ antialias: true });
+    const renderer = new THREE.WebGLRenderer({ antialias: true });
     renderer.setPixelRatio(window.devicePixelRatio);
     renderer.setSize(window.innerWidth, window.innerHeight);
     document.body.appendChild(renderer.domElement);
@@ -100,7 +96,15 @@ export const createBareThreeScene = () => {
     //
 
     window.addEventListener(`resize`, onWindowResize);
+
+    return {
+      renderer,
+      scene,
+      camera,
+    };
   }
+
+  const { renderer, scene, camera } = init();
 
   function onWindowResize() {
     camera.aspect = window.innerWidth / window.innerHeight;
@@ -143,10 +147,13 @@ export const createBareThreeScene = () => {
     renderer.render(scene, camera);
   }
 
-  init();
-  animate();
+  // animate();
 
   return {
+    animate,
+    renderer,
+    camera,
+    scene,
     dispose: () => {
       stop = true;
       window.removeEventListener(`resize`, onWindowResize);
