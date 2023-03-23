@@ -2,12 +2,12 @@
   "name": "@ricklove/vr-games",
   "version": "1.0.0",
   "type": "module",
-  "main": "./dist/index.js",
+  "main": "./lib/index.js",
   "scripts": {
     "build-old": "heft test --clean",
     "build:watch-old": "heft build",
-    "build": "tsup index.ts --sourcemap --format esm",
-    "build:watch": "tsup index.ts --sourcemap --format esm"
+    "build": "tsup index.ts --sourcemap --format esm --outDir=lib",
+    "build:watch": "tsup index.ts --sourcemap --format esm --outDir=lib"
   },
   "dependencies": {
     "@ricklove/utils-core": "workspace:*",
