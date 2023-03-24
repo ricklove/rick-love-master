@@ -1,10 +1,12 @@
-import React from 'react';
+import React, { useEffect, useRef } from 'react';
 import { VrTestGame } from '@ricklove/vr-games';
+
+const worker = new Worker(new URL('./worker.ts', import.meta.url), { type: 'module' });
 
 function App() {
   return (
     <div>
-      <VrTestGame />
+      <VrTestGame worker={worker} />
     </div>
   );
 }

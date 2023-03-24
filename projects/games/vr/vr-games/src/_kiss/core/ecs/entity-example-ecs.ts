@@ -28,7 +28,7 @@ const buildChangeSceneAction = (sceneKey: string) =>
 const buildAlienEgg = (actionKey: string) =>
   ecs
     .entity(`alienEgg`)
-    .rigidBody({ position: [0, 0.5, 0] })
+    .rigidBody({ position: [0, 0.5, 0], sensor: true })
     .selectable({ actionKey })
     .addChild(
       ecs

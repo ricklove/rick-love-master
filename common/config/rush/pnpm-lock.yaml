@@ -1065,8 +1065,9 @@ importers:
       three: 0.149.0
       three-stdlib: 2.21.1
       tsup: 6.7.0
+      typescript: ~4.9.5
     dependencies:
-      '@react-three/cannon': 6.5.2_bijcwmvm66nz23y3c7pbaebvs4_diw6wne6ux6qnprzdcxj5z22b4
+      '@react-three/cannon': 6.5.2_bijcwmvm66nz23y3c7pbaebvs4_y2obtkmude54d3dexdsbi5ulha
       '@react-three/drei': 9.57.3_v5bzzvmggqduoi2tbrmqm75vsi
       '@react-three/fiber': 8.9.1_xor7byvqlg4baqj6ymfbcmaax4
       '@react-three/flex': 1.0.1_diw6wne6ux6qnprzdcxj5z22b4
@@ -1088,7 +1089,8 @@ importers:
       '@types/react-dom': 18.0.5
       '@types/three': 0.149.0
       esbuild: 0.17.12
-      tsup: 6.7.0
+      tsup: 6.7.0_typescript@4.9.5
+      typescript: 4.9.5
 
   ../../projects/games/vr/vr-test:
     specifiers:
@@ -3419,7 +3421,7 @@ packages:
     resolution: {integrity: sha512-POu8Mk0hIU3lRXB3bGIGe4VHIwwDsQyoD1F394OK7STTiX9w4dG3cTLljjYswkQN+hDSHRrj4O36kuVa7KPU8Q==}
     dev: false
 
-  /@react-three/cannon/6.5.2_bijcwmvm66nz23y3c7pbaebvs4_diw6wne6ux6qnprzdcxj5z22b4:
+  /@react-three/cannon/6.5.2_bijcwmvm66nz23y3c7pbaebvs4_y2obtkmude54d3dexdsbi5ulha:
     resolution: {integrity: sha512-d7qH2XMVtHRkCaMUWpLkWSD9JPiE570gy8LoP7WBw+Ui+hI9ZiFx9HDaX5+Y6wzbGJd1WvELWaG9O0cOtk2rmw==}
     peerDependencies:
       '@react-three/fiber': '>=8'
@@ -3429,7 +3431,7 @@ packages:
       '@pmndrs/cannon-worker-api': 2.3.2_jpnpvp3tuziudpoz7erxdptpce_three@0.149.0
       '@react-three/fiber': 8.9.1_xor7byvqlg4baqj6ymfbcmaax4
       cannon-es: 0.20.0
-      cannon-es-debugger: 1.0.0_rchlmfkv4ovdt5uhd5epdu7shy
+      cannon-es-debugger: 1.0.0_6mctyoczal5tb3yexqpq3c2dae
       react: 18.2.0
       three: 0.149.0
     transitivePeerDependencies:
@@ -6528,7 +6530,7 @@ packages:
   /caniuse-lite/1.0.30001464:
     resolution: {integrity: sha512-oww27MtUmusatpRpCGSOneQk2/l5czXANDSFvsc7VuOQ86s3ANhZetpwXNf1zY/zdfP63Xvjz325DAdAoES13g==}
 
-  /cannon-es-debugger/1.0.0_rchlmfkv4ovdt5uhd5epdu7shy:
+  /cannon-es-debugger/1.0.0_6mctyoczal5tb3yexqpq3c2dae:
     resolution: {integrity: sha512-sE9lDOBAYFKlh+0w+cvWKwUhJef8HYnUSVPWPL0jD15MAuVRQKno4QYZSGxgOoJkMR3mQqxL4bxys2b3RSWH8g==}
     peerDependencies:
       cannon-es: 0.x
@@ -6540,6 +6542,7 @@ packages:
     dependencies:
       cannon-es: 0.20.0
       three: 0.149.0
+      typescript: 4.9.5
     dev: false
 
   /cannon-es/0.20.0:
@@ -16554,7 +16557,7 @@ packages:
   /tsort/0.0.1:
     resolution: {integrity: sha512-Tyrf5mxF8Ofs1tNoxA13lFeZ2Zrbd6cKbuH3V+MQ5sb6DtBj5FjrXVsRWT8YvNAQTqNoz66dz1WsbigI22aEnw==}
 
-  /tsup/6.7.0:
+  /tsup/6.7.0_typescript@4.9.5:
     resolution: {integrity: sha512-L3o8hGkaHnu5TdJns+mCqFsDBo83bJ44rlK7e6VdanIvpea4ArPcU3swWGsLVbXak1PqQx/V+SSmFPujBK+zEQ==}
     engines: {node: '>=14.18'}
     hasBin: true
@@ -16584,6 +16587,7 @@ packages:
       source-map: 0.8.0-beta.0
       sucrase: 3.30.0
       tree-kill: 1.2.2
+      typescript: 4.9.5
     transitivePeerDependencies:
       - supports-color
       - ts-node

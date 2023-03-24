@@ -3,11 +3,14 @@
   "version": "1.0.0",
   "type": "module",
   "main": "./lib/index.js",
+  "exports": {
+    "./worker": "./lib/worker.js"
+  },
   "scripts": {
     "build-old": "heft test --clean",
     "build:watch-old": "heft build",
-    "build": "tsup index.ts --sourcemap --format esm --outDir=lib",
-    "build:watch": "tsup index.ts --sourcemap --format esm --outDir=lib"
+    "build": "tsup index.ts worker.ts --sourcemap --format esm --outDir=lib",
+    "build:watch": "tsup index.ts worker.ts --sourcemap --format esm --outDir=lib"
   },
   "dependencies": {
     "@ricklove/utils-core": "workspace:*",
@@ -33,6 +36,7 @@
     "@types/react-dom": "18.0.5",
     "@types/three": "0.149.0",
     "esbuild": "0.17.12",
-    "tsup": "6.7.0"
+    "tsup": "6.7.0",
+    "typescript": "~4.9.5"
   }
 }
