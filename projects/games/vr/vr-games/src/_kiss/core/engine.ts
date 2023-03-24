@@ -20,8 +20,8 @@ export const createGameEngine = (host: HTMLDivElement, workerRaw: Worker) => {
   };
 
   const setup = () => {
-    const { scene, camera, renderer, dispose, raycaster } = setupThree(host);
-    const { room, controllers } = addTestScene(scene, renderer);
+    const { scene, camera, renderer, dispose } = setupThree(host);
+    const testScene = addTestScene(scene, renderer);
 
     worker.onmessage = (e) => {
       logger.log(`From [Worker]`, { e });
@@ -38,13 +38,15 @@ export const createGameEngine = (host: HTMLDivElement, workerRaw: Worker) => {
     worker.postMessage({ kind: `ping`, time: performance.now() });
     worker.postMessage({ kind: `setup` });
 
+    const inputBuffer = createInputBuffer();
+
     let frameCount = 0;
     let fpsRunningAverage = 60;
     let stop = false;
     let disposed = false;
     const clock = new THREE.Clock();
 
-    const mainLoop = () => {
+    const mainLoop: XRFrameRequestCallback = (time, frame) => {
       if (disposed) {
         return;
       }
@@ -65,10 +67,9 @@ export const createGameEngine = (host: HTMLDivElement, workerRaw: Worker) => {
         worker.postMessage({ kind: `ping`, time: performance.now() });
       }
 
-      readXrInput(renderer, camera);
-      // testWorker(worker);
+      readXrInput(renderer, frame, inputBuffer);
 
-      updateTestScene(deltaTime, { room, controllers, raycaster });
+      updateTestScene(deltaTime, testScene);
       renderer.render(scene, camera);
       frameCount++;
     };
@@ -88,7 +89,86 @@ export const createGameEngine = (host: HTMLDivElement, workerRaw: Worker) => {
   return { setup };
 };
 
-const readXrInput = (renderer: THREE.Renderer, camera: THREE.Camera) => {
-  // Read input from web-xr
-  // WebX;
+export const handJointNames = [
+  `wrist`,
+  `thumb-metacarpal`,
+  `thumb-phalanx-proximal`,
+  `thumb-phalanx-distal`,
+  `thumb-tip`,
+  `index-finger-metacarpal`,
+  `index-finger-phalanx-proximal`,
+  `index-finger-phalanx-intermediate`,
+  `index-finger-phalanx-distal`,
+  `index-finger-tip`,
+  `middle-finger-metacarpal`,
+  `middle-finger-phalanx-proximal`,
+  `middle-finger-phalanx-intermediate`,
+  `middle-finger-phalanx-distal`,
+  `middle-finger-tip`,
+  `ring-finger-metacarpal`,
+  `ring-finger-phalanx-proximal`,
+  `ring-finger-phalanx-intermediate`,
+  `ring-finger-phalanx-distal`,
+  `ring-finger-tip`,
+  `pinky-finger-metacarpal`,
+  `pinky-finger-phalanx-proximal`,
+  `pinky-finger-phalanx-intermediate`,
+  `pinky-finger-phalanx-distal`,
+  `pinky-finger-tip`,
+] as const satisfies readonly XRHandJoint[];
+
+const handJointNameIndex = Object.fromEntries(handJointNames.map((name, index) => [name, index] as const));
+
+enum MatrixBufferIndex {
+  camera,
+  controllerLeft,
+  controllerRight,
+  controllerGripLeft,
+  controllerGripRight,
+  handLeft,
+  handRight = handLeft + handJointNames.length,
+  COUNT = handRight + handJointNames.length + 1,
+}
+
+const createInputBuffer = () => {
+  return new Float32Array(16 * MatrixBufferIndex.COUNT);
+};
+const readXrInput = (renderer: THREE.WebGLRenderer, frame: XRFrame, buffer: Float32Array) => {
+  const session = frame?.session;
+  if (!session) {
+    return;
+  }
+
+  const referenceSpace = renderer.xr.getReferenceSpace();
+  if (!referenceSpace) {
+    return;
+  }
+
+  const camera = renderer.xr.getCamera();
+  camera.matrixWorld.toArray(buffer, MatrixBufferIndex.camera * 16);
+
+  [0, 1].forEach((sideOffset) => {
+    const controller = renderer.xr.getController(sideOffset);
+    controller.matrixWorld.toArray(buffer, (MatrixBufferIndex.controllerLeft + sideOffset) * 16);
+
+    const controlleGrip = renderer.xr.getControllerGrip(sideOffset);
+    controlleGrip.matrixWorld.toArray(buffer, (MatrixBufferIndex.controllerGripLeft + sideOffset) * 16);
+
+    const hand = renderer.xr.getHand(sideOffset);
+    if (hand) {
+      for (const jointName of handJointNames) {
+        const joint = hand.joints[jointName];
+        if (!joint) {
+          continue;
+        }
+
+        joint.matrixWorld.toArray(
+          buffer,
+          MatrixBufferIndex.handLeft + sideOffset * handJointNames.length + handJointNameIndex[jointName] * 16,
+        );
+      }
+    }
+  });
+
+  console.log(`readXrInput`, { buffer });
 };

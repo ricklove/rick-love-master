@@ -36,10 +36,53 @@ export const setupThree = (hostRaw: HTMLDivElement) => {
   const button = VRButton.createButton(renderer);
   host.appendChild(button);
 
+  //   const xrState = {
+  //     isVisible: false,
+  //     isPresenting: false,
+  //     isHandTracking: false,
+  //     inputSources: [] as XRInputSourceArray,
+  //     session: undefined as undefined | XRSession,
+  //   };
+  //   const handleSessionStart = (nativeEvent: { target: WebXRManager }) => {
+  //     xrState.isPresenting = true;
+  //     if (xrState.session) {
+  //       xrState.session.removeEventListener(`visibilitychange`, handleVisibilityChange);
+  //       xrState.session.removeEventListener(`inputsourceschange`, handleInputSourcesChange);
+  //     }
+  //     xrState.session = nativeEvent.target.getSession() ?? undefined;
+  //     if (!xrState.session) {
+  //       return;
+  //     }
+
+  //     xrState.session.addEventListener(`visibilitychange`, handleVisibilityChange);
+  //     xrState.session.addEventListener(`inputsourceschange`, handleInputSourcesChange);
+  //   };
+  //   const handleSessionEnd = () => {
+  //     xrState.isPresenting = false;
+  //     if (xrState.session) {
+  //       xrState.session.removeEventListener(`visibilitychange`, handleVisibilityChange);
+  //       xrState.session.removeEventListener(`inputsourceschange`, handleInputSourcesChange);
+  //     }
+  //     xrState.session = undefined;
+  //   };
+  //   renderer.xr.addEventListener(`sessionstart`, handleSessionStart);
+  //   renderer.xr.addEventListener(`sessionend`, handleSessionEnd);
+
+  //   const handleVisibilityChange = (e: XRSessionEvent) => {
+  //     xrState.isVisible = e.session.visibilityState === `visible`;
+  //   };
+  //   const handleInputSourcesChange = (e: XRInputSourceChangeEvent) => {
+  //     xrState.inputSources = e.session.inputSources;
+  //     xrState.isHandTracking = Object.values(e.session.inputSources).some((source) => source.hand);
+  //   };
+
   const dispose = () => {
     logger.log(`setupThree: dispose`, {});
 
     renderer.setAnimationLoop(null);
+    // renderer.xr.removeEventListener(`sessionstart`, handleSessionStart);
+    // renderer.xr.removeEventListener(`sessionend`, handleSessionEnd);
+    // handleSessionEnd();
     window.removeEventListener(`resize`, onWindowResize);
     host.removeChild(button);
     host.removeChild(container);
@@ -47,8 +90,6 @@ export const setupThree = (hostRaw: HTMLDivElement) => {
     scene.clear();
   };
 
-  const raycaster = new THREE.Raycaster();
-
   logger.log(`setupThree: DONE`, { camera, scene, renderer });
-  return { camera, scene, renderer, raycaster, dispose };
+  return { camera, scene, renderer, dispose };
 };

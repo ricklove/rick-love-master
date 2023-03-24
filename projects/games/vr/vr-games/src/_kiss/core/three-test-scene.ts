@@ -1,6 +1,5 @@
 import * as THREE from 'three';
 import { BoxLineGeometry, XRControllerModelFactory } from 'three-stdlib';
-import { setupThree } from './three-setup';
 
 export const addTestScene = (scene: THREE.Scene, renderer: THREE.WebGLRenderer) => {
   // Room
@@ -96,17 +95,15 @@ export const addTestScene = (scene: THREE.Scene, renderer: THREE.WebGLRenderer) 
     }
   }
 
-  return { room, controllers };
+  const raycaster = new THREE.Raycaster();
+
+  return { raycaster, room, controllers };
 };
 
 const tempMatrix = new THREE.Matrix4();
 export const updateTestScene = (
   deltaTime: number,
-  {
-    room,
-    controllers,
-    raycaster,
-  }: Pick<ReturnType<typeof setupThree> & ReturnType<typeof addTestScene>, `room` | `controllers` | `raycaster`>,
+  { room, controllers, raycaster }: Pick<ReturnType<typeof addTestScene>, `room` | `controllers` | `raycaster`>,
 ) => {
   const delta = deltaTime * 0.001 * 60;
 
