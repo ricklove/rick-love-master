@@ -18,7 +18,8 @@ export const createWorkerTestScene = async (messageBufferPool: MessageBufferPool
   const jointCoint = handJointNames.length * 2;
   const boxCount = 1000;
   const maxFps = 144;
-  const ADJUST_TIME_STEP = false;
+  const minFps = 120;
+  const ADJUST_TIME_STEP = true;
 
   let nextId = 0;
   const sceneData = {
@@ -161,7 +162,9 @@ export const createWorkerTestScene = async (messageBufferPool: MessageBufferPool
   let frameCount = 0;
   let lastTime = performance.now();
   let runningDeltaTime = 1000 / maxFps;
+  const constrainedDeltaTime = 1000 / maxFps;
   const minDeltaTime = 1000 / maxFps;
+  const maxDeltaTime = 1000 / minFps;
 
   const gameLoop = () => {
     const time = performance.now();
@@ -169,10 +172,9 @@ export const createWorkerTestScene = async (messageBufferPool: MessageBufferPool
     lastTime = time;
 
     runningDeltaTime = runningDeltaTime * 0.9 + deltaTime * 0.1;
-    if (runningDeltaTime < minDeltaTime) {
-      runningDeltaTime = minDeltaTime;
-    }
-    const timestepActual = 0.001 * runningDeltaTime;
+    const constrainedDeltaTime = Math.max(minDeltaTime, Math.min(maxDeltaTime, runningDeltaTime));
+
+    const timestepActual = 0.001 * constrainedDeltaTime;
     const timestepDiff = timestepActual - world.timestep;
     const timestepDiffRatio = timestepDiff / timestepActual;
     if (Math.abs(timestepDiffRatio) > 0.1 && ADJUST_TIME_STEP) {
@@ -185,6 +187,8 @@ export const createWorkerTestScene = async (messageBufferPool: MessageBufferPool
       world.timestep = timestepActual;
     }
     const fps = 1000 / runningDeltaTime;
+    const fpsConstrained = 1000 / constrainedDeltaTime;
+    const timeWarpRatio = constrainedDeltaTime / runningDeltaTime;
 
     // wogger.log(`Game loop`);
     // Step the simulation forward.
@@ -293,11 +297,14 @@ export const createWorkerTestScene = async (messageBufferPool: MessageBufferPool
     const timeUntilNextFrame = Math.max(0, timeRemaining * 0.85);
     if (frameCount % maxFps === 0) {
       wogger.log(`gameLoop time`, {
+        timeWarpRatio,
         fps,
+        fpsConstrained,
         timeElapsed,
         timeRemaining,
         timeUntilNextFrame,
         runningDeltaTime,
+        constrainedDeltaTime,
         deltaTime,
         lastTime,
         time,
