@@ -76,7 +76,7 @@ export const createWorkerTestScene = async () => {
   };
 
   // Use the RAPIER module here.
-  const world = new World({ x: 0.0, y: 0, z: 0.0 });
+  const world = new World({ x: 0.0, y: -9.8, z: 0.0 });
   world.timestep = 1.0 / fps;
   const timestep = world.timestep * 1000;
 
@@ -108,9 +108,9 @@ export const createWorkerTestScene = async () => {
     const rigidBodyDesc = RigidBodyDesc.dynamic()
       .setTranslation(o.position.x, o.position.y, o.position.z)
       .setRotation(o.quaternion)
-      .setLinvel(speed * (0.5 - Math.random()), speed * (0.5 - Math.random()), speed * (0.5 - Math.random()))
-      // Testing constant motion
-      .setCanSleep(false);
+      .setLinvel(speed * (0.5 - Math.random()), speed * (0.5 - Math.random()), speed * (0.5 - Math.random()));
+    // Testing constant motion
+    // .setCanSleep(false);
     const rigidBody = world.createRigidBody(rigidBodyDesc);
 
     const colliderDesc = ColliderDesc.cuboid(o.scale.x * 0.5, o.scale.y * 0.5, o.scale.z * 0.5);
