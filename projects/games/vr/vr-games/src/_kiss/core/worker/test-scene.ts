@@ -18,7 +18,7 @@ export const createWorkerTestScene = async (messageBufferPool: MessageBufferPool
   const jointCoint = handJointNames.length * 2;
   const boxCount = 1000;
   const maxFps = 144;
-  const minFpsViaSlowMotion = 120;
+  const minFpsViaSlowMotion = 72;
   const ADJUST_TIME_STEP = true;
 
   let nextId = 0;
@@ -92,7 +92,7 @@ export const createWorkerTestScene = async (messageBufferPool: MessageBufferPool
 
   // Use the RAPIER module here.
   const world = new World({ x: 0.0, y: -9.8, z: 0.0 });
-  world.timestep = 1.0 / maxFps;
+  world.timestep = 1.0 / minFpsViaSlowMotion;
   wogger.log(`world iterations`, {
     maxVelocityIterations: world.maxVelocityIterations,
     maxStabilizationIterations: world.maxStabilizationIterations,
@@ -161,8 +161,7 @@ export const createWorkerTestScene = async (messageBufferPool: MessageBufferPool
 
   let frameCount = 0;
   let lastTime = performance.now();
-  let runningDeltaTime = 1000 / maxFps;
-  const constrainedDeltaTime = 1000 / maxFps;
+  let runningDeltaTime = 1000 / minFpsViaSlowMotion;
   const minDeltaTime = 1000 / maxFps;
   const maxDeltaTime = 1000 / minFpsViaSlowMotion;
 
@@ -177,7 +176,7 @@ export const createWorkerTestScene = async (messageBufferPool: MessageBufferPool
     const timestepActual = 0.001 * constrainedDeltaTime;
     const timestepDiff = timestepActual - world.timestep;
     const timestepDiffRatio = timestepDiff / timestepActual;
-    if (Math.abs(timestepDiffRatio) > 0.1 && ADJUST_TIME_STEP) {
+    if (ADJUST_TIME_STEP && Math.abs(timestepDiffRatio) > 0.1) {
       wogger.log(`Timestep changed`, {
         timestepDiffRatio,
         timestepDiff,
