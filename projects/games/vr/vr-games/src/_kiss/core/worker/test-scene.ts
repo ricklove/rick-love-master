@@ -1,7 +1,8 @@
 import RAPIER, { ColliderDesc, RigidBody, RigidBodyDesc, World } from '@dimforge/rapier3d-compat';
 import { Quaternion, Vector3 } from 'three';
 import { handJointNames } from '../input/hand-joints';
-import { createMessageArrayBufferSet, postMessageArrayBufferFromWorker, postMessageFromWorker } from './message';
+import { postMessageFromWorker } from '../messages/message';
+import { createMessageArrayBufferSet, postMessageArrayBufferFromWorker } from '../messages/message-update-transforms';
 import { wogger } from './wogger';
 
 export const createWorkerTestScene = async () => {

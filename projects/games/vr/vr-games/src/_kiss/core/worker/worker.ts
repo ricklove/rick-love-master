@@ -1,5 +1,5 @@
-import { postMessageFromWorker } from './message';
-import { WorkerMessageFromWorker, WorkerMessageToWorker } from './message-type';
+import { postMessageFromWorker } from '../messages/message';
+import { WorkerMessageFromWorker, WorkerMessageToWorker } from '../messages/message-type';
 import { createWorkerTestScene } from './test-scene';
 import { wogger } from './wogger';
 

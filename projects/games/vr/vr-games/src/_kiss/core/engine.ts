@@ -2,10 +2,10 @@ import * as THREE from 'three';
 import { Object3D } from 'three';
 import { logger } from '../../utils/logger';
 import { createInputBuffer, readXrInput } from './input/input-data';
+import { WorkerMessageFromWorker, WorkerMessageToWorker } from './messages/message-type';
+import { readMessageArrayBufferFromWorker } from './messages/message-update-transforms';
 import { setupThree } from './three-setup';
 import { addTestScene, updateTestScene } from './three-test-scene';
-import { readMessageArrayBufferFromWorker } from './worker/message';
-import { WorkerMessageFromWorker, WorkerMessageToWorker } from './worker/message-type';
 
 export const createGameEngine = (host: HTMLDivElement, workerRaw: Worker) => {
   // [MainLoop] Read input from web-xr

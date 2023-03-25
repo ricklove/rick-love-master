@@ -1,10 +1,5 @@
 import { Object3D, Quaternion, Vector3 } from 'three';
-import { WorkerMessageFromWorker } from './message-type';
-import { wogger } from './wogger';
-
-export const postMessageFromWorker = (message: WorkerMessageFromWorker) => {
-  postMessage(message);
-};
+import { wogger } from '../worker/wogger';
 
 export const createMessageArrayBufferSet = (maxBoxCount: number, maxSphereCount: number) => {
   const maxBufferSize = getBufferSize(maxBoxCount, maxSphereCount);
