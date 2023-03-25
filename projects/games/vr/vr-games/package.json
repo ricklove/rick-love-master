@@ -4,6 +4,7 @@
   "type": "module",
   "main": "./lib/index.js",
   "exports": {
+    ".": "./lib/index.js",
     "./worker": "./lib/worker.js"
   },
   "scripts": {
