@@ -8,7 +8,7 @@ wogger.log(`I am loaded!`, {});
 const state = {
   ready: false,
   timeToMainTime: 0,
-  scene: undefined as undefined | ReturnType<typeof createWorkerTestScene>,
+  scene: undefined as undefined | Awaited<ReturnType<typeof createWorkerTestScene>>,
 };
 
 self.onmessage = (e: { data: unknown }) => {
@@ -23,8 +23,10 @@ self.onmessage = (e: { data: unknown }) => {
   if (data.kind === `setup`) {
     // TODO: setup resources
     state.ready = true;
-    state.scene = createWorkerTestScene();
-    wogger.log(`I am setup!`);
+    (async () => {
+      state.scene = await createWorkerTestScene();
+      wogger.log(`I am setup!`);
+    })();
     return;
   }
   if (data.kind === `dispose`) {

@@ -25,8 +25,10 @@ export const createGameEngine = (host: HTMLDivElement, workerRaw: Worker) => {
     const testScene = addTestScene(scene, renderer);
     const geometry = new THREE.BoxGeometry(1, 1, 1);
 
+    const objectMap = new Map<string, THREE.Object3D>();
+
     worker.onmessage = (e) => {
-      logger.log(`From [Worker]`, { e });
+      // logger.log(`From [Worker]`, { e });
       if (e.data.kind === `pong`) {
         logger.log(`pong from [Worker]`, {
           pingTime: e.data.pingTime,
@@ -35,14 +37,27 @@ export const createGameEngine = (host: HTMLDivElement, workerRaw: Worker) => {
         });
       }
       if (e.data.kind === `addObjects`) {
-        logger.log(`addObjects from [Worker]`, { e });
+        // logger.log(`addObjects from [Worker]`, { e });
         e.data.boxes.forEach((box) => {
-          //const object = new THREE.Mesh(geometry, new THREE.MeshLambertMaterial({ color: Math.random() * 0xffffff }));
-          const object = new THREE.Mesh(geometry, new THREE.MeshLambertMaterial({ color: 0xff0000 }));
+          const object = new THREE.Mesh(geometry, new THREE.MeshLambertMaterial({ color: Math.random() * 0xffffff }));
+          // const object = new THREE.Mesh(geometry, new THREE.MeshLambertMaterial({ color: 0xff0000 }));
           object.position.set(box.position[0], box.position[1], box.position[2]);
           object.quaternion.set(box.quaternion[0], box.quaternion[1], box.quaternion[2], box.quaternion[3]);
           object.scale.set(box.scale[0], box.scale[1], box.scale[2]);
-          testScene.room.add(object);
+          scene.add(object);
+          objectMap.set(box.key, object);
+        });
+      }
+      if (e.data.kind === `updateObjects`) {
+        // logger.log(`updateObjects from [Worker]`, { e });
+        e.data.boxes.forEach((box) => {
+          const object = objectMap.get(box.key);
+          if (!object) {
+            return;
+          }
+          object.position.set(box.position[0], box.position[1], box.position[2]);
+          object.quaternion.set(box.quaternion[0], box.quaternion[1], box.quaternion[2], box.quaternion[3]);
+          object.scale.set(box.scale[0], box.scale[1], box.scale[2]);
         });
       }
     };
