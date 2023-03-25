@@ -91,6 +91,11 @@ export const createWorkerTestScene = async () => {
   // Use the RAPIER module here.
   const world = new World({ x: 0.0, y: -9.8, z: 0.0 });
   world.timestep = 1.0 / maxFps;
+  wogger.log(`world iterations`, {
+    maxVelocityIterations: world.maxVelocityIterations,
+    maxStabilizationIterations: world.maxStabilizationIterations,
+    maxVelocityFrictionIterations: world.maxVelocityFrictionIterations,
+  });
 
   // Create the ground
   Object.values(sceneData.room).map((o) => {
@@ -168,8 +173,14 @@ export const createWorkerTestScene = async () => {
     }
     const timestepActual = 0.001 * runningDeltaTime;
     const timestepDiff = timestepActual - world.timestep;
-    if (Math.abs(timestepDiff) > 0.005) {
-      wogger.log(`Timestep changed`, { timestepDiff, timestepActual, worldTimestep: world.timestep });
+    const timestepDiffRatio = timestepDiff / timestepActual;
+    if (Math.abs(timestepDiffRatio) > 0.1) {
+      wogger.log(`Timestep changed`, {
+        timestepDiffRatio,
+        timestepDiff,
+        timestepActual,
+        worldTimestep: world.timestep,
+      });
       world.timestep = timestepActual;
     }
     const fps = 1000 / runningDeltaTime;
@@ -276,8 +287,9 @@ export const createWorkerTestScene = async () => {
     }
 
     const timeElapsed = performance.now() - time;
-    const timeRemaining = minDeltaTime - timeElapsed;
-    const timeUntilNextFrame = Math.max(0, timeRemaining);
+    const timeRemaining = world.timestep * 1000 - timeElapsed;
+    // const timeRemaining = minDeltaTime - timeElapsed;
+    const timeUntilNextFrame = Math.max(0, timeRemaining * 0.85);
     if (frameCount % maxFps === 0) {
       wogger.log(`gameLoop time`, {
         fps,
