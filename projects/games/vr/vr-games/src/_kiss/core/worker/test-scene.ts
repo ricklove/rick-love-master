@@ -2,10 +2,11 @@ import RAPIER, { ColliderDesc, RigidBody, RigidBodyDesc, World } from '@dimforge
 import { Quaternion, Vector3 } from 'three';
 import { handJointNames } from '../input/hand-joints';
 import { postMessageFromWorker } from '../messages/message';
-import { createMessageArrayBufferSet, postMessageArrayBufferFromWorker } from '../messages/message-update-transforms';
+import { MessageBufferPool } from '../messages/message-buffer';
+import { postMessageSceneObjectTransforms } from '../messages/messages/message-scene-object-transforms';
 import { wogger } from './wogger';
 
-export const createWorkerTestScene = async () => {
+export const createWorkerTestScene = async (messageBufferPool: MessageBufferPool) => {
   await RAPIER.init();
 
   const roomSize = 5;
@@ -17,8 +18,6 @@ export const createWorkerTestScene = async () => {
   const jointCoint = handJointNames.length * 2;
   const boxCount = 1000;
   const maxFps = 144;
-
-  const messageBufferSet = createMessageArrayBufferSet(6 + boxCount, jointCoint);
 
   let nextId = 0;
   const sceneData = {
@@ -279,10 +278,10 @@ export const createWorkerTestScene = async () => {
           })),
         });
       } else {
-        postMessageArrayBufferFromWorker(
+        postMessageSceneObjectTransforms(
           [...Object.values(scene.room), ...scene.boxes.filter((x) => x.hasMoved)],
           [...scene.joints],
-          messageBufferSet,
+          messageBufferPool,
         );
       }
     }

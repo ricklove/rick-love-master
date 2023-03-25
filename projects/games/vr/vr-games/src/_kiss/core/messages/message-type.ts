@@ -1,3 +1,9 @@
+export enum MessageBufferKind {
+  returnedBuffer = 0,
+  userInputTransforms,
+  sceneObjectTransforms,
+}
+
 export type WorkerMessageToWorker =
   | ArrayBuffer
   | {

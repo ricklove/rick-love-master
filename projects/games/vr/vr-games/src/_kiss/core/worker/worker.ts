@@ -1,5 +1,7 @@
 import { postMessageFromWorker } from '../messages/message';
-import { WorkerMessageFromWorker, WorkerMessageToWorker } from '../messages/message-type';
+import { createMessageBufferPool } from '../messages/message-buffer';
+import { MessageBufferKind, WorkerMessageFromWorker, WorkerMessageToWorker } from '../messages/message-type';
+import { readMessageUserInputTransforms } from '../messages/messages/message-user-input';
 import { createWorkerTestScene } from './test-scene';
 import { wogger } from './wogger';
 
@@ -8,36 +10,47 @@ wogger.log(`I am loaded!`, {});
 const state = {
   ready: false,
   timeToMainTime: 0,
+  messageBufferPool: createMessageBufferPool(self),
   scene: undefined as undefined | Awaited<ReturnType<typeof createWorkerTestScene>>,
 };
 
 self.onmessage = (e: { data: unknown }) => {
   const data = e.data as WorkerMessageToWorker;
   if (data instanceof ArrayBuffer) {
-    const dataFloat32 = new Float32Array(data);
-    // TODO: send this to physics
-    if (!state.scene) {
+    const i32Buffer = new Int32Array(data);
+    const kind = i32Buffer[0] as MessageBufferKind;
+    if (kind === MessageBufferKind.returnedBuffer) {
+      state.messageBufferPool.addReturnedBuffer(data);
       return;
     }
-    state.scene.joints.forEach((o, i) => {
-      o.position.set(dataFloat32[i * 3], dataFloat32[i * 3 + 1], dataFloat32[i * 3 + 2]);
-    });
+    if (kind === MessageBufferKind.userInputTransforms) {
+      if (!state.scene) {
+        state.messageBufferPool.returnBuffer(data);
+        return;
+      }
+      readMessageUserInputTransforms(data, state.scene.joints);
+      state.messageBufferPool.returnBuffer(data);
+      return;
+    }
 
-    // const total = dataFloat32.reduce((a, b) => a + b, 0);
-    // wogger.log(`ArrayBuffer received from [Main]`, { dataFloat32 });
+    wogger.error(`Unhandled ArrayBuffer from [Main]`, { data });
+    state.messageBufferPool.returnBuffer(data);
     return;
   }
   if (data.kind === `setup`) {
-    // TODO: setup resources
+    if (state.ready) {
+      return;
+    }
     state.ready = true;
+
+    const bufferPool = state.messageBufferPool;
     (async () => {
-      state.scene = await createWorkerTestScene();
+      state.scene = await createWorkerTestScene(bufferPool);
       wogger.log(`I am setup!`);
     })();
     return;
   }
   if (data.kind === `dispose`) {
-    // TODO: dispose resources
     state.ready = false;
     state.scene?.dispose();
     state.scene = undefined;

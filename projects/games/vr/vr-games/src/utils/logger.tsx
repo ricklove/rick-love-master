@@ -29,9 +29,15 @@ const log = (message: string, details?: unknown) => {
   console.log(message, { details, d });
   logState.unshift(`${logState.length} ${Date.now() % 1000000}: ${message} ${d}`);
 };
+const error = (message: string, details?: unknown) => {
+  const d = formatDetails(details, 3);
+  console.error(message, { details, d });
+  logState.unshift(`${logState.length} ${Date.now() % 1000000}: ERR: ${message} ${d}`);
+};
 
 export const logger = {
   log,
+  error,
   logState,
 };
 

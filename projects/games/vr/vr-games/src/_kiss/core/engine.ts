@@ -1,9 +1,10 @@
 import * as THREE from 'three';
 import { Object3D } from 'three';
 import { logger } from '../../utils/logger';
-import { createInputBuffer, readXrInput } from './input/input-data';
-import { WorkerMessageFromWorker, WorkerMessageToWorker } from './messages/message-type';
-import { readMessageArrayBufferFromWorker } from './messages/message-update-transforms';
+import { createMessageBufferPool } from './messages/message-buffer';
+import { MessageBufferKind, WorkerMessageFromWorker, WorkerMessageToWorker } from './messages/message-type';
+import { readMessageSceneObjectTransforms } from './messages/messages/message-scene-object-transforms';
+import { postMessageUserInputTransforms } from './messages/messages/message-user-input';
 import { setupThree } from './three-setup';
 import { addTestScene, updateTestScene } from './three-test-scene';
 
@@ -99,7 +100,8 @@ export const createGameEngine = (host: HTMLDivElement, workerRaw: Worker) => {
         const data = updateObjectsArrayBuffer;
         updateObjectsArrayBuffer = undefined;
         // logger.log(`updateObjectsArrayBuffer`, { data, objectMap });
-        readMessageArrayBufferFromWorker(data, objectMap, objectMap);
+        readMessageSceneObjectTransforms(data, objectMap, objectMap);
+        bufferPool.returnBuffer(data);
       }
     };
 
@@ -108,7 +110,20 @@ export const createGameEngine = (host: HTMLDivElement, workerRaw: Worker) => {
       const data = e.data as WorkerMessageFromWorker;
       if (data instanceof ArrayBuffer) {
         // logger.log(`ArrayBuffer from [Worker]`, { e });
-        updateObjectsArrayBuffer = data;
+        const kind = new Int32Array(data, 0, 1)[0];
+        if (kind === MessageBufferKind.returnedBuffer) {
+          bufferPool.addReturnedBuffer(data);
+          return;
+        }
+        if (kind === MessageBufferKind.sceneObjectTransforms) {
+          if (updateObjectsArrayBuffer) {
+            bufferPool.returnBuffer(updateObjectsArrayBuffer);
+          }
+          updateObjectsArrayBuffer = data;
+          return;
+        }
+        logger.error(`Unhandled ArrayBuffer from [Worker]`, { e });
+        bufferPool.returnBuffer(data);
         return;
       }
       if (data.kind === `pong`) {
@@ -130,14 +145,14 @@ export const createGameEngine = (host: HTMLDivElement, workerRaw: Worker) => {
         return;
       }
 
-      logger.log(`Unhandled message from [Worker]`, { e });
+      logger.error(`Unhandled message from [Worker]`, { e });
     };
 
     worker.postMessage({ kind: `ping`, time: performance.now() });
     worker.postMessage({ kind: `ping`, time: performance.now() });
     worker.postMessage({ kind: `setup` });
 
-    const inputBuffer = createInputBuffer();
+    const bufferPool = createMessageBufferPool(workerRaw);
 
     let frameCount = 0;
     let fpsRunningAverage = 60;
@@ -172,8 +187,7 @@ export const createGameEngine = (host: HTMLDivElement, workerRaw: Worker) => {
         worker.postMessage({ kind: `ping`, time: frameTime });
       }
 
-      readXrInput(renderer, frame, inputBuffer);
-      worker.postMessage(inputBuffer.buffer);
+      postMessageUserInputTransforms(renderer, frame, bufferPool);
 
       updateSceneFromData();
       updateTestScene(deltaTime, testScene);
