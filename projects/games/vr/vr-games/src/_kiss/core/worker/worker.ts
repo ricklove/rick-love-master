@@ -22,6 +22,7 @@ self.onmessage = (e: { data: unknown }) => {
     state.scene.joints.forEach((o, i) => {
       o.position.set(dataFloat32[i * 3], dataFloat32[i * 3 + 1], dataFloat32[i * 3 + 2]);
     });
+
     // const total = dataFloat32.reduce((a, b) => a + b, 0);
     // wogger.log(`ArrayBuffer received from [Main]`, { dataFloat32 });
     return;
@@ -41,6 +42,14 @@ self.onmessage = (e: { data: unknown }) => {
     state.scene?.dispose();
     state.scene = undefined;
     wogger.log(`I am in-disposed`);
+    return;
+  }
+  if (data.kind === `frameSync`) {
+    if (!state.scene) {
+      return;
+    }
+    state.scene.updateMessageRequested = true;
+    // wogger.log(`Update requested from [Main]`);
     return;
   }
   if (data.kind === `ping`) {

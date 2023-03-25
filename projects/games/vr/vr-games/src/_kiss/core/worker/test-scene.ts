@@ -1,6 +1,6 @@
 import RAPIER, { ColliderDesc, RigidBody, RigidBodyDesc, World } from '@dimforge/rapier3d-compat';
 import { Quaternion, Vector3 } from 'three';
-import { handJointNames } from '../input-data';
+import { handJointNames } from '../input/hand-joints';
 import { postMessageTyped } from './message';
 
 export const createWorkerTestScene = async () => {
@@ -16,40 +16,48 @@ export const createWorkerTestScene = async () => {
   const boxCount = 1000;
   const fps = 120;
 
-  const w = {
+  let nextId = 0;
+  const sceneData = {
     room: {
       ground: {
+        id: nextId++,
         position: new Vector3(0, 0, 0),
         scale: new Vector3(roomSize, 0.1, roomSize),
         quaternion: new Quaternion(),
       },
       ceiling: {
+        id: nextId++,
         position: new Vector3(0, roomHeight, 0),
         scale: new Vector3(roomSize, 0.1, roomSize),
         quaternion: new Quaternion(),
       },
       wallW: {
+        id: nextId++,
         position: new Vector3(-roomSize * 0.5, roomHeight * 0.5, 0),
         scale: new Vector3(0.1, roomHeight, roomSize),
         quaternion: new Quaternion(),
       },
       wallE: {
+        id: nextId++,
         position: new Vector3(roomSize * 0.5, roomHeight * 0.5, 0),
         scale: new Vector3(0.1, roomHeight, roomSize),
         quaternion: new Quaternion(),
       },
       wallN: {
+        id: nextId++,
         position: new Vector3(0, roomHeight * 0.5, -roomSize * 0.5),
         scale: new Vector3(roomSize, roomHeight, 0.1),
         quaternion: new Quaternion(),
       },
       wallS: {
+        id: nextId++,
         position: new Vector3(0, roomHeight * 0.5, roomSize * 0.5),
         scale: new Vector3(roomSize, roomHeight, 0.1),
         quaternion: new Quaternion(),
       },
     },
     boxes: Array.from({ length: boxCount }, (_, i) => ({
+      id: nextId++,
       rigidBody: undefined as undefined | RigidBody,
       // position: new Vector3(
       //   slotSize * (0.5 * cols - (i % cols)),
@@ -69,6 +77,7 @@ export const createWorkerTestScene = async () => {
       quaternion: new Quaternion(Math.random(), Math.random(), Math.random(), Math.random()).normalize(),
     })),
     joints: Array.from({ length: jointCoint }, () => ({
+      id: nextId++,
       rigidBody: undefined as undefined | RigidBody,
       position: new Vector3(0, -10, 0),
       radius: 0.01,
@@ -81,7 +90,7 @@ export const createWorkerTestScene = async () => {
   const timestep = world.timestep * 1000;
 
   // Create the ground
-  Object.values(w.room).map((o) => {
+  Object.values(sceneData.room).map((o) => {
     const colliderDesc = ColliderDesc.cuboid(o.scale.x * 0.5, o.scale.y * 0.5, o.scale.z * 0.5).setTranslation(
       o.position.x,
       o.position.y,
@@ -90,7 +99,7 @@ export const createWorkerTestScene = async () => {
     world.createCollider(colliderDesc);
   });
 
-  w.joints.map((o) => {
+  sceneData.joints.map((o) => {
     const rigidBodyDesc = RigidBodyDesc.kinematicPositionBased().setTranslation(
       o.position.x,
       o.position.y,
@@ -104,7 +113,7 @@ export const createWorkerTestScene = async () => {
     o.rigidBody = rigidBody;
   });
 
-  w.boxes.map((o) => {
+  sceneData.boxes.map((o) => {
     const rigidBodyDesc = RigidBodyDesc.dynamic()
       .setTranslation(o.position.x, o.position.y, o.position.z)
       .setRotation(o.quaternion)
@@ -122,14 +131,14 @@ export const createWorkerTestScene = async () => {
   // TODO: Make efficient
   postMessageTyped({
     kind: `addObjects`,
-    boxes: [...Object.values(w.room), ...w.boxes].map((x, i) => ({
-      key: `box-${i}`,
+    boxes: [...Object.values(sceneData.room), ...sceneData.boxes].map((x) => ({
+      id: x.id,
       position: x.position.toArray(),
       quaternion: x.quaternion.toArray() as [number, number, number, number],
       scale: x.scale.toArray(),
     })),
-    spheres: [...w.joints].map((x, i) => ({
-      key: `sphere-${i}`,
+    spheres: [...sceneData.joints].map((x, i) => ({
+      id: x.id,
       position: x.position.toArray(),
       radius: x.radius,
     })),
@@ -148,7 +157,7 @@ export const createWorkerTestScene = async () => {
     // const position = rigidBody.translation();
     // console.log(`Rigid-body position: `, position.x, position.y, position.z);
 
-    w.boxes.forEach((o) => {
+    scene.boxes.forEach((o) => {
       if (!o.rigidBody) {
         return;
       }
@@ -179,7 +188,7 @@ export const createWorkerTestScene = async () => {
     });
 
     // Copy joint positions to rigid bodies
-    w.joints.forEach((o, i) => {
+    scene.joints.forEach((o, i) => {
       o.rigidBody?.setNextKinematicTranslation(o.position);
     });
 
@@ -191,30 +200,36 @@ export const createWorkerTestScene = async () => {
     //   o.position.set(position.x, position.y, position.z);
     // });
 
-    postMessageTyped({
-      kind: `updateObjects`,
-      boxes: [...Object.values(w.room), ...w.boxes].map((x, i) => ({
-        key: `box-${i}`,
-        position: x.position.toArray(),
-        quaternion: x.quaternion.toArray() as [number, number, number, number],
-        scale: x.scale.toArray(),
-      })),
-      spheres: [...w.joints].map((x, i) => ({
-        key: `sphere-${i}`,
-        position: x.position.toArray(),
-        radius: x.radius,
-      })),
-    });
+    if (scene.updateMessageRequested) {
+      // wogger.log(`Sending update message`);
+      scene.updateMessageRequested = false;
+      postMessageTyped({
+        kind: `updateObjects`,
+        boxes: [...Object.values(scene.room), ...scene.boxes].map((x) => ({
+          id: x.id,
+          position: x.position.toArray(),
+          quaternion: x.quaternion.toArray() as [number, number, number, number],
+          scale: x.scale.toArray(),
+        })),
+        spheres: [...scene.joints].map((x) => ({
+          id: x.id,
+          position: x.position.toArray(),
+          radius: x.radius,
+        })),
+      });
+    }
 
     gameLoopTimerId = setTimeout(gameLoop, timestep);
   };
 
-  gameLoop();
-
-  return {
-    ...w,
+  const scene = {
+    ...sceneData,
+    updateMessageRequested: false,
     dispose: () => {
       clearTimeout(gameLoopTimerId);
     },
   };
+  gameLoop();
+
+  return scene;
 };

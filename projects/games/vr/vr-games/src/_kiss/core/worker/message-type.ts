@@ -7,6 +7,10 @@ export type WorkerMessageToWorker =
       kind: `dispose`;
     }
   | {
+      kind: `frameSync`;
+      time: number;
+    }
+  | {
       kind: `ping`;
       time: number;
     };
@@ -22,13 +26,13 @@ export type WorkerMessageFromWorker =
   | {
       kind: `addObjects`;
       boxes: {
-        key: string;
+        id: number;
         position: [number, number, number];
         quaternion: [number, number, number, number];
         scale: [number, number, number];
       }[];
       spheres: {
-        key: string;
+        id: number;
         position: [number, number, number];
         radius: number;
       }[];
@@ -36,14 +40,21 @@ export type WorkerMessageFromWorker =
   | {
       kind: `updateObjects`;
       boxes: {
-        key: string;
+        id: number;
         position: [number, number, number];
         quaternion: [number, number, number, number];
         scale: [number, number, number];
       }[];
       spheres: {
-        key: string;
+        id: number;
         position: [number, number, number];
         radius: number;
       }[];
     };
+
+// export type WorkerMessageFromWorkerKind<TKind extends WorkerMessageFromWorker[`kind`]> = Extract<
+//   WorkerMessageFromWorker,
+//   { kind: TKind }
+// >;
+
+// type _Test = WorkerMessageFromWorkerKind<`pong`>;
