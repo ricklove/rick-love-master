@@ -18,6 +18,7 @@ export const createWorkerTestScene = async (messageBufferPool: MessageBufferPool
   const jointCoint = handJointNames.length * 2;
   const boxCount = 1000;
   const maxFps = 144;
+  const ADJUST_TIME_STEP = false;
 
   let nextId = 0;
   const sceneData = {
@@ -174,7 +175,7 @@ export const createWorkerTestScene = async (messageBufferPool: MessageBufferPool
     const timestepActual = 0.001 * runningDeltaTime;
     const timestepDiff = timestepActual - world.timestep;
     const timestepDiffRatio = timestepDiff / timestepActual;
-    if (Math.abs(timestepDiffRatio) > 0.1) {
+    if (Math.abs(timestepDiffRatio) > 0.1 && ADJUST_TIME_STEP) {
       wogger.log(`Timestep changed`, {
         timestepDiffRatio,
         timestepDiff,
