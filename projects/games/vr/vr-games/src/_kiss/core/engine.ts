@@ -4,6 +4,7 @@ import { logger } from '../../utils/logger';
 import { createInputBuffer, readXrInput } from './input/input-data';
 import { setupThree } from './three-setup';
 import { addTestScene, updateTestScene } from './three-test-scene';
+import { readMessageArrayBufferFromWorker } from './worker/message';
 import { WorkerMessageFromWorker, WorkerMessageToWorker } from './worker/message-type';
 
 export const createGameEngine = (host: HTMLDivElement, workerRaw: Worker) => {
@@ -30,6 +31,7 @@ export const createGameEngine = (host: HTMLDivElement, workerRaw: Worker) => {
     const objectMap = [] as Object3D[];
     let addObjectsData = undefined as undefined | Extract<WorkerMessageFromWorker, { kind: `addObjects` }>;
     let updateObjectsData = undefined as undefined | Extract<WorkerMessageFromWorker, { kind: `updateObjects` }>;
+    let updateObjectsArrayBuffer = undefined as undefined | ArrayBuffer;
 
     const updateSceneFromData = () => {
       if (addObjectsData) {
@@ -85,25 +87,42 @@ export const createGameEngine = (host: HTMLDivElement, workerRaw: Worker) => {
           object.updateMatrix();
         });
       }
+      if (updateObjectsArrayBuffer) {
+        const data = updateObjectsArrayBuffer;
+        updateObjectsArrayBuffer = undefined;
+        // logger.log(`updateObjectsArrayBuffer`, { data, objectMap });
+        readMessageArrayBufferFromWorker(data, objectMap, objectMap);
+      }
     };
 
     worker.onmessage = (e) => {
       // logger.log(`From [Worker]`, { e });
-      if (e.data.kind === `pong`) {
+      const data = e.data as WorkerMessageFromWorker;
+      if (data instanceof ArrayBuffer) {
+        // logger.log(`ArrayBuffer from [Worker]`, { e });
+        updateObjectsArrayBuffer = data;
+        return;
+      }
+      if (data.kind === `pong`) {
         logger.log(`pong from [Worker]`, {
-          pingTime: e.data.pingTime,
-          time: e.data.time,
-          delta: e.data.time - e.data.pingTime,
+          pingTime: data.pingTime,
+          time: data.time,
+          delta: data.time - data.pingTime,
         });
+        return;
       }
-      if (e.data.kind === `addObjects`) {
+      if (data.kind === `addObjects`) {
         // logger.log(`addObjects from [Worker]`, { e });
-        addObjectsData = e.data;
+        addObjectsData = data;
+        return;
       }
-      if (e.data.kind === `updateObjects`) {
+      if (data.kind === `updateObjects`) {
         // logger.log(`updateObjects from [Worker]`, { e });
-        updateObjectsData = e.data;
+        updateObjectsData = data;
+        return;
       }
+
+      logger.log(`Unhandled message from [Worker]`, { e });
     };
 
     worker.postMessage({ kind: `ping`, time: performance.now() });

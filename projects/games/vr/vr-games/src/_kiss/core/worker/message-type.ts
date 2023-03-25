@@ -16,6 +16,7 @@ export type WorkerMessageToWorker =
     };
 
 export type WorkerMessageFromWorker =
+  | ArrayBuffer
   | {
       kind: `pong`;
       time: number;

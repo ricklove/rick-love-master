@@ -1,4 +1,4 @@
-import { postMessageTyped } from './message';
+import { postMessageFromWorker } from './message';
 import { WorkerMessageFromWorker, WorkerMessageToWorker } from './message-type';
 import { createWorkerTestScene } from './test-scene';
 import { wogger } from './wogger';
@@ -69,7 +69,7 @@ self.onmessage = (e: { data: unknown }) => {
       timeOffset: state.timeToMainTime,
     };
     wogger.log(`ping from [Main]`, { pong });
-    postMessageTyped(pong);
+    postMessageFromWorker(pong);
     return;
   }
 

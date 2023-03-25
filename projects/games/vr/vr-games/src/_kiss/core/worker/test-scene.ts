@@ -1,7 +1,7 @@
 import RAPIER, { ColliderDesc, RigidBody, RigidBodyDesc, World } from '@dimforge/rapier3d-compat';
 import { Quaternion, Vector3 } from 'three';
 import { handJointNames } from '../input/hand-joints';
-import { postMessageTyped } from './message';
+import { createMessageArrayBufferSet, postMessageArrayBufferFromWorker, postMessageFromWorker } from './message';
 
 export const createWorkerTestScene = async () => {
   await RAPIER.init();
@@ -15,6 +15,8 @@ export const createWorkerTestScene = async () => {
   const jointCoint = handJointNames.length * 2;
   const boxCount = 1000;
   const fps = 120;
+
+  const messageBufferSet = createMessageArrayBufferSet(6 + boxCount, jointCoint);
 
   let nextId = 0;
   const sceneData = {
@@ -75,6 +77,7 @@ export const createWorkerTestScene = async () => {
         boxSize * (0.1 + 0.75 * Math.random()),
       ),
       quaternion: new Quaternion(Math.random(), Math.random(), Math.random(), Math.random()).normalize(),
+      hasMoved: true,
     })),
     joints: Array.from({ length: jointCoint }, () => ({
       id: nextId++,
@@ -129,7 +132,7 @@ export const createWorkerTestScene = async () => {
   });
 
   // TODO: Make efficient
-  postMessageTyped({
+  postMessageFromWorker({
     kind: `addObjects`,
     boxes: [...Object.values(sceneData.room), ...sceneData.boxes].map((x) => ({
       id: x.id,
@@ -161,10 +164,32 @@ export const createWorkerTestScene = async () => {
       if (!o.rigidBody) {
         return;
       }
+
       const position = o.rigidBody.translation();
-      o.position.set(position.x, position.y, position.z);
+      const oPosition = o.position;
+      const xPositionDelta = position.x - o.position.x;
+      const yPositionDelta = position.y - o.position.y;
+      const zPositionDelta = position.z - o.position.z;
+      const positionDeltaSq =
+        xPositionDelta * xPositionDelta + yPositionDelta * yPositionDelta + zPositionDelta * zPositionDelta;
+      oPosition.set(position.x, position.y, position.z);
+
       const quaternion = o.rigidBody.rotation();
-      o.quaternion.set(quaternion.x, quaternion.y, quaternion.z, quaternion.w);
+      const oQuaternion = o.quaternion;
+      oQuaternion.set(quaternion.x, quaternion.y, quaternion.z, quaternion.w);
+      const xQuaternionDelta = quaternion.x - o.quaternion.x;
+      const yQuaternionDelta = quaternion.y - o.quaternion.y;
+      const zQuaternionDelta = quaternion.z - o.quaternion.z;
+      const wQuaternionDelta = quaternion.w - o.quaternion.w;
+      const quaternionDeltaSq =
+        xQuaternionDelta * xQuaternionDelta +
+        yQuaternionDelta * yQuaternionDelta +
+        zQuaternionDelta * zQuaternionDelta +
+        wQuaternionDelta * wQuaternionDelta;
+
+      o.hasMoved = positionDeltaSq > 0.00001 || quaternionDeltaSq > 0.00001;
+      // TEMP: Disable hasMoved
+      o.hasMoved = true;
 
       // // apply random force to wake up
       // if (o.rigidBody.isSleeping()) {
@@ -203,20 +228,29 @@ export const createWorkerTestScene = async () => {
     if (scene.updateMessageRequested) {
       // wogger.log(`Sending update message`);
       scene.updateMessageRequested = false;
-      postMessageTyped({
-        kind: `updateObjects`,
-        boxes: [...Object.values(scene.room), ...scene.boxes].map((x) => ({
-          id: x.id,
-          position: x.position.toArray(),
-          quaternion: x.quaternion.toArray() as [number, number, number, number],
-          scale: x.scale.toArray(),
-        })),
-        spheres: [...scene.joints].map((x) => ({
-          id: x.id,
-          position: x.position.toArray(),
-          radius: x.radius,
-        })),
-      });
+      const useArrayBuffer = false;
+      if (!useArrayBuffer) {
+        postMessageFromWorker({
+          kind: `updateObjects`,
+          boxes: [...Object.values(scene.room), ...scene.boxes.filter((x) => x.hasMoved)].map((x) => ({
+            id: x.id,
+            position: x.position.toArray(),
+            quaternion: x.quaternion.toArray() as [number, number, number, number],
+            scale: x.scale.toArray(),
+          })),
+          spheres: [...scene.joints].map((x) => ({
+            id: x.id,
+            position: x.position.toArray(),
+            radius: x.radius,
+          })),
+        });
+      } else {
+        postMessageArrayBufferFromWorker(
+          [...Object.values(scene.room), ...scene.boxes.filter((x) => x.hasMoved)],
+          [...scene.joints],
+          messageBufferSet,
+        );
+      }
     }
 
     gameLoopTimerId = setTimeout(gameLoop, timestep);
