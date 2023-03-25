@@ -95,7 +95,7 @@ export const readMessageArrayBufferFromWorker = (buffer: ArrayBuffer, boxes: Obj
   const boxCount = iBuffer[0];
   const sphereCount = iBuffer[1];
 
-  console.log(`readMessageArrayBufferFromWorker`, { boxCount, sphereCount, buffer, fBuffer, iBuffer });
+  // console.log(`readMessageArrayBufferFromWorker`, { boxCount, sphereCount, buffer, fBuffer, iBuffer });
 
   let offset = 2;
   for (let i = 0; i < boxCount; i++) {
@@ -103,11 +103,13 @@ export const readMessageArrayBufferFromWorker = (buffer: ArrayBuffer, boxes: Obj
     const box = boxes[id];
     box.position.set(fBuffer[offset++], fBuffer[offset++], fBuffer[offset++]);
     box.quaternion.set(fBuffer[offset++], fBuffer[offset++], fBuffer[offset++], fBuffer[offset++]);
+    box.updateMatrix();
   }
 
   for (let i = 0; i < sphereCount; i++) {
     const id = iBuffer[offset++];
     const sphere = spheres[id];
     sphere.position.set(fBuffer[offset++], fBuffer[offset++], fBuffer[offset++]);
+    sphere.updateMatrix();
   }
 };

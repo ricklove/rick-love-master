@@ -2,6 +2,7 @@ import RAPIER, { ColliderDesc, RigidBody, RigidBodyDesc, World } from '@dimforge
 import { Quaternion, Vector3 } from 'three';
 import { handJointNames } from '../input/hand-joints';
 import { createMessageArrayBufferSet, postMessageArrayBufferFromWorker, postMessageFromWorker } from './message';
+import { wogger } from './wogger';
 
 export const createWorkerTestScene = async () => {
   await RAPIER.init();
@@ -14,7 +15,7 @@ export const createWorkerTestScene = async () => {
   const speed = 5;
   const jointCoint = handJointNames.length * 2;
   const boxCount = 1000;
-  const fps = 120;
+  const maxFps = 144;
 
   const messageBufferSet = createMessageArrayBufferSet(6 + boxCount, jointCoint);
 
@@ -89,8 +90,7 @@ export const createWorkerTestScene = async () => {
 
   // Use the RAPIER module here.
   const world = new World({ x: 0.0, y: -9.8, z: 0.0 });
-  world.timestep = 1.0 / fps;
-  const timestep = world.timestep * 1000;
+  world.timestep = 1.0 / maxFps;
 
   // Create the ground
   Object.values(sceneData.room).map((o) => {
@@ -151,7 +151,29 @@ export const createWorkerTestScene = async () => {
   let gameLoopTimerId = setTimeout(() => {
     //empty
   }, 0);
+
+  let frameCount = 0;
+  let lastTime = performance.now();
+  let runningDeltaTime = 1000 / maxFps;
+  const minDeltaTime = 1000 / maxFps;
+
   const gameLoop = () => {
+    const time = performance.now();
+    const deltaTime = time - lastTime;
+    lastTime = time;
+
+    runningDeltaTime = runningDeltaTime * 0.9 + deltaTime * 0.1;
+    if (runningDeltaTime < minDeltaTime) {
+      runningDeltaTime = minDeltaTime;
+    }
+    const timestepActual = 0.001 * runningDeltaTime;
+    const timestepDiff = timestepActual - world.timestep;
+    if (Math.abs(timestepDiff) > 0.005) {
+      wogger.log(`Timestep changed`, { timestepDiff, timestepActual, worldTimestep: world.timestep });
+      world.timestep = timestepActual;
+    }
+    const fps = 1000 / runningDeltaTime;
+
     // wogger.log(`Game loop`);
     // Step the simulation forward.
     world.step();
@@ -228,8 +250,8 @@ export const createWorkerTestScene = async () => {
     if (scene.updateMessageRequested) {
       // wogger.log(`Sending update message`);
       scene.updateMessageRequested = false;
-      const useArrayBuffer = false;
-      if (!useArrayBuffer) {
+      const USE_ARRAY_BUFFER = true;
+      if (!USE_ARRAY_BUFFER) {
         postMessageFromWorker({
           kind: `updateObjects`,
           boxes: [...Object.values(scene.room), ...scene.boxes.filter((x) => x.hasMoved)].map((x) => ({
@@ -253,7 +275,25 @@ export const createWorkerTestScene = async () => {
       }
     }
 
-    gameLoopTimerId = setTimeout(gameLoop, timestep);
+    const timeElapsed = performance.now() - time;
+    const timeRemaining = minDeltaTime - timeElapsed;
+    const timeUntilNextFrame = Math.max(0, timeRemaining);
+    if (frameCount % maxFps === 0) {
+      wogger.log(`gameLoop time`, {
+        fps,
+        timeElapsed,
+        timeRemaining,
+        timeUntilNextFrame,
+        runningDeltaTime,
+        deltaTime,
+        lastTime,
+        time,
+        minDeltaTime,
+      });
+    }
+
+    frameCount++;
+    gameLoopTimerId = setTimeout(gameLoop, timeUntilNextFrame);
   };
 
   const scene = {

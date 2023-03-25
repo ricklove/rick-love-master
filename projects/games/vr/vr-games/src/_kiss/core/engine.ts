@@ -48,7 +48,10 @@ export const createGameEngine = (host: HTMLDivElement, workerRaw: Worker) => {
           object.position.set(o.position[0], o.position[1], o.position[2]);
           object.quaternion.set(o.quaternion[0], o.quaternion[1], o.quaternion[2], o.quaternion[3]);
           object.scale.set(o.scale[0], o.scale[1], o.scale[2]);
+          object.updateMatrix();
+
           scene.add(object);
+
           objectMap[o.id] = object;
         });
         data.spheres.forEach((o) => {
@@ -60,9 +63,14 @@ export const createGameEngine = (host: HTMLDivElement, workerRaw: Worker) => {
           object.matrixAutoUpdate = false;
           object.position.set(o.position[0], o.position[1], o.position[2]);
           object.scale.set(o.radius, o.radius, o.radius);
+          object.updateMatrix();
+
           scene.add(object);
+
           objectMap[o.id] = object;
         });
+
+        logger.log(`updateSceneFromData:addObjects Added objects to scene`, { data, objectMap });
       }
       if (updateObjectsData) {
         const data = updateObjectsData;
@@ -135,7 +143,7 @@ export const createGameEngine = (host: HTMLDivElement, workerRaw: Worker) => {
     let fpsRunningAverage = 60;
     let stop = false;
     let disposed = false;
-    const clock = new THREE.Clock();
+    let lastFrameTime = performance.now();
 
     const mainLoop: XRFrameRequestCallback = (time, frame) => {
       if (disposed) {
@@ -149,23 +157,27 @@ export const createGameEngine = (host: HTMLDivElement, workerRaw: Worker) => {
         return;
       }
 
-      const deltaTime = clock.getDelta() * 1000;
+      const frameTime = time; // performance.now();
+      //console.log(`frameTime`, { time, frameTime, lastFrameTime });
+      const deltaTime = frameTime - lastFrameTime;
+      lastFrameTime = frameTime;
+
       const fps = 1000 / (deltaTime || 1);
       fpsRunningAverage = 0.9 * fpsRunningAverage + 0.1 * fps;
 
-      worker.postMessage({ kind: `frameSync`, time: performance.now() });
+      worker.postMessage({ kind: `frameSync`, time: frameTime });
 
       if (frameCount % (10 * 60) === 0) {
         logger.log(`mainLoop`, { frameCount, deltaTime, fps, fpsRunningAverage });
-        worker.postMessage({ kind: `ping`, time: performance.now() });
+        worker.postMessage({ kind: `ping`, time: frameTime });
       }
 
       readXrInput(renderer, frame, inputBuffer);
       worker.postMessage(inputBuffer.buffer);
 
+      updateSceneFromData();
       updateTestScene(deltaTime, testScene);
       renderer.render(scene, camera);
-      updateSceneFromData();
 
       frameCount++;
     };
