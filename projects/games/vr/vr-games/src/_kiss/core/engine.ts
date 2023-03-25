@@ -1,5 +1,6 @@
 import * as THREE from 'three';
 import { logger } from '../../utils/logger';
+import { createInputBuffer, readXrInput } from './input-data';
 import { setupThree } from './three-setup';
 import { addTestScene, updateTestScene } from './three-test-scene';
 import { WorkerMessageFromWorker, WorkerMessageToWorker } from './worker/message-type';
@@ -22,6 +23,7 @@ export const createGameEngine = (host: HTMLDivElement, workerRaw: Worker) => {
   const setup = () => {
     const { scene, camera, renderer, dispose } = setupThree(host);
     const testScene = addTestScene(scene, renderer);
+    const geometry = new THREE.BoxGeometry(1, 1, 1);
 
     worker.onmessage = (e) => {
       logger.log(`From [Worker]`, { e });
@@ -30,6 +32,17 @@ export const createGameEngine = (host: HTMLDivElement, workerRaw: Worker) => {
           pingTime: e.data.pingTime,
           time: e.data.time,
           delta: e.data.time - e.data.pingTime,
+        });
+      }
+      if (e.data.kind === `addObjects`) {
+        logger.log(`addObjects from [Worker]`, { e });
+        e.data.boxes.forEach((box) => {
+          //const object = new THREE.Mesh(geometry, new THREE.MeshLambertMaterial({ color: Math.random() * 0xffffff }));
+          const object = new THREE.Mesh(geometry, new THREE.MeshLambertMaterial({ color: 0xff0000 }));
+          object.position.set(box.position[0], box.position[1], box.position[2]);
+          object.quaternion.set(box.quaternion[0], box.quaternion[1], box.quaternion[2], box.quaternion[3]);
+          object.scale.set(box.scale[0], box.scale[1], box.scale[2]);
+          testScene.room.add(object);
         });
       }
     };
@@ -68,6 +81,7 @@ export const createGameEngine = (host: HTMLDivElement, workerRaw: Worker) => {
       }
 
       readXrInput(renderer, frame, inputBuffer);
+      worker.postMessage(inputBuffer.buffer);
 
       updateTestScene(deltaTime, testScene);
       renderer.render(scene, camera);
@@ -87,88 +101,4 @@ export const createGameEngine = (host: HTMLDivElement, workerRaw: Worker) => {
   };
 
   return { setup };
-};
-
-export const handJointNames = [
-  `wrist`,
-  `thumb-metacarpal`,
-  `thumb-phalanx-proximal`,
-  `thumb-phalanx-distal`,
-  `thumb-tip`,
-  `index-finger-metacarpal`,
-  `index-finger-phalanx-proximal`,
-  `index-finger-phalanx-intermediate`,
-  `index-finger-phalanx-distal`,
-  `index-finger-tip`,
-  `middle-finger-metacarpal`,
-  `middle-finger-phalanx-proximal`,
-  `middle-finger-phalanx-intermediate`,
-  `middle-finger-phalanx-distal`,
-  `middle-finger-tip`,
-  `ring-finger-metacarpal`,
-  `ring-finger-phalanx-proximal`,
-  `ring-finger-phalanx-intermediate`,
-  `ring-finger-phalanx-distal`,
-  `ring-finger-tip`,
-  `pinky-finger-metacarpal`,
-  `pinky-finger-phalanx-proximal`,
-  `pinky-finger-phalanx-intermediate`,
-  `pinky-finger-phalanx-distal`,
-  `pinky-finger-tip`,
-] as const satisfies readonly XRHandJoint[];
-
-const handJointNameIndex = Object.fromEntries(handJointNames.map((name, index) => [name, index] as const));
-
-enum MatrixBufferIndex {
-  camera,
-  controllerLeft,
-  controllerRight,
-  controllerGripLeft,
-  controllerGripRight,
-  handLeft,
-  handRight = handLeft + handJointNames.length,
-  COUNT = handRight + handJointNames.length + 1,
-}
-
-const createInputBuffer = () => {
-  return new Float32Array(16 * MatrixBufferIndex.COUNT);
-};
-const readXrInput = (renderer: THREE.WebGLRenderer, frame: XRFrame, buffer: Float32Array) => {
-  const session = frame?.session;
-  if (!session) {
-    return;
-  }
-
-  const referenceSpace = renderer.xr.getReferenceSpace();
-  if (!referenceSpace) {
-    return;
-  }
-
-  const camera = renderer.xr.getCamera();
-  camera.matrixWorld.toArray(buffer, MatrixBufferIndex.camera * 16);
-
-  [0, 1].forEach((sideOffset) => {
-    const controller = renderer.xr.getController(sideOffset);
-    controller.matrixWorld.toArray(buffer, (MatrixBufferIndex.controllerLeft + sideOffset) * 16);
-
-    const controlleGrip = renderer.xr.getControllerGrip(sideOffset);
-    controlleGrip.matrixWorld.toArray(buffer, (MatrixBufferIndex.controllerGripLeft + sideOffset) * 16);
-
-    const hand = renderer.xr.getHand(sideOffset);
-    if (hand) {
-      for (const jointName of handJointNames) {
-        const joint = hand.joints[jointName];
-        if (!joint) {
-          continue;
-        }
-
-        joint.matrixWorld.toArray(
-          buffer,
-          MatrixBufferIndex.handLeft + sideOffset * handJointNames.length + handJointNameIndex[jointName] * 16,
-        );
-      }
-    }
-  });
-
-  console.log(`readXrInput`, { buffer });
 };

@@ -1043,6 +1043,7 @@ importers:
 
   ../../projects/games/vr/vr-games:
     specifiers:
+      '@dimforge/rapier3d-compat': 0.11.2
       '@react-three/cannon': 6.5.2
       '@react-three/drei': 9.57.3
       '@react-three/fiber': 8.9.1
@@ -1067,6 +1068,7 @@ importers:
       tsup: 6.7.0
       typescript: ~4.9.5
     dependencies:
+      '@dimforge/rapier3d-compat': 0.11.2
       '@react-three/cannon': 6.5.2_bijcwmvm66nz23y3c7pbaebvs4_y2obtkmude54d3dexdsbi5ulha
       '@react-three/drei': 9.57.3_v5bzzvmggqduoi2tbrmqm75vsi
       '@react-three/fiber': 8.9.1_xor7byvqlg4baqj6ymfbcmaax4

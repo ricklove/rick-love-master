@@ -1,4 +1,5 @@
 export type WorkerMessageToWorker =
+  | ArrayBuffer
   | {
       kind: `setup`;
     }
@@ -10,10 +11,29 @@ export type WorkerMessageToWorker =
       time: number;
     };
 
-export type WorkerMessageFromWorker = {
-  kind: `pong`;
-  time: number;
-  timeActual: number;
-  pingTime: number;
-  timeOffset: number;
-};
+export type WorkerMessageFromWorker =
+  | {
+      kind: `pong`;
+      time: number;
+      timeActual: number;
+      pingTime: number;
+      timeOffset: number;
+    }
+  | {
+      kind: `addObjects`;
+      boxes: {
+        key: string;
+        position: [number, number, number];
+        quaternion: [number, number, number, number];
+        scale: [number, number, number];
+      }[];
+    }
+  | {
+      kind: `updateObjects`;
+      boxes: {
+        key: string;
+        position: [number, number, number];
+        quaternion: [number, number, number, number];
+        scale: [number, number, number];
+      }[];
+    };
