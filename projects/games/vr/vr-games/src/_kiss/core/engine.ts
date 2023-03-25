@@ -23,7 +23,8 @@ export const createGameEngine = (host: HTMLDivElement, workerRaw: Worker) => {
   const setup = () => {
     const { scene, camera, renderer, dispose } = setupThree(host);
     const testScene = addTestScene(scene, renderer);
-    const geometry = new THREE.BoxGeometry(1, 1, 1);
+    const boxGeometry = new THREE.BoxGeometry(1, 1, 1);
+    const sphereGeometry = new THREE.SphereGeometry(1);
 
     const objectMap = new Map<string, THREE.Object3D>();
 
@@ -38,26 +39,47 @@ export const createGameEngine = (host: HTMLDivElement, workerRaw: Worker) => {
       }
       if (e.data.kind === `addObjects`) {
         // logger.log(`addObjects from [Worker]`, { e });
-        e.data.boxes.forEach((box) => {
-          const object = new THREE.Mesh(geometry, new THREE.MeshLambertMaterial({ color: Math.random() * 0xffffff }));
+        e.data.boxes.forEach((o) => {
+          const object = new THREE.Mesh(
+            boxGeometry,
+            new THREE.MeshLambertMaterial({ color: Math.random() * 0xffffff }),
+          );
           // const object = new THREE.Mesh(geometry, new THREE.MeshLambertMaterial({ color: 0xff0000 }));
-          object.position.set(box.position[0], box.position[1], box.position[2]);
-          object.quaternion.set(box.quaternion[0], box.quaternion[1], box.quaternion[2], box.quaternion[3]);
-          object.scale.set(box.scale[0], box.scale[1], box.scale[2]);
+          object.position.set(o.position[0], o.position[1], o.position[2]);
+          object.quaternion.set(o.quaternion[0], o.quaternion[1], o.quaternion[2], o.quaternion[3]);
+          object.scale.set(o.scale[0], o.scale[1], o.scale[2]);
           scene.add(object);
-          objectMap.set(box.key, object);
+          objectMap.set(o.key, object);
+        });
+        e.data.spheres.forEach((o) => {
+          const object = new THREE.Mesh(
+            sphereGeometry,
+            new THREE.MeshLambertMaterial({ color: Math.random() * 0xffffff }),
+          );
+          // const object = new THREE.Mesh(geometry, new THREE.MeshLambertMaterial({ color: 0xff0000 }));
+          object.position.set(o.position[0], o.position[1], o.position[2]);
+          object.scale.set(o.radius, o.radius, o.radius);
+          scene.add(object);
+          objectMap.set(o.key, object);
         });
       }
       if (e.data.kind === `updateObjects`) {
         // logger.log(`updateObjects from [Worker]`, { e });
-        e.data.boxes.forEach((box) => {
-          const object = objectMap.get(box.key);
+        e.data.boxes.forEach((o) => {
+          const object = objectMap.get(o.key);
           if (!object) {
             return;
           }
-          object.position.set(box.position[0], box.position[1], box.position[2]);
-          object.quaternion.set(box.quaternion[0], box.quaternion[1], box.quaternion[2], box.quaternion[3]);
-          object.scale.set(box.scale[0], box.scale[1], box.scale[2]);
+          object.position.set(o.position[0], o.position[1], o.position[2]);
+          object.quaternion.set(o.quaternion[0], o.quaternion[1], o.quaternion[2], o.quaternion[3]);
+          // object.scale.set(o.scale[0], o.scale[1], o.scale[2]);
+        });
+        e.data.spheres.forEach((o) => {
+          const object = objectMap.get(o.key);
+          if (!object) {
+            return;
+          }
+          object.position.set(o.position[0], o.position[1], o.position[2]);
         });
       }
     };

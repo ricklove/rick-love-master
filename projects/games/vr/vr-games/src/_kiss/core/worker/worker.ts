@@ -1,3 +1,4 @@
+import { Vector3 } from 'three';
 import { postMessageTyped } from './message';
 import { WorkerMessageFromWorker, WorkerMessageToWorker } from './message-type';
 import { createWorkerTestScene } from './test-scene';
@@ -10,13 +11,22 @@ const state = {
   timeToMainTime: 0,
   scene: undefined as undefined | Awaited<ReturnType<typeof createWorkerTestScene>>,
 };
+const v = new Vector3();
 
 self.onmessage = (e: { data: unknown }) => {
   const data = e.data as WorkerMessageToWorker;
   if (data instanceof ArrayBuffer) {
     const dataFloat32 = new Float32Array(data);
     // TODO: send this to physics
-    const total = dataFloat32.reduce((a, b) => a + b, 0);
+    if (!state.scene) {
+      return;
+    }
+    state.scene.joints.forEach((o, i) => {
+      o.rigidBody?.setNextKinematicTranslation(
+        v.set(dataFloat32[i * 3], dataFloat32[i * 3 + 1], dataFloat32[i * 3 + 2]),
+      );
+    });
+    // const total = dataFloat32.reduce((a, b) => a + b, 0);
     // wogger.log(`ArrayBuffer received from [Main]`, { dataFloat32 });
     return;
   }

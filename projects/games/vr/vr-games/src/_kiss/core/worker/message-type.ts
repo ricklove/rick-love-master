@@ -27,6 +27,11 @@ export type WorkerMessageFromWorker =
         quaternion: [number, number, number, number];
         scale: [number, number, number];
       }[];
+      spheres: {
+        key: string;
+        position: [number, number, number];
+        radius: number;
+      }[];
     }
   | {
       kind: `updateObjects`;
@@ -35,5 +40,10 @@ export type WorkerMessageFromWorker =
         position: [number, number, number];
         quaternion: [number, number, number, number];
         scale: [number, number, number];
+      }[];
+      spheres: {
+        key: string;
+        position: [number, number, number];
+        radius: number;
       }[];
     };

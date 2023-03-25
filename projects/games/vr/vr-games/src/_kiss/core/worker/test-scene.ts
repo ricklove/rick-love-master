@@ -1,5 +1,6 @@
 import RAPIER, { ColliderDesc, RigidBody, RigidBodyDesc, World } from '@dimforge/rapier3d-compat';
 import { Quaternion, Vector3 } from 'three';
+import { handJointNames } from '../input-data';
 import { postMessageTyped } from './message';
 
 export const createWorkerTestScene = async () => {
@@ -9,6 +10,7 @@ export const createWorkerTestScene = async () => {
   const roomHeight = 2;
   const boxSize = 0.2;
   const speed = 5;
+  const jointCoint = handJointNames.length * 2;
 
   const w = {
     room: {
@@ -57,6 +59,15 @@ export const createWorkerTestScene = async () => {
       ),
       quaternion: new Quaternion(Math.random(), Math.random(), Math.random(), Math.random()).normalize(),
     })),
+    joints: Array.from({ length: jointCoint }, () => ({
+      rigidBody: undefined as undefined | RigidBody,
+      position: new Vector3(
+        roomSize * (0.5 * (1 - 2 * Math.random())),
+        roomHeight * (0.25 + 0.5 * Math.random()),
+        roomSize * (0.5 * (1 - 2 * Math.random())),
+      ),
+      radius: 0.1,
+    })),
   };
 
   // Use the RAPIER module here.
@@ -66,28 +77,42 @@ export const createWorkerTestScene = async () => {
   const timestep = world.timestep * 1000;
 
   // Create the ground
-  Object.values(w.room).map((box) => {
-    const roomColliderDesc = ColliderDesc.cuboid(
-      box.scale.x * 0.5,
-      box.scale.y * 0.5,
-      box.scale.z * 0.5,
-    ).setTranslation(box.position.x, box.position.y, box.position.z);
-    world.createCollider(roomColliderDesc);
+  Object.values(w.room).map((o) => {
+    const colliderDesc = ColliderDesc.cuboid(o.scale.x * 0.5, o.scale.y * 0.5, o.scale.z * 0.5).setTranslation(
+      o.position.x,
+      o.position.y,
+      o.position.z,
+    );
+    world.createCollider(colliderDesc);
   });
 
-  w.boxes.map((box) => {
-    const boxRigidBodyDesc = RigidBodyDesc.dynamic()
-      .setTranslation(box.position.x, box.position.y, box.position.z)
-      .setRotation(box.quaternion)
+  w.boxes.map((o) => {
+    const rigidBodyDesc = RigidBodyDesc.dynamic()
+      .setTranslation(o.position.x, o.position.y, o.position.z)
+      .setRotation(o.quaternion)
       .setLinvel(speed * (0.5 - Math.random()), speed * (0.5 - Math.random()), speed * (0.5 - Math.random()))
       // Testing constant motion
       .setCanSleep(false);
-    const boxRigidBody = world.createRigidBody(boxRigidBodyDesc);
+    const rigidBody = world.createRigidBody(rigidBodyDesc);
 
-    const boxColliderDesc = ColliderDesc.cuboid(box.scale.x * 0.5, box.scale.y * 0.5, box.scale.z * 0.5);
-    world.createCollider(boxColliderDesc, boxRigidBody);
+    const colliderDesc = ColliderDesc.cuboid(o.scale.x * 0.5, o.scale.y * 0.5, o.scale.z * 0.5);
+    world.createCollider(colliderDesc, rigidBody);
 
-    box.rigidBody = boxRigidBody;
+    o.rigidBody = rigidBody;
+  });
+
+  w.joints.map((o) => {
+    const rigidBodyDesc = RigidBodyDesc.kinematicPositionBased().setTranslation(
+      o.position.x,
+      o.position.y,
+      o.position.z,
+    );
+    const rigidBody = world.createRigidBody(rigidBodyDesc);
+
+    const colliderDesc = ColliderDesc.ball(o.radius);
+    world.createCollider(colliderDesc, rigidBody);
+
+    o.rigidBody = rigidBody;
   });
 
   // TODO: Make efficient
@@ -98,6 +123,11 @@ export const createWorkerTestScene = async () => {
       position: x.position.toArray(),
       quaternion: x.quaternion.toArray() as [number, number, number, number],
       scale: x.scale.toArray(),
+    })),
+    spheres: [...w.joints].map((x, i) => ({
+      key: String(i),
+      position: x.position.toArray(),
+      radius: x.radius,
     })),
   });
 
@@ -114,14 +144,22 @@ export const createWorkerTestScene = async () => {
     // const position = rigidBody.translation();
     // console.log(`Rigid-body position: `, position.x, position.y, position.z);
 
-    w.boxes.forEach((box) => {
-      if (!box.rigidBody) {
+    w.boxes.forEach((o) => {
+      if (!o.rigidBody) {
         return;
       }
-      const position = box.rigidBody.translation();
-      box.position.set(position.x, position.y, position.z);
-      const quaternion = box.rigidBody.rotation();
-      box.quaternion.set(quaternion.x, quaternion.y, quaternion.z, quaternion.w);
+      const position = o.rigidBody.translation();
+      o.position.set(position.x, position.y, position.z);
+      const quaternion = o.rigidBody.rotation();
+      o.quaternion.set(quaternion.x, quaternion.y, quaternion.z, quaternion.w);
+    });
+
+    w.joints.forEach((o) => {
+      if (!o.rigidBody) {
+        return;
+      }
+      const position = o.rigidBody.translation();
+      o.position.set(position.x, position.y, position.z);
     });
 
     postMessageTyped({
@@ -131,6 +169,11 @@ export const createWorkerTestScene = async () => {
         position: x.position.toArray(),
         quaternion: x.quaternion.toArray() as [number, number, number, number],
         scale: x.scale.toArray(),
+      })),
+      spheres: [...w.joints].map((x, i) => ({
+        key: String(i),
+        position: x.position.toArray(),
+        radius: x.radius,
       })),
     });
 
