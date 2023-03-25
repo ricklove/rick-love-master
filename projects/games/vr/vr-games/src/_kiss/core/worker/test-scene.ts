@@ -18,7 +18,7 @@ export const createWorkerTestScene = async (messageBufferPool: MessageBufferPool
   const jointCoint = handJointNames.length * 2;
   const boxCount = 1000;
   const maxFps = 144;
-  const minFps = 120;
+  const minFpsViaSlowMotion = 120;
   const ADJUST_TIME_STEP = true;
 
   let nextId = 0;
@@ -164,7 +164,7 @@ export const createWorkerTestScene = async (messageBufferPool: MessageBufferPool
   let runningDeltaTime = 1000 / maxFps;
   const constrainedDeltaTime = 1000 / maxFps;
   const minDeltaTime = 1000 / maxFps;
-  const maxDeltaTime = 1000 / minFps;
+  const maxDeltaTime = 1000 / minFpsViaSlowMotion;
 
   const gameLoop = () => {
     const time = performance.now();
