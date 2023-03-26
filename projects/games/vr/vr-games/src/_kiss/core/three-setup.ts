@@ -12,7 +12,7 @@ export const setupThree = (hostRaw: HTMLDivElement) => {
   const scene = new THREE.Scene();
   scene.background = new THREE.Color(0x505050);
 
-  const camera = new THREE.PerspectiveCamera(50, window.innerWidth / window.innerHeight, 0.1, 10);
+  const camera = new THREE.PerspectiveCamera(50, window.innerWidth / window.innerHeight, 0.1, 1000);
   camera.position.set(0, 1, 0);
   scene.add(camera);
 

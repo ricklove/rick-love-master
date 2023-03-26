@@ -1,10 +1,10 @@
-import RAPIER, { ColliderDesc, RigidBodyDesc, World } from '@dimforge/rapier3d-compat';
+import RAPIER, { ColliderDesc, EventQueue, RigidBodyDesc, World } from '@dimforge/rapier3d-compat';
 import { Quaternion, Vector3 } from 'three';
 import { handJointNames } from '../input/hand-joints';
 import { postMessageFromWorker } from '../messages/message';
 import { MessageBufferPool } from '../messages/message-buffer';
 import { postMessageSceneObjectTransforms } from '../messages/messages/message-scene-object-transforms';
-import { GameWorkerEngine } from './types';
+import { GameEngine, GameWorkerEngine } from './types';
 import { wogger } from './wogger';
 
 export const createWorkerEngine = async (
@@ -39,7 +39,7 @@ export const createWorkerEngine = async (
       : new Vector3(1, 1, 1);
     const kind = data.kind ?? `dynamic`;
 
-    const rigidBodyDesc = (
+    let rigidBodyDesc = (
       kind === `fixed`
         ? RigidBodyDesc.fixed()
         : kind === `kinematicPositionBased`
@@ -51,14 +51,30 @@ export const createWorkerEngine = async (
       .setTranslation(position.x, position.y, position.z)
       .setRotation(quaternion);
 
+    if (data.gravityScale != null) {
+      rigidBodyDesc = rigidBodyDesc.setGravityScale(data.gravityScale);
+    }
+
     const rigidBody = world.createRigidBody(rigidBodyDesc);
 
     if (data.shape === `sphere`) {
-      const colliderDesc = ColliderDesc.ball(scale.x * 0.5);
+      let colliderDesc = ColliderDesc.ball(scale.x);
+      if (data.restitution) {
+        colliderDesc = colliderDesc.setRestitution(data.restitution);
+      }
+      if (data.sensor) {
+        colliderDesc = colliderDesc.setSensor(true);
+      }
       world.createCollider(colliderDesc, rigidBody);
     }
     if (data.shape === `box`) {
-      const colliderDesc = ColliderDesc.cuboid(scale.x * 0.5, scale.y * 0.5, scale.z * 0.5);
+      let colliderDesc = ColliderDesc.cuboid(scale.x * 0.5, scale.y * 0.5, scale.z * 0.5);
+      if (data.restitution) {
+        colliderDesc = colliderDesc.setRestitution(data.restitution);
+      }
+      if (data.sensor) {
+        colliderDesc = colliderDesc.setSensor(true);
+      }
       world.createCollider(colliderDesc, rigidBody);
     }
 
@@ -96,7 +112,8 @@ export const createWorkerEngine = async (
         kind: `kinematicPositionBased` as const,
         shape: `sphere` as const,
         position: new Vector3(0, 1, -2),
-        radius: 0.01,
+        radius: 0.02,
+        // radius: 0.01,
       }))
       .map(createEntity),
   };
@@ -134,6 +151,10 @@ export const createWorkerEngine = async (
   };
 
   // game loop
+  const state = {
+    gameEngine: undefined as undefined | GameEngine,
+  };
+
   let gameLoopTimerId = setTimeout(() => {
     //empty
   }, 0);
@@ -170,7 +191,37 @@ export const createWorkerEngine = async (
 
     // wogger.log(`Game loop`);
     // Step the simulation forward.
-    world.step();
+    const eventQueue = new EventQueue(true);
+    world.step(eventQueue);
+
+    if (state.gameEngine) {
+      state.gameEngine.update(
+        deltaTime * 0.001,
+        {
+          // TODO: Fix this
+          origin: {
+            position: new Vector3(0, 0, 0),
+          },
+          camera: {
+            position: new Vector3(0, 0, 0),
+            quaternion: new Quaternion(),
+          },
+          hands: {
+            left: {
+              side: `left` as const,
+              position: engineEntities.handJoints[0].engine.position,
+              quaternion: engineEntities.handJoints[0].engine.quaternion,
+            },
+            right: {
+              side: `right` as const,
+              position: engineEntities.handJoints[0 + handJointNames.length].engine.position,
+              quaternion: engineEntities.handJoints[0 + handJointNames.length].engine.quaternion,
+            },
+          },
+        },
+        eventQueue,
+      );
+    }
 
     // Update the entity positions
     registeredEntities.forEach((o) => {
@@ -293,9 +344,15 @@ export const createWorkerEngine = async (
     dispose: () => {
       clearTimeout(gameLoopTimerId);
     },
-    start: () => {
+    start: (gameEngine: GameEngine) => {
+      state.gameEngine = gameEngine;
       sendNewEntityMessage();
       setTimeout(gameEngineLoop, 100);
+    },
+    setGravity: (gravity: Vector3) => {
+      world.gravity.x = gravity.x;
+      world.gravity.y = gravity.y;
+      world.gravity.z = gravity.z;
     },
   };
   //   physicsLoop();

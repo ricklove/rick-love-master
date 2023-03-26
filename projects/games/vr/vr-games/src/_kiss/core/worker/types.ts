@@ -2,7 +2,7 @@ import { EventQueue, RigidBody } from '@dimforge/rapier3d-compat';
 import { Quaternion, Vector3 } from 'three';
 
 export type GameWorkerEngine = {
-  start: () => void;
+  start: (gameEngine: GameEngine) => void;
   dispose: () => void;
   updateMessageRequested: boolean;
   createEntity: <TType extends string, TUserData extends Record<string, unknown>>(args: {
@@ -14,7 +14,12 @@ export type GameWorkerEngine = {
     scale?: Vector3;
     radius?: number;
     quaternion?: Quaternion;
+
     collisionEvents?: boolean;
+    restitution?: number;
+    sensor?: boolean;
+    gravityScale?: number;
+
     userData?: TUserData;
   }) => {
     type: TType;
@@ -34,6 +39,7 @@ export type GameWorkerEngine = {
       hasMoved: boolean;
     };
   };
+  setGravity: (gravity: Vector3) => void;
   handJoints: { position: Vector3 }[];
 };
 

@@ -1,4 +1,4 @@
-import { createGame_RoomOfBlocks } from '../../game/room-of-blocks';
+import { createGame_PunchDefense } from '../../game/punch-defense';
 import { postMessageFromWorker } from '../messages/message';
 import { createMessageBufferPool } from '../messages/message-buffer';
 import { MessageBufferKind, WorkerMessageFromWorker, WorkerMessageToWorker } from '../messages/message-type';
@@ -49,9 +49,9 @@ self.onmessage = (e: { data: unknown }) => {
     const bufferPool = state.messageBufferPool;
     (async () => {
       state.gameWorkerEngine = await createWorkerEngine(bufferPool);
-      state.gameEngine = createGame_RoomOfBlocks({ engine: state.gameWorkerEngine });
-      // state.gameEngine = createGame_PunchDefense({ engine: state.gameWorkerEngine });
-      state.gameWorkerEngine.start();
+      // state.gameEngine = createGame_RoomOfBlocks({ engine: state.gameWorkerEngine });
+      state.gameEngine = createGame_PunchDefense({ engine: state.gameWorkerEngine });
+      state.gameWorkerEngine.start(state.gameEngine);
       wogger.log(`I am setup!`);
     })();
     return;
