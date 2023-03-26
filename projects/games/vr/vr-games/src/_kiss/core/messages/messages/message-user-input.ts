@@ -81,7 +81,7 @@ export const postMessageUserInputTransforms = (
   bufferPool.postMessage(buffer);
 };
 
-export const readMessageUserInputTransforms = (buffer: ArrayBuffer, joints: { position: Vector3 }[]) => {
+export const readMessageUserInputTransforms = (buffer: ArrayBuffer, handJoints: { position: Vector3 }[]) => {
   const f32Buffer = new Float32Array(buffer);
   const i32Buffer = new Int32Array(buffer);
 
@@ -91,7 +91,7 @@ export const readMessageUserInputTransforms = (buffer: ArrayBuffer, joints: { po
     console.error(`readMessageUpdateTransforms: wrong kind`, { _kind, bufferKind });
   }
 
-  joints.forEach((o, i) => {
+  handJoints.forEach((o, i) => {
     offset = InputBufferIndex.handLeft + i * 3;
     o.position.set(f32Buffer[offset++], f32Buffer[offset++], f32Buffer[offset++]);
   });

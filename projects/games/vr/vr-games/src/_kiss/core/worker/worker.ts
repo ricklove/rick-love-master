@@ -1,9 +1,11 @@
+import { createGame_RoomOfBlocks } from '../../game/room-of-blocks';
 import { postMessageFromWorker } from '../messages/message';
 import { createMessageBufferPool } from '../messages/message-buffer';
 import { MessageBufferKind, WorkerMessageFromWorker, WorkerMessageToWorker } from '../messages/message-type';
 import { readMessageUserInputTransforms } from '../messages/messages/message-user-input';
-import { createWorkerTestScene } from './test-scene';
+import { GameEngine, GameWorkerEngine } from './types';
 import { wogger } from './wogger';
+import { createWorkerEngine } from './worker-engine';
 
 wogger.log(`I am loaded!`, {});
 
@@ -11,7 +13,8 @@ const state = {
   ready: false,
   timeToMainTime: 0,
   messageBufferPool: createMessageBufferPool(self),
-  scene: undefined as undefined | Awaited<ReturnType<typeof createWorkerTestScene>>,
+  gameWorkerEngine: undefined as undefined | GameWorkerEngine,
+  gameEngine: undefined as undefined | GameEngine,
 };
 
 self.onmessage = (e: { data: unknown }) => {
@@ -24,11 +27,11 @@ self.onmessage = (e: { data: unknown }) => {
       return;
     }
     if (kind === MessageBufferKind.userInputTransforms) {
-      if (!state.scene) {
+      if (!state.gameWorkerEngine) {
         state.messageBufferPool.returnBuffer(data);
         return;
       }
-      readMessageUserInputTransforms(data, state.scene.joints);
+      readMessageUserInputTransforms(data, state.gameWorkerEngine.handJoints);
       state.messageBufferPool.returnBuffer(data);
       return;
     }
@@ -45,23 +48,26 @@ self.onmessage = (e: { data: unknown }) => {
 
     const bufferPool = state.messageBufferPool;
     (async () => {
-      state.scene = await createWorkerTestScene(bufferPool);
+      state.gameWorkerEngine = await createWorkerEngine(bufferPool);
+      state.gameEngine = createGame_RoomOfBlocks({ engine: state.gameWorkerEngine });
+      state.gameWorkerEngine.start();
       wogger.log(`I am setup!`);
     })();
     return;
   }
   if (data.kind === `dispose`) {
     state.ready = false;
-    state.scene?.dispose();
-    state.scene = undefined;
+    state.gameWorkerEngine?.dispose();
+    state.gameWorkerEngine = undefined;
+    state.gameEngine = undefined;
     wogger.log(`I am in-disposed`);
     return;
   }
   if (data.kind === `frameSync`) {
-    if (!state.scene) {
+    if (!state.gameWorkerEngine) {
       return;
     }
-    state.scene.updateMessageRequested = true;
+    state.gameWorkerEngine.updateMessageRequested = true;
     // wogger.log(`Update requested from [Main]`);
     return;
   }

@@ -165,7 +165,7 @@ export const createWorkerTestScene = async (messageBufferPool: MessageBufferPool
   const minDeltaTime = 1000 / maxFps;
   const maxDeltaTime = 1000 / minFpsViaSlowMotion;
 
-  const gameLoop = () => {
+  const physicsLoop = () => {
     const time = performance.now();
     const deltaTime = time - lastTime;
     lastTime = time;
@@ -312,7 +312,7 @@ export const createWorkerTestScene = async (messageBufferPool: MessageBufferPool
     }
 
     frameCount++;
-    gameLoopTimerId = setTimeout(gameLoop, timeUntilNextFrame);
+    gameLoopTimerId = setTimeout(physicsLoop, timeUntilNextFrame);
   };
 
   const scene = {
@@ -322,7 +322,7 @@ export const createWorkerTestScene = async (messageBufferPool: MessageBufferPool
       clearTimeout(gameLoopTimerId);
     },
   };
-  gameLoop();
+  physicsLoop();
 
   return scene;
 };
