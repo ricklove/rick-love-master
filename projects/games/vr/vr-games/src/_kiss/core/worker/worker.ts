@@ -50,6 +50,7 @@ self.onmessage = (e: { data: unknown }) => {
     (async () => {
       state.gameWorkerEngine = await createWorkerEngine(bufferPool);
       state.gameEngine = createGame_RoomOfBlocks({ engine: state.gameWorkerEngine });
+      // state.gameEngine = createGame_PunchDefense({ engine: state.gameWorkerEngine });
       state.gameWorkerEngine.start();
       wogger.log(`I am setup!`);
     })();

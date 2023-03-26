@@ -26,6 +26,7 @@ export type GameWorkerEngine = {
 
     engine: {
       id: number;
+      kind: `fixed` | `dynamic` | `kinematicPositionBased` | `kinematicVelocityBased`;
       position: Vector3;
       quaternion: Quaternion;
       scale: Vector3;

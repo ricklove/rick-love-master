@@ -95,4 +95,6 @@ export const readMessageUserInputTransforms = (buffer: ArrayBuffer, handJoints: 
     offset = InputBufferIndex.handLeft + i * 3;
     o.position.set(f32Buffer[offset++], f32Buffer[offset++], f32Buffer[offset++]);
   });
+
+  // console.log(`readMessageUserInputTransforms position set`, { handJoints });
 };

@@ -52,22 +52,24 @@ export const createGame_RoomOfBlocks = ({ engine: { createEntity } }: { engine: 
         scale: new Vector3(roomSize, roomHeight, 0.1),
       }),
     },
-    boxes: Array.from({ length: boxCount }, (_, i) => ({
-      type: `box` as const,
-      shape: `box` as const,
-      position: new Vector3(
-        roomSize * (0.5 * (1 - 2 * Math.random())),
-        roomHeight * (0.25 + 0.5 * Math.random()),
-        roomSize * (0.5 * (1 - 2 * Math.random())),
-      ),
-      scale: new Vector3(
-        boxSize * (0.1 + 0.75 * Math.random()),
-        boxSize * (0.1 + 0.75 * Math.random()),
-        boxSize * (0.1 + 0.75 * Math.random()),
-      ),
-      quaternion: new Quaternion(Math.random(), Math.random(), Math.random(), Math.random()).normalize(),
-      hasMoved: true,
-    })).map(createEntity),
+    boxes: [...new Array(boxCount)]
+      .map(() => ({
+        type: `box` as const,
+        shape: `box` as const,
+        position: new Vector3(
+          roomSize * (0.5 * (1 - 2 * Math.random())),
+          roomHeight * (0.25 + 0.5 * Math.random()),
+          roomSize * (0.5 * (1 - 2 * Math.random())),
+        ),
+        scale: new Vector3(
+          boxSize * (0.1 + 0.75 * Math.random()),
+          boxSize * (0.1 + 0.75 * Math.random()),
+          boxSize * (0.1 + 0.75 * Math.random()),
+        ),
+        quaternion: new Quaternion(Math.random(), Math.random(), Math.random(), Math.random()).normalize(),
+        hasMoved: true,
+      }))
+      .map(createEntity),
   };
 
   return {

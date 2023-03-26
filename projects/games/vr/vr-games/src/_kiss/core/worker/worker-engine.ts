@@ -32,14 +32,19 @@ export const createWorkerEngine = async (
 
     const position = data.position ?? new Vector3();
     const quaternion = data.quaternion ?? new Quaternion();
-    const scale = data.scale ?? new Vector3(data.radius, data.radius, data.radius) ?? new Vector3(1, 1, 1);
+    const scale = data.scale
+      ? data.scale
+      : data.radius
+      ? new Vector3(data.radius, data.radius, data.radius)
+      : new Vector3(1, 1, 1);
+    const kind = data.kind ?? `dynamic`;
 
     const rigidBodyDesc = (
-      data.kind === `fixed`
+      kind === `fixed`
         ? RigidBodyDesc.fixed()
-        : data.kind === `kinematicPositionBased`
+        : kind === `kinematicPositionBased`
         ? RigidBodyDesc.kinematicPositionBased()
-        : data.kind === `kinematicVelocityBased`
+        : kind === `kinematicVelocityBased`
         ? RigidBodyDesc.kinematicVelocityBased()
         : RigidBodyDesc.dynamic()
     )
@@ -49,7 +54,7 @@ export const createWorkerEngine = async (
     const rigidBody = world.createRigidBody(rigidBodyDesc);
 
     if (data.shape === `sphere`) {
-      const colliderDesc = ColliderDesc.ball(data.radius ?? 0.5);
+      const colliderDesc = ColliderDesc.ball(scale.x * 0.5);
       world.createCollider(colliderDesc, rigidBody);
     }
     if (data.shape === `box`) {
@@ -60,6 +65,7 @@ export const createWorkerEngine = async (
     const id = nextId++;
     const entity = {
       type: data.type,
+      startData: data,
       userData: data.userData as NonNullable<typeof data[`userData`]>,
       shape: data.shape,
       active: data.active ?? true,
@@ -68,26 +74,31 @@ export const createWorkerEngine = async (
 
       engine: {
         id,
+        kind,
         position: data.position.clone(),
         quaternion: quaternion.clone(),
         scale: scale.clone(),
         hasSentAddMessage: false,
-        hasMoved: false,
+        hasMoved: true,
       },
     };
     registeredEntities.push(entity);
+
+    // wogger.log(`createdEntity`, { entity, data, registeredEntities });
     return entity;
   };
 
   const jointCount = handJointNames.length * 2;
   const engineEntities = {
-    handJoints: Array.from({ length: jointCount }, () => ({
-      type: `handJoint` as const,
-      kind: `kinematicPositionBased` as const,
-      shape: `sphere` as const,
-      position: new Vector3(0, -10, 0),
-      radius: 0.01,
-    })).map(createEntity),
+    handJoints: [...new Array(jointCount)]
+      .map(() => ({
+        type: `handJoint` as const,
+        kind: `kinematicPositionBased` as const,
+        shape: `sphere` as const,
+        position: new Vector3(0, 1, -2),
+        radius: 0.01,
+      }))
+      .map(createEntity),
   };
 
   const sendNewEntityMessage = () => {
@@ -98,6 +109,9 @@ export const createWorkerEngine = async (
     newEntities.forEach((x) => {
       x.engine.hasSentAddMessage = true;
     });
+
+    wogger.log(`sendNewEntityMessage`, { newEntities });
+
     // TODO: Make efficient
     postMessageFromWorker({
       kind: `addObjects`,
@@ -166,6 +180,9 @@ export const createWorkerEngine = async (
       if (!o.active) {
         return;
       }
+      if (o.engine.kind !== `dynamic`) {
+        return;
+      }
 
       const position = o.rigidBody.translation();
       const oPosition = o.engine.position;
@@ -196,6 +213,7 @@ export const createWorkerEngine = async (
 
     // Copy joint positions to rigid bodies
     engineEntities.handJoints.forEach((o, i) => {
+      // wogger.log(`Updating hand joint rigidBody position`, { i, o });
       o.rigidBody?.setNextKinematicTranslation(o.engine.position);
     });
 
@@ -208,8 +226,8 @@ export const createWorkerEngine = async (
     // });
 
     if (gameWorkerEngine.updateMessageRequested) {
-      wogger.log(`Sending update message`);
       gameWorkerEngine.updateMessageRequested = false;
+      // wogger.log(`Sending update message`);
 
       sendNewEntityMessage();
 
