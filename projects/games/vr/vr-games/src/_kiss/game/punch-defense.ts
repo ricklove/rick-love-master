@@ -59,9 +59,9 @@ export const createGame_PunchDefense = ({
   [...entities.enemies, ...entities.bullets]
     .filter((x) => !x.active)
     .forEach((enemy) => {
-      enemy.rigidBody.setBodyType(RigidBodyType.Fixed, true);
-      enemy.rigidBody.setLinvel(v3.set(0, 0, 0), false);
-      enemy.rigidBody.setAngvel(v3.set(0, 0, 0), false);
+      enemy.physics.rigidBody.setBodyType(RigidBodyType.Fixed, true);
+      enemy.physics.rigidBody.setLinvel(v3.set(0, 0, 0), false);
+      enemy.physics.rigidBody.setAngvel(v3.set(0, 0, 0), false);
     });
 
   const handData = {
@@ -73,16 +73,18 @@ export const createGame_PunchDefense = ({
     },
   };
 
-  const entityHandleMap = new Map([...entities.bullets, ...entities.enemies].map((x) => [x.rigidBody.handle, x]));
+  const entityHandleMap = new Map(
+    [...entities.bullets, ...entities.enemies].map((x) => [x.physics.rigidBody.handle, x]),
+  );
 
   const hideEntity = (entity: ReturnType<typeof createEntity>) => {
     const time = performance.now();
-    entity.rigidBody.setBodyType(RigidBodyType.KinematicPositionBased, false);
-    entity.rigidBody.setTranslation(new Vector3(0, -1000, 0), false);
+    entity.physics.rigidBody.setBodyType(RigidBodyType.KinematicPositionBased, false);
+    entity.physics.rigidBody.setTranslation(new Vector3(0, -1000, 0), false);
     entity.userData.coolDown = time + 1000;
     entity.active = false;
 
-    // wogger.log(`hide entity`, { entity: entity.rigidBody.translation() });
+    // wogger.log(`hide entity`, { entity: entity.physics.rigidBody.translation() });
   };
 
   const update: GameEngine[`update`] = (deltaTimeSec, player, eventQueue) => {
@@ -105,18 +107,18 @@ export const createGame_PunchDefense = ({
           .applyEuler(e.set(0, Math.random() * 2 * Math.PI, 0))
           .setY(2 + Math.random() * 2)
           .add(origin.position);
-        enemy.rigidBody.setTranslation(v, true);
-        enemy.rigidBody.setLinvel(v3.set(0, 0, 0), true);
+        enemy.physics.rigidBody.setTranslation(v, true);
+        enemy.physics.rigidBody.setLinvel(v3.set(0, 0, 0), true);
         enemy.active = true;
-        enemy.rigidBody.setBodyType(RigidBodyType.Dynamic, true);
+        enemy.physics.rigidBody.setBodyType(RigidBodyType.Dynamic, true);
 
-        wogger.log(`enemy spwan pos`, { enemy: enemy.rigidBody.translation() });
+        wogger.log(`enemy spwan pos`, { enemy: enemy.physics.rigidBody.translation() });
       }
     }
 
     // move enemies towards player origin
     activeEnemies.forEach((enemy) => {
-      const enemyTranslation = enemy.rigidBody.translation();
+      const enemyTranslation = enemy.physics.rigidBody.translation();
       const enemyPosition = v.set(enemyTranslation.x, enemyTranslation.y, enemyTranslation.z);
       const enemyToPlayer = v2
         .copy(origin.position)
@@ -126,7 +128,7 @@ export const createGame_PunchDefense = ({
       if (enemyToPlayer.lengthSq() < 2) {
         return;
       }
-      //   const enemyLinearVelocity = enemy.rigidBody.linvel();
+      //   const enemyLinearVelocity = enemy.physics.rigidBody.linvel();
       //   const enemyVelocity = v3.set(enemyLinearVelocity.x, enemyLinearVelocity.y, enemyLinearVelocity.z);
 
       const enemyToPlayerImpulse = v
@@ -134,9 +136,9 @@ export const createGame_PunchDefense = ({
         .normalize()
         .multiplyScalar(1 * deltaTimeSec);
 
-      enemy.rigidBody.applyImpulse(enemyToPlayerImpulse, true);
+      enemy.physics.rigidBody.applyImpulse(enemyToPlayerImpulse, true);
 
-      //   wogger.log(`enemy moving towards player`, { enemy: enemy.rigidBody.translation() });
+      //   wogger.log(`enemy moving towards player`, { enemy: enemy.physics.rigidBody.translation() });
     });
 
     // shoot bullets from player hands
@@ -160,22 +162,22 @@ export const createGame_PunchDefense = ({
           const bullet = entities.bullets.find((x) => !x.active && x.userData.coolDown < time);
           if (bullet) {
             bullet.userData.launchingFromHand = hand.side;
-            bullet.rigidBody.setTranslation(hand.position, true);
-            bullet.rigidBody.setLinvel(v.set(0, 0, 0), true);
+            bullet.physics.rigidBody.setTranslation(hand.position, true);
+            bullet.physics.rigidBody.setLinvel(v.set(0, 0, 0), true);
             bullet.active = true;
-            bullet.rigidBody.setBodyType(RigidBodyType.Dynamic, true);
+            bullet.physics.rigidBody.setBodyType(RigidBodyType.Dynamic, true);
           }
         }
 
         // apply impulse to keep bullet attached to hand
         if (attachedBullet) {
-          const bulletTranslation = attachedBullet.rigidBody.translation();
+          const bulletTranslation = attachedBullet.physics.rigidBody.translation();
           const bulletPosition = v.set(bulletTranslation.x, bulletTranslation.y, bulletTranslation.z);
           const deltaToHand = v2
             .copy(hand.position)
             .sub(bulletPosition)
             .multiplyScalar(1 * deltaTimeSec);
-          attachedBullet.rigidBody.applyImpulse(deltaToHand, true);
+          attachedBullet.physics.rigidBody.applyImpulse(deltaToHand, true);
         }
       }
 
@@ -194,7 +196,7 @@ export const createGame_PunchDefense = ({
       .filter((x) => x.active)
       .forEach((bullet) => {
         // if too far, remove bullet
-        const bulletTranslation = bullet.rigidBody.translation();
+        const bulletTranslation = bullet.physics.rigidBody.translation();
         const bulletPosition = v.set(bulletTranslation.x, bulletTranslation.y, bulletTranslation.z);
         const distanceFromOriginSq = v2.copy(bulletPosition).sub(origin.position).lengthSq();
         if (distanceFromOriginSq > 10000) {
@@ -210,12 +212,12 @@ export const createGame_PunchDefense = ({
         entities.enemies
           .filter((x) => x.active)
           .forEach((enemy) => {
-            const bulletTranslation = bullet.rigidBody.translation();
+            const bulletTranslation = bullet.physics.rigidBody.translation();
             const bulletPosition = v.set(bulletTranslation.x, bulletTranslation.y, bulletTranslation.z);
-            const enemyTranslation = enemy.rigidBody.translation();
+            const enemyTranslation = enemy.physics.rigidBody.translation();
             const enemyPosition = v2.set(enemyTranslation.x, enemyTranslation.y, enemyTranslation.z);
             const distanceBetweenSq = v3.copy(bulletPosition).sub(enemyPosition).lengthSq();
-            const radiusCombined = bullet.engine.scale.x + enemy.engine.scale.x + 0.1;
+            const radiusCombined = (bullet.args.radius ?? 0.5) + (enemy.args.radius ?? 0.5) + 0.1;
 
             if (distanceBetweenSq < radiusCombined * radiusCombined) {
               hideEntity(bullet);

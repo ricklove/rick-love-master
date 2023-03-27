@@ -4,7 +4,7 @@ import { handJointNames } from '../input/hand-joints';
 import { postMessageFromWorker } from '../messages/message';
 import { MessageBufferPool } from '../messages/message-buffer';
 import { postMessageSceneObjectTransforms } from '../messages/messages/message-scene-object-transforms';
-import { GameEngine, GameWorkerEngine } from './types';
+import { GameEngine, GameWorkerCreateEntityArgs, GameWorkerEngine } from './types';
 import { wogger } from './wogger';
 
 export const createWorkerEngine = async (
@@ -26,18 +26,20 @@ export const createWorkerEngine = async (
   });
 
   let nextId = 0;
-  const registeredEntities = [] as ReturnType<GameWorkerEngine[`createEntity`]>[];
-  const createEntity: GameWorkerEngine[`createEntity`] = (data) => {
+  const registeredEntities = [] as ReturnType<typeof createEntity>[];
+  const createEntity = <TType extends string, TUserData extends Record<string, unknown>>(
+    args: GameWorkerCreateEntityArgs<TType, TUserData>,
+  ) => {
     // wogger.log(`createEntity`, { data });
 
-    const position = data.position ?? new Vector3();
-    const quaternion = data.quaternion ?? new Quaternion();
-    const scale = data.scale
-      ? data.scale
-      : data.radius
-      ? new Vector3(data.radius, data.radius, data.radius)
+    const position = args.position ?? new Vector3();
+    const quaternion = args.quaternion ?? new Quaternion();
+    const scale = args.scale
+      ? args.scale
+      : args.radius
+      ? new Vector3(args.radius, args.radius, args.radius)
       : new Vector3(1, 1, 1);
-    const kind = data.kind ?? `dynamic`;
+    const kind = args.kind ?? `dynamic`;
 
     let rigidBodyDesc = (
       kind === `fixed`
@@ -51,28 +53,28 @@ export const createWorkerEngine = async (
       .setTranslation(position.x, position.y, position.z)
       .setRotation(quaternion);
 
-    if (data.gravityScale != null) {
-      rigidBodyDesc = rigidBodyDesc.setGravityScale(data.gravityScale);
+    if (args.gravityScale != null) {
+      rigidBodyDesc = rigidBodyDesc.setGravityScale(args.gravityScale);
     }
 
     const rigidBody = world.createRigidBody(rigidBodyDesc);
 
-    if (data.shape === `sphere`) {
+    if (args.shape === `sphere`) {
       let colliderDesc = ColliderDesc.ball(scale.x);
-      if (data.restitution) {
-        colliderDesc = colliderDesc.setRestitution(data.restitution);
+      if (args.restitution) {
+        colliderDesc = colliderDesc.setRestitution(args.restitution);
       }
-      if (data.sensor) {
+      if (args.sensor) {
         colliderDesc = colliderDesc.setSensor(true);
       }
       world.createCollider(colliderDesc, rigidBody);
     }
-    if (data.shape === `box`) {
+    if (args.shape === `box`) {
       let colliderDesc = ColliderDesc.cuboid(scale.x * 0.5, scale.y * 0.5, scale.z * 0.5);
-      if (data.restitution) {
-        colliderDesc = colliderDesc.setRestitution(data.restitution);
+      if (args.restitution) {
+        colliderDesc = colliderDesc.setRestitution(args.restitution);
       }
-      if (data.sensor) {
+      if (args.sensor) {
         colliderDesc = colliderDesc.setSensor(true);
       }
       world.createCollider(colliderDesc, rigidBody);
@@ -80,22 +82,30 @@ export const createWorkerEngine = async (
 
     const id = nextId++;
     const entity = {
-      type: data.type,
-      startData: data,
-      userData: data.userData as NonNullable<typeof data[`userData`]>,
-      shape: data.shape,
-      active: data.active ?? true,
       id,
-      rigidBody,
+      type: args.type,
+      args: args,
+      userData: args.userData as NonNullable<typeof args[`userData`]>,
+      shape: args.shape,
+      active: args.active ?? true,
 
-      engine: {
-        id,
+      input: {
+        position: args.position.clone(),
+        quaternion: quaternion.clone(),
+      },
+      physics: {
         kind,
-        position: data.position.clone(),
+        rigidBody,
+      },
+      graphics: {
+        // id copied here for convenience
+        id,
+        visible: true,
+        hasSentAddMessage: false,
+        hasChanged: true,
+        position: args.position.clone(),
         quaternion: quaternion.clone(),
         scale: scale.clone(),
-        hasSentAddMessage: false,
-        hasMoved: true,
       },
     };
     registeredEntities.push(entity);
@@ -103,6 +113,7 @@ export const createWorkerEngine = async (
     // wogger.log(`createdEntity`, { entity, data, registeredEntities });
     return entity;
   };
+  const _createEntity: GameWorkerEngine[`createEntity`] = createEntity;
 
   const jointCount = handJointNames.length * 2;
   const engineEntities = {
@@ -119,12 +130,12 @@ export const createWorkerEngine = async (
   };
 
   const sendNewEntityMessage = () => {
-    const newEntities = registeredEntities.filter((x) => !x.engine.hasSentAddMessage);
+    const newEntities = registeredEntities.filter((x) => !x.graphics.hasSentAddMessage);
     if (!newEntities.length) {
       return;
     }
     newEntities.forEach((x) => {
-      x.engine.hasSentAddMessage = true;
+      x.graphics.hasSentAddMessage = true;
     });
 
     wogger.log(`sendNewEntityMessage`, { newEntities });
@@ -135,17 +146,17 @@ export const createWorkerEngine = async (
       boxes: newEntities
         .filter((x) => x.shape === `box`)
         .map((x) => ({
-          id: x.id,
-          position: x.engine.position.toArray(),
-          quaternion: x.engine.quaternion.toArray() as [number, number, number, number],
-          scale: x.engine.scale.toArray(),
+          id: x.graphics.id,
+          position: x.graphics.position.toArray(),
+          quaternion: x.graphics.quaternion.toArray() as [number, number, number, number],
+          scale: x.graphics.scale.toArray(),
         })),
       spheres: newEntities
         .filter((x) => x.shape === `sphere`)
-        .map((x, i) => ({
-          id: x.id,
-          position: x.engine.position.toArray(),
-          radius: x.engine.scale.x,
+        .map((x) => ({
+          id: x.graphics.id,
+          position: x.graphics.position.toArray(),
+          radius: x.graphics.scale.x,
         })),
     });
   };
@@ -189,6 +200,12 @@ export const createWorkerEngine = async (
     const fpsConstrained = 1000 / constrainedDeltaTime;
     const timeWarpRatio = constrainedDeltaTime / runningDeltaTime;
 
+    // Inputs
+    engineEntities.handJoints.forEach((o) => {
+      // wogger.log(`Updating hand joint rigidBody position`, { i, o });
+      o.physics.rigidBody?.setNextKinematicTranslation(o.input.position);
+    });
+
     // wogger.log(`Game loop`);
     // Step the simulation forward.
     const eventQueue = new EventQueue(true);
@@ -209,64 +226,19 @@ export const createWorkerEngine = async (
           hands: {
             left: {
               side: `left` as const,
-              position: engineEntities.handJoints[0].engine.position,
-              quaternion: engineEntities.handJoints[0].engine.quaternion,
+              position: engineEntities.handJoints[0].input.position,
+              quaternion: engineEntities.handJoints[0].input.quaternion,
             },
             right: {
               side: `right` as const,
-              position: engineEntities.handJoints[0 + handJointNames.length].engine.position,
-              quaternion: engineEntities.handJoints[0 + handJointNames.length].engine.quaternion,
+              position: engineEntities.handJoints[0 + handJointNames.length].input.position,
+              quaternion: engineEntities.handJoints[0 + handJointNames.length].input.quaternion,
             },
           },
         },
         eventQueue,
       );
     }
-
-    // Update the entity positions
-    registeredEntities.forEach((o) => {
-      if (!o.rigidBody) {
-        return;
-      }
-      if (!o.active) {
-        return;
-      }
-      if (o.engine.kind !== `dynamic`) {
-        return;
-      }
-
-      const position = o.rigidBody.translation();
-      const oPosition = o.engine.position;
-      const xPositionDelta = position.x - oPosition.x;
-      const yPositionDelta = position.y - oPosition.y;
-      const zPositionDelta = position.z - oPosition.z;
-      const positionDeltaSq =
-        xPositionDelta * xPositionDelta + yPositionDelta * yPositionDelta + zPositionDelta * zPositionDelta;
-      oPosition.set(position.x, position.y, position.z);
-
-      const quaternion = o.rigidBody.rotation();
-      const oQuaternion = o.engine.quaternion;
-      oQuaternion.set(quaternion.x, quaternion.y, quaternion.z, quaternion.w);
-      const xQuaternionDelta = quaternion.x - oQuaternion.x;
-      const yQuaternionDelta = quaternion.y - oQuaternion.y;
-      const zQuaternionDelta = quaternion.z - oQuaternion.z;
-      const wQuaternionDelta = quaternion.w - oQuaternion.w;
-      const quaternionDeltaSq =
-        xQuaternionDelta * xQuaternionDelta +
-        yQuaternionDelta * yQuaternionDelta +
-        zQuaternionDelta * zQuaternionDelta +
-        wQuaternionDelta * wQuaternionDelta;
-
-      o.engine.hasMoved = positionDeltaSq > 0.00001 || quaternionDeltaSq > 0.00001;
-      // TEMP: Disable hasMoved
-      o.engine.hasMoved = true;
-    });
-
-    // Copy joint positions to rigid bodies
-    engineEntities.handJoints.forEach((o, i) => {
-      // wogger.log(`Updating hand joint rigidBody position`, { i, o });
-      o.rigidBody?.setNextKinematicTranslation(o.engine.position);
-    });
 
     // w.joints.forEach((o) => {
     //   if (!o.rigidBody) {
@@ -280,35 +252,53 @@ export const createWorkerEngine = async (
       gameWorkerEngine.updateMessageRequested = false;
       // wogger.log(`Sending update message`);
 
-      sendNewEntityMessage();
+      // Update the graphics positions from physics
+      registeredEntities.forEach((o) => {
+        if (!o.physics.rigidBody) {
+          return;
+        }
+        if (!o.active) {
+          if (o.graphics.visible) {
+            o.graphics.visible = false;
+            o.graphics.hasChanged = true;
+          }
+          return;
+        }
+        if (!o.graphics.visible) {
+          o.graphics.visible = true;
+          o.graphics.hasChanged = true;
+        }
 
-      const USE_ARRAY_BUFFER = true;
-      if (!USE_ARRAY_BUFFER) {
-        postMessageFromWorker({
-          kind: `updateObjects`,
-          boxes: registeredEntities
-            .filter((x) => x.shape === `box` && x.active && x.engine.hasMoved)
-            .map((x) => ({
-              id: x.id,
-              position: x.engine.position.toArray(),
-              quaternion: x.engine.quaternion.toArray() as [number, number, number, number],
-              scale: x.engine.scale.toArray(),
-            })),
-          spheres: registeredEntities
-            .filter((x) => x.shape === `sphere` && x.active && x.engine.hasMoved)
-            .map((x) => ({
-              id: x.id,
-              position: x.engine.position.toArray(),
-              radius: x.engine.scale.x,
-            })),
-        });
-      } else {
-        postMessageSceneObjectTransforms(
-          registeredEntities.filter((x) => x.shape === `box` && x.active && x.engine.hasMoved).map((x) => x.engine),
-          registeredEntities.filter((x) => x.shape === `sphere` && x.active && x.engine.hasMoved).map((x) => x.engine),
-          messageBufferPool,
-        );
-      }
+        const position = o.physics.rigidBody.translation();
+        const oPosition = o.graphics.position;
+        const xPositionDelta = position.x - oPosition.x;
+        const yPositionDelta = position.y - oPosition.y;
+        const zPositionDelta = position.z - oPosition.z;
+        const positionDeltaSq =
+          xPositionDelta * xPositionDelta + yPositionDelta * yPositionDelta + zPositionDelta * zPositionDelta;
+        oPosition.set(position.x, position.y, position.z);
+
+        const quaternion = o.physics.rigidBody.rotation();
+        const oQuaternion = o.graphics.quaternion;
+        oQuaternion.set(quaternion.x, quaternion.y, quaternion.z, quaternion.w);
+        const xQuaternionDelta = quaternion.x - oQuaternion.x;
+        const yQuaternionDelta = quaternion.y - oQuaternion.y;
+        const zQuaternionDelta = quaternion.z - oQuaternion.z;
+        const wQuaternionDelta = quaternion.w - oQuaternion.w;
+        const quaternionDeltaSq =
+          xQuaternionDelta * xQuaternionDelta +
+          yQuaternionDelta * yQuaternionDelta +
+          zQuaternionDelta * zQuaternionDelta +
+          wQuaternionDelta * wQuaternionDelta;
+
+        o.graphics.hasChanged = o.graphics.hasChanged || positionDeltaSq > 0.00001 || quaternionDeltaSq > 0.00001;
+      });
+
+      sendNewEntityMessage();
+      postMessageSceneObjectTransforms(
+        registeredEntities.filter((x) => x.graphics.hasChanged).map((x) => x.graphics),
+        messageBufferPool,
+      );
     }
 
     const timeElapsed = performance.now() - time;
@@ -338,7 +328,9 @@ export const createWorkerEngine = async (
 
   const gameWorkerEngine = {
     // ...sceneData,
-    handJoints: engineEntities.handJoints.map((x) => x.engine),
+    inputs: {
+      handJoints: engineEntities.handJoints.map((x) => x.input),
+    },
     createEntity,
     updateMessageRequested: false,
     dispose: () => {

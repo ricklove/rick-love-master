@@ -100,7 +100,7 @@ export const createGameEngine = (host: HTMLDivElement, workerRaw: Worker) => {
         const data = updateObjectsArrayBuffer;
         updateObjectsArrayBuffer = undefined;
         // logger.log(`updateObjectsArrayBuffer`, { data, objectMap });
-        readMessageSceneObjectTransforms(data, objectMap, objectMap);
+        readMessageSceneObjectTransforms(data, objectMap);
         bufferPool.returnBuffer(data);
       }
     };

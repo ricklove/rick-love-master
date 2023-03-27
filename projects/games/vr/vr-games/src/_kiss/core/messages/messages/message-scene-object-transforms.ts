@@ -4,29 +4,29 @@ import { MessageBufferKind } from '../message-type';
 
 const bufferKind = MessageBufferKind.sceneObjectTransforms;
 
-const getBufferSize = (boxCount: number, sphereCount: number) => {
+const getBufferSize = (invisibleCount: number, objectCount: number) => {
   return (
     4 + // buffer kind
     4 + // box count
     4 + // sphere count
-    boxCount * 8 * 4 + // id(1) + position(3) + quaternion(4)
-    sphereCount * 4 * 4 // id(1) + position(3)
+    invisibleCount * 4 + // id(1) + position(3) + quaternion(4)
+    objectCount * 4 * 8 // id(1) + position(3) + quaternion(4)
   );
 };
 
 export const postMessageSceneObjectTransforms = (
-  boxes: {
+  objects: {
     id: number;
+    visible: boolean;
     position: Vector3;
     quaternion: Quaternion;
   }[],
-  spheres: {
-    id: number;
-    position: Vector3;
-  }[],
   bufferPool: MessageBufferPool,
 ) => {
-  const size = getBufferSize(boxes.length, spheres.length);
+  const invisibleObjs = objects.filter((obj) => !obj.visible);
+  const visibleObjs = objects.filter((obj) => obj.visible);
+
+  const size = getBufferSize(invisibleObjs.length, visibleObjs.length);
   const buffer = bufferPool.claimBuffer(size);
   const fBuffer = new Float32Array(buffer);
   const iBuffer = new Int32Array(buffer);
@@ -35,10 +35,14 @@ export const postMessageSceneObjectTransforms = (
 
   let offset = 0;
   iBuffer[offset++] = bufferKind;
-  iBuffer[offset++] = boxes.length;
-  iBuffer[offset++] = spheres.length;
 
-  for (const box of boxes) {
+  iBuffer[offset++] = invisibleObjs.length;
+  for (const obj of invisibleObjs) {
+    iBuffer[offset++] = obj.id;
+  }
+
+  iBuffer[offset++] = visibleObjs.length;
+  for (const box of visibleObjs) {
     iBuffer[offset++] = box.id;
     fBuffer[offset++] = box.position.x;
     fBuffer[offset++] = box.position.y;
@@ -49,17 +53,10 @@ export const postMessageSceneObjectTransforms = (
     fBuffer[offset++] = box.quaternion.w;
   }
 
-  for (const sphere of spheres) {
-    iBuffer[offset++] = sphere.id;
-    fBuffer[offset++] = sphere.position.x;
-    fBuffer[offset++] = sphere.position.y;
-    fBuffer[offset++] = sphere.position.z;
-  }
-
   bufferPool.postMessage(buffer);
 };
 
-export const readMessageSceneObjectTransforms = (buffer: ArrayBuffer, boxes: Object3D[], spheres: Object3D[]) => {
+export const readMessageSceneObjectTransforms = (buffer: ArrayBuffer, objectMap: Object3D[]) => {
   const f32Buffer = new Float32Array(buffer);
   const i32Buffer = new Int32Array(buffer);
 
@@ -67,9 +64,8 @@ export const readMessageSceneObjectTransforms = (buffer: ArrayBuffer, boxes: Obj
   const _kind = i32Buffer[offset++];
   if (_kind !== bufferKind) {
     console.error(`readMessageSceneObjectTransforms: wrong kind`, { _kind, bufferKind });
+    return;
   }
-  const boxCount = i32Buffer[offset++];
-  const sphereCount = i32Buffer[offset++];
 
   //   console.log(`readMessageSceneObjectTransforms`, {
   //     _kind,
@@ -80,24 +76,28 @@ export const readMessageSceneObjectTransforms = (buffer: ArrayBuffer, boxes: Obj
   //     i32Buffer,
   //   });
 
-  for (let i = 0; i < boxCount; i++) {
+  const invisibleCount = i32Buffer[offset++];
+  for (let i = 0; i < invisibleCount; i++) {
     const id = i32Buffer[offset++];
-    const box = boxes[id];
-    if (!box) {
-      console.error(`readMessageSceneObjectTransforms: box not found`, { id, box, i32Buffer, offset });
+    const obj = objectMap[id];
+    if (!obj) {
+      console.error(`readMessageSceneObjectTransforms: invisible obj not found`, { id, obj, i32Buffer, offset });
+      return;
     }
-    box.position.set(f32Buffer[offset++], f32Buffer[offset++], f32Buffer[offset++]);
-    box.quaternion.set(f32Buffer[offset++], f32Buffer[offset++], f32Buffer[offset++], f32Buffer[offset++]);
-    box.updateMatrix();
+    obj.visible = false;
   }
 
-  for (let i = 0; i < sphereCount; i++) {
+  const objectCount = i32Buffer[offset++];
+  for (let i = 0; i < objectCount; i++) {
     const id = i32Buffer[offset++];
-    const sphere = spheres[id];
-    if (!sphere) {
-      console.error(`readMessageSceneObjectTransforms: sphere not found`, { id, sphere });
+    const obj = objectMap[id];
+    if (!obj) {
+      console.error(`readMessageSceneObjectTransforms: visible obj not found`, { id, obj, i32Buffer, offset });
+      return;
     }
-    sphere.position.set(f32Buffer[offset++], f32Buffer[offset++], f32Buffer[offset++]);
-    sphere.updateMatrix();
+    obj.visible = true;
+    obj.position.set(f32Buffer[offset++], f32Buffer[offset++], f32Buffer[offset++]);
+    obj.quaternion.set(f32Buffer[offset++], f32Buffer[offset++], f32Buffer[offset++], f32Buffer[offset++]);
+    obj.updateMatrix();
   }
 };
