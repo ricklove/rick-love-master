@@ -106,6 +106,7 @@ export const createWorkerEngine = async (
         position: args.position.clone(),
         quaternion: quaternion.clone(),
         scale: scale.clone(),
+        color: args.color ?? Math.random() * 0xffffff,
       },
     };
     registeredEntities.push(entity);
@@ -117,12 +118,20 @@ export const createWorkerEngine = async (
 
   const jointCount = handJointNames.length * 2;
   const engineEntities = {
+    head: createEntity({
+      type: `head` as const,
+      kind: `kinematicPositionBased` as const,
+      shape: `sphere` as const,
+      position: new Vector3(0, 1, 0),
+      radius: 0.001,
+      sensor: true,
+    }),
     handJoints: [...new Array(jointCount)]
       .map(() => ({
         type: `handJoint` as const,
         kind: `kinematicPositionBased` as const,
         shape: `sphere` as const,
-        position: new Vector3(0, 1, -2),
+        position: new Vector3(0, 1, -1),
         radius: 0.02,
         // radius: 0.01,
       }))
@@ -150,6 +159,7 @@ export const createWorkerEngine = async (
           position: x.graphics.position.toArray(),
           quaternion: x.graphics.quaternion.toArray() as [number, number, number, number],
           scale: x.graphics.scale.toArray(),
+          color: x.graphics.color,
         })),
       spheres: newEntities
         .filter((x) => x.shape === `sphere`)
@@ -157,6 +167,7 @@ export const createWorkerEngine = async (
           id: x.graphics.id,
           position: x.graphics.position.toArray(),
           radius: x.graphics.scale.x,
+          color: x.graphics.color,
         })),
     });
   };
@@ -219,9 +230,9 @@ export const createWorkerEngine = async (
           origin: {
             position: new Vector3(0, 0, 0),
           },
-          camera: {
-            position: new Vector3(0, 0, 0),
-            quaternion: new Quaternion(),
+          head: {
+            position: engineEntities.head.input.position,
+            quaternion: engineEntities.head.input.quaternion,
           },
           hands: {
             left: {
@@ -329,6 +340,7 @@ export const createWorkerEngine = async (
   const gameWorkerEngine = {
     // ...sceneData,
     inputs: {
+      head: engineEntities.head.input,
       handJoints: engineEntities.handJoints.map((x) => x.input),
     },
     createEntity,

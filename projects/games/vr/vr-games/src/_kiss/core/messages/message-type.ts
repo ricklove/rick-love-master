@@ -37,11 +37,13 @@ export type WorkerMessageFromWorker =
         position: [number, number, number];
         quaternion: [number, number, number, number];
         scale: [number, number, number];
+        color: number;
       }[];
       spheres: {
         id: number;
         position: [number, number, number];
         radius: number;
+        color: number;
       }[];
     }
   | {

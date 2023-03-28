@@ -40,10 +40,7 @@ export const createGameEngine = (host: HTMLDivElement, workerRaw: Worker) => {
         addObjectsData = undefined;
 
         data.boxes.forEach((o) => {
-          const object = new THREE.Mesh(
-            boxGeometry,
-            new THREE.MeshLambertMaterial({ color: Math.random() * 0xffffff }),
-          );
+          const object = new THREE.Mesh(boxGeometry, new THREE.MeshLambertMaterial({ color: o.color }));
           // const object = new THREE.Mesh(geometry, new THREE.MeshLambertMaterial({ color: 0xff0000 }));
           object.matrixAutoUpdate = false;
           object.position.set(o.position[0], o.position[1], o.position[2]);
@@ -56,10 +53,7 @@ export const createGameEngine = (host: HTMLDivElement, workerRaw: Worker) => {
           objectMap[o.id] = object;
         });
         data.spheres.forEach((o) => {
-          const object = new THREE.Mesh(
-            sphereGeometry,
-            new THREE.MeshLambertMaterial({ color: Math.random() * 0xffffff }),
-          );
+          const object = new THREE.Mesh(sphereGeometry, new THREE.MeshLambertMaterial({ color: o.color }));
           // const object = new THREE.Mesh(geometry, new THREE.MeshLambertMaterial({ color: 0xff0000 }));
           object.matrixAutoUpdate = false;
           object.position.set(o.position[0], o.position[1], o.position[2]);

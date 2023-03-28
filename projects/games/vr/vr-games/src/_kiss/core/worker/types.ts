@@ -4,6 +4,7 @@ import { Quaternion, Vector3 } from 'three';
 export type GameWorkerCreateEntityArgs<TType extends string, TUserData extends Record<string, unknown>> = {
   type: TType;
   shape: `box` | `sphere`;
+  color?: number;
   position: Vector3;
   active?: boolean;
   kind?: `fixed` | `dynamic` | `kinematicPositionBased` | `kinematicVelocityBased`;
@@ -38,6 +39,7 @@ export type GameWorkerEngine = {
   ) => GameWorkerEntity<TType, TUserData>;
   setGravity: (gravity: Vector3) => void;
   inputs: {
+    head: { position: Vector3; quaternion: Quaternion };
     handJoints: { position: Vector3 }[];
   };
 };
@@ -50,7 +52,7 @@ export type GameEnginePlayer = {
   origin: {
     position: Vector3;
   };
-  camera: {
+  head: {
     position: Vector3;
     quaternion: Quaternion;
   };

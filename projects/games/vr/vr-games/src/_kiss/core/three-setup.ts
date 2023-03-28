@@ -33,6 +33,7 @@ export const setupThree = (hostRaw: HTMLDivElement) => {
 
   window.addEventListener(`resize`, onWindowResize);
 
+  renderer.xr.setReferenceSpaceType(`local-floor`);
   const button = VRButton.createButton(renderer);
   host.appendChild(button);
 

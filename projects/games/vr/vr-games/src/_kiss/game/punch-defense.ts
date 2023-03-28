@@ -8,7 +8,8 @@ export const createGame_PunchDefense = ({
 }: {
   engine: GameWorkerEngine;
 }): GameEngine => {
-  setGravity(new Vector3(0, -9.8, 0));
+  //   setGravity(new Vector3(0, -9.8, 0));
+  setGravity(new Vector3(0, 0, 0));
 
   const entities = {
     ground: createEntity({
@@ -30,6 +31,7 @@ export const createGame_PunchDefense = ({
         restitution: 1.0,
         userData: {
           coolDown: 0,
+          targetOffset: new Vector3(),
         },
       }))
       .map(createEntity),
@@ -45,23 +47,85 @@ export const createGame_PunchDefense = ({
         gravityScale: 0,
         userData: {
           launchingFromHand: false as false | `left` | `right`,
+          launchSpeed: 0,
+          launchStage: LaunchStage.none,
+          launchPositions: [...new Array(100)].map(() => new Vector3()),
+          iLaunchHistory: 0,
+          launchHistoryCount: 0,
           coolDown: 0,
         },
       }))
       .map(createEntity),
+    debugMarkers: [
+      { type: `debugHead` as const, size: 0.1, color: 0xff00ff },
+      { type: `debugR` as const, size: 0.01, color: 0xff0000 },
+      { type: `debugG` as const, size: 0.008, color: 0x00ff00 },
+      { type: `debugB` as const, size: 0.01, color: 0x0000ff },
+    ].flatMap(({ type, color, size }) =>
+      [...Array(100)]
+        .map((_, i) => ({
+          type,
+          active: false,
+          shape: `sphere` as const,
+          position: new Vector3(0, -1000, 0),
+          radius: size,
+          sensor: true,
+          gravityScale: 0,
+          userData: {
+            markedAt: 0,
+          },
+          color,
+        }))
+        .map(createEntity),
+    ),
   };
 
-  const v = new Vector3();
-  const v2 = new Vector3();
-  const v3 = new Vector3();
-  const e = new Euler();
+  const minBulletAttachSpeed = 0.8;
+  const minBulletLaunchSpeed = 1.2;
+  enum LaunchStage {
+    none = 0,
+    _01originating,
+    _02accelerating,
+    _03continuing,
+    _04launching,
+  }
+
+  const w = {
+    v: new Vector3(),
+    e: new Euler(),
+    handPositionDelta: new Vector3(),
+    handVelocity: new Vector3(),
+    handDirectionFromPlayerCore: new Vector3(),
+    enemyPosition: new Vector3(),
+    enemyVelocity: new Vector3(),
+    enemyToPlayer: new Vector3(),
+    enemyToPlayerImpulse: new Vector3(),
+    bulletPosition: new Vector3(),
+    bulletVelocity: new Vector3(),
+    bulletDiffFromOrigin: new Vector3(),
+    bulletLaunchVector: new Vector3(),
+  };
+
+  const addDebugMarker = (type: typeof entities.debugMarkers[number][`type`], position: Vector3, time: number) => {
+    const markersOfType = entities.debugMarkers.filter((x) => x.type === type);
+    const marker =
+      markersOfType.find((x) => !x.active) ??
+      markersOfType.sort((a, b) => a.userData.markedAt - b.userData.markedAt)[0];
+    if (!marker) {
+      return;
+    }
+    marker.physics.rigidBody.setBodyType(RigidBodyType.KinematicPositionBased, true);
+    marker.physics.rigidBody.setTranslation(position, true);
+    marker.active = true;
+    marker.userData.markedAt = time;
+  };
 
   [...entities.enemies, ...entities.bullets]
     .filter((x) => !x.active)
     .forEach((enemy) => {
       enemy.physics.rigidBody.setBodyType(RigidBodyType.Fixed, true);
-      enemy.physics.rigidBody.setLinvel(v3.set(0, 0, 0), false);
-      enemy.physics.rigidBody.setAngvel(v3.set(0, 0, 0), false);
+      enemy.physics.rigidBody.setLinvel(w.v.set(0, 0, 0), false);
+      enemy.physics.rigidBody.setAngvel(w.v.set(0, 0, 0), false);
     });
 
   const handData = {
@@ -87,9 +151,10 @@ export const createGame_PunchDefense = ({
     // wogger.log(`hide entity`, { entity: entity.physics.rigidBody.translation() });
   };
 
+  let frameCount = 0;
   const update: GameEngine[`update`] = (deltaTimeSec, player, eventQueue) => {
+    frameCount++;
     const time = performance.now();
-    const { origin } = player;
 
     // wogger.log(`update`, { deltaTimeSec, time, entities });
 
@@ -102,27 +167,31 @@ export const createGame_PunchDefense = ({
       const enemy = entities.enemies.find((x) => !x.active);
       if (enemy) {
         // spawn enemy in random position around player at far distance
-        const distance = 5 + 10 * Math.random();
-        v.set(0, 0, -distance)
-          .applyEuler(e.set(0, Math.random() * 2 * Math.PI, 0))
+        const distance = 10 + 20 * Math.random();
+        const enemyPosition = w.enemyPosition
+          .set(0, 0, -distance)
+          .applyEuler(w.e.set(0, Math.random() * 2 * Math.PI, 0))
           .setY(2 + Math.random() * 2)
-          .add(origin.position);
-        enemy.physics.rigidBody.setTranslation(v, true);
-        enemy.physics.rigidBody.setLinvel(v3.set(0, 0, 0), true);
+          .add(player.head.position);
+        const enemyVelocity = w.enemyVelocity.set(Math.random(), Math.random(), Math.random());
+        enemy.physics.rigidBody.setTranslation(enemyPosition, true);
+        enemy.physics.rigidBody.setLinvel(enemyVelocity, true);
         enemy.active = true;
         enemy.physics.rigidBody.setBodyType(RigidBodyType.Dynamic, true);
+
+        enemy.userData.targetOffset.set(Math.random(), 0.5 + Math.random(), Math.random());
 
         wogger.log(`enemy spwan pos`, { enemy: enemy.physics.rigidBody.translation() });
       }
     }
 
-    // move enemies towards player origin
+    // move enemies towards target
     activeEnemies.forEach((enemy) => {
       const enemyTranslation = enemy.physics.rigidBody.translation();
-      const enemyPosition = v.set(enemyTranslation.x, enemyTranslation.y, enemyTranslation.z);
-      const enemyToPlayer = v2
-        .copy(origin.position)
-        .add(v3.set(Math.random(), 0.5 + Math.random(), Math.random()))
+      const enemyPosition = w.enemyPosition.set(enemyTranslation.x, enemyTranslation.y, enemyTranslation.z);
+      const enemyToPlayer = w.enemyToPlayer
+        .copy(player.head.position)
+        .add(enemy.userData.targetOffset)
         .sub(enemyPosition);
 
       if (enemyToPlayer.lengthSq() < 2) {
@@ -131,7 +200,7 @@ export const createGame_PunchDefense = ({
       //   const enemyLinearVelocity = enemy.physics.rigidBody.linvel();
       //   const enemyVelocity = v3.set(enemyLinearVelocity.x, enemyLinearVelocity.y, enemyLinearVelocity.z);
 
-      const enemyToPlayerImpulse = v
+      const enemyToPlayerImpulse = w.enemyToPlayerImpulse
         .copy(enemyToPlayer)
         .normalize()
         .multiplyScalar(1 * deltaTimeSec);
@@ -141,65 +210,163 @@ export const createGame_PunchDefense = ({
       //   wogger.log(`enemy moving towards player`, { enemy: enemy.physics.rigidBody.translation() });
     });
 
+    // if (frameCount % 10 === 0) {
+    //   addDebugMarker(
+    //     `debugHead`,
+    //     w.v
+    //       .set(Math.random(), Math.random(), Math.random())
+    //       .multiplyScalar(1000 / (100 + frameCount))
+    //       .add(player.head.position),
+    //     time,
+    //   );
+    //   wogger.log(`head position`, { head: player.head.position.toArray() });
+    // }
+
     // shoot bullets from player hands
     const { hands } = player;
     [hands.left, hands.right].forEach((hand) => {
-      const handVelocity = v
-        .copy(hand.position)
-        .sub(handData[hand.side].lastPosition)
-        .multiplyScalar(1 / deltaTimeSec);
+      const handPositionDelta = w.handPositionDelta.copy(hand.position).sub(handData[hand.side].lastPosition);
       handData[hand.side].lastPosition.copy(hand.position);
-
-      const handDirectionFromOrigin = v2.copy(hand.position).sub(origin.position).normalize();
-      const handSpeedFromOrigin = handVelocity.dot(handDirectionFromOrigin);
-
-      // if hand is moving forward
-      if (handSpeedFromOrigin > 1) {
-        const attachedBullet = entities.bullets.find((x) => x.active && x.userData.launchingFromHand === hand.side);
-
-        // attach bullet to hand
-        if (!attachedBullet) {
-          const bullet = entities.bullets.find((x) => !x.active && x.userData.coolDown < time);
-          if (bullet) {
-            bullet.userData.launchingFromHand = hand.side;
-            bullet.physics.rigidBody.setTranslation(hand.position, true);
-            bullet.physics.rigidBody.setLinvel(v.set(0, 0, 0), true);
-            bullet.active = true;
-            bullet.physics.rigidBody.setBodyType(RigidBodyType.Dynamic, true);
-          }
-        }
-
-        // apply impulse to keep bullet attached to hand
-        if (attachedBullet) {
-          const bulletTranslation = attachedBullet.physics.rigidBody.translation();
-          const bulletPosition = v.set(bulletTranslation.x, bulletTranslation.y, bulletTranslation.z);
-          const deltaToHand = v2
-            .copy(hand.position)
-            .sub(bulletPosition)
-            .multiplyScalar(1 * deltaTimeSec);
-          attachedBullet.physics.rigidBody.applyImpulse(deltaToHand, true);
-        }
+      if (handPositionDelta.lengthSq() < 0.00000001) {
+        return;
       }
 
-      //   wogger.log(`hand speed`, { handSpeedFromOrigin });
-      // if hand is moving backward
-      if (handSpeedFromOrigin < 0) {
-        // detach bullet from hand
-        const attachedBullet = entities.bullets.find((x) => x.userData.launchingFromHand === hand.side);
-        if (attachedBullet) {
+      const handVelocity = w.handVelocity.copy(handPositionDelta).multiplyScalar(1 / deltaTimeSec);
+      const handDirectionFromPlayerCore = w.handDirectionFromPlayerCore
+        .copy(hand.position)
+        .sub(w.v.set(0, -0.1, 0).add(player.head.position))
+        .normalize();
+      const handSpeedFromOrigin = handVelocity.dot(handDirectionFromPlayerCore);
+
+      // shoot bullet from hand
+      const attachedBullet = entities.bullets.find((x) => x.userData.launchingFromHand === hand.side);
+
+      // attach bullet to hand
+      if (!attachedBullet && handSpeedFromOrigin > minBulletAttachSpeed) {
+        const bullet = entities.bullets.find(
+          (x) => !x.active && !x.userData.launchingFromHand && x.userData.coolDown < time,
+        );
+        if (!bullet) {
+          return;
+        }
+
+        bullet.userData.launchingFromHand = hand.side;
+        bullet.userData.launchStage = LaunchStage._01originating;
+        bullet.userData.iLaunchHistory = 0;
+        bullet.userData.launchHistoryCount = 0;
+        return;
+      }
+
+      if (!attachedBullet) {
+        return;
+      }
+
+      // keep bullet with hand
+      addDebugMarker(`debugG`, hand.position, time);
+
+      attachedBullet.userData.iLaunchHistory++;
+      if (attachedBullet.userData.iLaunchHistory >= attachedBullet.userData.launchPositions.length) {
+        attachedBullet.userData.iLaunchHistory = 0;
+      }
+      attachedBullet.userData.launchPositions[attachedBullet.userData.iLaunchHistory].copy(hand.position);
+      attachedBullet.userData.launchHistoryCount++;
+
+      if (attachedBullet.userData.launchStage === LaunchStage._01originating) {
+        attachedBullet.userData.launchStage++;
+        return;
+      }
+
+      if (attachedBullet.userData.launchStage === LaunchStage._02accelerating) {
+        if (handSpeedFromOrigin < minBulletAttachSpeed) {
+          // cancel launch
+          attachedBullet.userData.launchStage = LaunchStage.none;
           attachedBullet.userData.launchingFromHand = false;
+          return;
         }
+
+        if (handSpeedFromOrigin > minBulletLaunchSpeed) {
+          attachedBullet.active = true;
+          attachedBullet.userData.launchSpeed = handSpeedFromOrigin;
+          attachedBullet.physics.rigidBody.setBodyType(RigidBodyType.KinematicPositionBased, true);
+          attachedBullet.physics.rigidBody.setTranslation(hand.position, true);
+          attachedBullet.userData.launchStage++;
+        }
+        return;
       }
+
+      attachedBullet.physics.rigidBody.setTranslation(hand.position, true);
+      if (attachedBullet.userData.launchStage === LaunchStage._03continuing) {
+        if (handSpeedFromOrigin > attachedBullet.userData.launchSpeed) {
+          // if hand is moving faster, update launch settings
+          attachedBullet.userData.launchSpeed = handSpeedFromOrigin;
+        }
+
+        if (handSpeedFromOrigin < minBulletAttachSpeed) {
+          // if hand is retracting, launch bullet
+          attachedBullet.userData.launchStage++;
+        }
+        return;
+      }
+
+      if (attachedBullet.userData.launchHistoryCount <= 3) {
+        // cancel launch
+        attachedBullet.userData.launchStage = LaunchStage.none;
+        attachedBullet.userData.launchingFromHand = false;
+        hideEntity(attachedBullet);
+        return;
+      }
+
+      // Launch
+      attachedBullet.userData.launchStage = LaunchStage.none;
+      attachedBullet.userData.launchingFromHand = false;
+
+      const getAveragePosition = (ratioMin: number, ratioMax: number, marker: `debugR` | `debugB`) => {
+        w.v.set(0, 0, 0);
+        const count = Math.min(100, attachedBullet.userData.launchHistoryCount);
+        const iBackMin = Math.floor(ratioMin * count);
+        const iBackMax = Math.ceil(ratioMax * count);
+        for (let i = iBackMin; i <= iBackMax; i++) {
+          const iHistory = (attachedBullet.userData.iLaunchHistory - i + 200) % 100;
+          w.v.add(attachedBullet.userData.launchPositions[iHistory]);
+
+          addDebugMarker(marker, attachedBullet.userData.launchPositions[iHistory], time);
+        }
+        w.v.multiplyScalar(1 / (iBackMax - iBackMin + 1));
+        return w.v;
+      };
+
+      const launchVector = w.bulletLaunchVector
+        .copy(getAveragePosition(0.4, 0.6, `debugR`))
+        .sub(getAveragePosition(0.6, 0.8, `debugB`))
+        .normalize()
+        .multiplyScalar(attachedBullet.userData.launchSpeed * 2);
+
+      attachedBullet.physics.rigidBody.setBodyType(RigidBodyType.Dynamic, true);
+      attachedBullet.physics.rigidBody.applyImpulse(
+        w.v.copy(launchVector).multiplyScalar(attachedBullet.physics.rigidBody.mass()),
+        true,
+      );
     });
 
     entities.bullets
-      .filter((x) => x.active)
+      .filter((x) => x.active && !x.userData.launchingFromHand)
       .forEach((bullet) => {
+        // if too slow, remove bullet
+        // const bulletLinearVelocity = bullet.physics.rigidBody.linvel();
+        // const bulletVelocity = w.bulletVelocity.set(
+        //   bulletLinearVelocity.x,
+        //   bulletLinearVelocity.y,
+        //   bulletLinearVelocity.z,
+        // );
+        // if (bulletVelocity.lengthSq() < 0.01) {
+        //   hideEntity(bullet);
+        // }
+
         // if too far, remove bullet
         const bulletTranslation = bullet.physics.rigidBody.translation();
-        const bulletPosition = v.set(bulletTranslation.x, bulletTranslation.y, bulletTranslation.z);
-        const distanceFromOriginSq = v2.copy(bulletPosition).sub(origin.position).lengthSq();
-        if (distanceFromOriginSq > 10000) {
+        const bulletPosition = w.bulletPosition.set(bulletTranslation.x, bulletTranslation.y, bulletTranslation.z);
+        const bulletDiffFromOrigin = w.bulletDiffFromOrigin.copy(bulletPosition).sub(player.head.position);
+        if (bulletDiffFromOrigin.lengthSq() > 100) {
           hideEntity(bullet);
         }
       });
@@ -213,10 +380,10 @@ export const createGame_PunchDefense = ({
           .filter((x) => x.active)
           .forEach((enemy) => {
             const bulletTranslation = bullet.physics.rigidBody.translation();
-            const bulletPosition = v.set(bulletTranslation.x, bulletTranslation.y, bulletTranslation.z);
+            const bulletPosition = w.bulletPosition.set(bulletTranslation.x, bulletTranslation.y, bulletTranslation.z);
             const enemyTranslation = enemy.physics.rigidBody.translation();
-            const enemyPosition = v2.set(enemyTranslation.x, enemyTranslation.y, enemyTranslation.z);
-            const distanceBetweenSq = v3.copy(bulletPosition).sub(enemyPosition).lengthSq();
+            const enemyPosition = w.enemyPosition.set(enemyTranslation.x, enemyTranslation.y, enemyTranslation.z);
+            const distanceBetweenSq = w.v.copy(bulletPosition).sub(enemyPosition).lengthSq();
             const radiusCombined = (bullet.args.radius ?? 0.5) + (enemy.args.radius ?? 0.5) + 0.1;
 
             if (distanceBetweenSq < radiusCombined * radiusCombined) {

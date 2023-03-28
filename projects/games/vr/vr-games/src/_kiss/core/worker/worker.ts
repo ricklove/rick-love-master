@@ -31,7 +31,7 @@ self.onmessage = (e: { data: unknown }) => {
         state.messageBufferPool.returnBuffer(data);
         return;
       }
-      readMessageUserInputTransforms(data, state.gameWorkerEngine.inputs.handJoints);
+      readMessageUserInputTransforms(data, state.gameWorkerEngine.inputs);
       state.messageBufferPool.returnBuffer(data);
       return;
     }

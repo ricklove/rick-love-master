@@ -1,4 +1,4 @@
-import { Vector3 } from 'three';
+import { Quaternion, Vector3 } from 'three';
 import { handJointNameIndex, handJointNames } from '../../input/hand-joints';
 import { MessageBufferPool } from '../message-buffer';
 import { MessageBufferKind } from '../message-type';
@@ -34,7 +34,7 @@ const setXrInput = (renderer: THREE.WebGLRenderer, frame: XRFrame, buffer: Float
 
   const camera = renderer.xr.getCamera();
   camera.position.toArray(buffer, InputBufferIndex.camera);
-  camera.quaternion.toArray(buffer, InputBufferIndex.camera);
+  camera.quaternion.toArray(buffer, InputBufferIndex.camera + 3);
 
   [0, 1].forEach((sideOffset) => {
     const controller = renderer.xr.getController(sideOffset);
@@ -61,7 +61,7 @@ const setXrInput = (renderer: THREE.WebGLRenderer, frame: XRFrame, buffer: Float
     }
   });
 
-  console.log(`readXrInput`, { buffer });
+  // console.log(`readXrInput`, { buffer });
 };
 
 export const postMessageUserInputTransforms = (
@@ -81,7 +81,13 @@ export const postMessageUserInputTransforms = (
   bufferPool.postMessage(buffer);
 };
 
-export const readMessageUserInputTransforms = (buffer: ArrayBuffer, handJoints: { position: Vector3 }[]) => {
+export const readMessageUserInputTransforms = (
+  buffer: ArrayBuffer,
+  inputs: {
+    head: { position: Vector3; quaternion: Quaternion };
+    handJoints: { position: Vector3 }[];
+  },
+) => {
   const f32Buffer = new Float32Array(buffer);
   const i32Buffer = new Int32Array(buffer);
 
@@ -91,9 +97,14 @@ export const readMessageUserInputTransforms = (buffer: ArrayBuffer, handJoints: 
     console.error(`readMessageUpdateTransforms: wrong kind`, { _kind, bufferKind });
   }
 
-  handJoints.forEach((o, i) => {
+  inputs.handJoints.forEach((o, i) => {
     offset = InputBufferIndex.handLeft + i * 3;
     o.position.set(f32Buffer[offset++], f32Buffer[offset++], f32Buffer[offset++]);
+  });
+  [inputs.head].forEach((o) => {
+    offset = InputBufferIndex.camera;
+    o.position.set(f32Buffer[offset++], f32Buffer[offset++], f32Buffer[offset++]);
+    o.quaternion.set(f32Buffer[offset++], f32Buffer[offset++], f32Buffer[offset++], f32Buffer[offset++]);
   });
 
   // console.log(`readMessageUserInputTransforms position set`, { handJoints });
