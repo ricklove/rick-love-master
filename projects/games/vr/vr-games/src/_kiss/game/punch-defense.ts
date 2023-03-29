@@ -69,9 +69,9 @@ export const createGame_PunchDefense = ({
           shape: `sphere` as const,
           position: new Vector3(0, -1000, 0),
           radius: size,
-          sensor: true,
-          gravityScale: 0,
+          physics: false as const,
           userData: {
+            coolDown: 0,
             markedAt: 0,
           },
           color,
@@ -114,8 +114,9 @@ export const createGame_PunchDefense = ({
     if (!marker) {
       return;
     }
-    marker.physics.rigidBody.setBodyType(RigidBodyType.KinematicPositionBased, true);
-    marker.physics.rigidBody.setTranslation(position, true);
+    // marker.physics.rigidBody.setBodyType(RigidBodyType.KinematicPositionBased, true);
+    // marker.physics.rigidBody.setTranslation(position, true);
+    marker.graphics.position.copy(position);
     marker.active = true;
     marker.userData.markedAt = time;
   };
@@ -141,10 +142,14 @@ export const createGame_PunchDefense = ({
     [...entities.bullets, ...entities.enemies].map((x) => [x.physics.rigidBody.handle, x]),
   );
 
-  const hideEntity = (entity: ReturnType<typeof createEntity>) => {
+  const hideEntity = (entity: typeof entities[`enemies` | `bullets` | `debugMarkers`][number]) => {
     const time = performance.now();
-    entity.physics.rigidBody.setBodyType(RigidBodyType.KinematicPositionBased, false);
-    entity.physics.rigidBody.setTranslation(new Vector3(0, -1000, 0), false);
+    if (entity.physics) {
+      entity.physics.rigidBody.setBodyType(RigidBodyType.KinematicPositionBased, false);
+      entity.physics.rigidBody.setTranslation(new Vector3(0, -1000, 0), false);
+    } else {
+      entity.graphics.position.set(0, -1000, 0);
+    }
     entity.userData.coolDown = time + 1000;
     entity.active = false;
 

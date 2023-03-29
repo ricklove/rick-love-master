@@ -4,7 +4,13 @@ import { handJointNames } from '../input/hand-joints';
 import { postMessageFromWorker } from '../messages/message';
 import { MessageBufferPool } from '../messages/message-buffer';
 import { postMessageSceneObjectTransforms } from '../messages/messages/message-scene-object-transforms';
-import { GameEngine, GameWorkerCreateEntityArgs, GameWorkerEngine } from './types';
+import {
+  BooleanDefaultTrueOfOptionalField,
+  GameEngine,
+  GameWorkerCreateEntityArgs,
+  GameWorkerEngine,
+  PhysicsFieldsObj,
+} from './types';
 import { wogger } from './wogger';
 
 export const createWorkerEngine = async (
@@ -27,64 +33,76 @@ export const createWorkerEngine = async (
 
   let nextId = 0;
   const registeredEntities = [] as ReturnType<typeof createEntity>[];
-  const createEntity = <TType extends string, TUserData extends Record<string, unknown>>(
-    args: GameWorkerCreateEntityArgs<TType, TUserData>,
+  const createEntity = <
+    TArgs extends GameWorkerCreateEntityArgs,
+    TType extends string,
+    TUserData extends Record<string, unknown>,
+  >(
+    args: TArgs & { type: TType; userData?: TUserData },
   ) => {
     // wogger.log(`createEntity`, { data });
 
     const position = args.position ?? new Vector3();
     const quaternion = args.quaternion ?? new Quaternion();
-    const scale = args.scale
-      ? args.scale
-      : args.radius
-      ? new Vector3(args.radius, args.radius, args.radius)
-      : new Vector3(1, 1, 1);
-    const kind = args.kind ?? `dynamic`;
+    const scale =
+      args.shape === `sphere`
+        ? new Vector3(args.radius, args.radius, args.radius)
+        : args.shape === `box`
+        ? args.scale
+        : new Vector3(1, 1, 1);
 
-    let rigidBodyDesc = (
-      kind === `fixed`
-        ? RigidBodyDesc.fixed()
-        : kind === `kinematicPositionBased`
-        ? RigidBodyDesc.kinematicPositionBased()
-        : kind === `kinematicVelocityBased`
-        ? RigidBodyDesc.kinematicVelocityBased()
-        : RigidBodyDesc.dynamic()
-    )
-      .setTranslation(position.x, position.y, position.z)
-      .setRotation(quaternion);
+    const physics =
+      (!(`physics` in args) || args.physics === true) && (args.shape === `sphere` || args.shape === `box`)
+        ? (() => {
+            const kind = args.kind ?? `dynamic`;
 
-    if (args.gravityScale != null) {
-      rigidBodyDesc = rigidBodyDesc.setGravityScale(args.gravityScale);
-    }
+            let rigidBodyDesc = (
+              kind === `fixed`
+                ? RigidBodyDesc.fixed()
+                : kind === `kinematicPositionBased`
+                ? RigidBodyDesc.kinematicPositionBased()
+                : kind === `kinematicVelocityBased`
+                ? RigidBodyDesc.kinematicVelocityBased()
+                : RigidBodyDesc.dynamic()
+            )
+              .setTranslation(position.x, position.y, position.z)
+              .setRotation(quaternion);
 
-    const rigidBody = world.createRigidBody(rigidBodyDesc);
+            if (args.gravityScale != null) {
+              rigidBodyDesc = rigidBodyDesc.setGravityScale(args.gravityScale);
+            }
 
-    if (args.shape === `sphere`) {
-      let colliderDesc = ColliderDesc.ball(scale.x);
-      if (args.restitution) {
-        colliderDesc = colliderDesc.setRestitution(args.restitution);
-      }
-      if (args.sensor) {
-        colliderDesc = colliderDesc.setSensor(true);
-      }
-      world.createCollider(colliderDesc, rigidBody);
-    }
-    if (args.shape === `box`) {
-      let colliderDesc = ColliderDesc.cuboid(scale.x * 0.5, scale.y * 0.5, scale.z * 0.5);
-      if (args.restitution) {
-        colliderDesc = colliderDesc.setRestitution(args.restitution);
-      }
-      if (args.sensor) {
-        colliderDesc = colliderDesc.setSensor(true);
-      }
-      world.createCollider(colliderDesc, rigidBody);
-    }
+            const rigidBody = world.createRigidBody(rigidBodyDesc);
+
+            if (args.shape === `sphere`) {
+              let colliderDesc = ColliderDesc.ball(scale.x);
+              if (args.restitution) {
+                colliderDesc = colliderDesc.setRestitution(args.restitution);
+              }
+              if (args.sensor) {
+                colliderDesc = colliderDesc.setSensor(true);
+              }
+              world.createCollider(colliderDesc, rigidBody);
+            }
+            if (args.shape === `box`) {
+              let colliderDesc = ColliderDesc.cuboid(scale.x * 0.5, scale.y * 0.5, scale.z * 0.5);
+              if (args.restitution) {
+                colliderDesc = colliderDesc.setRestitution(args.restitution);
+              }
+              if (args.sensor) {
+                colliderDesc = colliderDesc.setSensor(true);
+              }
+              world.createCollider(colliderDesc, rigidBody);
+            }
+            return { kind, rigidBody };
+          })()
+        : undefined;
 
     const id = nextId++;
     const entity = {
       id,
       type: args.type,
-      args: args,
+      args: args as TArgs,
       userData: args.userData as NonNullable<typeof args[`userData`]>,
       shape: args.shape,
       active: args.active ?? true,
@@ -93,10 +111,8 @@ export const createWorkerEngine = async (
         position: args.position.clone(),
         quaternion: quaternion.clone(),
       },
-      physics: {
-        kind,
-        rigidBody,
-      },
+      physics: physics as typeof physics &
+        PhysicsFieldsObj<TArgs['shape'], BooleanDefaultTrueOfOptionalField<TArgs, 'physics'>>[`physics`],
       graphics: {
         // id copied here for convenience
         id,
@@ -114,7 +130,7 @@ export const createWorkerEngine = async (
     // wogger.log(`createdEntity`, { entity, data, registeredEntities });
     return entity;
   };
-  const _createEntity: GameWorkerEngine[`createEntity`] = createEntity;
+  const createEntityTyped: GameWorkerEngine[`createEntity`] = createEntity as GameWorkerEngine[`createEntity`];
 
   const jointCount = handJointNames.length * 2;
   const engineEntities = {
@@ -265,7 +281,7 @@ export const createWorkerEngine = async (
 
       // Update the graphics positions from physics
       registeredEntities.forEach((o) => {
-        if (!o.physics.rigidBody) {
+        if (!o.physics?.rigidBody) {
           return;
         }
         if (!o.active) {
@@ -343,7 +359,7 @@ export const createWorkerEngine = async (
       head: engineEntities.head.input,
       handJoints: engineEntities.handJoints.map((x) => x.input),
     },
-    createEntity,
+    createEntity: createEntityTyped,
     updateMessageRequested: false,
     dispose: () => {
       clearTimeout(gameLoopTimerId);
