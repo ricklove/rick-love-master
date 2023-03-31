@@ -40,3 +40,25 @@ const e3 = ecs
   .sphere({ radius: 1 })
   .sphereCollider({ restitution: 0.8, friction: 0.1 })
   .build();
+
+const e4 = ecs
+  .entity(`test`)
+  .transform({ position: { x: 0, y: 0, z: 0 }, quaternion: { x: 0, y: 0, z: 0, w: 1 } })
+  .rigidBody({ kind: `dynamic` })
+  .addChild(
+    ecs
+      .entity(`leg1`)
+      .transform({ position: { x: 0, y: 0, z: 0 }, quaternion: { x: 0, y: 0, z: 0, w: 1 } })
+      .sphere({ radius: 1 })
+      .sphereCollider({ restitution: 0.8, friction: 0.1 })
+      .build(),
+  )
+  .addChild(
+    ecs
+      .entity(`leg2`)
+      .transform({ position: { x: 0, y: 0, z: 0 }, quaternion: { x: 0, y: 0, z: 0, w: 1 } })
+      .sphere({ radius: 1 })
+      .sphereCollider({ restitution: 0.8, friction: 0.1 })
+      .build(),
+  )
+  .build();
