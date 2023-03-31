@@ -1059,6 +1059,7 @@ importers:
       cannon-es: 0.20.0
       esbuild: 0.17.12
       html2canvas: 1.4.1
+      immer: 9.0.21
       react: 18.2.0
       react-dom: 18.2.0
       react-merge-refs: ~2.0.1
@@ -1079,6 +1080,7 @@ importers:
       '@ricklove/utils-core': link:../../../../features/_utils/core
       cannon-es: 0.20.0
       html2canvas: 1.4.1
+      immer: 9.0.21
       react: 18.2.0
       react-dom: 18.2.0_react@18.2.0
       react-merge-refs: 2.0.1
@@ -10418,6 +10420,10 @@ packages:
   /immediate/3.3.0:
     resolution: {integrity: sha512-HR7EVodfFUdQCTIeySw+WDRFJlPcLOJbXfwwZ7Oom6tjsvZ3bOkCDJHehQC3nxJrv7+f9XecwazynjU8e4Vw3Q==}
     dev: true
+
+  /immer/9.0.21:
+    resolution: {integrity: sha512-bc4NBHqOqSfRW7POMkHd51LvClaeMXpm8dx0e8oE2GORbq5aRK7Bxl4FyzVLdGtLmvLKL7BTDBG5ACQm4HWjTA==}
+    dev: false
 
   /immutable/4.2.4:
     resolution: {integrity: sha512-WDxL3Hheb1JkRN3sQkyujNlL/xRjAo3rJtaU5xeufUauG66JdMr32bLj4gF+vWl84DIA3Zxw7tiAjneYzRRw+w==}

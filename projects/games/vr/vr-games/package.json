@@ -24,6 +24,7 @@
     "@react-three/rapier": "0.14.0",
     "@react-three/xr": "5.2.0",
     "@dimforge/rapier3d-compat": "0.11.2",
+    "immer": "9.0.21",
     "react": "18.2.0",
     "react-dom": "18.2.0",
     "three-stdlib": "2.21.1",
