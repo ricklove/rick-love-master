@@ -1,10 +1,10 @@
 import { createComponentFactory } from '../ecs-component-factory';
 
-export type Entity_Box = {
-  box: { scale: [number, number, number] };
+export type Entity_ShapeBox = {
+  shape: { kind: `box`; scale: [number, number, number] };
 };
 
-export const boxComponentFactory = createComponentFactory<{}, Entity_Box>()(`box`, () => {
+export const shapeBoxComponentFactory = createComponentFactory<{}, Entity_ShapeBox>()(`shape_box`, () => {
   return {
     addComponent: (
       entity,
@@ -16,7 +16,8 @@ export const boxComponentFactory = createComponentFactory<{}, Entity_Box>()(`box
     ) => {
       return {
         ...entity,
-        box: {
+        shape: {
+          kind: `box`,
           scale,
         },
       };

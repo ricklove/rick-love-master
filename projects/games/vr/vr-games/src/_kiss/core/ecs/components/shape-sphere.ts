@@ -1,10 +1,10 @@
 import { createComponentFactory } from '../ecs-component-factory';
 
-export type Entity_Sphere = {
-  sphere: { radius: number };
+export type Entity_ShapeSphere = {
+  shape: { kind: `sphere`; radius: number };
 };
 
-export const sphereComponentFactory = createComponentFactory<{}, Entity_Sphere>()(`sphere`, () => {
+export const shapeSphereComponentFactory = createComponentFactory<{}, Entity_ShapeSphere>()(`shape_sphere`, () => {
   return {
     addComponent: (
       entity,
@@ -16,7 +16,8 @@ export const sphereComponentFactory = createComponentFactory<{}, Entity_Sphere>(
     ) => {
       return {
         ...entity,
-        sphere: {
+        shape: {
+          kind: `sphere`,
           radius,
         },
       };
