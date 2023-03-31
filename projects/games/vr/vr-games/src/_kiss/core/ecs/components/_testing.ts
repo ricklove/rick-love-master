@@ -8,25 +8,10 @@ const global = {
 };
 
 const componentFactories = createComponentFactories(global);
-
-// const childA = {
-//   stuff: true,
-//   sphere: { radius: 1 },
-// };
-// const root = {};
-// const childB = componentFactories.sphereColliderComponentFactory.addComponent(childA, {});
-
-// const parentA = {
-//   transform: {
-//     position: [0, 0, 0] as [number, number, number],
-//     quaternion: [0, 0, 0, 1] as [number, number, number, number],
-//   },
-// };
-// const parentB = componentFactories.rigidBodyComponentFactory.addComponent(parentA, { kind: `dynamic` });
-// const parentC = componentFactories.rigidBodyComponentFactory.setup(parentB, root);
-// componentFactories.sphereColliderComponentFactory.setup(childB, parentC);
-
 const ecs = createEntityFactory(componentFactories);
+
+// What about behavior?
+
 const e1 = ecs.entity(`test`).build();
 const e2 = ecs
   .entity(`test`)

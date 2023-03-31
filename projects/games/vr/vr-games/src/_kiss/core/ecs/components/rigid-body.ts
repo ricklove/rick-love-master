@@ -10,15 +10,14 @@ export type Entity_RigidBody = {
   };
 };
 
-export type EntityInstance_RigidBody = Entity_Transform &
-  Entity_RigidBody & {
-    rigidBody: {
-      rigidBody: RigidBody;
-    };
+export type EntityInstance_RigidBody = {
+  rigidBody: {
+    rigidBody: RigidBody;
   };
+};
 
 export const rigidBodyComponentFactory = ({ world }: { world: World }) =>
-  createComponentFactory<Entity_Transform, Entity_RigidBody, {}, EntityInstance_RigidBody>()(`rigidBody`, () => {
+  createComponentFactory<Entity_Transform, Entity_RigidBody, EntityInstance_RigidBody>()(`rigidBody`, () => {
     const q = new Quaternion();
     return {
       addComponent: (entity, args: Entity_RigidBody[`rigidBody`]) => {
@@ -29,7 +28,8 @@ export const rigidBodyComponentFactory = ({ world }: { world: World }) =>
           },
         };
       },
-      setup: (entity) => {
+      setup: (entityInstance) => {
+        const entity = entityInstance.desc;
         const kind = entity.rigidBody.kind ?? `dynamic`;
         const position = entity.transform.position;
         const quaternion = entity.transform.quaternion;
@@ -51,14 +51,14 @@ export const rigidBodyComponentFactory = ({ world }: { world: World }) =>
         }
 
         return {
-          ...entity,
+          ...entityInstance,
           rigidBody: {
-            ...entity.rigidBody,
             rigidBody: world.createRigidBody(rigidBodyDesc),
           },
         };
       },
-      activate: (entity) => {
+      activate: (entityInstance) => {
+        const entity = entityInstance.desc;
         const kind =
           entity.rigidBody.kind === `fixed`
             ? RigidBodyType.Fixed
@@ -67,11 +67,11 @@ export const rigidBodyComponentFactory = ({ world }: { world: World }) =>
             : entity.rigidBody.kind === `kinematicVelocityBased`
             ? RigidBodyType.KinematicVelocityBased
             : RigidBodyType.Dynamic;
-        entity.rigidBody.rigidBody.setBodyType(kind, true);
+        entityInstance.rigidBody.rigidBody.setBodyType(kind, true);
       },
-      deactivate: (entity) => {
-        entity.rigidBody.rigidBody.setBodyType(RigidBodyType.Fixed, true);
-        entity.rigidBody.rigidBody.sleep();
+      deactivate: (entityInstance) => {
+        entityInstance.rigidBody.rigidBody.setBodyType(RigidBodyType.Fixed, true);
+        entityInstance.rigidBody.rigidBody.sleep();
       },
       //   update: (entity) => {
       //     // entity.rigidBody.rigidBody.setTranslation(entity.transform.position);
