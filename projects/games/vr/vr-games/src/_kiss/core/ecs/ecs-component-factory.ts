@@ -16,7 +16,10 @@ export type EcsComponentFactory<
     entity: TEntityInstanceInActual,
     parent: TEntityInstanceParent,
   ) => TEntityInstanceInActual & TEntityInstanceIn & TEntityInstanceOnly & { desc: TEntityIn & TEntityOut };
-  update?: (entity: TEntityInstanceIn & TEntityInstanceOnly & { desc: TEntityIn & TEntityOut }) => void;
+  update?: (
+    entity: TEntityInstanceIn & TEntityInstanceOnly & { desc: TEntityIn & TEntityOut },
+    parent: TEntityInstanceParent,
+  ) => void;
   activate?: (entity: TEntityInstanceIn & TEntityInstanceOnly & { desc: TEntityIn & TEntityOut }) => void;
   deactivate?: (entity: TEntityInstanceIn & TEntityInstanceOnly & { desc: TEntityIn & TEntityOut }) => void;
 };

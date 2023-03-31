@@ -2,9 +2,22 @@ import { World } from '@dimforge/rapier3d-compat';
 import { Vector3 } from 'three';
 import { createEntityFactory } from '../ecs-entity-factory';
 import { createComponentFactories } from './_components';
+import { GraphicsService } from './graphics';
 
+const graphicsService: GraphicsService = {
+  addObject: (args) => {
+    return { id: `0` };
+  },
+  setVisible: () => {
+    // empty
+  },
+  setTransform: () => {
+    // empty
+  },
+};
 const global = {
   world: new World(new Vector3(0, -9.81, 0)),
+  graphicsService,
 };
 
 const componentFactories = createComponentFactories(global);
@@ -24,6 +37,7 @@ const e3 = ecs
   .rigidBody({ kind: `dynamic` })
   .shape_sphere({ radius: 1 })
   .collider({ restitution: 0.8, friction: 0.1 })
+  .graphics({ color: 0xff0000 })
   .build();
 
 const e4 = ecs
@@ -36,6 +50,7 @@ const e4 = ecs
       .transform({ position: [0, 0, 0], quaternion: [0, 0, 0, 1] })
       .shape_box({ scale: [1, 1, 1] })
       .collider({ restitution: 0.8, friction: 0.1 })
+      .graphics({ color: 0x00ff00 })
       .build(),
   )
   .addChild(
@@ -44,6 +59,7 @@ const e4 = ecs
       .transform({ position: [0, 0, 0], quaternion: [0, 0, 0, 1] })
       .shape_sphere({ radius: 1 })
       .collider({ restitution: 0.8, friction: 0.1 })
+      .graphics({ color: 0x0000ff })
       .build(),
   )
   .addChild(
@@ -52,6 +68,7 @@ const e4 = ecs
       .transform({ position: [0, 0, 0], quaternion: [0, 0, 0, 1] })
       .shape_sphere({ radius: 1 })
       .collider({ restitution: 0.8, friction: 0.1 })
+      .graphics({ color: 0xff0000 })
       .build(),
   )
   .addChild(
@@ -60,6 +77,7 @@ const e4 = ecs
       .transform({ position: [0, 0, 0], quaternion: [0, 0, 0, 1] })
       .shape_sphere({ radius: 1 })
       .collider({ restitution: 0.8, friction: 0.1 })
+      .graphics({ color: 0x0000ff })
       .build(),
   )
   .addChild(
@@ -68,6 +86,7 @@ const e4 = ecs
       .transform({ position: [0, 0, 0], quaternion: [0, 0, 0, 1] })
       .shape_sphere({ radius: 1 })
       .collider({ restitution: 0.8, friction: 0.1 })
+      .graphics({ color: 0xff0000 })
       .build(),
   )
   .build();

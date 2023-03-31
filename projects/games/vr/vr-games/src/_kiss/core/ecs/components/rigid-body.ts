@@ -75,17 +75,17 @@ export const rigidBodyComponentFactory = ({ world }: { world: World }) =>
           entityInstance.rigidBody.rigidBody.setBodyType(RigidBodyType.Fixed, true);
           entityInstance.rigidBody.rigidBody.sleep();
         },
-        update: (entity) => {
-          const translation = entity.rigidBody.rigidBody.translation();
-          entity.transform.position[0] = translation.x;
-          entity.transform.position[1] = translation.y;
-          entity.transform.position[2] = translation.z;
+        update: (entityInstance) => {
+          const translation = entityInstance.rigidBody.rigidBody.translation();
+          entityInstance.transform.position[0] = translation.x;
+          entityInstance.transform.position[1] = translation.y;
+          entityInstance.transform.position[2] = translation.z;
 
-          const rotation = entity.rigidBody.rigidBody.rotation();
-          entity.transform.quaternion[0] = rotation.x;
-          entity.transform.quaternion[1] = rotation.y;
-          entity.transform.quaternion[2] = rotation.z;
-          entity.transform.quaternion[3] = rotation.w;
+          const rotation = entityInstance.rigidBody.rigidBody.rotation();
+          entityInstance.transform.quaternion[0] = rotation.x;
+          entityInstance.transform.quaternion[1] = rotation.y;
+          entityInstance.transform.quaternion[2] = rotation.z;
+          entityInstance.transform.quaternion[3] = rotation.w;
         },
       };
     },
