@@ -16,7 +16,7 @@ export type EntityInstance_RigidBody = {
   };
 };
 
-export const rigidBodyComponentFactory = ({ world }: { world: World }) =>
+export const rigidBodyComponentFactory = ({ physicsWorld }: { physicsWorld: World }) =>
   createComponentFactory<Entity_Transform, Entity_RigidBody, EntityInstance_Transform, EntityInstance_RigidBody>()(
     () => {
       const q = new Quaternion();
@@ -55,7 +55,7 @@ export const rigidBodyComponentFactory = ({ world }: { world: World }) =>
           return {
             ...entityInstance,
             rigidBody: {
-              rigidBody: world.createRigidBody(rigidBodyDesc),
+              rigidBody: physicsWorld.createRigidBody(rigidBodyDesc),
             },
           };
         },

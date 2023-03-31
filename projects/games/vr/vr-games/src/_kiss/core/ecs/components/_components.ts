@@ -6,7 +6,7 @@ import { shapeBoxComponentFactory } from './shape-box';
 import { shapeSphereComponentFactory } from './shape-sphere';
 import { transformComponentFactory } from './transform';
 
-export const createComponentFactories = (global: { world: World; graphicsService: GraphicsService }) => ({
+export const createComponentFactories = (global: { physicsWorld: World; graphicsService: GraphicsService }) => ({
   transformComponentFactory,
   graphicsComponentFactory: graphicsComponentFactory(global),
   rigidBodyComponentFactory: rigidBodyComponentFactory(global),

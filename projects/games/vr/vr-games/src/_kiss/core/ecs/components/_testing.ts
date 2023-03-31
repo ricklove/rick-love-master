@@ -16,7 +16,7 @@ const graphicsService: GraphicsService = {
   },
 };
 const global = {
-  world: new World(new Vector3(0, -9.81, 0)),
+  physicsWorld: new World(new Vector3(0, -9.81, 0)),
   graphicsService,
 };
 

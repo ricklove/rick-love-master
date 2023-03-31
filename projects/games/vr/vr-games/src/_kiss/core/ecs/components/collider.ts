@@ -23,7 +23,7 @@ export type EntityInstance_Collider = {
 
 export type Entity_Shape = Entity_ShapeBox | Entity_ShapeSphere;
 
-export const colliderComponentFactory = ({ world }: { world: World }) =>
+export const colliderComponentFactory = ({ physicsWorld }: { physicsWorld: World }) =>
   createComponentFactory<
     Entity_Transform & Entity_Shape,
     Entity_Collider,
@@ -82,7 +82,7 @@ export const colliderComponentFactory = ({ world }: { world: World }) =>
         if (entity.collider.sensor) {
           colliderDesc = colliderDesc.setSensor(true);
         }
-        const collider = world.createCollider(colliderDesc, parentInstance.rigidBody.rigidBody);
+        const collider = physicsWorld.createCollider(colliderDesc, parentInstance.rigidBody.rigidBody);
         return {
           ...entityInstance,
           collider: {
