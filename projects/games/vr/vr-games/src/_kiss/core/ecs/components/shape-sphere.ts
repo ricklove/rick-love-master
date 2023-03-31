@@ -4,8 +4,9 @@ export type Entity_ShapeSphere = {
   shape: { kind: `sphere`; radius: number };
 };
 
-export const shapeSphereComponentFactory = createComponentFactory<{}, Entity_ShapeSphere>()(`shape_sphere`, () => {
+export const shapeSphereComponentFactory = createComponentFactory<{}, Entity_ShapeSphere>()(() => {
   return {
+    name: `shape_sphere`,
     addComponent: (
       entity,
       {

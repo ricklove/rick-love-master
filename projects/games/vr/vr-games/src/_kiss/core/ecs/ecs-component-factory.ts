@@ -3,41 +3,51 @@ export type EcsComponentFactory<
   TEntityIn,
   TEntityOut,
   TComponentArgs,
-  TEntityInstance extends { desc: TEntityIn & TEntityOut } = { desc: TEntityIn & TEntityOut },
-  TEntityInstanceParent extends undefined | Record<string, unknown> = undefined,
+  TEntityInstanceIn extends Record<string, unknown>,
+  TEntityInstanceOnly extends Record<string, unknown>,
+  TEntityInstanceParent extends undefined | Record<string, unknown>,
 > = {
   name: TName;
   addComponent: <TEntityInActual extends TEntityIn>(
     entity: TEntityInActual,
     componentArgs: TComponentArgs,
   ) => TEntityInActual & TEntityOut;
-  setup: <TEntityInstanceIn extends { desc: TEntityIn & TEntityOut }>(
-    entity: TEntityInstanceIn,
+  setup: <TEntityInstanceInActual extends TEntityInstanceIn & { desc: TEntityIn & TEntityOut }>(
+    entity: TEntityInstanceInActual,
     parent: TEntityInstanceParent,
-  ) => TEntityInstanceIn & TEntityInstance;
-  update?: (entity: TEntityInstance) => void;
-  activate?: (entity: TEntityInstance) => void;
-  deactivate?: (entity: TEntityInstance) => void;
+  ) => TEntityInstanceInActual & TEntityInstanceIn & TEntityInstanceOnly & { desc: TEntityIn & TEntityOut };
+  update?: (entity: TEntityInstanceIn & TEntityInstanceOnly & { desc: TEntityIn & TEntityOut }) => void;
+  activate?: (entity: TEntityInstanceIn & TEntityInstanceOnly & { desc: TEntityIn & TEntityOut }) => void;
+  deactivate?: (entity: TEntityInstanceIn & TEntityInstanceOnly & { desc: TEntityIn & TEntityOut }) => void;
 };
 
 export const createComponentFactory = <
   TEntityIn extends Record<string, unknown>,
   TEntityOut extends Record<string, unknown>,
+  TEntityInstanceIn extends Record<string, unknown> = {},
   TEntityInstanceOnly extends Record<string, unknown> = {},
   TEntityInstanceParent extends undefined | Record<string, unknown> = undefined,
 >() => {
   type TEntityInstance = TEntityInstanceOnly & { desc: TEntityIn & TEntityOut };
   return <TName extends string, TComponentArgs>(
-    name: TName,
-    define: () => Omit<
-      EcsComponentFactory<TName, TEntityIn, TEntityOut, TComponentArgs, TEntityInstance, TEntityInstanceParent>,
-      `name`
+    define: () => EcsComponentFactory<
+      TName,
+      TEntityIn,
+      TEntityOut,
+      TComponentArgs,
+      TEntityInstanceIn,
+      TEntityInstance,
+      TEntityInstanceParent
     >,
-  ): EcsComponentFactory<TName, TEntityIn, TEntityOut, TComponentArgs, TEntityInstance, TEntityInstanceParent> => {
-    const d = define();
-    return {
-      name,
-      ...d,
-    };
+  ): EcsComponentFactory<
+    TName,
+    TEntityIn,
+    TEntityOut,
+    TComponentArgs,
+    TEntityInstanceIn,
+    TEntityInstance,
+    TEntityInstanceParent
+  > => {
+    return define();
   };
 };

@@ -14,12 +14,12 @@ const ecs = createEntityFactory(componentFactories);
 
 const e1 = ecs.entity(`test`).build();
 const e2 = ecs
-  .entity(`test`)
+  .entity(`test2`)
   .transform({ position: [0, 0, 0], quaternion: [0, 0, 0, 1] })
   .rigidBody({ kind: `dynamic` })
   .build();
 const e3 = ecs
-  .entity(`test`)
+  .entity(`test3`)
   .transform({ position: [0, 0, 0], quaternion: [0, 0, 0, 1] })
   .rigidBody({ kind: `dynamic` })
   .shape_sphere({ radius: 1 })
@@ -27,7 +27,7 @@ const e3 = ecs
   .build();
 
 const e4 = ecs
-  .entity(`test`)
+  .entity(`test4`)
   .transform({ position: [0, 0, 0], quaternion: [0, 0, 0, 1] })
   .rigidBody({ kind: `dynamic` })
   .addChild(

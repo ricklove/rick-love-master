@@ -4,8 +4,9 @@ export type Entity_ShapeBox = {
   shape: { kind: `box`; scale: [number, number, number] };
 };
 
-export const shapeBoxComponentFactory = createComponentFactory<{}, Entity_ShapeBox>()(`shape_box`, () => {
+export const shapeBoxComponentFactory = createComponentFactory<{}, Entity_ShapeBox>()(() => {
   return {
+    name: `shape_box`,
     addComponent: (
       entity,
       {
