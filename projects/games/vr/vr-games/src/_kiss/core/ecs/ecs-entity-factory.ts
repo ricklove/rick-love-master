@@ -17,13 +17,25 @@ type EntityFactoryComponentsOfComponentFactories<
   >;
 };
 
-type EmptyTupleIfUndefined<T> = T extends undefined ? [] : T;
-type AppendTuple<TTuple extends undefined | unknown[], TNext> = [...EmptyTupleIfUndefined<TTuple>, TNext];
-type AppendChild<TEntity, TNext> = TEntity extends { children: infer TChildren }
-  ? TChildren extends unknown[]
-    ? { children: AppendTuple<TChildren, TNext> }
-    : [TNext]
-  : [TNext];
+// type EmptyTupleIfUndefined<T> = T extends undefined ? [] : T;
+// type AppendTuple<TTuple extends undefined | unknown[], TNext> = [...EmptyTupleIfUndefined<TTuple>, TNext];
+// type AppendChild<TEntity, TNext> = TEntity extends { children: infer TChildren }
+//   ? TChildren extends unknown[]
+//     ? AppendTuple<TChildren, TNext>
+//     : [TNext]
+//   : [TNext];
+
+type AppendChildToEntityFactory<TEntityFactory, TEntityChild> = {
+  [K in keyof TEntityFactory]: K extends `_entity`
+    ? TEntityFactory[K] extends { children: unknown[] }
+      ? Simplify<Omit<TEntityFactory[K], `children`> & { children: [...TEntityFactory[K][`children`], TEntityChild] }>
+      : TEntityFactory[K] & { children: [TEntityChild] }
+    : TEntityFactory[K];
+};
+
+type Simplify<T> = {} & {
+  [K in keyof T]: T[K];
+};
 
 type EntityFactoryOfComponentFactories<
   TComponentFactories extends Record<string, { name: string; addComponent: unknown }>,
@@ -31,11 +43,7 @@ type EntityFactoryOfComponentFactories<
   addChild: <TEntityFactory extends { _entity: unknown }, TEntityChild>(
     this: TEntityFactory,
     child: TEntityChild,
-  ) => Omit<TEntityFactory, `_entity`> & {
-    _entity: Omit<TEntityFactory[`_entity`], `children`> & {
-      children: AppendChild<TEntityFactory[`_entity`], TEntityChild>;
-    };
-  };
+  ) => AppendChildToEntityFactory<TEntityFactory, TEntityChild>;
   build: <TEntityFactory extends { _entity: unknown }>(this: TEntityFactory) => TEntityFactory[`_entity`];
 };
 

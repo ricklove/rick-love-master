@@ -1,4 +1,5 @@
 import { RigidBody, RigidBodyDesc, RigidBodyType, World } from '@dimforge/rapier3d-compat';
+import { Quaternion } from 'three';
 import { createComponentFactory } from '../ecs-component-factory';
 import { Entity_Transform } from './transform';
 
@@ -18,6 +19,7 @@ export type EntityInstance_RigidBody = Entity_Transform &
 
 export const rigidBodyComponentFactory = ({ world }: { world: World }) =>
   createComponentFactory<Entity_Transform, Entity_RigidBody, {}, EntityInstance_RigidBody>()(`rigidBody`, () => {
+    const q = new Quaternion();
     return {
       addComponent: (entity, args: Entity_RigidBody[`rigidBody`]) => {
         return {
@@ -41,8 +43,8 @@ export const rigidBodyComponentFactory = ({ world }: { world: World }) =>
             ? RigidBodyDesc.kinematicVelocityBased()
             : RigidBodyDesc.dynamic()
         )
-          .setTranslation(position.x, position.y, position.z)
-          .setRotation(quaternion);
+          .setTranslation(...position)
+          .setRotation(q.set(...quaternion));
 
         if (entity.rigidBody.gravityScale != null) {
           rigidBodyDesc = rigidBodyDesc.setGravityScale(entity.rigidBody.gravityScale);

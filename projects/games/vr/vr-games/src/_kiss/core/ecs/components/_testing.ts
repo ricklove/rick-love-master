@@ -18,8 +18,8 @@ const childB = componentFactories.sphereColliderComponentFactory.addComponent(ch
 
 const parentA = {
   transform: {
-    position: { x: 0, y: 0, z: 0 },
-    quaternion: { x: 0, y: 0, z: 0, w: 1 },
+    position: [0, 0, 0] as [number, number, number],
+    quaternion: [0, 0, 0, 1] as [number, number, number, number],
   },
 };
 const parentB = componentFactories.rigidBodyComponentFactory.addComponent(parentA, { kind: `dynamic` });
@@ -30,12 +30,12 @@ const ecs = createEntityFactory(componentFactories);
 const e1 = ecs.entity(`test`).build();
 const e2 = ecs
   .entity(`test`)
-  .transform({ position: { x: 0, y: 0, z: 0 }, quaternion: { x: 0, y: 0, z: 0, w: 1 } })
+  .transform({ position: [0, 0, 0], quaternion: [0, 0, 0, 1] })
   .rigidBody({ kind: `dynamic` })
   .build();
 const e3 = ecs
   .entity(`test`)
-  .transform({ position: { x: 0, y: 0, z: 0 }, quaternion: { x: 0, y: 0, z: 0, w: 1 } })
+  .transform({ position: [0, 0, 0], quaternion: [0, 0, 0, 1] })
   .rigidBody({ kind: `dynamic` })
   .sphere({ radius: 1 })
   .sphereCollider({ restitution: 0.8, friction: 0.1 })
@@ -43,12 +43,20 @@ const e3 = ecs
 
 const e4 = ecs
   .entity(`test`)
-  .transform({ position: { x: 0, y: 0, z: 0 }, quaternion: { x: 0, y: 0, z: 0, w: 1 } })
+  .transform({ position: [0, 0, 0], quaternion: [0, 0, 0, 1] })
   .rigidBody({ kind: `dynamic` })
   .addChild(
     ecs
+      .entity(`body`)
+      .transform({ position: [0, 0, 0], quaternion: [0, 0, 0, 1] })
+      .box({ scale: [1, 1, 1] })
+      .boxCollider({ restitution: 0.8, friction: 0.1 })
+      .build(),
+  )
+  .addChild(
+    ecs
       .entity(`leg1`)
-      .transform({ position: { x: 0, y: 0, z: 0 }, quaternion: { x: 0, y: 0, z: 0, w: 1 } })
+      .transform({ position: [0, 0, 0], quaternion: [0, 0, 0, 1] })
       .sphere({ radius: 1 })
       .sphereCollider({ restitution: 0.8, friction: 0.1 })
       .build(),
@@ -56,7 +64,23 @@ const e4 = ecs
   .addChild(
     ecs
       .entity(`leg2`)
-      .transform({ position: { x: 0, y: 0, z: 0 }, quaternion: { x: 0, y: 0, z: 0, w: 1 } })
+      .transform({ position: [0, 0, 0], quaternion: [0, 0, 0, 1] })
+      .sphere({ radius: 1 })
+      .sphereCollider({ restitution: 0.8, friction: 0.1 })
+      .build(),
+  )
+  .addChild(
+    ecs
+      .entity(`leg3`)
+      .transform({ position: [0, 0, 0], quaternion: [0, 0, 0, 1] })
+      .sphere({ radius: 1 })
+      .sphereCollider({ restitution: 0.8, friction: 0.1 })
+      .build(),
+  )
+  .addChild(
+    ecs
+      .entity(`leg4`)
+      .transform({ position: [0, 0, 0], quaternion: [0, 0, 0, 1] })
       .sphere({ radius: 1 })
       .sphereCollider({ restitution: 0.8, friction: 0.1 })
       .build(),
