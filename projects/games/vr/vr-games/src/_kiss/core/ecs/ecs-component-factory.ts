@@ -29,19 +29,10 @@ export const createComponentFactory = <
   type TEntityInstance = TEntityInstanceOnly & { desc: TEntityIn & TEntityOut };
   return <TName extends string, TComponentArgs>(
     name: TName,
-    define: () => {
-      addComponent: <TEntityInActual extends TEntityIn>(
-        entity: TEntityInActual,
-        componentArgs: TComponentArgs,
-      ) => TEntityInActual & TEntityOut;
-      setup: <TEntityInstanceIn extends { desc: TEntityIn & TEntityOut }>(
-        entity: TEntityInstanceIn,
-        parent: TEntityInstanceParent,
-      ) => TEntityInstanceIn & TEntityInstance;
-      update?: (entity: TEntityInstance) => void;
-      activate?: (entity: TEntityInstance) => void;
-      deactivate?: (entity: TEntityInstance) => void;
-    },
+    define: () => Omit<
+      EcsComponentFactory<TName, TEntityIn, TEntityOut, TComponentArgs, TEntityInstance, TEntityInstanceParent>,
+      `name`
+    >,
   ): EcsComponentFactory<TName, TEntityIn, TEntityOut, TComponentArgs, TEntityInstance, TEntityInstanceParent> => {
     const d = define();
     return {
