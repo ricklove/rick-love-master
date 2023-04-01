@@ -22,6 +22,7 @@ export type EcsComponentFactory<
   ) => void;
   activate?: (entity: TEntityInstanceIn & TEntityInstanceOnly & { desc: TEntityIn & TEntityOut }) => void;
   deactivate?: (entity: TEntityInstanceIn & TEntityInstanceOnly & { desc: TEntityIn & TEntityOut }) => void;
+  destroy?: (entity: TEntityInstanceIn & TEntityInstanceOnly & { desc: TEntityIn & TEntityOut }) => void;
 };
 
 export const createComponentFactory = <

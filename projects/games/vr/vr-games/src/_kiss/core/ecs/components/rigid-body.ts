@@ -59,6 +59,9 @@ export const rigidBodyComponentFactory = ({ physicsWorld }: { physicsWorld: Worl
             },
           };
         },
+        destroy: (entityInstance) => {
+          physicsWorld.removeRigidBody(entityInstance.rigidBody.rigidBody);
+        },
         activate: (entityInstance) => {
           const entity = entityInstance.desc;
           const kind =

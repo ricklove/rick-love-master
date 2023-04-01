@@ -12,6 +12,7 @@ export type GraphicsService = {
     scale: [number, number, number];
     color: number;
   }) => { id: string };
+  removeObject: (id: string) => void;
   setVisible: (id: string, visible: boolean) => void;
   setTransform: (id: string, position: [number, number, number], quaternion: [number, number, number, number]) => void;
 };
@@ -27,6 +28,7 @@ export type EntityInstance_Graphics = {
   graphics: {
     id: string;
     visible: boolean;
+    _visibleActual: boolean;
   };
 };
 
@@ -66,16 +68,36 @@ export const graphicsComponentFactory = ({ graphicsService }: { graphicsService:
           graphics: {
             id: result.id,
             visible: entityInstance.desc.graphics.visible,
+            _visibleActual: false,
           },
         };
       },
+      destroy: (entityInstance) => {
+        graphicsService.removeObject(entityInstance.graphics.id);
+      },
       activate: (entityInstance) => {
+        if (!entityInstance.graphics.visible) {
+          return;
+        }
         graphicsService.setVisible(entityInstance.graphics.id, true);
+        entityInstance.graphics._visibleActual = true;
       },
       deactivate: (entityInstance) => {
+        if (!entityInstance.graphics._visibleActual) {
+          return;
+        }
         graphicsService.setVisible(entityInstance.graphics.id, false);
+        entityInstance.graphics._visibleActual = false;
       },
       update: (entityInstance) => {
+        if (entityInstance.graphics.visible !== entityInstance.graphics._visibleActual) {
+          graphicsService.setVisible(entityInstance.graphics.id, entityInstance.graphics.visible);
+          entityInstance.graphics._visibleActual = entityInstance.graphics.visible;
+          return;
+        }
+        if (!entityInstance.graphics._visibleActual) {
+          return;
+        }
         graphicsService.setTransform(
           entityInstance.graphics.id,
           entityInstance.transform.position,

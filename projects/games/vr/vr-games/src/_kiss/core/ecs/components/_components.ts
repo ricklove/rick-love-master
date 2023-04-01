@@ -8,9 +8,9 @@ import { transformComponentFactory } from './transform';
 
 export const createComponentFactories = (global: { physicsWorld: World; graphicsService: GraphicsService }) => ({
   transformComponentFactory,
-  graphicsComponentFactory: graphicsComponentFactory(global),
-  rigidBodyComponentFactory: rigidBodyComponentFactory(global),
   boxComponentFactory: shapeBoxComponentFactory,
   sphereComponentFactory: shapeSphereComponentFactory,
+  rigidBodyComponentFactory: rigidBodyComponentFactory(global),
   colliderComponentFactory: colliderComponentFactory(global),
+  graphicsComponentFactory: graphicsComponentFactory(global),
 });

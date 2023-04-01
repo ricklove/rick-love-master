@@ -56,6 +56,7 @@ export const createEntityFactory = <
   return null as unknown as {
     entity: <TEntityName extends string>(
       name: TEntityName,
-    ) => { _entity: { name: TEntityName } } & EntityFactoryOfComponentFactories<TComponentFactories>;
+      enabled?: boolean,
+    ) => { _entity: { name: TEntityName; enabled: boolean } } & EntityFactoryOfComponentFactories<TComponentFactories>;
   };
 };
