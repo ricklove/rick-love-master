@@ -9,12 +9,12 @@ type EcsComponentFactoryUntyped = EcsComponentFactory<
   EntityInstanceUntyped,
   EntityInstanceUntyped
 >;
-type EntityDescUntyped = {
+export type EntityDescUntyped = {
   enabled: boolean;
   children?: EntityDescUntyped[];
   [field: string]: unknown;
 };
-type EntityInstanceUntyped = {
+export type EntityInstanceUntyped = {
   enabled: boolean;
   _enabledActual: boolean;
   parent: EntityInstanceUntyped;
@@ -23,11 +23,11 @@ type EntityInstanceUntyped = {
   [field: string]: unknown;
 };
 
-export const createScene = (sceneRoot: EntityDescUntyped, componentFactories: Record<string, unknown>) => {
-  const factories = Object.values(componentFactories) as unknown as EcsComponentFactoryUntyped[];
+export const createSceneState = () => {
+  const factories = [] as EcsComponentFactoryUntyped[];
   const instances = [] as EntityInstanceUntyped[];
 
-  const createEntityInstance = (entity: EntityDescUntyped, parent: EntityInstanceUntyped): EntityInstanceUntyped => {
+  const createEntityInstance = (entity: EntityDescUntyped, parent: EntityInstanceUntyped) => {
     let instance: EntityInstanceUntyped = {
       enabled: entity.enabled,
       _enabledActual: false,
@@ -36,31 +36,72 @@ export const createScene = (sceneRoot: EntityDescUntyped, componentFactories: Re
       desc: entity,
     };
     for (const factory of factories) {
+      if (!entity[factory.name]) {
+        continue;
+      }
       instance = factory.setup(instance, parent);
     }
     instances.push(instance);
+    parent.children.push(instance);
 
     for (const child of entity.children ?? []) {
-      instance.children.push(createEntityInstance(child, instance));
+      createEntityInstance(child, instance);
     }
 
     return instance;
   };
 
-  const setup = () => {
-    createEntityInstance(sceneRoot, null as unknown as EntityInstanceUntyped);
+  const factoryDestroys = factories.filter((factory) => factory.destroy);
+  const destroyEntityInstance = (entity: EntityInstanceUntyped) => {
+    for (const child of entity.children) {
+      destroyEntityInstance(child);
+    }
+
+    for (const factory of factoryDestroys) {
+      if (!entity[factory.name]) {
+        continue;
+      }
+      factory.destroy!(entity);
+    }
   };
 
-  const factoryUpdates = factories.map((factory) => factory.update!).filter((x) => !!x);
-  const factoryActivates = factories.map((factory) => factory.activate!).filter((x) => !!x);
-  const factoryDeactivates = factories.map((factory) => factory.deactivate!).filter((x) => !!x);
-  const factoryDestroys = factories.map((factory) => factory.destroy!).filter((x) => !!x);
+  return {
+    factories,
+    instances,
+    createEntityInstance,
+    destroyEntityInstance,
+  };
+};
+
+export type EcsSceneState = ReturnType<typeof createSceneState>;
+
+export const createScene = (
+  sceneRoot: EntityDescUntyped,
+  componentFactories: Record<string, unknown>,
+  { sceneState }: { sceneState: EcsSceneState },
+) => {
+  const { factories, instances } = sceneState;
+  Object.values(componentFactories).forEach((factory) => {
+    factories.push(factory as EcsComponentFactoryUntyped);
+  });
+
+  const setup = () => {
+    sceneState.createEntityInstance(sceneRoot, {
+      enabled: true,
+      _enabledActual: true,
+      parent: null as unknown as EntityInstanceUntyped,
+      children: [],
+      desc: sceneRoot,
+    });
+  };
+
+  const factoryUpdates = factories.filter((factory) => factory.update!);
+  const factoryActivates = factories.filter((factory) => factory.activate!);
+  const factoryDeactivates = factories.filter((factory) => factory.deactivate!);
 
   const destroy = () => {
     for (const instance of instances) {
-      for (const destroy of factoryDestroys) {
-        destroy(instance);
-      }
+      sceneState.destroyEntityInstance(instance);
     }
   };
 
@@ -71,19 +112,29 @@ export const createScene = (sceneRoot: EntityDescUntyped, componentFactories: Re
       }
 
       if (instance.enabled) {
-        for (const activate of factoryActivates) {
-          activate(instance);
+        for (const factory of factoryActivates) {
+          if (!instance.desc[factory.name]) {
+            continue;
+          }
+          factory.activate!(instance);
         }
       } else {
-        for (const deactivate of factoryDeactivates) {
-          deactivate(instance);
+        for (const factory of factoryDeactivates) {
+          if (!instance.desc[factory.name]) {
+            continue;
+          }
+          factory.deactivate!(instance);
         }
       }
     }
 
-    for (const update of factoryUpdates) {
+    // TODO: Add factory entity registration
+    for (const factory of factoryUpdates) {
       for (const instance of instances) {
-        update(instance, instance.parent);
+        if (!instance.desc[factory.name]) {
+          continue;
+        }
+        factory.update!(instance, instance.parent);
       }
     }
   };

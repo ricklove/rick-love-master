@@ -1,5 +1,5 @@
 import { RigidBody, RigidBodyDesc, RigidBodyType, World } from '@dimforge/rapier3d-compat';
-import { Quaternion } from 'three';
+import { Quaternion, Vector3 } from 'three';
 import { createComponentFactory } from '../ecs-component-factory';
 import { Entity_Transform, EntityInstance_Transform } from './transform';
 
@@ -19,6 +19,7 @@ export type EntityInstance_RigidBody = {
 export const rigidBodyComponentFactory = ({ physicsWorld }: { physicsWorld: World }) =>
   createComponentFactory<Entity_Transform, Entity_RigidBody, EntityInstance_Transform, EntityInstance_RigidBody>()(
     () => {
+      const v = new Vector3();
       const q = new Quaternion();
       return {
         name: `rigidBody`,
@@ -64,6 +65,10 @@ export const rigidBodyComponentFactory = ({ physicsWorld }: { physicsWorld: Worl
         },
         activate: (entityInstance) => {
           const entity = entityInstance.desc;
+
+          entityInstance.rigidBody.rigidBody.setTranslation(v.set(...entity.transform.position), false);
+          entityInstance.rigidBody.rigidBody.setRotation(q.set(...entity.transform.quaternion), false);
+
           const kind =
             entity.rigidBody.kind === `fixed`
               ? RigidBodyType.Fixed
