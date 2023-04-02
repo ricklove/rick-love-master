@@ -2,6 +2,21 @@ import { createComponentFactory } from '../ecs-component-factory';
 import { EcsSceneState, EntityDescUntyped, EntityInstanceUntyped } from '../ecs-engine';
 import { Entity_Spawner, EntityInstance_Spawner } from './spawner';
 
+/** Game with waves
+ *
+ * This handles any type of game with waves:
+ *
+ * - Tower Defense
+ * - Beat Saber
+ * - Space Pirate Trainer
+ *
+ * However, any spawner can be used, and enemy speed can be calculated to arrive at the right time.
+ *
+ * - Beat Saber + Space Pirate Trainer:
+ *   - Spawn enemies with times so that they arrive to hit area on beat time
+ *
+ */
+
 export type Entity_GameWithWaves = {
   gameWithWaves: {
     enemySpawnerPrefabs: Record<string, EntityDescUntyped & Entity_Spawner>;
