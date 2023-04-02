@@ -11,12 +11,14 @@ type EcsComponentFactoryUntyped = EcsComponentFactory<
 >;
 export type EntityDescUntyped = {
   enabled: boolean;
+  components: string[];
   children?: EntityDescUntyped[];
   [field: string]: unknown;
 };
 export type EntityInstanceUntyped = {
   enabled: boolean;
   _enabledActual: boolean;
+  components: Set<string>;
   parent: EntityInstanceUntyped;
   children: EntityInstanceUntyped[];
   desc: EntityDescUntyped;
@@ -31,12 +33,13 @@ export const createSceneState = () => {
     let instance: EntityInstanceUntyped = {
       enabled: entity.enabled,
       _enabledActual: false,
+      components: new Set(entity.components),
       parent,
       children: [],
       desc: entity,
     };
     for (const factory of factories) {
-      if (!entity[factory.name]) {
+      if (!instance.components.has(factory.name)) {
         continue;
       }
       instance = factory.setup(instance, parent);
@@ -58,7 +61,7 @@ export const createSceneState = () => {
     }
 
     for (const factory of factoryDestroys) {
-      if (!entity[factory.name]) {
+      if (!entity.components.has(factory.name)) {
         continue;
       }
       factory.destroy!(entity);
@@ -89,6 +92,7 @@ export const createScene = (
     sceneState.createEntityInstance(sceneRoot, {
       enabled: true,
       _enabledActual: true,
+      components: new Set(),
       parent: null as unknown as EntityInstanceUntyped,
       children: [],
       desc: sceneRoot,
@@ -113,14 +117,14 @@ export const createScene = (
 
       if (instance.enabled) {
         for (const factory of factoryActivates) {
-          if (!instance.desc[factory.name]) {
+          if (!instance.components.has(factory.name)) {
             continue;
           }
           factory.activate!(instance);
         }
       } else {
         for (const factory of factoryDeactivates) {
-          if (!instance.desc[factory.name]) {
+          if (!instance.components.has(factory.name)) {
             continue;
           }
           factory.deactivate!(instance);
@@ -128,10 +132,10 @@ export const createScene = (
       }
     }
 
-    // TODO: Add factory entity registration
+    // TODO: Performance - Add factory entity registration
     for (const factory of factoryUpdates) {
       for (const instance of instances) {
-        if (!instance.desc[factory.name]) {
+        if (!instance.components.has(factory.name)) {
           continue;
         }
         factory.update!(instance, instance.parent);
