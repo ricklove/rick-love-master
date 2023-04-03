@@ -1,6 +1,6 @@
 import { createComponentFactory } from '../ecs-component-factory';
-import { EcsSceneState, EntityDescUntyped, EntityInstanceUntyped } from '../ecs-engine';
-import { Entity_Spawner, EntityInstance_Spawner } from './spawner';
+import { EcsSceneState } from '../ecs-engine';
+import { EntityInstance_Spawner } from './spawner';
 
 /** Game with waves
  *
@@ -16,10 +16,10 @@ import { Entity_Spawner, EntityInstance_Spawner } from './spawner';
  *   - Spawn enemies with times so that they arrive to hit area on beat time
  *
  */
+// generateWaveSequenceFromBeatTimesAndEnemySpeeds
 
 export type Entity_GameWithWaves = {
   gameWithWaves: {
-    enemySpawnerPrefabs: Record<string, EntityDescUntyped & Entity_Spawner>;
     waves: GameWave[];
   };
 };
@@ -30,7 +30,7 @@ type GameWave = {
 };
 type GameWaveSequence = {
   timeBeforeSequenceSec: number;
-  enemyKey: string;
+  spawnerName: string;
   count: number;
   position: [number, number, number];
 };
@@ -69,14 +69,11 @@ export const gameWithWavesComponentFactory = ({ sceneState }: { sceneState: EcsS
       setup: (entityInstance) => {
         const entity = entityInstance.desc;
 
+        const allSpawnerNames = entity.gameWithWaves.waves.flatMap((x) => x.sequence.map((y) => y.spawnerName));
+        const spawnerNames = [...new Set(allSpawnerNames)];
+
         const spawners = Object.fromEntries(
-          Object.entries(entity.gameWithWaves.enemySpawnerPrefabs).map(([key, x]) => [
-            key,
-            sceneState.createEntityInstance(
-              x,
-              entityInstance as unknown as EntityInstanceUntyped,
-            ) as unknown as EntityInstance_Spawner,
-          ]),
+          spawnerNames.map((x) => [x, sceneState.findEntityInstance(x) as unknown as EntityInstance_Spawner]),
         );
 
         const gameWithWaves: EntityInstance_GameWithWaves[`gameWithWaves`] = {
@@ -167,7 +164,7 @@ export const gameWithWavesComponentFactory = ({ sceneState }: { sceneState: EcsS
         }
 
         // spawn
-        const spawner = game.spawners[sequence.enemyKey];
+        const spawner = game.spawners[sequence.spawnerName];
         spawner.spawner.spawn(sequence.position);
         game.sequenceSentCount++;
         game.timeNextSpawn = undefined;

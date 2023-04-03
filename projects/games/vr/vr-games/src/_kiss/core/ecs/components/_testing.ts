@@ -110,6 +110,19 @@ const root = ecs
       })
       .build(),
   )
+  .addChild(
+    ecs
+      .entity(`game`)
+      .gameWithWaves({
+        waves: [
+          {
+            timeBeforeWaveSec: 3000,
+            sequence: [{ timeBeforeSequenceSec: 0, count: 1, spawnerName: `alienEggSpawner`, position: [0, 0, 0] }],
+          },
+        ],
+      })
+      .build(),
+  )
   .build();
 
 const scene = createScene(root, componentFactories, global);

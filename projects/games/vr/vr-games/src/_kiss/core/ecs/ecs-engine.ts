@@ -68,11 +68,22 @@ export const createSceneState = () => {
     }
   };
 
+  /** Find last entity with matching name */
+  const findEntityInstance = (name: string) => {
+    for (let i = instances.length - 1; i >= 0; i--) {
+      if (instances[i].desc.name === name) {
+        return instances[i];
+      }
+    }
+    return undefined;
+  };
+
   return {
     factories,
     instances,
     createEntityInstance,
     destroyEntityInstance,
+    findEntityInstance,
   };
 };
 
