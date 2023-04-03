@@ -52,7 +52,7 @@ export const createEntityFactory = <
 >(
   componentFactories: TComponentFactories,
 ) => {
-  // TODO: Implement
+  // TODO: Implement entity factory
   return null as unknown as {
     entity: <TEntityName extends string>(
       name: TEntityName,

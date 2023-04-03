@@ -1,21 +1,8 @@
 import { createComponentFactory } from '../ecs-component-factory';
+import { GraphicsService } from '../graphics-service';
 import { Entity_ShapeBox } from './shape-box';
 import { Entity_ShapeSphere } from './shape-sphere';
 import { Entity_Transform, EntityInstance_Transform } from './transform';
-
-export type GraphicsService = {
-  addObject: (args: {
-    shape: 'box' | 'sphere';
-    visible: boolean;
-    position: [number, number, number];
-    quaternion: [number, number, number, number];
-    scale: [number, number, number];
-    color: number;
-  }) => { id: string };
-  removeObject: (id: string) => void;
-  setVisible: (id: string, visible: boolean) => void;
-  setTransform: (id: string, position: [number, number, number], quaternion: [number, number, number, number]) => void;
-};
 
 export type Entity_Graphics = {
   graphics: {

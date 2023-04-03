@@ -1,8 +1,9 @@
 import { World } from '@dimforge/rapier3d-compat';
 import { EcsSceneState } from '../ecs-engine';
+import { GraphicsService } from '../graphics-service';
 import { colliderComponentFactory } from './collider';
 import { gameWithWavesComponentFactory } from './game-with-waves';
-import { graphicsComponentFactory, GraphicsService } from './graphics';
+import { graphicsComponentFactory } from './graphics';
 import { rigidBodyComponentFactory } from './rigid-body';
 import { shapeBoxComponentFactory } from './shape-box';
 import { shapeSphereComponentFactory } from './shape-sphere';
