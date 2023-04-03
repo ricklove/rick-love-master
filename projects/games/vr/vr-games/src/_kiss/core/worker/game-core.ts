@@ -23,5 +23,5 @@
 //   };
 // };
 
-export { createGameCore } from './prototype/game-core';
-// export { createGameCore } from '../ecs/game-core';
+// export { createGameCore } from './prototype/game-core';
+export { createGameCore } from '../ecs/game-core';

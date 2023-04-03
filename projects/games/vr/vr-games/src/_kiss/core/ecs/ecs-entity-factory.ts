@@ -70,8 +70,8 @@ export const createEntityFactory = <
 
       const entityFactoryWithComponents = entityFactory as Record<string, unknown>;
 
-      Object.entries(componentFactories).forEach(([componentNameRaw, componentFactory]) => {
-        const componentName = componentNameRaw as keyof typeof entityFactoryWithComponents;
+      Object.entries(componentFactories).forEach(([componentKey, componentFactory]) => {
+        const componentName = componentFactory.name as keyof typeof entityFactoryWithComponents;
         entityFactoryWithComponents[componentName] = (args: unknown) => {
           const addComponent = componentFactory.addComponent as (e: typeof entity, args: unknown) => typeof entity;
           entity = addComponent(entity, args);
@@ -80,6 +80,7 @@ export const createEntityFactory = <
         };
       });
 
+      // console.log(`entityFactory`, { entityFactory });
       return entityFactory;
     },
   };
