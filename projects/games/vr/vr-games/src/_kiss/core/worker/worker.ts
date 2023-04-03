@@ -1,11 +1,10 @@
-import { createGame_PunchDefense } from '../../game/punch-defense';
 import { postMessageFromWorker } from '../messages/message';
 import { createMessageBufferPool } from '../messages/message-buffer';
 import { MessageBufferKind, WorkerMessageFromWorker, WorkerMessageToWorker } from '../messages/message-type';
 import { readMessageUserInputTransforms } from '../messages/messages/message-user-input';
-import { GameEngine, GameWorkerEngine } from './types';
+import { createGameCore } from './game-core';
+import { GameCore } from './types';
 import { wogger } from './wogger';
-import { createWorkerEngine } from './worker-engine';
 
 wogger.log(`I am loaded!`, {});
 
@@ -13,8 +12,7 @@ const state = {
   ready: false,
   timeToMainTime: 0,
   messageBufferPool: createMessageBufferPool(self),
-  gameWorkerEngine: undefined as undefined | GameWorkerEngine,
-  gameEngine: undefined as undefined | GameEngine,
+  gameCore: undefined as undefined | GameCore,
 };
 
 self.onmessage = (e: { data: unknown }) => {
@@ -27,11 +25,11 @@ self.onmessage = (e: { data: unknown }) => {
       return;
     }
     if (kind === MessageBufferKind.userInputTransforms) {
-      if (!state.gameWorkerEngine) {
+      if (!state.gameCore) {
         state.messageBufferPool.returnBuffer(data);
         return;
       }
-      readMessageUserInputTransforms(data, state.gameWorkerEngine.inputs);
+      readMessageUserInputTransforms(data, state.gameCore.inputs);
       state.messageBufferPool.returnBuffer(data);
       return;
     }
@@ -48,28 +46,24 @@ self.onmessage = (e: { data: unknown }) => {
 
     const bufferPool = state.messageBufferPool;
     (async () => {
-      state.gameWorkerEngine = await createWorkerEngine(bufferPool);
-      // state.gameEngine = createGame_RoomOfBlocks({ engine: state.gameWorkerEngine });
-      state.gameEngine = createGame_PunchDefense({ engine: state.gameWorkerEngine });
-      state.gameWorkerEngine.start(state.gameEngine);
+      state.gameCore = await createGameCore(bufferPool);
+      state.gameCore.start();
       wogger.log(`I am setup!`);
     })();
     return;
   }
   if (data.kind === `dispose`) {
     state.ready = false;
-    state.gameWorkerEngine?.dispose();
-    state.gameWorkerEngine = undefined;
-    state.gameEngine = undefined;
+    state.gameCore?.dispose();
+    state.gameCore = undefined;
     wogger.log(`I am in-disposed`);
     return;
   }
   if (data.kind === `frameSync`) {
-    if (!state.gameWorkerEngine) {
+    if (!state.gameCore) {
       return;
     }
-    state.gameWorkerEngine.updateMessageRequested = true;
-    // wogger.log(`Update requested from [Main]`);
+    state.gameCore.requestUpdateMessage();
     return;
   }
   if (data.kind === `ping`) {

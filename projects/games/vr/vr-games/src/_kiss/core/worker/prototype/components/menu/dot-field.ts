@@ -1,5 +1,5 @@
 import { Vector3 } from 'three';
-import { GameWorkerEngine } from '../../core/worker/types';
+import { GameWorkerEngine } from '../../types';
 
 export const createDotField = ({ createEntity }: GameWorkerEngine) => {
   const createDot = (position: Vector3, color: number) => {

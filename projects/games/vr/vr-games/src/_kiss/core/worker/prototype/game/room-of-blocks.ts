@@ -1,5 +1,5 @@
 import { Quaternion, Vector3 } from 'three';
-import { GameEngine, GameWorkerEngine } from '../core/worker/types';
+import { GameEngine, GameWorkerEngine } from '../types';
 
 export const createGame_RoomOfBlocks = ({ engine: { createEntity } }: { engine: GameWorkerEngine }): GameEngine => {
   const roomSize = 5;

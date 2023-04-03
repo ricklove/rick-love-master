@@ -1,7 +1,7 @@
 import { RigidBodyType } from '@dimforge/rapier3d-compat';
 import { Euler, Vector3 } from 'three';
-import { GameEngine, GameWorkerEngine } from '../core/worker/types';
-import { wogger } from '../core/worker/wogger';
+import { wogger } from '../../wogger';
+import { GameEngine, GameWorkerEngine } from '../types';
 
 export const createGame_PunchDefense = ({
   engine: { createEntity, setGravity },

@@ -1,9 +1,10 @@
 import RAPIER, { ColliderDesc, EventQueue, RigidBodyDesc, World } from '@dimforge/rapier3d-compat';
 import { Quaternion, Vector3 } from 'three';
-import { handJointNames } from '../input/hand-joints';
-import { postMessageFromWorker } from '../messages/message';
-import { MessageBufferPool } from '../messages/message-buffer';
-import { postMessageSceneObjectTransforms } from '../messages/messages/message-scene-object-transforms';
+import { handJointNames } from '../../input/hand-joints';
+import { postMessageFromWorker } from '../../messages/message';
+import { MessageBufferPool } from '../../messages/message-buffer';
+import { postMessageSceneObjectTransforms } from '../../messages/messages/message-scene-object-transforms';
+import { wogger } from '../wogger';
 import {
   BooleanDefaultTrueOfOptionalField,
   GameEngine,
@@ -11,7 +12,6 @@ import {
   GameWorkerEngine,
   PhysicsFieldsObj,
 } from './types';
-import { wogger } from './wogger';
 
 export const createWorkerEngine = async (
   messageBufferPool: MessageBufferPool,
