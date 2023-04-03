@@ -29,8 +29,9 @@ export const createGameEngine = (host: HTMLDivElement, workerRaw: Worker) => {
     const boxGeometry = new THREE.BoxGeometry(1, 1, 1);
     const sphereGeometry = new THREE.SphereGeometry(1);
 
-    const objectMap = [] as Object3D[];
+    const objectMap = [] as (undefined | Object3D)[];
     let addObjectsData = undefined as undefined | Extract<WorkerMessageFromWorker, { kind: `addObjects` }>;
+    let removeObjectsData = undefined as undefined | Extract<WorkerMessageFromWorker, { kind: `removeObjects` }>;
     let updateObjectsData = undefined as undefined | Extract<WorkerMessageFromWorker, { kind: `updateObjects` }>;
     let updateObjectsArrayBuffer = undefined as undefined | ArrayBuffer;
 
@@ -66,6 +67,16 @@ export const createGameEngine = (host: HTMLDivElement, workerRaw: Worker) => {
         });
 
         logger.log(`updateSceneFromData:addObjects Added objects to scene`, { data, objectMap });
+      }
+      if (removeObjectsData) {
+        removeObjectsData.objectIds.forEach((id) => {
+          const object = objectMap[id];
+          if (!object) {
+            return;
+          }
+          scene.remove(object);
+          objectMap[id] = undefined;
+        });
       }
       if (updateObjectsData) {
         const data = updateObjectsData;
@@ -131,6 +142,11 @@ export const createGameEngine = (host: HTMLDivElement, workerRaw: Worker) => {
       if (data.kind === `addObjects`) {
         // logger.log(`addObjects from [Worker]`, { e });
         addObjectsData = data;
+        return;
+      }
+      if (data.kind === `removeObjects`) {
+        // logger.log(`addObjects from [Worker]`, { e });
+        removeObjectsData = data;
         return;
       }
       if (data.kind === `updateObjects`) {

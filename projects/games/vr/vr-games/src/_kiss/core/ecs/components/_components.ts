@@ -1,5 +1,6 @@
 import { World } from '@dimforge/rapier3d-compat';
 import { EcsSceneState } from '../ecs-engine';
+import { GamePlayerInputs } from '../game-player-inputs';
 import { GraphicsService } from '../graphics-service';
 import { colliderComponentFactory } from './collider';
 import { gameWithWavesComponentFactory } from './game-with-waves';
@@ -14,6 +15,7 @@ export const createComponentFactories = (global: {
   physicsWorld: World;
   graphicsService: GraphicsService;
   sceneState: EcsSceneState;
+  inputs: GamePlayerInputs;
 }) => ({
   transformComponentFactory,
   boxComponentFactory: shapeBoxComponentFactory,

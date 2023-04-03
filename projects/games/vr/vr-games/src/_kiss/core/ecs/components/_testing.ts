@@ -2,12 +2,13 @@ import { World } from '@dimforge/rapier3d-compat';
 import { Vector3 } from 'three';
 import { createScene, createSceneState } from '../ecs-engine';
 import { createEntityFactory } from '../ecs-entity-factory';
+import { createGamePlayerInputs } from '../game-player-inputs';
 import { GraphicsService } from '../graphics-service';
 import { createComponentFactories } from './_components';
 
 const createGraphicsService = (): GraphicsService => ({
   addObject: (args) => {
-    return { id: `0` };
+    return { id: 0 };
   },
   removeObject: () => {
     // empty
@@ -24,6 +25,7 @@ const global = {
   physicsWorld: new World(new Vector3(0, -9.81, 0)),
   graphicsService: createGraphicsService(),
   sceneState: createSceneState(),
+  inputs: createGamePlayerInputs(),
 };
 
 const componentFactories = createComponentFactories(global);

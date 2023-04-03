@@ -23,6 +23,7 @@ export const postMessageSceneObjectTransforms = (
   }[],
   bufferPool: MessageBufferPool,
 ) => {
+  // TODO: don't create new arrays
   const invisibleObjs = objects.filter((obj) => !obj.visible);
   const visibleObjs = objects.filter((obj) => obj.visible);
 
@@ -56,7 +57,7 @@ export const postMessageSceneObjectTransforms = (
   bufferPool.postMessage(buffer);
 };
 
-export const readMessageSceneObjectTransforms = (buffer: ArrayBuffer, objectMap: Object3D[]) => {
+export const readMessageSceneObjectTransforms = (buffer: ArrayBuffer, objectMap: (undefined | Object3D)[]) => {
   const f32Buffer = new Float32Array(buffer);
   const i32Buffer = new Int32Array(buffer);
 

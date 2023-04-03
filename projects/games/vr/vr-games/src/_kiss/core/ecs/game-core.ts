@@ -1,33 +1,19 @@
 import { World } from '@dimforge/rapier3d-compat';
-import { Quaternion, Vector3 } from 'three';
+import { Vector3 } from 'three';
 import { MessageBufferPool } from '../messages/message-buffer';
 import { GameCore } from '../worker/types';
 import { createComponentFactories } from './components/_components';
 import { createScene, createSceneState } from './ecs-engine';
 import { createEntityFactory } from './ecs-entity-factory';
-import { GraphicsService } from './graphics-service';
+import { createGamePlayerInputs } from './game-player-inputs';
+import { createGraphicsService } from './graphics-service';
 
 export const createGameCore = async (messageBuffer: MessageBufferPool): Promise<GameCore> => {
-  // Batch everything until requestUpdateMessage
-  const createGraphicsService = (): GraphicsService => ({
-    addObject: (args) => {
-      return { id: `0` };
-    },
-    removeObject: () => {
-      // empty
-    },
-    setVisible: () => {
-      // empty
-    },
-    setTransform: () => {
-      // empty
-    },
-  });
-
   const global = {
     physicsWorld: new World(new Vector3(0, -9.81, 0)),
-    graphicsService: createGraphicsService(),
+    graphicsService: createGraphicsService(messageBuffer),
     sceneState: createSceneState(),
+    inputs: createGamePlayerInputs(),
   };
 
   const componentFactories = createComponentFactories(global);
@@ -37,8 +23,14 @@ export const createGameCore = async (messageBuffer: MessageBufferPool): Promise<
 
   const scene = createScene(root, componentFactories, global);
 
+  let hasRequestedUpdateMessage = false;
   const gameLoop = () => {
     scene.update();
+    if (hasRequestedUpdateMessage) {
+      hasRequestedUpdateMessage = false;
+      global.graphicsService.sendMessages();
+    }
+
     // TODO: time left to achieve target fps
     setTimeout(gameLoop, 1);
   };
@@ -52,15 +44,8 @@ export const createGameCore = async (messageBuffer: MessageBufferPool): Promise<
       scene.destroy();
     },
     requestUpdateMessage: () => {
-      // TODO: send update message
+      hasRequestedUpdateMessage = true;
     },
-    // TODO: transfer inputs to scene
-    inputs: {
-      head: {
-        position: new Vector3(),
-        quaternion: new Quaternion(),
-      },
-      handJoints: [],
-    },
+    inputs: global.inputs,
   };
 };

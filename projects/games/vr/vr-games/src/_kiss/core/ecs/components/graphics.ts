@@ -13,7 +13,7 @@ export type Entity_Graphics = {
 
 export type EntityInstance_Graphics = {
   graphics: {
-    id: string;
+    id: number;
     visible: boolean;
     _visibleActual: boolean;
   };

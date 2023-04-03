@@ -47,6 +47,10 @@ export type WorkerMessageFromWorker =
       }[];
     }
   | {
+      kind: `removeObjects`;
+      objectIds: number[];
+    }
+  | {
       kind: `updateObjects`;
       boxes: {
         id: number;
