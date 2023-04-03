@@ -1,5 +1,6 @@
 import { EventQueue, RigidBody } from '@dimforge/rapier3d-compat';
 import { Quaternion, Vector3 } from 'three';
+import { GamePlayerInputs } from '../../input/game-player-inputs';
 
 type GameWorkerCreateEntityArgs_Common = {
   position: Vector3;
@@ -95,10 +96,7 @@ export type GameWorkerEngine = {
     args: TArgs & { type: TType; userData?: TUserData },
   ) => GameWorkerEntity<TArgs, TArgs[`shape`], BooleanDefaultTrueOfOptionalField<TArgs, `physics`>, TType, TUserData>;
   setGravity: (gravity: Vector3) => void;
-  inputs: {
-    head: { position: Vector3; quaternion: Quaternion };
-    handJoints: { position: Vector3 }[];
-  };
+  inputs: GamePlayerInputs;
 };
 
 export type GameEngine = {

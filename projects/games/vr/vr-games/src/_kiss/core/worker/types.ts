@@ -1,11 +1,8 @@
-import { Quaternion, Vector3 } from 'three';
+import { GamePlayerInputs } from '../input/game-player-inputs';
 
 export type GameCore = {
   start: () => void;
   dispose: () => void;
   requestUpdateMessage: () => void;
-  inputs: {
-    head: { position: Vector3; quaternion: Quaternion };
-    handJoints: { position: Vector3 }[];
-  };
+  inputs: GamePlayerInputs;
 };

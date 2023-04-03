@@ -1,11 +1,11 @@
 import { World } from '@dimforge/rapier3d-compat';
 import { Vector3 } from 'three';
+import { createGamePlayerInputs } from '../input/game-player-inputs';
 import { MessageBufferPool } from '../messages/message-buffer';
 import { GameCore } from '../worker/types';
 import { createComponentFactories } from './components/_components';
 import { createScene, createSceneState } from './ecs-engine';
 import { createEntityFactory } from './ecs-entity-factory';
-import { createGamePlayerInputs } from './game-player-inputs';
 import { createGraphicsService } from './graphics-service';
 
 export const createGameCore = async (messageBuffer: MessageBufferPool): Promise<GameCore> => {

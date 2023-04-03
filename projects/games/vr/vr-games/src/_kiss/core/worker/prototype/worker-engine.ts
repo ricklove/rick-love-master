@@ -132,7 +132,6 @@ export const createWorkerEngine = async (
   };
   const createEntityTyped: GameWorkerEngine[`createEntity`] = createEntity as GameWorkerEngine[`createEntity`];
 
-  const jointCount = handJointNames.length * 2;
   const engineEntities = {
     head: createEntity({
       type: `head` as const,
@@ -142,13 +141,25 @@ export const createWorkerEngine = async (
       radius: 0.001,
       sensor: true,
     }),
-    handJoints: [...new Array(jointCount)]
-      .map(() => ({
+    leftHandJoints: handJointNames
+      .map((handJoint) => ({
         type: `handJoint` as const,
         kind: `kinematicPositionBased` as const,
         shape: `sphere` as const,
         position: new Vector3(0, 1, -1),
         radius: 0.02,
+        userData: { handJoint },
+        // radius: 0.01,
+      }))
+      .map(createEntity),
+    rightHandJoints: handJointNames
+      .map((handJoint) => ({
+        type: `handJoint` as const,
+        kind: `kinematicPositionBased` as const,
+        shape: `sphere` as const,
+        position: new Vector3(0, 1, -1),
+        radius: 0.02,
+        userData: { handJoint },
         // radius: 0.01,
       }))
       .map(createEntity),
@@ -228,7 +239,11 @@ export const createWorkerEngine = async (
     const timeWarpRatio = constrainedDeltaTime / runningDeltaTime;
 
     // Inputs
-    engineEntities.handJoints.forEach((o) => {
+    engineEntities.leftHandJoints.forEach((o) => {
+      // wogger.log(`Updating hand joint rigidBody position`, { i, o });
+      o.physics.rigidBody?.setNextKinematicTranslation(o.input.position);
+    });
+    engineEntities.rightHandJoints.forEach((o) => {
       // wogger.log(`Updating hand joint rigidBody position`, { i, o });
       o.physics.rigidBody?.setNextKinematicTranslation(o.input.position);
     });
@@ -253,13 +268,13 @@ export const createWorkerEngine = async (
           hands: {
             left: {
               side: `left` as const,
-              position: engineEntities.handJoints[0].input.position,
-              quaternion: engineEntities.handJoints[0].input.quaternion,
+              position: engineEntities.leftHandJoints[0].input.position,
+              quaternion: engineEntities.leftHandJoints[0].input.quaternion,
             },
             right: {
               side: `right` as const,
-              position: engineEntities.handJoints[0 + handJointNames.length].input.position,
-              quaternion: engineEntities.handJoints[0 + handJointNames.length].input.quaternion,
+              position: engineEntities.rightHandJoints[0].input.position,
+              quaternion: engineEntities.rightHandJoints[0].input.quaternion,
             },
           },
         },
@@ -357,7 +372,10 @@ export const createWorkerEngine = async (
     // ...sceneData,
     inputs: {
       head: engineEntities.head.input,
-      handJoints: engineEntities.handJoints.map((x) => x.input),
+      hands: {
+        left: engineEntities.leftHandJoints.map((x) => ({ ...x.input, handJoint: x.userData.handJoint })),
+        right: engineEntities.rightHandJoints.map((x) => ({ ...x.input, handJoint: x.userData.handJoint })),
+      },
     },
     createEntity: createEntityTyped,
     updateMessageRequested: false,

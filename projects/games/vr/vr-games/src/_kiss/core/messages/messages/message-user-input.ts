@@ -1,4 +1,4 @@
-import { Quaternion, Vector3 } from 'three';
+import { GamePlayerInputs } from '../../input/game-player-inputs';
 import { handJointNameIndex, handJointNames } from '../../input/hand-joints';
 import { MessageBufferPool } from '../message-buffer';
 import { MessageBufferKind } from '../message-type';
@@ -81,13 +81,7 @@ export const postMessageUserInputTransforms = (
   bufferPool.postMessage(buffer);
 };
 
-export const readMessageUserInputTransforms = (
-  buffer: ArrayBuffer,
-  inputs: {
-    head: { position: Vector3; quaternion: Quaternion };
-    handJoints: { position: Vector3 }[];
-  },
-) => {
+export const readMessageUserInputTransforms = (buffer: ArrayBuffer, inputs: GamePlayerInputs) => {
   const f32Buffer = new Float32Array(buffer);
   const i32Buffer = new Int32Array(buffer);
 
@@ -97,10 +91,14 @@ export const readMessageUserInputTransforms = (
     console.error(`readMessageUpdateTransforms: wrong kind`, { _kind, bufferKind });
   }
 
-  inputs.handJoints.forEach((o, i) => {
-    offset = InputBufferIndex.handLeft + i * 3;
-    o.position.set(f32Buffer[offset++], f32Buffer[offset++], f32Buffer[offset++]);
+  [inputs.hands.left, inputs.hands.right].forEach((handJoints) => {
+    const handOffset = handJoints === inputs.hands.left ? InputBufferIndex.handLeft : InputBufferIndex.handRight;
+    handJoints.forEach((o, i) => {
+      offset = handOffset + i * 3;
+      o.position.set(f32Buffer[offset++], f32Buffer[offset++], f32Buffer[offset++]);
+    });
   });
+
   [inputs.head].forEach((o) => {
     offset = InputBufferIndex.camera;
     o.position.set(f32Buffer[offset++], f32Buffer[offset++], f32Buffer[offset++]);

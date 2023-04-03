@@ -1,10 +1,12 @@
 import { World } from '@dimforge/rapier3d-compat';
+import { GamePlayerInputs } from '../../input/game-player-inputs';
 import { EcsSceneState } from '../ecs-engine';
-import { GamePlayerInputs } from '../game-player-inputs';
+import { createEntityFactory } from '../ecs-entity-factory';
 import { GraphicsService } from '../graphics-service';
 import { colliderComponentFactory } from './collider';
 import { gameWithWavesComponentFactory } from './game-with-waves';
 import { graphicsComponentFactory } from './graphics';
+import { inputHandJointComponentFactory } from './input-hand-joint';
 import { rigidBodyComponentFactory } from './rigid-body';
 import { shapeBoxComponentFactory } from './shape-box';
 import { shapeSphereComponentFactory } from './shape-sphere';
@@ -17,12 +19,28 @@ export const createComponentFactories = (global: {
   sceneState: EcsSceneState;
   inputs: GamePlayerInputs;
 }) => ({
+  // update order
+
+  // inputs
+  inputHandJointComponentFactory: inputHandJointComponentFactory(global),
+
+  // misc
   transformComponentFactory,
   boxComponentFactory: shapeBoxComponentFactory,
   sphereComponentFactory: shapeSphereComponentFactory,
+  spawnerComponentFactory: spawnerComponentFactory(global),
+
+  // physics
   rigidBodyComponentFactory: rigidBodyComponentFactory(global),
   colliderComponentFactory: colliderComponentFactory(global),
-  graphicsComponentFactory: graphicsComponentFactory(global),
-  spawnerComponentFactory: spawnerComponentFactory(global),
+
+  // game logic
   gameWithWavesComponentFactory: gameWithWavesComponentFactory(global),
+
+  // graphics
+  graphicsComponentFactory: graphicsComponentFactory(global),
 });
+
+const _ecs = (componentFactories: ReturnType<typeof createComponentFactories>) =>
+  createEntityFactory(componentFactories);
+export type Ecs = ReturnType<typeof _ecs>;

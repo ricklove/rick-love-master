@@ -1,8 +1,8 @@
 import { World } from '@dimforge/rapier3d-compat';
 import { Vector3 } from 'three';
+import { createGamePlayerInputs } from '../../input/game-player-inputs';
 import { createScene, createSceneState } from '../ecs-engine';
 import { createEntityFactory } from '../ecs-entity-factory';
-import { createGamePlayerInputs } from '../game-player-inputs';
 import { GraphicsService } from '../graphics-service';
 import { createComponentFactories } from './_components';
 
