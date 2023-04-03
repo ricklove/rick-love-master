@@ -52,8 +52,39 @@ export const createEntityFactory = <
 >(
   componentFactories: TComponentFactories,
 ) => {
-  // TODO: Implement entity factory
-  return null as unknown as {
+  const f = {
+    entity: <TEntityName extends string>(name: TEntityName, enabled = true) => {
+      let entity = {
+        name,
+        enabled,
+        components: [] as string[],
+        children: [] as unknown[],
+      };
+      const entityFactory = {
+        addChild: <TEntityChild>(child: TEntityChild) => {
+          entity.children.push(child);
+          return entityFactory;
+        },
+        build: () => entity,
+      };
+
+      const entityFactoryWithComponents = entityFactory as Record<string, unknown>;
+
+      Object.entries(componentFactories).forEach(([componentNameRaw, componentFactory]) => {
+        const componentName = componentNameRaw as keyof typeof entityFactoryWithComponents;
+        entityFactoryWithComponents[componentName] = (args: unknown) => {
+          const addComponent = componentFactory.addComponent as (e: typeof entity, args: unknown) => typeof entity;
+          entity = addComponent(entity, args);
+          entity.components.push(componentName);
+          return entityFactory;
+        };
+      });
+
+      return entityFactory;
+    },
+  };
+
+  return f as unknown as {
     entity: <TEntityName extends string>(
       name: TEntityName,
       enabled?: boolean,
