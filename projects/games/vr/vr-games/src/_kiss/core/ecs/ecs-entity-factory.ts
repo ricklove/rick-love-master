@@ -65,40 +65,55 @@ export const createEntityFactory = <
 >(
   componentFactories: TComponentFactories,
 ) => {
-  const f = {
-    entity: <TEntityName extends string>(name: TEntityName, enabled = true) => {
-      let entity = {
+  const createEntity = <TEntityName extends string>(name: TEntityName, enabled = true) => {
+    const state = {
+      entity: {
         name,
         enabled,
         components: [] as string[],
         children: [] as unknown[],
+      },
+    };
+    const entityFactory = {
+      addChild: (child: unknown) => {
+        state.entity.children.push(child);
+        return entityFactory;
+      },
+      addChildren: (children: unknown[]) => {
+        state.entity.children.push(...children);
+        console.log(`entityFactory addChildren`, { entity: state.entity, children });
+        return entityFactory;
+      },
+      build: () => state.entity,
+    };
+
+    const entityFactoryWithComponents = entityFactory as Record<string, unknown>;
+
+    Object.entries(componentFactories).forEach(([componentKey, componentFactory]) => {
+      const componentName = componentFactory.name as keyof typeof entityFactoryWithComponents;
+      entityFactoryWithComponents[componentName] = (args: unknown) => {
+        const addComponent = componentFactory.addComponent as (
+          e: typeof state.entity,
+          args: unknown,
+        ) => typeof state.entity;
+        state.entity = addComponent(state.entity, args);
+        state.entity.components.push(componentName);
+        return entityFactory;
       };
-      const entityFactory = {
-        addChild: (child: unknown) => {
-          entity.children.push(child);
-          return entityFactory;
-        },
-        addChildren: (children: unknown[]) => {
-          entity.children.push(...children);
-          console.log(`entityFactory addChildren`, { entity, children });
-          return entityFactory;
-        },
-        build: () => entity,
-      };
+    });
 
-      const entityFactoryWithComponents = entityFactory as Record<string, unknown>;
-
-      Object.entries(componentFactories).forEach(([componentKey, componentFactory]) => {
-        const componentName = componentFactory.name as keyof typeof entityFactoryWithComponents;
-        entityFactoryWithComponents[componentName] = (args: unknown) => {
-          const addComponent = componentFactory.addComponent as (e: typeof entity, args: unknown) => typeof entity;
-          entity = addComponent(entity, args);
-          entity.components.push(componentName);
-          return entityFactory;
-        };
-      });
-
-      // console.log(`entityFactory`, { entityFactory });
+    // console.log(`entityFactory`, { entityFactory });
+    return { state, entityFactory };
+  };
+  const f = {
+    entity: <TEntityName extends string>(name: TEntityName, enabled = true) => {
+      return createEntity(name, enabled).entityFactory;
+    },
+    copy: <TEntityName extends string>(entity: unknown, name: TEntityName, enabled = true) => {
+      const { state, entityFactory } = createEntity(name, enabled);
+      state.entity = entity as typeof state.entity;
+      state.entity.name = name;
+      state.entity.enabled = enabled;
       return entityFactory;
     },
   };
@@ -109,6 +124,13 @@ export const createEntityFactory = <
       enabled?: boolean,
     ) => {
       _entity: { name: TEntityName; enabled: boolean; components: string[] };
+    } & EntityFactoryOfComponentFactories<TComponentFactories>;
+    copy: <TEntityName extends string, TEntityIn>(
+      entity: TEntityIn,
+      name: TEntityName,
+      enabled?: boolean,
+    ) => {
+      _entity: { name: TEntityName; enabled: boolean } & TEntityIn;
     } & EntityFactoryOfComponentFactories<TComponentFactories>;
   };
 };

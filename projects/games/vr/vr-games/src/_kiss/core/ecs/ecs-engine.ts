@@ -128,6 +128,12 @@ export const createScene = (
       }
 
       instance._enabledActual = instance.enabled;
+
+      // update children enabled (which will come after this in the loop)
+      for (const child of instance.children) {
+        child.enabled = instance.enabled;
+      }
+
       if (instance.enabled) {
         for (const factory of factoryActivates) {
           if (!instance.components.has(factory.name)) {

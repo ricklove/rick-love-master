@@ -7,7 +7,14 @@ import { createWeapon_saber } from '../prefabs/weapons/saber';
 export const createScene_beatSaber = (ecs: Ecs) => {
   const hands = createHands(ecs);
 
-  const egg = createAlienEgg(ecs, [0, 0, 0], 0.5);
+  const eggRaw = createAlienEgg(ecs, [0, 0, 0], 0.5);
+  const egg = ecs
+    .copy(eggRaw, `eggEnemy`, false)
+    .moveToTarget({
+      target: [0, 0, 0],
+      timeToMoveSec: 6,
+    })
+    .build();
 
   const root = ecs
     .entity(`root`, false)
@@ -35,7 +42,7 @@ export const createScene_beatSaber = (ecs: Ecs) => {
       ecs
         .entity(`egg`)
         .spawner({
-          poolSize: 10,
+          poolSize: 0,
           prefab: egg,
         })
         .build(),

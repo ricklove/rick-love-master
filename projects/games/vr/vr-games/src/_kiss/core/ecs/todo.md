@@ -21,7 +21,7 @@
     - [x] from a single point in the distance
     - [ ] with an x-z offset
     - [ ] randomly generated sequence
-  - [ ] blocks move toward player at a constant speed
+  - [x] blocks move toward player at a constant speed
   - [ ] player can hit block with visual feedback
     - [ ] correct timing will cause block to disappear
     - [ ] incorrect timing will cause block to turn red

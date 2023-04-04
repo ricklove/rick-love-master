@@ -9,6 +9,7 @@ import { gameWithWavesComponentFactory } from './game-with-waves';
 import { graphicsComponentFactory } from './graphics';
 import { inputHandAttachableComponentFactory } from './input-hand-attachable';
 import { inputHandJointComponentFactory } from './input-hand-joint';
+import { moveToTargetComponentFactory } from './move-to-target';
 import { rigidBodyComponentFactory } from './rigid-body';
 import { shapeBoxComponentFactory } from './shape-box';
 import { shapeSphereComponentFactory } from './shape-sphere';
@@ -36,6 +37,7 @@ export const createComponentFactories = (global: {
   // physics
   rigidBodyComponentFactory: rigidBodyComponentFactory(global),
   colliderComponentFactory: colliderComponentFactory(global),
+  moveToTargetComponentFactory: moveToTargetComponentFactory(global),
 
   // game logic
   gameComponentFactory: gameComponentFactory(global),
