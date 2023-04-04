@@ -5,7 +5,7 @@ import { GameCore } from '../worker/types';
 import { wogger } from '../worker/wogger';
 import { createComponentFactories } from './components/_components';
 import { EntityInstance_RigidBody } from './components/rigid-body';
-import { createScene, createSceneState } from './ecs-engine';
+import { createScene, createSceneState, EntityInstanceUntyped } from './ecs-engine';
 import { createEntityFactory } from './ecs-entity-factory';
 import { createGraphicsService } from './graphics-service';
 import { createPhysicsService } from './physics-service';
@@ -48,14 +48,19 @@ export const createGameCore = async (messageBuffer: MessageBufferPool): Promise<
       const entityId2 = global.physicsService.handleEntityIds.get(handle2);
       const entity1 = entityId1 && global.sceneState.findEntityInstanceById(entityId1);
       const entity2 = entityId2 && global.sceneState.findEntityInstanceById(entityId2);
-      const entityRigidbody1 = (entity1 && entity1.parent) as unknown as undefined | EntityInstance_RigidBody;
-      const entityRigidbody2 = (entity2 && entity2.parent) as unknown as undefined | EntityInstance_RigidBody;
-
-      entityRigidbody1?.rigidBody.onCollision?.(entityRigidbody2, started);
-      entityRigidbody2?.rigidBody.onCollision?.(entityRigidbody1, started);
+      let entityRigidbody1 = entity1 as unknown as undefined | EntityInstance_RigidBody;
+      let entityRigidbody2 = entity2 as unknown as undefined | EntityInstance_RigidBody;
+      if (entityRigidbody1 && !entityRigidbody1.rigidBody) {
+        entityRigidbody1 = (entity1 && entity1.parent) as unknown as undefined | EntityInstance_RigidBody;
+      }
+      if (entityRigidbody2 && !entityRigidbody2.rigidBody) {
+        entityRigidbody2 = (entity2 && entity2.parent) as unknown as undefined | EntityInstance_RigidBody;
+      }
 
       wogger.log(`collision`, {
         started,
+        e1: `${(entityRigidbody1 as unknown as EntityInstanceUntyped).desc.name} (${entityId1})`,
+        e2: `${(entityRigidbody2 as unknown as EntityInstanceUntyped).desc.name} (${entityId2})`,
         entityRigidbody1,
         entityRigidbody2,
         entity1,
@@ -67,18 +72,8 @@ export const createGameCore = async (messageBuffer: MessageBufferPool): Promise<
         global,
       });
 
-      // const entity1 = entityHandleMap.get(handle1);
-      // const entity2 = entityHandleMap.get(handle2);
-      // if (!entity1 || !entity2) return;
-      // if (!entity1.active || !entity2.active) return;
-
-      // if (
-      //   (entity1.type === `bullet` && entity2.type === `enemy`) ||
-      //   (entity1.type === `enemy` && entity2.type === `bullet`)
-      // ) {
-      //   hideEntity(entity1);
-      //   hideEntity(entity2);
-      // }
+      entityRigidbody1?.rigidBody.onCollision?.(entityRigidbody2, started);
+      entityRigidbody2?.rigidBody.onCollision?.(entityRigidbody1, started);
     });
 
     scene.update();

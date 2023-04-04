@@ -23,7 +23,7 @@
     - [ ] randomly generated sequence
   - [x] blocks move toward player at a constant speed
   - [ ] player can hit block with visual feedback
-    - [ ] hitting block will cause block to disappear
+    - [x] hitting block will cause block to disappear
     - [ ] missing block will ?
   - [ ] display score / chain
 
