@@ -3,12 +3,12 @@ import { Ecs } from '../components/_components';
 export const createAlienEgg = (ecs: Ecs, position: [number, number, number], scale: number = 1) => {
   const alienEgg = ecs
     .entity(`alienEgg`)
-    .transform({ position, quaternion: [0, 0, 0, 1] })
+    .transform({ position })
     .rigidBody({ kind: `dynamic` })
     .addChild(
       ecs
         .entity(`body`)
-        .transform({ position: [0, 0.5 * scale, 0], quaternion: [0, 0, 0, 1] })
+        .transform({ position: [0, 0.5 * scale, 0] })
         .shape_sphere({ radius: 0.5 * scale })
         .collider({ restitution: 0.8, friction: 0.1 })
         .graphics({ color: 0x00ff00 })
@@ -17,7 +17,7 @@ export const createAlienEgg = (ecs: Ecs, position: [number, number, number], sca
     .addChild(
       ecs
         .entity(`leg1`)
-        .transform({ position: [0.25 * scale, 0.25 * scale, -0.25 * scale], quaternion: [0, 0, 0, 1] })
+        .transform({ position: [0.25 * scale, 0.25 * scale, -0.25 * scale] })
         .shape_sphere({ radius: 0.25 * scale })
         .collider({ restitution: 0.8, friction: 0.1 })
         .graphics({ color: 0x0000ff })
@@ -26,7 +26,7 @@ export const createAlienEgg = (ecs: Ecs, position: [number, number, number], sca
     .addChild(
       ecs
         .entity(`leg2`)
-        .transform({ position: [-0.25 * scale, 0.25 * scale, 0.25 * scale], quaternion: [0, 0, 0, 1] })
+        .transform({ position: [-0.25 * scale, 0.25 * scale, 0.25 * scale] })
         .shape_sphere({ radius: 0.25 * scale })
         .collider({ restitution: 0.8, friction: 0.1 })
         .graphics({ color: 0x0000ff })
@@ -35,7 +35,7 @@ export const createAlienEgg = (ecs: Ecs, position: [number, number, number], sca
     .addChild(
       ecs
         .entity(`leg3`)
-        .transform({ position: [-0.25 * scale, 0.25 * scale, -0.25 * scale], quaternion: [0, 0, 0, 1] })
+        .transform({ position: [-0.25 * scale, 0.25 * scale, -0.25 * scale] })
         .shape_sphere({ radius: 0.25 * scale })
         .collider({ restitution: 0.8, friction: 0.1 })
         .graphics({ color: 0x0000ff })
@@ -44,7 +44,7 @@ export const createAlienEgg = (ecs: Ecs, position: [number, number, number], sca
     .addChild(
       ecs
         .entity(`leg4`)
-        .transform({ position: [0.25 * scale, 0.25 * scale, 0.25 * scale], quaternion: [0, 0, 0, 1] })
+        .transform({ position: [0.25 * scale, 0.25 * scale, 0.25 * scale] })
         .shape_sphere({ radius: 0.25 * scale })
         .collider({ restitution: 0.8, friction: 0.1 })
         .graphics({ color: 0x0000ff })

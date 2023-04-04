@@ -6,16 +6,25 @@ export const createWeapon_knuckleClaws = (
   scale: number = 1,
   attachedHandSide?: `left` | `right`,
 ) => {
+  const length = 0.4 * scale;
+  const bladeThickness = 0.002 * scale;
+  const bladeWidth = 0.01 * scale;
+
+  const knucleGap = 0.02 * scale;
+  const angle = Math.PI * 0.05;
+  const hOfAngle = Math.sin(angle);
+  const hAtHalfLegnth = hOfAngle * length * 0.5;
+
   const saber = ecs
     .entity(`knuckleClaws`)
-    .transform({ position, quaternion: [0, 0, 0, 1] })
+    .transform({ position })
     .rigidBody({ kind: `dynamic` })
     .inputHandAttachable({ handAttachableKind: `knuckles`, attachmentPosition: [0, 0, 0], attachedHandSide })
     .addChild(
       ecs
         .entity(`bladeMiddle`)
-        .transform({ position: [0, 0, -0.15 * scale], quaternion: [0, 0, 0, 1] })
-        .shape_box({ scale: [0.01 * scale, 0.002 * scale, 0.31 * scale] })
+        .transform({ position: [0, 0, 1.03 * -0.5 * length] })
+        .shape_box({ scale: [bladeWidth, bladeThickness, 1.03 * length] })
         .collider({ restitution: 1 })
         .graphics({ color: 0xff0000 })
         .build(),
@@ -23,8 +32,8 @@ export const createWeapon_knuckleClaws = (
     .addChild(
       ecs
         .entity(`bladeTop`)
-        .transform({ position: [0, 0.015 * scale, -0.16 * scale], quaternion: [0, 0, 0, 1] })
-        .shape_box({ scale: [0.01 * scale, 0.002 * scale, 0.33 * scale] })
+        .transform({ position: [0, knucleGap + hAtHalfLegnth, -0.5 * length], rotation: [angle, 0, 0] })
+        .shape_box({ scale: [bladeWidth, bladeThickness, 1.01 * length] })
         .collider({ restitution: 1 })
         .graphics({ color: 0xff0000 })
         .build(),
@@ -32,8 +41,8 @@ export const createWeapon_knuckleClaws = (
     .addChild(
       ecs
         .entity(`bladeBottom`)
-        .transform({ position: [0, -0.015 * scale, -0.15 * scale], quaternion: [0, 0, 0, 1] })
-        .shape_box({ scale: [0.01 * scale, 0.002 * scale, 0.31 * scale] })
+        .transform({ position: [0, -knucleGap - hAtHalfLegnth, -0.5 * length], rotation: [-angle, 0, 0] })
+        .shape_box({ scale: [bladeWidth, bladeThickness, 1.01 * length] })
         .collider({ restitution: 1 })
         .graphics({ color: 0xff0000 })
         .build(),
