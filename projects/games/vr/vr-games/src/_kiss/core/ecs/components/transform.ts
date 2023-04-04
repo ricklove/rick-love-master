@@ -14,7 +14,7 @@ export type EntityInstance_Transform = {
   };
 };
 
-export const transformComponentFactory = createComponentFactory<{}, Entity_Transform, EntityInstance_Transform>()(
+export const transformComponentFactory = createComponentFactory<{}, Entity_Transform, {}, EntityInstance_Transform>()(
   () => {
     const q = new Quaternion();
     const e = new Euler();

@@ -3,7 +3,10 @@ import { EcsSceneState } from '../ecs-engine';
 import { createEntityFactory } from '../ecs-entity-factory';
 import { GraphicsService } from '../graphics-service';
 import { PhysicsService } from '../physics-service';
+import { actionDisableEntityComponentFactory } from './actions/action-disable-entity';
+import { actionsComponentFactory } from './actions/actions';
 import { colliderComponentFactory } from './collider';
+import { collisionActionComponentFactory } from './collisionAction';
 import { gameComponentFactory } from './game';
 import { gameWithWavesComponentFactory } from './game-with-waves';
 import { graphicsComponentFactory } from './graphics';
@@ -37,11 +40,15 @@ export const createComponentFactories = (global: {
   // physics
   rigidBodyComponentFactory: rigidBodyComponentFactory(global),
   colliderComponentFactory: colliderComponentFactory(global),
+  collisionActionComponentFactory: collisionActionComponentFactory,
   moveToTargetComponentFactory: moveToTargetComponentFactory(global),
 
   // game logic
   gameComponentFactory: gameComponentFactory(global),
   gameWithWavesComponentFactory: gameWithWavesComponentFactory(global),
+
+  actionsComponentFactory: actionsComponentFactory,
+  actionDisableEntityComponentFactory: actionDisableEntityComponentFactory,
 
   // graphics
   graphicsComponentFactory: graphicsComponentFactory(global),

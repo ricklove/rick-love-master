@@ -14,10 +14,10 @@ export const createScene_beatSaber = (ecs: Ecs) => {
       target: [0, 0, 0],
       timeToMoveSec: 6,
     })
+    .actions({})
+    .actionDisableEntity({ actionName: `collide` })
+    .collisionAction({ collisionTagFilter: `weapon`, action: `collide` })
     .build();
-
-  // overriding collisionTag (as example)
-  egg.rigidBody.collisionTag = `enemy`;
 
   const root = ecs
     .entity(`root`, false)
