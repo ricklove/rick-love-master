@@ -16,6 +16,9 @@ export const createScene_beatSaber = (ecs: Ecs) => {
     })
     .build();
 
+  // overriding collisionTag (as example)
+  egg.rigidBody.collisionTag = `enemy`;
+
   const root = ecs
     .entity(`root`, false)
     .addChild(hands.hands.left)
@@ -68,63 +71,6 @@ export const createScene_beatSaber = (ecs: Ecs) => {
         })
         .build(),
     )
-
-    // .addChild(
-    //   ecs
-    //     .entity(`table`)
-    //     .transform({ position: [0, 1, -1] })
-    //     .rigidBody({ kind: `fixed` })
-    //     .addChild(
-    //       ecs
-    //         .entity(`table-collider`)
-    //         .transform({ position: [0, -0.025, 0] })
-    //         .shape_box({ scale: [2, 0.05, 2] })
-    //         .collider({ restitution: 0.1 })
-    //         .graphics({ color: 0x111111 })
-    //         .build(),
-    //     )
-    //     .build(),
-    // )
-    // .addChildren(eggs)
-    // .addChild(createSaber(ecs, [0, 1, -0.35], 1))
-    // .addChild(createSaber(ecs, [0, 1, -0.25], 1))
-    // .addChild(createSaber(ecs, [0, 1, -0.15], 1))
-    // .addChild(createSaber(ecs, [0, 1, -0.05], 1))
-    // .addChild(createAlienEgg(ecs, [-1, 2, -3], 0.25))
-    // .addChild(createAlienEgg(ecs, [-2, 2, -5]))
-    // .addChild(
-    //   ecs
-    //     .entity(`ball`)
-    //     .transform({ position: [0, 2, -5] })
-    //     .rigidBody({ kind: `dynamic` })
-    //     .addChild(
-    //       ecs
-    //         .entity(`ball-collider`)
-    //         .transform({ position: [0, 0, 0] })
-    //         .shape_sphere({ radius: 0.5 })
-    //         .collider({ restitution: 0.8, colliderEvents: true })
-    //         .graphics({ color: 0x0000ff })
-    //         .build(),
-    //     )
-    //     .build(),
-    // )
-    // .addChild(
-    //   ecs
-    //     .entity(`ball2`)
-    //     .transform({ position: [0, 2.7, -5] })
-    //     .rigidBody({ kind: `dynamic` })
-    //     .addChild(
-    //       ecs
-    //         .entity(`ball-collider`)
-    //         .transform({ position: [0, 0, 0] })
-    //         .shape_sphere({ radius: 0.1 })
-    //         .collider({ restitution: 0.8 })
-    //         .graphics({ color: 0x550055 })
-    //         .build(),
-    //     )
-    //     .build(),
-    // )
-
     .build();
 
   return root;

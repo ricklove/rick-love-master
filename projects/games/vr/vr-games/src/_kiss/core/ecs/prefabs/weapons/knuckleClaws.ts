@@ -18,7 +18,7 @@ export const createWeapon_knuckleClaws = (
   const claws = ecs
     .entity(`knuckleClaws`)
     .transform({ position })
-    .rigidBody({ kind: `dynamic` })
+    .rigidBody({ kind: `dynamic`, collisionTag: `weapon` })
     .inputHandAttachable({ handAttachableKind: `knuckles`, attachmentPosition: [0, 0, 0], attachedHandSide })
     .addChild(
       ecs

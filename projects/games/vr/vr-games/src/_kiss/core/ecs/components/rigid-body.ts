@@ -9,12 +9,14 @@ export type Entity_RigidBody = {
   rigidBody: {
     kind: `fixed` | `dynamic` | `kinematicPositionBased` | `kinematicVelocityBased`;
     gravityScale?: number;
+    collisionTag?: string;
   };
 };
 
 export type EntityInstance_RigidBody = {
   rigidBody: {
     rigidBody: RigidBody;
+    collisionTag?: string;
     onCollision?: (other: undefined | EntityInstance_RigidBody, started: boolean) => void;
   };
 };
@@ -64,6 +66,7 @@ export const rigidBodyComponentFactory = ({ physicsService }: { physicsService: 
             ...entityInstance,
             rigidBody: {
               rigidBody,
+              collisionTag: entity.rigidBody.collisionTag,
             },
           };
         },

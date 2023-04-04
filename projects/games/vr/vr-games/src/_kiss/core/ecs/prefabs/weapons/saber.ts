@@ -9,7 +9,7 @@ export const createWeapon_saber = (
   const saber = ecs
     .entity(`saber`)
     .transform({ position })
-    .rigidBody({ kind: `dynamic` })
+    .rigidBody({ kind: `dynamic`, collisionTag: `weapon` })
     .inputHandAttachable({ handAttachableKind: `sword`, attachmentPosition: [0, 0.08, 0], attachedHandSide })
     .addChild(
       ecs

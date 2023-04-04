@@ -130,7 +130,7 @@ export const createEntityFactory = <
       name: TEntityName,
       enabled?: boolean,
     ) => {
-      _entity: { name: TEntityName; enabled: boolean } & TEntityIn;
+      _entity: TEntityIn;
     } & EntityFactoryOfComponentFactories<TComponentFactories>;
   };
 };

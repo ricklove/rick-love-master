@@ -4,7 +4,7 @@ export const createAlienEgg = (ecs: Ecs, position: [number, number, number], sca
   const alienEgg = ecs
     .entity(`alienEgg`)
     .transform({ position })
-    .rigidBody({ kind: `dynamic` })
+    .rigidBody({ kind: `dynamic`, collisionTag: `enemy` })
     .addChild(
       ecs
         .entity(`body`)
