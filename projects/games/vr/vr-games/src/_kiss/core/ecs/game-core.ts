@@ -10,6 +10,7 @@ import { createEntityFactory } from './ecs-entity-factory';
 import { createGraphicsService } from './graphics-service';
 import { createAlienEgg } from './prefabs/alien-egg';
 import { createHands } from './prefabs/hands';
+import { createSaber } from './prefabs/saber';
 
 export const createGameCore = async (messageBuffer: MessageBufferPool): Promise<GameCore> => {
   await RAPIER.init();
@@ -29,11 +30,11 @@ export const createGameCore = async (messageBuffer: MessageBufferPool): Promise<
   // temp
   const scale = 0.25;
   const cols = 5;
-  const count = 125;
+  const count = 50;
   const eggs = [...new Array(count)].map((_, i) =>
     createAlienEgg(
       ecs,
-      [-1 + scale * (i % cols), 0 + scale * Math.floor(i / (cols * cols)), -1 + scale * (Math.floor(i / cols) % cols)],
+      [-1 + scale * (i % cols), 1 + scale * Math.floor(i / (cols * cols)), -1 + scale * (Math.floor(i / cols) % cols)],
       scale,
     ),
   );
@@ -56,7 +57,28 @@ export const createGameCore = async (messageBuffer: MessageBufferPool): Promise<
         )
         .build(),
     )
+    .addChild(
+      ecs
+        .entity(`table`)
+        .transform({ position: [0, 1, -1] })
+        .rigidBody({ kind: `fixed` })
+        .addChild(
+          ecs
+            .entity(`table-collider`)
+            .transform({ position: [0, -0.025, 0] })
+            .shape_box({ scale: [2, 0.05, 2] })
+            .collider({ restitution: 0.1 })
+            .graphics({ color: 0x111111 })
+            .build(),
+        )
+        .build(),
+    )
+    .addChild(createSaber(ecs, [0, 1, -0.35], 1))
     .addChildren(eggs)
+    // .addChild(createSaber(ecs, [0, 1, -0.35], 1))
+    // .addChild(createSaber(ecs, [0, 1, -0.25], 1))
+    // .addChild(createSaber(ecs, [0, 1, -0.15], 1))
+    // .addChild(createSaber(ecs, [0, 1, -0.05], 1))
     // .addChild(createAlienEgg(ecs, [-1, 2, -3], 0.25))
     .addChild(createAlienEgg(ecs, [-2, 2, -5]))
     .addChild(

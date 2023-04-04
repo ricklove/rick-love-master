@@ -1,9 +1,9 @@
 import { handJointNames } from '../../input/hand-joints';
 import { Ecs } from '../components/_components';
 
-export const createHands = (ecs: Ecs) => {
-  const leftHand = createHand(ecs, `left`);
-  const rightHand = createHand(ecs, `right`);
+export const createHands = (ecs: Ecs, jointRadius = 0.02) => {
+  const leftHand = createHand(ecs, `left`, jointRadius);
+  const rightHand = createHand(ecs, `right`, jointRadius);
 
   return {
     hands: {
@@ -13,7 +13,7 @@ export const createHands = (ecs: Ecs) => {
   };
 };
 
-const createHand = (ecs: Ecs, side: `left` | `right`) => {
+const createHand = (ecs: Ecs, side: `left` | `right`, jointRadius: number) => {
   let x = ecs.entity(`${side}-hand`);
 
   handJointNames.forEach((jointName) => {
@@ -27,8 +27,8 @@ const createHand = (ecs: Ecs, side: `left` | `right`) => {
           ecs
             .entity(`${side}-hand-${jointName}-collider`)
             .transform({ position: [0, 0, 0] })
-            .shape_sphere({ radius: 0.01 })
-            .collider({ restitution: 0.8, friction: 0.1 })
+            .shape_sphere({ radius: jointRadius })
+            .collider({ restitution: 0, friction: 1 })
             .graphics({ color: 0x00ff00 })
             .build(),
         )
