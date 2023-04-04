@@ -18,7 +18,7 @@
   - [x] player in fixed position at origin
     - [x] player is holding saber
   - [ ] blocks are spawned
-    - [ ] from a single point in the distance
+    - [x] from a single point in the distance
     - [ ] with an x-z offset
     - [ ] randomly generated sequence
   - [ ] blocks move toward player at a constant speed

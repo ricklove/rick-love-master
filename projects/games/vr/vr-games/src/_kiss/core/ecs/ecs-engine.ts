@@ -1,3 +1,4 @@
+import { wogger } from '../worker/wogger';
 import { EcsComponentFactory } from './ecs-component-factory';
 
 type EcsComponentFactoryUntyped = EcsComponentFactory<
@@ -32,7 +33,7 @@ export const createSceneState = () => {
   const createEntityInstance = (entity: EntityDescUntyped, parent: EntityInstanceUntyped) => {
     let instance: EntityInstanceUntyped = {
       enabled: entity.enabled,
-      _enabledActual: entity.enabled,
+      _enabledActual: true,
       components: new Set(entity.components),
       parent,
       children: [],
@@ -139,6 +140,7 @@ export const createScene = (
           if (!instance.components.has(factory.name)) {
             continue;
           }
+          wogger.log(`entity deactivating`, { instance });
           factory.deactivate!(instance);
         }
       }

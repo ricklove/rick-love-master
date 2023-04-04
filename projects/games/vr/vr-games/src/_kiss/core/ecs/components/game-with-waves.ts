@@ -1,5 +1,6 @@
 import { createComponentFactory } from '../ecs-component-factory';
 import { EcsSceneState } from '../ecs-engine';
+import { Entity_Game, EntityInstance_Game } from './game';
 import { EntityInstance_Spawner } from './spawner';
 
 /** Game with waves
@@ -35,14 +36,6 @@ type GameWaveSequence = {
   position: [number, number, number];
 };
 
-export type EntityInstance_Game = {
-  game: {
-    active: boolean;
-    gameResult?: `win` | `lose`;
-    startGame?: () => void;
-  };
-};
-
 export type EntityInstance_GameWithWaves = {
   gameWithWaves: {
     waveIndex?: number;
@@ -55,7 +48,7 @@ export type EntityInstance_GameWithWaves = {
 };
 
 export const gameWithWavesComponentFactory = ({ sceneState }: { sceneState: EcsSceneState }) =>
-  createComponentFactory<{}, Entity_GameWithWaves, EntityInstance_Game, EntityInstance_GameWithWaves>()(() => {
+  createComponentFactory<Entity_Game, Entity_GameWithWaves, EntityInstance_Game, EntityInstance_GameWithWaves>()(() => {
     return {
       name: `gameWithWaves`,
       addComponent: (entity, args: Entity_GameWithWaves[`gameWithWaves`]) => {
@@ -134,6 +127,7 @@ export const gameWithWavesComponentFactory = ({ sceneState }: { sceneState: EcsS
         if (!wave) {
           entityInstance.game.active = false;
           entityInstance.game.gameResult = `win`;
+          console.log(`gameWithWaves waves finished`, { entityInstance });
           return;
         }
 
@@ -144,7 +138,8 @@ export const gameWithWavesComponentFactory = ({ sceneState }: { sceneState: EcsS
         if (!sequence) {
           game.sequenceIndex = 0;
           game.waveIndex++;
-          game.timeNextWave = Date.now() + desc.waves[game.waveIndex].timeBeforeWaveSec * 1000;
+          const nextWave = desc.waves[game.waveIndex];
+          game.timeNextWave = !nextWave ? undefined : Date.now() + nextWave.timeBeforeWaveSec * 1000;
           return;
         }
 

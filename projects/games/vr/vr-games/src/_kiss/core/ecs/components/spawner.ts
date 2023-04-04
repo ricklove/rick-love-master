@@ -60,6 +60,7 @@ export const spawnerComponentFactory = ({ sceneState }: { sceneState: EcsSceneSt
           pool: [],
         };
 
+        // Create pool of disabled
         entity.spawner.prefab.enabled = false;
         for (let i = 0; i < entity.spawner.poolSize; i++) {
           sceneState.createEntityInstance(entity.spawner.prefab, entityInstance as unknown as EntityInstanceUntyped);

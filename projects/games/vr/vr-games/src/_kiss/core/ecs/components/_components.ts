@@ -4,6 +4,7 @@ import { EcsSceneState } from '../ecs-engine';
 import { createEntityFactory } from '../ecs-entity-factory';
 import { GraphicsService } from '../graphics-service';
 import { colliderComponentFactory } from './collider';
+import { gameComponentFactory } from './game';
 import { gameWithWavesComponentFactory } from './game-with-waves';
 import { graphicsComponentFactory } from './graphics';
 import { inputHandAttachableComponentFactory } from './input-hand-attachable';
@@ -37,6 +38,7 @@ export const createComponentFactories = (global: {
   colliderComponentFactory: colliderComponentFactory(global),
 
   // game logic
+  gameComponentFactory: gameComponentFactory(global),
   gameWithWavesComponentFactory: gameWithWavesComponentFactory(global),
 
   // graphics

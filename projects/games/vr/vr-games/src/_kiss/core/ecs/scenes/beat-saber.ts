@@ -7,16 +7,7 @@ import { createWeapon_saber } from '../prefabs/weapons/saber';
 export const createScene_beatSaber = (ecs: Ecs) => {
   const hands = createHands(ecs);
 
-  const scale = 0.25;
-  const cols = 5;
-  const count = 50;
-  const eggs = [...new Array(count)].map((_, i) =>
-    createAlienEgg(
-      ecs,
-      [-1 + scale * (i % cols), 1 + scale * Math.floor(i / (cols * cols)), -1 + scale * (Math.floor(i / cols) % cols)],
-      scale,
-    ),
-  );
+  const egg = createAlienEgg(ecs, [0, 0, 0], 0.5);
 
   const root = ecs
     .entity(`root`, false)
@@ -40,6 +31,37 @@ export const createScene_beatSaber = (ecs: Ecs) => {
         )
         .build(),
     )
+    .addChild(
+      ecs
+        .entity(`egg`)
+        .spawner({
+          poolSize: 10,
+          prefab: egg,
+        })
+        .build(),
+    )
+    .addChild(
+      ecs
+        .entity(`game`)
+        .game({ active: true })
+        .gameWithWaves({
+          waves: [
+            {
+              sequence: [
+                {
+                  spawnerName: `egg`,
+                  count: 10,
+                  position: [0, 1, -25],
+                  timeBeforeSequenceSec: 1,
+                },
+              ],
+              timeBeforeWaveSec: 3,
+            },
+          ],
+        })
+        .build(),
+    )
+
     // .addChild(
     //   ecs
     //     .entity(`table`)
