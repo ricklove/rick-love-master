@@ -4,7 +4,7 @@ import { GamePlayerInputs } from '../../input/game-player-inputs';
 import { createComponentFactory } from '../ecs-component-factory';
 import { Entity_RigidBody, EntityInstance_RigidBody } from './rigid-body';
 
-export type HandAttachableKind = `sword`;
+export type HandAttachableKind = `sword` | `knuckles`;
 export type Entity_InputHandAttachable = {
   inputHandAttachable: {
     handAttachableKind: HandAttachableKind;
@@ -79,7 +79,12 @@ export const inputHandAttachableComponentFactory = ({ inputs }: { inputs: GamePl
               vUp.copy(indexProximal).sub(pinkyProximal);
               vKnucklesMid.copy(indexProximal).add(pinkyProximal).multiplyScalar(0.5);
               vWristToKnuckles.copy(vKnucklesMid).sub(wrist);
-              vKnucklesToPalm.copy(vWristToKnuckles).cross(vUp).negate();
+              vKnucklesToPalm.copy(vWristToKnuckles).cross(vUp);
+
+              if (handSide === `right`) {
+                vKnucklesToPalm.negate();
+              }
+
               vPalmGrip
                 .copy(vKnucklesToPalm)
                 .normalize()
@@ -89,11 +94,54 @@ export const inputHandAttachableComponentFactory = ({ inputs }: { inputs: GamePl
               // vForward.copy(pinkyProximal).sub(thumbMetacarpal).normalize();
               // mForward.lookAt(vPalmGrip, wrist, vUp);
               // mForward.lookAt(pinkyProximal, thumbMetacarpal, vUp);
-              mForward.lookAt(pinkyProximal, wrist, vUp);
+              mForward.lookAt(wrist, pinkyProximal, vUp);
               qForward.setFromRotationMatrix(mForward);
 
               const pos = entityInstance.desc.inputHandAttachable.attachmentPosition ?? [0, 0, 0];
               vAttachment.set(pos[0], pos[1], pos[2]).negate().applyQuaternion(qForward).add(vPalmGrip);
+
+              return {
+                position: vAttachment,
+                quaternion: qForward,
+              };
+            };
+          }
+
+          if (handAttachableKind === `knuckles`) {
+            const vKnucklesMid = new Vector3();
+            const vUp = new Vector3();
+            const vWristToKnuckles = new Vector3();
+            const mForward = new Matrix4();
+            const qForward = new Quaternion();
+            const vAttachment = new Vector3();
+            const v = new Vector3();
+
+            return () => {
+              const { attachedHandSide: handSide } = inputHandAttachable;
+              if (!handSide) {
+                return;
+              }
+              const wrist = inputs.hands[handSide].find((x) => x.handJoint === `wrist`)?.position;
+              const indexProximal = inputs.hands[handSide].find(
+                (x) => x.handJoint === `index-finger-phalanx-proximal`,
+              )?.position;
+              const pinkyProximal = inputs.hands[handSide].find(
+                (x) => x.handJoint === `pinky-finger-phalanx-proximal`,
+              )?.position;
+
+              if (!wrist || !indexProximal || !pinkyProximal) {
+                return;
+              }
+
+              vUp.copy(indexProximal).sub(pinkyProximal);
+              vKnucklesMid.copy(indexProximal).add(pinkyProximal).multiplyScalar(0.5);
+              vWristToKnuckles.copy(vKnucklesMid).sub(wrist);
+
+              mForward.lookAt(wrist, vKnucklesMid, vUp);
+              qForward.setFromRotationMatrix(mForward);
+
+              const pos = entityInstance.desc.inputHandAttachable.attachmentPosition ?? [0, 0, 0];
+              vAttachment.set(pos[0], pos[1], pos[2]).negate().applyQuaternion(qForward).add(vKnucklesMid);
 
               return {
                 position: vAttachment,

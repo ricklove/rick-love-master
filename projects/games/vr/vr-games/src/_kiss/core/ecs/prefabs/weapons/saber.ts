@@ -1,14 +1,19 @@
-import { Ecs } from '../components/_components';
+import { Ecs } from '../../components/_components';
 
-export const createSaber = (ecs: Ecs, position: [number, number, number], scale: number = 1) => {
+export const createWeapon_saber = (
+  ecs: Ecs,
+  position: [number, number, number],
+  scale: number = 1,
+  attachedHandSide?: `left` | `right`,
+) => {
   const saber = ecs
     .entity(`saber`)
     .transform({ position, quaternion: [0, 0, 0, 1] })
     .rigidBody({ kind: `dynamic` })
-    .inputHandAttachable({ handAttachableKind: `sword`, attachmentPosition: [0, 0.08, 0], attachedHandSide: `right` })
+    .inputHandAttachable({ handAttachableKind: `sword`, attachmentPosition: [0, 0.08, 0], attachedHandSide })
     .addChild(
       ecs
-        .entity(`staff`)
+        .entity(`blade`)
         .transform({ position: [0, 0.55 * scale, 0], quaternion: [0, 0, 0, 1] })
         .shape_box({ scale: [0.002 * scale, 0.92 * scale, 0.02 * scale] })
         .collider({ restitution: 1 })

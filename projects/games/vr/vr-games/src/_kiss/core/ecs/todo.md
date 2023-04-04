@@ -16,7 +16,7 @@
 - minimal game
 
   - [x] player in fixed position at origin
-    - [ ] player is holding saber
+    - [x] player is holding saber
   - [ ] blocks are spawned
     - [ ] from a single point in the distance
     - [ ] with an x-z offset

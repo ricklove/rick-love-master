@@ -1,7 +1,7 @@
 import { Ecs } from '../components/_components';
 import { createAlienEgg } from '../prefabs/alien-egg';
 import { createHands } from '../prefabs/hands';
-import { createSaber } from '../prefabs/saber';
+import { createWeapon_saber } from '../prefabs/weapons/saber';
 
 export const createScene_test01 = (ecs: Ecs) => {
   const hands = createHands(ecs);
@@ -51,7 +51,7 @@ export const createScene_test01 = (ecs: Ecs) => {
         )
         .build(),
     )
-    .addChild(createSaber(ecs, [0, 1, -0.35], 1))
+    .addChild(createWeapon_saber(ecs, [0, 1, -0.35], 1))
     .addChildren(eggs)
     // .addChild(createSaber(ecs, [0, 1, -0.35], 1))
     // .addChild(createSaber(ecs, [0, 1, -0.25], 1))

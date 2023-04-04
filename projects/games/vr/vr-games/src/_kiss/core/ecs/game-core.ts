@@ -8,7 +8,7 @@ import { createComponentFactories } from './components/_components';
 import { createScene, createSceneState } from './ecs-engine';
 import { createEntityFactory } from './ecs-entity-factory';
 import { createGraphicsService } from './graphics-service';
-import { createScene_test01 } from './scenes/test-01';
+import { createScene_beatSaber } from './scenes/beat-saber';
 
 export const createGameCore = async (messageBuffer: MessageBufferPool): Promise<GameCore> => {
   await RAPIER.init();
@@ -23,7 +23,8 @@ export const createGameCore = async (messageBuffer: MessageBufferPool): Promise<
   const componentFactories = createComponentFactories(global);
   const ecs = createEntityFactory(componentFactories);
 
-  const root = createScene_test01(ecs);
+  // const root = createScene_test01(ecs);
+  const root = createScene_beatSaber(ecs);
 
   const scene = createScene(root, componentFactories, global);
 
