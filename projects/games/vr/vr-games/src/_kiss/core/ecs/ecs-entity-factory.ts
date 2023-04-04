@@ -32,6 +32,15 @@ type AppendChildToEntityFactory<TEntityFactory, TEntityChild> = {
       : TEntityFactory[K] & { children: [TEntityChild] }
     : TEntityFactory[K];
 };
+type AppendChildrenToEntityFactory<TEntityFactory, TEntityChildren extends unknown[]> = {
+  [K in keyof TEntityFactory]: K extends `_entity`
+    ? TEntityFactory[K] extends { children: unknown[] }
+      ? Simplify<
+          Omit<TEntityFactory[K], `children`> & { children: [...TEntityFactory[K][`children`], ...TEntityChildren] }
+        >
+      : TEntityFactory[K] & { children: [...TEntityChildren] }
+    : TEntityFactory[K];
+};
 
 type Simplify<T> = {} & {
   [K in keyof T]: T[K];
@@ -44,6 +53,10 @@ type EntityFactoryOfComponentFactories<
     this: TEntityFactory,
     child: TEntityChild,
   ) => AppendChildToEntityFactory<TEntityFactory, TEntityChild>;
+  addChildren: <TEntityFactory extends { _entity: unknown }, TEntityChildren extends unknown[]>(
+    this: TEntityFactory,
+    children: TEntityChildren,
+  ) => AppendChildrenToEntityFactory<TEntityFactory, TEntityChildren>;
   build: <TEntityFactory extends { _entity: unknown }>(this: TEntityFactory) => TEntityFactory[`_entity`];
 };
 
@@ -61,8 +74,13 @@ export const createEntityFactory = <
         children: [] as unknown[],
       };
       const entityFactory = {
-        addChild: <TEntityChild>(child: TEntityChild) => {
+        addChild: (child: unknown) => {
           entity.children.push(child);
+          return entityFactory;
+        },
+        addChildren: (children: unknown[]) => {
+          entity.children.push(...children);
+          console.log(`entityFactory addChildren`, { entity, children });
           return entityFactory;
         },
         build: () => entity,

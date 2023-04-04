@@ -47,8 +47,8 @@ export const rigidBodyComponentFactory = ({ physicsWorld }: { physicsWorld: Worl
               ? RigidBodyDesc.kinematicVelocityBased()
               : RigidBodyDesc.dynamic()
           )
-            .setTranslation(...position)
-            .setRotation(q.set(...quaternion));
+            .setTranslation(position[0], position[1], position[2])
+            .setRotation(q.set(quaternion[0], quaternion[1], quaternion[2], quaternion[3]));
 
           if (entity.rigidBody.gravityScale != null) {
             rigidBodyDesc = rigidBodyDesc.setGravityScale(entity.rigidBody.gravityScale);

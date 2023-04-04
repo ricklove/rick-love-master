@@ -27,6 +27,17 @@ export const createGameCore = async (messageBuffer: MessageBufferPool): Promise<
   const hands = createHands(ecs);
 
   // temp
+  const scale = 0.25;
+  const cols = 5;
+  const count = 125;
+  const eggs = [...new Array(count)].map((_, i) =>
+    createAlienEgg(
+      ecs,
+      [-1 + scale * (i % cols), 0 + scale * Math.floor(i / (cols * cols)), -1 + scale * (Math.floor(i / cols) % cols)],
+      scale,
+    ),
+  );
+
   const root = ecs
     .entity(`root`, false)
     .addChild(
@@ -45,6 +56,8 @@ export const createGameCore = async (messageBuffer: MessageBufferPool): Promise<
         )
         .build(),
     )
+    .addChildren(eggs)
+    // .addChild(createAlienEgg(ecs, [-1, 2, -3], 0.25))
     .addChild(createAlienEgg(ecs, [-2, 2, -5]))
     .addChild(
       ecs
