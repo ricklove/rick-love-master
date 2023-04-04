@@ -37,6 +37,26 @@ export const setupThree = (hostRaw: HTMLDivElement) => {
   const button = VRButton.createButton(renderer);
   host.appendChild(button);
 
+  // const controllerKinds = [] as {
+  //   isHand: boolean;
+  //   handedness: XRHandedness;
+  // }[];
+
+  // const handleInputSourcesChange = (
+  //   e: THREE.Event & {
+  //     type: 'inputsourceschange';
+  //   } & {
+  //     target: THREE.WebXRManager;
+  //   },
+  // ) => {
+  //   e.target.session.inputSources.forEach((inputSource) => {
+
+  //   });
+  //   xrState.inputSources = e.session.inputSources;
+  //   xrState.isHandTracking = Object.values(e.session.inputSources).some((source) => source.hand);
+  // };
+  // renderer.xr.addEventListener(`inputsourceschange`, handleInputSourcesChange);
+
   //   const xrState = {
   //     isVisible: false,
   //     isPresenting: false,
@@ -84,6 +104,7 @@ export const setupThree = (hostRaw: HTMLDivElement) => {
     // renderer.xr.removeEventListener(`sessionstart`, handleSessionStart);
     // renderer.xr.removeEventListener(`sessionend`, handleSessionEnd);
     // handleSessionEnd();
+    // renderer.xr.removeEventListener(`inputsourceschange`, (e) => handleInputSourcesChange);
     window.removeEventListener(`resize`, onWindowResize);
     host.removeChild(button);
     host.removeChild(container);

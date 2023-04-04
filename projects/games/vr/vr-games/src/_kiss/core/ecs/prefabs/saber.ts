@@ -5,6 +5,7 @@ export const createSaber = (ecs: Ecs, position: [number, number, number], scale:
     .entity(`saber`)
     .transform({ position, quaternion: [0, 0, 0, 1] })
     .rigidBody({ kind: `dynamic` })
+    .inputHandAttachable({ handAttachableKind: `sword`, attachmentPosition: [0, 0.08, 0], attachedHandSide: `right` })
     .addChild(
       ecs
         .entity(`staff`)

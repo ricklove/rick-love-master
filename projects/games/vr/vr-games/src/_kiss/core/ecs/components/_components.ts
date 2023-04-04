@@ -6,6 +6,7 @@ import { GraphicsService } from '../graphics-service';
 import { colliderComponentFactory } from './collider';
 import { gameWithWavesComponentFactory } from './game-with-waves';
 import { graphicsComponentFactory } from './graphics';
+import { inputHandAttachableComponentFactory } from './input-hand-attachable';
 import { inputHandJointComponentFactory } from './input-hand-joint';
 import { rigidBodyComponentFactory } from './rigid-body';
 import { shapeBoxComponentFactory } from './shape-box';
@@ -23,6 +24,7 @@ export const createComponentFactories = (global: {
 
   // inputs
   inputHandJointComponentFactory: inputHandJointComponentFactory(global),
+  inputHandAttachableComponentFactory: inputHandAttachableComponentFactory(global),
 
   // misc
   transformComponentFactory,

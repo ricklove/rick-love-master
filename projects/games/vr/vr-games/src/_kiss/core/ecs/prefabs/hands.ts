@@ -1,7 +1,7 @@
 import { handJointNames } from '../../input/hand-joints';
 import { Ecs } from '../components/_components';
 
-export const createHands = (ecs: Ecs, jointRadius = 0.02) => {
+export const createHands = (ecs: Ecs, jointRadius = 0.01) => {
   const leftHand = createHand(ecs, `left`, jointRadius);
   const rightHand = createHand(ecs, `right`, jointRadius);
 
