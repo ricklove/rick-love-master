@@ -1,5 +1,6 @@
 import { RigidBody, RigidBodyDesc, RigidBodyType, World } from '@dimforge/rapier3d-compat';
 import { Quaternion, Vector3 } from 'three';
+import { wogger } from '../../worker/wogger';
 import { createComponentFactory } from '../ecs-component-factory';
 import { Entity_Transform, EntityInstance_Transform } from './transform';
 
@@ -53,10 +54,13 @@ export const rigidBodyComponentFactory = ({ physicsWorld }: { physicsWorld: Worl
             rigidBodyDesc = rigidBodyDesc.setGravityScale(entity.rigidBody.gravityScale);
           }
 
+          const rigidBody = physicsWorld.createRigidBody(rigidBodyDesc);
+          wogger.log(`rigidBody setup`, { rigidBody, entityInstance });
+
           return {
             ...entityInstance,
             rigidBody: {
-              rigidBody: physicsWorld.createRigidBody(rigidBodyDesc),
+              rigidBody,
             },
           };
         },
