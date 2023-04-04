@@ -15,7 +15,7 @@ export const createWeapon_knuckleClaws = (
   const hOfAngle = Math.sin(angle);
   const hAtHalfLegnth = hOfAngle * length * 0.5;
 
-  const saber = ecs
+  const claws = ecs
     .entity(`knuckleClaws`)
     .transform({ position })
     .rigidBody({ kind: `dynamic` })
@@ -49,5 +49,5 @@ export const createWeapon_knuckleClaws = (
     )
     .build();
 
-  return saber;
+  return claws;
 };
