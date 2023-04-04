@@ -1,4 +1,4 @@
-import { RigidBody, RigidBodyDesc, RigidBodyType } from '@dimforge/rapier3d-compat';
+import { RigidBody, RigidBodyDesc } from '@dimforge/rapier3d-compat';
 import { Quaternion, Vector3 } from 'three';
 import { wogger } from '../../worker/wogger';
 import { createComponentFactory } from '../ecs-component-factory';
@@ -83,22 +83,24 @@ export const rigidBodyComponentFactory = ({ physicsService }: { physicsService: 
             false,
           );
 
-          const kind =
-            entity.rigidBody.kind === `fixed`
-              ? RigidBodyType.Fixed
-              : entity.rigidBody.kind === `kinematicPositionBased`
-              ? RigidBodyType.KinematicPositionBased
-              : entity.rigidBody.kind === `kinematicVelocityBased`
-              ? RigidBodyType.KinematicVelocityBased
-              : RigidBodyType.Dynamic;
-          entityInstance.rigidBody.rigidBody.setBodyType(kind, true);
+          // const kind =
+          //   entity.rigidBody.kind === `fixed`
+          //     ? RigidBodyType.Fixed
+          //     : entity.rigidBody.kind === `kinematicPositionBased`
+          //     ? RigidBodyType.KinematicPositionBased
+          //     : entity.rigidBody.kind === `kinematicVelocityBased`
+          //     ? RigidBodyType.KinematicVelocityBased
+          //     : RigidBodyType.Dynamic;
+          // entityInstance.rigidBody.rigidBody.setBodyType(kind, false);
+          entityInstance.rigidBody.rigidBody.setEnabled(true);
 
           wogger.log(`rigidBody activate`, { entityInstance });
         },
         deactivate: (entityInstance) => {
-          entityInstance.rigidBody.rigidBody.setBodyType(RigidBodyType.Fixed, false);
-          entityInstance.rigidBody.rigidBody.setTranslation(v.set(0, -10000, 0), false);
-          entityInstance.rigidBody.rigidBody.sleep();
+          // entityInstance.rigidBody.rigidBody.setBodyType(RigidBodyType.Fixed, false);
+          // entityInstance.rigidBody.rigidBody.setTranslation(v.set(0, -10000, 0), false);
+          // entityInstance.rigidBody.rigidBody.sleep();
+          entityInstance.rigidBody.rigidBody.setEnabled(false);
 
           wogger.log(`rigidBody deactivate`, { entityInstance });
         },
