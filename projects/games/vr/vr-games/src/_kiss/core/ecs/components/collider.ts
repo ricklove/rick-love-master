@@ -72,8 +72,8 @@ export const colliderComponentFactory = ({ physicsWorld }: { physicsWorld: World
         if (!colliderDesc) throw new Error(`ColliderDesc not defined`);
 
         const { position, quaternion } = entityInstance.transform;
-        colliderDesc.setTranslation(...position);
-        colliderDesc.setRotation(q.set(...quaternion));
+        colliderDesc.setTranslation(position[0], position[1], position[2]);
+        colliderDesc.setRotation(q.set(quaternion[0], quaternion[1], quaternion[2], quaternion[3]));
 
         if (entity.collider.restitution) {
           colliderDesc = colliderDesc.setRestitution(entity.collider.restitution);

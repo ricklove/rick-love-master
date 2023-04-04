@@ -32,7 +32,7 @@ export const createSceneState = () => {
   const createEntityInstance = (entity: EntityDescUntyped, parent: EntityInstanceUntyped) => {
     let instance: EntityInstanceUntyped = {
       enabled: entity.enabled,
-      _enabledActual: false,
+      _enabledActual: entity.enabled,
       components: new Set(entity.components),
       parent,
       children: [],
@@ -126,6 +126,7 @@ export const createScene = (
         continue;
       }
 
+      instance._enabledActual = instance.enabled;
       if (instance.enabled) {
         for (const factory of factoryActivates) {
           if (!instance.components.has(factory.name)) {

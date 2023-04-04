@@ -70,8 +70,12 @@ export const rigidBodyComponentFactory = ({ physicsWorld }: { physicsWorld: Worl
         activate: (entityInstance) => {
           const entity = entityInstance.desc;
 
-          entityInstance.rigidBody.rigidBody.setTranslation(v.set(...entity.transform.position), false);
-          entityInstance.rigidBody.rigidBody.setRotation(q.set(...entity.transform.quaternion), false);
+          const { position, quaternion } = entity.transform;
+          entityInstance.rigidBody.rigidBody.setTranslation(v.set(position[0], position[1], position[2]), false);
+          entityInstance.rigidBody.rigidBody.setRotation(
+            q.set(quaternion[0], quaternion[1], quaternion[2], quaternion[3]),
+            false,
+          );
 
           const kind =
             entity.rigidBody.kind === `fixed`
@@ -82,10 +86,14 @@ export const rigidBodyComponentFactory = ({ physicsWorld }: { physicsWorld: Worl
               ? RigidBodyType.KinematicVelocityBased
               : RigidBodyType.Dynamic;
           entityInstance.rigidBody.rigidBody.setBodyType(kind, true);
+
+          wogger.log(`rigidBody activate`, { entityInstance });
         },
         deactivate: (entityInstance) => {
           entityInstance.rigidBody.rigidBody.setBodyType(RigidBodyType.Fixed, true);
           entityInstance.rigidBody.rigidBody.sleep();
+
+          wogger.log(`rigidBody deactivate`, { entityInstance });
         },
         update: (entityInstance) => {
           const translation = entityInstance.rigidBody.rigidBody.translation();
@@ -98,6 +106,8 @@ export const rigidBodyComponentFactory = ({ physicsWorld }: { physicsWorld: Worl
           entityInstance.transform.quaternion[1] = rotation.y;
           entityInstance.transform.quaternion[2] = rotation.z;
           entityInstance.transform.quaternion[3] = rotation.w;
+
+          // wogger.log(`rigidBody update`, { entityInstance });
         },
       };
     },
