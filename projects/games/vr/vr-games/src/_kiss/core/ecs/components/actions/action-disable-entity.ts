@@ -1,3 +1,4 @@
+import { wogger } from '../../../worker/wogger';
 import { createComponentFactory } from '../../ecs-component-factory';
 import { EntityInstanceUntyped } from '../../ecs-engine';
 import { Entity_Actions, EntityInstance_Actions } from './actions';
@@ -46,6 +47,7 @@ export const actionDisableEntityComponentFactory = createComponentFactory<
 
       const eInstance = entityInstance as unknown as EntityInstanceUntyped;
       entityInstance.actions.actions[entityInstance.desc.actionDisableEntity.actionName] = () => {
+        wogger.log(`actionDisableEntity action`, { entityInstance });
         eInstance.enabled = false;
       };
     },

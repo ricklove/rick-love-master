@@ -27,6 +27,22 @@ export const createScene_beatSaber = (ecs: Ecs) => {
     .addChild(createWeapon_knuckleClaws(ecs, [0, 1, -0.35], 1, `right`))
     .addChild(
       ecs
+        .entity(`weapon-test`)
+        .transform({ position: [0.25, 0, -3] })
+        .rigidBody({ kind: `dynamic`, collisionTag: `weapon` })
+        .addChild(
+          ecs
+            .entity(`box-collider`)
+            .transform({ position: [0, 0.5, 0] })
+            .shape_box({ scale: [0.5, 0.5, 0.5] })
+            .collider({ colliderEvents: true })
+            .graphics({ color: 0xff0000 })
+            .build(),
+        )
+        .build(),
+    )
+    .addChild(
+      ecs
         .entity(`ground`)
         .transform({ position: [0, -5, 0] })
         .rigidBody({ kind: `fixed` })
@@ -60,7 +76,7 @@ export const createScene_beatSaber = (ecs: Ecs) => {
               sequence: [
                 {
                   spawnerName: `egg`,
-                  count: 10,
+                  count: 1,
                   position: [0, 1, -25],
                   timeBeforeSequenceSec: 1,
                 },

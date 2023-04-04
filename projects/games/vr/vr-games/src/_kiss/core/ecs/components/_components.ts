@@ -6,7 +6,7 @@ import { PhysicsService } from '../physics-service';
 import { actionDisableEntityComponentFactory } from './actions/action-disable-entity';
 import { actionsComponentFactory } from './actions/actions';
 import { colliderComponentFactory } from './collider';
-import { collisionActionComponentFactory } from './collisionAction';
+import { collisionActionComponentFactory } from './collision-action';
 import { gameComponentFactory } from './game';
 import { gameWithWavesComponentFactory } from './game-with-waves';
 import { graphicsComponentFactory } from './graphics';
@@ -40,7 +40,6 @@ export const createComponentFactories = (global: {
   // physics
   rigidBodyComponentFactory: rigidBodyComponentFactory(global),
   colliderComponentFactory: colliderComponentFactory(global),
-  collisionActionComponentFactory: collisionActionComponentFactory,
   moveToTargetComponentFactory: moveToTargetComponentFactory(global),
 
   // game logic
@@ -49,6 +48,7 @@ export const createComponentFactories = (global: {
 
   actionsComponentFactory: actionsComponentFactory,
   actionDisableEntityComponentFactory: actionDisableEntityComponentFactory,
+  collisionActionComponentFactory: collisionActionComponentFactory,
 
   // graphics
   graphicsComponentFactory: graphicsComponentFactory(global),

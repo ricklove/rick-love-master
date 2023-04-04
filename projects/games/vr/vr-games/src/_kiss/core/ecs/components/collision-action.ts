@@ -36,8 +36,20 @@ export const collisionActionComponentFactory = createComponentFactory<
           return;
         }
 
-        wogger.log(`collisionActionComponentFactory: onCollision`, { entityInstance, other });
+        // wogger.log(`collisionActionComponentFactory: onCollision START`, {
+        //   entityInstance,
+        //   other,
+        //   actions: entityInstance.actions.actions,
+        // });
+
         const action = entityInstance.actions.actions[entityInstance.desc.collisionAction.action];
+        // wogger.log(`collisionActionComponentFactory: onCollision`, {
+        //   entityInstance,
+        //   other,
+        //   actions: entityInstance.actions.actions,
+        //   action,
+        // });
+
         if (!action) {
           wogger.error(`collisionActionComponentFactory: action not found`, { entityInstance, other });
           return;
