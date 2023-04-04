@@ -150,7 +150,7 @@ export const createScene = (
           if (!instance.components.has(factory.name)) {
             continue;
           }
-          wogger.log(`entity activating`, { instance });
+          wogger.log(`entity activating: [${instance.desc.name} ${instance.instanceId}]`, { instance });
           factory.activate!(instance);
         }
       } else {
@@ -158,7 +158,7 @@ export const createScene = (
           if (!instance.components.has(factory.name)) {
             continue;
           }
-          wogger.log(`entity deactivating`, { instance });
+          wogger.log(`entity deactivating: [${instance.desc.name} ${instance.instanceId}]`, { instance });
           factory.deactivate!(instance);
         }
       }

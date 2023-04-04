@@ -18,7 +18,7 @@ export const createScene_test01 = (ecs: Ecs) => {
   );
 
   const root = ecs
-    .entity(`root`, false)
+    .entity(`root`, true)
     .addChild(
       ecs
         .entity(`ground`)

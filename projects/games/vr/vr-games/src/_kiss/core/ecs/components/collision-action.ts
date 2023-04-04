@@ -55,6 +55,12 @@ export const collisionActionComponentFactory = createComponentFactory<
           return;
         }
 
+        wogger.log(`collisionActionComponentFactory: onCollision action`, {
+          entityInstance,
+          other,
+          actions: entityInstance.actions.actions,
+          action,
+        });
         action();
       };
 

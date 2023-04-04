@@ -20,7 +20,7 @@ export const createScene_beatSaber = (ecs: Ecs) => {
     .build();
 
   const root = ecs
-    .entity(`root`, false)
+    .entity(`root`, true)
     .addChild(hands.hands.left)
     .addChild(hands.hands.right)
     .addChild(createWeapon_saber(ecs, [0, 1, -0.35], 1, `left`))
@@ -29,13 +29,13 @@ export const createScene_beatSaber = (ecs: Ecs) => {
       ecs
         .entity(`weapon-test`)
         .transform({ position: [0.25, 0, -3] })
-        .rigidBody({ kind: `dynamic`, collisionTag: `weapon` })
+        .rigidBody({ kind: `kinematicPositionBased`, collisionTag: `weapon` })
         .addChild(
           ecs
             .entity(`box-collider`)
             .transform({ position: [0, 0.5, 0] })
             .shape_box({ scale: [0.5, 0.5, 0.5] })
-            .collider({ colliderEvents: true })
+            .collider({ colliderEvents: true, sensor: true })
             .graphics({ color: 0xff0000 })
             .build(),
         )

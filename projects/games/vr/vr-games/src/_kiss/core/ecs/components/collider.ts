@@ -1,6 +1,5 @@
 import RAPIER, { Collider, ColliderDesc } from '@dimforge/rapier3d-compat';
 import { Quaternion } from 'three';
-import { wogger } from '../../worker/wogger';
 import { createComponentFactory } from '../ecs-component-factory';
 import { PhysicsService } from '../physics-service';
 import { EntityInstance_RigidBody } from './rigid-body';
@@ -91,7 +90,7 @@ export const colliderComponentFactory = ({ physicsService }: { physicsService: P
 
         const collider = physicsService.world.createCollider(colliderDesc, parentInstance.rigidBody.rigidBody);
         physicsService.handleEntityIds.set(collider.handle, entityInstance.instanceId);
-        wogger.log(`collider setup`, { collider, parentInstance, entityInstance });
+        // wogger.log(`collider setup`, { collider, parentInstance, entityInstance });
 
         return {
           ...entityInstance,

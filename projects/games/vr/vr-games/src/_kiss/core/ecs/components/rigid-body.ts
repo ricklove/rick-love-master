@@ -60,7 +60,7 @@ export const rigidBodyComponentFactory = ({ physicsService }: { physicsService: 
 
           const rigidBody = physicsService.world.createRigidBody(rigidBodyDesc);
           physicsService.handleEntityIds.set(rigidBody.handle, entityInstance.instanceId);
-          wogger.log(`rigidBody setup`, { rigidBody, entityInstance });
+          // wogger.log(`rigidBody setup`, { rigidBody, entityInstance });
 
           return {
             ...entityInstance,

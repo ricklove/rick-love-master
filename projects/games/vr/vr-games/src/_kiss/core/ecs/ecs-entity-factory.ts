@@ -1,3 +1,5 @@
+import { wogger } from '../worker/wogger';
+
 type AddComponentSimplified<TAddComponent, TComponentName extends string> = TAddComponent extends (
   entity: infer TEntityIn,
   args: infer TComponentArgs,
@@ -81,10 +83,13 @@ export const createEntityFactory = <
       },
       addChildren: (children: unknown[]) => {
         state.entity.children.push(...children);
-        console.log(`entityFactory addChildren`, { entity: state.entity, children });
+        wogger.log(`entityFactory addChildren: [${state.entity.name}]`, { entity: state.entity, children });
         return entityFactory;
       },
-      build: () => state.entity,
+      build: () => {
+        wogger.log(`entity build: [${state.entity.name}]`, { state });
+        return state.entity;
+      },
     };
 
     const entityFactoryWithComponents = entityFactory as Record<string, unknown>;

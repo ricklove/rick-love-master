@@ -14,7 +14,8 @@ export type Entity_Graphics = {
 export type EntityInstance_Graphics = {
   graphics: {
     id: number;
-    visible: boolean;
+    // visible: boolean;
+    _visibleTarget: boolean;
     _visibleActual: boolean;
   };
 };
@@ -54,8 +55,8 @@ export const graphicsComponentFactory = ({ graphicsService }: { graphicsService:
           ...entityInstance,
           graphics: {
             id: result.id,
-            visible: entityInstance.desc.graphics.visible,
-            _visibleActual: false,
+            _visibleTarget: entityInstance.desc.graphics.visible,
+            _visibleActual: entityInstance.desc.graphics.visible,
           },
         };
       },
@@ -63,26 +64,18 @@ export const graphicsComponentFactory = ({ graphicsService }: { graphicsService:
         graphicsService.removeObject(entityInstance.graphics.id);
       },
       activate: (entityInstance) => {
-        if (!entityInstance.graphics.visible) {
-          return;
-        }
-        graphicsService.setVisible(entityInstance.graphics.id, true);
-        entityInstance.graphics._visibleActual = true;
+        entityInstance.graphics._visibleTarget = true;
       },
       deactivate: (entityInstance) => {
-        if (!entityInstance.graphics._visibleActual) {
-          return;
-        }
-        graphicsService.setVisible(entityInstance.graphics.id, false);
-        entityInstance.graphics._visibleActual = false;
+        entityInstance.graphics._visibleTarget = false;
       },
       update: (entityInstance) => {
-        if (entityInstance.graphics.visible !== entityInstance.graphics._visibleActual) {
-          graphicsService.setVisible(entityInstance.graphics.id, entityInstance.graphics.visible);
-          entityInstance.graphics._visibleActual = entityInstance.graphics.visible;
+        if (entityInstance.graphics._visibleTarget !== entityInstance.graphics._visibleActual) {
+          graphicsService.setVisible(entityInstance.graphics.id, entityInstance.graphics._visibleTarget);
+          entityInstance.graphics._visibleActual = entityInstance.graphics._visibleTarget;
           return;
         }
-        if (!entityInstance.graphics._visibleActual) {
+        if (!entityInstance.graphics._visibleTarget) {
           return;
         }
         graphicsService.setTransform(
