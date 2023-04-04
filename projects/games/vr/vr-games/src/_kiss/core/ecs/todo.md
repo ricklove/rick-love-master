@@ -23,8 +23,8 @@
     - [ ] randomly generated sequence
   - [x] blocks move toward player at a constant speed
   - [ ] player can hit block with visual feedback
-    - [ ] correct timing will cause block to disappear
-    - [ ] incorrect timing will cause block to turn red
+    - [ ] hitting block will cause block to disappear
+    - [ ] missing block will ?
   - [ ] display score / chain
 
 - level selection

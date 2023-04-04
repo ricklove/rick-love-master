@@ -1,9 +1,8 @@
-import { World } from '@dimforge/rapier3d-compat';
-import { Vector3 } from 'three';
 import { createGamePlayerInputs } from '../../input/game-player-inputs';
 import { createScene, createSceneState } from '../ecs-engine';
 import { createEntityFactory } from '../ecs-entity-factory';
 import { GraphicsService } from '../graphics-service';
+import { createPhysicsService } from '../physics-service';
 import { createComponentFactories } from './_components';
 
 const createGraphicsService = (): GraphicsService => ({
@@ -22,7 +21,7 @@ const createGraphicsService = (): GraphicsService => ({
 });
 
 const global = {
-  physicsWorld: new World(new Vector3(0, -9.81, 0)),
+  physicsService: createPhysicsService(),
   graphicsService: createGraphicsService(),
   sceneState: createSceneState(),
   inputs: createGamePlayerInputs(),
@@ -116,6 +115,9 @@ const root = ecs
   .addChild(
     ecs
       .entity(`game`)
+      .game({
+        active: true,
+      })
       .gameWithWaves({
         waves: [
           {

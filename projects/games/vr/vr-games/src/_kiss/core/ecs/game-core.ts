@@ -1,20 +1,21 @@
-import RAPIER, { EventQueue, World } from '@dimforge/rapier3d-compat';
-import { Vector3 } from 'three';
+import RAPIER, { EventQueue } from '@dimforge/rapier3d-compat';
 import { createGamePlayerInputs } from '../input/game-player-inputs';
 import { MessageBufferPool } from '../messages/message-buffer';
 import { GameCore } from '../worker/types';
 import { wogger } from '../worker/wogger';
 import { createComponentFactories } from './components/_components';
+import { EntityInstance_RigidBody } from './components/rigid-body';
 import { createScene, createSceneState } from './ecs-engine';
 import { createEntityFactory } from './ecs-entity-factory';
 import { createGraphicsService } from './graphics-service';
+import { createPhysicsService } from './physics-service';
 import { createScene_beatSaber } from './scenes/beat-saber';
 
 export const createGameCore = async (messageBuffer: MessageBufferPool): Promise<GameCore> => {
   await RAPIER.init();
 
   const global = {
-    physicsWorld: new World(new Vector3(0, -9.81, 0)),
+    physicsService: createPhysicsService(),
     graphicsService: createGraphicsService(messageBuffer),
     sceneState: createSceneState(),
     inputs: createGamePlayerInputs(),
@@ -29,13 +30,13 @@ export const createGameCore = async (messageBuffer: MessageBufferPool): Promise<
   const scene = createScene(root, componentFactories, global);
 
   let hasRequestedUpdateMessage = false;
-  global.physicsWorld.timestep = 1.0 / 120;
+  global.physicsService.world.timestep = 1.0 / 120;
 
   const eventQueue = new EventQueue(true);
 
   const gameLoop = () => {
     // TODO: physics should be updated inside the scene update
-    global.physicsWorld.step(eventQueue);
+    global.physicsService.world.step(eventQueue);
 
     // handle collisions
     eventQueue.drainCollisionEvents((handle1, handle2, started) => {
@@ -43,7 +44,28 @@ export const createGameCore = async (messageBuffer: MessageBufferPool): Promise<
         return;
       }
 
-      wogger.log(`collision`, { started, handle1, handle2 });
+      const entityId1 = global.physicsService.handleEntityIds.get(handle1);
+      const entityId2 = global.physicsService.handleEntityIds.get(handle2);
+      const entity1 = entityId1 && global.sceneState.findEntityInstanceById(entityId1);
+      const entity2 = entityId2 && global.sceneState.findEntityInstanceById(entityId2);
+      const entityRigidbody1 = (entity1 && entity1.parent) as unknown as undefined | EntityInstance_RigidBody;
+      const entityRigidbody2 = (entity2 && entity2.parent) as unknown as undefined | EntityInstance_RigidBody;
+
+      entityRigidbody1?.rigidBody.onCollision?.(entityRigidbody2, started);
+      entityRigidbody2?.rigidBody.onCollision?.(entityRigidbody1, started);
+
+      wogger.log(`collision`, {
+        started,
+        entityRigidbody1,
+        entityRigidbody2,
+        entity1,
+        entity2,
+        entityId1,
+        entityId2,
+        handle1,
+        handle2,
+        global,
+      });
 
       // const entity1 = entityHandleMap.get(handle1);
       // const entity2 = entityHandleMap.get(handle2);

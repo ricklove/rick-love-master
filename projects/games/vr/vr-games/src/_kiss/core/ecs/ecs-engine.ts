@@ -17,6 +17,7 @@ export type EntityDescUntyped = {
   [field: string]: unknown;
 };
 export type EntityInstanceUntyped = {
+  instanceId: number;
   enabled: boolean;
   _enabledActual: boolean;
   components: Set<string>;
@@ -26,12 +27,15 @@ export type EntityInstanceUntyped = {
   [field: string]: unknown;
 };
 
+let nextInstanceId = 0;
 export const createSceneState = () => {
   const factories = [] as EcsComponentFactoryUntyped[];
   const instances = [] as EntityInstanceUntyped[];
+  const instanceMap = new Map<number, EntityInstanceUntyped>();
 
   const createEntityInstance = (entity: EntityDescUntyped, parent: EntityInstanceUntyped) => {
     let instance: EntityInstanceUntyped = {
+      instanceId: nextInstanceId++,
       enabled: entity.enabled,
       _enabledActual: true,
       components: new Set(entity.components),
@@ -46,6 +50,7 @@ export const createSceneState = () => {
       instance = factory.setup(instance, parent);
     }
     instances.push(instance);
+    instanceMap.set(instance.instanceId, instance);
     parent.children.push(instance);
 
     for (const child of entity.children ?? []) {
@@ -79,12 +84,17 @@ export const createSceneState = () => {
     return undefined;
   };
 
+  const findEntityInstanceById = (instanceId: number) => {
+    return instanceMap.get(instanceId);
+  };
+
   return {
     factories,
     instances,
     createEntityInstance,
     destroyEntityInstance,
     findEntityInstance,
+    findEntityInstanceById,
   };
 };
 
@@ -102,6 +112,7 @@ export const createScene = (
 
   const setup = () => {
     sceneState.createEntityInstance(sceneRoot, {
+      instanceId: nextInstanceId++,
       enabled: true,
       _enabledActual: true,
       components: new Set(),
@@ -139,6 +150,7 @@ export const createScene = (
           if (!instance.components.has(factory.name)) {
             continue;
           }
+          wogger.log(`entity activating`, { instance });
           factory.activate!(instance);
         }
       } else {

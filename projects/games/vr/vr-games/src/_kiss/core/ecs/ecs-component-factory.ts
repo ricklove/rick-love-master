@@ -12,17 +12,23 @@ export type EcsComponentFactory<
     entity: TEntityInActual,
     componentArgs: TComponentArgs,
   ) => TEntityInActual & TEntityOut;
-  setup: <TEntityInstanceInActual extends TEntityInstanceIn & { desc: TEntityIn & TEntityOut }>(
+  setup: <TEntityInstanceInActual extends TEntityInstanceIn & { instanceId: number; desc: TEntityIn & TEntityOut }>(
     entity: TEntityInstanceInActual,
     parent: TEntityInstanceParent,
   ) => TEntityInstanceInActual & TEntityInstanceIn & TEntityInstanceOnly & { desc: TEntityIn & TEntityOut };
   update?: (
-    entity: TEntityInstanceIn & TEntityInstanceOnly & { desc: TEntityIn & TEntityOut },
+    entity: TEntityInstanceIn & TEntityInstanceOnly & { instanceId: number; desc: TEntityIn & TEntityOut },
     parent: TEntityInstanceParent,
   ) => void;
-  activate?: (entity: TEntityInstanceIn & TEntityInstanceOnly & { desc: TEntityIn & TEntityOut }) => void;
-  deactivate?: (entity: TEntityInstanceIn & TEntityInstanceOnly & { desc: TEntityIn & TEntityOut }) => void;
-  destroy?: (entity: TEntityInstanceIn & TEntityInstanceOnly & { desc: TEntityIn & TEntityOut }) => void;
+  activate?: (
+    entity: TEntityInstanceIn & TEntityInstanceOnly & { instanceId: number; desc: TEntityIn & TEntityOut },
+  ) => void;
+  deactivate?: (
+    entity: TEntityInstanceIn & TEntityInstanceOnly & { instanceId: number; desc: TEntityIn & TEntityOut },
+  ) => void;
+  destroy?: (
+    entity: TEntityInstanceIn & TEntityInstanceOnly & { instanceId: number; desc: TEntityIn & TEntityOut },
+  ) => void;
 };
 
 export const createComponentFactory = <

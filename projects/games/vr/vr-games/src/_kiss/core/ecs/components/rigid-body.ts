@@ -1,7 +1,8 @@
-import { RigidBody, RigidBodyDesc, RigidBodyType, World } from '@dimforge/rapier3d-compat';
+import { RigidBody, RigidBodyDesc, RigidBodyType } from '@dimforge/rapier3d-compat';
 import { Quaternion, Vector3 } from 'three';
 import { wogger } from '../../worker/wogger';
 import { createComponentFactory } from '../ecs-component-factory';
+import { PhysicsService } from '../physics-service';
 import { Entity_Transform, EntityInstance_Transform } from './transform';
 
 export type Entity_RigidBody = {
@@ -14,10 +15,11 @@ export type Entity_RigidBody = {
 export type EntityInstance_RigidBody = {
   rigidBody: {
     rigidBody: RigidBody;
+    onCollision?: (other: undefined | EntityInstance_RigidBody, started: boolean) => void;
   };
 };
 
-export const rigidBodyComponentFactory = ({ physicsWorld }: { physicsWorld: World }) =>
+export const rigidBodyComponentFactory = ({ physicsService }: { physicsService: PhysicsService }) =>
   createComponentFactory<Entity_Transform, Entity_RigidBody, EntityInstance_Transform, EntityInstance_RigidBody>()(
     () => {
       const v = new Vector3();
@@ -54,7 +56,8 @@ export const rigidBodyComponentFactory = ({ physicsWorld }: { physicsWorld: Worl
             rigidBodyDesc = rigidBodyDesc.setGravityScale(entity.rigidBody.gravityScale);
           }
 
-          const rigidBody = physicsWorld.createRigidBody(rigidBodyDesc);
+          const rigidBody = physicsService.world.createRigidBody(rigidBodyDesc);
+          physicsService.handleEntityIds.set(rigidBody.handle, entityInstance.instanceId);
           wogger.log(`rigidBody setup`, { rigidBody, entityInstance });
 
           return {
@@ -65,7 +68,7 @@ export const rigidBodyComponentFactory = ({ physicsWorld }: { physicsWorld: Worl
           };
         },
         destroy: (entityInstance) => {
-          physicsWorld.removeRigidBody(entityInstance.rigidBody.rigidBody);
+          physicsService.world.removeRigidBody(entityInstance.rigidBody.rigidBody);
         },
         activate: (entityInstance) => {
           const entity = entityInstance.desc;

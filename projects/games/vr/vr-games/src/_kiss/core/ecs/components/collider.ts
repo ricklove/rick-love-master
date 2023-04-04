@@ -1,7 +1,8 @@
-import RAPIER, { Collider, ColliderDesc, World } from '@dimforge/rapier3d-compat';
+import RAPIER, { Collider, ColliderDesc } from '@dimforge/rapier3d-compat';
 import { Quaternion } from 'three';
 import { wogger } from '../../worker/wogger';
 import { createComponentFactory } from '../ecs-component-factory';
+import { PhysicsService } from '../physics-service';
 import { EntityInstance_RigidBody } from './rigid-body';
 import { Entity_ShapeBox } from './shape-box';
 import { Entity_ShapeSphere } from './shape-sphere';
@@ -24,7 +25,7 @@ export type EntityInstance_Collider = {
 
 export type Entity_Shape = Entity_ShapeBox | Entity_ShapeSphere;
 
-export const colliderComponentFactory = ({ physicsWorld }: { physicsWorld: World }) =>
+export const colliderComponentFactory = ({ physicsService }: { physicsService: PhysicsService }) =>
   createComponentFactory<
     Entity_Transform & Entity_Shape,
     Entity_Collider,
@@ -88,7 +89,8 @@ export const colliderComponentFactory = ({ physicsWorld }: { physicsWorld: World
           colliderDesc = colliderDesc.setActiveEvents(RAPIER.ActiveEvents.COLLISION_EVENTS);
         }
 
-        const collider = physicsWorld.createCollider(colliderDesc, parentInstance.rigidBody.rigidBody);
+        const collider = physicsService.world.createCollider(colliderDesc, parentInstance.rigidBody.rigidBody);
+        physicsService.handleEntityIds.set(collider.handle, entityInstance.instanceId);
         wogger.log(`collider setup`, { collider, parentInstance, entityInstance });
 
         return {

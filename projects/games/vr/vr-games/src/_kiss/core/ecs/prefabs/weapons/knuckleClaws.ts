@@ -25,7 +25,7 @@ export const createWeapon_knuckleClaws = (
         .entity(`bladeMiddle`)
         .transform({ position: [0, 0, 1.03 * -0.5 * length] })
         .shape_box({ scale: [bladeWidth, bladeThickness, 1.03 * length] })
-        .collider({ restitution: 1 })
+        .collider({ restitution: 1, colliderEvents: true })
         .graphics({ color: 0xff0000 })
         .build(),
     )
@@ -34,7 +34,7 @@ export const createWeapon_knuckleClaws = (
         .entity(`bladeTop`)
         .transform({ position: [0, knucleGap + hAtHalfLegnth, -0.5 * length], rotation: [angle, 0, 0] })
         .shape_box({ scale: [bladeWidth, bladeThickness, 1.01 * length] })
-        .collider({ restitution: 1 })
+        .collider({ restitution: 1, colliderEvents: true })
         .graphics({ color: 0xff0000 })
         .build(),
     )
@@ -43,7 +43,7 @@ export const createWeapon_knuckleClaws = (
         .entity(`bladeBottom`)
         .transform({ position: [0, -knucleGap - hAtHalfLegnth, -0.5 * length], rotation: [-angle, 0, 0] })
         .shape_box({ scale: [bladeWidth, bladeThickness, 1.01 * length] })
-        .collider({ restitution: 1 })
+        .collider({ restitution: 1, colliderEvents: true })
         .graphics({ color: 0xff0000 })
         .build(),
     )

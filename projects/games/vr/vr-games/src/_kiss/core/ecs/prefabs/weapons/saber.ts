@@ -16,7 +16,7 @@ export const createWeapon_saber = (
         .entity(`blade`)
         .transform({ position: [0, 0.55 * scale, 0] })
         .shape_box({ scale: [0.002 * scale, 0.92 * scale, 0.02 * scale] })
-        .collider({ restitution: 1 })
+        .collider({ restitution: 1, colliderEvents: true })
         .graphics({ color: 0xff0000 })
         .build(),
     )
@@ -25,7 +25,7 @@ export const createWeapon_saber = (
         .entity(`handle`)
         .transform({ position: [0, 0.1 * scale, 0] })
         .shape_box({ scale: [0.025 * scale, 0.2 * scale, 0.025 * scale] })
-        .collider({ restitution: 0, friction: 10 })
+        .collider({ restitution: 0, friction: 10, colliderEvents: true })
         .graphics({ color: 0x555555 })
         .build(),
     )
@@ -34,7 +34,7 @@ export const createWeapon_saber = (
         .entity(`guard`)
         .transform({ position: [0, 0.2 * scale, 0] })
         .shape_box({ scale: [0.06 * scale, 0.001 * scale, 0.06 * scale] })
-        .collider({ restitution: 0, friction: 10 })
+        .collider({ restitution: 0, friction: 10, colliderEvents: true })
         .graphics({ color: 0x555555 })
         .build(),
     )
