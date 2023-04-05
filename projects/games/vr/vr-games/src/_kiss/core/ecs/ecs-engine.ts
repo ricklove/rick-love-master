@@ -1,4 +1,5 @@
 import { wogger } from '../worker/wogger';
+import { EntityAction } from './components/actions/parser';
 import { EcsComponentFactory } from './ecs-component-factory';
 
 type EcsComponentFactoryUntyped = EcsComponentFactory<
@@ -21,6 +22,7 @@ export type EntityInstanceUntyped = {
   enabled: boolean;
   _enabledActual: boolean;
   components: Set<string>;
+  execute: (action: EntityAction) => void;
   parent: EntityInstanceUntyped;
   children: EntityInstanceUntyped[];
   desc: EntityDescUntyped;
@@ -42,6 +44,19 @@ export const createSceneState = () => {
       parent,
       children: [],
       desc: entity,
+      execute: (action) => {
+        const { componentName, actionName, args } = action;
+        const eInstance = instance as unknown as Record<string, Record<string, (...args: unknown[]) => void>>;
+        const actionFn = eInstance[componentName][actionName];
+
+        if (!actionFn) {
+          wogger.error(`execute action not found`, { componentName, actionName, args, entity: eInstance });
+          return;
+        }
+
+        wogger.log(`execute action`, { componentName, actionName, args, entity: eInstance });
+        actionFn(...args);
+      },
     };
     for (const factory of factories) {
       if (!instance.components.has(factory.name)) {
@@ -119,6 +134,9 @@ export const createScene = (
       parent: null as unknown as EntityInstanceUntyped,
       children: [],
       desc: sceneRoot,
+      execute: () => {
+        // noop
+      },
     });
   };
 

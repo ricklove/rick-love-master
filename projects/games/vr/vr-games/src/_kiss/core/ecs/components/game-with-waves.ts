@@ -1,5 +1,7 @@
+import { wogger } from '../../worker/wogger';
 import { createComponentFactory } from '../ecs-component-factory';
 import { EcsSceneState } from '../ecs-engine';
+import { EntityAction, parseActionCode } from './actions/parser';
 import { Entity_Game, EntityInstance_Game } from './game';
 import { EntityInstance_Spawner } from './spawner';
 
@@ -30,14 +32,17 @@ type GameWave = {
   sequence: GameWaveSequence[];
 };
 type GameWaveSequence = {
-  timeBeforeSequenceSec: number;
+  timeBeforeSpawnSec: number;
   spawnerName: string;
   count: number;
   position: [number, number, number];
+  /** actionCode */
+  action?: string;
 };
 
 export type EntityInstance_GameWithWaves = {
   gameWithWaves: {
+    actions: { [actionCode: string]: EntityAction };
     waveIndex?: number;
     sequenceIndex: number;
     sequenceSentCount: number;
@@ -69,7 +74,31 @@ export const gameWithWavesComponentFactory = ({ sceneState }: { sceneState: EcsS
           spawnerNames.map((x) => [x, sceneState.findEntityInstance(x) as unknown as EntityInstance_Spawner]),
         );
 
+        const actionsCodes = [
+          ...new Set(
+            entity.gameWithWaves.waves
+              .flatMap((x) => x.sequence)
+              .map((x) => x.action!)
+              .filter((x) => x),
+          ),
+        ];
+        const actions = actionsCodes
+          .map((x) => {
+            const action = parseActionCode(x);
+            return {
+              actionCode: x,
+              action: action!,
+            };
+          })
+          .filter((x) => x.action)
+          .reduce((acc, x) => {
+            acc[x.actionCode] = x.action;
+            return acc;
+          }, {} as Record<string, EntityAction>);
+        wogger.log(`gameWithWaves setup - parsed actions`, { actionsCodes, actions });
+
         const gameWithWaves: EntityInstance_GameWithWaves[`gameWithWaves`] = {
+          actions,
           waveIndex: undefined,
           sequenceIndex: 0,
           sequenceSentCount: 0,
@@ -152,7 +181,7 @@ export const gameWithWavesComponentFactory = ({ sceneState }: { sceneState: EcsS
 
         // wait for next spawn
         if (!game.timeNextSpawn) {
-          game.timeNextSpawn = Date.now() + sequence.timeBeforeSequenceSec * 1000;
+          game.timeNextSpawn = Date.now() + sequence.timeBeforeSpawnSec * 1000;
         }
         if (Date.now() < game.timeNextSpawn) {
           return;
@@ -160,7 +189,8 @@ export const gameWithWavesComponentFactory = ({ sceneState }: { sceneState: EcsS
 
         // spawn
         const spawner = game.spawners[sequence.spawnerName];
-        spawner.spawner.spawn(sequence.position);
+        const action = sequence.action ? game.actions[sequence.action] : undefined;
+        spawner.spawner.spawn(sequence.position, undefined, action);
         game.sequenceSentCount++;
         game.timeNextSpawn = undefined;
 

@@ -15,8 +15,8 @@ export const createScene_beatSaber = (ecs: Ecs) => {
       timeToMoveSec: 6,
     })
     .actions({})
-    .actionDisableEntity({ actionName: `collide` })
-    .collisionAction({ collisionTagFilter: `weapon`, action: `collide` })
+    .actionDisableEntity({ actionName: `defeat` })
+    .collisionAction({ collisionTagFilter: `weapon`, action: `defeat` })
     .build();
 
   const root = ecs
@@ -76,9 +76,24 @@ export const createScene_beatSaber = (ecs: Ecs) => {
               sequence: [
                 {
                   spawnerName: `eggSpawner`,
-                  count: 10,
-                  position: [0, 1, -25],
-                  timeBeforeSequenceSec: 1,
+                  count: 3,
+                  position: [2, 1, -25],
+                  action: `moveToTarget.setTarget([-1, 1, 0], 6)`,
+                  timeBeforeSpawnSec: 1,
+                },
+                {
+                  spawnerName: `eggSpawner`,
+                  count: 3,
+                  position: [-2, 1, -15],
+                  action: `moveToTarget.setTarget([1, 1, 0], 3)`,
+                  timeBeforeSpawnSec: 1,
+                },
+                {
+                  spawnerName: `eggSpawner`,
+                  count: 3,
+                  position: [0, 0, -25],
+                  action: `moveToTarget.setTarget([0, 0, 0], 6)`,
+                  timeBeforeSpawnSec: 1,
                 },
               ],
               timeBeforeWaveSec: 3,

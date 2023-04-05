@@ -1,6 +1,7 @@
 import { Quaternion } from 'three';
 import { createComponentFactory } from '../ecs-component-factory';
 import { EcsSceneState, EntityDescUntyped, EntityInstanceUntyped } from '../ecs-engine';
+import { EntityAction } from './actions/parser';
 import { Entity_Transform, EntityInstance_Transform } from './transform';
 
 export type Entity_Spawner = {
@@ -12,7 +13,11 @@ export type Entity_Spawner = {
 
 export type EntityInstance_Spawner = {
   spawner: {
-    spawn: (position: [number, number, number], quaternion?: [number, number, number, number]) => void;
+    spawn: (
+      position: [number, number, number],
+      quaternion?: [number, number, number, number],
+      action?: EntityAction,
+    ) => void;
     pool: (EntityInstanceUntyped & EntityInstance_Transform)[];
   };
 };
@@ -33,7 +38,11 @@ export const spawnerComponentFactory = ({ sceneState }: { sceneState: EcsSceneSt
       setup: (entityInstance) => {
         const entity = entityInstance.desc;
 
-        const spawn = (position: [number, number, number], quaternion?: [number, number, number, number]) => {
+        const spawn = (
+          position: [number, number, number],
+          quaternion?: [number, number, number, number],
+          action?: EntityAction,
+        ) => {
           const inactiveChild = spawner.pool.find((x) => !x.enabled);
           if (inactiveChild) {
             inactiveChild.transform.position = [...position];
@@ -53,6 +62,9 @@ export const spawnerComponentFactory = ({ sceneState }: { sceneState: EcsSceneSt
             entityInstance as unknown as EntityInstanceUntyped,
           );
           instance.enabled = true;
+          if (action) {
+            instance.execute(action);
+          }
         };
 
         const spawner: EntityInstance_Spawner[`spawner`] = {
