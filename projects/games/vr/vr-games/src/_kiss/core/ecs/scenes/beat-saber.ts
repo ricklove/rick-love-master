@@ -17,6 +17,16 @@ export const createScene_beatSaber = (ecs: Ecs) => {
     .actions({})
     .actionDisableEntity({ actionName: `defeat` })
     .collisionAction({ collisionTagFilter: `weapon`, action: `defeat` })
+    .addChild(
+      ecs
+        .entity(`eggEnemy-text`)
+        .transform({ position: [0.35, 0.25, 0] })
+        .shape_text({ text: `Egg`, fontSize: 0.5, alignment: `left`, verticalAlignment: `center` })
+        .graphics({ color: 0xff0000 })
+        .moveRelativeToParent({})
+        // .collider({ sensor: true })
+        .build(),
+    )
     .build();
 
   const root = ecs
@@ -25,22 +35,22 @@ export const createScene_beatSaber = (ecs: Ecs) => {
     .addChild(hands.hands.right)
     .addChild(createWeapon_saber(ecs, [0, 1, -0.35], 1, `left`))
     .addChild(createWeapon_knuckleClaws(ecs, [0, 1, -0.35], 1, `right`))
-    .addChild(
-      ecs
-        .entity(`weapon-test`)
-        .transform({ position: [0.25, 0, -3] })
-        .rigidBody({ kind: `kinematicPositionBased`, collisionTag: `weapon` })
-        .addChild(
-          ecs
-            .entity(`box-collider`)
-            .transform({ position: [0, 0.5, 0] })
-            .shape_box({ scale: [0.5, 0.5, 0.5] })
-            .collider({ colliderEvents: true })
-            .graphics({ color: 0xff0000 })
-            .build(),
-        )
-        .build(),
-    )
+    // .addChild(
+    //   ecs
+    //     .entity(`weapon-test`)
+    //     .transform({ position: [0.25, 0, -3] })
+    //     .rigidBody({ kind: `kinematicPositionBased`, collisionTag: `weapon` })
+    //     .addChild(
+    //       ecs
+    //         .entity(`box-collider`)
+    //         .transform({ position: [0, 0.5, 0] })
+    //         .shape_box({ scale: [0.5, 0.5, 0.5] })
+    //         .collider({ colliderEvents: true })
+    //         .graphics({ color: 0xff0000 })
+    //         .build(),
+    //     )
+    //     .build(),
+    // )
     .addChild(
       ecs
         .entity(`ground`)

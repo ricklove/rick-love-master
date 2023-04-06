@@ -12,10 +12,12 @@ import { gameWithWavesComponentFactory } from './game-with-waves';
 import { graphicsComponentFactory } from './graphics';
 import { inputHandAttachableComponentFactory } from './input-hand-attachable';
 import { inputHandJointComponentFactory } from './input-hand-joint';
+import { moveRelativeToParentComponentFactory } from './move-relative-to-parent';
 import { moveToTargetComponentFactory } from './move-to-target';
 import { rigidBodyComponentFactory } from './rigid-body';
 import { shapeBoxComponentFactory } from './shape-box';
 import { shapeSphereComponentFactory } from './shape-sphere';
+import { shapeTextComponentFactory } from './shape-text';
 import { spawnerComponentFactory } from './spawner';
 import { transformComponentFactory } from './transform';
 
@@ -35,12 +37,14 @@ export const createComponentFactories = (global: {
   transformComponentFactory,
   boxComponentFactory: shapeBoxComponentFactory,
   sphereComponentFactory: shapeSphereComponentFactory,
+  shapeTextComponentFactory: shapeTextComponentFactory,
   spawnerComponentFactory: spawnerComponentFactory(global),
 
   // physics
   rigidBodyComponentFactory: rigidBodyComponentFactory(global),
   colliderComponentFactory: colliderComponentFactory(global),
   moveToTargetComponentFactory: moveToTargetComponentFactory(global),
+  moveRelativeToParentComponentFactory: moveRelativeToParentComponentFactory,
 
   // game logic
   gameComponentFactory: gameComponentFactory(global),

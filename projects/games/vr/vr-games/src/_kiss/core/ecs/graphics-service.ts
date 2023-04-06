@@ -5,12 +5,18 @@ import { postMessageSceneObjectTransforms } from '../messages/messages/message-s
 
 export type GraphicsService = {
   addObject: (args: {
-    shape: 'box' | 'sphere';
+    shape: 'box' | 'sphere' | 'text';
     visible: boolean;
     position: [number, number, number];
     quaternion: [number, number, number, number];
     scale: [number, number, number];
     color: number;
+    text?: {
+      text: string;
+      fontSize: number;
+      alignment: 'left' | 'center' | 'right';
+      verticalAlignment: 'top' | 'center' | 'bottom';
+    };
   }) => { id: number };
   removeObject: (id: number) => void;
   setVisible: (id: number, visible: boolean) => void;
@@ -25,12 +31,18 @@ export const createGraphicsService = (
     hasChanged: boolean;
     destroyed: boolean;
     id: number;
-    shape: 'box' | 'sphere';
+    shape: 'box' | 'sphere' | 'text';
     visible: boolean;
     position: Vector3;
     quaternion: Quaternion;
     scale: Vector3;
     color: number;
+    text?: {
+      text: string;
+      fontSize: number;
+      alignment: 'left' | 'center' | 'right';
+      verticalAlignment: 'top' | 'center' | 'bottom';
+    };
   }[];
   const objectsToAdd = [] as typeof allObjects;
   const objectsToDestroy = [] as {
@@ -66,6 +78,19 @@ export const createGraphicsService = (
             quaternion: x.quaternion.toArray(),
             radius: x.scale.x,
             color: x.color,
+          })),
+        texts: objectsToAdd
+          .filter((x) => x.shape === `text`)
+          .map((x) => ({
+            id: x.id,
+            position: x.position.toArray(),
+            quaternion: x.quaternion.toArray() as [number, number, number, number],
+            radius: x.scale.x,
+            color: x.color,
+            text: x.text?.text!,
+            fontSize: x.text?.fontSize!,
+            alignment: x.text?.alignment!,
+            verticalAlignment: x.text?.verticalAlignment!,
           })),
       });
       objectsToAdd.length = 0;

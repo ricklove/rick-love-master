@@ -5,6 +5,7 @@ import { PhysicsService } from '../physics-service';
 import { EntityInstance_RigidBody } from './rigid-body';
 import { Entity_ShapeBox } from './shape-box';
 import { Entity_ShapeSphere } from './shape-sphere';
+import { Entity_ShapeText } from './shape-text';
 import { Entity_Transform, EntityInstance_Transform } from './transform';
 
 export type Entity_Collider = {
@@ -22,7 +23,7 @@ export type EntityInstance_Collider = {
   };
 };
 
-export type Entity_Shape = Entity_ShapeBox | Entity_ShapeSphere;
+export type Entity_Shape = Entity_ShapeBox | Entity_ShapeSphere | Entity_ShapeText;
 
 export const colliderComponentFactory = ({ physicsService }: { physicsService: PhysicsService }) =>
   createComponentFactory<
@@ -67,6 +68,8 @@ export const colliderComponentFactory = ({ physicsService }: { physicsService: P
             ? ColliderDesc.cuboid(entity.shape.scale[0] * 0.5, entity.shape.scale[1] * 0.5, entity.shape.scale[2] * 0.5)
             : entity.shape.kind === `sphere`
             ? ColliderDesc.ball(entity.shape.radius)
+            : entity.shape.kind === `text`
+            ? ColliderDesc.cuboid(entity.shape.fontSize * 0.5, entity.shape.fontSize * 0.5, entity.shape.fontSize * 0.5)
             : undefined;
 
         if (!colliderDesc) throw new Error(`ColliderDesc not defined`);

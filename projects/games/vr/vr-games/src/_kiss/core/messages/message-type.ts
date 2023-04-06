@@ -32,18 +32,28 @@ export type WorkerMessageFromWorker =
     }
   | {
       kind: `addObjects`;
-      boxes: {
+      boxes?: {
         id: number;
         position: [number, number, number];
         quaternion: [number, number, number, number];
         scale: [number, number, number];
         color: number;
       }[];
-      spheres: {
+      spheres?: {
         id: number;
         position: [number, number, number];
         radius: number;
         color: number;
+      }[];
+      texts?: {
+        id: number;
+        position: [number, number, number];
+        quaternion: [number, number, number, number];
+        color: number;
+        text: string;
+        fontSize: number;
+        alignment: `left` | `center` | `right`;
+        verticalAlignment: `top` | `center` | `bottom`;
       }[];
     }
   | {

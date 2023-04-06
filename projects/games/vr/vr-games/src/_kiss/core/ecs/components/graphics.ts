@@ -2,6 +2,7 @@ import { createComponentFactory } from '../ecs-component-factory';
 import { GraphicsService } from '../graphics-service';
 import { Entity_ShapeBox } from './shape-box';
 import { Entity_ShapeSphere } from './shape-sphere';
+import { Entity_ShapeText } from './shape-text';
 import { Entity_Transform, EntityInstance_Transform } from './transform';
 
 export type Entity_Graphics = {
@@ -20,7 +21,7 @@ export type EntityInstance_Graphics = {
   };
 };
 
-export type Entity_Shape = Entity_ShapeBox | Entity_ShapeSphere;
+export type Entity_Shape = Entity_ShapeBox | Entity_ShapeSphere | Entity_ShapeText;
 
 export const graphicsComponentFactory = ({ graphicsService }: { graphicsService: GraphicsService }) =>
   createComponentFactory<
@@ -47,8 +48,22 @@ export const graphicsComponentFactory = ({ graphicsService }: { graphicsService:
           visible: entityInstance.desc.graphics.visible,
           position: entityInstance.transform.position,
           quaternion: entityInstance.transform.quaternion,
-          scale: shapeDesc.kind === `box` ? shapeDesc.scale : [shapeDesc.radius, shapeDesc.radius, shapeDesc.radius],
+          scale:
+            shapeDesc.kind === `box`
+              ? shapeDesc.scale
+              : shapeDesc.kind === `sphere`
+              ? [shapeDesc.radius, shapeDesc.radius, shapeDesc.radius]
+              : [1, 1, 1],
           color: entityInstance.desc.graphics.color,
+          text:
+            shapeDesc.kind === `text`
+              ? {
+                  text: shapeDesc.text,
+                  fontSize: shapeDesc.fontSize,
+                  alignment: shapeDesc.alignment ?? `center`,
+                  verticalAlignment: shapeDesc.verticalAlignment ?? `center`,
+                }
+              : undefined,
         });
 
         return {

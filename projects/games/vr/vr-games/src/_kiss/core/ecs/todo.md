@@ -17,10 +17,10 @@
 
   - [x] player in fixed position at origin
     - [x] player is holding saber
-  - [ ] blocks are spawned
+  - [x] blocks are spawned
     - [x] from a single point in the distance
-    - [ ] with an x-z offset
-    - [ ] randomly generated sequence
+    - [x] with an x-z offset
+    - [x] hard coded sequence
   - [x] blocks move toward player at a constant speed
   - [ ] player can hit block with visual feedback
     - [x] hitting block will cause block to disappear
@@ -29,9 +29,24 @@
 
 - level selection
 
-  - display text menu of songs
-  - convert midi to wave sequence
+  - [ ] display song menu
+    - [x] text component can display text with position offset to parent
+    - [ ] vertical menu can display unlimited items
+    - [ ] scroll buttons to move menu up/down
+    - [ ] menu item is selectable box
+    - [ ] load game on item selection
+    - [ ] menu button during game to go back to menu
+  - [ ] convert midi to wave sequence
     - https://github.com/Tonejs/Midi
+
+- Bible reader
+
+  - [ ] endless mode (randomized song selection)
+  - [ ] select passage
+  - [ ] attach one word at a time to each note
+  - [ ] play read verse at end of verse
+    - https://api.esv.org/docs/passage-audio/
+  - [ ] quick buttons for back/forward verse, change passage, etc
 
 ## Space Pirate Trainer
 

@@ -1,5 +1,5 @@
 import * as THREE from 'three';
-import { VRButton } from 'three-stdlib';
+import { Font, FontLoader, VRButton } from 'three-stdlib';
 import { logger } from '../../utils/logger';
 
 export const setupThree = (hostRaw: HTMLDivElement) => {
@@ -36,6 +36,14 @@ export const setupThree = (hostRaw: HTMLDivElement) => {
   renderer.xr.setReferenceSpaceType(`local-floor`);
   const button = VRButton.createButton(renderer);
   host.appendChild(button);
+
+  const state = {
+    font: undefined as undefined | Font,
+  };
+  const loader = new FontLoader();
+  loader.load(`/fonts/helvetiker_regular.typeface.json`, (font) => {
+    state.font = font;
+  });
 
   // const controllerKinds = [] as {
   //   isHand: boolean;
@@ -113,5 +121,5 @@ export const setupThree = (hostRaw: HTMLDivElement) => {
   };
 
   logger.log(`setupThree: DONE`, { camera, scene, renderer });
-  return { camera, scene, renderer, dispose };
+  return { camera, scene, renderer, dispose, state };
 };

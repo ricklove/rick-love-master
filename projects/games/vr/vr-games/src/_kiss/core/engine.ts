@@ -1,5 +1,6 @@
 import * as THREE from 'three';
 import { Object3D } from 'three';
+import { TextGeometry } from 'three-stdlib';
 import { logger } from '../../utils/logger';
 import { createMessageBufferPool } from './messages/message-buffer';
 import { MessageBufferKind, WorkerMessageFromWorker, WorkerMessageToWorker } from './messages/message-type';
@@ -24,7 +25,7 @@ export const createGameEngine = (host: HTMLDivElement, workerRaw: Worker) => {
   };
 
   const setup = () => {
-    const { scene, camera, renderer, dispose } = setupThree(host);
+    const { scene, camera, renderer, dispose, state } = setupThree(host);
     const testScene = addTestScene(scene, renderer);
     const boxGeometry = new THREE.BoxGeometry(1, 1, 1);
     const sphereGeometry = new THREE.SphereGeometry(1);
@@ -40,7 +41,7 @@ export const createGameEngine = (host: HTMLDivElement, workerRaw: Worker) => {
         const data = addObjectsData;
         addObjectsData = undefined;
 
-        data.boxes.forEach((o) => {
+        data.boxes?.forEach((o) => {
           const object = new THREE.Mesh(boxGeometry, new THREE.MeshLambertMaterial({ color: o.color }));
           // const object = new THREE.Mesh(geometry, new THREE.MeshLambertMaterial({ color: 0xff0000 }));
           object.matrixAutoUpdate = false;
@@ -53,12 +54,39 @@ export const createGameEngine = (host: HTMLDivElement, workerRaw: Worker) => {
 
           objectMap[o.id] = object;
         });
-        data.spheres.forEach((o) => {
+        data.spheres?.forEach((o) => {
           const object = new THREE.Mesh(sphereGeometry, new THREE.MeshLambertMaterial({ color: o.color }));
           // const object = new THREE.Mesh(geometry, new THREE.MeshLambertMaterial({ color: 0xff0000 }));
           object.matrixAutoUpdate = false;
           object.position.set(o.position[0], o.position[1], o.position[2]);
           object.scale.set(o.radius, o.radius, o.radius);
+          object.updateMatrix();
+
+          scene.add(object);
+
+          objectMap[o.id] = object;
+        });
+        data.texts?.forEach((o) => {
+          const font = state.font;
+          if (!font) {
+            console.error(`No font loaded`);
+            return;
+          }
+
+          const textGeometry = new TextGeometry(o.text, { font, size: o.fontSize, height: 0.1 });
+          const object = new THREE.Mesh(textGeometry, new THREE.MeshLambertMaterial({ color: o.color }));
+
+          textGeometry.computeBoundingBox();
+          const boundingBox = textGeometry.boundingBox!;
+          const textWidth = boundingBox.max.x - boundingBox.min.x;
+          const textHeight = boundingBox.max.y - boundingBox.min.y;
+
+          const xOffset = o.alignment === `left` ? textWidth / 2 : o.alignment === `right` ? -textWidth / 2 : 0;
+          const yOffset =
+            o.verticalAlignment === `top` ? -textHeight / 2 : o.verticalAlignment === `bottom` ? textHeight / 2 : 0;
+
+          object.matrixAutoUpdate = false;
+          object.position.set(o.position[0] + xOffset, o.position[1] + yOffset, o.position[2]);
           object.updateMatrix();
 
           scene.add(object);
