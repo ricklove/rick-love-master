@@ -1,6 +1,7 @@
 import { Ecs } from '../components/_components';
 import { createAlienEgg } from '../prefabs/alien-egg';
 import { createHands } from '../prefabs/hands';
+import { createMenu } from '../prefabs/menu';
 import { createWeapon_knuckleClaws } from '../prefabs/weapons/knuckleClaws';
 import { createWeapon_saber } from '../prefabs/weapons/saber';
 
@@ -29,6 +30,23 @@ export const createScene_beatSaber = (ecs: Ecs) => {
     )
     .build();
 
+  const songs = [
+    `MW`,
+    `g`,
+    `n`,
+    `Song-1`,
+    `Song-2`,
+    `Song-3`,
+    `Song-4`,
+    `Song-5`,
+    `Song-6`,
+    `Song-7`,
+    `Song-8`,
+    `Song-9`,
+    `Song-10`,
+  ];
+  const menu = createMenu(ecs, [0, 1, -1], songs);
+
   const root = ecs
     .entity(`root`, true)
     .addChild(hands.hands.left)
@@ -51,6 +69,7 @@ export const createScene_beatSaber = (ecs: Ecs) => {
     //     )
     //     .build(),
     // )
+    .addChild(menu)
     .addChild(
       ecs
         .entity(`ground`)

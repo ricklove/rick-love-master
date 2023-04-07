@@ -73,20 +73,38 @@ export const createGameEngine = (host: HTMLDivElement, workerRaw: Worker) => {
             return;
           }
 
-          const textGeometry = new TextGeometry(o.text, { font, size: o.fontSize, height: 0.1 });
-          const object = new THREE.Mesh(textGeometry, new THREE.MeshLambertMaterial({ color: o.color }));
+          const fontSize = o.fontSize;
+          const textGeometry = new TextGeometry(o.text, { font, size: fontSize, height: 0.01 });
+          const objectInner = new THREE.Mesh(textGeometry, new THREE.MeshLambertMaterial({ color: o.color }));
+          const object = new THREE.Group();
+          object.add(objectInner);
 
           textGeometry.computeBoundingBox();
           const boundingBox = textGeometry.boundingBox!;
           const textWidth = boundingBox.max.x - boundingBox.min.x;
-          const textHeight = boundingBox.max.y - boundingBox.min.y;
+          const textHeight = fontSize; // boundingBox.max.y - boundingBox.min.y;
 
-          const xOffset = o.alignment === `left` ? textWidth / 2 : o.alignment === `right` ? -textWidth / 2 : 0;
+          // TODO: put this in a group to perserver the alignment
+          // text geometry is baseline left by default
+          // fontSize is baseline to top of MW
+          // g is below the fontSize
+          const xOffset = o.alignment === `center` ? -textWidth / 2 : o.alignment === `right` ? -textWidth : 0;
           const yOffset =
-            o.verticalAlignment === `top` ? -textHeight / 2 : o.verticalAlignment === `bottom` ? textHeight / 2 : 0;
+            o.verticalAlignment === `center` ? -textHeight / 2 : o.verticalAlignment === `top` ? -textHeight : 0;
 
+          console.log(`font size`, {
+            alignment: o.alignment,
+            verticalAlignment: o.verticalAlignment,
+            xOffset,
+            yOffset,
+            fontSize,
+            textWidth,
+            textHeight,
+            boundingBox,
+          });
+          objectInner.position.set(xOffset, yOffset, 0);
           object.matrixAutoUpdate = false;
-          object.position.set(o.position[0] + xOffset, o.position[1] + yOffset, o.position[2]);
+          object.position.set(o.position[0], o.position[1], o.position[2]);
           object.updateMatrix();
 
           scene.add(object);
