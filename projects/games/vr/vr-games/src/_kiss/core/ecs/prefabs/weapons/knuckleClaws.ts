@@ -5,6 +5,7 @@ export const createWeapon_knuckleClaws = (
   position: [number, number, number],
   scale: number = 1,
   attachedHandSide?: `left` | `right` | `mouse`,
+  autoHide?: boolean,
 ) => {
   const length = 0.4 * scale;
   const bladeThickness = 0.002 * scale;
@@ -19,7 +20,7 @@ export const createWeapon_knuckleClaws = (
     .entity(`knuckleClaws`)
     .transform({ position })
     .rigidBody({ kind: `dynamic`, collisionTag: `weapon` })
-    .inputHandAttachable({ handAttachableKind: `knuckles`, attachmentPosition: [0, 0, 0], attachedHandSide })
+    .inputHandAttachable({ handAttachableKind: `knuckles`, attachmentPosition: [0, 0, 0], attachedHandSide, autoHide })
     .addChild(
       ecs
         .entity(`bladeMiddle`)

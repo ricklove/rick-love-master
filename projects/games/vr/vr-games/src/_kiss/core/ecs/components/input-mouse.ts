@@ -61,6 +61,7 @@ export const createMouseInputTracker = () => {
   const state = {
     z: 0.5,
     timeLastUpdate: 0,
+    mouseTimeLastUpdate: 0,
   };
 
   const v = new Vector3();
@@ -70,18 +71,25 @@ export const createMouseInputTracker = () => {
     getPosition: (inputs: GamePlayerInputs) => {
       const mouseState = inputs.mouse;
 
-      if (!mouseState.time || performance.now() > mouseState.time + 3000) {
-        // hide if no mouse activity for 3 seconds
+      if (!mouseState.time) {
+        // hide if no input
         return { enabled: false as const };
       }
 
-      if (mouseState.wheelDeltaY && mouseState.time !== state.timeLastUpdate) {
-        state.timeLastUpdate = mouseState.time;
+      if (mouseState.time !== state.mouseTimeLastUpdate) {
+        state.timeLastUpdate = Date.now();
+        state.mouseTimeLastUpdate = mouseState.time;
+
         if (mouseState.wheelDeltaY > 0) {
           state.z = Math.max(0.1, state.z * 0.95);
-        } else {
+        } else if (mouseState.wheelDeltaY < 0) {
           state.z = Math.min(10, state.z * 1.05);
         }
+      }
+
+      if (Date.now() > state.timeLastUpdate + 3000) {
+        // hide if no mouse activity for 3 seconds
+        return { enabled: false as const };
       }
 
       vPosition.copy(mouseState.position).add(v.copy(mouseState.direction).multiplyScalar(state.z));

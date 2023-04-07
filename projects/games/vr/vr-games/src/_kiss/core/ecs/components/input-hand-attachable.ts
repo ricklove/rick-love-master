@@ -11,6 +11,7 @@ export type Entity_InputHandAttachable = {
     handAttachableKind: HandAttachableKind;
     attachmentPosition?: [number, number, number];
     attachedHandSide?: `left` | `right` | `mouse`;
+    autoHide?: boolean;
   };
 };
 
@@ -35,6 +36,8 @@ export const inputHandAttachableComponentFactory = ({ inputs }: { inputs: GamePl
     EntityInstance_RigidBody,
     EntityInstance_InputHandAttachable
   >()(() => {
+    const v = new Vector3();
+
     return {
       name: `inputHandAttachable`,
       addComponent: (entity, args: Entity_InputHandAttachable[`inputHandAttachable`]) => {
@@ -214,6 +217,10 @@ export const inputHandAttachableComponentFactory = ({ inputs }: { inputs: GamePl
             rigidBody.setBodyType(entityInstance.inputHandAttachable.unattachedBodyType, true);
             entityInstance.inputHandAttachable.unattachedBodyType = undefined;
           }
+          if (entityInstance.desc.inputHandAttachable.autoHide) {
+            entityInstance.rigidBody.rigidBody.setEnabled(false);
+            entityInstance.rigidBody.rigidBody.setTranslation(v.set(0, -10000, 0), false);
+          }
           return;
         }
 
@@ -221,7 +228,16 @@ export const inputHandAttachableComponentFactory = ({ inputs }: { inputs: GamePl
         const { calculateAttachment } = entityInstance.inputHandAttachable;
         const result = calculateAttachment();
         if (!result) {
+          if (entityInstance.desc.inputHandAttachable.autoHide) {
+            entityInstance.rigidBody.rigidBody.setEnabled(false);
+            entityInstance.rigidBody.rigidBody.setTranslation(v.set(0, -10000, 0), false);
+          }
+
           return;
+        }
+
+        if (!entityInstance.rigidBody.rigidBody.isEnabled()) {
+          entityInstance.rigidBody.rigidBody.setEnabled(true);
         }
 
         const { position, quaternion } = result;
