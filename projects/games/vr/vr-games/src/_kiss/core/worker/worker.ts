@@ -1,7 +1,7 @@
+import { readMessageUserInputTransforms } from '../input/message-user-input';
 import { postMessageFromWorker } from '../messages/message';
 import { createMessageBufferPool } from '../messages/message-buffer';
 import { MessageBufferKind, WorkerMessageFromWorker, WorkerMessageToWorker } from '../messages/message-type';
-import { readMessageUserInputTransforms } from '../messages/messages/message-user-input';
 import { createGameCore } from './game-core';
 import { GameCore } from './types';
 import { wogger } from './wogger';

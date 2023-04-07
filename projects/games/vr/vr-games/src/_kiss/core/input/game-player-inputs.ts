@@ -16,6 +16,14 @@ export type GamePlayerInputs = {
       position: Vector3;
     }[];
   };
+  mouse: {
+    position: Vector3;
+    direction: Vector3;
+    time: number;
+    buttons: number;
+    wheelDeltaX: number;
+    wheelDeltaY: number;
+  };
 };
 
 export const createGamePlayerInputs = (): GamePlayerInputs => ({
@@ -32,5 +40,13 @@ export const createGamePlayerInputs = (): GamePlayerInputs => ({
       handJoint: x as XRHandJoint,
       position: new Vector3(),
     })),
+  },
+  mouse: {
+    position: new Vector3(),
+    direction: new Vector3(),
+    time: 0,
+    buttons: 0,
+    wheelDeltaX: 0,
+    wheelDeltaY: 0,
   },
 });

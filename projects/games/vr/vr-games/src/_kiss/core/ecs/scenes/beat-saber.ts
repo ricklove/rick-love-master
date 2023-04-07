@@ -51,6 +51,7 @@ export const createScene_beatSaber = (ecs: Ecs) => {
     .entity(`root`, true)
     .addChild(hands.hands.left)
     .addChild(hands.hands.right)
+    .addChild(hands.mouseHand)
     .addChild(createWeapon_saber(ecs, [0, 1, -0.35], 1, `left`))
     .addChild(createWeapon_knuckleClaws(ecs, [0, 1, -0.35], 1, `right`))
     // .addChild(

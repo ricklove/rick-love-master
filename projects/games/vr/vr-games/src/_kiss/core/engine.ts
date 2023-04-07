@@ -2,10 +2,11 @@ import * as THREE from 'three';
 import { Object3D } from 'three';
 import { TextGeometry } from 'three-stdlib';
 import { logger } from '../../utils/logger';
+import { postMessageUserInputTransforms } from './input/message-user-input';
+import { setupMouseInput } from './input/mouse';
 import { createMessageBufferPool } from './messages/message-buffer';
 import { MessageBufferKind, WorkerMessageFromWorker, WorkerMessageToWorker } from './messages/message-type';
 import { readMessageSceneObjectTransforms } from './messages/messages/message-scene-object-transforms';
-import { postMessageUserInputTransforms } from './messages/messages/message-user-input';
 import { setupThree } from './three-setup';
 import { addTestScene, updateTestScene } from './three-test-scene';
 
@@ -209,6 +210,8 @@ export const createGameEngine = (host: HTMLDivElement, workerRaw: Worker) => {
     worker.postMessage({ kind: `ping`, time: performance.now() });
     worker.postMessage({ kind: `setup` });
 
+    const mouseInput = setupMouseInput();
+
     const bufferPool = createMessageBufferPool(workerRaw);
 
     let frameCount = 0;
@@ -244,7 +247,7 @@ export const createGameEngine = (host: HTMLDivElement, workerRaw: Worker) => {
         worker.postMessage({ kind: `ping`, time: frameTime });
       }
 
-      postMessageUserInputTransforms(renderer, frame, bufferPool);
+      postMessageUserInputTransforms(renderer, frame, bufferPool, mouseInput.mouseState, camera);
 
       updateSceneFromData();
       updateTestScene(deltaTime, testScene);
@@ -260,6 +263,7 @@ export const createGameEngine = (host: HTMLDivElement, workerRaw: Worker) => {
     return {
       animate,
       dispose: () => {
+        mouseInput.unsubscribe();
         stop = true;
       },
     };

@@ -1,5 +1,6 @@
 import RAPIER, { ColliderDesc, EventQueue, RigidBodyDesc, World } from '@dimforge/rapier3d-compat';
 import { Quaternion, Vector3 } from 'three';
+import { createGamePlayerInputs, GamePlayerInputs } from '../../input/game-player-inputs';
 import { handJointNames } from '../../input/hand-joints';
 import { postMessageFromWorker } from '../../messages/message';
 import { MessageBufferPool } from '../../messages/message-buffer';
@@ -368,15 +369,18 @@ export const createWorkerEngine = async (
     gameLoopTimerId = setTimeout(gameEngineLoop, timeUntilNextFrame);
   };
 
+  const inputs: GamePlayerInputs = {
+    ...createGamePlayerInputs(),
+    head: engineEntities.head.input,
+    hands: {
+      left: engineEntities.leftHandJoints.map((x) => ({ ...x.input, handJoint: x.userData.handJoint })),
+      right: engineEntities.rightHandJoints.map((x) => ({ ...x.input, handJoint: x.userData.handJoint })),
+    },
+  };
+
   const gameWorkerEngine = {
     // ...sceneData,
-    inputs: {
-      head: engineEntities.head.input,
-      hands: {
-        left: engineEntities.leftHandJoints.map((x) => ({ ...x.input, handJoint: x.userData.handJoint })),
-        right: engineEntities.rightHandJoints.map((x) => ({ ...x.input, handJoint: x.userData.handJoint })),
-      },
-    },
+    inputs,
     createEntity: createEntityTyped,
     updateMessageRequested: false,
     dispose: () => {

@@ -1,7 +1,9 @@
-import { GamePlayerInputs } from '../../input/game-player-inputs';
-import { handJointNameIndex, handJointNames } from '../../input/hand-joints';
-import { MessageBufferPool } from '../message-buffer';
-import { MessageBufferKind } from '../message-type';
+import { Quaternion, Vector3 } from 'three';
+import { MessageBufferPool } from '../messages/message-buffer';
+import { MessageBufferKind } from '../messages/message-type';
+import { GamePlayerInputs } from './game-player-inputs';
+import { handJointNameIndex, handJointNames } from './hand-joints';
+import { MouseState } from './mouse';
 
 const bufferKind = MessageBufferKind.userInputTransforms;
 
@@ -14,14 +16,18 @@ enum InputBufferIndex {
   controllerRight = controllerLeft + 7,
   controllerGripLeft = controllerRight + 7,
   controllerGripRight = controllerGripLeft + 7,
-  COUNT = controllerGripRight + 7,
+  /**
+   * 10 floats: position(3), direction(3), time, buttons, wheelDeltaX, wheelDeltaY
+   */
+  mouse = controllerGripRight + 7,
+  COUNT = mouse + 10,
 }
 
 const getBufferSize = () => {
   return InputBufferIndex.COUNT * 4;
 };
 
-const setXrInput = (renderer: THREE.WebGLRenderer, frame: XRFrame, buffer: Float32Array) => {
+const injectXrInput = (renderer: THREE.WebGLRenderer, frame: XRFrame, buffer: Float32Array) => {
   const session = frame?.session;
   if (!session) {
     return;
@@ -62,14 +68,43 @@ const setXrInput = (renderer: THREE.WebGLRenderer, frame: XRFrame, buffer: Float
       }
     }
   });
+};
 
-  // console.log(`readXrInput`, { buffer });
+const vMouseScreenPosition = new Vector3();
+const vMouseDirection = new Vector3();
+const q = new Quaternion();
+const injectMouseInput = (
+  renderer: THREE.WebGLRenderer,
+  mouseState: MouseState,
+  nonXrCamera: THREE.Camera,
+  buffer: Float32Array,
+) => {
+  const mainCamera = nonXrCamera;
+
+  vMouseScreenPosition.set(mouseState.u, mouseState.v, 0);
+  vMouseScreenPosition.unproject(mainCamera);
+
+  vMouseDirection.set(mouseState.u, mouseState.v, 1);
+  vMouseDirection.unproject(mainCamera);
+  vMouseDirection.sub(mainCamera.position).normalize();
+
+  vMouseScreenPosition.toArray(buffer, InputBufferIndex.mouse);
+  vMouseDirection.toArray(buffer, InputBufferIndex.mouse + 3);
+
+  buffer[InputBufferIndex.mouse + 6] = mouseState.time;
+  buffer[InputBufferIndex.mouse + 7] = mouseState.buttons;
+  buffer[InputBufferIndex.mouse + 8] = mouseState.wheelDeltaX;
+  buffer[InputBufferIndex.mouse + 9] = mouseState.wheelDeltaY;
+
+  // console.log(`injectMouseInput`, { vMouseScreenPosition, vMouseDirection, time: mouseState.time });
 };
 
 export const postMessageUserInputTransforms = (
   renderer: THREE.WebGLRenderer,
   frame: XRFrame,
   bufferPool: MessageBufferPool,
+  mouseState: MouseState,
+  nonXrCamera: THREE.Camera,
 ) => {
   const size = getBufferSize();
   const buffer = bufferPool.claimBuffer(size);
@@ -79,7 +114,8 @@ export const postMessageUserInputTransforms = (
   // wogger.log(`postMessageArrayBufferFromWorker`, { boxes, spheres, buffer, fBuffer, iBuffer });
 
   iBuffer[0] = bufferKind;
-  setXrInput(renderer, frame, fBuffer);
+  injectXrInput(renderer, frame, fBuffer);
+  injectMouseInput(renderer, mouseState, nonXrCamera, fBuffer);
   bufferPool.postMessage(buffer);
 };
 
@@ -105,6 +141,16 @@ export const readMessageUserInputTransforms = (buffer: ArrayBuffer, inputs: Game
     offset = InputBufferIndex.camera;
     o.position.set(f32Buffer[offset++], f32Buffer[offset++], f32Buffer[offset++]);
     o.quaternion.set(f32Buffer[offset++], f32Buffer[offset++], f32Buffer[offset++], f32Buffer[offset++]);
+  });
+
+  [inputs.mouse].forEach((o) => {
+    offset = InputBufferIndex.mouse;
+    o.position.set(f32Buffer[offset++], f32Buffer[offset++], f32Buffer[offset++]);
+    o.direction.set(f32Buffer[offset++], f32Buffer[offset++], f32Buffer[offset++]);
+    o.time = f32Buffer[offset++];
+    o.buttons = i32Buffer[offset++];
+    o.wheelDeltaX = f32Buffer[offset++];
+    o.wheelDeltaY = f32Buffer[offset++];
   });
 
   // console.log(`readMessageUserInputTransforms position set`, { handJoints });
