@@ -21,7 +21,7 @@ const createHand = (ecs: Ecs, side: `left` | `right`, jointRadius: number) => {
       ecs
         .entity(`${side}-hand-${jointName}`)
         .transform({ position: [0, 0, 0] })
-        .rigidBody({ kind: `kinematicPositionBased` })
+        .rigidBody({ kind: `kinematicPositionBased`, collisionTag: `hand` })
         .inputHandJoint({ handSide: side, handJoint: jointName })
         .addChild(
           ecs

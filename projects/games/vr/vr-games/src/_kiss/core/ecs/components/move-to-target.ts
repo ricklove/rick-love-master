@@ -15,6 +15,7 @@ export type EntityInstance_MoveToTarget = {
     target: Vector3;
     timeToArrive: number;
     setTarget: (target: [number, number, number], timeToMoveSec: number) => void;
+    setRelativeTarget: (target: [number, number, number], timeToMoveSec: number) => void;
   };
 };
 
@@ -55,6 +56,15 @@ export const moveToTargetComponentFactory = ({ inputs }: { inputs: GamePlayerInp
             timeToArrive: Date.now() + d.timeToMoveSec * 1000,
             setTarget: (target: [number, number, number], timeToMoveSec: number) => {
               result.moveToTarget.target.set(target[0], target[1], target[2]);
+              result.moveToTarget.timeToArrive = Date.now() + timeToMoveSec * 1000;
+            },
+            setRelativeTarget: (target: [number, number, number], timeToMoveSec: number) => {
+              const currentTarget = result.moveToTarget.target;
+              result.moveToTarget.target.set(
+                target[0] + currentTarget.x,
+                target[1] + currentTarget.y,
+                target[2] + currentTarget.z,
+              );
               result.moveToTarget.timeToArrive = Date.now() + timeToMoveSec * 1000;
             },
           },

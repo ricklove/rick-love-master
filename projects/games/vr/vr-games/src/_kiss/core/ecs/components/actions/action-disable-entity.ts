@@ -11,6 +11,7 @@ export type Entity_ActionDisableEntity = {
 export type EntityInstance_ActionDisableEntity = {
   actionDisableEntity: {
     _ready: boolean;
+    disable: () => void;
   };
 };
 
@@ -35,6 +36,9 @@ export const actionDisableEntityComponentFactory = createComponentFactory<
         ...entityInstance,
         actionDisableEntity: {
           _ready: false,
+          disable: () => {
+            // not ready yet
+          },
         },
       };
     },
@@ -46,10 +50,13 @@ export const actionDisableEntityComponentFactory = createComponentFactory<
       entityInstance.actionDisableEntity._ready = true;
 
       const eInstance = entityInstance as unknown as EntityInstanceUntyped;
-      entityInstance.actions.actions[entityInstance.desc.actionDisableEntity.actionName] = () => {
+      const disable = () => {
         wogger.log(`actionDisableEntity action`, { entityInstance });
         eInstance.enabled = false;
       };
+
+      entityInstance.actions.actions[entityInstance.desc.actionDisableEntity.actionName] = disable;
+      entityInstance.actionDisableEntity.disable = disable;
     },
   };
 });

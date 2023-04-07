@@ -1,20 +1,25 @@
 import { wogger } from '../../../worker/wogger';
 
 export type EntityAction = {
+  entityPath: string;
   componentName: string;
   actionName: string;
   args: unknown[];
 };
 export const parseActionCode = (actionCode: string): undefined | EntityAction => {
+  // Example actions:
+  // moveToTarget.setRelativeTarget([0,-${itemHeight},0],0.5)
+  // ../menu-scroller/moveToTarget.setRelativeTarget([0,-${itemHeight},0],0.5)
+
   // regex to parse action code
-  const match = actionCode.trim().match(/^([a-zA-Z0-9_]+)\.([a-zA-Z0-9_]+)\((.*)\)$/);
+  const match = actionCode.trim().match(/^(\.?\.\/(?:[a-zA-Z0-9_-]+\/)*)?([a-zA-Z0-9_-]+)\.([a-zA-Z0-9_-]+)\((.*)\)$/);
 
   if (!match) {
     wogger.error(`action could not be parsed`, { actionCode });
     return;
   }
 
-  const [_, componentName, actionName, actionArgs] = match;
+  const [_, entityPath, componentName, actionName, actionArgs] = match;
 
   //   // parse args to array
   //   const regexPattern_quotedString = `("[^"]*")|('[^']*')|(\`[^\`]*\`)`;
@@ -85,8 +90,43 @@ export const parseActionCode = (actionCode: string): undefined | EntityAction =>
   const args = eval(`[${actionArgs}]`) as unknown[];
 
   return {
+    entityPath,
     componentName,
     actionName,
     args,
   };
+};
+
+type EntityInstanceWithPathInfo = {
+  instanceId: number;
+  parent: EntityInstanceWithPathInfo;
+  children: EntityInstanceWithPathInfo[];
+  desc: { name: string };
+};
+export const findEntityInstanceByPath = (entity: EntityInstanceWithPathInfo, path: string) => {
+  if (!path) {
+    return entity;
+  }
+
+  const pathParts = path.split(`/`);
+  let currentEntity = entity;
+  for (const pathPart of pathParts) {
+    if (pathPart === `..`) {
+      currentEntity = currentEntity.parent;
+      continue;
+    }
+    if (pathPart === `.`) {
+      continue;
+    }
+
+    const childByNameOrId = currentEntity.children.find(
+      (child) => child.desc.name === pathPart || child.instanceId === Number(pathPart),
+    );
+    if (!childByNameOrId) {
+      wogger.error(`entity with path not found`, { path, entity, pathPart, currentEntity });
+      return;
+    }
+    currentEntity = childByNameOrId;
+  }
+  return currentEntity;
 };

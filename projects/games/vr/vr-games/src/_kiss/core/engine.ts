@@ -74,7 +74,8 @@ export const createGameEngine = (host: HTMLDivElement, workerRaw: Worker) => {
           }
 
           const fontSize = o.fontSize;
-          const textGeometry = new TextGeometry(o.text, { font, size: fontSize, height: 0.01 });
+          const thickness = fontSize * 0.1;
+          const textGeometry = new TextGeometry(o.text, { font, size: fontSize, height: thickness });
           const objectInner = new THREE.Mesh(textGeometry, new THREE.MeshLambertMaterial({ color: o.color }));
           const object = new THREE.Group();
           object.add(objectInner);

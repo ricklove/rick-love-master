@@ -31,7 +31,7 @@
 
   - [ ] display song menu
     - [x] text component can display text with position offset to parent
-    - [ ] vertical menu can display unlimited items
+    - [x] vertical menu can display unlimited items
     - [ ] scroll buttons to move menu up/down
     - [ ] menu item is selectable box
     - [ ] load game on item selection

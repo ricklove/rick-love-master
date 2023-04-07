@@ -1,5 +1,5 @@
 import { wogger } from '../worker/wogger';
-import { EntityAction } from './components/actions/parser';
+import { EntityAction, findEntityInstanceByPath } from './components/actions/parser';
 import { EcsComponentFactory } from './ecs-component-factory';
 
 type EcsComponentFactoryUntyped = EcsComponentFactory<
@@ -12,6 +12,7 @@ type EcsComponentFactoryUntyped = EcsComponentFactory<
   EntityInstanceUntyped
 >;
 export type EntityDescUntyped = {
+  name: string;
   enabled: boolean;
   components: string[];
   children?: EntityDescUntyped[];
@@ -45,8 +46,12 @@ export const createSceneState = () => {
       children: [],
       desc: entity,
       execute: (action) => {
-        const { componentName, actionName, args } = action;
-        const eInstance = instance as unknown as Record<string, Record<string, (...args: unknown[]) => void>>;
+        const { entityPath, componentName, actionName, args } = action;
+        const foundInstance = findEntityInstanceByPath(instance, entityPath);
+        // if(entityPath) {
+
+        // }
+        const eInstance = foundInstance as unknown as Record<string, Record<string, (...args: unknown[]) => void>>;
         const actionFn = eInstance[componentName][actionName];
 
         if (!actionFn) {

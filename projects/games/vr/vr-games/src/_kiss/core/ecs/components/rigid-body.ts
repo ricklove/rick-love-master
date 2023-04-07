@@ -10,6 +10,7 @@ export type Entity_RigidBody = {
     kind: `fixed` | `dynamic` | `kinematicPositionBased` | `kinematicVelocityBased`;
     gravityScale?: number;
     collisionTag?: string;
+    moveToTransform?: boolean;
   };
 };
 
@@ -105,6 +106,17 @@ export const rigidBodyComponentFactory = ({ physicsService }: { physicsService: 
           wogger.log(`rigidBody deactivate`, { entityInstance });
         },
         update: (entityInstance) => {
+          if (entityInstance.desc.rigidBody.moveToTransform) {
+            // move to transform
+            const { position, quaternion } = entityInstance.transform;
+            entityInstance.rigidBody.rigidBody.setTranslation(v.set(position[0], position[1], position[2]), false);
+            entityInstance.rigidBody.rigidBody.setRotation(
+              q.set(quaternion[0], quaternion[1], quaternion[2], quaternion[3]),
+              false,
+            );
+            return;
+          }
+
           const translation = entityInstance.rigidBody.rigidBody.translation();
           entityInstance.transform.position[0] = translation.x;
           entityInstance.transform.position[1] = translation.y;

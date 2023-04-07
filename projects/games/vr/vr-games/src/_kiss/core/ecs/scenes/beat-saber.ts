@@ -16,18 +16,18 @@ export const createScene_beatSaber = (ecs: Ecs) => {
       timeToMoveSec: 6,
     })
     .actions({})
-    .actionDisableEntity({ actionName: `defeat` })
-    .collisionAction({ collisionTagFilter: `weapon`, action: `defeat` })
-    .addChild(
-      ecs
-        .entity(`eggEnemy-text`)
-        .transform({ position: [0.35, 0.25, 0] })
-        .shape_text({ text: `Egg`, fontSize: 0.5, alignment: `left`, verticalAlignment: `center` })
-        .graphics({ color: 0xff0000 })
-        .moveRelativeToParent({})
-        // .collider({ sensor: true })
-        .build(),
-    )
+    .actionDisableEntity({ actionName: `disable` })
+    .collisionAction({ collisionTagFilter: `weapon`, action: `actionDisableEntity.disable()` })
+    // .addChild(
+    //   ecs
+    //     .entity(`eggEnemy-text`)
+    //     .transform({ position: [0.35, 0.25, 0] })
+    //     .shape_text({ text: `Egg`, fontSize: 0.5, alignment: `left`, verticalAlignment: `center` })
+    //     .graphics({ color: 0xff0000 })
+    //     .moveRelativeToParent({})
+    //     // .collider({ sensor: true })
+    //     .build(),
+    // )
     .build();
 
   const songs = [
@@ -45,7 +45,7 @@ export const createScene_beatSaber = (ecs: Ecs) => {
     `Song-9`,
     `Song-10`,
   ];
-  const menu = createMenu(ecs, [0, 1, -1], songs);
+  const menu = createMenu(ecs, [-0.1, 1, -0.5], songs);
 
   const root = ecs
     .entity(`root`, true)

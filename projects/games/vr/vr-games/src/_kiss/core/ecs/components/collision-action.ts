@@ -1,11 +1,14 @@
 import { wogger } from '../../worker/wogger';
 import { createComponentFactory } from '../ecs-component-factory';
-import { Entity_Actions, EntityInstance_Actions } from './actions/actions';
+import { EntityInstanceUntyped } from '../ecs-engine';
+import { EntityInstance_Actions } from './actions/actions';
+import { parseActionCode } from './actions/parser';
 import { Entity_RigidBody, EntityInstance_RigidBody } from './rigid-body';
 
 export type Entity_CollisionAction = {
   collisionAction: {
     collisionTagFilter: string;
+    /** action code */
     action: string;
   };
 };
@@ -15,7 +18,7 @@ export type EntityInstance_CollisionAction = {
 };
 
 export const collisionActionComponentFactory = createComponentFactory<
-  Entity_RigidBody & Entity_Actions,
+  Entity_RigidBody,
   Entity_CollisionAction,
   EntityInstance_RigidBody & EntityInstance_Actions,
   EntityInstance_CollisionAction
@@ -31,27 +34,20 @@ export const collisionActionComponentFactory = createComponentFactory<
       };
     },
     setup: (entityInstance) => {
+      const action = parseActionCode(entityInstance.desc.collisionAction.action);
+
+      if (!action) {
+        console.error(
+          `collisionActionComponentFactory: invalid action code: ${entityInstance.desc.collisionAction.action}`,
+        );
+        return {
+          ...entityInstance,
+          collisionAction: {},
+        };
+      }
+
       entityInstance.rigidBody.onCollision = (other) => {
         if (other?.rigidBody.collisionTag !== entityInstance.desc.collisionAction.collisionTagFilter) {
-          return;
-        }
-
-        // wogger.log(`collisionActionComponentFactory: onCollision START`, {
-        //   entityInstance,
-        //   other,
-        //   actions: entityInstance.actions.actions,
-        // });
-
-        const action = entityInstance.actions.actions[entityInstance.desc.collisionAction.action];
-        // wogger.log(`collisionActionComponentFactory: onCollision`, {
-        //   entityInstance,
-        //   other,
-        //   actions: entityInstance.actions.actions,
-        //   action,
-        // });
-
-        if (!action) {
-          wogger.error(`collisionActionComponentFactory: action not found`, { entityInstance, other });
           return;
         }
 
@@ -61,7 +57,7 @@ export const collisionActionComponentFactory = createComponentFactory<
           actions: entityInstance.actions.actions,
           action,
         });
-        action();
+        (entityInstance as unknown as EntityInstanceUntyped).execute(action);
       };
 
       return {
