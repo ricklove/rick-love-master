@@ -89,6 +89,7 @@ export const parseActionCode = (actionCode: string): undefined | EntityAction =>
   // eslint-disable-next-line no-eval
   const args = eval(`[${actionArgs}]`) as unknown[];
 
+  wogger.log(`action parsed`, { actionCode, entityPath, componentName, actionName, args });
   return {
     entityPath,
     componentName,
@@ -104,6 +105,8 @@ type EntityInstanceWithPathInfo = {
   desc: { name: string };
 };
 export const findEntityInstanceByPath = (entity: EntityInstanceWithPathInfo, path: string) => {
+  wogger.log(`findEntityInstanceByPath`, { entity, path });
+
   if (!path) {
     return entity;
   }
@@ -111,11 +114,14 @@ export const findEntityInstanceByPath = (entity: EntityInstanceWithPathInfo, pat
   const pathParts = path.split(`/`);
   let currentEntity = entity;
   for (const pathPart of pathParts) {
-    if (pathPart === `..`) {
-      currentEntity = currentEntity.parent;
+    if (!pathPart) {
       continue;
     }
     if (pathPart === `.`) {
+      continue;
+    }
+    if (pathPart === `..`) {
+      currentEntity = currentEntity.parent;
       continue;
     }
 

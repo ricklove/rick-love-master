@@ -2,10 +2,9 @@ import RAPIER, { EventQueue } from '@dimforge/rapier3d-compat';
 import { createGamePlayerInputs } from '../input/game-player-inputs';
 import { MessageBufferPool } from '../messages/message-buffer';
 import { GameCore } from '../worker/types';
-import { wogger } from '../worker/wogger';
 import { createComponentFactories } from './components/_components';
 import { EntityInstance_RigidBody } from './components/rigid-body';
-import { createScene, createSceneState, EntityInstanceUntyped } from './ecs-engine';
+import { createScene, createSceneState } from './ecs-engine';
 import { createEntityFactory } from './ecs-entity-factory';
 import { createGraphicsService } from './graphics-service';
 import { createPhysicsService } from './physics-service';
@@ -57,20 +56,26 @@ export const createGameCore = async (messageBuffer: MessageBufferPool): Promise<
         entityRigidbody2 = (entity2 && entity2.parent) as unknown as undefined | EntityInstance_RigidBody;
       }
 
-      wogger.log(`collision`, {
-        started,
-        e1: `${(entityRigidbody1 as unknown as EntityInstanceUntyped).desc.name} (${entityId1})`,
-        e2: `${(entityRigidbody2 as unknown as EntityInstanceUntyped).desc.name} (${entityId2})`,
-        entityRigidbody1,
-        entityRigidbody2,
-        entity1,
-        entity2,
-        entityId1,
-        entityId2,
-        handle1,
-        handle2,
-        global,
-      });
+      // wogger.log(`collision`, {
+      //   started,
+      //   er1: `${(entityRigidbody1 as unknown as EntityInstanceUntyped).desc.name} (${entityId1}) ${
+      //     (entity1 as unknown as EntityInstanceUntyped).desc.name
+      //   } ${(entityRigidbody1 as unknown as EntityInstance_RigidBody).rigidBody.collisionTag ?? ``}`,
+      //   er2: `${(entityRigidbody2 as unknown as EntityInstanceUntyped).desc.name} (${entityId2}) ${
+      //     (entity2 as unknown as EntityInstanceUntyped).desc.name
+      //   } ${(entityRigidbody2 as unknown as EntityInstance_RigidBody).rigidBody.collisionTag ?? ``}`,
+      //   onCollision1: entityRigidbody1?.rigidBody.onCollision,
+      //   onCollision2: entityRigidbody2?.rigidBody.onCollision,
+      //   entityRigidbody1,
+      //   entityRigidbody2,
+      //   entity1,
+      //   entity2,
+      //   entityId1,
+      //   entityId2,
+      //   handle1,
+      //   handle2,
+      //   global,
+      // });
 
       entityRigidbody1?.rigidBody.onCollision?.(entityRigidbody2, started);
       entityRigidbody2?.rigidBody.onCollision?.(entityRigidbody1, started);

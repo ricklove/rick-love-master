@@ -1,5 +1,6 @@
 import { Vector3 } from 'three';
 import { GamePlayerInputs } from '../../input/game-player-inputs';
+import { wogger } from '../../worker/wogger';
 import { createComponentFactory } from '../ecs-component-factory';
 import { Entity_RigidBody, EntityInstance_RigidBody } from './rigid-body';
 
@@ -60,12 +61,20 @@ export const moveToTargetComponentFactory = ({ inputs }: { inputs: GamePlayerInp
             },
             setRelativeTarget: (target: [number, number, number], timeToMoveSec: number) => {
               const currentTarget = result.moveToTarget.target;
+              // const currentTarget = entityInstance.rigidBody.rigidBody.translation();
               result.moveToTarget.target.set(
                 target[0] + currentTarget.x,
                 target[1] + currentTarget.y,
                 target[2] + currentTarget.z,
               );
               result.moveToTarget.timeToArrive = Date.now() + timeToMoveSec * 1000;
+
+              wogger.log(`moveToTargetComponentFactory: setRelativeTarget`, {
+                target,
+                timeToMoveSec,
+                currentTarget,
+                result,
+              });
             },
           },
         };
@@ -75,13 +84,35 @@ export const moveToTargetComponentFactory = ({ inputs }: { inputs: GamePlayerInp
       update: (entityInstance) => {
         const { rigidBody } = entityInstance.rigidBody;
         const { target, timeToArrive } = entityInstance.moveToTarget;
-        const timeToMoveSec = (timeToArrive - Date.now()) / 1000;
+        let timeToMoveSec = (timeToArrive - Date.now()) / 1000;
+
+        if (timeToMoveSec < 0) {
+          // wogger.log(`moveToTargetComponentFactory: update: no time - resetForces`, {
+          //   target,
+          //   timeToMoveSec,
+          //   vPositionDelta: vPositionDelta.toArray(),
+          //   vVelocityDelta: vVelocityDelta.toArray(),
+          //   vImpulse: vImpulse.toArray(),
+          // });
+          rigidBody.setLinvel(v.set(0, 0, 0), false);
+          return;
+        }
+        if (timeToMoveSec < 0.02) {
+          timeToMoveSec = 0.02;
+        }
 
         const translation = rigidBody.translation();
         vPosition.set(translation.x, translation.y, translation.z);
         vPositionDelta.copy(target).sub(vPosition);
 
-        if (vPositionDelta.lengthSq() < 0.1) {
+        if (vPositionDelta.lengthSq() < 0.0001) {
+          // wogger.log(`moveToTargetComponentFactory: update: no position delta`, {
+          //   target,
+          //   timeToMoveSec,
+          //   vPositionDelta: vPositionDelta.toArray(),
+          //   vVelocityDelta: vVelocityDelta.toArray(),
+          //   vImpulse: vImpulse.toArray(),
+          // });
           return;
         }
 
@@ -91,12 +122,27 @@ export const moveToTargetComponentFactory = ({ inputs }: { inputs: GamePlayerInp
         vVelocityActual.set(vel.x, vel.y, vel.z);
         vVelocityDelta.copy(vVelocityTarget).sub(vVelocityActual);
 
-        if (vVelocityDelta.lengthSq() < 0.1) {
+        if (vVelocityDelta.lengthSq() < 0.0001) {
+          // wogger.log(`moveToTargetComponentFactory: update: no velocity delta`, {
+          //   target,
+          //   timeToMoveSec,
+          //   vPositionDelta: vPositionDelta.toArray(),
+          //   vVelocityDelta: vVelocityDelta.toArray(),
+          //   vImpulse: vImpulse.toArray(),
+          // });
           return;
         }
 
         vImpulse.copy(vVelocityDelta).multiplyScalar(rigidBody.mass());
         rigidBody.applyImpulse(vImpulse, true);
+
+        // wogger.log(`moveToTargetComponentFactory: update`, {
+        //   target,
+        //   timeToMoveSec,
+        //   vPositionDelta: vPositionDelta.toArray(),
+        //   vVelocityDelta: vVelocityDelta.toArray(),
+        //   vImpulse: vImpulse.toArray(),
+        // });
       },
     };
   });

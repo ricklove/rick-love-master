@@ -45,7 +45,7 @@ export const createScene_beatSaber = (ecs: Ecs) => {
     `Song-9`,
     `Song-10`,
   ];
-  const menu = createMenu(ecs, [-0.1, 1, -0.5], songs);
+  const menu = createMenu(ecs, [-0.1, 1, -0.5], songs, (i) => `../game/gameWithLevels.loadLevel(${i})`);
 
   const root = ecs
     .entity(`root`, true)

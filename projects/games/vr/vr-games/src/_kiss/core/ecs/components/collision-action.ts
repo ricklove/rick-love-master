@@ -1,7 +1,6 @@
 import { wogger } from '../../worker/wogger';
 import { createComponentFactory } from '../ecs-component-factory';
 import { EntityInstanceUntyped } from '../ecs-engine';
-import { EntityInstance_Actions } from './actions/actions';
 import { parseActionCode } from './actions/parser';
 import { Entity_RigidBody, EntityInstance_RigidBody } from './rigid-body';
 
@@ -20,7 +19,7 @@ export type EntityInstance_CollisionAction = {
 export const collisionActionComponentFactory = createComponentFactory<
   Entity_RigidBody,
   Entity_CollisionAction,
-  EntityInstance_RigidBody & EntityInstance_Actions,
+  EntityInstance_RigidBody,
   EntityInstance_CollisionAction
 >()(() => {
   return {
@@ -46,17 +45,23 @@ export const collisionActionComponentFactory = createComponentFactory<
         };
       }
 
-      entityInstance.rigidBody.onCollision = (other) => {
-        if (other?.rigidBody.collisionTag !== entityInstance.desc.collisionAction.collisionTagFilter) {
+      entityInstance.rigidBody.onCollision = (other, started) => {
+        wogger.log(`collisionActionComponentFactory: onCollision START`, { other, started });
+        const hasCollisionTag =
+          other?.rigidBody.collisionTag === entityInstance.desc.collisionAction.collisionTagFilter;
+
+        wogger.log(`collisionActionComponentFactory: onCollision action`, {
+          hasCollisionTag,
+          entityInstance,
+          other,
+          started,
+          action,
+        });
+
+        if (!hasCollisionTag) {
           return;
         }
 
-        wogger.log(`collisionActionComponentFactory: onCollision action`, {
-          entityInstance,
-          other,
-          actions: entityInstance.actions.actions,
-          action,
-        });
         (entityInstance as unknown as EntityInstanceUntyped).execute(action);
       };
 
