@@ -9,8 +9,7 @@ export type Entity_InputMouse = {
 
 export type EntityInstance_InputMouse = {
   inputMouse: {
-    timeLastUpdate: number;
-    z: number;
+    tracker: MouseInputTracker;
   };
 };
 
@@ -18,7 +17,7 @@ export const inputMouseComponentFactory = ({ inputs }: { inputs: GamePlayerInput
   createComponentFactory<Entity_RigidBody, Entity_InputMouse, EntityInstance_RigidBody, EntityInstance_InputMouse>()(
     () => {
       const v = new Vector3();
-      const vPosition = new Vector3();
+
       return {
         name: `inputMouse`,
         addComponent: (entity, args: Entity_InputMouse[`inputMouse`]) => {
@@ -33,32 +32,64 @@ export const inputMouseComponentFactory = ({ inputs }: { inputs: GamePlayerInput
           return {
             ...entityInstance,
             inputMouse: {
-              z: 0.5,
-              timeLastUpdate: 0,
+              tracker: createMouseInputTracker(),
             },
           };
         },
         update: (entityInstance) => {
           const { rigidBody } = entityInstance.rigidBody;
 
-          const mouseState = inputs.mouse;
-          if (mouseState.wheelDeltaY && mouseState.time !== entityInstance.inputMouse.timeLastUpdate) {
-            entityInstance.inputMouse.timeLastUpdate = mouseState.time;
-            if (mouseState.wheelDeltaY > 0) {
-              entityInstance.inputMouse.z = Math.max(0.1, entityInstance.inputMouse.z * 0.95);
-            } else {
-              entityInstance.inputMouse.z = Math.min(10, entityInstance.inputMouse.z * 1.05);
-            }
+          const { enabled, position: vPosition } = entityInstance.inputMouse.tracker.getPosition(inputs);
+
+          if (!enabled) {
+            rigidBody.setEnabled(false);
+            rigidBody.setTranslation(v.set(0, -10000, 0), false);
+            return;
           }
 
-          vPosition
-            .copy(mouseState.position)
-            .add(v.copy(mouseState.direction).multiplyScalar(entityInstance.inputMouse.z));
-
-          // wogger.log(`mouseState.position`, { ...vPosition, mouseState });
-
+          if (!rigidBody.isEnabled()) {
+            rigidBody.setEnabled(true);
+          }
           rigidBody.setTranslation(vPosition, true);
         },
       };
     },
   );
+
+export type MouseInputTracker = ReturnType<typeof createMouseInputTracker>;
+export const createMouseInputTracker = () => {
+  const state = {
+    z: 0.5,
+    timeLastUpdate: 0,
+  };
+
+  const v = new Vector3();
+  const vPosition = new Vector3();
+
+  return {
+    getPosition: (inputs: GamePlayerInputs) => {
+      const mouseState = inputs.mouse;
+
+      if (!mouseState.time || performance.now() > mouseState.time + 3000) {
+        // hide if no mouse activity for 3 seconds
+        return { enabled: false as const };
+      }
+
+      if (mouseState.wheelDeltaY && mouseState.time !== state.timeLastUpdate) {
+        state.timeLastUpdate = mouseState.time;
+        if (mouseState.wheelDeltaY > 0) {
+          state.z = Math.max(0.1, state.z * 0.95);
+        } else {
+          state.z = Math.min(10, state.z * 1.05);
+        }
+      }
+
+      vPosition.copy(mouseState.position).add(v.copy(mouseState.direction).multiplyScalar(state.z));
+
+      return {
+        enabled: true as const,
+        position: vPosition,
+      };
+    },
+  };
+};

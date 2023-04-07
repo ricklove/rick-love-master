@@ -4,7 +4,7 @@ export const createWeapon_knuckleClaws = (
   ecs: Ecs,
   position: [number, number, number],
   scale: number = 1,
-  attachedHandSide?: `left` | `right`,
+  attachedHandSide?: `left` | `right` | `mouse`,
 ) => {
   const length = 0.4 * scale;
   const bladeThickness = 0.002 * scale;

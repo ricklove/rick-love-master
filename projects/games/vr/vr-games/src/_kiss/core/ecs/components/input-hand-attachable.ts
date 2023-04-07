@@ -2,6 +2,7 @@ import { RigidBodyType } from '@dimforge/rapier3d-compat';
 import { Matrix4, Quaternion, Vector3 } from 'three';
 import { GamePlayerInputs } from '../../input/game-player-inputs';
 import { createComponentFactory } from '../ecs-component-factory';
+import { createMouseInputTracker, MouseInputTracker } from './input-mouse';
 import { Entity_RigidBody, EntityInstance_RigidBody } from './rigid-body';
 
 export type HandAttachableKind = `sword` | `knuckles`;
@@ -9,13 +10,13 @@ export type Entity_InputHandAttachable = {
   inputHandAttachable: {
     handAttachableKind: HandAttachableKind;
     attachmentPosition?: [number, number, number];
-    attachedHandSide?: `left` | `right`;
+    attachedHandSide?: `left` | `right` | `mouse`;
   };
 };
 
 export type EntityInstance_InputHandAttachable = {
   inputHandAttachable: {
-    attachedHandSide?: `left` | `right`;
+    attachedHandSide?: `left` | `right` | `mouse`;
     unattachedBodyType?: RigidBodyType;
     calculateAttachment: () =>
       | undefined
@@ -23,6 +24,7 @@ export type EntityInstance_InputHandAttachable = {
           position: Vector3;
           quaternion: Quaternion;
         };
+    mouseTracker: MouseInputTracker;
   };
 };
 
@@ -63,6 +65,22 @@ export const inputHandAttachableComponentFactory = ({ inputs }: { inputs: GamePl
               if (!handSide) {
                 return;
               }
+              if (handSide === `mouse`) {
+                const mouseResult = inputHandAttachable.mouseTracker.getPosition(inputs);
+                if (!mouseResult.enabled) {
+                  // hide if no mouse activity for 3 seconds
+                  return;
+                }
+
+                vAttachment.copy(mouseResult.position);
+                qForward.identity();
+
+                return {
+                  position: vAttachment,
+                  quaternion: qForward,
+                };
+              }
+
               const wrist = inputs.hands[handSide].find((x) => x.handJoint === `wrist`)?.position;
               const indexProximal = inputs.hands[handSide].find(
                 (x) => x.handJoint === `index-finger-phalanx-proximal`,
@@ -121,6 +139,22 @@ export const inputHandAttachableComponentFactory = ({ inputs }: { inputs: GamePl
               if (!handSide) {
                 return;
               }
+              if (handSide === `mouse`) {
+                const mouseResult = inputHandAttachable.mouseTracker.getPosition(inputs);
+                if (!mouseResult.enabled) {
+                  // hide if no mouse activity for 3 seconds
+                  return;
+                }
+
+                vAttachment.copy(mouseResult.position);
+                qForward.identity();
+
+                return {
+                  position: vAttachment,
+                  quaternion: qForward,
+                };
+              }
+
               const wrist = inputs.hands[handSide].find((x) => x.handJoint === `wrist`)?.position;
               const indexProximal = inputs.hands[handSide].find(
                 (x) => x.handJoint === `index-finger-phalanx-proximal`,
@@ -156,6 +190,7 @@ export const inputHandAttachableComponentFactory = ({ inputs }: { inputs: GamePl
         const inputHandAttachable: EntityInstance_InputHandAttachable[`inputHandAttachable`] = {
           attachedHandSide: entityInstance.desc.inputHandAttachable.attachedHandSide,
           calculateAttachment: createCalculateAttachment(),
+          mouseTracker: createMouseInputTracker(),
         };
 
         return {

@@ -4,7 +4,7 @@ export const createWeapon_saber = (
   ecs: Ecs,
   position: [number, number, number],
   scale: number = 1,
-  attachedHandSide?: `left` | `right`,
+  attachedHandSide?: `left` | `right` | `mouse`,
 ) => {
   const saber = ecs
     .entity(`saber`)
