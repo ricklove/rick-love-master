@@ -1,12 +1,13 @@
 import { wogger } from '../../../worker/wogger';
 
+export type EntityActionCode = string & { _type: 'EntityActionCode' };
 export type EntityAction = {
   entityPath: string;
   componentName: string;
   actionName: string;
   args: unknown[];
 };
-export const parseActionCode = (actionCode: string): undefined | EntityAction => {
+export const parseActionCode = (actionCode: EntityActionCode): undefined | EntityAction => {
   // Example actions:
   // moveToTarget.setRelativeTarget([0,-${itemHeight},0],0.5)
   // ../menu-scroller/moveToTarget.setRelativeTarget([0,-${itemHeight},0],0.5)

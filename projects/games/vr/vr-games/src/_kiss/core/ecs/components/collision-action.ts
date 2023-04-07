@@ -1,14 +1,13 @@
 import { wogger } from '../../worker/wogger';
 import { createComponentFactory } from '../ecs-component-factory';
 import { EntityInstanceUntyped } from '../ecs-engine';
-import { parseActionCode } from './actions/parser';
+import { EntityActionCode, parseActionCode } from './actions/parser';
 import { Entity_RigidBody, EntityInstance_RigidBody } from './rigid-body';
 
 export type Entity_CollisionAction = {
   collisionAction: {
     collisionTagFilter: string;
-    /** action code */
-    action: string;
+    action: EntityActionCode;
   };
 };
 

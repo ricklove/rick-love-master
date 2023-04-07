@@ -2,12 +2,14 @@ import RAPIER, { EventQueue } from '@dimforge/rapier3d-compat';
 import { createGamePlayerInputs } from '../input/game-player-inputs';
 import { MessageBufferPool } from '../messages/message-buffer';
 import { GameCore } from '../worker/types';
-import { createComponentFactories } from './components/_components';
+import { ComponentFactoryGlobals, createComponentFactories } from './components/_components';
+import { createMidiSequenceLoader } from './components/midi-sequence-loader';
 import { EntityInstance_RigidBody } from './components/rigid-body';
 import { createScene, createSceneState } from './ecs-engine';
 import { createEntityFactory } from './ecs-entity-factory';
 import { createGraphicsService } from './graphics-service';
 import { createPhysicsService } from './physics-service';
+import { createMenu } from './prefabs/menu';
 import { createScene_beatSaber } from './scenes/beat-saber';
 
 export const createGameCore = async (messageBuffer: MessageBufferPool): Promise<GameCore> => {
@@ -18,7 +20,13 @@ export const createGameCore = async (messageBuffer: MessageBufferPool): Promise<
     graphicsService: createGraphicsService(messageBuffer),
     sceneState: createSceneState(),
     inputs: createGamePlayerInputs(),
-  };
+    midiSequenceLoader: createMidiSequenceLoader(),
+    prefabFactory: {
+      menu: (args) => {
+        return createMenu(ecs, args);
+      },
+    },
+  } satisfies ComponentFactoryGlobals;
 
   const componentFactories = createComponentFactories(global);
   const ecs = createEntityFactory(componentFactories);

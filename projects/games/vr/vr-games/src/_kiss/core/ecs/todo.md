@@ -33,7 +33,7 @@
     - [x] text component can display text with position offset to parent
     - [x] vertical menu can display unlimited items
     - [x] scroll buttons to move menu up/down
-    - [ ] menu item is selectable
+    - [x] menu item is selectable
     - [ ] load game on item selection
     - [ ] menu button during game to go back to menu
   - [ ] convert midi to wave sequence

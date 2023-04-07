@@ -1,4 +1,5 @@
 import { Ecs } from '../components/_components';
+import { EntityActionCode } from '../components/actions/parser';
 import { createAlienEgg } from '../prefabs/alien-egg';
 import { createHands } from '../prefabs/hands';
 import { createMenu } from '../prefabs/menu';
@@ -17,7 +18,7 @@ export const createScene_beatSaber = (ecs: Ecs) => {
     })
     .actions({})
     .actionDisableEntity({ actionName: `disable` })
-    .collisionAction({ collisionTagFilter: `weapon`, action: `actionDisableEntity.disable()` })
+    .collisionAction({ collisionTagFilter: `weapon`, action: `actionDisableEntity.disable()` as EntityActionCode })
     // .addChild(
     //   ecs
     //     .entity(`eggEnemy-text`)
@@ -44,8 +45,44 @@ export const createScene_beatSaber = (ecs: Ecs) => {
     `Song-8`,
     `Song-9`,
     `Song-10`,
-  ];
-  const menu = createMenu(ecs, [-0.1, 1, -0.5], songs, (i) => `../game/gameWithLevels.loadLevel(${i})`);
+  ].map((song) => ({
+    name: song,
+    getWaves: () => [
+      {
+        sequence: [
+          {
+            spawnerName: `eggSpawner`,
+            count: 3,
+            position: [2, 1, -25],
+            action: `moveToTarget.setTarget([-1, 1, 0], 6)`,
+            timeBeforeSpawnSec: 1,
+          },
+          {
+            spawnerName: `eggSpawner`,
+            count: 3,
+            position: [-2, 1, -15],
+            action: `moveToTarget.setTarget([1, 1, 0], 3)`,
+            timeBeforeSpawnSec: 1,
+          },
+          {
+            spawnerName: `eggSpawner`,
+            count: 3,
+            position: [0, 0, -25],
+            action: `moveToTarget.setTarget([0, 0, 0], 6)`,
+            timeBeforeSpawnSec: 1,
+          },
+        ],
+        timeBeforeWaveSec: 3,
+      },
+    ],
+  }));
+  const menu = createMenu(ecs, {
+    position: [-0.1, 1, -0.5],
+    items: songs.map((x, i) => ({
+      text: x.name,
+      action: `../game/gameWithLevels.loadLevel(${i})` as EntityActionCode,
+    })),
+  });
 
   const root = ecs
     .entity(`root`, true)
@@ -55,22 +92,6 @@ export const createScene_beatSaber = (ecs: Ecs) => {
     .addChild(createWeapon_knuckleClaws(ecs, [0, 1, -0.35], 1, `mouse`, true))
     .addChild(createWeapon_saber(ecs, [0, 1, -0.35], 1, `left`))
     .addChild(createWeapon_knuckleClaws(ecs, [0, 1, -0.35], 1, `right`))
-    // .addChild(
-    //   ecs
-    //     .entity(`weapon-test`)
-    //     .transform({ position: [0.25, 0, -3] })
-    //     .rigidBody({ kind: `kinematicPositionBased`, collisionTag: `weapon` })
-    //     .addChild(
-    //       ecs
-    //         .entity(`box-collider`)
-    //         .transform({ position: [0, 0.5, 0] })
-    //         .shape_box({ scale: [0.5, 0.5, 0.5] })
-    //         .collider({ colliderEvents: true })
-    //         .graphics({ color: 0xff0000 })
-    //         .build(),
-    //     )
-    //     .build(),
-    // )
     .addChild(menu)
     .addChild(
       ecs
@@ -109,21 +130,21 @@ export const createScene_beatSaber = (ecs: Ecs) => {
                   spawnerName: `eggSpawner`,
                   count: 3,
                   position: [2, 1, -25],
-                  action: `moveToTarget.setTarget([-1, 1, 0], 6)`,
+                  action: `moveToTarget.setTarget([-1, 1, 0], 6)` as EntityActionCode,
                   timeBeforeSpawnSec: 1,
                 },
                 {
                   spawnerName: `eggSpawner`,
                   count: 3,
                   position: [-2, 1, -15],
-                  action: `moveToTarget.setTarget([1, 1, 0], 3)`,
+                  action: `moveToTarget.setTarget([1, 1, 0], 3)` as EntityActionCode,
                   timeBeforeSpawnSec: 1,
                 },
                 {
                   spawnerName: `eggSpawner`,
                   count: 3,
                   position: [0, 0, -25],
-                  action: `moveToTarget.setTarget([0, 0, 0], 6)`,
+                  action: `moveToTarget.setTarget([0, 0, 0], 6)` as EntityActionCode,
                   timeBeforeSpawnSec: 1,
                 },
               ],

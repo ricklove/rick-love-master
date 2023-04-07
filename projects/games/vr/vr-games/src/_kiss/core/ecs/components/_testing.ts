@@ -3,7 +3,8 @@ import { createScene, createSceneState } from '../ecs-engine';
 import { createEntityFactory } from '../ecs-entity-factory';
 import { GraphicsService } from '../graphics-service';
 import { createPhysicsService } from '../physics-service';
-import { createComponentFactories } from './_components';
+import { ComponentFactoryGlobals, createComponentFactories } from './_components';
+import { createMidiSequenceLoader } from './midi-sequence-loader';
 
 const createGraphicsService = (): GraphicsService => ({
   addObject: (args) => {
@@ -25,7 +26,13 @@ const global = {
   graphicsService: createGraphicsService(),
   sceneState: createSceneState(),
   inputs: createGamePlayerInputs(),
-};
+  midiSequenceLoader: createMidiSequenceLoader(),
+  prefabFactory: {
+    menu: () => {
+      return ecs.entity(`placeholder`).build();
+    },
+  },
+} satisfies ComponentFactoryGlobals;
 
 const componentFactories = createComponentFactories(global);
 const ecs = createEntityFactory(componentFactories);

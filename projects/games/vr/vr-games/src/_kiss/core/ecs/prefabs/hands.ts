@@ -51,7 +51,7 @@ const createMouseHand = (ecs: Ecs) => {
       ecs
         .entity(`mouse-hand-collider`)
         .transform({ position: [0, 0, 0] })
-        .shape_sphere({ radius: 0.05 })
+        .shape_sphere({ radius: 0.02 })
         .collider({ restitution: 0, friction: 1 })
         .graphics({ color: 0x00ff00 })
         .build(),

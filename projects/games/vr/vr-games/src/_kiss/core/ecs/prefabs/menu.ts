@@ -1,10 +1,15 @@
 import { Ecs } from '../components/_components';
+import { EntityActionCode } from '../components/actions/parser';
 
 export const createMenu = (
   ecs: Ecs,
-  position: [number, number, number],
-  items: string[],
-  makeSelectActionCode: (index: number) => string,
+  {
+    position,
+    items,
+  }: {
+    position: [number, number, number];
+    items: { text: string; action: EntityActionCode }[];
+  },
 ) => {
   const itemHeight = 0.04;
 
@@ -37,12 +42,12 @@ export const createMenu = (
         .rigidBody({ kind: `dynamic`, gravityScale: 0 })
         .collisionAction({
           collisionTagFilter: `hand`,
-          action: `../menu-scroller/moveToTarget.setRelativeTarget([0,${itemHeight},0],0.25)`,
+          action: `../menu-scroller/moveToTarget.setRelativeTarget([0,${itemHeight},0],0.25)` as EntityActionCode,
         })
         .addChild(
           ecs
             .entity(`menu-up-bullet`)
-            .transform({ position: [0, 0, -itemHeight * 0.75], rotation: [0, 0, Math.PI * 0.25] })
+            .transform({ position: [0, 0, 0], rotation: [0, 0, Math.PI * 0.25] })
             .shape_box({ scale: [itemHeight * 0.75, itemHeight * 0.75, itemHeight * 0.75] })
             .collider({ sensor: true, colliderEvents: true })
             .graphics({ color: 0x0000ff })
@@ -67,12 +72,12 @@ export const createMenu = (
         .rigidBody({ kind: `dynamic`, gravityScale: 0 })
         .collisionAction({
           collisionTagFilter: `hand`,
-          action: `../menu-scroller/moveToTarget.setRelativeTarget([0,-${itemHeight},0],0.25)`,
+          action: `../menu-scroller/moveToTarget.setRelativeTarget([0,-${itemHeight},0],0.25)` as EntityActionCode,
         })
         .addChild(
           ecs
             .entity(`menu-down-bullet`)
-            .transform({ position: [0, 0, -itemHeight * 0.75], rotation: [0, 0, Math.PI * 0.25] })
+            .transform({ position: [0, 0, 0], rotation: [0, 0, Math.PI * 0.25] })
             .shape_box({ scale: [itemHeight * 0.75, itemHeight * 0.75, itemHeight * 0.75] })
             .collider({ sensor: true, colliderEvents: true })
             .graphics({ color: 0x0000ff })
@@ -91,7 +96,7 @@ export const createMenu = (
         .build(),
     );
 
-  items.forEach((text, i) => {
+  items.forEach(({ text, action }, i) => {
     menuScroller = menuScroller.addChild(
       ecs
         .entity(`menu-${i}`)
@@ -99,7 +104,7 @@ export const createMenu = (
         .rigidBody({ kind: `dynamic`, gravityScale: 0, moveToTransform: true })
         .collisionAction({
           collisionTagFilter: `hand`,
-          action: makeSelectActionCode(i),
+          action,
         })
         .moveRelativeToParent({})
         .addChild(
