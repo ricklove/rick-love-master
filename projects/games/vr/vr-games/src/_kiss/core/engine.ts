@@ -2,6 +2,7 @@ import * as THREE from 'three';
 import { Object3D } from 'three';
 import { TextGeometry } from 'three-stdlib';
 import { logger } from '../../utils/logger';
+import { createAudioBeatCalculator } from './audio/audio-beat-calculator';
 import { musicList } from './audio/music-list';
 import { postMessageUserInputTransforms } from './input/message-user-input';
 import { setupMouseInput } from './input/mouse';
@@ -253,6 +254,9 @@ export const createGameEngine = (host: HTMLDivElement, workerRaw: Worker) => {
 
     const bufferPool = createMessageBufferPool(workerRaw);
 
+    const beatCalculator = createAudioBeatCalculator();
+    beatCalculator.setup(audioState.audio);
+
     let frameCount = 0;
     let fpsRunningAverage = 60;
     let stop = false;
@@ -291,6 +295,9 @@ export const createGameEngine = (host: HTMLDivElement, workerRaw: Worker) => {
       updateSceneFromData();
       updateTestScene(deltaTime, testScene);
       renderer.render(scene, camera);
+
+      // audio analyser
+      beatCalculator.update();
 
       frameCount++;
     };

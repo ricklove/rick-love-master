@@ -48,6 +48,7 @@ export const setupThree = (hostRaw: HTMLDivElement) => {
   const audioLoader = new THREE.AudioLoader();
   const listener = new THREE.AudioListener();
   const audio = new THREE.Audio(listener);
+
   camera.add(listener);
 
   const audioState = {
