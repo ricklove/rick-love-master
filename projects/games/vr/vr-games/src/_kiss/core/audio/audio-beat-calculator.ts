@@ -65,11 +65,11 @@ export const createAudioBeatCalculator = () => {
       // const total = data.reduce((a, b) => a + b, 0);
       const diffRatio = (total - state.totalRunning) / state.totalRunning;
 
-      if (diffRatio > 50 && total > 100) {
+      if (diffRatio > 40 && total > 100) {
         console.log(`total`, total, `diffRatio`, diffRatio, `totalRunning`, state.totalRunning);
         state.total = total;
         // spike
-        state.totalRunning = state.totalRunning * 0.8 + total * 0.2;
+        state.totalRunning = state.totalRunning * 0.7 + total * 0.3;
         // state.totalRunning = total;
       } else {
         // bleed off
