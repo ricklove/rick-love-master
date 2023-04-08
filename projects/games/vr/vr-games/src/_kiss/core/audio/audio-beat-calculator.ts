@@ -53,7 +53,7 @@ export const createAudioBeatCalculator = () => {
         state.bucketsLast[i] = value;
 
         // totalDelta += Math.abs(delta);
-        totalDelta += delta;
+        totalDelta += Math.sign(delta) * delta * delta;
       }
 
       //   if (totalDelta > state.totalDeltaRunning * 1.5) {
@@ -65,16 +65,16 @@ export const createAudioBeatCalculator = () => {
       // const total = data.reduce((a, b) => a + b, 0);
       const diffRatio = (total - state.totalRunning) / state.totalRunning;
 
-      if (diffRatio > 10 && total > 100) {
+      if (diffRatio > 50 && total > 100) {
         console.log(`total`, total, `diffRatio`, diffRatio, `totalRunning`, state.totalRunning);
         state.total = total;
         // spike
-        // state.totalRunning = state.totalRunning * 0.5 + total * 0.5;
-        state.totalRunning = total;
+        state.totalRunning = state.totalRunning * 0.8 + total * 0.2;
+        // state.totalRunning = total;
       } else {
         // bleed off
-        state.totalRunning = state.totalRunning * 0.97 + total * 0.03;
       }
+      state.totalRunning = state.totalRunning * 0.95 + total * 0.05;
 
       //   const hitIndexes = [...data].map((x, i) => ({ x, i })).filter((x) => x.x > 128);
 
