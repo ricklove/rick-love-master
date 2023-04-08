@@ -7,16 +7,18 @@ export const createAudioBeatCalculator = () => {
     audioAnalyser: undefined as undefined | THREE.AudioAnalyser,
     buckets: [] as boolean[],
     bucketsAverages: [] as number[],
+    bucketsLast: [] as number[],
     //topBuckets: [] as number[],
     top: ``,
     total: 0,
     totalRunning: 0,
+    totalDeltaRunning: 0,
   };
 
   return {
     setup: (audio: THREE.Audio) => {
       state.audio = audio;
-      const audioAnalyser = (state.audioAnalyser = new THREE.AudioAnalyser(audio, 1024));
+      const audioAnalyser = (state.audioAnalyser = new THREE.AudioAnalyser(audio, 2048));
       audioAnalyser.analyser.minDecibels = -60;
       audioAnalyser.analyser.maxDecibels = -10;
       audioAnalyser.analyser.smoothingTimeConstant = 0;
@@ -43,25 +45,27 @@ export const createAudioBeatCalculator = () => {
       //     state.top = topStr;
       //   }
 
-      //   for (let i = 0; i < data.length; i++) {
-      //     const value = data[i];
+      let totalDelta = 0;
+      for (let i = 0; i < data.length; i++) {
+        const value = data[i];
 
-      //     state.bucketsAverages[i] = (state.bucketsAverages[i] || 0) * 0.95 + value * 0.05;
-      //     const diff = Math.abs(state.bucketsAverages[i] - value);
+        const delta = value - (state.bucketsLast[i] || 0);
+        state.bucketsLast[i] = value;
 
-      //     const isHit = diff > 64;
-      //     const wasHit = state.buckets[i];
-      //     state.buckets[i] = isHit;
+        // totalDelta += Math.abs(delta);
+        totalDelta += delta;
+      }
 
-      //     if (isHit !== wasHit) {
-      //       console.log(`hit change ${isHit ? `OOO` : `...`} [${i}] @${value.toString(16)} ${diff.toString(16)}`);
-      //     }
+      //   if (totalDelta > state.totalDeltaRunning * 1.5) {
+      //     console.log(`totalDelta`, totalDelta, state.totalDeltaRunning);
       //   }
+      //   state.totalDeltaRunning = state.totalDeltaRunning * 0.95 + totalDelta * 0.05;
+      const total = totalDelta;
 
-      const total = data.reduce((a, b) => a + b, 0);
+      // const total = data.reduce((a, b) => a + b, 0);
       const diffRatio = (total - state.totalRunning) / state.totalRunning;
 
-      if (diffRatio > 0.5 && total > 100) {
+      if (diffRatio > 10 && total > 100) {
         console.log(`total`, total, `diffRatio`, diffRatio, `totalRunning`, state.totalRunning);
         state.total = total;
         // spike
@@ -69,7 +73,7 @@ export const createAudioBeatCalculator = () => {
         state.totalRunning = total;
       } else {
         // bleed off
-        state.totalRunning = state.totalRunning * 0.8 + total * 0.18;
+        state.totalRunning = state.totalRunning * 0.97 + total * 0.03;
       }
 
       //   const hitIndexes = [...data].map((x, i) => ({ x, i })).filter((x) => x.x > 128);
