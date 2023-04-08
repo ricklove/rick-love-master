@@ -13,6 +13,18 @@ export const createAudioBeatCalculator = () => {
     total: 0,
     totalRunning: 0,
     totalDeltaRunning: 0,
+    path: ``,
+    data: {} as {
+      path: string;
+      beats: {
+        time: number;
+        intensity: number;
+      }[];
+    },
+  };
+
+  const saveResult = () => {
+    localStorage.setItem(`music-beats-${state.path}`, JSON.stringify(state.data));
   };
 
   return {
@@ -23,8 +35,19 @@ export const createAudioBeatCalculator = () => {
       audioAnalyser.analyser.maxDecibels = -10;
       audioAnalyser.analyser.smoothingTimeConstant = 0;
     },
+    setPath: (path: string) => {
+      state.path = path;
+      state.data = {
+        path,
+        beats: [],
+      };
+    },
     update: () => {
       if (!state.audio || !state.audio.isPlaying || !state.audioAnalyser) {
+        if (state.path) {
+          saveResult();
+          state.path = ``;
+        }
         return;
       }
 
@@ -45,8 +68,10 @@ export const createAudioBeatCalculator = () => {
       //     state.top = topStr;
       //   }
 
+      // use base range
+      const cutoff = Math.floor(data.length * 0.5);
       let totalDelta = 0;
-      for (let i = 0; i < data.length; i++) {
+      for (let i = 0; i < cutoff; i++) {
         const value = data[i];
 
         const delta = value - (state.bucketsLast[i] || 0);
@@ -71,6 +96,11 @@ export const createAudioBeatCalculator = () => {
         // spike
         state.totalRunning = state.totalRunning * 0.7 + total * 0.3;
         // state.totalRunning = total;
+
+        state.data.beats.push({
+          time: state.audio.context.currentTime,
+          intensity: diffRatio,
+        });
       } else {
         // bleed off
       }

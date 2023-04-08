@@ -36,8 +36,13 @@
     - [x] menu item is selectable
     - [x] load game on item selection
     - [ ] menu button during game to go back to menu
-  - [ ] convert midi to wave sequence
-    - https://github.com/Tonejs/Midi
+  - [ ] convert music to wave sequence
+    - [x] Detect beats from any sound file
+    - [ ] Use stepmania simfiles
+      - [ ] Can use double levels to get 8 note signals, or combine 2 difficulties for 8
+      - https://github.com/noahm/simfile-parser
+    - [ ] Midi files
+      - https://github.com/Tonejs/Midi
 
 - Bible reader
 

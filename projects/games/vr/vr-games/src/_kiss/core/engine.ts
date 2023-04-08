@@ -186,6 +186,7 @@ export const createGameEngine = (host: HTMLDivElement, workerRaw: Worker) => {
           console.log(`loaded music, playing`, { data, buffer });
 
           audioState.play(buffer);
+          beatCalculator.setPath(path);
         });
       }
     };
@@ -263,6 +264,9 @@ export const createGameEngine = (host: HTMLDivElement, workerRaw: Worker) => {
     let disposed = false;
     let lastFrameTime = performance.now();
 
+    let autoPlayId = 0;
+    let autoPlayTimeoutId = undefined as undefined | number | NodeJS.Timeout;
+
     const mainLoop: XRFrameRequestCallback = (time, frame) => {
       if (disposed) {
         return;
@@ -298,6 +302,21 @@ export const createGameEngine = (host: HTMLDivElement, workerRaw: Worker) => {
 
       // audio analyser
       beatCalculator.update();
+
+      const autoPlay = false;
+      if (autoPlay && !audioState.audio.isPlaying && !autoPlayTimeoutId) {
+        autoPlayTimeoutId = setTimeout(() => {
+          autoPlayTimeoutId = undefined;
+          const path = musicList[autoPlayId++]?.path;
+          if (path) {
+            // eslint-disable-next-line no-void
+            void audioState.load(path).then((buffer) => {
+              audioState.play(buffer);
+              beatCalculator.setPath(path);
+            });
+          }
+        }, 1000);
+      }
 
       frameCount++;
     };
