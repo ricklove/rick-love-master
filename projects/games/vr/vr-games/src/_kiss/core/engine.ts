@@ -2,6 +2,7 @@ import * as THREE from 'three';
 import { Object3D } from 'three';
 import { TextGeometry } from 'three-stdlib';
 import { logger } from '../../utils/logger';
+import { musicList } from './audio/music-list';
 import { postMessageUserInputTransforms } from './input/message-user-input';
 import { setupMouseInput } from './input/mouse';
 import { createMessageBufferPool } from './messages/message-buffer';
@@ -26,7 +27,7 @@ export const createGameEngine = (host: HTMLDivElement, workerRaw: Worker) => {
   };
 
   const setup = () => {
-    const { scene, camera, renderer, dispose, state } = setupThree(host);
+    const { scene, camera, renderer, dispose, state, audioState } = setupThree(host);
     const testScene = addTestScene(scene, renderer);
     const boxGeometry = new THREE.BoxGeometry(1, 1, 1);
     const sphereGeometry = new THREE.SphereGeometry(1);
@@ -36,6 +37,8 @@ export const createGameEngine = (host: HTMLDivElement, workerRaw: Worker) => {
     let removeObjectsData = undefined as undefined | Extract<WorkerMessageFromWorker, { kind: `removeObjects` }>;
     let updateObjectsData = undefined as undefined | Extract<WorkerMessageFromWorker, { kind: `updateObjects` }>;
     let updateObjectsArrayBuffer = undefined as undefined | ArrayBuffer;
+    let loadMusicData = undefined as undefined | Extract<WorkerMessageFromWorker, { kind: `loadMusic` }>;
+    let playMusicData = undefined as undefined | Extract<WorkerMessageFromWorker, { kind: `playMusic` }>;
 
     const updateSceneFromData = () => {
       if (addObjectsData) {
@@ -156,6 +159,34 @@ export const createGameEngine = (host: HTMLDivElement, workerRaw: Worker) => {
         readMessageSceneObjectTransforms(data, objectMap);
         bufferPool.returnBuffer(data);
       }
+      if (loadMusicData) {
+        const data = loadMusicData;
+        loadMusicData = undefined;
+
+        // TODO: Improve this
+        // eslint-disable-next-line no-void
+        void audioState.load(musicList[data.musicId].path!);
+      }
+      if (playMusicData) {
+        const data = playMusicData;
+        playMusicData = undefined;
+
+        const path = musicList[data.musicId]?.path;
+
+        if (!path) {
+          console.error(`could not find music`, { data, path });
+          return;
+        }
+
+        console.log(`playMusicData`, { data, path });
+
+        // eslint-disable-next-line no-void
+        void audioState.load(path).then((buffer) => {
+          console.log(`loaded music, playing`, { data, buffer });
+
+          audioState.play(buffer);
+        });
+      }
     };
 
     worker.onmessage = (e) => {
@@ -200,6 +231,14 @@ export const createGameEngine = (host: HTMLDivElement, workerRaw: Worker) => {
       if (data.kind === `updateObjects`) {
         // logger.log(`updateObjects from [Worker]`, { e });
         updateObjectsData = data;
+        return;
+      }
+      if (data.kind === `loadMusic`) {
+        loadMusicData = data;
+        return;
+      }
+      if (data.kind === `playMusic`) {
+        playMusicData = data;
         return;
       }
 

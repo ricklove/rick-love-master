@@ -1,9 +1,9 @@
-export type MidiSequenceLoader = {
+export type MusicSequenceLoader = {
   getSongs: () => Promise<{ songName: string }[]>;
-  loadSong: (songName: string) => Promise<MidiSequenceData>;
+  loadSong: (songName: string) => Promise<MusicSequenceData>;
 };
 
-export type MidiSequenceData = {
+export type MusicSequenceData = {
   songName: string;
   bpm: number;
   tracks: {
@@ -16,7 +16,7 @@ export type MidiSequenceData = {
   }[];
 };
 
-export const createMidiSequenceLoader = (rootPath: string = `/midi`) => {
+export const createMusicSequenceLoader = (rootPath: string = `/midi`) => {
   return {
     getSongs: async () => {
       const response = await fetch(`${rootPath}/songList.json`);
@@ -25,7 +25,7 @@ export const createMidiSequenceLoader = (rootPath: string = `/midi`) => {
     },
     loadSong: async (songName: string) => {
       const response = await fetch(`${rootPath}/${songName}.json`);
-      const song = (await response.json()) as MidiSequenceData;
+      const song = (await response.json()) as MusicSequenceData;
       return song;
     },
   };

@@ -1,4 +1,5 @@
 import { GamePlayerInputs } from '../../input/game-player-inputs';
+import { AudioService } from '../audio-service';
 import { EcsSceneState, EntityDescUntyped } from '../ecs-engine';
 import { createEntityFactory } from '../ecs-entity-factory';
 import { GraphicsService } from '../graphics-service';
@@ -9,13 +10,13 @@ import { EntityActionCode } from './actions/parser';
 import { colliderComponentFactory } from './collider';
 import { collisionActionComponentFactory } from './collision-action';
 import { gameComponentFactory } from './game';
-import { gameWithMidiWavesComponentFactory } from './game-with-midi-waves';
+import { gameWithMusicWavesComponentFactory } from './game-with-music-waves';
 import { gameWithWavesComponentFactory } from './game-with-waves';
 import { graphicsComponentFactory } from './graphics';
 import { inputHandAttachableComponentFactory } from './input-hand-attachable';
 import { inputHandJointComponentFactory } from './input-hand-joint';
 import { inputMouseComponentFactory } from './input-mouse';
-import { MidiSequenceLoader } from './midi-sequence-loader';
+import { MusicSequenceLoader } from './midi-sequence-loader';
 import { moveRelativeToParentComponentFactory } from './move-relative-to-parent';
 import { moveToTargetComponentFactory } from './move-to-target';
 import { rigidBodyComponentFactory } from './rigid-body';
@@ -26,11 +27,12 @@ import { spawnerComponentFactory } from './spawner';
 import { transformComponentFactory } from './transform';
 
 export type ComponentFactoryGlobals = {
+  audioService: AudioService;
   physicsService: PhysicsService;
   graphicsService: GraphicsService;
   sceneState: EcsSceneState;
   inputs: GamePlayerInputs;
-  midiSequenceLoader: MidiSequenceLoader;
+  midiSequenceLoader: MusicSequenceLoader;
   prefabFactory: {
     menu: (args: {
       position: [number, number, number];
@@ -63,7 +65,7 @@ export const createComponentFactories = (global: ComponentFactoryGlobals) => ({
   // game logic
   gameComponentFactory: gameComponentFactory(global),
   gameWithWavesComponentFactory: gameWithWavesComponentFactory(global),
-  gameWithMidiWavesComponentFactory: gameWithMidiWavesComponentFactory(global),
+  gameWithMusicWavesComponentFactory: gameWithMusicWavesComponentFactory(global),
 
   actionsComponentFactory: actionsComponentFactory,
   actionDisableEntityComponentFactory: actionDisableEntityComponentFactory,

@@ -2,8 +2,9 @@ import RAPIER, { EventQueue } from '@dimforge/rapier3d-compat';
 import { createGamePlayerInputs } from '../input/game-player-inputs';
 import { MessageBufferPool } from '../messages/message-buffer';
 import { GameCore } from '../worker/types';
+import { createAudioService } from './audio-service';
 import { ComponentFactoryGlobals, createComponentFactories } from './components/_components';
-import { createMidiSequenceLoader } from './components/midi-sequence-loader';
+import { createMusicSequenceLoader } from './components/midi-sequence-loader';
 import { EntityInstance_RigidBody } from './components/rigid-body';
 import { createScene, createSceneState } from './ecs-engine';
 import { createEntityFactory } from './ecs-entity-factory';
@@ -16,11 +17,12 @@ export const createGameCore = async (messageBuffer: MessageBufferPool): Promise<
   await RAPIER.init();
 
   const global = {
+    audioService: createAudioService(),
     physicsService: createPhysicsService(),
     graphicsService: createGraphicsService(messageBuffer),
     sceneState: createSceneState(),
     inputs: createGamePlayerInputs(),
-    midiSequenceLoader: createMidiSequenceLoader(),
+    midiSequenceLoader: createMusicSequenceLoader(),
     prefabFactory: {
       menu: (args) => {
         return createMenu(ecs, args);

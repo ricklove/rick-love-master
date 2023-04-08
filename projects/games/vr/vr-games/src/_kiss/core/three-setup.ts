@@ -45,6 +45,34 @@ export const setupThree = (hostRaw: HTMLDivElement) => {
     state.font = font;
   });
 
+  const audioLoader = new THREE.AudioLoader();
+  const listener = new THREE.AudioListener();
+  const audio = new THREE.Audio(listener);
+  camera.add(listener);
+
+  const audioState = {
+    audioLoader,
+    listener,
+    audio,
+    load: async (url: string) => {
+      return await new Promise<AudioBuffer>((resolve) => {
+        audioLoader.load(url, (buffer) => {
+          resolve(buffer);
+          // audio.setBuffer(buffer);
+          // audio.play();
+        });
+      });
+    },
+    play: (buffer: AudioBuffer) => {
+      audio.setBuffer(buffer);
+      audio.play();
+    },
+  };
+  // audioLoader.load(`/music/Alexander Ehlers - Free Music Pack/Alexander Ehlers - Doomed.mp3`, (buffer) => {
+  //   audio.setBuffer(buffer);
+  //   audio.play();
+  // });
+
   // const controllerKinds = [] as {
   //   isHand: boolean;
   //   handedness: XRHandedness;
@@ -121,5 +149,5 @@ export const setupThree = (hostRaw: HTMLDivElement) => {
   };
 
   logger.log(`setupThree: DONE`, { camera, scene, renderer });
-  return { camera, scene, renderer, dispose, state };
+  return { camera, scene, renderer, dispose, state, audioState };
 };

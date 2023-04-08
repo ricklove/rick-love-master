@@ -64,7 +64,7 @@ export const createScene_beatSaber = (ecs: Ecs) => {
         })
         .build(),
     )
-    .addChild(ecs.entity(`game`).game({ active: true }).gameWithWaves({}).gameWithMidiWaves({}).build())
+    .addChild(ecs.entity(`game`).game({ active: true }).gameWithWaves({}).gameWithMusicWaves({}).build())
     .build();
 
   return root;

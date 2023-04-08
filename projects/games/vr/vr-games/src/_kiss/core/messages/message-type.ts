@@ -73,6 +73,14 @@ export type WorkerMessageFromWorker =
         position: [number, number, number];
         radius: number;
       }[];
+    }
+  | {
+      kind: `loadMusic`;
+      musicId: number;
+    }
+  | {
+      kind: `playMusic`;
+      musicId: number;
     };
 
 // export type WorkerMessageFromWorkerKind<TKind extends WorkerMessageFromWorker[`kind`]> = Extract<

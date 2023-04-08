@@ -1,10 +1,11 @@
 import { createGamePlayerInputs } from '../../input/game-player-inputs';
+import { createAudioService } from '../audio-service';
 import { createScene, createSceneState } from '../ecs-engine';
 import { createEntityFactory } from '../ecs-entity-factory';
 import { GraphicsService } from '../graphics-service';
 import { createPhysicsService } from '../physics-service';
 import { ComponentFactoryGlobals, createComponentFactories } from './_components';
-import { createMidiSequenceLoader } from './midi-sequence-loader';
+import { createMusicSequenceLoader } from './midi-sequence-loader';
 
 const createGraphicsService = (): GraphicsService => ({
   addObject: (args) => {
@@ -22,11 +23,12 @@ const createGraphicsService = (): GraphicsService => ({
 });
 
 const global = {
+  audioService: createAudioService(),
   physicsService: createPhysicsService(),
   graphicsService: createGraphicsService(),
   sceneState: createSceneState(),
   inputs: createGamePlayerInputs(),
-  midiSequenceLoader: createMidiSequenceLoader(),
+  midiSequenceLoader: createMusicSequenceLoader(),
   prefabFactory: {
     menu: () => {
       return ecs.entity(`placeholder`).build();
