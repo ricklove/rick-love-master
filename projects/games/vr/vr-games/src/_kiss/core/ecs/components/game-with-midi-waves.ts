@@ -84,7 +84,12 @@ export const gameWithMidiWavesComponentFactory = ({
         }));
 
         const showMenu = () => {
-          hideMenu();
+          if (gameWithMidiWaves.menu) {
+            gameWithMidiWaves.menu.enabled = true;
+            return;
+          }
+
+          // hideMenu();
 
           const menu = prefabFactory.menu({
             position: [-0.1, 1, -0.5],
@@ -100,10 +105,13 @@ export const gameWithMidiWavesComponentFactory = ({
         };
 
         const hideMenu = () => {
-          if (gameWithMidiWaves.menu) {
-            sceneState.destroyEntityInstance(gameWithMidiWaves.menu);
-            gameWithMidiWaves.menu = undefined;
+          if (!gameWithMidiWaves.menu) {
+            return;
           }
+          gameWithMidiWaves.menu.enabled = false;
+
+          // sceneState.destroyEntityInstance(gameWithMidiWaves.menu);
+          // gameWithMidiWaves.menu = undefined;
         };
 
         const getActualEntityInstance = () =>
@@ -125,7 +133,7 @@ export const gameWithMidiWavesComponentFactory = ({
             actualEntityInstance.gameWithWaves.setWaves(song.getWaves());
             actualEntityInstance.game.active = true;
 
-            // hideMenu();
+            hideMenu();
           },
         };
 
@@ -138,7 +146,7 @@ export const gameWithMidiWavesComponentFactory = ({
       update: (entityInstance) => {
         //TODO: implement
 
-        if (!entityInstance.game.active && !entityInstance.gameWithMidiWaves.menu) {
+        if (!entityInstance.game.active && !entityInstance.gameWithMidiWaves.menu?.enabled) {
           entityInstance.gameWithMidiWaves.showMenu();
         }
       },

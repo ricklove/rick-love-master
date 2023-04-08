@@ -34,7 +34,7 @@
     - [x] vertical menu can display unlimited items
     - [x] scroll buttons to move menu up/down
     - [x] menu item is selectable
-    - [ ] load game on item selection
+    - [x] load game on item selection
     - [ ] menu button during game to go back to menu
   - [ ] convert midi to wave sequence
     - https://github.com/Tonejs/Midi
