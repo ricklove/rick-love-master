@@ -19,6 +19,7 @@
         "vr:start": "cd ./projects/games/vr/vr-test && npm run dev",
         "--- generation TEMP Scripts": "",
         "gen:project": "npm --prefix tools/rush-packages run cli -- --d projects/study/subjects --p @ricklove/study-subjects --t lib",
+        "gen:node": "npm --prefix tools/rush-packages run cli -- --d projects/games/vr/game-tools-cli --p @ricklove/game-tools-cli --t node",
         "gen:site": "cd projects/bible && npm create vite@latest bible-site -- --template react-ts",
         "--- projects": "",
         "jointhejourney:extract": "cd projects/church/join-the-journey/exporter && npm run cli",

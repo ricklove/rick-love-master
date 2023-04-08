@@ -606,6 +606,10 @@
       "projectFolder": "projects/experiments/brute-force"
     },
     {
+      "packageName": "@ricklove/game-tools-cli",
+      "projectFolder": "projects/games/vr/game-tools-cli"
+    },
+    {
       "packageName": "@ricklove/vr-games",
       "projectFolder": "projects/games/vr/vr-games"
     },

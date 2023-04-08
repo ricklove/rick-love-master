@@ -1064,6 +1064,7 @@ importers:
       react-dom: 18.2.0
       react-merge-refs: ~2.0.1
       rxjs: 7.8.0
+      simfile-parser: 0.4.1
       three: 0.149.0
       three-stdlib: 2.21.1
       tsup: 6.7.0
@@ -1085,6 +1086,7 @@ importers:
       react-dom: 18.2.0_react@18.2.0
       react-merge-refs: 2.0.1
       rxjs: 7.8.0
+      simfile-parser: 0.4.1
       three: 0.149.0
       three-stdlib: 2.21.1_three@0.149.0
     devDependencies:
@@ -15405,6 +15407,14 @@ packages:
 
   /signal-exit/3.0.7:
     resolution: {integrity: sha512-wnD2ZE+l+SPC/uoS0vXeE9L1+0wuaMqKlfz9AMUo38JsyLSBWSFcHR1Rri62LZc12vLr1gb3jl7iwQhgwpAbGQ==}
+
+  /simfile-parser/0.4.1:
+    resolution: {integrity: sha512-Mo8VqI3RKo+D+SecyA403LvRn+k+PdqgEmOd89/q+VDqz4j0whYGdutRjncdyFMPPYnl9cERXGEwsqYjwfBntQ==}
+    engines: {node: ^14.13.1 || >=16.0.0}
+    hasBin: true
+    dependencies:
+      fraction.js: 4.2.0
+    dev: false
 
   /simple-concat/1.0.1:
     resolution: {integrity: sha512-cSFtAPtRhljv69IK0hTVZQ+OfE9nePi/rtJmw5UjHeVyVroEqJXP1sFztKUy1qU+xvz3u/sfYJLa947b7nAN2Q==}
