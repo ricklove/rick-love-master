@@ -64,9 +64,12 @@ export const createAudioBeatCalculator = () => {
       if (diffRatio > 0.5 && total > 100) {
         console.log(`total`, total, `diffRatio`, diffRatio, `totalRunning`, state.totalRunning);
         state.total = total;
-        state.totalRunning = state.totalRunning * 0.95 + total * 0.05;
+        // spike
+        // state.totalRunning = state.totalRunning * 0.5 + total * 0.5;
+        state.totalRunning = total;
       } else {
-        state.totalRunning = state.totalRunning * 0.8 + total * 0.2;
+        // bleed off
+        state.totalRunning = state.totalRunning * 0.8 + total * 0.18;
       }
 
       //   const hitIndexes = [...data].map((x, i) => ({ x, i })).filter((x) => x.x > 128);
