@@ -45,6 +45,10 @@ const injectXrInput = (renderer: THREE.WebGLRenderer, frame: XRFrame, buffer: Fl
   [0, 1].forEach((iController) => {
     const controller = renderer.xr.getController(iController);
     const inputSource = session.inputSources[iController];
+    if (!inputSource || !controller) {
+      return;
+    }
+
     const sideOffset = inputSource.handedness === `left` ? 0 : 1;
     controller.position.toArray(buffer, InputBufferIndex.controllerLeft + sideOffset * 7);
     controller.quaternion.toArray(buffer, InputBufferIndex.controllerLeft + sideOffset * 7 + 3);
