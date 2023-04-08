@@ -104,7 +104,7 @@ export const createMenu = (
         .rigidBody({ kind: `dynamic`, gravityScale: 0, moveToTransform: true })
         .collisionAction({
           collisionTagFilter: `hand`,
-          action,
+          action: `../../${action}` as EntityActionCode,
         })
         .moveRelativeToParent({})
         .addChild(

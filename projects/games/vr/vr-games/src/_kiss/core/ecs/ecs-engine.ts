@@ -48,18 +48,16 @@ export const createSceneState = () => {
       execute: (action) => {
         const { entityPath, componentName, actionName, args } = action;
         const foundInstance = findEntityInstanceByPath(instance, entityPath);
-        // if(entityPath) {
 
-        // }
         const eInstance = foundInstance as unknown as Record<string, Record<string, (...args: unknown[]) => void>>;
-        const actionFn = eInstance[componentName][actionName];
+        const actionFn = eInstance?.[componentName]?.[actionName];
 
         if (!actionFn) {
-          wogger.error(`execute action not found`, { componentName, actionName, args, entity: eInstance });
+          wogger.error(`execute action not found`, { foundInstance, componentName, actionName, args, source: entity });
           return;
         }
 
-        wogger.log(`execute action`, { componentName, actionName, args, entity: eInstance });
+        wogger.log(`execute action`, { foundInstance, componentName, actionName, args, source: entity });
         actionFn(...args);
       },
     };
@@ -92,6 +90,9 @@ export const createSceneState = () => {
       }
       factory.destroy!(entity);
     }
+
+    const iChild = entity.parent.children.findIndex((e) => e.instanceId === entity.instanceId);
+    entity.parent.children.splice(iChild, 1);
   };
 
   /** Find last entity with matching name */

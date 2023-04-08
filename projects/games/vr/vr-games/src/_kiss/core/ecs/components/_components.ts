@@ -1,5 +1,5 @@
 import { GamePlayerInputs } from '../../input/game-player-inputs';
-import { EcsSceneState } from '../ecs-engine';
+import { EcsSceneState, EntityDescUntyped } from '../ecs-engine';
 import { createEntityFactory } from '../ecs-entity-factory';
 import { GraphicsService } from '../graphics-service';
 import { PhysicsService } from '../physics-service';
@@ -32,9 +32,10 @@ export type ComponentFactoryGlobals = {
   inputs: GamePlayerInputs;
   midiSequenceLoader: MidiSequenceLoader;
   prefabFactory: {
-    menu: (args: { position: [number, number, number]; items: { text: string; action: EntityActionCode }[] }) => {
-      enabled: boolean;
-    };
+    menu: (args: {
+      position: [number, number, number];
+      items: { text: string; action: EntityActionCode }[];
+    }) => EntityDescUntyped;
   };
 };
 

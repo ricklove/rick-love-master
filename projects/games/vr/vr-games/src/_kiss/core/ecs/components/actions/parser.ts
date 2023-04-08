@@ -11,9 +11,12 @@ export const parseActionCode = (actionCode: EntityActionCode): undefined | Entit
   // Example actions:
   // moveToTarget.setRelativeTarget([0,-${itemHeight},0],0.5)
   // ../menu-scroller/moveToTarget.setRelativeTarget([0,-${itemHeight},0],0.5)
+  // ../../../gameWithMidiWaves.loadLevel(0)
 
   // regex to parse action code
-  const match = actionCode.trim().match(/^(\.?\.\/(?:[a-zA-Z0-9_-]+\/)*)?([a-zA-Z0-9_-]+)\.([a-zA-Z0-9_-]+)\((.*)\)$/);
+  const match = actionCode
+    .trim()
+    .match(/^(\.?\.\/(?:(?:\.\.|[a-zA-Z0-9_-]+)\/)*)?([a-zA-Z0-9_-]+)\.([a-zA-Z0-9_-]+)\((.*)\)$/);
 
   if (!match) {
     wogger.error(`action could not be parsed`, { actionCode });
@@ -106,7 +109,7 @@ type EntityInstanceWithPathInfo = {
   desc: { name: string };
 };
 export const findEntityInstanceByPath = (entity: EntityInstanceWithPathInfo, path: string) => {
-  wogger.log(`findEntityInstanceByPath`, { entity, path });
+  // wogger.log(`findEntityInstanceByPath`, { entity, path });
 
   if (!path) {
     return entity;
@@ -135,5 +138,7 @@ export const findEntityInstanceByPath = (entity: EntityInstanceWithPathInfo, pat
     }
     currentEntity = childByNameOrId;
   }
+
+  wogger.log(`findEntityInstanceByPath`, { entity, path, currentEntity });
   return currentEntity;
 };

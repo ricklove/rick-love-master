@@ -23,11 +23,11 @@ import { EntityInstance_Spawner } from './spawner';
 
 export type Entity_GameWithWaves = {
   gameWithWaves: {
-    waves: GameWave[];
+    waves?: GameWave[];
   };
 };
 
-type GameWave = {
+export type GameWave = {
   timeBeforeWaveSec: number;
   sequence: GameWaveSequence[];
 };
@@ -69,51 +69,60 @@ export const gameWithWavesComponentFactory = ({ sceneState }: { sceneState: EcsS
       setup: (entityInstance) => {
         const entity = entityInstance.desc;
 
-        const allSpawnerNames = entity.gameWithWaves.waves.flatMap((x) => x.sequence.map((y) => y.spawnerName));
-        const spawnerNames = [...new Set(allSpawnerNames)];
+        const setWaves = (waves: GameWave[]) => {
+          entityInstance.game.gameResult = undefined;
 
-        const spawners = Object.fromEntries(
-          spawnerNames.map((x) => [x, sceneState.findEntityInstance(x) as unknown as EntityInstance_Spawner]),
-        );
+          const allSpawnerNames = waves.flatMap((x) => x.sequence.map((y) => y.spawnerName));
+          const spawnerNames = [...new Set(allSpawnerNames)];
 
-        const actionsCodes = [
-          ...new Set(
-            entity.gameWithWaves.waves
-              .flatMap((x) => x.sequence)
-              .map((x) => x.action!)
-              .filter((x) => x),
-          ),
-        ];
-        const actions = actionsCodes
-          .map((x) => {
-            const action = parseActionCode(x);
-            return {
-              actionCode: x,
-              action: action!,
-            };
-          })
-          .filter((x) => x.action)
-          .reduce((acc, x) => {
-            acc[x.actionCode] = x.action;
-            return acc;
-          }, {} as Record<string, EntityAction>);
-        wogger.log(`gameWithWaves setup - parsed actions`, { actionsCodes, actions });
+          const spawners = Object.fromEntries(
+            spawnerNames.map((x) => [x, sceneState.findEntityInstance(x) as unknown as EntityInstance_Spawner]),
+          );
+
+          const actionsCodes = [
+            ...new Set(
+              waves
+                .flatMap((x) => x.sequence)
+                .map((x) => x.action!)
+                .filter((x) => x),
+            ),
+          ];
+          const actions = actionsCodes
+            .map((x) => {
+              const action = parseActionCode(x);
+              return {
+                actionCode: x,
+                action: action!,
+              };
+            })
+            .filter((x) => x.action)
+            .reduce((acc, x) => {
+              acc[x.actionCode] = x.action;
+              return acc;
+            }, {} as Record<string, EntityAction>);
+          wogger.log(`gameWithWaves setup - parsed actions`, { actionsCodes, actions });
+
+          gameWithWaves.waves = waves;
+          gameWithWaves.waveIndex = undefined;
+          gameWithWaves.actions = actions;
+          gameWithWaves.spawners = spawners;
+        };
 
         const gameWithWaves: EntityInstance_GameWithWaves[`gameWithWaves`] = {
-          waves: entity.gameWithWaves.waves,
-          actions,
+          waves: [],
+          actions: {},
           waveIndex: undefined,
           sequenceIndex: 0,
           sequenceSentCount: 0,
           timeNextWave: undefined,
           timeNextSpawn: undefined,
-          spawners,
-          setWaves: (waves) => {
-            gameWithWaves.waves = waves;
-            entityInstance.game.gameResult = undefined;
-            gameWithWaves.waveIndex = undefined;
-          },
+          spawners: {},
+          setWaves,
         };
+
+        if (entity.gameWithWaves.waves) {
+          setWaves(entity.gameWithWaves.waves);
+        }
 
         return {
           ...entityInstance,
@@ -137,6 +146,10 @@ export const gameWithWavesComponentFactory = ({ sceneState }: { sceneState: EcsS
 
         const game = entityInstance.gameWithWaves;
         const waves = game.waves;
+
+        if (!waves.length) {
+          return;
+        }
 
         if (game.waveIndex === undefined) {
           // start first wave

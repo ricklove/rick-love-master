@@ -2,7 +2,6 @@ import { Ecs } from '../components/_components';
 import { EntityActionCode } from '../components/actions/parser';
 import { createAlienEgg } from '../prefabs/alien-egg';
 import { createHands } from '../prefabs/hands';
-import { createMenu } from '../prefabs/menu';
 import { createWeapon_knuckleClaws } from '../prefabs/weapons/knuckleClaws';
 import { createWeapon_saber } from '../prefabs/weapons/saber';
 
@@ -31,59 +30,6 @@ export const createScene_beatSaber = (ecs: Ecs) => {
     // )
     .build();
 
-  const songs = [
-    `MW`,
-    `g`,
-    `n`,
-    `Song-1`,
-    `Song-2`,
-    `Song-3`,
-    `Song-4`,
-    `Song-5`,
-    `Song-6`,
-    `Song-7`,
-    `Song-8`,
-    `Song-9`,
-    `Song-10`,
-  ].map((song) => ({
-    name: song,
-    getWaves: () => [
-      {
-        sequence: [
-          {
-            spawnerName: `eggSpawner`,
-            count: 3,
-            position: [2, 1, -25],
-            action: `moveToTarget.setTarget([-1, 1, 0], 6)`,
-            timeBeforeSpawnSec: 1,
-          },
-          {
-            spawnerName: `eggSpawner`,
-            count: 3,
-            position: [-2, 1, -15],
-            action: `moveToTarget.setTarget([1, 1, 0], 3)`,
-            timeBeforeSpawnSec: 1,
-          },
-          {
-            spawnerName: `eggSpawner`,
-            count: 3,
-            position: [0, 0, -25],
-            action: `moveToTarget.setTarget([0, 0, 0], 6)`,
-            timeBeforeSpawnSec: 1,
-          },
-        ],
-        timeBeforeWaveSec: 3,
-      },
-    ],
-  }));
-  const menu = createMenu(ecs, {
-    position: [-0.1, 1, -0.5],
-    items: songs.map((x, i) => ({
-      text: x.name,
-      action: `../game/gameWithLevels.loadLevel(${i})` as EntityActionCode,
-    })),
-  });
-
   const root = ecs
     .entity(`root`, true)
     .addChild(hands.hands.left)
@@ -92,7 +38,6 @@ export const createScene_beatSaber = (ecs: Ecs) => {
     .addChild(createWeapon_knuckleClaws(ecs, [0, 1, -0.35], 1, `mouse`, true))
     .addChild(createWeapon_saber(ecs, [0, 1, -0.35], 1, `left`))
     .addChild(createWeapon_knuckleClaws(ecs, [0, 1, -0.35], 1, `right`))
-    .addChild(menu)
     .addChild(
       ecs
         .entity(`ground`)
@@ -118,42 +63,7 @@ export const createScene_beatSaber = (ecs: Ecs) => {
         })
         .build(),
     )
-    .addChild(
-      ecs
-        .entity(`game`)
-        .game({ active: true })
-        .gameWithWaves({
-          waves: [
-            {
-              sequence: [
-                {
-                  spawnerName: `eggSpawner`,
-                  count: 3,
-                  position: [2, 1, -25],
-                  action: `moveToTarget.setTarget([-1, 1, 0], 6)` as EntityActionCode,
-                  timeBeforeSpawnSec: 1,
-                },
-                {
-                  spawnerName: `eggSpawner`,
-                  count: 3,
-                  position: [-2, 1, -15],
-                  action: `moveToTarget.setTarget([1, 1, 0], 3)` as EntityActionCode,
-                  timeBeforeSpawnSec: 1,
-                },
-                {
-                  spawnerName: `eggSpawner`,
-                  count: 3,
-                  position: [0, 0, -25],
-                  action: `moveToTarget.setTarget([0, 0, 0], 6)` as EntityActionCode,
-                  timeBeforeSpawnSec: 1,
-                },
-              ],
-              timeBeforeWaveSec: 3,
-            },
-          ],
-        })
-        .build(),
-    )
+    .addChild(ecs.entity(`game`).game({ active: true }).gameWithWaves({}).gameWithMidiWaves({}).build())
     .build();
 
   return root;

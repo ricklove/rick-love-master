@@ -44,7 +44,13 @@ export const collisionActionComponentFactory = createComponentFactory<
         };
       }
 
+      const sleepUntil = Date.now() + 1000;
       entityInstance.rigidBody.onCollision = (other, started) => {
+        if (Date.now() < sleepUntil) {
+          wogger.log(`collisionActionComponentFactory: onCollision SLEEP - ignoring collision`, { other, started });
+          return;
+        }
+
         wogger.log(`collisionActionComponentFactory: onCollision START`, { other, started });
         const hasCollisionTag =
           other?.rigidBody.collisionTag === entityInstance.desc.collisionAction.collisionTagFilter;
