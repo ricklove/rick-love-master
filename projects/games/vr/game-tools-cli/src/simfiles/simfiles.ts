@@ -81,7 +81,6 @@ export const parseSimFiles = async (rootPath: string) => {
               return time;
             };
 
-            // TODO: combine arrows and freezes into a time sequence
             const notes = [
               ...arrows.map((x) => ({
                 direction: x.direction,
@@ -129,9 +128,10 @@ export const parseSimFiles = async (rootPath: string) => {
               return position.toString(16).toLowerCase();
             };
 
-            const noteText = notes
+            const notesB = notes
               .map((x, i) => {
-                const isNextBeat = x.beat === 1 + (notes[i - 1]?.beat ?? -1);
+                const prevBeat = notes[i - 1]?.beat ?? -1;
+                const beatGap = x.beat - prevBeat;
                 const positions =
                   x.kind && x.position
                     ? [{ kind: x.kind, position: x.position }]
@@ -149,21 +149,84 @@ export const parseSimFiles = async (rootPath: string) => {
                         .filter((x) => x)
                         .map((x) => x!);
 
-                const timingCode = isNextBeat ? `` : `@${x.beat}`;
+                return {
+                  ...x,
+                  beatGap,
+                  positions,
+                };
+              })
+              .filter((x) => x.positions.length);
 
-                if (positions.length === 1 && positions[0].kind === `1`) {
-                  return `${getPosition(positions[0].position)}${timingCode}`;
-                }
+            const notesC = notesB.flatMap((x, i) => {
+              const { positions } = x;
 
-                const notesCode = positions.map((x) => `${getPosition(x.position)}${getKind(x.kind)}`).join(``);
-                return `${notesCode}${timingCode}`;
+              // convert hold to freeze
+              const freezePositions = positions
+                .filter((p) => getKind(p.kind) === SimFileNoteKind.HoldHead_2)
+                .map((p) => {
+                  const pos = p.position;
+                  const upNote = notesB.find(
+                    (n) =>
+                      n.positions.find(
+                        (np) => np.position === pos && getKind(np.kind) === SimFileNoteKind.HoldRollEnd_3,
+                      ),
+                    i + 1,
+                  );
+
+                  return {
+                    position: pos,
+                    startBeat: x.beat,
+                    endBeat: upNote?.beat ?? x.beat + 1,
+                  };
+                });
+
+              const nonFreezePositions = positions.filter(
+                (p) =>
+                  getKind(p.kind) !== SimFileNoteKind.HoldHead_2 && getKind(p.kind) !== SimFileNoteKind.HoldRollEnd_3,
+              );
+
+              return [
+                { ...x, positions: nonFreezePositions },
+                // ...freezePositions.map((f) => ({
+                //   ...x,
+                //   duration: f.endBeat - f.startBeat,
+                //   positions: [
+                //     {
+                //       kind: SimFileNoteKind.Freeze,
+                //       position: f.position,
+                //     },
+                //   ],
+                // })),
+              ];
+            });
+
+            const notesFinal = notesC
+              .filter((x) => x.positions.length)
+              .sort((a, b) => a.beat - b.beat)
+              .map((x) => {
+                const { beatGap, positions } = x;
+                const timingCode = beatGap === 1 ? `` : `@${beatGap}`;
+                const durationCode = x.duration <= 1 ? `` : `>${x.duration}`;
+                const debugCode = ``; //`[${x.direction}@${x.beat}]`;
+
+                const notesCode = positions
+                  .map(
+                    (x) =>
+                      `${getPosition(x.position)}${getKind(x.kind) === SimFileNoteKind.Tap_1 ? `` : getKind(x.kind)}`,
+                  )
+                  .join(``);
+                return `${notesCode}${timingCode}${durationCode}${debugCode}`;
               })
               .join(` `);
 
             return {
               difficulty,
-              bpmRanges,
-              noteText,
+              bpmRanges: bpmRanges.map((x) => ({
+                bpm: x.bpm,
+                startBeat: Math.max(0, x.startOffset) * 4,
+                endBeat: (x.endOffset ?? 0) * 4 || undefined,
+              })),
+              notes: notesFinal,
               // arrows: arrows.map((arrow) => ({
               //   position: arrow.direction.replace(/0/g, `.`),
               //   time: calculateTime(arrow.offset),
@@ -190,6 +253,14 @@ export const parseSimFiles = async (rootPath: string) => {
     for (const song of pack.songs) {
       await fs.mkdir(dirname(resolve(`./out/${song.titleDir}.json`)), { recursive: true });
       await fs.writeFile(resolve(`./out/${song.titleDir}.json`), JSON.stringify(song, null, 2));
+    }
+  }
+
+  for (const pack of allPacks) {
+    for (const song of pack.simfiles) {
+      const titleDir = relative(rootPath, song.title.titleDir);
+      await fs.mkdir(dirname(resolve(`./out/${titleDir}.raw.json`)), { recursive: true });
+      await fs.writeFile(resolve(`./out/${titleDir}.raw.json`), JSON.stringify(song, null, 2));
     }
   }
 
