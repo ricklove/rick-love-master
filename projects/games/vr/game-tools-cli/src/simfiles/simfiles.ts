@@ -112,6 +112,7 @@ export const parseSimFiles = async (rootPath: string) => {
             };
 
             const arrowsA = arrows
+              .filter((x) => !(x.direction as string).startsWith(`/`))
               .map((x) => ({
                 positions: x.direction
                   .split(``)
@@ -174,8 +175,12 @@ export const parseSimFiles = async (rootPath: string) => {
                 bpm: x.bpm,
                 startBeat: Math.max(0, x.startOffset) * 4,
                 endBeat: (x.endOffset ?? 0) * 4 || undefined,
+                startTime: calculateTime(Math.max(0, x.startOffset)),
+                endTime: calculateTime(x.endOffset ?? 0) || undefined,
               })),
+              finalBeatTime: calculateTime((notesC[notesC.length - 1].beat + notesC[notesC.length - 1].duration) / 4),
               notes: notesFinal,
+
               // arrows: arrows.map((arrow) => ({
               //   position: arrow.direction.replace(/0/g, `.`),
               //   time: calculateTime(arrow.offset),
@@ -205,14 +210,14 @@ export const parseSimFiles = async (rootPath: string) => {
     }
   }
 
-  for (const pack of allPacks) {
-    for (const song of pack.simfiles) {
-      const titleDir = relative(rootPath, song.title.titleDir);
-      await fs.mkdir(dirname(resolve(`./out/${titleDir}.raw.json`)), { recursive: true });
-      await fs.writeFile(resolve(`./out/${titleDir}.raw.json`), JSON.stringify(song, null, 2));
-    }
-  }
+  // for (const pack of allPacks) {
+  //   for (const song of pack.simfiles) {
+  //     const titleDir = relative(rootPath, song.title.titleDir);
+  //     await fs.mkdir(dirname(resolve(`./out/${titleDir}.raw.json`)), { recursive: true });
+  //     await fs.writeFile(resolve(`./out/${titleDir}.raw.json`), JSON.stringify(song, null, 2));
+  //   }
+  // }
 
-  await fs.writeFile(resolve(`./out/allPacks.json`), JSON.stringify(allPacks, null, 2));
+  // await fs.writeFile(resolve(`./out/allPacks.json`), JSON.stringify(allPacks, null, 2));
   // await fs.writeFile(resolve(`./out/allPacksSimplified.json`), JSON.stringify(simplifiedPacks, null, 2));
 };
