@@ -1,0 +1,198 @@
+import { promises as fs } from 'fs';
+import { dirname, relative, resolve } from 'path';
+import { parseAllPacks } from 'simfile-parser';
+
+/**
+
+https://github.com/stepmania/stepmania/wiki/sm#notes
+https://github.com/stepmania/stepmania/wiki/Note-Types
+
+There are multiple **note types** available in StepMania.
+
+The total number of beats covered by any given measure is 4
+
+| Note Type | Key Symbol | Comments |
+| --- | --- | --- |
+| Tap | 1 | Standard note type |
+| Hold Head | 2 | Tap the hold note (as charged note on beat, frezze arrows on dance, etc.) when it crosses the judgment row, then hold it down. Note: Releasing the key during hold note in some themes breaks your combo. |
+| Hold/Roll End | 3 | You can let go of the hold when the end crosses the judgment row. |
+| Roll Head | 4 | Tap the roll note when it crosses the judgment row, then hit repeatly it until the end. |
+| Mine | M | Do not tap the negative notes (as mines, shock arrows, etc.) when it crosses or have your foot held down when it crosses. You will lose life and in some themes breaks your combo! |
+| Lift | L | Have your foot on the arrow before it crosses. Lift up when it does cross. |
+| Fake | F | You can ignore this note: it does nothing for or against you. |
+| AutoKeysound | K | This 'note' is not really a note, it marks a keysound that will play automatically at this row. No note will appear here, and this is only used for empty rows. |
+
+ */
+export type SimFileNotes = {};
+
+export enum SimFileNoteKind {
+  Tap_1 = `T`,
+  HoldHead_2 = `S`,
+  HoldRollEnd_3 = `E`,
+  RollHead_4 = `R`,
+  Mine_M = `M`,
+  Lift_L = `L`,
+  Fake_F = `F`,
+  AutoKeysound_K = `K`,
+  Freeze = `Z`,
+  Unknown = `U`,
+}
+
+export const parseSimFiles = async (rootPath: string) => {
+  const allPacks = parseAllPacks(rootPath);
+
+  const simplifiedPacks = allPacks.map((pack) => {
+    const { simfiles, name, dir } = pack;
+    return {
+      name,
+      packDir: relative(rootPath, dir),
+      songs: simfiles.map((simfile) => {
+        const { title, artist, availableTypes, charts, displayBpm } = simfile;
+        return {
+          titleDir: relative(rootPath, title.titleDir),
+          title: title.titleName,
+          jacketImageFileName: title.jacket,
+          artist,
+          bpm: displayBpm,
+          availableTypes: availableTypes.map((type) => ({
+            slug: type.slug,
+            mode: type.mode,
+            difficulty: type.difficulty,
+            feet: type.feet,
+          })),
+          charts: Object.entries(charts).map(([difficulty, chart]) => {
+            const { bpm: bpmRanges, arrows, freezes, stops } = chart;
+            const calculateTime = (offset: number) => {
+              let time = 0;
+              for (const bpm of bpmRanges) {
+                // 4 beats per offset
+                const beatsPerSec = bpm.bpm / 60;
+                const secsPerOffset = 4 / beatsPerSec;
+
+                const startOffset = Math.max(0, bpm.startOffset);
+                if (!bpm.endOffset || offset < bpm.endOffset) {
+                  time += (offset - startOffset) * secsPerOffset;
+                  break;
+                }
+
+                time += (bpm.endOffset - startOffset) * secsPerOffset;
+              }
+
+              return time;
+            };
+
+            // TODO: combine arrows and freezes into a time sequence
+            const notes = [
+              ...arrows.map((x) => ({
+                direction: x.direction,
+                kind: undefined,
+                position: undefined,
+                beat: x.offset * 4,
+                duration: 1,
+              })),
+              ...freezes.map((x) => ({
+                direction: undefined,
+                kind: SimFileNoteKind.Freeze,
+                position: x.direction,
+                beat: x.startOffset * 4,
+                duration: (x.endOffset - x.startOffset) * 4,
+              })),
+            ].sort((a, b) => a.beat - b.beat);
+
+            const getKind = (directionChar: string) => {
+              switch (directionChar) {
+                case `1`:
+                  return SimFileNoteKind.Tap_1;
+                case `2`:
+                  return SimFileNoteKind.HoldHead_2;
+                case `3`:
+                  return SimFileNoteKind.HoldRollEnd_3;
+                case `4`:
+                  return SimFileNoteKind.RollHead_4;
+                case `M`:
+                  return SimFileNoteKind.Mine_M;
+                case `L`:
+                  return SimFileNoteKind.Lift_L;
+                case `F`:
+                  return SimFileNoteKind.Fake_F;
+                case `K`:
+                  return SimFileNoteKind.AutoKeysound_K;
+                case `Z`:
+                  return SimFileNoteKind.Freeze;
+                default:
+                  console.error(`Unknown direction char: ${directionChar}`);
+                  return SimFileNoteKind.Unknown;
+              }
+            };
+
+            const getPosition = (position: number) => {
+              return position.toString(16).toLowerCase();
+            };
+
+            const noteText = notes
+              .map((x, i) => {
+                const isNextBeat = x.beat === 1 + (notes[i - 1]?.beat ?? -1);
+                const positions =
+                  x.kind && x.position
+                    ? [{ kind: x.kind, position: x.position }]
+                    : (x.direction ?? ``)
+                        .split(``)
+                        .map((x, i) => {
+                          if (x === `0`) {
+                            return;
+                          }
+                          return {
+                            kind: x,
+                            position: i,
+                          };
+                        })
+                        .filter((x) => x)
+                        .map((x) => x!);
+
+                const timingCode = isNextBeat ? `` : `@${x.beat}`;
+
+                if (positions.length === 1 && positions[0].kind === `1`) {
+                  return `${getPosition(positions[0].position)}${timingCode}`;
+                }
+
+                const notesCode = positions.map((x) => `${getPosition(x.position)}${getKind(x.kind)}`).join(``);
+                return `${notesCode}${timingCode}`;
+              })
+              .join(` `);
+
+            return {
+              difficulty,
+              bpmRanges,
+              noteText,
+              // arrows: arrows.map((arrow) => ({
+              //   position: arrow.direction.replace(/0/g, `.`),
+              //   time: calculateTime(arrow.offset),
+              //   offset: arrow.offset,
+              //   quantization: arrow.quantization,
+              // })),
+              // freezes: freezes.map((freeze) => ({
+              //   position: freeze.direction,
+              //   startOffset: freeze.startOffset,
+              //   endOffset: freeze.endOffset,
+              //   timeStart: calculateTime(freeze.startOffset),
+              //   timeEnd: calculateTime(freeze.endOffset),
+              // })),
+            };
+          }),
+        };
+      }),
+    };
+  });
+
+  await fs.mkdir(dirname(resolve(`./out/`)), { recursive: true });
+
+  for (const pack of simplifiedPacks) {
+    for (const song of pack.songs) {
+      await fs.mkdir(dirname(resolve(`./out/${song.titleDir}.json`)), { recursive: true });
+      await fs.writeFile(resolve(`./out/${song.titleDir}.json`), JSON.stringify(song, null, 2));
+    }
+  }
+
+  await fs.writeFile(resolve(`./out/allPacks.json`), JSON.stringify(allPacks, null, 2));
+  // await fs.writeFile(resolve(`./out/allPacksSimplified.json`), JSON.stringify(simplifiedPacks, null, 2));
+};

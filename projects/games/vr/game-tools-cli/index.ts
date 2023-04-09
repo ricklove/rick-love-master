@@ -1,1 +1,1 @@
-export * from './src/placeholder';
+import './src/cli';

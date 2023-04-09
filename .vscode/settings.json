@@ -21,7 +21,7 @@
     "**/*.build.error.log": true,
     "**/.next": true,
     "**/temp": true,
-    "**/lib": true,
+    // "**/lib": true,
     // required boilerplate
     // "**/config": true,
     // "**/.eslintrc.cjs": true

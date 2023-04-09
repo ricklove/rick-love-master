@@ -258,6 +258,8 @@ export const createGameEngine = (host: HTMLDivElement, workerRaw: Worker) => {
     const beatCalculator = createAudioBeatCalculator();
     beatCalculator.setup(audioState.audio);
 
+    // const simfiles = createSimfileService(`/`);
+
     let frameCount = 0;
     let fpsRunningAverage = 60;
     let stop = false;
