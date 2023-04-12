@@ -1,5 +1,5 @@
 import { promises as fs } from 'fs';
-import { dirname, relative, resolve } from 'path';
+import { relative, resolve } from 'path';
 import { parseAllPacks } from 'simfile-parser';
 
 /**
@@ -58,10 +58,18 @@ export const parseSimFiles = async (rootPath: string) => {
             slug: type.slug,
             mode: type.mode,
             difficulty: type.difficulty,
-            feet: type.feet,
+            meter: type.feet,
           })),
           charts: Object.entries(charts).map(([difficulty, chart]) => {
             const { bpm: bpmRanges, arrows, freezes, stops } = chart;
+
+            const stopDurations = stops
+              .map((x) => ({
+                beat: x.offset * 4,
+                durationTime: x.duration,
+              }))
+              .filter((x) => x.beat > 0 && x.durationTime && x.durationTime > 0);
+
             const calculateTime = (offset: number) => {
               let time = 0;
               for (const bpm of bpmRanges) {
@@ -179,6 +187,7 @@ export const parseSimFiles = async (rootPath: string) => {
                 endTime: calculateTime(x.endOffset ?? 0) || undefined,
               })),
               finalBeatTime: calculateTime((notesC[notesC.length - 1].beat + notesC[notesC.length - 1].duration) / 4),
+              stops: stopDurations,
               notes: notesFinal,
 
               // arrows: arrows.map((arrow) => ({
@@ -201,23 +210,24 @@ export const parseSimFiles = async (rootPath: string) => {
     };
   });
 
-  await fs.mkdir(dirname(resolve(`./out/`)), { recursive: true });
-
   for (const pack of simplifiedPacks) {
     for (const song of pack.songs) {
-      await fs.mkdir(dirname(resolve(`./out/${song.titleDir}.json`)), { recursive: true });
-      await fs.writeFile(resolve(`./out/${song.titleDir}.json`), JSON.stringify(song, null, 2));
+      await fs.writeFile(resolve(rootPath, `${song.titleDir}/game-data.json`), JSON.stringify(song, null, 2));
     }
   }
 
-  // for (const pack of allPacks) {
-  //   for (const song of pack.simfiles) {
-  //     const titleDir = relative(rootPath, song.title.titleDir);
-  //     await fs.mkdir(dirname(resolve(`./out/${titleDir}.raw.json`)), { recursive: true });
-  //     await fs.writeFile(resolve(`./out/${titleDir}.raw.json`), JSON.stringify(song, null, 2));
-  //   }
-  // }
+  const indexObj = simplifiedPacks.map((x) => ({
+    pack: x.name,
+    songs: x.songs.map((x) => ({
+      title: x.title,
+      titleDir: x.titleDir,
+      artist: x.artist,
+      image: x.jacketImageFileName,
+      bpm: x.bpm,
+      minMeter: Math.min(...x.availableTypes.map((x) => x.meter)),
+      maxMeter: Math.max(...x.availableTypes.map((x) => x.meter)),
+    })),
+  }));
 
-  // await fs.writeFile(resolve(`./out/allPacks.json`), JSON.stringify(allPacks, null, 2));
-  // await fs.writeFile(resolve(`./out/allPacksSimplified.json`), JSON.stringify(simplifiedPacks, null, 2));
+  await fs.writeFile(resolve(rootPath, `game-data-index.json`), JSON.stringify(indexObj, null, 2));
 };
