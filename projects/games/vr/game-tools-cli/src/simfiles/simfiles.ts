@@ -38,181 +38,235 @@ export enum SimFileNoteKind {
   Unknown = `U`,
 }
 
-export const parseSimFiles = async (rootPath: string) => {
+export const getMusicFileName = async (
+  rootPath: string,
+  packDirName: string,
+  titleDirName: string,
+  titleName: string,
+) => {
+  // check if .ogg file exists
+
+  const ext = [`.ogg`, `.mp3`, ` .ogg`, ` .mp3`];
+
+  // D:\Projects\rick-love-master\projects\games\vr\vr-test\public\vr-test\public\ddr\pack_1427_941f54\1st Samurai\1st Samurai.mp3
+  // D:\Projects\rick-love-master\projects\games\vr\vr-test\public\ddr\pack_1427_941f54\1st Samurai\1st Samurai.mp3
+
+  for (const e of ext) {
+    try {
+      const fileName = titleDirName + e;
+      const filePath = resolve(rootPath, packDirName, titleDirName, fileName).replace(/\\/g, `/`);
+      // console.log(`Checking for music file: ${filePath}`);
+
+      await fs.access(filePath);
+      return fileName;
+    } catch (error) {
+      continue;
+    }
+  }
+
+  const filePath = resolve(rootPath, packDirName, titleDirName, titleName).replace(/\\/g, `/`);
+  console.log(`Could not find music file for ${titleName} in ${titleDirName}: ${filePath}`);
+  return undefined;
+};
+
+export const parseAndSaveSimFileGameData = async (rootPath: string) => {
   const allPacks = parseAllPacks(rootPath);
 
-  const simplifiedPacks = allPacks.map((pack) => {
-    const { simfiles, name, dir } = pack;
-    return {
-      name,
-      packDir: relative(rootPath, dir),
-      songs: simfiles.map((simfile) => {
-        const { title, artist, availableTypes, charts, displayBpm } = simfile;
-        return {
-          titleDir: relative(rootPath, title.titleDir),
-          title: title.titleName,
-          jacketImageFileName: title.jacket,
-          artist,
-          bpm: displayBpm,
-          availableTypes: availableTypes.map((type) => ({
-            slug: type.slug,
-            mode: type.mode,
-            difficulty: type.difficulty,
-            meter: type.feet,
-          })),
-          charts: Object.entries(charts).map(([difficulty, chart]) => {
-            const { bpm: bpmRanges, arrows, freezes, stops } = chart;
+  const simplifiedPacks = await Promise.all(
+    allPacks.map(async (pack) => {
+      const { simfiles, name, dir } = pack;
+      const packDirName = relative(rootPath, dir).replace(/\\/g, `/`);
+      const packDirAbs = resolve(rootPath, packDirName);
+      return {
+        name,
+        packDirName,
+        songs: await Promise.all(
+          simfiles.map(async (simfile) => {
+            const { title, artist, availableTypes, charts, displayBpm } = simfile;
 
-            const stopDurations = stops
-              .map((x) => ({
-                beat: x.offset * 4,
-                durationTime: x.duration,
-              }))
-              .filter((x) => x.beat > 0 && x.durationTime && x.durationTime > 0);
-
-            const calculateTime = (offset: number) => {
-              let time = 0;
-              for (const bpm of bpmRanges) {
-                // 4 beats per offset
-                const beatsPerSec = bpm.bpm / 60;
-                const secsPerOffset = 4 / beatsPerSec;
-
-                const startOffset = Math.max(0, bpm.startOffset);
-                if (!bpm.endOffset || offset < bpm.endOffset) {
-                  time += (offset - startOffset) * secsPerOffset;
-                  break;
-                }
-
-                time += (bpm.endOffset - startOffset) * secsPerOffset;
-              }
-
-              return time;
-            };
-
-            const getKind = (directionChar: string) => {
-              switch (directionChar) {
-                case `1`:
-                  return SimFileNoteKind.Tap_1;
-                case `2`:
-                  return SimFileNoteKind.HoldHead_2;
-                case `3`:
-                  return SimFileNoteKind.HoldRollEnd_3;
-                case `4`:
-                  return SimFileNoteKind.RollHead_4;
-                case `M`:
-                  return SimFileNoteKind.Mine_M;
-                case `L`:
-                  return SimFileNoteKind.Lift_L;
-                case `F`:
-                  return SimFileNoteKind.Fake_F;
-                case `K`:
-                  return SimFileNoteKind.AutoKeysound_K;
-                case `Z`:
-                  return SimFileNoteKind.Freeze;
-                default:
-                  console.error(`Unknown direction char: ${directionChar}`);
-                  return SimFileNoteKind.Unknown;
-              }
-            };
-
-            const getPosition = (position: number) => {
-              return position.toString(16).toLowerCase();
-            };
-
-            const arrowsA = arrows
-              .filter((x) => !(x.direction as string).startsWith(`/`))
-              .map((x) => ({
-                positions: x.direction
-                  .split(``)
-                  .map((x, i) => {
-                    if (x === `0`) {
-                      return;
-                    }
-                    return {
-                      kind: getKind(x),
-                      position: i,
-                    };
-                  })
-                  .filter((x) => x)
-                  .map((x) => x!)
-                  .filter((x) => x.kind !== SimFileNoteKind.HoldHead_2),
-                beat: x.offset * 4,
-                duration: 0,
-              }))
-              .filter((x) => x.positions.length);
-
-            const notesA = [
-              ...arrowsA,
-              ...freezes.map((x) => ({
-                positions: [{ kind: SimFileNoteKind.Freeze, position: x.direction }],
-                beat: x.startOffset * 4,
-                duration: (x.endOffset - x.startOffset) * 4,
-              })),
-            ].sort((a, b) => a.beat - b.beat);
-
-            const notesB = notesA.map((x, i) => {
-              const prevBeat = notesA[i - 1]?.beat ?? -1;
-              const beatGap = x.beat - prevBeat;
-              return {
-                ...x,
-                beatGap,
-              };
-            });
-
-            const notesC = notesB.filter((x) => x.positions.length);
-
-            const notesFinal = notesC
-              .filter((x) => x.positions.length)
-              .sort((a, b) => a.beat - b.beat)
-              .map((x) => {
-                const { beatGap, positions } = x;
-                const timingCode = beatGap === 1 ? `` : `@${beatGap}`;
-                const durationCode = x.duration <= 1 ? `` : `>${x.duration}`;
-                const debugCode = ``; //`[@${x.beat}]`;
-
-                const notesCode = positions
-                  .map((x) => `${getPosition(x.position)}${x.kind === SimFileNoteKind.Tap_1 ? `` : x.kind}`)
-                  .join(``);
-                return `${notesCode}${timingCode}${durationCode}${debugCode}`;
-              })
-              .join(` `);
+            const titleDirName = relative(packDirAbs, title.titleDir).replace(/\\/g, `/`);
+            const titleName = title.titleName;
+            const musicFileName = await getMusicFileName(rootPath, packDirName, titleDirName, titleName);
 
             return {
-              difficulty,
-              bpmRanges: bpmRanges.map((x) => ({
-                bpm: x.bpm,
-                startBeat: Math.max(0, x.startOffset) * 4,
-                endBeat: (x.endOffset ?? 0) * 4 || undefined,
-                startTime: calculateTime(Math.max(0, x.startOffset)),
-                endTime: calculateTime(x.endOffset ?? 0) || undefined,
+              packDirName,
+              titleDirName,
+              title: titleName,
+              musicFileName,
+              jacketImageFileName: title.jacket,
+              artist,
+              bpm: displayBpm,
+              availableTypes: availableTypes.map((type) => ({
+                slug: type.slug,
+                mode: type.mode,
+                difficulty: type.difficulty,
+                meter: type.feet,
               })),
-              finalBeatTime: calculateTime((notesC[notesC.length - 1].beat + notesC[notesC.length - 1].duration) / 4),
-              stops: stopDurations,
-              notes: notesFinal,
+              charts: Object.entries(charts).map(([difficulty, chart]) => {
+                const { bpm: bpmRanges, arrows, freezes, stops } = chart;
 
-              // arrows: arrows.map((arrow) => ({
-              //   position: arrow.direction.replace(/0/g, `.`),
-              //   time: calculateTime(arrow.offset),
-              //   offset: arrow.offset,
-              //   quantization: arrow.quantization,
-              // })),
-              // freezes: freezes.map((freeze) => ({
-              //   position: freeze.direction,
-              //   startOffset: freeze.startOffset,
-              //   endOffset: freeze.endOffset,
-              //   timeStart: calculateTime(freeze.startOffset),
-              //   timeEnd: calculateTime(freeze.endOffset),
-              // })),
+                const stopDurations = stops
+                  .map((x) => ({
+                    beat: x.offset * 4,
+                    durationTime: x.duration,
+                  }))
+                  .filter((x) => x.beat > 0 && x.durationTime && x.durationTime > 0);
+
+                const calculateTime = (offset: number) => {
+                  let time = 0;
+                  for (const bpm of bpmRanges) {
+                    // 4 beats per offset
+                    const beatsPerSec = bpm.bpm / 60;
+                    const secsPerOffset = 4 / beatsPerSec;
+
+                    const startOffset = Math.max(0, bpm.startOffset);
+                    if (!bpm.endOffset || offset < bpm.endOffset) {
+                      time += (offset - startOffset) * secsPerOffset;
+                      break;
+                    }
+
+                    time += (bpm.endOffset - startOffset) * secsPerOffset;
+                  }
+
+                  return time;
+                };
+
+                const getKind = (directionChar: string) => {
+                  switch (directionChar) {
+                    case `1`:
+                      return SimFileNoteKind.Tap_1;
+                    case `2`:
+                      return SimFileNoteKind.HoldHead_2;
+                    case `3`:
+                      return SimFileNoteKind.HoldRollEnd_3;
+                    case `4`:
+                      return SimFileNoteKind.RollHead_4;
+                    case `M`:
+                      return SimFileNoteKind.Mine_M;
+                    case `L`:
+                      return SimFileNoteKind.Lift_L;
+                    case `F`:
+                      return SimFileNoteKind.Fake_F;
+                    case `K`:
+                      return SimFileNoteKind.AutoKeysound_K;
+                    case `Z`:
+                      return SimFileNoteKind.Freeze;
+                    default:
+                      console.error(`Unknown direction char: ${directionChar}`);
+                      return SimFileNoteKind.Unknown;
+                  }
+                };
+
+                const getPosition = (position: number) => {
+                  return position.toString(16).toLowerCase();
+                };
+
+                const arrowsA = arrows
+                  .filter((x) => !(x.direction as string).startsWith(`/`))
+                  .map((x) => ({
+                    positions: x.direction
+                      .split(``)
+                      .map((x, i) => {
+                        if (x === `0`) {
+                          return;
+                        }
+                        return {
+                          kind: getKind(x),
+                          position: i,
+                        };
+                      })
+                      .filter((x) => x)
+                      .map((x) => x!)
+                      .filter((x) => x.kind !== SimFileNoteKind.HoldHead_2),
+                    beat: x.offset * 4,
+                    duration: 0,
+                  }))
+                  .filter((x) => x.positions.length);
+
+                const notesA = [
+                  ...arrowsA,
+                  ...freezes.map((x) => ({
+                    positions: [{ kind: SimFileNoteKind.Freeze, position: x.direction }],
+                    beat: x.startOffset * 4,
+                    duration: (x.endOffset - x.startOffset) * 4,
+                  })),
+                ].sort((a, b) => a.beat - b.beat);
+
+                const notesB = notesA.map((x, i) => {
+                  const prevBeat = notesA[i - 1]?.beat ?? -1;
+                  const beatGap = x.beat - prevBeat;
+                  return {
+                    ...x,
+                    beatGap,
+                  };
+                });
+
+                const notesC = notesB.filter((x) => x.positions.length);
+
+                const notesFinal = notesC
+                  .filter((x) => x.positions.length)
+                  .sort((a, b) => a.beat - b.beat)
+                  .map((x) => {
+                    const { beatGap, positions } = x;
+                    const timingCode = beatGap === 1 ? `` : `@${beatGap}`;
+                    const durationCode = x.duration <= 1 ? `` : `>${x.duration}`;
+                    const debugCode = ``; //`[@${x.beat}]`;
+
+                    const notesCode = positions
+                      .map((x) => `${getPosition(x.position)}${x.kind === SimFileNoteKind.Tap_1 ? `` : x.kind}`)
+                      .join(``);
+                    return `${notesCode}${timingCode}${durationCode}${debugCode}`;
+                  })
+                  .join(` `);
+
+                return {
+                  difficulty,
+                  bpmRanges: bpmRanges.map((x) => ({
+                    bpm: x.bpm,
+                    startBeat: Math.max(0, x.startOffset) * 4,
+                    endBeat: (x.endOffset ?? 0) * 4 || undefined,
+                    startTime: calculateTime(Math.max(0, x.startOffset)),
+                    endTime: calculateTime(x.endOffset ?? 0) || undefined,
+                  })),
+                  finalBeatTime: calculateTime(
+                    (notesC[notesC.length - 1].beat + notesC[notesC.length - 1].duration) / 4,
+                  ),
+                  stops: stopDurations,
+                  notes: notesFinal,
+
+                  // arrows: arrows.map((arrow) => ({
+                  //   position: arrow.direction.replace(/0/g, `.`),
+                  //   time: calculateTime(arrow.offset),
+                  //   offset: arrow.offset,
+                  //   quantization: arrow.quantization,
+                  // })),
+                  // freezes: freezes.map((freeze) => ({
+                  //   position: freeze.direction,
+                  //   startOffset: freeze.startOffset,
+                  //   endOffset: freeze.endOffset,
+                  //   timeStart: calculateTime(freeze.startOffset),
+                  //   timeEnd: calculateTime(freeze.endOffset),
+                  // })),
+                };
+              }),
             };
           }),
-        };
-      }),
-    };
-  });
+        ),
+      };
+    }),
+  );
+
+  const outPath = rootPath;
+  // const outPath = `./out`;
+  await fs.mkdir(outPath, { recursive: true });
 
   for (const pack of simplifiedPacks) {
     for (const song of pack.songs) {
-      await fs.writeFile(resolve(rootPath, `${song.titleDir}/game-data.json`), JSON.stringify(song, null, 2));
+      await fs.mkdir(resolve(outPath, song.packDirName, song.titleDirName), { recursive: true });
+      await fs.writeFile(
+        resolve(outPath, song.packDirName, song.titleDirName, `game-data.json`),
+        JSON.stringify(song, null, 2),
+      );
     }
   }
 
@@ -220,7 +274,8 @@ export const parseSimFiles = async (rootPath: string) => {
     pack: x.name,
     songs: x.songs.map((x) => ({
       title: x.title,
-      titleDir: x.titleDir,
+      titleDir: x.titleDirName,
+      musicFileName: x.musicFileName,
       artist: x.artist,
       image: x.jacketImageFileName,
       bpm: x.bpm,
@@ -229,5 +284,5 @@ export const parseSimFiles = async (rootPath: string) => {
     })),
   }));
 
-  await fs.writeFile(resolve(rootPath, `game-data-index.json`), JSON.stringify(indexObj, null, 2));
+  await fs.writeFile(resolve(outPath, `game-data-index.json`), JSON.stringify(indexObj, null, 2));
 };
