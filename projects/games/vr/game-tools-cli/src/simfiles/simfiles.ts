@@ -198,7 +198,7 @@ export const parseAndSaveSimFileGameData = async (rootPath: string) => {
                   return {
                     ...x,
                     beatGap,
-                    timeStart: calculateTime(x.beat),
+                    timeStart: calculateTime(x.beat / 4),
                   };
                 });
 
