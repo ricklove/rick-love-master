@@ -1,9 +1,9 @@
 import * as THREE from 'three';
 import { Object3D } from 'three';
 import { TextGeometry } from 'three-stdlib';
+import { delay } from '@ricklove/utils-core';
 import { logger } from '../../utils/logger';
-import { createAudioBeatCalculator } from './audio/audio-beat-calculator';
-import { musicList } from './audio/music-list';
+import { createMusicSequenceLoader, MusicSequenceData } from './ecs/components/music-sequence-loader';
 import { postMessageUserInputTransforms } from './input/message-user-input';
 import { setupMouseInput } from './input/mouse';
 import { createMessageBufferPool } from './messages/message-buffer';
@@ -40,6 +40,14 @@ export const createGameEngine = (host: HTMLDivElement, workerRaw: Worker) => {
     let updateObjectsArrayBuffer = undefined as undefined | ArrayBuffer;
     let loadMusicData = undefined as undefined | Extract<WorkerMessageFromWorker, { kind: `loadMusic` }>;
     let playMusicData = undefined as undefined | Extract<WorkerMessageFromWorker, { kind: `playMusic` }>;
+
+    const musicLoader = createMusicSequenceLoader(`/ddr`);
+    const _musicList = musicLoader.getSongs();
+    const musicState = [] as {
+      loading: boolean;
+      song: MusicSequenceData;
+      buffer: AudioBuffer;
+    }[];
 
     const updateSceneFromData = () => {
       if (addObjectsData) {
@@ -160,34 +168,64 @@ export const createGameEngine = (host: HTMLDivElement, workerRaw: Worker) => {
         readMessageSceneObjectTransforms(data, objectMap);
         bufferPool.returnBuffer(data);
       }
+
+      const loadMusic = async (index: number) => {
+        while (musicState[index]?.loading) {
+          await delay(10);
+        }
+        if (musicState[index]) {
+          return musicState[index];
+        }
+        musicState[index] = { loading: true } as typeof musicState[0];
+        const songs = await musicLoader.getSongs();
+        const songInfo = songs[index];
+        if (!songInfo) {
+          console.error(`could not find music`, { index, songInfo });
+          return;
+        }
+
+        const song = await musicLoader.loadSong(songInfo.key);
+        const musicFilePath = song.musicFilePath;
+        const buffer = await audioState.load(musicFilePath);
+
+        // eslint-disable-next-line require-atomic-updates
+        const result = (musicState[index] = {
+          loading: false,
+          song,
+          buffer,
+        });
+
+        console.log(`loaded music`, { index, songName: result.song.songName });
+
+        return result;
+      };
+
+      const playMusic = async (index: number) => {
+        const music = await loadMusic(index);
+        if (!music) {
+          console.error(`could not find music`, { index, music });
+          return;
+        }
+
+        console.log(`playing music`, { index, songName: music.song.songName });
+        audioState.play(music.buffer);
+
+        // beatCalculator.setPath(path);
+      };
+
       if (loadMusicData) {
         const data = loadMusicData;
         loadMusicData = undefined;
 
-        // TODO: Improve this
         // eslint-disable-next-line no-void
-        void audioState.load(musicList[data.musicId].path!);
+        void loadMusic(data.musicId);
       }
       if (playMusicData) {
         const data = playMusicData;
         playMusicData = undefined;
 
-        const path = musicList[data.musicId]?.path;
-
-        if (!path) {
-          console.error(`could not find music`, { data, path });
-          return;
-        }
-
-        console.log(`playMusicData`, { data, path });
-
         // eslint-disable-next-line no-void
-        void audioState.load(path).then((buffer) => {
-          console.log(`loaded music, playing`, { data, buffer });
-
-          audioState.play(buffer);
-          beatCalculator.setPath(path);
-        });
+        void playMusic(data.musicId);
       }
     };
 
@@ -255,8 +293,8 @@ export const createGameEngine = (host: HTMLDivElement, workerRaw: Worker) => {
 
     const bufferPool = createMessageBufferPool(workerRaw);
 
-    const beatCalculator = createAudioBeatCalculator();
-    beatCalculator.setup(audioState.audio);
+    // const beatCalculator = createAudioBeatCalculator();
+    // beatCalculator.setup(audioState.audio);
 
     // const simfiles = createSimfileService(`/`);
 
@@ -266,8 +304,8 @@ export const createGameEngine = (host: HTMLDivElement, workerRaw: Worker) => {
     let disposed = false;
     let lastFrameTime = performance.now();
 
-    let autoPlayId = 0;
-    let autoPlayTimeoutId = undefined as undefined | number | NodeJS.Timeout;
+    const autoPlayId = 0;
+    const autoPlayTimeoutId = undefined as undefined | number | NodeJS.Timeout;
 
     const mainLoop: XRFrameRequestCallback = (time, frame) => {
       if (disposed) {
@@ -303,22 +341,22 @@ export const createGameEngine = (host: HTMLDivElement, workerRaw: Worker) => {
       renderer.render(scene, camera);
 
       // audio analyser
-      beatCalculator.update();
+      // beatCalculator.update();
 
-      const autoPlay = false;
-      if (autoPlay && !audioState.audio.isPlaying && !autoPlayTimeoutId) {
-        autoPlayTimeoutId = setTimeout(() => {
-          autoPlayTimeoutId = undefined;
-          const path = musicList[autoPlayId++]?.path;
-          if (path) {
-            // eslint-disable-next-line no-void
-            void audioState.load(path).then((buffer) => {
-              audioState.play(buffer);
-              beatCalculator.setPath(path);
-            });
-          }
-        }, 1000);
-      }
+      // const autoPlay = false;
+      // if (autoPlay && !audioState.audio.isPlaying && !autoPlayTimeoutId) {
+      //   autoPlayTimeoutId = setTimeout(() => {
+      //     autoPlayTimeoutId = undefined;
+      //     const path = musicList[autoPlayId++]?.path;
+      //     if (path) {
+      //       // eslint-disable-next-line no-void
+      //       void audioState.load(path).then((buffer) => {
+      //         audioState.play(buffer);
+      //         beatCalculator.setPath(path);
+      //       });
+      //     }
+      //   }, 1000);
+      // }
 
       frameCount++;
     };

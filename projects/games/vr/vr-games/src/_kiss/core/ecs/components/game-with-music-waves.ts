@@ -1,3 +1,4 @@
+import { delay } from '@ricklove/utils-core';
 import { musicList } from '../../audio/music-list';
 import { wogger } from '../../worker/wogger';
 import { AudioService } from '../audio-service';
@@ -6,7 +7,7 @@ import { EcsSceneState, EntityDescUntyped, EntityInstanceUntyped } from '../ecs-
 import { EntityActionCode } from './actions/parser';
 import { Entity_Game, EntityInstance_Game } from './game';
 import { Entity_GameWithWaves, EntityInstance_GameWithWaves, GameWave } from './game-with-waves';
-import { MusicSequenceLoader } from './midi-sequence-loader';
+import { MusicSequenceLoader } from './music-sequence-loader';
 
 export type Entity_GameWithMusicWaves = {
   gameWithMusicWaves: {};
@@ -15,6 +16,7 @@ export type Entity_GameWithMusicWaves = {
 export type EntityInstance_GameWithMusicWaves = {
   gameWithMusicWaves: {
     menu?: EntityInstanceUntyped;
+    loading: boolean;
     showMenu: () => void;
     hideMenu: () => void;
     loadLevel: (levelIndex: number) => void;
@@ -23,12 +25,12 @@ export type EntityInstance_GameWithMusicWaves = {
 
 export const gameWithMusicWavesComponentFactory = ({
   audioService,
-  midiSequenceLoader,
+  musicSequenceLoader,
   prefabFactory,
   sceneState,
 }: {
   audioService: AudioService;
-  midiSequenceLoader: MusicSequenceLoader;
+  musicSequenceLoader: MusicSequenceLoader;
   prefabFactory: {
     menu: (args: {
       position: [number, number, number];
@@ -58,38 +60,109 @@ export const gameWithMusicWavesComponentFactory = ({
           sceneState.findEntityInstanceById(entityInstance.instanceId)! as unknown as typeof entityInstance &
             EntityInstanceUntyped;
 
-        const songs = [`MW`, `g`, `n`, `Song-8`, `Song-9`, `Song-10`].map((song, i) => ({
-          name: song,
-          getWaves: () =>
-            [
+        const timeToMoveSec = 3.5;
+
+        // load songs
+        const songsIndexState = {
+          loading: false,
+          songs: undefined as
+            | undefined
+            | {
+                key: string;
+                title: string;
+                loading: boolean;
+                waves?: GameWave[];
+              }[],
+        };
+        const getOrLoadSongs = async () => {
+          while (songsIndexState.loading) {
+            await delay(10);
+          }
+          if (songsIndexState.songs) {
+            return songsIndexState.songs;
+          }
+          songsIndexState.loading = true;
+          const songs = await musicSequenceLoader.getSongs();
+          // eslint-disable-next-line require-atomic-updates
+          songsIndexState.songs = songs.map((x) => ({
+            key: x.key,
+            title: `${x.songName} - ${x.difficulty}`,
+            loading: false,
+            waves: undefined,
+          }));
+          // eslint-disable-next-line require-atomic-updates
+          songsIndexState.loading = false;
+          return songsIndexState.songs;
+        };
+        const getOrLoadSong = async (index: number) => {
+          const songData = (await getOrLoadSongs())[index];
+
+          while (songData.loading) {
+            await delay(10);
+          }
+          if (songData.waves) {
+            return {
+              key: songData.key,
+              title: songData.title,
+              waves: songData.waves,
+            };
+          }
+          songData.loading = true;
+          const songDataRaw = await musicSequenceLoader.loadSong(songData.key);
+          const waves: GameWave[] = songDataRaw.notes.map((x) => ({
+            timeBeforeWaveSec: x.timeBeforeSec,
+            sequence: [
               {
-                sequence: [
-                  {
-                    spawnerName: `eggSpawner`,
-                    count: i + 1,
-                    position: [2, 1, -25],
-                    action: `moveToTarget.setTarget([-1, 1, 0], 6)`,
-                    timeBeforeSpawnSec: 1,
-                  },
-                  {
-                    spawnerName: `eggSpawner`,
-                    count: i + 1,
-                    position: [-2, 1, -15],
-                    action: `moveToTarget.setTarget([1, 1, 0], 3)`,
-                    timeBeforeSpawnSec: 1,
-                  },
-                  {
-                    spawnerName: `eggSpawner`,
-                    count: i + 1,
-                    position: [0, 0, -25],
-                    action: `moveToTarget.setTarget([0, 0, 0], 6)`,
-                    timeBeforeSpawnSec: 1,
-                  },
-                ],
-                timeBeforeWaveSec: 3,
+                ...getEnemyKind(x.kind, timeToMoveSec),
+                timeBeforeSpawnSec: 0,
+                count: 1,
               },
-            ] as GameWave[],
-        }));
+            ],
+          }));
+
+          // eslint-disable-next-line require-atomic-updates
+          songData.waves = waves;
+          // eslint-disable-next-line require-atomic-updates
+          songData.loading = false;
+          return {
+            key: songData.key,
+            title: songData.title,
+            waves,
+          };
+        };
+
+        // const songs = [`MW`, `g`, `n`, `Song-8`, `Song-9`, `Song-10`].map((song, i) => ({
+        //   name: song,
+        //   getWaves: () =>
+        //     [
+        //       {
+        //         sequence: [
+        //           {
+        //             spawnerName: `eggSpawner`,
+        //             count: i + 1,
+        //             position: [2, 1, -25],
+        //             action: `moveToTarget.setTarget([-1, 1, 0], 6)`,
+        //             timeBeforeSpawnSec: 1,
+        //           },
+        //           {
+        //             spawnerName: `eggSpawner`,
+        //             count: i + 1,
+        //             position: [-2, 1, -15],
+        //             action: `moveToTarget.setTarget([1, 1, 0], 3)`,
+        //             timeBeforeSpawnSec: 1,
+        //           },
+        //           {
+        //             spawnerName: `eggSpawner`,
+        //             count: i + 1,
+        //             position: [0, 0, -25],
+        //             action: `moveToTarget.setTarget([0, 0, 0], 6)`,
+        //             timeBeforeSpawnSec: 1,
+        //           },
+        //         ],
+        //         timeBeforeWaveSec: 3,
+        //       },
+        //     ] as GameWave[],
+        // }));
 
         const showMenu = () => {
           if (gameWithMusicWaves.menu) {
@@ -97,19 +170,23 @@ export const gameWithMusicWavesComponentFactory = ({
             return;
           }
 
-          // hideMenu();
+          gameWithMusicWaves.loading = true;
 
-          const menu = prefabFactory.menu({
-            position: [-0.1, 1, -0.5],
-            items: songs.map((x, i) => ({
-              text: x.name,
-              action: `../gameWithMusicWaves.loadLevel(${i})` as EntityActionCode,
-            })),
-          });
+          (async () => {
+            const songs = await getOrLoadSongs();
+            const menu = prefabFactory.menu({
+              position: [-0.1, 1, -0.5],
+              items: songs.map((x, i) => ({
+                text: x.title,
+                action: `../gameWithMusicWaves.loadLevel(${i})` as EntityActionCode,
+              })),
+            });
 
-          const menuInstance = sceneState.createEntityInstance(menu, getActualEntityInstance());
+            const menuInstance = sceneState.createEntityInstance(menu, getActualEntityInstance());
 
-          gameWithMusicWaves.menu = menuInstance;
+            gameWithMusicWaves.menu = menuInstance;
+            gameWithMusicWaves.loading = false;
+          })();
         };
 
         const hideMenu = () => {
@@ -123,25 +200,37 @@ export const gameWithMusicWavesComponentFactory = ({
         };
 
         const loadLevel = (levelIndex: number) => {
-          const song = songs[levelIndex];
-          wogger.log(`loadLevel`, { levelIndex, song, songs });
-
-          if (!song) {
-            return;
-          }
-          const actualEntityInstance = getActualEntityInstance();
-          actualEntityInstance.gameWithWaves.setWaves(song.getWaves());
-          actualEntityInstance.game.active = true;
-
-          const musicId = Math.floor(musicList.length * Math.random());
-          wogger.log(`loadLevel - playMuisc`, { musicList, musicId, audioService });
-          audioService.playMusic(musicId);
-
+          gameWithMusicWaves.loading = true;
           hideMenu();
+          // TODO: show loading
+
+          (async () => {
+            const song = await getOrLoadSong(levelIndex);
+            wogger.log(`loadLevel`, { levelIndex, song });
+
+            if (!song) {
+              return;
+            }
+            const actualEntityInstance = getActualEntityInstance();
+            // TODO: make sure waves stay in sync with music
+            actualEntityInstance.gameWithWaves.setWaves(song.waves);
+            actualEntityInstance.game.active = true;
+            gameWithMusicWaves.loading = false;
+
+            const musicId = levelIndex;
+            wogger.log(`loadLevel - loadMusic`, { musicList, musicId, audioService });
+            audioService.loadMusic(musicId);
+
+            setTimeout(() => {
+              wogger.log(`loadLevel - playMusic`, { musicList, musicId, audioService });
+              audioService.playMusic(musicId);
+            }, (timeToMoveSec - 0.5) * 1000);
+          })();
         };
 
         const gameWithMusicWaves = {
           menu: undefined as undefined | EntityInstanceUntyped,
+          loading: false,
           showMenu,
           hideMenu,
           loadLevel,
@@ -156,9 +245,21 @@ export const gameWithMusicWavesComponentFactory = ({
       update: (entityInstance) => {
         //TODO: implement
 
-        if (!entityInstance.game.active && !entityInstance.gameWithMusicWaves.menu?.enabled) {
+        if (
+          !entityInstance.game.active &&
+          !entityInstance.gameWithMusicWaves.menu?.enabled &&
+          !entityInstance.gameWithMusicWaves.loading
+        ) {
           entityInstance.gameWithMusicWaves.showMenu();
         }
       },
     };
   });
+
+const getEnemyKind = (kind: number, timeToMoveSec: number) => {
+  return {
+    spawnerName: `eggSpawner`,
+    position: [-2 + ((2 + kind) % 5), kind % 3, -25] as [number, number, number],
+    action: `moveToTarget.setTarget([0, ${(kind + 1) % 3}, 0], ${timeToMoveSec})` as EntityActionCode,
+  };
+};

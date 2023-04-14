@@ -16,9 +16,9 @@ import { graphicsComponentFactory } from './graphics';
 import { inputHandAttachableComponentFactory } from './input-hand-attachable';
 import { inputHandJointComponentFactory } from './input-hand-joint';
 import { inputMouseComponentFactory } from './input-mouse';
-import { MusicSequenceLoader } from './midi-sequence-loader';
 import { moveRelativeToParentComponentFactory } from './move-relative-to-parent';
 import { moveToTargetComponentFactory } from './move-to-target';
+import { MusicSequenceLoader } from './music-sequence-loader';
 import { rigidBodyComponentFactory } from './rigid-body';
 import { shapeBoxComponentFactory } from './shape-box';
 import { shapeSphereComponentFactory } from './shape-sphere';
@@ -32,7 +32,7 @@ export type ComponentFactoryGlobals = {
   graphicsService: GraphicsService;
   sceneState: EcsSceneState;
   inputs: GamePlayerInputs;
-  midiSequenceLoader: MusicSequenceLoader;
+  musicSequenceLoader: MusicSequenceLoader;
   prefabFactory: {
     menu: (args: {
       position: [number, number, number];

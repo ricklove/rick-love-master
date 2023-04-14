@@ -4,7 +4,7 @@ import { MessageBufferPool } from '../messages/message-buffer';
 import { GameCore } from '../worker/types';
 import { createAudioService } from './audio-service';
 import { ComponentFactoryGlobals, createComponentFactories } from './components/_components';
-import { createMusicSequenceLoader } from './components/midi-sequence-loader';
+import { createMusicSequenceLoader } from './components/music-sequence-loader';
 import { EntityInstance_RigidBody } from './components/rigid-body';
 import { createScene, createSceneState } from './ecs-engine';
 import { createEntityFactory } from './ecs-entity-factory';
@@ -22,7 +22,7 @@ export const createGameCore = async (messageBuffer: MessageBufferPool): Promise<
     graphicsService: createGraphicsService(messageBuffer),
     sceneState: createSceneState(),
     inputs: createGamePlayerInputs(),
-    midiSequenceLoader: createMusicSequenceLoader(),
+    musicSequenceLoader: createMusicSequenceLoader(),
     prefabFactory: {
       menu: (args) => {
         return createMenu(ecs, args);

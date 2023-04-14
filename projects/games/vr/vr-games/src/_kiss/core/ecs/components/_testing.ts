@@ -5,7 +5,7 @@ import { createEntityFactory } from '../ecs-entity-factory';
 import { GraphicsService } from '../graphics-service';
 import { createPhysicsService } from '../physics-service';
 import { ComponentFactoryGlobals, createComponentFactories } from './_components';
-import { createMusicSequenceLoader } from './midi-sequence-loader';
+import { createMusicSequenceLoader } from './music-sequence-loader';
 
 const createGraphicsService = (): GraphicsService => ({
   addObject: (args) => {
@@ -28,7 +28,7 @@ const global = {
   graphicsService: createGraphicsService(),
   sceneState: createSceneState(),
   inputs: createGamePlayerInputs(),
-  midiSequenceLoader: createMusicSequenceLoader(),
+  musicSequenceLoader: createMusicSequenceLoader(),
   prefabFactory: {
     menu: () => {
       return ecs.entity(`placeholder`).build();

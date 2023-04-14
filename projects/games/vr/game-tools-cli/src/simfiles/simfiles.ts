@@ -95,7 +95,7 @@ export const parseAndSaveSimFileGameData = async (rootPath: string) => {
               musicFileName,
               jacketImageFileName: title.jacket,
               artist,
-              bpm: displayBpm,
+              displayBpm: displayBpm,
               availableTypes: availableTypes.map((type) => ({
                 slug: type.slug,
                 mode: type.mode,
@@ -198,14 +198,14 @@ export const parseAndSaveSimFileGameData = async (rootPath: string) => {
                   return {
                     ...x,
                     beatGap,
+                    timeStart: calculateTime(x.beat),
                   };
                 });
 
                 const notesC = notesB.filter((x) => x.positions.length);
+                const notesFinal = notesC.filter((x) => x.positions.length).sort((a, b) => a.beat - b.beat);
 
-                const notesFinal = notesC
-                  .filter((x) => x.positions.length)
-                  .sort((a, b) => a.beat - b.beat)
+                const notesCode = notesFinal
                   .map((x) => {
                     const { beatGap, positions } = x;
                     const timingCode = beatGap === 1 ? `` : `@${beatGap}`;
@@ -232,6 +232,8 @@ export const parseAndSaveSimFileGameData = async (rootPath: string) => {
                     (notesC[notesC.length - 1].beat + notesC[notesC.length - 1].duration) / 4,
                   ),
                   stops: stopDurations,
+                  notesCode: notesCode,
+                  // TODO: remove this and parse notesCode
                   notes: notesFinal,
 
                   // arrows: arrows.map((arrow) => ({
@@ -278,9 +280,10 @@ export const parseAndSaveSimFileGameData = async (rootPath: string) => {
       musicFileName: x.musicFileName,
       artist: x.artist,
       image: x.jacketImageFileName,
-      bpm: x.bpm,
+      displayBpm: x.displayBpm,
       minMeter: Math.min(...x.availableTypes.map((x) => x.meter)),
       maxMeter: Math.max(...x.availableTypes.map((x) => x.meter)),
+      difficulties: x.charts.map((x) => x.difficulty),
     })),
   }));
 
