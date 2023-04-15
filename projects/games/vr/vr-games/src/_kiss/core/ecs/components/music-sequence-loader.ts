@@ -10,6 +10,7 @@ export type MusicSequenceData = {
   musicFilePath: string;
   notes: {
     kind: number;
+    sameKindIndex: number;
     timeBeforeSec: number;
   }[];
 };
@@ -66,13 +67,26 @@ export const createMusicSequenceLoader = (rootPath: string = `/ddr`) => {
       }
       const response = await fetch(songsPath);
       const songDoc = (await response.json()) as GameDataSongDocument;
+
+      const notes = songDoc.charts[0].notes.map((x, i) => ({
+        kind: x.positions.reduce((acc, x) => acc + x.position + x.kind.charCodeAt(0), 0),
+        timeBeforeSec: x.timeStart - songDoc.charts[0].notes[i - 1]?.timeStart || 0,
+        sameKindIndex: 0,
+      }));
+      notes.forEach((x, i) => {
+        if (i === 0) {
+          return;
+        }
+        const prev = notes[i - 1];
+        if (prev.kind === x.kind) {
+          x.sameKindIndex = prev.sameKindIndex + 1;
+        }
+      });
+
       const song: MusicSequenceData = {
         songName: songDoc.title,
         musicFilePath: `${rootPath}/${songDoc.packDirName}/${songDoc.titleDirName}/${songDoc.musicFileName}`,
-        notes: songDoc.charts[0].notes.map((x, i) => ({
-          kind: x.positions.reduce((acc, x) => acc + x.position + x.kind.charCodeAt(0), 0),
-          timeBeforeSec: x.timeStart - songDoc.charts[0].notes[i - 1]?.timeStart || 0,
-        })),
+        notes,
       };
       return song;
     },

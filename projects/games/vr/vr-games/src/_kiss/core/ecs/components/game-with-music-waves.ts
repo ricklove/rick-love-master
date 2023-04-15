@@ -113,7 +113,7 @@ export const gameWithMusicWavesComponentFactory = ({
             timeBeforeWaveSec: x.timeBeforeSec,
             sequence: [
               {
-                ...getEnemyKind(x.kind, timeToMoveSec),
+                ...getEnemyKind(x.kind, timeToMoveSec, x.sameKindIndex),
                 timeBeforeSpawnSec: 0,
                 count: 1,
               },
@@ -178,10 +178,13 @@ export const gameWithMusicWavesComponentFactory = ({
               const songs = await getOrLoadSongs();
               const menu = prefabFactory.menu({
                 position: [-0.1, 1, -0.5],
-                items: songs.map((x, i) => ({
-                  text: x.title,
-                  action: `../gameWithMusicWaves.loadLevel(${i})` as EntityActionCode,
-                })),
+                items: songs
+                  // TEMP
+                  .slice(0, 20)
+                  .map((x, i) => ({
+                    text: x.title,
+                    action: `../gameWithMusicWaves.loadLevel(${i})` as EntityActionCode,
+                  })),
               });
 
               const menuInstance = sceneState.createEntityInstance(menu, getActualEntityInstance());
@@ -189,7 +192,7 @@ export const gameWithMusicWavesComponentFactory = ({
               gameWithMusicWaves.menu = menuInstance;
               gameWithMusicWaves.loading = false;
             })();
-          }, 1000);
+          }, 100);
         };
 
         const hideMenu = () => {
@@ -259,10 +262,24 @@ export const gameWithMusicWavesComponentFactory = ({
     };
   });
 
-const getEnemyKind = (kind: number, timeToMoveSec: number) => {
+const getEnemyKind = (kind: number, timeToMoveSec: number, sameKindIndex: number) => {
+  const yTargetCenter = 1;
+  const yTargetRadius = 0.5;
+  const xTargetCenter = 0;
+  const xTargetRadius = 0.5;
+  const xOffset = Math.sin((sameKindIndex * Math.PI * 2) / 11);
+  const yOffset = Math.sin((sameKindIndex * Math.PI * 2) / 13);
+
+  const xTarget = xTargetCenter + ((xTargetRadius * ((-3 + ((kind + 3) % 7)) / 3 + xOffset)) % 1);
+  const yTarget = yTargetCenter + ((yTargetRadius * ((-1 + ((kind + 1) % 3)) / 1 + yOffset)) % 1);
+
+  const xStart = -2 + ((2 + kind) % 5) + xOffset;
+  const yStart = (kind % 3) + yOffset;
+  const zStart = -25;
+
   return {
     spawnerName: `eggSpawner`,
-    position: [-2 + ((2 + kind) % 5), kind % 3, -25] as [number, number, number],
-    action: `moveToTarget.setTarget([0, ${(kind + 1) % 3}, 0], ${timeToMoveSec})` as EntityActionCode,
+    position: [xStart, yStart, zStart] as [number, number, number],
+    action: `moveToTarget.setTarget([${xTarget}, ${yTarget}, 0], ${timeToMoveSec})` as EntityActionCode,
   };
 };
