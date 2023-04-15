@@ -17,7 +17,11 @@ export const createScene_beatSaber = (ecs: Ecs) => {
     })
     .actions({})
     .actionDisableEntity({ actionName: `disable` })
-    .collisionAction({ collisionTagFilter: `weapon`, action: `actionDisableEntity.disable()` as EntityActionCode })
+    .collisionAction({
+      collisionTagFilter: `weapon`,
+      selfColliderTagFilder: `leg`,
+      action: `actionDisableEntity.disable()` as EntityActionCode,
+    })
     // .addChild(
     //   ecs
     //     .entity(`eggEnemy-text`)

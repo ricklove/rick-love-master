@@ -3,6 +3,7 @@ import { Quaternion, Vector3 } from 'three';
 import { wogger } from '../../worker/wogger';
 import { createComponentFactory } from '../ecs-component-factory';
 import { PhysicsService } from '../physics-service';
+import { EntityInstance_Collider } from './collider';
 import { Entity_Transform, EntityInstance_Transform } from './transform';
 
 export type Entity_RigidBody = {
@@ -18,7 +19,12 @@ export type EntityInstance_RigidBody = {
   rigidBody: {
     rigidBody: RigidBody;
     collisionTag?: string;
-    onCollision?: (other: undefined | EntityInstance_RigidBody, started: boolean) => void;
+    onCollision?: (
+      other: undefined | EntityInstance_RigidBody,
+      started: boolean,
+      collider: EntityInstance_Collider,
+      otherCollider: undefined | EntityInstance_Collider,
+    ) => void;
   };
 };
 

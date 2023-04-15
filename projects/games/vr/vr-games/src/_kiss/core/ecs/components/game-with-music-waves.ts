@@ -280,6 +280,7 @@ const getEnemyKind = (kind: number, timeToMoveSec: number, sameKindIndex: number
   return {
     spawnerName: `eggSpawner`,
     position: [xStart, yStart, zStart] as [number, number, number],
+    rotation: [(Math.PI / 8) * kind, 0, (Math.PI / 5) * kind] as [number, number, number],
     action: `moveToTarget.setTarget([${xTarget}, ${yTarget}, 0], ${timeToMoveSec})` as EntityActionCode,
   };
 };

@@ -7,6 +7,8 @@ import { Entity_RigidBody, EntityInstance_RigidBody } from './rigid-body';
 export type Entity_CollisionAction = {
   collisionAction: {
     collisionTagFilter: string;
+    selfColliderTagFilder?: string;
+    otherColliderTagFilder?: string;
     action: EntityActionCode;
   };
 };
@@ -45,7 +47,7 @@ export const collisionActionComponentFactory = createComponentFactory<
       }
 
       const sleepUntil = Date.now() + 1000;
-      entityInstance.rigidBody.onCollision = (other, started) => {
+      entityInstance.rigidBody.onCollision = (other, started, selfCollider, otherCollider) => {
         if (Date.now() < sleepUntil) {
           wogger.log(`collisionActionComponentFactory: onCollision SLEEP - ignoring collision`, { other, started });
           return;
@@ -54,6 +56,12 @@ export const collisionActionComponentFactory = createComponentFactory<
         wogger.log(`collisionActionComponentFactory: onCollision START`, { other, started });
         const hasCollisionTag =
           other?.rigidBody.collisionTag === entityInstance.desc.collisionAction.collisionTagFilter;
+        const hasSelfColliderTag =
+          !entityInstance.desc.collisionAction.selfColliderTagFilder ||
+          selfCollider.collider.colliderTag === entityInstance.desc.collisionAction.selfColliderTagFilder;
+        const hadOtherColliderTag =
+          !entityInstance.desc.collisionAction.otherColliderTagFilder ||
+          otherCollider?.collider.colliderTag === entityInstance.desc.collisionAction.otherColliderTagFilder;
 
         wogger.log(`collisionActionComponentFactory: onCollision action`, {
           hasCollisionTag,
@@ -63,7 +71,7 @@ export const collisionActionComponentFactory = createComponentFactory<
           action,
         });
 
-        if (!hasCollisionTag) {
+        if (!hasCollisionTag || !hasSelfColliderTag || !hadOtherColliderTag) {
           return;
         }
 

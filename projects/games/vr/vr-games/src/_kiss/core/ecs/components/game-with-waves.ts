@@ -36,6 +36,7 @@ type GameWaveSequence = {
   spawnerName: string;
   count: number;
   position: [number, number, number];
+  rotation: [number, number, number];
   /** actionCode */
   action?: EntityActionCode;
 };
@@ -211,7 +212,7 @@ export const gameWithWavesComponentFactory = ({ sceneState }: { sceneState: EcsS
         // spawn
         const spawner = game.spawners[sequence.spawnerName];
         const action = sequence.action ? game.actions[sequence.action] : undefined;
-        spawner.spawner.spawn(sequence.position, undefined, action);
+        spawner.spawner.spawn(sequence.position, sequence.rotation, action);
         game.sequenceSentCount++;
         game.timeNextSpawn = undefined;
 

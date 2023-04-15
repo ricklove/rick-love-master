@@ -4,6 +4,7 @@ import { MessageBufferPool } from '../messages/message-buffer';
 import { GameCore } from '../worker/types';
 import { createAudioService } from './audio-service';
 import { ComponentFactoryGlobals, createComponentFactories } from './components/_components';
+import { EntityInstance_Collider } from './components/collider';
 import { createMusicSequenceLoader } from './components/music-sequence-loader';
 import { EntityInstance_RigidBody } from './components/rigid-body';
 import { createScene, createSceneState } from './ecs-engine';
@@ -57,6 +58,9 @@ export const createGameCore = async (messageBuffer: MessageBufferPool): Promise<
       const entityId2 = global.physicsService.handleEntityIds.get(handle2);
       const entity1 = entityId1 && global.sceneState.findEntityInstanceById(entityId1);
       const entity2 = entityId2 && global.sceneState.findEntityInstanceById(entityId2);
+      const entityCollider1 = entity1 as unknown as undefined | EntityInstance_Collider;
+      const entityCollider2 = entity2 as unknown as undefined | EntityInstance_Collider;
+
       let entityRigidbody1 = entity1 as unknown as undefined | EntityInstance_RigidBody;
       let entityRigidbody2 = entity2 as unknown as undefined | EntityInstance_RigidBody;
       if (entityRigidbody1 && !entityRigidbody1.rigidBody) {
@@ -87,8 +91,18 @@ export const createGameCore = async (messageBuffer: MessageBufferPool): Promise<
       //   global,
       // });
 
-      entityRigidbody1?.rigidBody.onCollision?.(entityRigidbody2, started);
-      entityRigidbody2?.rigidBody.onCollision?.(entityRigidbody1, started);
+      entityRigidbody1?.rigidBody.onCollision?.(
+        entityRigidbody2,
+        started,
+        entityCollider1 as EntityInstance_Collider,
+        entityCollider2,
+      );
+      entityRigidbody2?.rigidBody.onCollision?.(
+        entityRigidbody1,
+        started,
+        entityCollider2 as EntityInstance_Collider,
+        entityCollider1,
+      );
     });
 
     scene.update();

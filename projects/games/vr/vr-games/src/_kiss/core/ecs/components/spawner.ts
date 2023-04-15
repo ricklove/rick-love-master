@@ -1,4 +1,4 @@
-import { Quaternion } from 'three';
+import { Euler, Quaternion } from 'three';
 import { createComponentFactory } from '../ecs-component-factory';
 import { EcsSceneState, EntityDescUntyped, EntityInstanceUntyped } from '../ecs-engine';
 import { EntityAction } from './actions/parser';
@@ -13,11 +13,7 @@ export type Entity_Spawner = {
 
 export type EntityInstance_Spawner = {
   spawner: {
-    spawn: (
-      position: [number, number, number],
-      quaternion?: [number, number, number, number],
-      action?: EntityAction,
-    ) => void;
+    spawn: (position: [number, number, number], rotation?: [number, number, number], action?: EntityAction) => void;
     pool: (EntityInstanceUntyped & EntityInstance_Transform)[];
   };
 };
@@ -38,11 +34,26 @@ export const spawnerComponentFactory = ({ sceneState }: { sceneState: EcsSceneSt
       setup: (entityInstance) => {
         const entity = entityInstance.desc;
 
+        const q = new Quaternion();
+        const euler = new Euler();
+        const quaternion = [0, 0, 0, 1] as [number, number, number, number];
         const spawn = (
           position: [number, number, number],
-          quaternion?: [number, number, number, number],
+          rotation?: [number, number, number],
           action?: EntityAction,
         ) => {
+          quaternion[0] = 0;
+          quaternion[1] = 0;
+          quaternion[2] = 0;
+          quaternion[3] = 1;
+          if (rotation) {
+            q.setFromEuler(euler.set(rotation[0], rotation[1], rotation[2]));
+            quaternion[0] = q.x;
+            quaternion[1] = q.y;
+            quaternion[2] = q.z;
+            quaternion[3] = q.w;
+          }
+
           const inactiveChild = spawner.pool.find((x) => !x.enabled);
           if (inactiveChild) {
             inactiveChild.transform.position = [...position];

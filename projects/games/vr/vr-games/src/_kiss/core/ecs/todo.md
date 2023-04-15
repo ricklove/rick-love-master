@@ -46,7 +46,7 @@
 
 - Controller Input
 
-  - [ ] Support controller input (instead of hands)
+  - [x] Support controller input (instead of hands)
 
 - Bible reader
 

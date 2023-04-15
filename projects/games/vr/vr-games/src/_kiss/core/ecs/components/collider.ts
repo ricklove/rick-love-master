@@ -13,6 +13,7 @@ export type Entity_Collider = {
     restitution?: number;
     friction?: number;
     colliderEvents?: boolean;
+    colliderTag?: string;
     sensor?: boolean;
   };
 };
@@ -20,6 +21,7 @@ export type Entity_Collider = {
 export type EntityInstance_Collider = {
   collider: {
     collider: Collider;
+    colliderTag?: string;
   };
 };
 
@@ -36,27 +38,11 @@ export const colliderComponentFactory = ({ physicsService }: { physicsService: P
     const q = new Quaternion();
     return {
       name: `collider`,
-      addComponent: (
-        entity,
-        {
-          restitution,
-          friction,
-          colliderEvents,
-          sensor,
-        }: {
-          restitution?: number;
-          friction?: number;
-          colliderEvents?: boolean;
-          sensor?: boolean;
-        },
-      ) => {
+      addComponent: (entity, args: Entity_Collider[`collider`]) => {
         return {
           ...entity,
           collider: {
-            restitution,
-            friction,
-            colliderEvents,
-            sensor,
+            ...args,
           },
         };
       },
@@ -99,6 +85,7 @@ export const colliderComponentFactory = ({ physicsService }: { physicsService: P
           ...entityInstance,
           collider: {
             collider,
+            colliderTag: entity.collider.colliderTag,
           },
         };
       },

@@ -131,7 +131,15 @@ const root = ecs
         waves: [
           {
             timeBeforeWaveSec: 3000,
-            sequence: [{ timeBeforeSpawnSec: 0, count: 1, spawnerName: `alienEggSpawner`, position: [0, 0, 0] }],
+            sequence: [
+              {
+                timeBeforeSpawnSec: 0,
+                count: 1,
+                spawnerName: `alienEggSpawner`,
+                position: [0, 0, 0],
+                rotation: [0, 0, 0],
+              },
+            ],
           },
         ],
       })
