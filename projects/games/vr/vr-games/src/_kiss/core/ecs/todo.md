@@ -38,11 +38,15 @@
     - [ ] menu button during game to go back to menu
   - [ ] convert music to wave sequence
     - [x] Detect beats from any sound file
-    - [ ] Use stepmania simfiles
+    - [x] Use stepmania simfiles
       - [ ] Can use double levels to get 8 note signals, or combine 2 difficulties for 8
       - https://github.com/noahm/simfile-parser
     - [ ] Midi files
       - https://github.com/Tonejs/Midi
+
+- Controller Input
+
+  - [ ] Support controller input (instead of hands)
 
 - Bible reader
 

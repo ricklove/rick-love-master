@@ -171,22 +171,25 @@ export const gameWithMusicWavesComponentFactory = ({
           }
 
           gameWithMusicWaves.loading = true;
+          // TODO: show loading
 
-          (async () => {
-            const songs = await getOrLoadSongs();
-            const menu = prefabFactory.menu({
-              position: [-0.1, 1, -0.5],
-              items: songs.map((x, i) => ({
-                text: x.title,
-                action: `../gameWithMusicWaves.loadLevel(${i})` as EntityActionCode,
-              })),
-            });
+          setTimeout(() => {
+            (async () => {
+              const songs = await getOrLoadSongs();
+              const menu = prefabFactory.menu({
+                position: [-0.1, 1, -0.5],
+                items: songs.map((x, i) => ({
+                  text: x.title,
+                  action: `../gameWithMusicWaves.loadLevel(${i})` as EntityActionCode,
+                })),
+              });
 
-            const menuInstance = sceneState.createEntityInstance(menu, getActualEntityInstance());
+              const menuInstance = sceneState.createEntityInstance(menu, getActualEntityInstance());
 
-            gameWithMusicWaves.menu = menuInstance;
-            gameWithMusicWaves.loading = false;
-          })();
+              gameWithMusicWaves.menu = menuInstance;
+              gameWithMusicWaves.loading = false;
+            })();
+          }, 1000);
         };
 
         const hideMenu = () => {

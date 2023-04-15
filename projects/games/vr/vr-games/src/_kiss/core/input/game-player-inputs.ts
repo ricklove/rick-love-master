@@ -6,6 +6,16 @@ export type GamePlayerInputs = {
     position: Vector3;
     quaternion: Quaternion;
   };
+  controllerGrips: {
+    left: {
+      position: Vector3;
+      quaternion: Quaternion;
+    };
+    right: {
+      position: Vector3;
+      quaternion: Quaternion;
+    };
+  };
   hands: {
     left: {
       handJoint: XRHandJoint;
@@ -30,6 +40,16 @@ export const createGamePlayerInputs = (): GamePlayerInputs => ({
   head: {
     position: new Vector3(),
     quaternion: new Quaternion(),
+  },
+  controllerGrips: {
+    left: {
+      position: new Vector3(),
+      quaternion: new Quaternion(),
+    },
+    right: {
+      position: new Vector3(),
+      quaternion: new Quaternion(),
+    },
   },
   hands: {
     left: handJointNames.map((x) => ({

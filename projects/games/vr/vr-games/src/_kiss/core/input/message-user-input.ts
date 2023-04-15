@@ -14,6 +14,7 @@ enum InputBufferIndex {
   camera = handRight + handJointNames.length * 3,
   controllerLeft = camera + 7,
   controllerRight = controllerLeft + 7,
+  /** controllerGrip is for holding */
   controllerGripLeft = controllerRight + 7,
   controllerGripRight = controllerGripLeft + 7,
   /**
@@ -101,6 +102,14 @@ const injectMouseInput = (
   buffer[InputBufferIndex.mouse + 9] = mouseState.wheelDeltaY;
 
   // console.log(`injectMouseInput`, { vMouseScreenPosition, vMouseDirection, time: mouseState.time });
+
+  // // DEBUG: left grip controller via mouse
+  // const MOUSE_TO_CONTROLLER = true;
+  // if (MOUSE_TO_CONTROLLER) {
+  //   vMouseScreenPosition.add(vMouseDirection);
+  //   vMouseScreenPosition.toArray(buffer, InputBufferIndex.controllerGripLeft);
+  //   q.identity().toArray(buffer, InputBufferIndex.controllerGripLeft + 3);
+  // }
 };
 
 export const postMessageUserInputTransforms = (
@@ -143,6 +152,12 @@ export const readMessageUserInputTransforms = (buffer: ArrayBuffer, inputs: Game
 
   [inputs.head].forEach((o) => {
     offset = InputBufferIndex.camera;
+    o.position.set(f32Buffer[offset++], f32Buffer[offset++], f32Buffer[offset++]);
+    o.quaternion.set(f32Buffer[offset++], f32Buffer[offset++], f32Buffer[offset++], f32Buffer[offset++]);
+  });
+
+  [inputs.controllerGrips.left, inputs.controllerGrips.right].forEach((o, i) => {
+    offset = i === 0 ? InputBufferIndex.controllerGripLeft : InputBufferIndex.controllerGripRight;
     o.position.set(f32Buffer[offset++], f32Buffer[offset++], f32Buffer[offset++]);
     o.quaternion.set(f32Buffer[offset++], f32Buffer[offset++], f32Buffer[offset++], f32Buffer[offset++]);
   });
