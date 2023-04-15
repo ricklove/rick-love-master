@@ -13,6 +13,7 @@ import { gameComponentFactory } from './game';
 import { gameWithMusicWavesComponentFactory } from './game-with-music-waves';
 import { gameWithWavesComponentFactory } from './game-with-waves';
 import { graphicsComponentFactory } from './graphics';
+import { inputControllerComponentFactory } from './input-controller';
 import { inputHandAttachableComponentFactory } from './input-hand-attachable';
 import { inputHandJointComponentFactory } from './input-hand-joint';
 import { inputMouseComponentFactory } from './input-mouse';
@@ -46,6 +47,7 @@ export const createComponentFactories = (global: ComponentFactoryGlobals) => ({
 
   // inputs
   inputHandJointComponentFactory: inputHandJointComponentFactory(global),
+  inputControllerComponentFactory: inputControllerComponentFactory(global),
   inputHandAttachableComponentFactory: inputHandAttachableComponentFactory(global),
   inputMouseComponentFactory: inputMouseComponentFactory(global),
 

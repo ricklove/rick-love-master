@@ -52,57 +52,6 @@ export const inputHandAttachableComponentFactory = ({ inputs }: { inputs: GamePl
         const createCalculateAttachment = () => {
           const { handAttachableKind } = entityInstance.desc.inputHandAttachable;
 
-          const oldPositions = {
-            wrists: {
-              left: new Vector3(),
-              right: new Vector3(),
-            },
-            controllerGrips: {
-              left: new Vector3(),
-              right: new Vector3(),
-            },
-            oldResult: {
-              left: `controllerGrips` as `controllerGrips` | `wrists`,
-              right: `controllerGrips` as `controllerGrips` | `wrists`,
-            },
-          };
-
-          const getActiveInputKind = () => {
-            const jointIndex = 0;
-            const diffWristLeft = oldPositions.wrists.left.sub(inputs.hands.left[jointIndex].position).lengthSq();
-            const diffWristRight = oldPositions.wrists.right.sub(inputs.hands.right[jointIndex].position).lengthSq();
-            const diffControllerGripsLeft = oldPositions.controllerGrips.left
-              .sub(inputs.controllerGrips.left.position)
-              .lengthSq();
-            const diffControllerGripsRight = oldPositions.controllerGrips.right
-              .sub(inputs.controllerGrips.right.position)
-              .lengthSq();
-
-            const result = {
-              left:
-                diffControllerGripsLeft === diffWristLeft
-                  ? oldPositions.oldResult.left
-                  : diffControllerGripsLeft > diffWristLeft
-                  ? `controllerGrips`
-                  : `wrists`,
-              right:
-                diffControllerGripsRight === diffWristRight
-                  ? oldPositions.oldResult.right
-                  : diffControllerGripsRight > diffWristRight
-                  ? `controllerGrips`
-                  : `wrists`,
-            } as const;
-
-            oldPositions.wrists.left.copy(inputs.hands.left[jointIndex].position);
-            oldPositions.wrists.right.copy(inputs.hands.right[jointIndex].position);
-            oldPositions.controllerGrips.left.copy(inputs.controllerGrips.left.position);
-            oldPositions.controllerGrips.right.copy(inputs.controllerGrips.right.position);
-            oldPositions.oldResult = result;
-
-            // wogger.log(`getActiveInputKind`, { ...result, oldPositions });
-            return result;
-          };
-
           if (handAttachableKind === `sword`) {
             const vKnucklesMid = new Vector3();
             const vUp = new Vector3();
@@ -135,7 +84,7 @@ export const inputHandAttachableComponentFactory = ({ inputs }: { inputs: GamePl
                 };
               }
 
-              const inputKind = getActiveInputKind()[handSide];
+              const inputKind = inputs.activeInputKind[handSide];
               if (inputKind === `controllerGrips`) {
                 const input = inputs.controllerGrips[handSide];
                 vAttachment.copy(input.position);
@@ -221,7 +170,7 @@ export const inputHandAttachableComponentFactory = ({ inputs }: { inputs: GamePl
                 };
               }
 
-              const inputKind = getActiveInputKind()[handSide];
+              const inputKind = inputs.activeInputKind[handSide];
               if (inputKind === `controllerGrips`) {
                 const input = inputs.controllerGrips[handSide];
                 vAttachment.copy(input.position);

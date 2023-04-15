@@ -1,4 +1,4 @@
-import { Quaternion, Vector3 } from 'three';
+import { Euler, Quaternion, Vector3 } from 'three';
 import { MessageBufferPool } from '../messages/message-buffer';
 import { MessageBufferKind } from '../messages/message-type';
 import { GamePlayerInputs } from './game-player-inputs';
@@ -43,23 +43,15 @@ const injectXrInput = (renderer: THREE.WebGLRenderer, frame: XRFrame, buffer: Fl
   camera.position.toArray(buffer, InputBufferIndex.camera);
   camera.quaternion.toArray(buffer, InputBufferIndex.camera + 3);
 
-  [0, 1].forEach((iController) => {
-    const controller = renderer.xr.getController(iController);
-    const inputSource = session.inputSources[iController];
-    if (!inputSource || !controller) {
-      return;
-    }
-
+  session.inputSources.forEach((inputSource, iController) => {
     const sideOffset = inputSource.handedness === `left` ? 0 : 1;
-    controller.position.toArray(buffer, InputBufferIndex.controllerLeft + sideOffset * 7);
-    controller.quaternion.toArray(buffer, InputBufferIndex.controllerLeft + sideOffset * 7 + 3);
 
-    const controlleGrip = renderer.xr.getControllerGrip(sideOffset);
-    controlleGrip.position.toArray(buffer, InputBufferIndex.controllerGripLeft + sideOffset * 7);
-    controlleGrip.quaternion.toArray(buffer, InputBufferIndex.controllerGripLeft + sideOffset * 7 + 3);
-
+    // hands
     const hand = renderer.xr.getHand(sideOffset);
-    if (hand) {
+    const isHandActive = !!inputSource.hand;
+
+    // console.log(`injectXrInput`, { isHandActive, inputSource, controller, sideOffset, hand });
+    if (isHandActive && hand) {
       for (const jointName of handJointNames) {
         const joint = hand.joints[jointName];
         if (!joint) {
@@ -71,13 +63,39 @@ const injectXrInput = (renderer: THREE.WebGLRenderer, frame: XRFrame, buffer: Fl
           InputBufferIndex.handLeft + (sideOffset * handJointNames.length + handJointNameIndex[jointName]) * 3,
         );
       }
+      return;
     }
+
+    // controllers
+    const controller = renderer.xr.getController(iController);
+    const controlleGrip = renderer.xr.getControllerGrip(iController);
+    if (!controller) {
+      return;
+    }
+
+    controller.position.toArray(buffer, InputBufferIndex.controllerLeft + sideOffset * 7);
+    controller.quaternion.toArray(buffer, InputBufferIndex.controllerLeft + sideOffset * 7 + 3);
+
+    controlleGrip.position.toArray(buffer, InputBufferIndex.controllerGripLeft + sideOffset * 7);
+    q.copy(controlleGrip.quaternion)
+      .multiply(qUpToForward)
+      .toArray(buffer, InputBufferIndex.controllerGripLeft + sideOffset * 7 + 3);
+
+    console.log(`injectXrInput`, {
+      inputSource,
+      position: controlleGrip.position,
+      controlleGrip,
+      controller,
+      sideOffset,
+      hand,
+    });
   });
 };
 
 const vMouseScreenPosition = new Vector3();
 const vMouseDirection = new Vector3();
 const q = new Quaternion();
+const qUpToForward = new Quaternion().setFromEuler(new Euler(-Math.PI / 2, 0, 0));
 const injectMouseInput = (
   renderer: THREE.WebGLRenderer,
   mouseState: MouseState,
@@ -171,6 +189,8 @@ export const readMessageUserInputTransforms = (buffer: ArrayBuffer, inputs: Game
     o.wheelDeltaX = f32Buffer[offset++];
     o.wheelDeltaY = f32Buffer[offset++];
   });
+
+  inputs.updateActiveInputKind();
 
   // console.log(`readMessageUserInputTransforms position set`, { handJoints });
 };

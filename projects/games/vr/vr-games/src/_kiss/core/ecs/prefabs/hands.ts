@@ -4,12 +4,18 @@ import { Ecs } from '../components/_components';
 export const createHands = (ecs: Ecs, jointRadius = 0.01) => {
   const leftHand = createHand(ecs, `left`, jointRadius);
   const rightHand = createHand(ecs, `right`, jointRadius);
+  const leftControllerHand = createControllerHand(ecs, `left`, jointRadius);
+  const rightControllerHand = createControllerHand(ecs, `right`, jointRadius);
   const mouseHand = createMouseHand(ecs);
 
   return {
     hands: {
       left: leftHand,
       right: rightHand,
+    },
+    controllerHands: {
+      left: leftControllerHand,
+      right: rightControllerHand,
     },
     mouseHand,
   };
@@ -39,6 +45,24 @@ const createHand = (ecs: Ecs, side: `left` | `right`, jointRadius: number) => {
   });
 
   return x.build();
+};
+
+const createControllerHand = (ecs: Ecs, side: `left` | `right`, jointRadius: number) => {
+  return ecs
+    .entity(`${side}-controller-hand`)
+    .transform({ position: [0, 0, 0] })
+    .rigidBody({ kind: `kinematicPositionBased`, collisionTag: `hand` })
+    .inputController({ handSide: side })
+    .addChild(
+      ecs
+        .entity(`mouse-hand-collider`)
+        .transform({ position: [0, 0, 0] })
+        .shape_sphere({ radius: 0.02 })
+        .collider({ restitution: 0, friction: 1 })
+        .graphics({ color: 0x00ff00 })
+        .build(),
+    )
+    .build();
 };
 
 const createMouseHand = (ecs: Ecs) => {

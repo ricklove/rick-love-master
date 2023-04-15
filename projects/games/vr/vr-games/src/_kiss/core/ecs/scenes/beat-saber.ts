@@ -3,6 +3,7 @@ import { EntityActionCode } from '../components/actions/parser';
 import { createAlienEgg } from '../prefabs/alien-egg';
 import { createHands } from '../prefabs/hands';
 import { createWeapon_knuckleClaws } from '../prefabs/weapons/knuckleClaws';
+import { createWeapon_saber } from '../prefabs/weapons/saber';
 
 export const createScene_beatSaber = (ecs: Ecs) => {
   const hands = createHands(ecs);
@@ -33,12 +34,15 @@ export const createScene_beatSaber = (ecs: Ecs) => {
     .entity(`root`, true)
     .addChild(hands.hands.left)
     .addChild(hands.hands.right)
+    .addChild(hands.controllerHands.left)
+    .addChild(hands.controllerHands.right)
     .addChild(hands.mouseHand)
     // .addChild(createWeapon_saber(ecs, [0, 1, -0.35], 1, `mouse`, true))
     .addChild(createWeapon_knuckleClaws(ecs, [0, 1, -0.35], 1, `mouse`, true))
-    // .addChild(createWeapon_saber(ecs, [0, 1, -0.35], 1, `left`))
-    .addChild(createWeapon_knuckleClaws(ecs, [0, 1, -0.35], 1, `left`))
-    .addChild(createWeapon_knuckleClaws(ecs, [0, 1, -0.35], 1, `right`))
+    .addChild(createWeapon_saber(ecs, [0, 1, -0.35], 1, `left`))
+    .addChild(createWeapon_saber(ecs, [0, 1, -0.35], 1, `right`))
+    // .addChild(createWeapon_knuckleClaws(ecs, [0, 1, -0.35], 1, `left`))
+    // .addChild(createWeapon_knuckleClaws(ecs, [0, 1, -0.35], 1, `right`))
     .addChild(
       ecs
         .entity(`ground`)
