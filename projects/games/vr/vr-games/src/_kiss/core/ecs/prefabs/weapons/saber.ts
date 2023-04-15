@@ -5,22 +5,31 @@ export const createWeapon_saber = (
   position: [number, number, number],
   scale: number = 1,
   attachedHandSide?: `left` | `right` | `mouse`,
+  collisionTag?: `weapon-left` | `weapon-right` | `weapon`,
+  attachmentPosition?: [number, number, number],
   autoHide?: boolean,
 ) => {
+  const color = collisionTag === `weapon-left` ? 0x0000ff : collisionTag === `weapon-right` ? 0xff0000 : 0xff0000;
+
   //const angle = Math.PI * 0.15;
   const angle = 0; // Math.PI * 0.15;
   const saber = ecs
     .entity(`saber`)
     .transform({ position })
-    .rigidBody({ kind: `dynamic`, collisionTag: `weapon` })
-    .inputHandAttachable({ handAttachableKind: `sword`, attachmentPosition: [0, 0.08, 0], attachedHandSide, autoHide })
+    .rigidBody({ kind: `dynamic`, collisionTag: collisionTag ?? `weapon` })
+    .inputHandAttachable({
+      handAttachableKind: `sword`,
+      attachmentPosition: attachmentPosition ?? [0, 0.08, 0],
+      attachedHandSide,
+      autoHide,
+    })
     .addChild(
       ecs
         .entity(`blade`)
         .transform({ position: [0, 0.55 * scale, -Math.sin(angle) * 0.55 * scale], rotation: [-angle, 0, 0] })
         .shape_box({ scale: [0.002 * scale, 0.92 * scale, 0.02 * scale] })
         .collider({ restitution: 1, colliderEvents: true })
-        .graphics({ color: 0xff0000 })
+        .graphics({ color })
         .build(),
     )
     .addChild(

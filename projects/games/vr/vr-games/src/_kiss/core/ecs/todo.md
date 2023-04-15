@@ -27,6 +27,11 @@
     - [ ] missing block will ?
   - [ ] display score / chain
 
+- additional game features
+
+  - [x] enemy has weak spots
+  - [x] alternate left/right hand
+
 - level selection
 
   - [ ] display song menu

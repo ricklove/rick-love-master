@@ -75,7 +75,8 @@ export const inputHandAttachableComponentFactory = ({ inputs }: { inputs: GamePl
                   return;
                 }
 
-                vAttachment.copy(mouseResult.position);
+                const pos = entityInstance.desc.inputHandAttachable.attachmentPosition ?? [0, 0, 0];
+                vAttachment.set(pos[0], pos[1], pos[2]).add(mouseResult.position);
                 qForward.identity();
 
                 return {
@@ -161,7 +162,8 @@ export const inputHandAttachableComponentFactory = ({ inputs }: { inputs: GamePl
                   return;
                 }
 
-                vAttachment.copy(mouseResult.position);
+                const pos = entityInstance.desc.inputHandAttachable.attachmentPosition ?? [0, 0, 0];
+                vAttachment.set(pos[0], pos[1], pos[2]).add(mouseResult.position);
                 qForward.identity();
 
                 return {

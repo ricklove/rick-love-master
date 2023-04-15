@@ -109,16 +109,36 @@ export const gameWithMusicWavesComponentFactory = ({
           }
           songData.loading = true;
           const songDataRaw = await musicSequenceLoader.loadSong(songData.key);
-          const waves: GameWave[] = songDataRaw.notes.map((x) => ({
-            timeBeforeWaveSec: x.timeBeforeSec,
-            sequence: [
-              {
-                ...getEnemyKind(x.kind, timeToMoveSec, x.sameKindIndex),
-                timeBeforeSpawnSec: 0,
-                count: 1,
-              },
-            ],
-          }));
+          const waves: GameWave[] = songDataRaw.notes.map((x, i) => {
+            const DOUBLE = true;
+            if (!DOUBLE) {
+              return {
+                timeBeforeWaveSec: 0,
+                sequence: [
+                  {
+                    ...getEnemyKind(x.kind, timeToMoveSec, x.sameKindIndex, i),
+                    timeBeforeSpawnSec: x.timeBeforeSec,
+                    count: 1,
+                  },
+                ],
+              };
+            }
+            return {
+              timeBeforeWaveSec: 0,
+              sequence: [
+                {
+                  ...getEnemyKind(x.kind, timeToMoveSec, x.sameKindIndex * 2, i * 2),
+                  timeBeforeSpawnSec: x.timeBeforeSec * 0.5,
+                  count: 1,
+                },
+                {
+                  ...getEnemyKind(x.kind, timeToMoveSec, x.sameKindIndex * 2 + 1, i * 2 + 1),
+                  timeBeforeSpawnSec: x.timeBeforeSec * 0.5,
+                  count: 1,
+                },
+              ],
+            };
+          });
 
           // eslint-disable-next-line require-atomic-updates
           songData.waves = waves;
@@ -262,11 +282,11 @@ export const gameWithMusicWavesComponentFactory = ({
     };
   });
 
-const getEnemyKind = (kind: number, timeToMoveSec: number, sameKindIndex: number) => {
+const getEnemyKind = (kind: number, timeToMoveSec: number, sameKindIndex: number, index: number) => {
   const yTargetCenter = 1;
-  const yTargetRadius = 0.5;
+  const yTargetRadius = 0.8;
   const xTargetCenter = 0;
-  const xTargetRadius = 0.5;
+  const xTargetRadius = 1;
   const xOffset = Math.sin((sameKindIndex * Math.PI * 2) / 11);
   const yOffset = Math.sin((sameKindIndex * Math.PI * 2) / 13);
 
@@ -277,10 +297,14 @@ const getEnemyKind = (kind: number, timeToMoveSec: number, sameKindIndex: number
   const yStart = (kind % 3) + yOffset;
   const zStart = -25;
 
+  const side = index % 2 === 0 ? `left` : `right`;
+  // const rotation = [(Math.PI / 8) * kind, 0, (Math.PI / 5) * kind] as [number, number, number];
+  const rotation = (side === `left` ? [0, 0, Math.PI * 0.3] : [0, 0, -Math.PI * 0.3]) as [number, number, number];
+
   return {
-    spawnerName: `eggSpawner`,
+    spawnerName: `eggSpawner-${side}`,
     position: [xStart, yStart, zStart] as [number, number, number],
-    rotation: [(Math.PI / 8) * kind, 0, (Math.PI / 5) * kind] as [number, number, number],
+    rotation,
     action: `moveToTarget.setTarget([${xTarget}, ${yTarget}, 0], ${timeToMoveSec})` as EntityActionCode,
   };
 };

@@ -3,36 +3,39 @@ import { EntityActionCode } from '../components/actions/parser';
 import { createAlienEgg } from '../prefabs/alien-egg';
 import { createHands } from '../prefabs/hands';
 import { createWeapon_knuckleClaws } from '../prefabs/weapons/knuckleClaws';
-import { createWeapon_saber } from '../prefabs/weapons/saber';
 
 export const createScene_beatSaber = (ecs: Ecs) => {
   const hands = createHands(ecs);
 
-  const eggRaw = createAlienEgg(ecs, [0, 0, 0], 0.5);
-  const egg = ecs
-    .copy(eggRaw, `eggEnemy`, false)
-    .moveToTarget({
-      target: [0, 0, 0],
-      timeToMoveSec: 6,
-    })
-    .actions({})
-    .actionDisableEntity({ actionName: `disable` })
-    .collisionAction({
-      collisionTagFilter: `weapon`,
-      selfColliderTagFilder: `leg`,
-      action: `actionDisableEntity.disable()` as EntityActionCode,
-    })
-    // .addChild(
-    //   ecs
-    //     .entity(`eggEnemy-text`)
-    //     .transform({ position: [0.35, 0.25, 0] })
-    //     .shape_text({ text: `Egg`, fontSize: 0.5, alignment: `left`, verticalAlignment: `center` })
-    //     .graphics({ color: 0xff0000 })
-    //     .moveRelativeToParent({})
-    //     // .collider({ sensor: true })
-    //     .build(),
-    // )
-    .build();
+  const egg = (side: `left` | `right`) => {
+    const eggRaw = createAlienEgg(ecs, [0, 0, 0], 0.5, 0x00ff00, side === `left` ? 0x0000ff : 0xff0000);
+    return (
+      ecs
+        .copy(eggRaw, `eggEnemy`, false)
+        .moveToTarget({
+          target: [0, 0, 0],
+          timeToMoveSec: 6,
+        })
+        .actions({})
+        .actionDisableEntity({ actionName: `disable` })
+        .collisionAction({
+          collisionTagFilter: `weapon-${side}`,
+          // selfColliderTagFilder: `leg`,
+          action: `actionDisableEntity.disable()` as EntityActionCode,
+        })
+        // .addChild(
+        //   ecs
+        //     .entity(`eggEnemy-text`)
+        //     .transform({ position: [0.35, 0.25, 0] })
+        //     .shape_text({ text: `Egg`, fontSize: 0.5, alignment: `left`, verticalAlignment: `center` })
+        //     .graphics({ color: 0xff0000 })
+        //     .moveRelativeToParent({})
+        //     // .collider({ sensor: true })
+        //     .build(),
+        // )
+        .build()
+    );
+  };
 
   const root = ecs
     .entity(`root`, true)
@@ -42,11 +45,13 @@ export const createScene_beatSaber = (ecs: Ecs) => {
     .addChild(hands.controllerHands.right)
     .addChild(hands.mouseHand)
     // .addChild(createWeapon_saber(ecs, [0, 1, -0.35], 1, `mouse`, true))
-    .addChild(createWeapon_knuckleClaws(ecs, [0, 1, -0.35], 1, `mouse`, true))
-    .addChild(createWeapon_saber(ecs, [0, 1, -0.35], 1, `left`))
-    .addChild(createWeapon_saber(ecs, [0, 1, -0.35], 1, `right`))
-    // .addChild(createWeapon_knuckleClaws(ecs, [0, 1, -0.35], 1, `left`))
-    // .addChild(createWeapon_knuckleClaws(ecs, [0, 1, -0.35], 1, `right`))
+    .addChild(createWeapon_knuckleClaws(ecs, [0, 1, -0.35], 1, `mouse`, `weapon-left`, [-0.05, 0, 0], true))
+    .addChild(createWeapon_knuckleClaws(ecs, [0, 1, -0.35], 1, `mouse`, `weapon-right`, [0.05, 0, 0], true))
+    // .addChild(createWeapon_saber(ecs, [0, 1, -0.35], 1, `left`, `weapon-left`))
+    // .addChild(createWeapon_saber(ecs, [0, 1, -0.35], 1, `right`, `weapon-right`))
+    .addChild(createWeapon_knuckleClaws(ecs, [0, 1, -0.35], 1, `left`, `weapon-left`))
+    .addChild(createWeapon_knuckleClaws(ecs, [0, 1, -0.35], 1, `right`, `weapon-right`))
+
     .addChild(
       ecs
         .entity(`ground`)
@@ -65,10 +70,19 @@ export const createScene_beatSaber = (ecs: Ecs) => {
     )
     .addChild(
       ecs
-        .entity(`eggSpawner`)
+        .entity(`eggSpawner-left`)
         .spawner({
           poolSize: 0,
-          prefab: egg,
+          prefab: egg(`left`),
+        })
+        .build(),
+    )
+    .addChild(
+      ecs
+        .entity(`eggSpawner-right`)
+        .spawner({
+          poolSize: 0,
+          prefab: egg(`right`),
         })
         .build(),
     )
