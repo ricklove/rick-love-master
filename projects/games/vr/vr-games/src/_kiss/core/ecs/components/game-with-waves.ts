@@ -29,10 +29,12 @@ export type Entity_GameWithWaves = {
 
 export type GameWave = {
   timeBeforeWaveSec: number;
+  timeExactWaveSec?: number;
   sequence: GameWaveSequence[];
 };
 type GameWaveSequence = {
   timeBeforeSpawnSec: number;
+  timeExactSpawnSec?: number;
   spawnerName: string;
   count: number;
   position: [number, number, number];
@@ -157,7 +159,9 @@ export const gameWithWavesComponentFactory = ({ sceneState }: { sceneState: EcsS
           game.waveIndex = 0;
           game.sequenceIndex = 0;
           game.sequenceSentCount = 0;
-          game.timeNextWave = Date.now() + waves[0].timeBeforeWaveSec * 1000;
+          game.timeNextWave = waves[0].timeExactWaveSec
+            ? waves[0].timeExactWaveSec * 1000
+            : Date.now() + waves[0].timeBeforeWaveSec * 1000;
           game.timeNextSpawn = undefined;
         }
 
@@ -190,7 +194,11 @@ export const gameWithWavesComponentFactory = ({ sceneState }: { sceneState: EcsS
           game.sequenceIndex = 0;
           game.waveIndex++;
           const nextWave = waves[game.waveIndex];
-          game.timeNextWave = !nextWave ? undefined : Date.now() + nextWave.timeBeforeWaveSec * 1000;
+          game.timeNextWave = !nextWave
+            ? undefined
+            : nextWave.timeExactWaveSec
+            ? nextWave.timeExactWaveSec * 1000
+            : Date.now() + nextWave.timeBeforeWaveSec * 1000;
           return;
         }
 
@@ -203,7 +211,9 @@ export const gameWithWavesComponentFactory = ({ sceneState }: { sceneState: EcsS
 
         // wait for next spawn
         if (!game.timeNextSpawn) {
-          game.timeNextSpawn = Date.now() + sequence.timeBeforeSpawnSec * 1000;
+          game.timeNextSpawn = sequence.timeExactSpawnSec
+            ? sequence.timeExactSpawnSec * 1000
+            : Date.now() + sequence.timeBeforeSpawnSec * 1000;
         }
         if (Date.now() < game.timeNextSpawn) {
           return;

@@ -31,6 +31,9 @@
 
   - [x] enemy has weak spots
   - [x] alternate left/right hand
+  - [ ] sync note timing
+    - [ ] flash on beat
+  - [ ] enemy sounds
 
 - level selection
 
@@ -110,3 +113,5 @@
 ## Acron (multiplayer w/ phones)
 
 ## Among Us (multiplayer w/ phones)
+
+## Rain World (Ecosystem)

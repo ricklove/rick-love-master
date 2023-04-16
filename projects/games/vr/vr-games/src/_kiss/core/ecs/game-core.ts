@@ -3,6 +3,7 @@ import { createGamePlayerInputs } from '../input/game-player-inputs';
 import { MessageBufferPool } from '../messages/message-buffer';
 import { GameCore } from '../worker/types';
 import { createAudioService } from './audio-service';
+import { createBeatService } from './beat-service';
 import { ComponentFactoryGlobals, createComponentFactories } from './components/_components';
 import { EntityInstance_Collider } from './components/collider';
 import { createMusicSequenceLoader } from './components/music-sequence-loader';
@@ -19,6 +20,7 @@ export const createGameCore = async (messageBuffer: MessageBufferPool): Promise<
 
   const global = {
     audioService: createAudioService(),
+    beatService: createBeatService(),
     physicsService: createPhysicsService(),
     graphicsService: createGraphicsService(messageBuffer),
     sceneState: createSceneState(),

@@ -1,5 +1,6 @@
 import { GamePlayerInputs } from '../../input/game-player-inputs';
 import { AudioService } from '../audio-service';
+import { BeatService } from '../beat-service';
 import { EcsSceneState, EntityDescUntyped } from '../ecs-engine';
 import { createEntityFactory } from '../ecs-entity-factory';
 import { GraphicsService } from '../graphics-service';
@@ -13,6 +14,7 @@ import { gameComponentFactory } from './game';
 import { gameWithMusicWavesComponentFactory } from './game-with-music-waves';
 import { gameWithWavesComponentFactory } from './game-with-waves';
 import { graphicsComponentFactory } from './graphics';
+import { graphicsWithBeatComponentFactory } from './graphics-with-beat';
 import { inputControllerComponentFactory } from './input-controller';
 import { inputHandAttachableComponentFactory } from './input-hand-attachable';
 import { inputHandJointComponentFactory } from './input-hand-joint';
@@ -29,6 +31,7 @@ import { transformComponentFactory } from './transform';
 
 export type ComponentFactoryGlobals = {
   audioService: AudioService;
+  beatService: BeatService;
   physicsService: PhysicsService;
   graphicsService: GraphicsService;
   sceneState: EcsSceneState;
@@ -74,6 +77,7 @@ export const createComponentFactories = (global: ComponentFactoryGlobals) => ({
   collisionActionComponentFactory: collisionActionComponentFactory,
 
   // graphics
+  graphicsWithBeatComponentFactory: graphicsWithBeatComponentFactory(global),
   graphicsComponentFactory: graphicsComponentFactory(global),
 });
 

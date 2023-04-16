@@ -37,6 +37,7 @@ export const createWeapon_knuckleClaws = (
         .shape_box({ scale: [bladeWidth, bladeThickness, 1.03 * length] })
         .collider({ restitution: 1, colliderEvents: true })
         .graphics({ color })
+        .graphicsWithBeat({ colorBeat: 0xffffff })
         .build(),
     )
     .addChild(
@@ -46,6 +47,7 @@ export const createWeapon_knuckleClaws = (
         .shape_box({ scale: [bladeWidth, bladeThickness, 1.01 * length] })
         .collider({ restitution: 1, colliderEvents: true })
         .graphics({ color })
+        .graphicsWithBeat({ colorBeat: 0xffffff })
         .build(),
     )
     .addChild(
@@ -55,6 +57,7 @@ export const createWeapon_knuckleClaws = (
         .shape_box({ scale: [bladeWidth, bladeThickness, 1.01 * length] })
         .collider({ restitution: 1, colliderEvents: true })
         .graphics({ color })
+        .graphicsWithBeat({ colorBeat: 0xffffff })
         .build(),
     )
     .build();

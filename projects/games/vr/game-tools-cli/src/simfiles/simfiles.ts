@@ -69,6 +69,41 @@ export const getMusicFileName = async (
   return undefined;
 };
 
+export const getMusicOffset = async (
+  rootPath: string,
+  packDirName: string,
+  titleDirName: string,
+  titleName: string,
+) => {
+  // check if .ogg file exists
+
+  const ext = [`.sm`, `.ssc`];
+
+  // D:\Projects\rick-love-master\projects\games\vr\vr-test\public\vr-test\public\ddr\pack_1427_941f54\1st Samurai\1st Samurai.mp3
+  // D:\Projects\rick-love-master\projects\games\vr\vr-test\public\ddr\pack_1427_941f54\1st Samurai\1st Samurai.mp3
+
+  for (const e of ext) {
+    try {
+      const fileName = titleDirName + e;
+      const filePath = resolve(rootPath, packDirName, titleDirName, fileName).replace(/\\/g, `/`);
+      // console.log(`Checking for music file: ${filePath}`);
+
+      const contents = await fs.readFile(filePath, { encoding: `utf8` });
+      const lines = contents.split(`\n`).map((x) => x.trim().replace(/;$/, ``));
+      const offsetLine = lines.find((line) => line.startsWith(`#OFFSET`));
+      // console.log(`offsetLine`, { offsetLine, filePath, contents: contents.slice(0, 100) });
+      const offset = Number(offsetLine?.split(`:`)[1] || 0);
+      return offset;
+    } catch (error) {
+      continue;
+    }
+  }
+
+  const filePath = resolve(rootPath, packDirName, titleDirName, titleName).replace(/\\/g, `/`);
+  console.log(`Could not find offset for ${titleName} in ${titleDirName}: ${filePath}`);
+  return 0;
+};
+
 export const parseAndSaveSimFileGameData = async (rootPath: string) => {
   const allPacks = parseAllPacks(rootPath);
 
@@ -87,12 +122,14 @@ export const parseAndSaveSimFileGameData = async (rootPath: string) => {
             const titleDirName = relative(packDirAbs, title.titleDir).replace(/\\/g, `/`);
             const titleName = title.titleName;
             const musicFileName = await getMusicFileName(rootPath, packDirName, titleDirName, titleName);
+            const musicOffset = await getMusicOffset(rootPath, packDirName, titleDirName, titleName);
 
             return {
               packDirName,
               titleDirName,
               title: titleName,
               musicFileName,
+              musicOffset,
               jacketImageFileName: title.jacket,
               artist,
               displayBpm: displayBpm,
@@ -113,7 +150,7 @@ export const parseAndSaveSimFileGameData = async (rootPath: string) => {
                   .filter((x) => x.beat > 0 && x.durationTime && x.durationTime > 0);
 
                 const calculateTime = (offset: number) => {
-                  let time = 0;
+                  let time = -musicOffset;
                   for (const bpm of bpmRanges) {
                     // 4 beats per offset
                     const beatsPerSec = bpm.bpm / 60;
@@ -268,6 +305,18 @@ export const parseAndSaveSimFileGameData = async (rootPath: string) => {
       await fs.writeFile(
         resolve(outPath, song.packDirName, song.titleDirName, `game-data.json`),
         JSON.stringify(song, null, 2),
+      );
+
+      // raw song
+      const rawSongData = allPacks
+        .find((x) => x.name === pack.name)
+        ?.simfiles.find((x) => x.title.titleName === song.title);
+      if (!rawSongData) {
+        continue;
+      }
+      await fs.writeFile(
+        resolve(outPath, song.packDirName, song.titleDirName, `game-data-raw.json`),
+        JSON.stringify(rawSongData, null, 2),
       );
     }
   }

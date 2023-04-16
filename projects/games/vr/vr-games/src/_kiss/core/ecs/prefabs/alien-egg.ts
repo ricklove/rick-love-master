@@ -27,6 +27,7 @@ export const createAlienEgg = (
         .shape_sphere({ radius: 0.25 * scale })
         .collider({ restitution: 0.8, friction: 0.1, colliderTag: `leg` })
         .graphics({ color: legColor })
+        .graphicsWithBeat({ colorBeat: 0xffffff })
         .build(),
     )
     .addChild(
@@ -36,6 +37,7 @@ export const createAlienEgg = (
         .shape_sphere({ radius: 0.25 * scale })
         .collider({ restitution: 0.8, friction: 0.1, colliderTag: `leg` })
         .graphics({ color: legColor })
+        .graphicsWithBeat({ colorBeat: 0xffffff })
         .build(),
     )
     .addChild(
@@ -45,6 +47,7 @@ export const createAlienEgg = (
         .shape_sphere({ radius: 0.25 * scale })
         .collider({ restitution: 0.8, friction: 0.1, colliderTag: `leg` })
         .graphics({ color: legColor })
+        .graphicsWithBeat({ colorBeat: 0xffffff })
         .build(),
     )
     .addChild(
@@ -54,6 +57,7 @@ export const createAlienEgg = (
         .shape_sphere({ radius: 0.25 * scale })
         .collider({ restitution: 0.8, friction: 0.1, colliderTag: `leg` })
         .graphics({ color: legColor })
+        .graphicsWithBeat({ colorBeat: 0xffffff })
         .build(),
     )
     .build();

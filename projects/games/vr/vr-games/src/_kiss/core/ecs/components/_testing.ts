@@ -1,5 +1,6 @@
 import { createGamePlayerInputs } from '../../input/game-player-inputs';
 import { createAudioService } from '../audio-service';
+import { createBeatService } from '../beat-service';
 import { createScene, createSceneState } from '../ecs-engine';
 import { createEntityFactory } from '../ecs-entity-factory';
 import { GraphicsService } from '../graphics-service';
@@ -24,6 +25,7 @@ const createGraphicsService = (): GraphicsService => ({
 
 const global = {
   audioService: createAudioService(),
+  beatService: createBeatService(),
   physicsService: createPhysicsService(),
   graphicsService: createGraphicsService(),
   sceneState: createSceneState(),

@@ -2,6 +2,7 @@ import { delay } from '@ricklove/utils-core';
 import { musicList } from '../../audio/music-list';
 import { wogger } from '../../worker/wogger';
 import { AudioService } from '../audio-service';
+import { BeatService } from '../beat-service';
 import { createComponentFactory } from '../ecs-component-factory';
 import { EcsSceneState, EntityDescUntyped, EntityInstanceUntyped } from '../ecs-engine';
 import { EntityActionCode } from './actions/parser';
@@ -17,6 +18,9 @@ export type EntityInstance_GameWithMusicWaves = {
   gameWithMusicWaves: {
     menu?: EntityInstanceUntyped;
     loading: boolean;
+    beatTimesMs: number[];
+    iNextBeatTime: number;
+    musicId: number;
     showMenu: () => void;
     hideMenu: () => void;
     loadLevel: (levelIndex: number) => void;
@@ -25,11 +29,13 @@ export type EntityInstance_GameWithMusicWaves = {
 
 export const gameWithMusicWavesComponentFactory = ({
   audioService,
+  beatService,
   musicSequenceLoader,
   prefabFactory,
   sceneState,
 }: {
   audioService: AudioService;
+  beatService: BeatService;
   musicSequenceLoader: MusicSequenceLoader;
   prefabFactory: {
     menu: (args: {
@@ -60,7 +66,8 @@ export const gameWithMusicWavesComponentFactory = ({
           sceneState.findEntityInstanceById(entityInstance.instanceId)! as unknown as typeof entityInstance &
             EntityInstanceUntyped;
 
-        const timeToMoveSec = 3.5;
+        const timeToArriveOnBeatSec = 0;
+        const timeToMoveExtraSec = 3.5;
 
         // load songs
         const songsIndexState = {
@@ -96,19 +103,42 @@ export const gameWithMusicWavesComponentFactory = ({
         };
         const getOrLoadSong = async (index: number) => {
           const songData = (await getOrLoadSongs())[index];
+          const loadTimeMs = 1000;
+          const timeExactSongStartMs = Date.now() + timeToArriveOnBeatSec * 1000 + loadTimeMs;
 
-          while (songData.loading) {
-            await delay(10);
-          }
-          if (songData.waves) {
-            return {
-              key: songData.key,
-              title: songData.title,
-              waves: songData.waves,
-            };
-          }
+          // while (songData.loading) {
+          //   await delay(10);
+          // }
+          // if (songData.waves) {
+          //   return {
+          //     key: songData.key,
+          //     title: songData.title,
+          //     waves: songData.waves,
+          //     beatTimesMs,
+          //   };
+          // }
           songData.loading = true;
           const songDataRaw = await musicSequenceLoader.loadSong(songData.key);
+          const beatTimesMs = [] as number[];
+
+          songDataRaw.bpmRanges.forEach((beatRange, i) => {
+            const finalBeatTimeMs = (songDataRaw.bpmRanges[i + 1]?.startTime || songDataRaw.finalBeatTime) * 1000;
+            const bpm = beatRange.bpm;
+            const msPerBeat = 60000 / bpm;
+            const lastBeatTimeMs = beatTimesMs[beatTimesMs.length - 1] || timeExactSongStartMs;
+            let nextBeatTime = lastBeatTimeMs + msPerBeat;
+            while (nextBeatTime < timeExactSongStartMs + finalBeatTimeMs) {
+              beatTimesMs.push(nextBeatTime);
+              nextBeatTime += msPerBeat;
+            }
+          });
+
+          // songDataRaw.notes.forEach((x) => {
+          //   const lastBeatTimeMs = beatTimesMs[beatTimesMs.length - 1] || timeExactSongStartMs;
+          //   beatTimesMs.push(lastBeatTimeMs + x.timeBeforeSec * 1000);
+          // });
+
+          let timeExactSec = timeExactSongStartMs / 1000 - timeToArriveOnBeatSec;
           const waves: GameWave[] = songDataRaw.notes.map((x, i) => {
             const DOUBLE = true;
             if (!DOUBLE) {
@@ -116,8 +146,9 @@ export const gameWithMusicWavesComponentFactory = ({
                 timeBeforeWaveSec: 0,
                 sequence: [
                   {
-                    ...getEnemyKind(x.kind, timeToMoveSec, x.sameKindIndex, i),
+                    ...getEnemyKind(x.kind, timeToArriveOnBeatSec + timeToMoveExtraSec, x.sameKindIndex, i),
                     timeBeforeSpawnSec: x.timeBeforeSec,
+                    timeExactSpawnSec: (timeExactSec = timeExactSec + x.timeBeforeSec),
                     count: 1,
                   },
                 ],
@@ -127,18 +158,30 @@ export const gameWithMusicWavesComponentFactory = ({
               timeBeforeWaveSec: 0,
               sequence: [
                 {
-                  ...getEnemyKind(x.kind, timeToMoveSec, x.sameKindIndex * 2, i * 2),
+                  ...getEnemyKind(x.kind, timeToArriveOnBeatSec + timeToMoveExtraSec, x.sameKindIndex * 2, i * 2),
                   timeBeforeSpawnSec: x.timeBeforeSec * 0.5,
+                  timeExactSpawnSec: (timeExactSec = timeExactSec + x.timeBeforeSec),
                   count: 1,
                 },
                 {
-                  ...getEnemyKind(x.kind, timeToMoveSec, x.sameKindIndex * 2 + 1, i * 2 + 1),
+                  ...getEnemyKind(
+                    x.kind,
+                    timeToArriveOnBeatSec + timeToMoveExtraSec,
+                    x.sameKindIndex * 2 + 1,
+                    i * 2 + 1,
+                  ),
                   timeBeforeSpawnSec: x.timeBeforeSec * 0.5,
+                  timeExactSpawnSec: (timeExactSec = timeExactSec + x.timeBeforeSec * 0.5),
                   count: 1,
                 },
               ],
             };
           });
+
+          // wogger.log(`timings`, {
+          //   timeExactSongStartMs,
+          //   firstSpawnArriveTimeMs: (timeToMoveSec + (waves[0]?.sequence[0]?.timeExactSpawnSec ?? 0)) * 1000,
+          // });
 
           // eslint-disable-next-line require-atomic-updates
           songData.waves = waves;
@@ -148,6 +191,8 @@ export const gameWithMusicWavesComponentFactory = ({
             key: songData.key,
             title: songData.title,
             waves,
+            beatTimesMs,
+            timeExactSongStartMs,
           };
         };
 
@@ -241,22 +286,24 @@ export const gameWithMusicWavesComponentFactory = ({
             // TODO: make sure waves stay in sync with music
             actualEntityInstance.gameWithWaves.setWaves(song.waves);
             actualEntityInstance.game.active = true;
+
+            gameWithMusicWaves.beatTimesMs = song.beatTimesMs;
+            gameWithMusicWaves.iNextBeatTime = 0;
             gameWithMusicWaves.loading = false;
+            gameWithMusicWaves.musicId = levelIndex;
 
             const musicId = levelIndex;
             wogger.log(`loadLevel - loadMusic`, { musicList, musicId, audioService });
             audioService.loadMusic(musicId);
-
-            setTimeout(() => {
-              wogger.log(`loadLevel - playMusic`, { musicList, musicId, audioService });
-              audioService.playMusic(musicId);
-            }, (timeToMoveSec - 0.5) * 1000);
           })();
         };
 
-        const gameWithMusicWaves = {
+        const gameWithMusicWaves: EntityInstance_GameWithMusicWaves[`gameWithMusicWaves`] = {
           menu: undefined as undefined | EntityInstanceUntyped,
           loading: false,
+          beatTimesMs: [] as number[],
+          iNextBeatTime: 0,
+          musicId: 0,
           showMenu,
           hideMenu,
           loadLevel,
@@ -269,14 +316,30 @@ export const gameWithMusicWavesComponentFactory = ({
         };
       },
       update: (entityInstance) => {
-        //TODO: implement
-
         if (
           !entityInstance.game.active &&
           !entityInstance.gameWithMusicWaves.menu?.enabled &&
           !entityInstance.gameWithMusicWaves.loading
         ) {
           entityInstance.gameWithMusicWaves.showMenu();
+          return;
+        }
+
+        const g = entityInstance.gameWithMusicWaves;
+        while (Date.now() > g.beatTimesMs[g.iNextBeatTime] ?? Number.MAX_SAFE_INTEGER) {
+          if (g.iNextBeatTime === 0) {
+            wogger.log(`loadLevel - playMusic`, { musicId: g.musicId });
+            audioService.playMusic(g.musicId);
+          }
+
+          // wogger.log(`beat`, {
+          //   now: Date.now(),
+          //   nextBeatTime: g.beatTimesMs[g.iNextBeatTime],
+          //   iNextBeatTime: g.iNextBeatTime,
+          //   beatTimesMs: g.beatTimesMs,
+          // });
+          beatService.beat.next(g.iNextBeatTime);
+          g.iNextBeatTime++;
         }
       },
     };
@@ -287,6 +350,7 @@ const getEnemyKind = (kind: number, timeToMoveSec: number, sameKindIndex: number
   const yTargetRadius = 0.8;
   const xTargetCenter = 0;
   const xTargetRadius = 1;
+  const zTarget = 0;
   const xOffset = Math.sin((sameKindIndex * Math.PI * 2) / 11);
   const yOffset = Math.sin((sameKindIndex * Math.PI * 2) / 13);
 
@@ -305,6 +369,6 @@ const getEnemyKind = (kind: number, timeToMoveSec: number, sameKindIndex: number
     spawnerName: `eggSpawner-${side}`,
     position: [xStart, yStart, zStart] as [number, number, number],
     rotation,
-    action: `moveToTarget.setTarget([${xTarget}, ${yTarget}, 0], ${timeToMoveSec})` as EntityActionCode,
+    action: `moveToTarget.setTarget([${xTarget}, ${yTarget}, ${zTarget}], ${timeToMoveSec})` as EntityActionCode,
   };
 };

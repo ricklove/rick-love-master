@@ -8,6 +8,12 @@ export type MusicSequenceLoader = {
 export type MusicSequenceData = {
   songName: string;
   musicFilePath: string;
+  bpmRanges: {
+    bpm: number;
+    startBeat: number;
+    startTime: number;
+  }[];
+  finalBeatTime: number;
   notes: {
     kind: number;
     sameKindIndex: number;
@@ -61,16 +67,18 @@ export const createMusicSequenceLoader = (rootPath: string = `/ddr`) => {
     },
     loadSong: async (key: string) => {
       const songs = await service.getSongs();
-      const songsPath = songs.find((x) => x.key === key)?.songGameDataPath;
+      const songInfo = songs.find((x) => x.key === key);
+      const songsPath = songInfo?.songGameDataPath;
       if (!songsPath) {
         throw new Error(`Song not found: ${key}`);
       }
       const response = await fetch(songsPath);
       const songDoc = (await response.json()) as GameDataSongDocument;
 
-      const notes = songDoc.charts[0].notes.map((x, i) => ({
+      const chart = songDoc.charts.find((x) => x.difficulty === songInfo?.difficulty) ?? songDoc.charts[0];
+      const notes = chart.notes.map((x, i) => ({
         kind: x.positions.reduce((acc, x) => acc + x.position + x.kind.charCodeAt(0), 0),
-        timeBeforeSec: x.timeStart - songDoc.charts[0].notes[i - 1]?.timeStart || 0,
+        timeBeforeSec: x.timeStart - chart.notes[i - 1]?.timeStart || 0,
         sameKindIndex: 0,
       }));
       notes.forEach((x, i) => {
@@ -86,6 +94,8 @@ export const createMusicSequenceLoader = (rootPath: string = `/ddr`) => {
       const song: MusicSequenceData = {
         songName: songDoc.title,
         musicFilePath: `${rootPath}/${songDoc.packDirName}/${songDoc.titleDirName}/${songDoc.musicFileName}`,
+        bpmRanges: chart.bpmRanges,
+        finalBeatTime: chart.finalBeatTime,
         notes,
       };
       return song;

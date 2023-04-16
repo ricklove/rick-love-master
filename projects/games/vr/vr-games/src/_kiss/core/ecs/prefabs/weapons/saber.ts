@@ -30,6 +30,7 @@ export const createWeapon_saber = (
         .shape_box({ scale: [0.002 * scale, 0.92 * scale, 0.02 * scale] })
         .collider({ restitution: 1, colliderEvents: true })
         .graphics({ color })
+        .graphicsWithBeat({ colorBeat: 0xffffff })
         .build(),
     )
     .addChild(
