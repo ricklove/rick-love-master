@@ -49,6 +49,9 @@ export const graphicsWithBeatComponentFactory = ({ beatService }: { beatService:
         };
       },
       update: (entityInstance) => {
+        // DISABLED: Sync is not perfect
+        return;
+
         const onBeat = Date.now() < entityInstance.graphicsWithBeat.timeBeatEndMs;
         const colorToUse = onBeat
           ? entityInstance.graphicsWithBeat.colorBeat

@@ -131,7 +131,6 @@ export const graphicsComponentFactory = ({ graphicsService }: { graphicsService:
         if (entityInstance.graphics._visibleTarget !== entityInstance.graphics._visibleActual) {
           graphicsService.setVisible(entityInstance.graphics.id, entityInstance.graphics._visibleTarget);
           entityInstance.graphics._visibleActual = entityInstance.graphics._visibleTarget;
-          return;
         }
         if (!entityInstance.graphics._visibleTarget) {
           return;

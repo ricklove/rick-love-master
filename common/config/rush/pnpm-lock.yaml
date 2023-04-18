@@ -1084,6 +1084,7 @@ importers:
       simfile-parser: 0.4.1
       three: 0.149.0
       three-stdlib: 2.21.1
+      troika-three-text: 0.47.1
       tsup: 6.7.0
       typescript: ~4.9.5
     dependencies:
@@ -1106,6 +1107,7 @@ importers:
       simfile-parser: 0.4.1
       three: 0.149.0
       three-stdlib: 2.21.1_three@0.149.0
+      troika-three-text: 0.47.1_three@0.149.0
     devDependencies:
       '@ricklove/config-lib-rig': link:../../../../config/lib-rig
       '@types/react': 18.0.14

@@ -1,6 +1,6 @@
 import * as THREE from 'three';
 import { Object3D } from 'three';
-import { TextGeometry } from 'three-stdlib';
+import { preloadFont, Text } from 'troika-three-text';
 import { delay } from '@ricklove/utils-core';
 import { logger } from '../../utils/logger';
 import { createMusicSequenceLoader, MusicSequenceData } from './ecs/components/music-sequence-loader';
@@ -32,6 +32,17 @@ export const createGameEngine = (host: HTMLDivElement, workerRaw: Worker) => {
     const testScene = addTestScene(scene, renderer);
     const boxGeometry = new THREE.BoxGeometry(1, 1, 1);
     const sphereGeometry = new THREE.SphereGeometry(1);
+
+    // preload troika font
+    preloadFont(
+      {
+        // font:
+        // characters: 'abcdefghijklmnopqrstuvwxyz'
+      },
+      () => {
+        // ready
+      },
+    );
 
     const objectMap = [] as (undefined | Object3D)[];
     let addObjectsData = undefined as undefined | Extract<WorkerMessageFromWorker, { kind: `addObjects` }>;
@@ -80,43 +91,21 @@ export const createGameEngine = (host: HTMLDivElement, workerRaw: Worker) => {
           objectMap[o.id] = object;
         });
         data.texts?.forEach((o) => {
-          const font = state.font;
-          if (!font) {
-            console.error(`No font loaded`);
-            return;
-          }
-
           const fontSize = o.fontSize;
-          const thickness = fontSize * 0.1;
-          const textGeometry = new TextGeometry(o.text, { font, size: fontSize, height: thickness });
-          const objectInner = new THREE.Mesh(textGeometry, new THREE.MeshLambertMaterial({ color: o.color }));
+
+          const textObj = new Text();
+          textObj.text = o.text;
+          textObj.fontSize = fontSize;
+          textObj.position.z = 0;
+          textObj.color = o.color;
+          textObj.anchorX = o.alignment;
+          textObj.anchorY = o.verticalAlignment === `center` ? `middle` : o.verticalAlignment;
+          // textObj.alignment
+          textObj.sync();
+
           const object = new THREE.Group();
-          object.add(objectInner);
+          object.add(textObj);
 
-          textGeometry.computeBoundingBox();
-          const boundingBox = textGeometry.boundingBox!;
-          const textWidth = boundingBox.max.x - boundingBox.min.x;
-          const textHeight = fontSize; // boundingBox.max.y - boundingBox.min.y;
-
-          // TODO: put this in a group to perserver the alignment
-          // text geometry is baseline left by default
-          // fontSize is baseline to top of MW
-          // g is below the fontSize
-          const xOffset = o.alignment === `center` ? -textWidth / 2 : o.alignment === `right` ? -textWidth : 0;
-          const yOffset =
-            o.verticalAlignment === `center` ? -textHeight / 2 : o.verticalAlignment === `top` ? -textHeight : 0;
-
-          console.log(`font size`, {
-            alignment: o.alignment,
-            verticalAlignment: o.verticalAlignment,
-            xOffset,
-            yOffset,
-            fontSize,
-            textWidth,
-            textHeight,
-            boundingBox,
-          });
-          objectInner.position.set(xOffset, yOffset, 0);
           object.matrixAutoUpdate = false;
           object.position.set(o.position[0], o.position[1], o.position[2]);
           object.updateMatrix();

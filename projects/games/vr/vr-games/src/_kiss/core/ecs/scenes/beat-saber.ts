@@ -8,7 +8,13 @@ export const createScene_beatSaber = (ecs: Ecs) => {
   const hands = createHands(ecs);
 
   const egg = (side: `left` | `right`) => {
-    const eggRaw = createAlienEgg(ecs, [0, 0, 0], 0.5, 0x00ff00, side === `left` ? 0x0000ff : 0xff0000);
+    const eggRaw = createAlienEgg(
+      ecs,
+      [0, 0, 0],
+      0.5,
+      side === `left` ? 0x00ff00 : 0xffff00,
+      side === `left` ? 0x0000ff : 0xff0000,
+    );
     return (
       ecs
         .copy(eggRaw, `eggEnemy`, false)

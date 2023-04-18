@@ -1,4 +1,5 @@
 import { delay } from '@ricklove/utils-core';
+import { wogger } from '../../worker/wogger';
 
 export type MusicSequenceLoader = {
   getSongs: () => Promise<{ key: string; songName: string; difficulty: string }[]>;
@@ -75,7 +76,8 @@ export const createMusicSequenceLoader = (rootPath: string = `/ddr`) => {
       const response = await fetch(songsPath);
       const songDoc = (await response.json()) as GameDataSongDocument;
 
-      const chart = songDoc.charts.find((x) => x.difficulty === songInfo?.difficulty) ?? songDoc.charts[0];
+      const chart = songDoc.charts.find((x) => x.difficulty === `single-${songInfo?.difficulty}`) ?? songDoc.charts[0];
+      wogger.log(`chart`, { chart, key, songInfo });
       const notes = chart.notes.map((x, i) => ({
         kind: x.positions.reduce((acc, x) => acc + x.position + x.kind.charCodeAt(0), 0),
         timeBeforeSec: x.timeStart - chart.notes[i - 1]?.timeStart || 0,

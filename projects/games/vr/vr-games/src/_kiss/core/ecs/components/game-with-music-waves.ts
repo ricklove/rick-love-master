@@ -1,3 +1,4 @@
+import { Euler, Vector3 } from 'three';
 import { delay } from '@ricklove/utils-core';
 import { musicList } from '../../audio/music-list';
 import { wogger } from '../../worker/wogger';
@@ -140,7 +141,7 @@ export const gameWithMusicWavesComponentFactory = ({
 
           let timeExactSec = timeExactSongStartMs / 1000 - timeToArriveOnBeatSec;
           const waves: GameWave[] = songDataRaw.notes.map((x, i) => {
-            const DOUBLE = true;
+            const DOUBLE = false;
             if (!DOUBLE) {
               return {
                 timeBeforeWaveSec: 0,
@@ -245,7 +246,7 @@ export const gameWithMusicWavesComponentFactory = ({
                 position: [-0.1, 1, -0.5],
                 items: songs
                   // TEMP
-                  .slice(0, 20)
+                  // .slice(0, 40)
                   .map((x, i) => ({
                     text: x.title,
                     action: `../gameWithMusicWaves.loadLevel(${i})` as EntityActionCode,
@@ -345,17 +346,21 @@ export const gameWithMusicWavesComponentFactory = ({
     };
   });
 
+const v = new Vector3();
+const vTarget = new Vector3();
+const euler = new Euler();
 const getEnemyKind = (kind: number, timeToMoveSec: number, sameKindIndex: number, index: number) => {
   const yTargetCenter = 1;
   const yTargetRadius = 0.8;
   const xTargetCenter = 0;
-  const xTargetRadius = 1;
+  const xTargetRadius = 2;
   const zTarget = 0;
   const xOffset = Math.sin((sameKindIndex * Math.PI * 2) / 11);
   const yOffset = Math.sin((sameKindIndex * Math.PI * 2) / 13);
 
-  const xTarget = xTargetCenter + ((xTargetRadius * ((-3 + ((kind + 3) % 7)) / 3 + xOffset)) % 1);
-  const yTarget = yTargetCenter + ((yTargetRadius * ((-1 + ((kind + 1) % 3)) / 1 + yOffset)) % 1);
+  // const xTarget = xTargetCenter + ((xTargetRadius * ((-3 + ((kind + 3) % 7)) / 3 + xOffset)) % 1);
+  const xTarget = xTargetCenter + ((xTargetRadius * ((-1 + ((kind + 1) % 3)) / 1 + xOffset)) % 1);
+  const yTarget = yTargetCenter + ((yTargetRadius * ((-1 + ((kind + 8) % 3)) / 1 + yOffset)) % 1);
 
   const xStart = -2 + ((2 + kind) % 5) + xOffset;
   const yStart = (kind % 3) + yOffset;
@@ -365,10 +370,16 @@ const getEnemyKind = (kind: number, timeToMoveSec: number, sameKindIndex: number
   // const rotation = [(Math.PI / 8) * kind, 0, (Math.PI / 5) * kind] as [number, number, number];
   const rotation = (side === `left` ? [0, 0, Math.PI * 0.3] : [0, 0, -Math.PI * 0.3]) as [number, number, number];
 
+  v.set(xStart, yStart, zStart);
+  vTarget.set(xTarget, yTarget, zTarget);
+
+  v.applyEuler(euler.set(0, (Math.PI * index) / 100, 0));
+  vTarget.applyEuler(euler.set(0, (Math.PI * index) / 100, 0));
+
   return {
     spawnerName: `eggSpawner-${side}`,
-    position: [xStart, yStart, zStart] as [number, number, number],
+    position: [v.x, v.y, v.z] as [number, number, number],
     rotation,
-    action: `moveToTarget.setTarget([${xTarget}, ${yTarget}, ${zTarget}], ${timeToMoveSec})` as EntityActionCode,
+    action: `moveToTarget.setTarget([${vTarget.x}, ${vTarget.y}, ${vTarget.z}], ${timeToMoveSec})` as EntityActionCode,
   };
 };
