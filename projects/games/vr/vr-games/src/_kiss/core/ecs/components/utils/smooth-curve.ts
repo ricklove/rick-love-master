@@ -33,8 +33,18 @@ export const createSmoothCurve = (path: [number, number, number][]) => {
 
   const segmentLengths = path.map((p, i) => {
     if (i === 0) return 0;
-    const p0 = path[i - 1];
-    return Math.sqrt((p[0] - p0[0]) ** 2 + (p[1] - p0[1]) ** 2 + (p[2] - p0[2]) ** 2);
+    const subPointCount = 7;
+    const subPoints = [...Array(subPointCount)].map((_, iSub) => {
+      const t = iSub / (subPointCount - 1);
+      return getPointOnSegment(i, t);
+    });
+    const subSegmentLengths = subPoints.map((p, i) => {
+      if (i === 0) return 0;
+      const p0 = subPoints[i - 1];
+      return Math.sqrt((p[0] - p0[0]) ** 2 + (p[1] - p0[1]) ** 2 + (p[2] - p0[2]) ** 2);
+    });
+
+    return subSegmentLengths.reduce((a, b) => a + b, 0);
   });
   const totalSegmentLength = segmentLengths.reduce((a, b) => a + b, 0);
 

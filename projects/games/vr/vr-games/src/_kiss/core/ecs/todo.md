@@ -22,8 +22,13 @@
 ## Code Quality
 
 - [ ] No coupling of logic everything is flat Types, data, functions
-- [ ] Functions are testable and composible and are not tied to boilerplate (like ecs)
-- [ ] Functions have a single concern
+- [ ] Pure Functions
+  - [ ] All logic is in pure functions
+  - [ ] Functions have no state, dependencies, or side effects (only args and result)
+  - [ ] Functions have a single concern
+  - [ ] Functions are tested
+  - [ ] Functions are visualized
+  - [ ] Functions are efficient (no creating objects, a working state container is provided)
 - [ ] Components/Systems are simple (no boilerplate, no logic, just a call to a function)
 
 ## Beat Saber
