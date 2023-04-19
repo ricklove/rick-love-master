@@ -46,7 +46,7 @@ self.onmessage = (e: { data: unknown }) => {
 
     const bufferPool = state.messageBufferPool;
     (async () => {
-      state.gameCore = await createGameCore(bufferPool);
+      state.gameCore = await createGameCore(bufferPool, data.params);
       state.gameCore.start();
       wogger.log(`I am setup!`);
     })();

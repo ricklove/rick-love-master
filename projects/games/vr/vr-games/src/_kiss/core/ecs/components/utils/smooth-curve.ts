@@ -1,4 +1,7 @@
-export const createSmoothCurve = (path: [number, number, number][]) => {
+export type SmoothCurveArgs = {
+  path: [number, number, number][];
+};
+export const createSmoothCurve = ({ path }: SmoothCurveArgs) => {
   // function to get any point along the path
   const pathMids = path
     .map((p, i) => {

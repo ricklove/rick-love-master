@@ -2,6 +2,7 @@ import RAPIER, { EventQueue } from '@dimforge/rapier3d-compat';
 import { createGamePlayerInputs } from '../input/game-player-inputs';
 import { MessageBufferPool } from '../messages/message-buffer';
 import { GameCore } from '../worker/types';
+import { wogger } from '../worker/wogger';
 import { createAudioService } from './audio-service';
 import { createBeatService } from './beat-service';
 import { ComponentFactoryGlobals, createComponentFactories } from './components/_components';
@@ -13,9 +14,12 @@ import { createEntityFactory } from './ecs-entity-factory';
 import { createGraphicsService } from './graphics-service';
 import { createPhysicsService } from './physics-service';
 import { createMenu } from './prefabs/menu';
-import { createScene_beatSaber } from './scenes/beat-saber';
+import { scenes } from './scenes/_scenes';
 
-export const createGameCore = async (messageBuffer: MessageBufferPool): Promise<GameCore> => {
+export const createGameCore = async (
+  messageBuffer: MessageBufferPool,
+  params: { key: string; value: string }[],
+): Promise<GameCore> => {
   await RAPIER.init();
 
   const global = {
@@ -37,7 +41,10 @@ export const createGameCore = async (messageBuffer: MessageBufferPool): Promise<
   const ecs = createEntityFactory(componentFactories);
 
   // const root = createScene_test01(ecs);
-  const root = createScene_beatSaber(ecs);
+  const sceneKey = params.find((x) => x.key === `scene`)?.value;
+  const sceneCreator = scenes.find((x) => x.key === sceneKey) ?? scenes[0];
+  wogger.log(`sceneKey`, { sceneKey, params });
+  const root = sceneCreator.createScene(ecs);
 
   const scene = createScene(root, componentFactories, global);
 

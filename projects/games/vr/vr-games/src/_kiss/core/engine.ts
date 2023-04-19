@@ -276,7 +276,15 @@ export const createGameEngine = (host: HTMLDivElement, workerRaw: Worker) => {
 
     worker.postMessage({ kind: `ping`, time: performance.now() });
     worker.postMessage({ kind: `ping`, time: performance.now() });
-    worker.postMessage({ kind: `setup` });
+    worker.postMessage({
+      kind: `setup`,
+      params:
+        location.search
+          ?.split(`?`)[1]
+          ?.split(`&`)
+          .map((x) => x.split(`=`))
+          .map(([k, v]) => ({ key: k, value: v })) ?? [],
+    });
 
     const mouseInput = setupMouseInput();
 

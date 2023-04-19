@@ -8,6 +8,7 @@ export type WorkerMessageToWorker =
   | ArrayBuffer
   | {
       kind: `setup`;
+      params: { key: string; value: string }[];
     }
   | {
       kind: `dispose`;

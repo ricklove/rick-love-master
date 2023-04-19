@@ -54,7 +54,7 @@ export const menuComponentFactory = ({ sceneState }: { sceneState: EcsSceneState
         // create a smooth curve through the path at even intervals
         const path = entity.menu.path;
 
-        const curve = createSmoothCurve(path);
+        const curve = createSmoothCurve({ path });
         const slotCount = Math.floor(curve.totalSegmentLength / gap);
         const slots = [...new Array(slotCount)].map((_, i) => {
           return curve.getPointOnPath(i / slotCount);
