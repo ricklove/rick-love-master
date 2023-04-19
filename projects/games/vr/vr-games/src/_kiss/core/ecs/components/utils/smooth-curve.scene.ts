@@ -1,5 +1,4 @@
-import { Ecs } from '../_components';
-import { createDebugScene } from './_debug-scene';
+import { debugScene } from './_debug-scene';
 import { createSmoothCurve, SmoothCurveArgs } from './smooth-curve';
 
 const inputs: { [name: string]: SmoothCurveArgs } = {
@@ -31,12 +30,12 @@ const inputs: { [name: string]: SmoothCurveArgs } = {
 
 export const testScenes_smoothCurve = Object.entries(inputs).map(([key, args]) => ({
   key: key,
-  createScene: (ecs: Ecs) => {
+  createScene: debugScene.create(() => {
     const slotSize = 0.1;
     const result = createSmoothCurve(args);
     const count = Math.floor(result.totalSegmentLength / (slotSize * 1.8));
 
-    return createDebugScene(ecs, {
+    return {
       points: [
         ...[...new Array(count)].map((_, i) => {
           const position = result.getPointOnPath(i / count);
@@ -54,6 +53,6 @@ export const testScenes_smoothCurve = Object.entries(inputs).map(([key, args]) =
           };
         }),
       ],
-    });
-  },
+    };
+  }),
 }));
