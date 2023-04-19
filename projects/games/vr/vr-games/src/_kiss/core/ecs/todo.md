@@ -11,6 +11,21 @@
 
 # Games to clone to test out game system
 
+## Tools
+
+- [ ] Debug Menu
+  - [ ] Can easily visualize anything
+  - [ ] Can easily create scenes to test small units
+  - [ ] Can navigate test scenes, search, reload
+    - [ ] compile goes directly back to last test scene
+
+## Code Quality
+
+- [ ] No coupling of logic everything is flat Types, data, functions
+- [ ] Functions are testable and composible and are not tied to boilerplate (like ecs)
+- [ ] Functions have a single concern
+- [ ] Components/Systems are simple (no boilerplate, no logic, just a call to a function)
+
 ## Beat Saber
 
 - minimal game
@@ -24,6 +39,8 @@
   - [x] blocks move toward player at a constant speed
   - [ ] player can hit block with visual feedback
     - [x] hitting block will cause block to disappear
+    - [ ] hitting block will play sound
+    - [ ] hitting block will vibrate controller
     - [ ] missing block will ?
   - [ ] display score / chain
 
@@ -34,6 +51,8 @@
   - [ ] sync note timing
     - [ ] flash on beat
   - [ ] enemy sounds
+  - [ ] missed enemy damages the platform
+  - [ ] player can fall off platform
 
 - level selection
 
@@ -44,8 +63,10 @@
     - [x] menu item is selectable
     - [x] load game on item selection
     - [ ] menu button during game to go back to menu
+    - [ ] virtualize menu items
   - [ ] convert music to wave sequence
     - [x] Detect beats from any sound file
+      - [ ] Generate notes from any music
     - [x] Use stepmania simfiles
       - [ ] Can use double levels to get 8 note signals, or combine 2 difficulties for 8
       - https://github.com/noahm/simfile-parser

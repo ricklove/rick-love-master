@@ -11,6 +11,7 @@ export type EntityInstance_Transform = {
   transform: {
     position: [number, number, number];
     quaternion: [number, number, number, number];
+    move: (position: [number, number, number], quaternion?: [number, number, number, number]) => void;
   };
 };
 
@@ -28,6 +29,7 @@ export const transformComponentFactory = createComponentFactory<{}, Entity_Trans
         },
       ) => {
         const { rotation: r } = args;
+
         return {
           ...entity,
           transform: {
@@ -42,12 +44,20 @@ export const transformComponentFactory = createComponentFactory<{}, Entity_Trans
         };
       },
       setup: (entity) => {
+        const transform: EntityInstance_Transform[`transform`] = {
+          position: [...entity.desc.transform.position],
+          quaternion: [...entity.desc.transform.quaternion],
+          move: (position, quaternion) => {
+            transform.position = position;
+            if (quaternion) {
+              transform.quaternion = quaternion;
+            }
+          },
+        };
+
         return {
           ...entity,
-          transform: {
-            position: [...entity.desc.transform.position],
-            quaternion: [...entity.desc.transform.quaternion],
-          },
+          transform,
         };
       },
     };

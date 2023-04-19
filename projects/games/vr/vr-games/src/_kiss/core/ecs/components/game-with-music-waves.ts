@@ -243,10 +243,10 @@ export const gameWithMusicWavesComponentFactory = ({
             (async () => {
               const songs = await getOrLoadSongs();
               const menu = prefabFactory.menu({
-                position: [-0.1, 1, -0.5],
+                position: [-0.1, 1.5, -1.5],
                 items: songs
                   // TEMP
-                  // .slice(0, 40)
+                  .slice(0, 10)
                   .map((x, i) => ({
                     text: x.title,
                     action: `../gameWithMusicWaves.loadLevel(${i})` as EntityActionCode,
@@ -364,7 +364,7 @@ const getEnemyKind = (kind: number, timeToMoveSec: number, sameKindIndex: number
 
   const xStart = -2 + ((2 + kind) % 5) + xOffset;
   const yStart = (kind % 3) + yOffset;
-  const zStart = -25;
+  const zStart = -50;
 
   const side = index % 2 === 0 ? `left` : `right`;
   // const rotation = [(Math.PI / 8) * kind, 0, (Math.PI / 5) * kind] as [number, number, number];

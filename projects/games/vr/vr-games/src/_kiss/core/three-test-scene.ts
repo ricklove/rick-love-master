@@ -9,7 +9,7 @@ export const addTestScene = (scene: THREE.Scene, renderer: THREE.WebGLRenderer) 
   // );
   // scene.add(room);
 
-  scene.add(new THREE.HemisphereLight(0x606060, 0x404040));
+  scene.add(new THREE.HemisphereLight(0x111111, 0x444444));
 
   const light = new THREE.DirectionalLight(0xffffff);
   light.position.set(1, 1, 1).normalize();

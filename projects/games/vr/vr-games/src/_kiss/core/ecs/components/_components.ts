@@ -19,6 +19,7 @@ import { inputControllerComponentFactory } from './input-controller';
 import { inputHandAttachableComponentFactory } from './input-hand-attachable';
 import { inputHandJointComponentFactory } from './input-hand-joint';
 import { inputMouseComponentFactory } from './input-mouse';
+import { menuComponentFactory } from './menu';
 import { moveRelativeToParentComponentFactory } from './move-relative-to-parent';
 import { moveToTargetComponentFactory } from './move-to-target';
 import { MusicSequenceLoader } from './music-sequence-loader';
@@ -60,6 +61,7 @@ export const createComponentFactories = (global: ComponentFactoryGlobals) => ({
   sphereComponentFactory: shapeSphereComponentFactory,
   shapeTextComponentFactory: shapeTextComponentFactory,
   spawnerComponentFactory: spawnerComponentFactory(global),
+  menuComponentFactory: menuComponentFactory(global),
 
   // physics
   rigidBodyComponentFactory: rigidBodyComponentFactory(global),
