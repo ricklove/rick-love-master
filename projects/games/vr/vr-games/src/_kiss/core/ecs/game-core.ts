@@ -43,8 +43,8 @@ export const createGameCore = async (
 
   // const root = createScene_test01(ecs);
   const sceneKey = params.find((x) => x.key === `scene`)?.value;
-  const sceneCreator = scenes.find((x) => x.key === sceneKey) ?? scenes[0];
-  wogger.log(`sceneKey`, { sceneKey, params });
+  const sceneCreator = scenes.find((x) => x.key.toLowerCase() === String(sceneKey).toLowerCase()) ?? scenes[0];
+  wogger.log(`sceneKey`, { sceneKey, params, sceneCreator, scenes });
   const root = sceneCreator.createScene(ecs as Ecs & AbstractEcs, params) as EntityDescUntyped;
 
   const scene = createScene(root, componentFactories, global);

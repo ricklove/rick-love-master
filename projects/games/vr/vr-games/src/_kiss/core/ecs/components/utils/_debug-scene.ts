@@ -15,12 +15,12 @@ export const debugScene = {
   setup: (provider: DebugSceneCreateProvider) => {
     debugScene._create = provider;
   },
-  create: <TInput extends Record<string, unknown>>({
+  create: <TInput extends Record<string, unknown>, TName extends string>({
     name,
     inputs,
     getPoints,
   }: {
-    name: string;
+    name: TName;
     inputs: { [key: string]: TInput };
     getPoints: (input: TInput) => {
       points: {
