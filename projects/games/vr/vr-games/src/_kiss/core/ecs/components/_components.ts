@@ -10,6 +10,7 @@ import { actionsComponentFactory } from './actions/actions';
 import { EntityActionCode } from './actions/parser';
 import { colliderComponentFactory } from './collider';
 import { collisionActionComponentFactory } from './collision-action';
+import { debugActionComponentFactory } from './debug-action';
 import { gameComponentFactory } from './game';
 import { gameWithMusicWavesComponentFactory } from './game-with-music-waves';
 import { gameWithWavesComponentFactory } from './game-with-waves';
@@ -48,6 +49,8 @@ export type ComponentFactoryGlobals = {
 
 export const createComponentFactories = (global: ComponentFactoryGlobals) => ({
   // update order
+
+  debugActionComponentFactory: debugActionComponentFactory(global),
 
   // inputs
   inputHandJointComponentFactory: inputHandJointComponentFactory(global),

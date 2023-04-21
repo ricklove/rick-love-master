@@ -4,9 +4,9 @@ import { Ecs } from '../components/_components';
 export const createHands = (ecs: Ecs, jointRadius = 0.01) => {
   const leftHand = createHand(ecs, `left`, jointRadius);
   const rightHand = createHand(ecs, `right`, jointRadius);
-  const leftControllerHand = createControllerHand(ecs, `left`, jointRadius);
-  const rightControllerHand = createControllerHand(ecs, `right`, jointRadius);
-  const mouseHand = createMouseHand(ecs);
+  const leftControllerHand = createControllerHand(ecs, `left`, jointRadius * 2);
+  const rightControllerHand = createControllerHand(ecs, `right`, jointRadius * 2);
+  const mouseHand = createMouseHand(ecs, jointRadius * 2);
 
   return {
     hands: {
@@ -57,7 +57,7 @@ const createControllerHand = (ecs: Ecs, side: `left` | `right`, jointRadius: num
       ecs
         .entity(`mouse-hand-collider`)
         .transform({ position: [0, 0, 0] })
-        .shape_sphere({ radius: 0.02 })
+        .shape_sphere({ radius: jointRadius })
         .collider({ restitution: 0, friction: 1 })
         .graphics({ color: 0x00ff00 })
         .build(),
@@ -65,7 +65,7 @@ const createControllerHand = (ecs: Ecs, side: `left` | `right`, jointRadius: num
     .build();
 };
 
-const createMouseHand = (ecs: Ecs) => {
+const createMouseHand = (ecs: Ecs, jointRadius: number) => {
   return ecs
     .entity(`mouse-hand`)
     .transform({ position: [0, 0, 0] })
@@ -75,7 +75,7 @@ const createMouseHand = (ecs: Ecs) => {
       ecs
         .entity(`mouse-hand-collider`)
         .transform({ position: [0, 0, 0] })
-        .shape_sphere({ radius: 0.02 })
+        .shape_sphere({ radius: jointRadius })
         .collider({ restitution: 0, friction: 1 })
         .graphics({ color: 0x00ff00 })
         .build(),

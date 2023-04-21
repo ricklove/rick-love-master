@@ -31,13 +31,13 @@ const inputs: { [name: string]: SmoothCurveArgs } = {
 export const testSceneSmoothCurve = debugScene.create({
   name: `SmoothCurve`,
   inputs,
-  getPoints: (input) => {
+  getResult: (input) => {
     const slotSize = 0.1;
     const result = createSmoothCurve(input);
     const count = Math.floor(result.totalSegmentLength / (slotSize * 1.8));
 
     return {
-      points: [
+      getPoints: () => [
         ...[...new Array(count)].map((_, i) => {
           const position = result.getPointOnPath(i / count);
           return {

@@ -1,14 +1,17 @@
 export type AbstractEcs = { _type: `AbstractEcs` };
 export type AbstractEntityDesc = { _type: `AbstractEntityDesc` };
-type DebugSceneCreateProvider = (
+export type DebugSceneResult = {
   getPoints: () => {
-    points: {
-      position: [number, number, number];
-      color?: number;
-      scale?: [number, number, number];
-    }[];
-  },
-) => (ecs: AbstractEcs) => AbstractEntityDesc;
+    position: [number, number, number];
+    color?: number;
+    scale?: [number, number, number];
+    text?: string;
+  }[];
+  actions?: {
+    [name: string]: () => void;
+  };
+};
+type DebugSceneCreateProvider = (getResult: () => DebugSceneResult) => (ecs: AbstractEcs) => AbstractEntityDesc;
 
 export const debugScene = {
   _create: undefined as undefined | DebugSceneCreateProvider,
@@ -18,17 +21,11 @@ export const debugScene = {
   create: <TInput extends Record<string, unknown>, TName extends string>({
     name,
     inputs,
-    getPoints,
+    getResult,
   }: {
     name: TName;
     inputs: { [key: string]: TInput };
-    getPoints: (input: TInput) => {
-      points: {
-        position: [number, number, number];
-        color?: number;
-        scale?: [number, number, number];
-      }[];
-    };
+    getResult: (input: TInput) => DebugSceneResult;
   }) => {
     return {
       key: name,
@@ -39,8 +36,8 @@ export const debugScene = {
         const inputKey = params.find((x) => x.key === `input`)?.value ?? 0;
         const inputsList = Object.values(inputs);
         const input = inputs[inputKey] ?? inputsList[Number(inputKey)] ?? inputsList[0];
-        const points = getPoints(input);
-        return debugScene._create(() => points)(runtimeArgs);
+        const result = getResult(input);
+        return debugScene._create(() => result)(runtimeArgs);
       },
     };
   },
