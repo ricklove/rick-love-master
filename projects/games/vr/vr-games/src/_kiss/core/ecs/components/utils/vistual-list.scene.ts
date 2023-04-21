@@ -61,9 +61,11 @@ export const testSceneVirtualList = debugScene.create({
       actions: {
         forward1: () => result.scroll(1),
         forwardSmall: () => result.scroll(0.03),
+        forwardMedium: () => result.scroll(0.3),
         forwardLarge: () => result.scroll(10),
         backward1: () => result.scroll(-1),
         backwardSmall: () => result.scroll(-0.03),
+        backwardMedium: () => result.scroll(-0.3),
         backwardLarge: () => result.scroll(-10),
       },
     };

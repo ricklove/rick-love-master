@@ -1,4 +1,4 @@
-import { Vector3 } from 'three';
+import { Quaternion, Vector3 } from 'three';
 import { GamePlayerInputs } from '../../input/game-player-inputs';
 import { createComponentFactory } from '../ecs-component-factory';
 import { Entity_RigidBody, EntityInstance_RigidBody } from './rigid-body';
@@ -39,7 +39,7 @@ export const inputMouseComponentFactory = ({ inputs }: { inputs: GamePlayerInput
         update: (entityInstance) => {
           const { rigidBody } = entityInstance.rigidBody;
 
-          const { enabled, position: vPosition } = entityInstance.inputMouse.tracker.getPosition(inputs);
+          const { enabled, position, quaternion } = entityInstance.inputMouse.tracker.getPosition(inputs);
 
           if (!enabled) {
             rigidBody.setEnabled(false);
@@ -50,7 +50,8 @@ export const inputMouseComponentFactory = ({ inputs }: { inputs: GamePlayerInput
           if (!rigidBody.isEnabled()) {
             rigidBody.setEnabled(true);
           }
-          rigidBody.setTranslation(vPosition, true);
+          rigidBody.setTranslation(position, true);
+          rigidBody.setRotation(quaternion, true);
         },
       };
     },
@@ -59,13 +60,16 @@ export const inputMouseComponentFactory = ({ inputs }: { inputs: GamePlayerInput
 export type MouseInputTracker = ReturnType<typeof createMouseInputTracker>;
 export const createMouseInputTracker = () => {
   const state = {
-    z: 0.5,
+    z: 0.38,
     timeLastUpdate: 0,
     mouseTimeLastUpdate: 0,
   };
 
   const v = new Vector3();
+  const vForward = new Vector3(0, 0, 1);
+  const vDirection = new Vector3(0, 0, 1);
   const vPosition = new Vector3();
+  const q = new Quaternion();
 
   return {
     getPosition: (inputs: GamePlayerInputs) => {
@@ -92,11 +96,17 @@ export const createMouseInputTracker = () => {
         return { enabled: false as const };
       }
 
-      vPosition.copy(mouseState.position).add(v.copy(mouseState.direction).multiplyScalar(state.z));
+      vPosition.copy(mouseState.position).add(v.copy(mouseState.direction).multiplyScalar(state.z - 0.05));
+
+      // rotate to look at mouse direction
+      vDirection.copy(mouseState.direction);
+      vDirection.setZ(vDirection.z * 1.2).normalize();
+      q.setFromUnitVectors(vForward, v.copy(vDirection).negate());
 
       return {
         enabled: true as const,
         position: vPosition,
+        quaternion: q,
       };
     },
   };
