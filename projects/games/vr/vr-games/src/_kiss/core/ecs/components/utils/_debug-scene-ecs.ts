@@ -1,6 +1,5 @@
-import { EntityDescUntyped } from '../../ecs-engine';
 import { Ecs } from '../_components';
-import { debugScene } from './_debug-scene';
+import { AbstractEntityDesc, debugScene } from './_debug-scene';
 
 const dotPrefab = (
   ecs: Ecs,
@@ -41,5 +40,7 @@ const createDebugScene =
   };
 
 export const setupDebugSceneWithEcs = () => {
-  debugScene.setup((getPoints) => (ecs) => createDebugScene(getPoints)(ecs as Ecs) as EntityDescUntyped);
+  debugScene.setup(
+    (getPoints) => (ecs) => createDebugScene(getPoints)(ecs as unknown as Ecs) as unknown as AbstractEntityDesc,
+  );
 };

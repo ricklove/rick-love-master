@@ -28,11 +28,12 @@ const inputs: { [name: string]: SmoothCurveArgs } = {
   },
 };
 
-export const testScenes_smoothCurve = Object.entries(inputs).map(([key, args]) => ({
-  key: key,
-  createScene: debugScene.create(() => {
+export const testScenes_smoothCurve = debugScene.create({
+  name: `smoothCurve`,
+  inputs,
+  getPoints: (input) => {
     const slotSize = 0.1;
-    const result = createSmoothCurve(args);
+    const result = createSmoothCurve(input);
     const count = Math.floor(result.totalSegmentLength / (slotSize * 1.8));
 
     return {
@@ -45,7 +46,7 @@ export const testScenes_smoothCurve = Object.entries(inputs).map(([key, args]) =
             scale: [slotSize, slotSize, slotSize] as [number, number, number],
           };
         }),
-        ...args.path.map((x) => {
+        ...input.path.map((x) => {
           return {
             position: x,
             color: 0xff0000,
@@ -54,5 +55,5 @@ export const testScenes_smoothCurve = Object.entries(inputs).map(([key, args]) =
         }),
       ],
     };
-  }),
-}));
+  },
+});

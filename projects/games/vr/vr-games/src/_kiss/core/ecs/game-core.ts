@@ -5,11 +5,12 @@ import { GameCore } from '../worker/types';
 import { wogger } from '../worker/wogger';
 import { createAudioService } from './audio-service';
 import { createBeatService } from './beat-service';
-import { ComponentFactoryGlobals, createComponentFactories } from './components/_components';
+import { ComponentFactoryGlobals, createComponentFactories, Ecs } from './components/_components';
 import { EntityInstance_Collider } from './components/collider';
 import { createMusicSequenceLoader } from './components/music-sequence-loader';
 import { EntityInstance_RigidBody } from './components/rigid-body';
-import { createScene, createSceneState } from './ecs-engine';
+import { AbstractEcs } from './components/utils/_debug-scene';
+import { createScene, createSceneState, EntityDescUntyped } from './ecs-engine';
 import { createEntityFactory } from './ecs-entity-factory';
 import { createGraphicsService } from './graphics-service';
 import { createPhysicsService } from './physics-service';
@@ -44,7 +45,7 @@ export const createGameCore = async (
   const sceneKey = params.find((x) => x.key === `scene`)?.value;
   const sceneCreator = scenes.find((x) => x.key === sceneKey) ?? scenes[0];
   wogger.log(`sceneKey`, { sceneKey, params });
-  const root = sceneCreator.createScene(ecs);
+  const root = sceneCreator.createScene(ecs as Ecs & AbstractEcs, params) as EntityDescUntyped;
 
   const scene = createScene(root, componentFactories, global);
 
