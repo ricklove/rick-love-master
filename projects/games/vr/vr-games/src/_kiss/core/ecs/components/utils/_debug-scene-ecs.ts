@@ -113,24 +113,34 @@ const createDebugScene = (getResult: () => DebugSceneResult) => (ecs: Ecs) => {
         const yStart = 1.2;
         const ySize = -0.015;
 
+        let intervalId = undefined as undefined | ReturnType<typeof setInterval>;
+
         return actionPrefab(ecs, {
           name: name,
           position: [-0.2, yStart + ySize * i, -0.5],
           callback: (entityInstance) => {
-            callback();
-            const dotEntityInstances = entityInstance.parent.children.filter((x) => x.desc.name.startsWith(`dot-`));
-            const points = getPoints();
-            dotEntityInstances.forEach((x, i) => {
-              const p = points[i];
-              const eTransform = x as unknown as EntityInstance_Transform;
-              eTransform.transform.move(p.position);
+            // toggle on/off
+            if (intervalId) {
+              clearInterval(intervalId);
+              intervalId = undefined;
+              return;
+            }
+            intervalId = setInterval(() => {
+              callback();
+              const dotEntityInstances = entityInstance.parent.children.filter((x) => x.desc.name.startsWith(`dot-`));
+              const points = getPoints();
+              dotEntityInstances.forEach((x, i) => {
+                const p = points[i];
+                const eTransform = x as unknown as EntityInstance_Transform;
+                eTransform.transform.move(p.position);
 
-              // TODO: Update text
-              // const eText = x as unknown as EntityInstance;
-              // eText.shape.text = p.text;
-            });
+                // TODO: Update text
+                // const eText = x as unknown as EntityInstance;
+                // eText.shape.text = p.text;
+              });
 
-            console.log(`actionPrefab`, { p0: points[0].position[0], points, dotEntityInstances });
+              console.log(`actionPrefab`, { p0: points[0].position[0], points, dotEntityInstances });
+            }, 100);
           },
         });
       }),
