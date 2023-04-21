@@ -91,8 +91,8 @@ export const createMouseInputTracker = () => {
         }
       }
 
-      if (Date.now() > state.timeLastUpdate + 3000) {
-        // hide if no mouse activity for 3 seconds
+      if (Date.now() > state.timeLastUpdate + 500) {
+        // hide if no mouse activity for short time
         return { enabled: false as const };
       }
 
