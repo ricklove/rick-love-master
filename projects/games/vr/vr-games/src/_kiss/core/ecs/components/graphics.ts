@@ -2,7 +2,7 @@ import { createComponentFactory } from '../ecs-component-factory';
 import { GraphicsService } from '../graphics-service';
 import { Entity_ShapeBox } from './shape-box';
 import { Entity_ShapeSphere } from './shape-sphere';
-import { Entity_ShapeText } from './shape-text';
+import { Entity_ShapeText, EntityInstance_ShapeText } from './shape-text';
 import { Entity_Transform, EntityInstance_Transform } from './transform';
 
 export type Entity_Graphics = {
@@ -25,16 +25,21 @@ export type EntityInstance_Graphics = {
         color: number;
       };
     };
+    _text?: string;
   };
 };
 
 export type Entity_Shape = Entity_ShapeBox | Entity_ShapeSphere | Entity_ShapeText;
+export type EntityInstance_Shape =
+  // | EntityInstance_ShapeBox
+  // | EntityInstance_ShapeSphere
+  EntityInstance_ShapeText;
 
 export const graphicsComponentFactory = ({ graphicsService }: { graphicsService: GraphicsService }) =>
   createComponentFactory<
     Entity_Transform & Entity_Shape,
     Entity_Graphics,
-    EntityInstance_Transform,
+    EntityInstance_Transform & EntityInstance_Shape,
     EntityInstance_Graphics
   >()(() => {
     return {
@@ -104,6 +109,7 @@ export const graphicsComponentFactory = ({ graphicsService }: { graphicsService:
           _visibleTarget: entityInstance.desc.graphics.visible,
           _visibleActual: entityInstance.desc.graphics.visible,
           _colors: {},
+          _text: shapeDesc.kind === `text` ? shapeDesc.text : undefined,
           setColor,
         };
 
@@ -135,6 +141,11 @@ export const graphicsComponentFactory = ({ graphicsService }: { graphicsService:
         if (!entityInstance.graphics._visibleTarget) {
           return;
         }
+        if (entityInstance.desc.shape.kind === `text` && entityInstance.graphics._text !== entityInstance.shape.text) {
+          entityInstance.graphics._text = entityInstance.shape.text;
+          graphicsService.setText(entityInstance.graphics.id, entityInstance.shape.text);
+        }
+
         graphicsService.setTransform(
           entityInstance.graphics.id,
           entityInstance.transform.position,

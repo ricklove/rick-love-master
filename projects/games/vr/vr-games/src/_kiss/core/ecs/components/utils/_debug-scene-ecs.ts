@@ -2,6 +2,7 @@ import { EntityInstanceUntyped } from '../../ecs-engine';
 import { createHands } from '../../prefabs/hands';
 import { Ecs } from '../_components';
 import { EntityActionCode } from '../actions/parser';
+import { EntityInstance_ShapeText } from '../shape-text';
 import { EntityInstance_Transform } from '../transform';
 import { AbstractEntityDesc, debugScene, DebugSceneResult } from './_debug-scene';
 
@@ -134,9 +135,10 @@ const createDebugScene = (getResult: () => DebugSceneResult) => (ecs: Ecs) => {
                 const eTransform = x as unknown as EntityInstance_Transform;
                 eTransform.transform.move(p.position);
 
-                // TODO: Update text
-                // const eText = x as unknown as EntityInstance;
-                // eText.shape.text = p.text;
+                if (p.text) {
+                  const eText = x.children[0] as unknown as EntityInstance_ShapeText;
+                  eText?.shape.setText(p.text);
+                }
               });
 
               console.log(`actionPrefab`, { p0: points[0].position[0], points, dotEntityInstances });

@@ -15,20 +15,30 @@
 
 - [ ] Debug Menu
   - [ ] Can easily visualize anything
-  - [ ] Can easily create scenes to test small units
-  - [ ] Can navigate test scenes, search, reload
-    - [ ] compile goes directly back to last test scene
+    - [ ] debug.showPoint
+  - [x] Can easily create test scene to test small units
+    - [x] test scene can show points
+    - [x] test scene can show text
+    - [x] test scene can have actions
+      - [x] actions can modify point position
+      - [ ] actions can modify point visibility
+      - [ ] actions can modify point text
+  - [ ] Can navigate test scenes
+    - [x] can reload specific scene (set url)
+    - [x] compile goes directly back to last test scene
+    - [ ] Can view menu of scenes
+    - [ ] Can search menu of scenes
 
 ## Code Quality
 
-- [ ] No coupling of logic everything is flat Types, data, functions
-- [ ] Pure Functions
-  - [ ] All logic is in pure functions
-  - [ ] Functions have no state, dependencies, or side effects (only args and result)
-  - [ ] Functions have a single concern
+- [x] No coupling of logic everything is flat Types, data, functions
+- [x] Pure Functions setup
+  - [x] All logic in pure function
+  - [x] Functions have no state, dependencies, or side effects (only args and result)
+  - [x] Functions have a single concern
   - [ ] Functions are tested
-  - [ ] Functions are visualized
-  - [ ] Functions are efficient (no creating objects, a working state container is provided)
+  - [x] Functions are visualized
+  - [x] Functions are efficient (no creating objects, a working state container is provided)
 - [ ] Components/Systems are simple (no boilerplate, no logic, just a call to a function)
 
 ## Beat Saber

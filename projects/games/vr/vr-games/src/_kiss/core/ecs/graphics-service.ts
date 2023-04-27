@@ -21,6 +21,7 @@ export type GraphicsService = {
   removeObject: (id: number) => void;
   setVisible: (id: number, visible: boolean) => void;
   setTransform: (id: number, position: [number, number, number], quaternion: [number, number, number, number]) => void;
+  setText: (id: number, text: string) => void;
 };
 
 // Batch everything until requestUpdateMessage
@@ -47,6 +48,11 @@ export const createGraphicsService = (
   const objectsToAdd = [] as typeof allObjects;
   const objectsToDestroy = [] as {
     id: number;
+  }[];
+
+  const textsToUpdate = [] as {
+    id: number;
+    text: string;
   }[];
 
   const sendMessages = () => {
@@ -96,6 +102,16 @@ export const createGraphicsService = (
       objectsToAdd.length = 0;
     }
 
+    if (textsToUpdate.length) {
+      // wogger.log(`textsToUpdate`, { textsToUpdate });
+      postMessageFromWorker({
+        kind: `setTexts`,
+        texts: [...textsToUpdate],
+      });
+
+      textsToUpdate.length = 0;
+    }
+
     postMessageSceneObjectTransforms(
       allObjects.filter((x) => !x.destroyed && x.hasChanged),
       messageBufferPool,
@@ -140,6 +156,10 @@ export const createGraphicsService = (
       obj.quaternion.z = quaternion[2];
       obj.quaternion.w = quaternion[3];
       obj.hasChanged = true;
+    },
+    setText: (id, text) => {
+      // wogger.log(`GraphicsService.setText`, { textsToUpdate });
+      textsToUpdate.push({ id, text });
     },
   };
 };

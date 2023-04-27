@@ -12,6 +12,16 @@ import { readMessageSceneObjectTransforms } from './messages/messages/message-sc
 import { setupThree } from './three-setup';
 import { addTestScene, updateTestScene } from './three-test-scene';
 
+type TroikaText = THREE.Object3D & {
+  text: string;
+  fontSize: number;
+  position: { z: number };
+  color: number;
+  anchorX: string;
+  anchorY: string;
+  sync: () => void;
+};
+
 export const createGameEngine = (host: HTMLDivElement, workerRaw: Worker) => {
   // [MainLoop] Read input from web-xr
   // [MainLoop] Send data to [Worker]
@@ -51,6 +61,7 @@ export const createGameEngine = (host: HTMLDivElement, workerRaw: Worker) => {
     let updateObjectsArrayBuffer = undefined as undefined | ArrayBuffer;
     let loadMusicData = undefined as undefined | Extract<WorkerMessageFromWorker, { kind: `loadMusic` }>;
     let playMusicData = undefined as undefined | Extract<WorkerMessageFromWorker, { kind: `playMusic` }>;
+    let setTextsData = undefined as undefined | Extract<WorkerMessageFromWorker, { kind: `setTexts` }>;
 
     const musicLoader = createMusicSequenceLoader(`/ddr`);
     const _musicList = musicLoader.getSongs();
@@ -93,7 +104,7 @@ export const createGameEngine = (host: HTMLDivElement, workerRaw: Worker) => {
         data.texts?.forEach((o) => {
           const fontSize = o.fontSize;
 
-          const textObj = new Text();
+          const textObj = new Text() as TroikaText;
           textObj.text = o.text;
           textObj.fontSize = fontSize;
           textObj.position.z = 0;
@@ -117,8 +128,26 @@ export const createGameEngine = (host: HTMLDivElement, workerRaw: Worker) => {
 
         logger.log(`updateSceneFromData:addObjects Added objects to scene`, { data, objectMap });
       }
+      if (setTextsData) {
+        const data = setTextsData;
+        setTextsData = undefined;
+
+        data.texts.forEach((o) => {
+          const obj = objectMap[o.id] as THREE.Group;
+          const textObj = obj?.children[0] as TroikaText;
+
+          if (!textObj) {
+            return;
+          }
+
+          textObj.text = o.text;
+          textObj.sync();
+        });
+      }
       if (removeObjectsData) {
-        removeObjectsData.objectIds.forEach((id) => {
+        const data = removeObjectsData;
+        removeObjectsData = undefined;
+        data.objectIds.forEach((id) => {
           const object = objectMap[id];
           if (!object) {
             return;
@@ -165,7 +194,7 @@ export const createGameEngine = (host: HTMLDivElement, workerRaw: Worker) => {
         if (musicState[index]) {
           return musicState[index];
         }
-        musicState[index] = { loading: true } as typeof musicState[0];
+        musicState[index] = { loading: true } as (typeof musicState)[0];
         const songs = await musicLoader.getSongs();
         const songInfo = songs[index];
         if (!songInfo) {
@@ -270,7 +299,12 @@ export const createGameEngine = (host: HTMLDivElement, workerRaw: Worker) => {
         playMusicData = data;
         return;
       }
+      if (data.kind === `setTexts`) {
+        setTextsData = data;
+        return;
+      }
 
+      const _exhaustiveCheck: never = data;
       logger.error(`Unhandled message from [Worker]`, { e });
     };
 

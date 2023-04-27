@@ -82,6 +82,13 @@ export type WorkerMessageFromWorker =
   | {
       kind: `playMusic`;
       musicId: number;
+    }
+  | {
+      kind: `setTexts`;
+      texts: {
+        id: number;
+        text: string;
+      }[];
     };
 
 // export type WorkerMessageFromWorkerKind<TKind extends WorkerMessageFromWorker[`kind`]> = Extract<
