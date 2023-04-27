@@ -89,6 +89,10 @@ export type WorkerMessageFromWorker =
         id: number;
         text: string;
       }[];
+    }
+  | {
+      kind: `navigateToUrl`;
+      url: string;
     };
 
 // export type WorkerMessageFromWorkerKind<TKind extends WorkerMessageFromWorker[`kind`]> = Extract<

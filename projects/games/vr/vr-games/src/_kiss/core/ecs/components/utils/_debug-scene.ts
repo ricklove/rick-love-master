@@ -1,3 +1,5 @@
+import { wogger } from '../../../worker/wogger';
+
 export type AbstractEcs = { _type: `AbstractEcs` };
 export type AbstractEntityDesc = { _type: `AbstractEntityDesc` };
 export type DebugSceneResult = {
@@ -8,7 +10,10 @@ export type DebugSceneResult = {
     text?: string;
   }[];
   actions?: {
-    [name: string]: () => void;
+    [name: string]: {
+      execute: () => void;
+      intervalTimeMs?: number;
+    };
   };
 };
 type DebugSceneCreateProvider = (getResult: () => DebugSceneResult) => (ecs: AbstractEcs) => AbstractEntityDesc;
@@ -29,14 +34,47 @@ export const debugScene = {
   }) => {
     return {
       key: name,
-      createScene: (runtimeArgs: AbstractEcs, params: { key: string; value: string }[]) => {
+      createScene: (
+        runtimeArgs: AbstractEcs,
+        params: { key: string; value: string }[],
+        onParamsChanged: (params: { key: string; value: string }[]) => void,
+      ) => {
         if (debugScene._create === undefined) {
           throw new Error(`debugScene not setup`);
         }
-        const inputKey = params.find((x) => x.key === `input`)?.value ?? 0;
+        const inputKey = params.find((x) => x.key === `input`)?.value;
         const inputsList = Object.values(inputs);
-        const input = inputs[inputKey] ?? inputsList[Number(inputKey)] ?? inputsList[0];
+        const input = inputs[inputKey ?? `--empty--`] ?? inputsList[Number(inputKey)];
+
+        wogger.log(`debugScene.createScene`, { name, inputKey, inputsList, input });
+
+        if (!input && inputsList.length) {
+          return debugScene._create(() => ({
+            getPoints: () => [],
+            actions: {
+              _back: { execute: () => onParamsChanged([]) },
+              ...Object.fromEntries(
+                Object.entries(inputs).map(([key, value]) => [
+                  key,
+                  {
+                    execute: () => {
+                      onParamsChanged([
+                        { key: `scene`, value: name },
+                        { key: `input`, value: key },
+                      ]);
+                    },
+                  },
+                ]),
+              ),
+            },
+          }))(runtimeArgs);
+        }
+
         const result = getResult(input);
+        result.actions = {
+          _back: { execute: () => onParamsChanged([{ key: `scene`, value: name }]) },
+          ...(result.actions ?? {}),
+        };
         return debugScene._create(() => result)(runtimeArgs);
       },
     };

@@ -110,7 +110,7 @@ const createDebugScene = (getResult: () => DebugSceneResult) => (ecs: Ecs) => {
     .addChild(inputs)
     .addChildren(pointEntities)
     .addChildren(
-      actionsList.map(([name, callback], i) => {
+      actionsList.map(([name, action], i) => {
         const yStart = 1.2;
         const ySize = -0.015;
 
@@ -120,6 +120,12 @@ const createDebugScene = (getResult: () => DebugSceneResult) => (ecs: Ecs) => {
           name: name,
           position: [-0.2, yStart + ySize * i, -0.5],
           callback: (entityInstance) => {
+            const intervalTimeMs = action.intervalTimeMs;
+            if (!intervalTimeMs) {
+              action.execute();
+              return;
+            }
+
             // toggle on/off
             if (intervalId) {
               clearInterval(intervalId);
@@ -127,7 +133,7 @@ const createDebugScene = (getResult: () => DebugSceneResult) => (ecs: Ecs) => {
               return;
             }
             intervalId = setInterval(() => {
-              callback();
+              action.execute();
               const dotEntityInstances = entityInstance.parent.children.filter((x) => x.desc.name.startsWith(`dot-`));
               const points = getPoints();
               dotEntityInstances.forEach((x, i) => {
@@ -142,7 +148,7 @@ const createDebugScene = (getResult: () => DebugSceneResult) => (ecs: Ecs) => {
               });
 
               console.log(`actionPrefab`, { p0: points[0].position[0], points, dotEntityInstances });
-            }, 100);
+            }, intervalTimeMs);
           },
         });
       }),

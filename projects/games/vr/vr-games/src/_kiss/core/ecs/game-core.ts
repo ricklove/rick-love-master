@@ -1,5 +1,6 @@
 import RAPIER, { EventQueue } from '@dimforge/rapier3d-compat';
 import { createGamePlayerInputs } from '../input/game-player-inputs';
+import { postMessageFromWorker } from '../messages/message';
 import { MessageBufferPool } from '../messages/message-buffer';
 import { GameCore } from '../worker/types';
 import { wogger } from '../worker/wogger';
@@ -45,7 +46,9 @@ export const createGameCore = async (
   const sceneKey = params.find((x) => x.key === `scene`)?.value;
   const sceneCreator = scenes.find((x) => x.key.toLowerCase() === String(sceneKey).toLowerCase()) ?? scenes[0];
   wogger.log(`sceneKey`, { sceneKey, params, sceneCreator, scenes });
-  const root = sceneCreator.createScene(ecs as Ecs & AbstractEcs, params) as EntityDescUntyped;
+  const root = sceneCreator.createScene(ecs as Ecs & AbstractEcs, params, (newParams) => {
+    postMessageFromWorker({ kind: `navigateToUrl`, url: `?${newParams.map((x) => `${x.key}=${x.value}`).join(`&`)}` });
+  }) as EntityDescUntyped;
 
   const scene = createScene(root, componentFactories, global);
 

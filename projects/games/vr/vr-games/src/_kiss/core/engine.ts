@@ -303,6 +303,13 @@ export const createGameEngine = (host: HTMLDivElement, workerRaw: Worker) => {
         setTextsData = data;
         return;
       }
+      if (data.kind === `navigateToUrl`) {
+        const url = data.url;
+        setTimeout(() => {
+          window.location.href = url;
+        }, 0);
+        return;
+      }
 
       const _exhaustiveCheck: never = data;
       logger.error(`Unhandled message from [Worker]`, { e });

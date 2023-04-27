@@ -9,5 +9,9 @@ export const debugScenes = [
   testSceneVirtualList,
 ] satisfies {
   key: string;
-  createScene: (ecs: AbstractEcs, params: { key: string; value: string }[]) => AbstractEntityDesc;
+  createScene: (
+    ecs: AbstractEcs,
+    params: { key: string; value: string }[],
+    onParamsChanged: (params: { key: string; value: string }[]) => void,
+  ) => AbstractEntityDesc;
 }[];

@@ -28,7 +28,7 @@ const inputs: { [name: string]: VirtualListArgs<string> } = {
   },
   wavy: {
     slotRadius: 0.05,
-    gap: 0.1,
+    gap: 0.16,
     items: [...new Array(10)].map((_, i) => `${i}`),
     path: [
       [-2, 0, -5],
@@ -59,14 +59,14 @@ export const testSceneVirtualList = debugScene.create({
         }),
       ],
       actions: {
-        forward1: () => result.scroll(1),
-        forwardSmall: () => result.scroll(0.03),
-        forwardMedium: () => result.scroll(0.3),
-        forwardLarge: () => result.scroll(10),
-        backward1: () => result.scroll(-1),
-        backwardSmall: () => result.scroll(-0.03),
-        backwardMedium: () => result.scroll(-0.3),
-        backwardLarge: () => result.scroll(-10),
+        forward1: { intervalTimeMs: 100, execute: () => result.scroll(1) },
+        forwardSmall: { intervalTimeMs: 100, execute: () => result.scroll(0.03) },
+        forwardMedium: { intervalTimeMs: 100, execute: () => result.scroll(0.3) },
+        forwardLarge: { intervalTimeMs: 100, execute: () => result.scroll(10) },
+        backward1: { intervalTimeMs: 100, execute: () => result.scroll(-1) },
+        backwardSmall: { intervalTimeMs: 100, execute: () => result.scroll(-0.03) },
+        backwardMedium: { intervalTimeMs: 100, execute: () => result.scroll(-0.3) },
+        backwardLarge: { intervalTimeMs: 100, execute: () => result.scroll(-10) },
       },
     };
   },
