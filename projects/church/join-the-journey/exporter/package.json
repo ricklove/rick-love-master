@@ -10,15 +10,17 @@
   },
   "dependencies": {
     "html5parser": "2.0.2",
-    "@ricklove/church-join-the-journey-common": "*",
-    "@ricklove/upload-api-common-client": "*",
-    "@ricklove/utils-core": "*",
-    "@ricklove/utils-fetch-node": "*",
+    "@ricklove/church-join-the-journey-common": "workspace:*",
+    "@ricklove/upload-api-common-client": "workspace:*",
+    "@ricklove/utils-core": "workspace:*",
+    "@ricklove/utils-fetch-node": "workspace:*",
     "sharp": "0.30.7"
   },
   "devDependencies": {
-    "@ricklove/config-lib-rig": "*",
+    "@ricklove/config-lib-rig": "workspace:*",
+    "@types/node": "12.12.6",
     "@types/sharp": "0.30.5",
-    "ts-node": "~10.9.1"
+    "ts-node": "~10.9.1",
+    "typescript": "~4.9.5"
   }
 }

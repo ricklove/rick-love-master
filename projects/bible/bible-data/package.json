@@ -8,9 +8,9 @@
     "build:watch": "heft build"
   },
   "dependencies": {
-    "@ricklove/bible-types": "*"
+    "@ricklove/bible-types": "workspace:*"
   },
   "devDependencies": {
-    "@ricklove/config-lib-rig": "*"
+    "@ricklove/config-lib-rig": "workspace:*"
   }
 }

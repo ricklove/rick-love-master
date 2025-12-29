@@ -8,15 +8,15 @@
     "build:watch": "heft build"
   },
   "dependencies": {
-    "@ricklove/doodle-client": "*",
-    "@ricklove/utils-core": "*",
-    "@ricklove/utils-react": "*",
-    "@ricklove/user-data-service": "*",
-    "@ricklove/react-native-lite": "*",
-    "react": "17.0.2"
+    "@ricklove/doodle-client": "workspace:*",
+    "@ricklove/utils-core": "workspace:*",
+    "@ricklove/utils-react": "workspace:*",
+    "@ricklove/user-data-service": "workspace:*",
+    "@ricklove/react-native-lite": "workspace:*",
+    "react": "18.2.0"
   },
   "devDependencies": {
-    "@ricklove/config-lib-rig": "*",
-    "@types/react": "~17.0.19"
+    "@ricklove/config-lib-rig": "workspace:*",
+    "@types/react": "18.0.14"
   }
 }

@@ -1,4 +1,4 @@
-export const getValuesAsItems = <T>(obj: T): T[keyof T][] => {
+export const getValuesAsItems = <T extends Record<string, unknown>>(obj: T): T[keyof T][] => {
   return Object.keys(obj)
     .map((k) => k as keyof typeof obj)
     .map((k) => obj[k])
@@ -14,6 +14,7 @@ export const toKeyValueObject = <T>(items: { key: string; value: T }[]): { [key:
 };
 
 export const toMap = <T>(items: { key: string; value: T }[]): Map<string, T> => {
+
   const v = new Map(items.map((x) => [x.key, x.value]));
   return v;
 };

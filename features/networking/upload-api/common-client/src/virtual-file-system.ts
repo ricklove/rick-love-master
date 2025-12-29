@@ -38,7 +38,7 @@ export const createUploadApiVirtualFileSystem = (
       uploadApiUrl: config.uploadApiUrl,
       uploadUrlPrefix: `./fileSystemIndex.json`,
       currentUploadUrl: config.fileSystemIndexUrl,
-      onChangeUploadUrl: async (fileSystemIndexUrl) => {
+      onChangeUploadUrl: async (_fileSystemIndexUrl) => {
         // console.log(`fileSystemIndexUrl changed`, { fileSystemIndexUrl });
       },
       kind: `json`,
@@ -121,7 +121,7 @@ export const createUploadApiVirtualFileSystem = (
         uploadApiUrl: config.uploadApiUrl,
         uploadUrlPrefix: relativePath,
         currentUploadUrl: f.accessUrl,
-        onChangeUploadUrl: async (fileSystemIndexUrl) => {
+        onChangeUploadUrl: async (_fileSystemIndexUrl) => {
           // console.log(`fileSystemIndexUrl changed`, { fileSystemIndexUrl });
         },
         kind,

@@ -1,0 +1,13 @@
+{
+  "name": "@ricklove/study-subjects",
+  "version": "1.0.0",
+  "type": "module",
+  "main": "./lib/index.js",
+  "scripts": {
+    "build": "heft test --clean",
+    "build:watch": "heft build"
+  },
+  "devDependencies": {
+    "@ricklove/config-lib-rig": "workspace:*"
+  }
+}

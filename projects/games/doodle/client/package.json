@@ -8,20 +8,20 @@
     "build:watch": "heft build"
   },
   "dependencies": {
-    "@ricklove/doodle-common": "*",
-    "@ricklove/react-controls": "*",
-    "@ricklove/react-native-lite": "*",
-    "@ricklove/upload-api-client": "*",
-    "@ricklove/web-mesh": "*",
-    "@ricklove/websockets-api-common": "*",
-    "@ricklove/websockets-api-client": "*",
-    "@ricklove/utils-core": "*",
-    "@ricklove/utils-react": "*",
-    "@ricklove/utils-web": "*",
-    "react": "17.0.2"
+    "@ricklove/doodle-common": "workspace:*",
+    "@ricklove/react-controls": "workspace:*",
+    "@ricklove/react-native-lite": "workspace:*",
+    "@ricklove/upload-api-client": "workspace:*",
+    "@ricklove/web-mesh": "workspace:*",
+    "@ricklove/websockets-api-common": "workspace:*",
+    "@ricklove/websockets-api-client": "workspace:*",
+    "@ricklove/utils-core": "workspace:*",
+    "@ricklove/utils-react": "workspace:*",
+    "@ricklove/utils-web": "workspace:*",
+    "react": "18.2.0"
   },
   "devDependencies": {
-    "@ricklove/config-lib-rig": "*",
-    "@types/react": "~17.0.19"
+    "@ricklove/config-lib-rig": "workspace:*",
+    "@types/react": "18.0.14"
   }
 }

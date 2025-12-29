@@ -9,15 +9,15 @@
   },
   "dependencies": {
     "@emotion/react": "~11.4.1",
-    "@ricklove/react-controls": "*",
-    "@ricklove/react-native-lite": "*",
-    "@ricklove/utils-core": "*",
-    "@ricklove/utils-react": "*",
-    "@ricklove/websockets-api-client": "*",
-    "react": "17.0.2"
+    "@ricklove/react-controls": "workspace:*",
+    "@ricklove/react-native-lite": "workspace:*",
+    "@ricklove/utils-core": "workspace:*",
+    "@ricklove/utils-react": "workspace:*",
+    "@ricklove/websockets-api-client": "workspace:*",
+    "react": "18.2.0"
   },
   "devDependencies": {
-    "@ricklove/config-lib-rig": "*",
-    "@types/react": "~17.0.19"
+    "@ricklove/config-lib-rig": "workspace:*",
+    "@types/react": "18.0.14"
   }
 }

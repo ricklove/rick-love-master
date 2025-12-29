@@ -9,12 +9,12 @@
   },
   "dependencies": {
     "@emotion/react": "~11.4.1",
-    "@ricklove/dork": "*",
-    "@ricklove/utils-core": "*",
-    "react": "17.0.2"
+    "@ricklove/dork": "workspace:*",
+    "@ricklove/utils-core": "workspace:*",
+    "react": "18.2.0"
   },
   "devDependencies": {
-    "@ricklove/config-lib-rig": "*",
-    "@types/react": "~17.0.19"
+    "@ricklove/config-lib-rig": "workspace:*",
+    "@types/react": "18.0.14"
   }
 }

@@ -7,12 +7,12 @@
     "build:watch": ""
   },
   "dependencies": {
-    "@ricklove/config-eslint": "*",
+    "@ricklove/config-eslint": "workspace:*",
     "@rushstack/eslint-config": "^2.4.0",
-    "@rushstack/heft": "^0.37.0",
-    "@rushstack/heft-web-rig": "^0.4.6",
-    "@types/heft-jest": "1.0.2",
+    "@rushstack/heft": "^0.49.7",
+    "@rushstack/heft-web-rig": "^0.14.5",
+    "@types/heft-jest": "1.0.3",
     "eslint": "~7.32.0",
-    "typescript": "~4.3.5"
+    "typescript": "~4.9.5"
   }
 }

@@ -8,14 +8,14 @@
     "build:watch": "heft build"
   },
   "dependencies": {
-    "@ricklove/websockets-api-common": "*",
-    "@ricklove/utils-core": "*",
-    "@ricklove/utils-node": "*",
+    "@ricklove/websockets-api-common": "workspace:*",
+    "@ricklove/utils-core": "workspace:*",
+    "@ricklove/utils-node": "workspace:*",
     "aws-sdk": "^2.749.0",
     "uuid": "^8.3.0"
   },
   "devDependencies": {
-    "@ricklove/config-lib-rig": "*",
+    "@ricklove/config-lib-rig": "workspace:*",
     "@types/aws-sdk": "^2.7.0",
     "@types/node": "12.12.6",
     "@types/uuid": "^8.3.0"

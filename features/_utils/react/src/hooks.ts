@@ -75,8 +75,9 @@ export function useAsyncWorker() {
             throw error;
           }
         }
-      } catch (error) {
+      } catch (err) {
         // console.log(`doWork catch`, { err: error });
+        const error = err as Error;
 
         if (!mounted.current) {
           // console.warn(`doWork Error when not Mounted`, { err: error });

@@ -52,10 +52,15 @@ export const GamesListPage = (_props: {}) => {
       />
       {/* <HostComponentAsync component={componentGameUtils.progressGame} /> */}
       {!game && (
-        <div style={{ margin: 16 }}>
+        <div style={{ margin: 16, display: `flex`, flexDirection: `column`, flexWrap: `wrap`, maxHeight: `80vh` }}>
           <div>Games</div>
           {gamesList.map((x) => (
-            <div key={x.name} className={`link`} style={{ padding: 4 }} onClick={(e) => openLinkInSameView(e, x.name)}>
+            <div
+              key={x.name}
+              className={`link`}
+              style={{ padding: 8, fontSize: `2em` }}
+              onClick={(e) => openLinkInSameView(e, x.name)}
+            >
               <span>🎮 {x.name}</span>
             </div>
           ))}

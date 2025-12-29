@@ -14,8 +14,12 @@
         "--- lessons": "// Lesson server is needed for editing lessons (in addition to web)",
         "lessons:serve": "cd ./projects/code-training/lesson-editor-local-server && npm run serve",
         "lessons:edit": "start http://localhost:3042/lessons/editor",
+        "--- vr": "// Run these command in separate terminals",
+        "vr:watch": "rush build:watch --to-except vr-test-site",
+        "vr:start": "cd ./projects/games/vr/vr-test && npm run dev",
         "--- generation TEMP Scripts": "",
-        "gen:project": "npm --prefix tools/rush-packages run cli -- --d projects/bible/bible-types --p @ricklove/bible-types --t lib",
+        "gen:project": "npm --prefix tools/rush-packages run cli -- --d projects/study/subjects --p @ricklove/study-subjects --t lib",
+        "gen:node": "npm --prefix tools/rush-packages run cli -- --d projects/games/vr/game-tools-cli --p @ricklove/game-tools-cli --t node",
         "gen:site": "cd projects/bible && npm create vite@latest bible-site -- --template react-ts",
         "--- projects": "",
         "jointhejourney:extract": "cd projects/church/join-the-journey/exporter && npm run cli",
@@ -23,6 +27,8 @@
         "jointhejourney:deploy": "cd projects/church/join-the-journey/join-the-journey-site && npm run deploy",
         "bible:dev": "cd projects/bible/bible-site && npm run dev",
         "bible:deploy": "cd projects/bible/bible-site && npm run deploy",
+        "___ utils": "",
+        "patch": "rush-pnpm patch",
         "---": ""
     }
 }

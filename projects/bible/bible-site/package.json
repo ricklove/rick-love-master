@@ -13,17 +13,17 @@
     "// build:watch": "heft build"
   },
   "dependencies": {
-    "react": "17.0.2",
-    "react-dom": "17.0.2",
-    "@ricklove/bible-components": "*"
+    "react": "18.2.0",
+    "react-dom": "18.2.0",
+    "@ricklove/bible-components": "workspace:*"
   },
   "devDependencies": {
-    "@types/react": "~17.0.19",
-    "@types/react-dom": "~17.0.5",
+    "@types/react": "18.0.14",
+    "@types/react-dom": "18.0.5",
     "@vitejs/plugin-react": "^2.0.1",
     "copyfiles": "~2.4.1",
     "rimraf": "~3.0.2",
-    "typescript": "~4.3.5",
+    "typescript": "~4.9.5",
     "vite": "^3.0.7"
   }
 }

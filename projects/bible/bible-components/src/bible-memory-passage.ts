@@ -15,6 +15,7 @@ export const createMemoryPassagesFromBible = ({
     const sectionItems: MemoryPassage[] = sectionsToMemorize.map((s) => ({
       title: `${s.passageReference}`,
       //title: `${s.passageReference} - ${s.header}`,
+      header: `${s.passageReference} - ${s.header}`,
       text: `${s.passageReference} - ${s.header}\n\n${s.verses.map((v) => v.text).join(``)}`,
       lang: `en-US`,
       passageRange: {

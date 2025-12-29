@@ -11,12 +11,12 @@
     "---@ricklove/nft-art-server": "*"
   },
   "dependencies": {
-    "@ricklove/doodle-server": "*",
-    "@ricklove/nft-api-server": "*",
-    "@ricklove/upload-api-server": "*",
-    "@ricklove/websockets-api-server": "*",
-    "@ricklove/utils-core": "*",
-    "@ricklove/utils-files": "*",
+    "@ricklove/doodle-server": "workspace:*",
+    "@ricklove/nft-api-server": "workspace:*",
+    "@ricklove/upload-api-server": "workspace:*",
+    "@ricklove/websockets-api-server": "workspace:*",
+    "@ricklove/utils-core": "workspace:*",
+    "@ricklove/utils-files": "workspace:*",
     "@babel/core": "^7.0.0",
     "@babel/polyfill": "^7.11.5",
     "aws-lambda": "^1.0.6",
@@ -27,10 +27,10 @@
     "@rollup/plugin-typescript": "^8.3.4",
     "ts-node": "~10.9.1",
     "tslib": "2.4.0",
-    "typescript": "~4.3.5"
+    "typescript": "~4.9.5"
   },
   "devDependencies": {
-    "@ricklove/config-lib-rig": "*",
+    "@ricklove/config-lib-rig": "workspace:*",
     "@types/node": "12.12.6",
     "@types/aws-lambda": "^8.10.62",
     "@types/glob": "^7.1.3"

@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
-import { View, Text, TouchableOpacity, Platform } from '@ricklove/react-native-lite';
-import { ProblemService } from '../problems/problems-service';
+import { Platform, Text, TouchableOpacity, View } from '@ricklove/react-native-lite';
 
 const subjectStyles = {
   container: {

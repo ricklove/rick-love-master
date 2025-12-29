@@ -11,8 +11,8 @@
     "node-fetch": "^3.2.10"
   },
   "devDependencies": {
-    "@ricklove/config-lib-rig": "*",
-    "@ricklove/utils-core": "*",
+    "@ricklove/config-lib-rig": "workspace:*",
+    "@ricklove/utils-core": "workspace:*",
     "@types/node-fetch": "^2.6.2"
   }
 }

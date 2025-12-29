@@ -1,5 +1,5 @@
-import loadable, { DefaultComponent } from '@loadable/component';
 import { useRef, useState } from 'react';
+import loadable, { DefaultComponent } from '@loadable/component';
 
 const loadComponent = async <T>(loadFn: (props: T) => Promise<DefaultComponent<T>>) => {
   const result = loadable(loadFn);
@@ -21,7 +21,7 @@ export const useLoadable = <T>(loadFn: (props: T) => Promise<DefaultComponent<T>
 
     loadState.current = `loading`;
     const result = await loadComponent(loadFn);
-    setValue({ LoadedComponent: result.LoadedComponent });
+    setValue({ LoadedComponent: result.LoadedComponent as React.ComponentType<T> });
     // eslint-disable-next-line require-atomic-updates
     loadState.current = `loaded`;
   };

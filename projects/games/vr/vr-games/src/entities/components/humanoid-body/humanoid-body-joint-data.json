@@ -1,0 +1,352 @@
+{
+  "id": "layer3",
+  "label": "joints",
+  "style": "opacity:0.552846",
+  "groupmode": "layer",
+  "circle": [
+    {
+      "style": "opacity:1;fill:#000000;fill-opacity:1;stroke:none;stroke-width:10.5833;stroke-linecap:round;stroke-linejoin:round;paint-order:stroke markers fill;stop-color:#000000",
+      "id": "path1462",
+      "cx": "21.194036",
+      "cy": "-43.232384",
+      "r": "0.5",
+      "label": "pinky-finger-tip"
+    },
+    {
+      "style": "opacity:1;fill:#000000;fill-opacity:1;stroke:none;stroke-width:10.5833;stroke-linecap:round;stroke-linejoin:round;paint-order:stroke markers fill;stop-color:#000000",
+      "id": "circle1560",
+      "cx": "21.046127",
+      "cy": "-43.811691",
+      "r": "0.5",
+      "label": "pinky-finger-phalanx-distal"
+    },
+    {
+      "style": "opacity:1;fill:#000000;fill-opacity:1;stroke:none;stroke-width:10.5833;stroke-linecap:round;stroke-linejoin:round;paint-order:stroke markers fill;stop-color:#000000",
+      "id": "circle1562",
+      "cx": "20.750311",
+      "cy": "-45.019611",
+      "r": "0.5",
+      "label": "pinky-finger-phalanx-intermediate"
+    },
+    {
+      "style": "opacity:1;fill:#000000;fill-opacity:1;stroke:none;stroke-width:10.5833;stroke-linecap:round;stroke-linejoin:round;paint-order:stroke markers fill;stop-color:#000000",
+      "id": "circle1564",
+      "cx": "20.49147",
+      "cy": "-46.646603",
+      "r": "0.5",
+      "label": "pinky-finger-phalanx-proximal"
+    },
+    {
+      "style": "opacity:1;fill:#000000;fill-opacity:1;stroke:none;stroke-width:10.5833;stroke-linecap:round;stroke-linejoin:round;paint-order:stroke markers fill;stop-color:#000000",
+      "id": "circle1588",
+      "cx": "20.516123",
+      "cy": "-49.259647",
+      "r": "0.5",
+      "label": "pinky-finger-metacarpal"
+    },
+    {
+      "style": "opacity:1;fill:#000000;fill-opacity:1;stroke:none;stroke-width:10.5833;stroke-linecap:round;stroke-linejoin:round;paint-order:stroke markers fill;stop-color:#000000",
+      "id": "circle1544",
+      "cx": "22.525211",
+      "cy": "-42.307957",
+      "r": "0.5",
+      "label": "ring-finger-tip"
+    },
+    {
+      "style": "opacity:1;fill:#000000;fill-opacity:1;stroke:none;stroke-width:10.5833;stroke-linecap:round;stroke-linejoin:round;paint-order:stroke markers fill;stop-color:#000000",
+      "id": "circle1558",
+      "cx": "22.352652",
+      "cy": "-43.059822",
+      "r": "0.5",
+      "label": "ring-finger-phalanx-distal"
+    },
+    {
+      "style": "opacity:1;fill:#000000;fill-opacity:1;stroke:none;stroke-width:10.5833;stroke-linecap:round;stroke-linejoin:round;paint-order:stroke markers fill;stop-color:#000000",
+      "id": "circle1566",
+      "cx": "21.982882",
+      "cy": "-44.588207",
+      "r": "0.5",
+      "label": "ring-finger-phalanx-intermediate"
+    },
+    {
+      "style": "opacity:1;fill:#000000;fill-opacity:1;stroke:none;stroke-width:10.5833;stroke-linecap:round;stroke-linejoin:round;paint-order:stroke markers fill;stop-color:#000000",
+      "id": "circle1568",
+      "cx": "21.588459",
+      "cy": "-46.511017",
+      "r": "0.5",
+      "label": "ring-finger-phalanx-proximal"
+    },
+    {
+      "style": "opacity:1;fill:#000000;fill-opacity:1;stroke:none;stroke-width:10.5833;stroke-linecap:round;stroke-linejoin:round;paint-order:stroke markers fill;stop-color:#000000",
+      "id": "circle1586",
+      "cx": "21.181711",
+      "cy": "-49.124065",
+      "r": "0.5",
+      "label": "ring-finger-metacarpal"
+    },
+    {
+      "style": "opacity:1;fill:#000000;fill-opacity:1;stroke:none;stroke-width:10.5833;stroke-linecap:round;stroke-linejoin:round;paint-order:stroke markers fill;stop-color:#000000",
+      "id": "circle1546",
+      "cx": "23.979643",
+      "cy": "-42.036789",
+      "r": "0.5",
+      "label": "middle-finger-tip"
+    },
+    {
+      "style": "opacity:1;fill:#000000;fill-opacity:1;stroke:none;stroke-width:10.5833;stroke-linecap:round;stroke-linejoin:round;paint-order:stroke markers fill;stop-color:#000000",
+      "id": "circle1556",
+      "cx": "23.733128",
+      "cy": "-42.813313",
+      "r": "0.5",
+      "label": "middle-finger-phalanx-distal"
+    },
+    {
+      "style": "opacity:1;fill:#000000;fill-opacity:1;stroke:none;stroke-width:10.5833;stroke-linecap:round;stroke-linejoin:round;paint-order:stroke markers fill;stop-color:#000000",
+      "id": "circle1572",
+      "cx": "23.289406",
+      "cy": "-44.415649",
+      "r": "0.5",
+      "label": "middle-finger-phalanx-intermediate"
+    },
+    {
+      "style": "opacity:1;fill:#000000;fill-opacity:1;stroke:none;stroke-width:10.5833;stroke-linecap:round;stroke-linejoin:round;paint-order:stroke markers fill;stop-color:#000000",
+      "id": "circle1570",
+      "cx": "22.722424",
+      "cy": "-46.449387",
+      "r": "0.5",
+      "label": "middle-finger-phalanx-proximal"
+    },
+    {
+      "style": "opacity:1;fill:#000000;fill-opacity:1;stroke:none;stroke-width:10.5833;stroke-linecap:round;stroke-linejoin:round;paint-order:stroke markers fill;stop-color:#000000",
+      "id": "circle1584",
+      "cx": "21.908926",
+      "cy": "-49.333603",
+      "r": "0.5",
+      "label": "middle-finger-metacarpal"
+    },
+    {
+      "style": "opacity:1;fill:#000000;fill-opacity:1;stroke:none;stroke-width:10.5833;stroke-linecap:round;stroke-linejoin:round;paint-order:stroke markers fill;stop-color:#000000",
+      "id": "circle1548",
+      "cx": "25.606634",
+      "cy": "-42.751682",
+      "r": "0.5",
+      "label": "index-finger-tip"
+    },
+    {
+      "style": "opacity:1;fill:#000000;fill-opacity:1;stroke:none;stroke-width:10.5833;stroke-linecap:round;stroke-linejoin:round;paint-order:stroke markers fill;stop-color:#000000",
+      "id": "circle1554",
+      "cx": "25.27384",
+      "cy": "-43.713085",
+      "r": "0.5",
+      "label": "index-finger-phalanx-distal"
+    },
+    {
+      "style": "opacity:1;fill:#000000;fill-opacity:1;stroke:none;stroke-width:10.5833;stroke-linecap:round;stroke-linejoin:round;paint-order:stroke markers fill;stop-color:#000000",
+      "id": "circle1576",
+      "cx": "24.743837",
+      "cy": "-44.957981",
+      "r": "0.5",
+      "label": "index-finger-phalanx-intermediate"
+    },
+    {
+      "style": "opacity:1;fill:#000000;fill-opacity:1;stroke:none;stroke-width:10.5833;stroke-linecap:round;stroke-linejoin:round;paint-order:stroke markers fill;stop-color:#000000",
+      "id": "circle1578",
+      "cx": "23.99197",
+      "cy": "-46.85614",
+      "r": "0.5",
+      "label": "index-finger-phalanx-proximal"
+    },
+    {
+      "style": "opacity:1;fill:#000000;fill-opacity:1;stroke:none;stroke-width:10.5833;stroke-linecap:round;stroke-linejoin:round;paint-order:stroke markers fill;stop-color:#000000",
+      "id": "circle1582",
+      "cx": "22.722424",
+      "cy": "-49.481514",
+      "r": "0.5",
+      "label": "index-finger-metacarpal"
+    },
+    {
+      "style": "opacity:1;fill:#000000;fill-opacity:1;stroke:none;stroke-width:10.5833;stroke-linecap:round;stroke-linejoin:round;paint-order:stroke markers fill;stop-color:#000000",
+      "id": "circle1550",
+      "cx": "27.159672",
+      "cy": "-47.521729",
+      "r": "0.5",
+      "label": "thumb-tip"
+    },
+    {
+      "style": "opacity:1;fill:#000000;fill-opacity:1;stroke:none;stroke-width:10.5833;stroke-linecap:round;stroke-linejoin:round;paint-order:stroke markers fill;stop-color:#000000",
+      "id": "circle1552",
+      "cx": "26.333851",
+      "cy": "-48.187317",
+      "r": "0.5",
+      "label": "thumb-phalanx-distal"
+    },
+    {
+      "style": "opacity:1;fill:#000000;fill-opacity:1;stroke:none;stroke-width:10.5833;stroke-linecap:round;stroke-linejoin:round;paint-order:stroke markers fill;stop-color:#000000",
+      "id": "circle1574",
+      "cx": "25.051979",
+      "cy": "-49.087093",
+      "r": "0.5",
+      "label": "thumb-phalanx-proximal"
+    },
+    {
+      "style": "opacity:1;fill:#000000;fill-opacity:1;stroke:none;stroke-width:10.5833;stroke-linecap:round;stroke-linejoin:round;paint-order:stroke markers fill;stop-color:#000000",
+      "id": "circle1580",
+      "cx": "23.597546",
+      "cy": "-50.196404",
+      "r": "0.5",
+      "label": "thumb-metacarpal"
+    },
+    {
+      "style": "opacity:1;fill:#000000;fill-opacity:1;stroke:none;stroke-width:10.5833;stroke-linecap:round;stroke-linejoin:round;paint-order:stroke markers fill;stop-color:#000000",
+      "id": "circle1590",
+      "cx": "21.4652",
+      "cy": "-51.009899",
+      "r": "0.5",
+      "label": "wrist"
+    },
+    {
+      "style": "opacity:1;fill:#000000;fill-opacity:1;stroke:none;stroke-width:10.5833;stroke-linecap:round;stroke-linejoin:round;paint-order:stroke markers fill;stop-color:#000000",
+      "id": "circle2029",
+      "cx": "15.696774",
+      "cy": "-63.730019",
+      "r": "0.5",
+      "label": "elbow"
+    },
+    {
+      "style": "opacity:1;fill:#000000;fill-opacity:1;stroke:none;stroke-width:10.5833;stroke-linecap:round;stroke-linejoin:round;paint-order:stroke markers fill;stop-color:#000000",
+      "id": "circle2031",
+      "cx": "10.298118",
+      "cy": "-79.457611",
+      "r": "0.5",
+      "label": "shoulder-socket"
+    },
+    {
+      "style": "opacity:1;fill:#000000;fill-opacity:1;stroke:none;stroke-width:10.5833;stroke-linecap:round;stroke-linejoin:round;paint-order:stroke markers fill;stop-color:#000000",
+      "id": "circle2033",
+      "cx": "0",
+      "cy": "-81.947403",
+      "r": "0.5",
+      "label": "neck-base"
+    },
+    {
+      "style": "opacity:1;fill:#000000;fill-opacity:1;stroke:none;stroke-width:10.5833;stroke-linecap:round;stroke-linejoin:round;paint-order:stroke markers fill;stop-color:#000000",
+      "id": "circle2173",
+      "cx": "8.2804134e-17",
+      "cy": "-87.641876",
+      "r": "0.5",
+      "label": "chin-tip",
+    },
+    {
+      "style": "opacity:1;fill:#000000;fill-opacity:1;stroke:none;stroke-width:10.5833;stroke-linecap:round;stroke-linejoin:round;paint-order:stroke markers fill;stop-color:#000000",
+      "id": "circle2626",
+      "cx": "8.2804134e-17",
+      "cy": "-92.383156",
+      "r": "0.5",
+      "label": "nose-tip",
+    },
+    {
+      "style": "opacity:1;fill:#000000;fill-opacity:1;stroke:none;stroke-width:10.5833;stroke-linecap:round;stroke-linejoin:round;paint-order:stroke markers fill;stop-color:#000000",
+      "id": "circle2628",
+      "cx": "2.4519999",
+      "cy": "-94.300583",
+      "r": "0.5",
+      "label": "eye-lens",
+    },
+    {
+      "style": "opacity:1;fill:#000000;fill-opacity:1;stroke:none;stroke-width:10.5833;stroke-linecap:round;stroke-linejoin:round;paint-order:stroke markers fill;stop-color:#000000",
+      "id": "circle3377",
+      "cx": "4.5806942",
+      "cy": "-92.008049",
+      "r": "0.5",
+      "label": "ear"
+    },
+    {
+      "style": "opacity:1;fill:#000000;fill-opacity:1;stroke:none;stroke-width:10.5833;stroke-linecap:round;stroke-linejoin:round;paint-order:stroke markers fill;stop-color:#000000",
+      "id": "circle3051",
+      "cx": "0",
+      "cy": "-57.892391",
+      "r": "0.5",
+      "label": "pelvis-top"
+    },
+    {
+      "style": "opacity:1;fill:#000000;fill-opacity:1;stroke:none;stroke-width:10.5833;stroke-linecap:round;stroke-linejoin:round;paint-order:stroke markers fill;stop-color:#000000",
+      "id": "circle3102",
+      "cx": "0",
+      "cy": "-48.619011",
+      "r": "0.5",
+      "label": "pelvis-bottom"
+    },
+    {
+      "style": "opacity:1;fill:#000000;fill-opacity:1;stroke:none;stroke-width:10.5833;stroke-linecap:round;stroke-linejoin:round;paint-order:stroke markers fill;stop-color:#000000",
+      "id": "circle2708",
+      "cx": "5.5866961",
+      "cy": "-51.737373",
+      "r": "0.5",
+      "label": "hip-socket"
+    },
+    {
+      "style": "opacity:1;fill:#000000;fill-opacity:1;stroke:none;stroke-width:10.5833;stroke-linecap:round;stroke-linejoin:round;paint-order:stroke markers fill;stop-color:#000000",
+      "id": "circle2710",
+      "cx": "8.2710962",
+      "cy": "-49.819946",
+      "r": "0.5",
+      "label": "femur-top"
+    },
+    {
+      "style": "opacity:1;fill:#000000;fill-opacity:1;stroke:none;stroke-width:10.5833;stroke-linecap:round;stroke-linejoin:round;paint-order:stroke markers fill;stop-color:#000000",
+      "id": "circle2813",
+      "cx": "4.9940367",
+      "cy": "-25.416311",
+      "r": "0.5",
+      "label": "knee"
+    },
+    {
+      "style": "opacity:1;fill:#000000;fill-opacity:1;stroke:none;stroke-width:10.5833;stroke-linecap:round;stroke-linejoin:round;paint-order:stroke markers fill;stop-color:#000000",
+      "id": "circle2895",
+      "cx": "4.2270651",
+      "cy": "-2.9301045",
+      "r": "0.5",
+      "label": "ankle"
+    },
+    {
+      "style": "opacity:1;fill:#000000;fill-opacity:1;stroke:none;stroke-width:10.5833;stroke-linecap:round;stroke-linejoin:round;paint-order:stroke markers fill;stop-color:#000000",
+      "id": "circle2897",
+      "cx": "2.867434",
+      "cy": "2.50842",
+      "r": "0.5",
+      "label": "big-toe-tip"
+    },
+    {
+      "style": "opacity:1;fill:#000000;fill-opacity:1;stroke:none;stroke-width:10.5833;stroke-linecap:round;stroke-linejoin:round;paint-order:stroke markers fill;stop-color:#000000",
+      "id": "circle2899",
+      "cx": "4.122478",
+      "cy": "2.7175939",
+      "r": "0.5",
+      "label": "index-toe-tip"
+    },
+    {
+      "style": "opacity:1;fill:#000000;fill-opacity:1;stroke:none;stroke-width:10.5833;stroke-linecap:round;stroke-linejoin:round;paint-order:stroke markers fill;stop-color:#000000",
+      "id": "circle2901",
+      "cx": "5.2032104",
+      "cy": "2.7524562",
+      "r": "0.5",
+      "label": "middle-toe-tip"
+    },
+    {
+      "style": "opacity:1;fill:#000000;fill-opacity:1;stroke:none;stroke-width:10.5833;stroke-linecap:round;stroke-linejoin:round;paint-order:stroke markers fill;stop-color:#000000",
+      "id": "circle2903",
+      "cx": "6.0399065",
+      "cy": "2.7175939",
+      "r": "0.5",
+      "label": "ring-toe-tip"
+    },
+    {
+      "style": "opacity:1;fill:#000000;fill-opacity:1;stroke:none;stroke-width:10.5833;stroke-linecap:round;stroke-linejoin:round;paint-order:stroke markers fill;stop-color:#000000",
+      "id": "circle2905",
+      "cx": "6.8766026",
+      "cy": "2.6478693",
+      "r": "0.5",
+      "label": "pinky-toe-tip"
+    }
+  ]
+}

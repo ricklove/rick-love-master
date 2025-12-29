@@ -53,6 +53,57 @@ declare module "hardhat/types/runtime" {
       signerOrOptions?: ethers.Signer | FactoryOptions
     ): Promise<Contracts.OnchainSvgNftContract__factory>;
 
+    getContractAt(
+      name: "ExperimentsContract",
+      address: string,
+      signer?: ethers.Signer
+    ): Promise<Contracts.ExperimentsContract>;
+    getContractAt(
+      name: "ExperimentsContract2",
+      address: string,
+      signer?: ethers.Signer
+    ): Promise<Contracts.ExperimentsContract2>;
+    getContractAt(
+      name: "IERC165",
+      address: string,
+      signer?: ethers.Signer
+    ): Promise<Contracts.IERC165>;
+    getContractAt(
+      name: "IERC721",
+      address: string,
+      signer?: ethers.Signer
+    ): Promise<Contracts.IERC721>;
+    getContractAt(
+      name: "IERC721Metadata",
+      address: string,
+      signer?: ethers.Signer
+    ): Promise<Contracts.IERC721Metadata>;
+    getContractAt(
+      name: "IERC721Receiver",
+      address: string,
+      signer?: ethers.Signer
+    ): Promise<Contracts.IERC721Receiver>;
+    getContractAt(
+      name: "KittenBlocksOnchainSvgNftContract",
+      address: string,
+      signer?: ethers.Signer
+    ): Promise<Contracts.KittenBlocksOnchainSvgNftContract>;
+    getContractAt(
+      name: "NftContract",
+      address: string,
+      signer?: ethers.Signer
+    ): Promise<Contracts.NftContract>;
+    getContractAt(
+      name: "OnchainNftContract",
+      address: string,
+      signer?: ethers.Signer
+    ): Promise<Contracts.OnchainNftContract>;
+    getContractAt(
+      name: "OnchainSvgNftContract",
+      address: string,
+      signer?: ethers.Signer
+    ): Promise<Contracts.OnchainSvgNftContract>;
+
     // default types
     getContractFactory(
       name: string,
@@ -63,5 +114,10 @@ declare module "hardhat/types/runtime" {
       bytecode: ethers.utils.BytesLike,
       signer?: ethers.Signer
     ): Promise<ethers.ContractFactory>;
+    getContractAt(
+      nameOrAbi: string | any[],
+      address: string,
+      signer?: ethers.Signer
+    ): Promise<ethers.Contract>;
   }
 }

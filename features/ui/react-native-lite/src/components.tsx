@@ -9,7 +9,7 @@ function mergeStyles<T>(items: (T | undefined | null) | (T | T[] | undefined | n
     }
     let item = { ...mergeStyles(items[0]) };
     items.forEach((x) => {
-      item = { ...item, ...mergeStyles(x ?? {}) };
+      item = { ...item, ...mergeStyles(x ?? ({} as T)) };
     });
     return (item ?? {}) as T;
   }

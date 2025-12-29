@@ -3,7 +3,7 @@
   "editor.formatOnSave": true,
   "editor.defaultFormatter": "esbenp.prettier-vscode",
   "[typescript]": {
-    "editor.defaultFormatter": "esbenp.prettier-vscode"
+    "editor.defaultFormatter": "dbaeumer.vscode-eslint"
   },
   "[typescriptreact]": {
     "editor.defaultFormatter": "esbenp.prettier-vscode"
@@ -21,7 +21,7 @@
     "**/*.build.error.log": true,
     "**/.next": true,
     "**/temp": true,
-    "**/lib": true,
+    // "**/lib": true,
     // required boilerplate
     // "**/config": true,
     // "**/.eslintrc.cjs": true

@@ -262,6 +262,7 @@ const sendNewAssignmentsIfReady = (
   });
 
   // Save to server (for data)
+  // eslint-disable-next-line @typescript-eslint/no-misused-promises
   setTimeout(async () => {
     const uploadApiWebClient = createUploadApiClient(config);
     const backupUrl = (
