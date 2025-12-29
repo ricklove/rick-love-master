@@ -31,6 +31,8 @@ export const createSmoothCurve = ({ path }: SmoothCurveArgs) => {
     const y = invT2 * p0[1] + 2 * invT * t * p1[1] + t2 * p2[1];
     const z = invT2 * p0[2] + 2 * invT * t * p1[2] + t2 * p2[2];
 
+    // also get the tangent
+
     return [x, y, z] as [number, number, number];
   };
 
@@ -66,9 +68,26 @@ export const createSmoothCurve = ({ path }: SmoothCurveArgs) => {
     return getPointOnSegment(iSegment, tInSegment);
   };
 
+  const getTangetOnPath = (t: number) => {
+    const tPos = getPointOnPath(t);
+    const nPos = getPointOnPath(t + 0.0001);
+    return [nPos[0] - tPos[0], nPos[1] - tPos[1], nPos[2] - tPos[2]];
+  };
+
+  const getNormalOnPath = (t: number) => {
+    const tPos = getPointOnPath(t);
+    const nPos = getPointOnPath(t + 0.0001);
+    // calculate normal from tangent
+
+    // how is this done?
+
+    return [nPos[0] - tPos[0], nPos[1] - tPos[1], nPos[2] - tPos[2]];
+  };
+
   return {
     totalSegmentLength,
     segmentLengths,
     getPointOnPath,
+    getTangetOnPath,
   };
 };

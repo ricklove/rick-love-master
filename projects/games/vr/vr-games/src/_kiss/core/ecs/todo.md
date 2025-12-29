@@ -21,12 +21,12 @@
     - [x] test scene can show text
     - [x] test scene can have actions
       - [x] actions can modify point position
-      - [ ] actions can modify point visibility
-      - [ ] actions can modify point text
-  - [ ] Can navigate test scenes
+      - [x] actions can modify point visibility
+      - [x] actions can modify point text
+  - [x] Can navigate test scenes
     - [x] can reload specific scene (set url)
     - [x] compile goes directly back to last test scene
-    - [ ] Can view menu of scenes
+    - [x] Can view menu of scenes
     - [ ] Can search menu of scenes
 
 ## Code Quality
@@ -78,7 +78,7 @@
     - [x] menu item is selectable
     - [x] load game on item selection
     - [ ] menu button during game to go back to menu
-    - [ ] virtualize menu items
+    - [x] virtualize menu items
   - [ ] convert music to wave sequence
     - [x] Detect beats from any sound file
       - [ ] Generate notes from any music

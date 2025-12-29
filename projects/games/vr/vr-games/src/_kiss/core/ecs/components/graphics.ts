@@ -154,3 +154,39 @@ export const graphicsComponentFactory = ({ graphicsService }: { graphicsService:
       },
     };
   });
+
+type StorageType = 'localStorage' | 'sessionStorage';
+export const persist = <TObject extends Record<string, unknown>, TValue, TKey extends string>(
+  obj: TObject,
+  key: TKey,
+  defaultValue: TValue,
+  storage?: StorageType,
+): TObject & { [K in TKey]: TValue } => {
+  return Object.defineProperty(obj, key, {
+    get() {
+      const storedValue = window[storage ?? `localStorage`].getItem(key);
+      return storedValue !== null ? (JSON.parse(storedValue) as T) : defaultValue;
+    },
+    set(newValue: TValue) {
+      window[storage ?? `localStorage`].setItem(key, JSON.stringify(newValue));
+    },
+  }) as TObject & { [K in TKey]: TValue };
+};
+
+const _test = persist({}, `test`, false);
+const _test2 = persist(_test, `cool`, { goat: true });
+
+export const createPersistentObject = <TObject extends Record<string, unknown>, TKey extends keyof TObject>(
+  defaultValues: TObject,
+  keys: TKey[],
+) => {
+  const obj = { ...defaultValues };
+  for (const key of keys) {
+    const k = key as unknown as keyof TObject;
+    delete obj[k];
+    persist(obj, k as string, defaultValues[k] as unknown);
+  }
+  return obj;
+};
+
+const _test3 = createPersistentObject({ goat: true, cool: 1 }, [`cool`]);
