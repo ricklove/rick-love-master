@@ -72,7 +72,7 @@ export const BibleMemoryHost = ({
     if (!nextPassage) {
       return;
     }
-    bibleMemoryRef.current.setPassage(nextPassage);
+    bibleMemoryRef.current.setPassage(nextPassage, { shouldClear: false });
   }, []);
 
   const startBibleMemory = useCallback(() => {
@@ -107,6 +107,19 @@ export const BibleMemoryHost = ({
     bibleMemoryRef.current.toggleHintMode();
   }, []);
 
+  const toggleContentOnlyMode = useCallback(() => {
+    if (!bibleMemoryRef.current) {
+      return;
+    }
+    bibleMemoryRef.current.toggleContentOnlyMode();
+
+    activePassageRef.current = passages?.[0];
+    if (!activePassageRef.current) {
+      return;
+    }
+    bibleMemoryRef.current.setPassage(activePassageRef.current, { shouldClear: true });
+  }, []);
+
   return (
     <>
       <div
@@ -128,15 +141,26 @@ export const BibleMemoryHost = ({
         )}
         <div ref={hostRef} />
         {isStarted && (
-          <button
-            style={{
-              background: `#444444`,
-              color: `#FFFFFF`,
-            }}
-            onClick={toggleHintMode}
-          >
-            Toggle Hint Mode
-          </button>
+          <>
+            <button
+              style={{
+                background: `#444444`,
+                color: `#FFFFFF`,
+              }}
+              onClick={toggleHintMode}
+            >
+              Toggle Hint Mode
+            </button>
+            <button
+              style={{
+                background: `#444444`,
+                color: `#FFFFFF`,
+              }}
+              onClick={toggleContentOnlyMode}
+            >
+              Toggle Content Only Mode
+            </button>
+          </>
         )}
       </div>
     </>

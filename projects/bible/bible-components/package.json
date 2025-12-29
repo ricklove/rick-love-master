@@ -21,6 +21,7 @@
   },
   "devDependencies": {
     "@ricklove/config-lib-rig": "workspace:*",
+    "@types/dom-speech-recognition": "0.0.7",
     "@types/react": "18.0.14"
   }
 }

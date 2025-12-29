@@ -595,6 +595,7 @@ importers:
       '@ricklove/utils-core': workspace:*
       '@ricklove/utils-fetch': workspace:*
       '@ricklove/utils-react': workspace:*
+      '@types/dom-speech-recognition': 0.0.7
       '@types/react': 18.0.14
       react: 18.2.0
       react-markdown: ~8.0.3
@@ -611,6 +612,7 @@ importers:
       react-markdown: 8.0.5_luyos4mouogwq6z3wafb3re4ce
     devDependencies:
       '@ricklove/config-lib-rig': link:../../../config/lib-rig
+      '@types/dom-speech-recognition': 0.0.7
       '@types/react': 18.0.14
 
   ../../projects/bible/bible-data:
@@ -4266,6 +4268,10 @@ packages:
     dependencies:
       '@types/ms': 0.7.31
     dev: false
+
+  /@types/dom-speech-recognition/0.0.7:
+    resolution: {integrity: sha512-NjiUoJbBlKhyufNsMZLSp+pbPNtPAFnR738RCJvtZy/HVQ2TZjmqpMyaeOSMXgxdfZM60nt8QGbtfmQrJAH2sw==}
+    dev: true
 
   /@types/eslint-scope/3.7.4:
     resolution: {integrity: sha512-9K4zoImiZc3HlIp6AVUDE4CWYx22a+lhSZMYNpbjW04+YF0KWj4pJXnEMjdnFTiQibFFmElcsasJXDbdI/EPhA==}

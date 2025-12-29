@@ -325,7 +325,7 @@ export const createMemoryRuntimeService = () => {
       { emoji: `🏴‍☠️`, words: `take|took`.split(`|`) },
     ];
 
-    const formatPart = (part: typeof partStates[number] & { index: number }) => {
+    const formatPart = (part: (typeof partStates)[number] & { index: number }) => {
       const { elapsedTime, word, text, isDone } = part;
 
       const wordEmoji = wordEmojis.find((x) => x.words.includes(word.toLowerCase()))?.emoji ?? ``;
@@ -466,8 +466,11 @@ export const createMemoryRuntimeService = () => {
       },
     ];
 
+    let skipVerseNumbers = false;
+    let isContentOnlyMode = false;
+
     const getParts = (text: string): typeof partStates => {
-      const partMatches = [...text.matchAll(getWordRegex())];
+      const partMatches = [...text.matchAll(getWordRegex({ includeDigits: !skipVerseNumbers }))];
 
       let iNext = 0;
       const parts = partMatches.map((m, i) => {
@@ -475,7 +478,7 @@ export const createMemoryRuntimeService = () => {
         const partText = text.substring(iNext, isLast ? text.length : (m?.index ?? 0) + m[0].length);
         const entry = {
           text: partText,
-          word: getWordRegex().exec(partText)?.[0] ?? ``,
+          word: getWordRegex({ includeDigits: !skipVerseNumbers }).exec(partText)?.[0] ?? ``,
           normalized: normalizeWord(partText),
           isDone: false,
           endTime: 0,
@@ -550,11 +553,18 @@ export const createMemoryRuntimeService = () => {
       setDiagnostic(`hintMode=${hintMode}`);
     };
 
+    const toggleContentOnlyMode = () => {
+      isContentOnlyMode = !isContentOnlyMode;
+      skipVerseNumbers = !skipVerseNumbers;
+      addInput([]);
+      setDiagnostic(`isContentOnlyMode=${isContentOnlyMode}`);
+    };
+
     // addCommand(`Change Hint Mode`, toggleHintMode);
 
     const AHEAD_LENGTH = 3;
 
-    const markPartDone = (p: typeof partStates[number]) => {
+    const markPartDone = (p: (typeof partStates)[number]) => {
       p.isDone = true;
       p.endTime = Date.now();
       if (!p.startTime) {
@@ -564,7 +574,7 @@ export const createMemoryRuntimeService = () => {
     };
 
     const addInput = (newInput: { text: string; matchMode: 'firstLetter' | 'number' | 'phonetic' }[]) => {
-      const partStatesWithIndex = partStates as (typeof partStates[number] & { index: number })[];
+      const partStatesWithIndex = partStates as ((typeof partStates)[number] & { index: number })[];
       partStatesWithIndex.forEach((p, i) => (p.index = i));
 
       const getPartsToMatch = () => {
@@ -706,6 +716,10 @@ export const createMemoryRuntimeService = () => {
       resetProblem,
       addToProblem,
       toggleHintMode,
+      toggleContentOnlyMode,
+      get isContentOnlyMode() {
+        return isContentOnlyMode;
+      },
       start: (onDone: (scoreRatio: number) => void, onNext: () => void) => {
         isRunning = true;
         doneCallback = onDone;
@@ -904,17 +918,32 @@ export const createMemoryRuntimeService = () => {
       state.instance.resetProblem(memoryPassage.text, memoryPassage.title, memoryPassage.lang);
       state.instance.start(onDone, onNext);
     },
-    setPassage: (memoryPassage: MemoryPassage) => {
+    setPassage: (memoryPassage: MemoryPassage, options: { shouldClear: boolean }) => {
       if (!state.instance) {
         return;
       }
-      state.instance.addToProblem(memoryPassage.text, memoryPassage.title, memoryPassage.lang);
+
+      const updateProblem = options.shouldClear ? state.instance.resetProblem : state.instance.addToProblem;
+
+      if (state.instance.isContentOnlyMode && memoryPassage.header) {
+        const textNoHeader = memoryPassage.text.replace(memoryPassage.header, ``).trim();
+        updateProblem(textNoHeader, memoryPassage.title, memoryPassage.lang);
+        return;
+      }
+
+      updateProblem(memoryPassage.text, memoryPassage.title, memoryPassage.lang);
     },
     toggleHintMode: () => {
       if (!state.instance) {
         return;
       }
       state.instance.toggleHintMode();
+    },
+    toggleContentOnlyMode: () => {
+      if (!state.instance) {
+        return;
+      }
+      state.instance.toggleContentOnlyMode();
     },
     stop: () => {
       if (!state.instance) {
