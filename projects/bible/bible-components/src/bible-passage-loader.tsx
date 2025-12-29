@@ -54,7 +54,7 @@ export const BiblePassageLoader = ({
       <C.Loading loading={loading} />
       <C.ErrorBox error={error} />
       <form onSubmit={loadPassage}>
-        <input type='text' value={passageReference} onChange={changePassageReference} />
+        <input type='text' value={passageReference} onChange={changePassageReference} autoFocus />
         <button onClick={loadPassage}>Load</button>
       </form>
     </>
