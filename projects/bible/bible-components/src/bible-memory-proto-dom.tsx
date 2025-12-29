@@ -476,10 +476,11 @@ export const createMemoryRuntimeService = () => {
       const parts = partMatches.map((m, i) => {
         const isLast = i === partMatches.length - 1;
         const partText = text.substring(iNext, isLast ? text.length : (m?.index ?? 0) + m[0].length);
+        const partWord = getWordRegex({ includeDigits: !skipVerseNumbers }).exec(partText)?.[0] ?? ``;
         const entry = {
           text: partText,
-          word: getWordRegex({ includeDigits: !skipVerseNumbers }).exec(partText)?.[0] ?? ``,
-          normalized: normalizeWord(partText),
+          word: partWord,
+          normalized: normalizeWord(partWord),
           isDone: false,
           endTime: 0,
           startTime: 0,
